@@ -1,0 +1,48 @@
+The stringLiteral function in scala.util.parsing.combinator.!JavaTokenParsers
+tries to parse String literals with Unicode escape
+sequence in them
+
+{code}
+  def stringLiteral: Parser[String] = 
+    ("\""+"""([^"\p{Cntrl}\\]|\\[\\/bfnrt]|\\u[a-fA-F0-9]{4})*"""+"\"").r
+{code}
+
+However, such Unicode escapes can occur elsewhere,
+including the first \ of an escape sequence,
+or even instead of the " characters themselves (\u0022).
+
+If you wish to support Unicode escapes, they should be
+handled in a lower level stream Char => Char parser only,
+where they would apply to string literals, numbers,
+identifiers, etc.
+
+Compile and run the following program
+
+{code}
+import scala.util.parsing.combinator.JavaTokenParsers
+object StringLiteral extends JavaTokenParsers with Application {
+  override def main(args: Array[String]) {
+    args.foreach { a => println(a)
+                        println(parseAll(stringLiteral, a)) }
+  }
+}
+{code}
+
+and pass it the strings:
+
+{code}
+  scala StringLiteral "\"trivial\"" "\"A backslash \u005c\ character\u0022"
+{code}
+and it parses the first correctly but fails on the second argument
+
+{code}
+"trivial"
+[1.10] parsed: "trivial"
+"A backslash \u005c\ character\u0022
+[1.1] failure: string matching regex `"([^"\p{Cntrl}\\]|\\[\\/bfnrt]|\\u[a-fA-F0-9]{4})*"' expected but `"' found
+
+"A backslash \u005c\ character\u0022
+^
+{code}
+
+(Be careful about quoting arguments to the shell.)

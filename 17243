@@ -1,0 +1,16 @@
+{code}
+scala> class X { def ==(other: String) = true }
+defined class X
+
+scala> new X == null
+<console>:9: warning: comparing a fresh object using `==' will always yield false
+              new X == null
+                    ^
+res14: Boolean = true
+{code}
+
+The culprit:
+
+{code}
+case Select(qual, name @ (nme.EQ | nme.NE | nme.eq | nme.ne)) if args.length == 1 =>
+{code}

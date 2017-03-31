@@ -1,0 +1,19 @@
+This one is especially revealing - it's looking for a method on java.lang.Thread, that's pretty far off.
+{noformat}
+  [partest] java.lang.NoSuchMethodError: java.lang.Thread.CHECK_FREQ()I
+ scala.actors.scheduler.TerminationService$class.liftedTree1$1(TerminationService.scala:42)
+
+private[scheduler] trait TerminationService extends TerminationMonitor {
+  _: Thread with IScheduler =>
+
+  protected val CHECK_FREQ = 50
+{noformat}
+What I see is: if a class appears in the self type (possibly there are more conditions) then it acts like everything is in that class.  But if you have
+
+trait Foo extends Bar {
+  self: Baz with Quux =>
+
+...
+}
+
+Then a member might be in the implementation class of Foo, Bar, or anything inherited from Bar, or in Baz, Quux, or anything inherited through them, or the implementation classes of any of those.

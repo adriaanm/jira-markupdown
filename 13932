@@ -1,0 +1,23 @@
+Taking a closer look at transient lazy vals, I suspect it could be actually broken by design.
+
+Given the following source:
+
+{code}
+@serializable
+class testimpl {
+  @transient lazy val classval: String = ""
+}
+{code}
+
+This results into the following fields in the class:
+
+{code}
+  public volatile int bitmap$$0;
+  private transient String classval;
+{code}
+
+That means, if an instance is serialized, the bitmap$$0 goes into the stream, the classval will be thrown away.
+
+When deserialization takes place, classval will be null. But bitmap$$0 will have the init-flag for classval still set, i.e. classval wont be initialized again! ==> NPE!
+
+I don't think that's the intended behavior.

@@ -1,0 +1,45 @@
+[Updated to consolidate demonstrations.]
+{code}
+class A { class E }
+class B extends A { class E }
+trait C { type E = Int }
+trait D { type E = String }
+
+object Test {
+  // should not compile (?)
+  // martin says "I'd argue about that"
+  type EE[+X <: { type E }] = X#E
+
+  def fail1() {
+    val b = new B
+    var x1: EE[A] = null
+    var x2: EE[B] = new b.E
+    x1 = x2
+  }
+
+  def fail2() {
+    val b = new B
+    var x1: p.E forSome { val p: A } = new b.E // should not compile
+    var x2: p.E forSome { val p: B } = new b.E
+    x1 = x2 // should not compile
+  }
+
+  def fail3() {
+    var x1: EE[C] = 5
+    var x2: EE[C with D] = ""
+    x1 = x2
+  }
+
+  def wrap(label: String)(op: => Unit): Unit =
+    try { op } catch { case x: ClassCastException => println("%30s %s".format(label, x)) }
+
+  def main(args: Array[String]): Unit = {
+    wrap("Variance and inner classes")(fail1())
+    wrap("Conformance of existentials")(fail2())
+    wrap("Linearization and type aliases")(fail3())
+  }
+}
+//     Variance and inner classes java.lang.ClassCastException: B$E cannot be cast to A$E
+//    Conformance of existentials java.lang.ClassCastException: B$E cannot be cast to A$E
+// Linearization and type aliases java.lang.ClassCastException: java.lang.String cannot be cast to java.lang.Integer
+{code}

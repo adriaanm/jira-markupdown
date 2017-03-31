@@ -1,0 +1,11 @@
+The error is
+{code}
+java.lang.InternalError: Malformed class name
+        at java.lang.Class.getSimpleName(Unknown Source)
+{code}
+like Ticket SI-286 - getSimpleName expects a $$ between TestScalaBug$$foo$$ and foo2's class name?
+
+Could TestScalaBug$$foo$$foo2 instead be named TestScalaBug$$foo$$$$foo2 ? I understand that this conflicts with the goal of having nice names when accessing Scala classes from Java.
+
+
+The alternate approach would be to generate a TestScalaBug$$foo class, with TestScalaBug$$foo$$foo2 being an inner class of that class. But I suspect that approach may have already been considered and rejected in Ticket SI-1572

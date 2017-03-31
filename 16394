@@ -1,0 +1,25 @@
+Compile following code:
+
+{code}
+class X {
+  class Y {
+    class Z {
+      class Z2
+    }
+  }
+}
+{code}
+
+and check InnerClasses attribute for Z2, it'll print:
+
+{code}
+  InnerClass: 
+   public #32= #29 of #31; //Z=class X$Y$Z of class X$Y
+   public #33= #10 of #29; //Z2=class X$Y$Z$Z2 of class X$Y$Z
+{code}
+
+which is incomplete because entry for Y (being inner class of X) is missing.
+
+For definition of InnerClass attribute check JVM spec. 4.8.5.
+
+Also, checked that Java compiler generates complete table in corresponding case.

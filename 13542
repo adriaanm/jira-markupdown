@@ -1,0 +1,33 @@
+Using trunk, the following example compiles successfully, but fails at runtime with an `IncompatibleClassChangeError`:
+
+{code}
+import scala.actors.Actor._
+import scala.actors.remote.RemoteActor
+import scala.actors.remote.RemoteActor._
+import scala.actors.remote.Node
+object client extends Application {
+  RemoteActor.classLoader = classOf[C].getClassLoader()
+  actor {
+    val ra = select(Node("127.0.0.1", 9000), 'server)
+    val res = ra !? C("hello")
+    println(res)
+  }
+}
+{code}
+
+Stack trace:
+{code}
+java.lang.IncompatibleClassChangeError: Found interface scala.actors.Actor, but class was expected
+        at client$$$$anonfun$$1.apply(client.scala:9)
+        at client$$$$anonfun$$1.apply(client.scala:7)
+        at scala.actors.Actor$$$$anon$$3.act(Actor.scala:90)
+        at scala.actors.Reaction.run(Reaction.scala:76)
+        at scala.actors.FJTask$$Wrap.run(Unknown Source)
+        at scala.actors.FJTaskRunner.scanWhileIdling(Unknown Source)
+        at scala.actors.FJTaskRunner.run(Unknown Source)
+{code}
+
+Expected:
+No runtime error.
+
+When using Scala 2.7.1.final or rev 15298 no runtime error occurs.

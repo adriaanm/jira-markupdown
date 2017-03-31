@@ -1,0 +1,24 @@
+Because martin's novella on this subject was nominated for several prestigious commenting awards, I enclose it here.
+{code}
+// This is very tricky stuff, because we are navigating
+// the Skylla and Charybdis of anonymous classes and what to return
+// from them here. On the one hand, we cannot admit
+// every non-private member of an anonymous class as a part of
+// the structural type of the enclosing block. This runs afoul of
+// the restriction that a structural type may not refer to an enclosing
+// type parameter or abstract types (which in turn is necessitated
+// by what can be done in Java reflection. On the other hand,
+// making every term member private conflicts with private escape checking
+// see ticket SI-3174 for an example.
+// The cleanest way forward is if we would find a way to suppress
+// structural type checking for these members and maybe defer 
+// type errors to the places where members are called. But that would
+// be a big refactoring and also a  big departure from existing code.
+// The probably safest fix for 2.8 is to keep members of an anonymous
+// class that are not mentioned in a parent type private (as before)
+// but to disable escape checking for code that's in the same anonymous class.
+// That's what's done here. 
+// We really should go back and think hard whether we find a better
+// way to address the problem of escaping idents on the one hand and well-formed
+// structural types on the other.  
+{code}

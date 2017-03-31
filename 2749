@@ -1,0 +1,34 @@
+Sorry, thanks for persisting (in the future, it would help, though, to simply copy/paste output from the interpreter, as I've done below)
+
+Martin: I tried out various combinations of argument types, and could refer to the overload with one argument list (except not in the given example -- see below for one where I did manage), but never to the one with two.
+
+{code}
+scala> object Foo {
+     |   def bar(i: Int) = println(i)
+     |   def bar(i: Int) (f: Float) = println(i*f)
+     | }
+defined module Foo
+
+scala> Foo.bar(5): (Float => Unit)
+<console>:6: error: ambiguous reference to overloaded definition,
+both method bar in object Foo of type (i: Int)(f: Float)Unit
+and  method bar in object Foo of type (i: Int)Unit
+match argument types (Int)
+       Foo.bar(5): (Float => Unit)
+           ^
+
+scala> object x{def a(i: String): Option[String] = Some("a"); def a(i: String)(b:  List[String]): Int = 1}
+defined module x
+
+scala> x.a("a"): Option[String]
+res10: Option[String] = Some(a)
+
+scala> def f(xs: List[String]): Int = x.a("a")(xs)                         
+<console>:5: error: ambiguous reference to overloaded definition,
+both method a in object x of type (i: String)(b: List[String])Int
+and  method a in object x of type (i: String)Option[String]
+match argument types (java.lang.String)
+       def f(xs: List[String]): Int = x.a("a")(xs)
+                                        ^
+
+{code}

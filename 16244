@@ -1,0 +1,13 @@
+Paul and me stumbled upon this during ScalaDays. It doesn't seem to be fixed in trunk yet and I couldn't find a ticket so I'm creating one...
+
+There is a check in {{Inliners.scala}} that prevents inlining of private methods (their call sites are invokespecial, not invokevirtual = Dynamic):
+{code}
+for (i <- bb) {
+  i match {
+    case CALL_METHOD(msym, Dynamic) =>
+      if (analyzeInc(msym, i, bb)) break
+    case _ => ()
+  }
+  info = tfa.interpret(info, i)
+}
+{code}

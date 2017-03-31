@@ -1,0 +1,15 @@
+looks like another case of mistaken identity:
+
+{code}
+
+class Dep(meh: Int)(implicit val s: String)
+
+object Test extends Application {
+  implicit val s: String = "meh" // verify error
+  //implicit val blahblah: String = "meh" // replace above line by this one --> no runtime error
+  
+  def Inner(implicit s: String) = 1
+
+  new Dep(Inner){}
+}
+{code}

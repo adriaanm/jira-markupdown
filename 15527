@@ -1,0 +1,35 @@
+I'm trying to tune/optimize Scala-IDE, and during my
+investigation I saw something strange reference of 2
+ScalaPresentationCompiler (sub type of interactive.Global) co-located in the same Reference Tree.
+
+I think the cause is usage of *mutable object* NoPhase (mutable object doesn't allow multiple context, in our case multiple Global)
+
+form nsc.NoPhase
+{code}
+
+object NoPhase extends Phase(null) {
+ def name = "<no phase>"
+ def run { throw new Error("NoPhase.run") }
+}
+{code}
+and Phase is a mutable structure
+{code}
+abstract class Phase(val prev: Phase) {
+...
+ private var nx: Phase = this
+ if (prev ne null) prev.nx = this
+{code}
+So every time NoPhase is define as a previous of a Phase instance its nx field is updated.
+
+Some Phase subtypes are inner class with $$outer to there Global (in our case ScalaPresentationCompiler)
+
+eg : from nsc.Global :
+{code}
+   private val firstPhase = {
+...
+     val phase1 = syntaxAnalyzer.newPhase(NoPhase)
+{code}
+
+So NoPhase could retains big Global instance.
+
+I attach a screenshot of a memory analyze (I can post the heap dump if you need)

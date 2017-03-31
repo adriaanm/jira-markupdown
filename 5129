@@ -1,0 +1,14 @@
+That one is actually fixed (well I have slightly more global change but logic is the same). Unfortunately optimizer has a bug and in situation like:
+{code}
+trait Foo[T] { val foo: T}
+
+class A extends Foo[Unit]{
+  lazy val foo = println("Unit: called A.foo")
+}
+{code}
+
+the following call is eliminated during dead code elimination:
+{code}
+val a: Foo[Unit] = new A
+a.foo
+{code}

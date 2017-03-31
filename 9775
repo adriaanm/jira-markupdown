@@ -1,0 +1,17 @@
+I tested dist.tgz on
+
+* Mac OSX 10.8.4
+* Win7 64 bits
+** with cmd.exe
+** with cygwin inside cmd.exe
+** with mintty/cygwin
+* Ubuntu 10.10 VM
+
+All console stuff works fine (line wrapping, backspace, history, paste, arrows, reverse search). For completeness I'll try a win 32 bits when I have time.
+
+I started to browse the recent commits in jline2 and was reminded that it has an ["expand event"|https://github.com/jline/jline2/blob/master/src/main/java/jline/console/ConsoleReader.java#L635] feature that defaults to true. So !! recalls the previous line and in general anything starting with ! may cause IllegalArgumentException.
+
+For instance try typing {{1 != 1}} with this 925 build.
+
+You may need to [call|https://github.com/scala/scala/blob/a49722990655633c2c97ddf5699adf25bc8bea76/src/jline/src/main/java/scala/tools/jline/console/ConsoleReader.java#L92] {{ConsoleReader.setExpandEvents(false)}}.
+

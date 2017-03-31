@@ -1,0 +1,49 @@
+The current definition is:
+
+{code}
+def orElse[A1 <: A, B1 >: B](that: PartialFunction[A1, B1]): PartialFunction[A1, B1]
+{code}
+
+This prevents me from creating groups capturing sealed traits and chaining them:
+
+{code}
+sealed trait Special
+case object One extends Special
+case object Two extends Special
+
+type Receive = PartialFunction[Any, Unit]
+
+// compile error
+def receive: Receive = handleAnyMessage orElse handleSpecialMessage 
+
+def handleSpecialMessage: PartialFunction[Special, Unit] = {
+  case One =>
+  case Two =>
+}
+
+def handleAnyMessage: Receive = {
+  case _ =>
+}
+{code}
+
+I am using this pattern with actors to prevent myself from forgetting to implement handlers for messages.
+
+A partial function should not get the most specific type. It should get the least specific type. After all, it has an `isDefinedAt` method.
+
+My current workaround:
+
+{code}
+implicit def widenTypeOfPartialFunction[A : ClassTag, B, A1](p: PartialFunction[A, B]): PartialFunction[A1, B] =
+    new Partial[A1, B] {
+      def apply(a: A1): B =
+        c match {
+          case a: A => p(a)
+        }
+
+      def isDefinedAt(a: A1): Boolean =
+        a match {
+          case a: A => p isDefinedAt a
+          case _ => false
+        }
+    }
+{code}

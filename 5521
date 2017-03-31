@@ -1,0 +1,24 @@
+Another example where this isn't working. The {{context.scope}} checked by {{nonImplicitSynonymInScope}} doesn't contain the template member {{x}}.
+
+{code}
+object Test1 {
+  object A { implicit val x: Int = 1 }
+  import A.x
+  def x: Int = 0
+  implicitly[Int]
+}
+{code}
+
+By contrast, this does shadow:
+
+{code}
+object Test2 {
+  object A { implicit val x: Int = 1 }
+  
+  {
+    import A.x
+    def x: Int = 0
+    implicitly[Int]
+  }
+}
+{code}

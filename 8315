@@ -1,0 +1,55 @@
+Sorry for delayed response.
+
+Examples without specs2 dependency.
+{code}
+object Minimized {
+  class F
+  class Fs
+  class FF {
+    def ^(f: F): Fs = null
+    def ^(f: Fs): Fs = null
+  }
+
+  class DT
+  class DR[+T]
+  trait T {
+    implicit def dtF[T](x: => DR[T]): F = null
+    implicit def dtFs[T](x: => DR[T]): Fs = null
+    implicit def f2Fs[T](x: => F): Fs = null //if this line is commented, then compilation will fail
+  }
+
+  class S extends T {
+    val result: DR[DT] = null
+
+    val ff: FF = null
+
+    def is: Fs = ff ^ result
+  }
+}
+{code}
+As A.P.Marki commented, conversion from F to Fs breaks the tie in overloading resolution. SLS 6.23.2 has no words about implicit conversions in resolving overlading. So resolving ^ overloading shouldn't be a reason.
+Ok then let's imagine that result can be converted by two possible implicit conversions and we can choose one of them, because one of them is more specific due to implicit conversion from F to Fs, but then following example should be compilable:
+{code}
+object Minimized {
+  class TT
+  class F extends TT
+  class Fs extends TT
+  class FF {
+    def ^(f: F): Fs = null
+    def ^(f: Fs): Fs = null
+  }
+
+  class DT
+  class DR[+T]
+  trait T {
+    implicit def dtF[T](x: => DR[T]): F = null
+    implicit def dtFs[T](x: => DR[T]): Fs = null
+    implicit def f2Fs[T](x: => F): Fs = null //if this line is commented, then compilation will fail
+  }
+
+  class S extends T {
+    val result: DR[DT] = null
+    val tt: TT = result
+  }
+}
+{code}

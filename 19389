@@ -1,0 +1,85 @@
+{noformat}
+git show
+commit 1658a825f0e1004186df9be188fe9ce374ad9ae7
+Author: Jason Zaugg <jzaugg@gmail.com>
+Date:   Thu Oct 23 16:26:46 2014 +1000
+
+    Failing test case for quasiquotes in presentation compiler
+
+    ```
+    $ ./test/partest --show-diff test/files/presentation/quasiquotes
+    ...
+    +reload: Source.scala
+    +too many patterns for trait api: expected 1, found 2
+    ```
+
+diff --git a/test/files/presentation/quasiquotes/Runner.scala b/test/files/presentation/quasiquotes/Runner.scala
+new file mode 100644
+index 0000000..944f458
+--- /dev/null
++++ b/test/files/presentation/quasiquotes/Runner.scala
+@@ -0,0 +1,27 @@
++import scala.tools.nsc.interactive.tests.InteractiveTest
++import scala.reflect.internal.util.SourceFile
++import scala.tools.nsc.interactive.Response
++
++object Test extends InteractiveTest {
++
++  override def execute(): Unit = {
++    val src = loadSourceAndWaitUntilTypechecked("Source.scala")
++    checkErrors(src)
++  }
++
++  private def loadSourceAndWaitUntilTypechecked(sourceName: String): SourceFile = {
++    val sourceFile = sourceFiles.find(_.file.name == sourceName).head
++    askReload(List(sourceFile)).get
++    askLoadedTyped(sourceFile).get
++    sourceFile
++  }
++
++  private def checkErrors(source: SourceFile): Unit = compiler.getUnitOf(source) match {
++    case Some(unit) =>
++      val problems = unit.problems.toList
++      if(problems.isEmpty) reporter.println("Test OK")
++      else problems.foreach(problem => reporter.println(problem.msg))
++
++    case None => reporter.println("No compilation unit found for " + source.file.name)
++  }
++}
+diff --git a/test/files/presentation/quasiquotes/src/Source.scala b/test/files/presentation/quasiquotes/src/Source.scala
+new file mode 100644
+index 0000000..769c8fd
+--- /dev/null
++++ b/test/files/presentation/quasiquotes/src/Source.scala
+@@ -0,0 +1,10 @@
++class Quasi {
++  import reflect.runtime.universe._
++
++  def test: Unit = {
++    (null: Any) match {
++      case q"$foo($bar)" =>
++    }
++    ()
++  }
++}
+topic/quasiquote-presentation ~/code/scala git diff
+topic/quasiquote-presentation ~/code/scala git diff head
+diff --git a/test/files/presentation/quasiquotes.flags b/test/files/presentation/quasiquotes.flags
+new file mode 100644
+index 0000000..3c1ff18
+--- /dev/null
++++ b/test/files/presentation/quasiquotes.flags
+@@ -0,0 +1 @@
++-Ytyper-debug
+
+
+% qscalac -Ytyper-debug 
+test/files/presentation/quasiquotes/src/Source.scala 2>&1 | tee sandbox/good.txt
+
+% pt --show-diff test/files/presentation/quasiquotes
+
+% diff -U 100000 sandbox/good.txt test/files/presentation/quasiquotes-presentation.log | gist --filename quasiquote.diff
+https://gist.github.com/retronym/31af8fe2c36bd880a072
+{noformat}
+
+As reported https://groups.google.com/d/msg/scala-ide-user/jUalTVRnTmY/v6XG7q3B3FYJ

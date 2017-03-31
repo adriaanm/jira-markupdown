@@ -1,0 +1,31 @@
+The implicits cache from current development versions doesn't properly take into account that the implicit parameter might contain (own) symbols.
+
+It's pretty easy to reproduce the problem:
+
+{code}
+class Test
+object Test { implicit def view(x : Test) = 0 }
+
+object Call {
+  def call(implicit view : Test => Int) = view(null)
+  call
+  call
+}
+{code}
+
+This will cause a "no-symbol does not have owner" error in the lambda lifting stage. Output with "-uniqid -print:typer":
+
+{code}
+[...]
+	CallSI-7515.this.callSI-10687({
+		((xSI-11869: TestSI-7512) => TestSI-7513.viewSI-10678(xSI-11869))
+	});
+	CallSI-7515.this.callSI-10687({
+		((xSI-11869: TestSI-7512) => TestSI-7513.viewSI-10678(xSI-11869))
+	})
+[...]
+{code}
+
+Scala is clearly re-using the same parameter symbols for the two "call" calls. This confuses the lambda lifter. Further damage is done once the two calls are in different scopes.
+
+As it's pretty hard to get around this bug for what I'm trying to do, I have created a crude compiler patch that reincarnates all parameter symbols for results taken from the implicits cache (attached).

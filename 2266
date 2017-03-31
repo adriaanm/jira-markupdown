@@ -1,0 +1,29 @@
+I've been digging into this a little deeper. 
+
+For the first problem:
+
+{code}
+trait T[A[_]];
+object Bug2308A {
+  type T1 = T[B] forSome { type B[_] }
+}
+{code}
+
+A naive trip through the debugger suggests that:
+
+ 1. `RefChecks.transformStat:928` substitutes the existential parameter `B[_]` with `WildcardType`.
+ 1. `Infer.checkKindBoundsHK` compares the type argument `WildcardType` with the type parameter `A[_]`, and reports the arity mismatch.
+
+Perhaps `RefChecks.transformStat` could be modified to replaced existential types with a wildcard with the same structure (e.g. `B[_]` => `new WildCardParameterisedType(WildCardType)`; or `checkKindBoundsHK` could add a special case to short circuit the check.
+
+----
+
+The second problem, which is blocking the port of part of Scalaz, is eluding me. It is minimally:
+
+{code}
+trait Request[IN[_]]
+trait T[A]
+(null: Request[T]) : (Request[IN] forSome { type IN[_] })
+{code}
+
+Which part of the type conformance checking should return true for `T <:< IN[_]` ? `Types.isHKSubType0` does not, as `(tp1.normalize, tp2.normalize)` results in a pair of type  `(TypeVar, PolyType)`, which falls through to the default case. But I could be looking in entirely the wrong place...

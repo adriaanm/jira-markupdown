@@ -1,0 +1,22 @@
+The basic build idea and layout of plugin projects has been change a bit.
+
+1. eclipse-lib and aspect-lib and... other libs will not eencouraged to be included in the svn trunk;
+2. trunk will be build against the latest binary snapshot of Scala 2.8 and binary Eclipse and binary aspectj related plugins; 
+3. packaging and deploying will depend on the Eclipse PDE, direct ant script is not useful;(PDE can generate related scripts if necessary such as auto-building for CI)
+4. Bootstrape SDT building without SDT has been enabled
+I modify some settings. $$root-dir$$/bin directory will be used.  $$root-dir$$/build_simple.xml is one simplified build.xml. It will complie the source of scala-plugin into the bin directory. This uses the scalac, So it need to set the correct classpath for scalac. some directories locations(maybe two) need to be modified before running the ant script. Pointing them to latest binary Eclipse and Scala.
+5. should get Eclipse installed with latest ajdt. I use one update site,as follow:
+http://download.eclipse.org/tools/ajdt/36/dev/update
+6. directly running SDT from workspace has also been supported.
+"/bin" directory layout makes PDE to recognize the scala project as java project. And now, we can  use the PDE to run SDT without deploying(I guess the current trunk should be run directly as well. so, maybe it is not a feature...). I save a PDE lanuch file under the root of scala-plugin project. The arguments of lanuching has been configured. 
+And, I suggest SDT change to use the vm arguments to add hook, not the config.ini. Modifying of config.ini is relatviely complex for newcomeer and error-prone.
+7. the codes modified by me are leading with "//XXX: Jin Mingjian". you can search the file by it to get all the locations of modification by me.
+8. I mainly fixed somethings blocking the running of SDT under eclipse 3.6m6. 
+A. The way of HyperlinkDector implementation has been changed. I remove one file. I use the EP to add the HyperlinkDector and HyperlinkDectorTargets. The HyperlinkDectorTarget is allowed to be customized. And Reflective forName() is not needed at all.
+B. aop.xml has been removed. it is not needed. new weaving engine allow to declare the aspects in the properties of package in the mf file directly.
+C. and other small tweaks..
+
+9. I'd like to do some cleaning works to eliminate all forName like hard-codes as possible. How about this ideas?:)  
+
+if some problems, let me know:)
+

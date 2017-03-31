@@ -1,0 +1,36 @@
+introduced in between r18473 and r18480 (http://lampsvn.epfl.ch/trac/scala/log/scala/trunk), so assigning to adriaan.
+
+
+!TestArrayList.java:
+{code}
+class TestArrayList extends java.util.ArrayList {
+}
+{code}
+
+Test.scala:
+{code}
+class Test {
+  def test(list: TestArrayList) = list.iterator
+}
+{code}
+
+{code}
+$$ javac TestArrayList.java
+$$ scalac -classpath . Test.scala
+Exception in thread "main" java.lang.AssertionError: assertion failed: java.util.ArrayList[E]
+        at scala.Predef$$.assert(Predef.scala:97)                                             
+        at scala.tools.nsc.symtab.Types$$TypeRef.transform(Types.scala:1417)                  
+        at scala.tools.nsc.symtab.Types$$TypeRef$$$$anonfun$$baseTypeSeq$$3.apply(Types.scala:1588)
+        at scala.tools.nsc.symtab.Types$$TypeRef$$$$anonfun$$baseTypeSeq$$3.apply(Types.scala:1588)
+        at scala.tools.nsc.symtab.BaseTypeSeqs$$BaseTypeSeq.map(BaseTypeSeqs.scala:114)        
+        at scala.tools.nsc.symtab.Types$$TypeRef.baseTypeSeq(Types.scala:1588)                 
+        at scala.tools.nsc.symtab.BaseTypeSeqs$$$$anonfun$$compoundBaseTypeSeq$$1.apply(BaseTypeSeqs.scala:207)
+        at scala.tools.nsc.symtab.BaseTypeSeqs$$$$anonfun$$compoundBaseTypeSeq$$1.apply(BaseTypeSeqs.scala:205)
+        at scala.collection.generic.LinearSequenceTemplate$$class.foreach(LinearSequenceTemplate.scala:82)  
+        at scala.collection.immutable.List.foreach(List.scala:27)                                          
+        at scala.tools.nsc.symtab.BaseTypeSeqs$$class.compoundBaseTypeSeq(BaseTypeSeqs.scala:205)           
+        at scala.tools.nsc.symtab.SymbolTable.compoundBaseTypeSeq(SymbolTable.scala:13)                    
+        at scala.tools.nsc.symtab.Types$$CompoundType$$$$anonfun$$baseTypeSeq$$1.apply(Types.scala:1071)        
+        at scala.tools.nsc.symtab.Types$$CompoundType$$$$anonfun$$baseTypeSeq$$1.apply(Types.scala:1071)        
+        at scala.tools.nsc.symtab.Types$$CompoundType.memo(Types.scala:1127)
+{code}

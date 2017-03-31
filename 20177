@@ -1,0 +1,75 @@
+Having the following Java interfaces:
+
+{code:java}
+public interface Promise<T> {
+  <R> Promise<R> map(SuccessHandler<? super T, ? extends R> handler);
+  <R> Promise<R> map(FutureSuccessHandler<? super T, R> handler);
+}
+{code}
+
+{code:java}
+public interface SuccessHandler<T, R> {
+  R handle(T result);
+}
+{code}
+
+
+{code:java}
+public interface FutureSuccessHandler<T,R> {
+  Promise<R> handle(T result);
+}
+{code}
+
+Where Promise#map method contains two overloads, receiving two different interfaces and using bounded wildcards, Scala fails to choose which overload to use having the following code:
+
+{code:scala}
+object Test {
+  val promise: Promise[String] = ???
+  promise.map(new SuccessHandler[String, Int] {
+    override def handle(result: String): Int = ???
+  })
+}
+{code}
+
+Failing on compilation error:
+
+(Using directly scalac and providing classpath):
+
+{code:java}
+Test.scala:9: error: overloaded method value map with alternatives:
+  [R](x$1: test.FutureSuccessHandler[_ >: String, R])test.Promise[R] <and>
+  [R](x$1: test.SuccessHandler[_ >: String, _ <: R])test.Promise[R]
+ cannot be applied to (test.SuccessHandler[String,Int])
+  promise.map(new SuccessHandler[String, Int] {
+          ^
+one error found
+
+{code}
+
+(Using Maven with scala-maven-plugin):
+
+
+{code:java}
+[INFO] Using incremental compilation
+[INFO] Compiling 1 Scala sources and 3 Java sources to /home/michael/ScalaTest/target/classes...
+[ERROR] /home/michael/ScalaTest/src/main/scala/test/Test.scala:9: overloaded method value map with alternatives:
+  [R(in method map)(in method map)(in method map)(in method map)(in method map)(in method map)(in method map)(in method map)](handler: test.FutureSuccessHandler[_ >: String, R(in method map)(in method map)(in method map)(in method map)(in method map)(in method map)(in method map)(in method map)])test.Promise[R(in method map)(in method map)(in method map)(in method map)(in method map)(in method map)(in method map)(in method map)] <and>
+  [R(in method map)(in method map)(in method map)(in method map)(in method map)(in method map)(in method map)(in method map)](handler: test.SuccessHandler[_ >: String, _ <: R(in method map)(in method map)(in method map)(in method map)(in method map)(in method map)(in method map)(in method map)])test.Promise[R(in method map)(in method map)(in method map)(in method map)(in method map)(in method map)(in method map)(in method map)]
+ cannot be applied to (test.SuccessHandler[String,Int])
+[ERROR]   promise.map(new SuccessHandler[String, Int] {
+[ERROR]           ^
+[ERROR] one error found
+
+{code}
+
+Now, interesting things about the issue:
+1. Having this line: 'promise.map(new SuccessHandler[String, Int]', changing the parameter type R to be also String (instead of Int), leads the code to compile successfully (when 'SuccessHandler' generic types are the same, all works fine).
+2. Signatures of the 'map' methods containing bounded wildcard as defined below:
+
+{code:java}
+<R> Promise<R> map(SuccessHandler<? super T, ? extends R> handler);
+<R> Promise<R> map(FutureSuccessHandler<? super T, R> handler);
+{code}
+
+if I remove the lower bounded wildcards (from both methods) everything compiles without any issues.
+The issue looks like caused by the wildcards, but have no idea more why.

@@ -1,0 +1,37 @@
+The problem is with type-/value-parameter symbols that hang of the info of those method symbols. Accessing the methods info at later phases runs the type through additiona InfoTransformers. If they modify types of value parameters or bounds of type parameters, new symbols are cloned:
+
+{noformat}
+scala> type X = Int
+defined type alias X
+
+scala> class C { def foo[A <: T](a: A) }
+<console>:33: error: not found: type T
+       class C { def foo[A <: T](a: A) }
+                              ^
+
+scala> class C { def foo[A <: X](a: A) }
+<console>:34: error: class C needs to be abstract, since method foo is not defined
+       class C { def foo[A <: X](a: A) }
+             ^
+
+scala> trait C { def foo[A <: X](a: A) }
+defined trait C
+
+scala> typeOf[C].member("foo": TermName).id
+res2: Int = 94862
+
+scala> enteringErasure(typeOf[C].member("foo": TermName).id)
+res3: Int = 94862
+
+scala> typeOf[C].member("foo": TermName).info
+res6: $r.intp.global.Type = [A <: X](a: A)Unit
+
+scala> enteringErasure(typeOf[C].member("foo": TermName).info)
+res7: $r.intp.global.Type = [A <: Int](a: A)Unit
+
+scala> typeOf[C].member("foo": TermName).typeParams.map(_.id)
+res0: List[Int] = List(94863)
+
+scala> enteringErasure(typeOf[C].member("foo": TermName).typeParams.map(_.id))
+res1: List[Int] = List(94934)
+{noformat}

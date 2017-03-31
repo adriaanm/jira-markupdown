@@ -1,0 +1,10 @@
+The trait {{scala.math.PartiallyOrdered}} is -- surprisingly -- fundamentally different from {{scala.math.Ordered}}: its type parameter {{A}} is covariant (which was changed for the {{Ordered}} trait in 2.8), and its comparison methods ({{tryCompareTo}} etc.) take as argument a value of type {{B >: A <% PartiallyOrdered\[B]}}. The drawbacks are numerous:
+
+- From a mathematical standpoint, it is surprising that trait {{Ordered\[A]}} does not (and presently cannot) extend trait {{PartiallyOrdered\[A]}}, even though the former is a specialization of the latter.
+- This is aggravated by the fact that this inconsistency does not exist in the {{...Ordering}} traits: here, {{Ordering\[T]}} is in fact a subtype of {{PartialOrdering\[T]}}.
+- From an implementers standpoint, the API difference between {{PartiallyOrdered}} and {{Ordered}} is highly confusing. 
+- The signature of {{tryCompareTo}} makes it tedious to implement this method, even in simple settings such as for case classes.
+
+A [Google search|https://www.google.de/search?q=scala+PartiallyOrdered&nfpr=1] suggests it is questionable if this trait is being used in any larger-scale context (maybe because of the above reasons; I am filing this issue also because I found it to be unusable in a context where I heavily make use of partial orders, which was kind of disappointing). In fact, most of the evidence of people actually using it is people [being|http://scala-programming-language.1934581.n4.nabble.com/How-to-implement-PartiallyOrdered-trait-td2300147.html] [confused|http://osdir.com/ml/lang.scala/2008-08/msg00125.html] about how to use it properly. The {{VectorClock}} class in Akka used to extend it, but not anymore.
+
+As undesirable as API breakage is, I think this should be addressed rather sooner than later. Set aside any practical aspects, the current inconsistency between {{Ordered}}/{{PartiallyOrdered}} and {{Ordering}}/{{PartialOrdering}} alone is too confusing to leave this as is.

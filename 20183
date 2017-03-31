@@ -1,0 +1,27 @@
+The example given for Streams fails to compile with this error:
+
+{noformat}
+Error:(597, 60) forward reference extends over definition of value fibs
+    val fibs: Stream[BigInt] = BigInt(0) #:: BigInt(1) #:: fibs.zip(fibs.tail).map { n => n._1 + n._2 }
+{noformat}
+
+https://github.com/scala/scala/blob/2.12.x/src/library/scala/collection/immutable/Stream.scala#L23-L38
+
+{code:scala}
+import scala.math.BigInt
+/*
+ *  object Main extends App {
+ *
+ *    val fibs: Stream[BigInt] = BigInt(0) #:: BigInt(1) #:: fibs.zip(fibs.tail).map { n => n._1 + n._2 }
+ *
+ *    fibs take 5 foreach println
+ *  }
+ *
+ *  // prints
+ *  //
+ *  // 0
+ *  // 1
+ *  // 1
+ *  // 2
+ *  // 3
+{code}

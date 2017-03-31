@@ -1,0 +1,46 @@
+The following Scala program compiles and runs without errors:
+{code}
+trait MyTrait[T] {
+    def map[U](t: T, u: MyArgument[U]) : MyArgument[U] = u
+}
+
+class MyArgument[U](u: U) {}
+
+class MyClass[U] extends MyTrait[U] {}
+
+class MyClassRenamedTypes[U2] extends MyTrait[U2] {}
+
+object MyClass {
+    def main(args: Array[String]) {
+        new MyClass[Int].map(1, new MyArgument("String"))
+        new MyClassRenamedTypes[Int].map(1, new MyArgument("String"))
+    }
+}
+{code}
+
+Consider a Java implementation of the same main main() method:
+
+{code}
+public class JavaTypeParam {
+    public static void main(String[] args) {
+        // This should compile:
+        new MyClassRenamedTypes<Integer>().map(1, new MyArgument<String>("String"));
+        // This fails:
+        new MyClass<Integer>().map(1, new MyArgument<String>("String"));
+    }
+}
+{code}
+
+Javac fails to compile the last line of this main() method:
+{noformat}
+JavaTypeParam.java:6: <U>map(U,MyArgument<U>) in MyClass<java.lang.Integer> cannot be applied to (int,MyArgument<java.lang.String>)
+        new MyClass<Integer>().map(1, new MyArgument<String>("String"));
+                              ^{noformat}
+
+The only difference between MyClass and MyClassRenamedTypes is the name of the type parameter.  It looks like type parameters in different namespaces are colliding.
+
+Interestingly, everything compiles if MyArgument[U] is replaced by U.  It also compiles if the definition of MyTrait.map() is changed to
+
+{code}
+def map[U](u: MyArgument[U]) : MyArgument[U] = u{code}
+

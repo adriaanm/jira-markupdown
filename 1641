@@ -1,0 +1,56 @@
+Verified it with clean workspace and fresh installation. The problem is still there.
+
+My platform: openSUSE 11.1 32bit, Java 1.6.0, Eclipse 3.4.2. Plug-in version: 2.8.0.r17250
+
+What I have done:
+1. Create Scala project (this gave my another exception about failed assertion that I'll report in separate ticket)
+2. Create some package
+3. Created some class
+4. Code highlighting didn't work right from the beginning
+
+During class creation, apart from exception I have reported earlier I've got:
+{code}
+java.lang.NoClassDefFoundError: Could not initialize class scala.tools.eclipse.util.Style$$                                                                                          
+        at scala.tools.editor.Presentations$$ProjectImpl$$FileImpl$$TokenImpl$$class.style(Presentations.scala:101)                                                                     
+        at scala.tools.eclipse.ScalaPlugin$$Project$$File$$Token.scala$$tools$$editor$$TypersPresentations$$ProjectImpl$$FileImpl$$TokenImpl$$$$super$$style(ScalaPlugin.scala:977)             
+        at scala.tools.editor.TypersPresentations$$ProjectImpl$$FileImpl$$TokenImpl$$class.style(TypersPresentations.scala:367)                                                         
+        at scala.tools.eclipse.ScalaPlugin$$Project$$File$$Token.style(ScalaPlugin.scala:977)                                                                                          
+        at lampion.presentation.Presentations$$ProjectImpl$$FileImpl$$class.refreshHighlightFor(Presentations.scala:58)                                                                
+        at scala.tools.eclipse.ScalaPlugin$$Project$$File.refreshHighlightFor(ScalaPlugin.scala:690)                                                                                  
+        at scala.tools.eclipse.ScalaPlugin$$Project$$File.refresh(ScalaPlugin.scala:818)                                                                                              
+        at scala.tools.eclipse.SourceViewer$$reconciler$$.createPresentation(SourceViewer.scala:75)                                                                                   
+        at org.eclipse.jface.text.presentation.PresentationReconciler.createPresentation(PresentationReconciler.java:453)                                                           
+        at org.eclipse.jface.text.presentation.PresentationReconciler.processDamage(PresentationReconciler.java:566)                                                                
+        at org.eclipse.jface.text.presentation.PresentationReconciler.access$$3(PresentationReconciler.java:564)                                                                     
+        at org.eclipse.jface.text.presentation.PresentationReconciler$$InternalListener.inputDocumentChanged(PresentationReconciler.java:119)                                        
+        at org.eclipse.jface.text.TextViewer.fireInputDocumentChanged(TextViewer.java:2714)                                                                                         
+        at org.eclipse.jface.text.TextViewer.setDocument(TextViewer.java:2763)                                                                                                      
+        at org.eclipse.jface.text.source.SourceViewer.setDocument(SourceViewer.java:541)                                                                                            
+        at org.eclipse.jface.text.source.projection.ProjectionViewer.setDocument(ProjectionViewer.java:369)                                                                         
+        at org.eclipse.jface.text.source.SourceViewer.setDocument(SourceViewer.java:496)                                                                                            
+        at org.eclipse.ui.texteditor.AbstractTextEditor.initializeSourceViewer(AbstractTextEditor.java:3808)                                                                        
+        at org.eclipse.ui.texteditor.AbstractTextEditor.createPartControl(AbstractTextEditor.java:3364)                                                                             
+        at org.eclipse.ui.texteditor.StatusTextEditor.createPartControl(StatusTextEditor.java:53)
+        at org.eclipse.ui.texteditor.AbstractDecoratedTextEditor.createPartControl(AbstractDecoratedTextEditor.java:394)
+        at org.eclipse.jdt.internal.ui.javaeditor.JavaEditor.createPartControl(JavaEditor.java:3033)
+        at org.eclipse.jdt.internal.ui.javaeditor.CompilationUnitEditor.createPartControl(CompilationUnitEditor.java:1468)
+        at org.eclipse.ui.internal.EditorReference.createPartHelper(EditorReference.java:661)
+        at org.eclipse.ui.internal.EditorReference.createPart(EditorReference.java:428)
+        at org.eclipse.ui.internal.WorkbenchPartReference.getPart(WorkbenchPartReference.java:594)
+        at org.eclipse.ui.internal.EditorReference.getEditor(EditorReference.java:266)
+        at org.eclipse.ui.internal.WorkbenchPage.busyOpenEditorBatched(WorkbenchPage.java:2820)
+        at org.eclipse.ui.internal.WorkbenchPage.busyOpenEditor(WorkbenchPage.java:2729)
+        at org.eclipse.ui.internal.WorkbenchPage.access$$11(WorkbenchPage.java:2721)
+        at org.eclipse.ui.internal.WorkbenchPage$$10.run(WorkbenchPage.java:2673)
+        at org.eclipse.swt.custom.BusyIndicator.showWhile(BusyIndicator.java:70)
+        at org.eclipse.ui.internal.WorkbenchPage.openEditor(WorkbenchPage.java:2668)
+        at org.eclipse.ui.internal.WorkbenchPage.openEditor(WorkbenchPage.java:2652)
+        at org.eclipse.ui.internal.WorkbenchPage.openEditor(WorkbenchPage.java:2643)
+        at org.eclipse.ui.ide.IDE.openEditor(IDE.java:646)
+        at org.eclipse.ui.ide.IDE.openEditor(IDE.java:605)
+        at scala.tools.eclipse.wizards.NewResourceWizard$$class.performFinish(NewResourceWizard.scala:176)
+        at scala.tools.eclipse.wizards.NewClassWizard.performFinish(NewClassWizard.scala:9)
+...
+{code}
+
+I hope this will give you a clue what's going on.

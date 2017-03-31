@@ -1,0 +1,38 @@
+Yep, it would be ideal to just rely on the optimizer to kill the dead branches.
+
+But it doesn't seem like we currently eliminate impossible {{isInstanceOf}} tests:
+
+{code}
+% scala210 -optimize -Xprint:jvm -e  'if (Int.box(1).isInstanceOf[Byte]) "byte" else "other"'
+
+[[syntax trees at end of                       jvm]] // scalacmd9042292549797194950.scala
+package <empty> {
+  object Main extends Object {
+    def main(argv: Array[String]): Unit = {
+      val args: Array[String] = argv;
+      {
+        {
+          new anonymous class anon$1();
+          ()
+        }
+      }
+    };
+    def <init>(): Main.type = {
+      Main.super.<init>();
+      ()
+    }
+  };
+  final class Main$$anon$1 extends Object {
+    def <init>(): anonymous class anon$1 = {
+      Main$$anon$1.super.<init>();
+      if (scala.Int.box(1).$isInstanceOf[Byte]())
+        "byte"
+      else
+        "other";
+      ()
+    }
+  }
+}
+{code}
+
+I don't suppose that would be such a tough optimization to add.

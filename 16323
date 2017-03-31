@@ -1,0 +1,35 @@
+getClass.getName doesn't return a real java.lang.String because replace and replaceAll don't work properly
+
+{noformat}
+scala> class A {
+     |  val b = new B
+     |  class B {
+     |  val c = new C
+     |  class C {
+     |  }
+     |  }
+     |  }
+defined class A
+
+scala> val a = new A
+a: A = A@19e0bcf
+
+scala> val c = a.b.c
+c: a.b.C = A$B$C@90dbc4
+
+scala> c.getClass.getName.replace("$","#")
+res60: java.lang.String = #line92.#read##iw##iw#A#B#C
+
+scala> c.getClass.getName.replaceAll("[$]","#")
+res61: java.lang.String = #line92.#read##iw##iw#A#B#C
+{noformat}
+
+Expected behaviour:
+
+{noformat}
+scala> "A$B$C".replace("$","#")
+res0: java.lang.String = A#B#C
+
+scala> "A$B$C".replaceAll("[$]","#")
+res1: java.lang.String = A#B#C
+{noformat}

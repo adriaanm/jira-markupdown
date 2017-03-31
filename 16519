@@ -1,0 +1,25 @@
+Trying to compile this file fails kind of sensibly in 2.9.1:
+{code}
+package scala.tools.nsc
+package interpreter
+
+class IMain extends Imports
+{code}
+{noformat}
+error: class file needed by Imports is missing.
+reference value global of scala.tools.nsc.interpreter.IMain refers to nonexisting symbol.
+one error found
+{noformat}
+In current trunk it explodes instead:
+{noformat}
+scalac3 -d /tmp ./IMain.scala 
+unhandled exception while transforming IMain.scala
+error: scala.reflect.internal.MissingRequirementError
+[...]
+	at scala.reflect.internal.MissingRequirementError$.signal(MissingRequirementError.scala:16)
+	at scala.reflect.internal.MissingRequirementError$.notFound(MissingRequirementError.scala:17)
+	at scala.reflect.internal.pickling.UnPickler$Scan$$anonfun$errorMissingRequirement$1.apply(UnPickler.scala:822)
+	at scala.reflect.internal.pickling.UnPickler$Scan$$anonfun$errorMissingRequirement$1.apply(UnPickler.scala:822)
+	at scala.reflect.internal.Symbols$Symbol.orElse(Symbols.scala:1773)
+{noformat}
+This hits me every day, plus or minus.

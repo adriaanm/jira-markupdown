@@ -1,0 +1,19 @@
+Correctly errors out in 2.9, compiles without warning in 2.10.
+{code}
+object Test {
+  sealed trait Foo
+  object Bar extends Foo
+
+  def f(x: Foo) = x match {
+    case scala.Right => true
+    case _           => false
+  }
+}
+// scala 2.9
+// ./a.scala:9: error: pattern type is incompatible with expected type;
+//  found   : object Right
+//  required: Test.Foo
+//     case scala.Right => true
+//                ^
+// one error found
+{code}

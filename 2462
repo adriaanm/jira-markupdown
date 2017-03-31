@@ -1,0 +1,12 @@
+It's an initial implementation and it's only in the compiler jar,
+but as of r23615:
+{code}
+scala> implicit def mkUFn(x: AnyRef) = scala.tools.reflect.UniversalFn(x)
+mkUFn: (x: AnyRef)scala.tools.reflect.UniversalFn
+
+scala> (() => 5*5*5).as[java.util.concurrent.Callable[Int]]
+res1: java.util.concurrent.Callable[Int] = <function1>
+
+scala> res1.call
+res2: Int = 125
+{code}

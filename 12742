@@ -1,0 +1,46 @@
+Code:
+{code}
+   object Test {
+     val Some(foo) : Option[Int] = None
+   }
+{code}
+Compilation causes compiler crash:
+{code}
+Exception in thread "main" java.lang.Error: symbol value foo does not exist in Test.<init>
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:920)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:394)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:442)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:948)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genStat(GenICode.scala:167)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$1.apply(GenICode.scala:142)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$1.apply(GenICode.scala:141)
+        at scala.List.foreach(List.scala:721)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.genStat(GenICode.scala:141)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:947)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:110)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$0.apply(GenICode.scala:68)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$0.apply(GenICode.scala:68)
+        at scala.List.foreach(List.scala:721)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:68)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:132)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:86)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$0.apply(GenICode.scala:68)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$0.apply(GenICode.scala:68)
+        at scala.List.foreach(List.scala:721)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:68)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:78)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:64)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.apply(GenICode.scala:60)
+        at scala.tools.nsc.Global$$GlobalPhase.applyPhase(Global.scala:243)
+        at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$2.apply(Global.scala:232)
+        at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$2.apply(Global.scala:232)
+        at scala.Iterator$$class.foreach(Iterator.scala:375)
+        at scala.collection.mutable.ListBuffer$$$$anon$$0.foreach(ListBuffer.scala:255)
+        at scala.tools.nsc.Global$$GlobalPhase.run(Global.scala:232)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.run(GenICode.scala:53)
+        at scala.tools.nsc.Global$$Run.compileSources(Global.scala:528)
+        at scala.tools.nsc.Global$$Run.compile(Global.scala:609)
+        at scala.tools.nsc.Main$$.process(Main.scala:86)
+        at scala.tools.nsc.Main$$.main(Main.scala:107)
+        at scala.tools.nsc.Main.main(Main.scala)
+{code}

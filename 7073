@@ -1,0 +1,42 @@
+A sequence of bash commands creating and running a small test case. 
+
+{code}
+echo "public class A { public B b; }" > A.java
+echo "public class B { public C c; }" > B.java
+echo "public class C { }" > C.java
+echo class A_scala { var b:B = _ }  > A.scala # only to avoid name .class file name confusion
+{code}
+
+{code}
+javac *.java
+scalac A.scala
+{code}
+
+Every thing works fine so far.
+
+{code} 
+rm C.class
+rm A.class
+{code}
+
+Now comes the interesting part:
+
+{code}
+javac A.java
+ls
+{code}
+
+As you can see, Java compiles just fine.
+
+{code}
+scalac A.scala
+{code}
+
+This will cause
+
+{panel}
+error: error while loading B, Missing dependency 'class C', required by ./B.class
+one error found
+{panel}
+
+Scalac seems to be trying to load dependencies of B, despite B being already compiled.

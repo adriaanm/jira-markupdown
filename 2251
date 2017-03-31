@@ -1,0 +1,25 @@
+Just ran into this with 2.8.1 trying to access a protected field in a mix-in trait. I didn't notice any warnings from the compiler. I got the run-time IllegalAccessError symptom. It happens for me regardless of if I access the protected field via this, naked or through self:
+
+{code}
+trait SessionStore {
+  self : GenericAutowireComposer =>
+
+  // also tried this.session and session
+  def getUser: Option[User] = Option(self.session.getAttribute("user").asInstanceOf[User]
+
+}
+
+class FooCtrl extends GenericAutowireComposer with SessionStore { ... }
+{code}
+
+
+At run-time, I get an IllegalArgumentException:
+
+
+{code}
+java.lang.IllegalAccessError: tried to access field org.zkoss.zk.ui.util.GenericAutowireComposer.session from class FooCtrl$$class
+  at FooCtrl$$class.setUser
+{code}
+
+
+I can see that 'fixing' this so that it actually works could be a royal pain. However, generating bytecode that attempts to access protected fields in other classes can't be a Good Thing. Shouldn't this kind of access violation be caught by something in the compiler guts? 

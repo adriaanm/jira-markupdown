@@ -1,0 +1,28 @@
+The change wasn't in the typechecker, it was in the library. Matching against `scala.util.Right` still gives the error.
+
+{code}
+object Test {
+  sealed trait Foo
+  object Bar extends Foo
+
+  object Other
+  val OtherAlias = Other
+
+  def f(x: Foo) = x match {
+    case Other => true // warns
+    case _     => false
+  }
+
+  def g(x: Foo) = x match {
+    case OtherAlias => true // no warning.
+    case _          => false
+  }
+}
+
+{code}
+
+The check happens in {{adapt}}, which calls {{inferModulePattern}} if the pattern's symbol is a module. Seems to me that we should make the check for any stable identifier pattern:
+
+{quote}
+A stable identifier pattern is a stable identifier r (§3.1). The type of r must conform to the expected type of the pattern. The pattern matches any value v such that r == v (§12.1).
+{quote}

@@ -1,0 +1,48 @@
+I hope the comments inside the snippet explains the problem, if not please ask.
+
+{code}
+trait Foo
+{
+  val number : Int
+  def print = println("Foo: " + number)
+  override def toString = "Foo: " + number
+}
+
+trait Baz extends Foo
+{
+  override def print = println("Baz: " + (number-111))
+  override def toString = "Baz: " + number
+}
+
+
+def id[A](foo : A) = foo
+def convert(foo : Foo) = new Foo with Baz
+{
+  val number = foo.number
+}
+
+
+def test[D <% Foo](foo : D)
+{
+  // here the conversion is done because type erasure traits D as Any which does not define 'print'
+  foo.print
+  // no conversion is done here because Any already defines toString
+  // however Foo overrides it, which a conversion should be done IMO
+  println(foo.toString)
+}
+
+object Bar extends Foo
+{	
+  val number = 777
+}
+println("Id")
+test(Bar)(id)
+
+println()
+
+println("Converted")
+test(Bar)(convert)
+{code}
+
+
+P.S. One motivation behind this would be extend the 'Ordered' trait with {{ override def equals(a : Any) = .. }} because a.compare(b) == 0 can be different from a == b otherwise. As a consequence !(a < b || a > b) may be different from (a == b).

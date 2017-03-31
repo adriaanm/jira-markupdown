@@ -1,0 +1,16 @@
+It's not related to structural types, nor existentials.
+
+This will also loop:
+{code}
+trait Foo
+trait Sizeable { def size: Int }
+implicit def fooHasSize[T](gto: T)(implicit ev: T => Foo): Sizeable = ev(gto)
+fooHasSize(new Foo{})
+{code}
+
+-Xprint:typer reveals why:
+
+{code}
+implicit def fooHasSize[T](gto: T)(implicit ev: T => Foo): Sizeable 
+ = fooHasSize[Foo](ev.apply(gto))(Predef.$conforms[Foo])
+{code}

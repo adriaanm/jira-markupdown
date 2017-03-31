@@ -1,0 +1,23 @@
+OK, yes, that config breaks ctl-D. I'll take a look at what's going on. (OK, I see there's a mapping for ctl-D. Maybe REPL can test for that or subvert it when pasting. Actually readline doc says it should take ctl-D as EOF at beginning of empty line. There is noise at JLine2/3 around this issue.)
+
+Meanwhile, the workaround is to use here doc syntax:
+
+{code}
+$ scala
+Welcome to Scala 2.11.8 (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_101).
+Type in expressions for evaluation. Or try :help.
+
+scala> :pa << DONE
+// Entering paste mode (DONE to finish)
+
+val i = 42
+DONE
+
+// Exiting paste mode, now interpreting.
+
+i: Int = 42
+
+scala> 
+{code}
+
+I think it's fair to say, I had the last laugh on here doc syntax. Or, maybe every dumb idea looks smart once.

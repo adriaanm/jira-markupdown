@@ -1,0 +1,32 @@
+
+{code}
+//An unapplySeq for extractor can offer Option[Seq[S]] or Option[(A, B, Seq[S])].
+
+//Omitting the Seq:
+
+scala> object X { def unapplySeq(v: Any) = Option((1, 2, 3)) }
+defined object X
+
+scala> val X(x, y, z) = null
+<console>:12: error: too many patterns for object X offering (Int, Int): expected 2, found 3
+       val X(x, y, z) = null
+           ^
+
+scala> val X(x, y) = null
+x: Int = 1
+y: Int = 2
+
+scala> val X(x, y, _*) = null
+<console>:14: error: Star pattern must correspond with varargs or unapplySeq
+       val X(x, y, _*) = null
+           ^
+
+// the bug permits idiom for avoiding SI-6675
+// since apparently no tupling for unapplySeq
+
+scala> val X(x) = null
+<console>:13: error: not enough patterns for object X offering (Int, Int): expected 2, found 1
+       val X(x) = null
+           ^
+
+{code}

@@ -1,0 +1,27 @@
+This is basically a duplicate of SI-7222.
+
+In 2.10.0, the parser phase of the compiler desugared your for-comprehension as irrefutable, ie to {{ x.foreach { case (k, v) => } }}.
+
+However, it can't do that in general for tuple patterns; they are supposed to parse to a {{withFilter}} call. That's important for code like:
+
+{code}
+for ( (a, b) <- List[Any]((1, 2), "boo"))
+{code}
+
+That code should return a one element list; if we omit the {{withFilter}} we'll get a {{MatchError}} instead.
+
+So now your example is desugared to:
+
+{code}
+x.withFilter { case (k, v) => (k, v) }.foreach(_ => ???)
+{code}
+
+{withFilter} returns `Repr`, the third type argument of {{GenMapLike}}, which you have bound to an existential type. As such, it doesn't support {{foreach}}.
+
+I suggest in this case to call {{foreach}} directly:
+
+{code}
+x foreach {
+  case (k, v) => ???
+}
+{code}

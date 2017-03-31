@@ -1,0 +1,41 @@
+{code}
+scala> (Int.box(1)) == (Long.box(1L))
+res5: Boolean = true
+
+scala> Set[Int](1).asInstanceOf[Set[Long]].apply(1L)
+res6: Boolean = true
+
+scala> collection.immutable.TreeSet[Long](1L).subsetOf(Set[Int](1).asInstanceOf[Set[Long]])
+res7: Boolean = true
+
+scala> collection.immutable.TreeSet[Long](1L).equals(Set[Int](1))
+res8: Boolean = true
+{code}
+
+Here's the nasty cast that leads us down the garden path:
+{code}
+trait GenSetLike {
+ 
+  /** Compares this set with another object for equality.
+   *
+   *  '''Note:''' This operation contains an unchecked cast: if `that`
+   *        is a set, it will assume with an unchecked cast
+   *        that it has the same element type as this set.
+   *        Any subsequent ClassCastException is treated as a `false` result.
+   *  @param that the other object
+   *  @return     `true` if `that` is a set which contains the same elements
+   *              as this set.
+   */
+  override def equals(that: Any): Boolean = that match {
+    case that: GenSet[_] =>
+      (this eq that) ||
+      (that canEqual this) &&
+      (this.size == that.size) &&
+      (try this subsetOf that.asInstanceOf[GenSet[A]]
+       catch { case ex: ClassCastException => false })
+    case _ =>
+      false
+  }
+{code}
+
+I'm not sure what to do about this one, but I'll assign to [~ichoran] who is rarely short of good ideas!

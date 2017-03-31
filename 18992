@@ -1,0 +1,30 @@
+Extracted from spire:
+
+{code}
+import scala.{ specialized => spec }
+
+trait EqProductFoo[@spec(Int) A] {
+  def eqv(x0: A): Boolean = ???
+}
+
+trait OrderProductFoo[@spec(Int) A] extends EqProductFoo[A] {
+  override def eqv(x0: A): Boolean = super.eqv(x0)
+}
+
+object Bar {
+   def OrderProduct2[@spec(Int) A]: EqProductFoo[A] = {
+    new OrderProductFoo[A] { }
+  }
+  OrderProduct2[Int]
+}
+
+object Test extends App {
+  Bar
+}
+{code}
+
+This compiles and runs fine with Scala 2.10.2 but fails with Scala 2.11.0-RC1:
+
+{code}
+java.lang.ClassFormatError: Duplicate method name&signature in class file foo/Bar$$anon$1
+{code}

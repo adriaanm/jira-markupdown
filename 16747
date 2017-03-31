@@ -1,0 +1,16 @@
+If it is expected the mixed optimized and unoptimized bytecode breaks down this way, we need to record the optimization status in the bytecode and fail the compile when people try to mix.  (If it's not expected then of course fixing it is the way to go.)
+
+If I have an optimized build of the compiler, and then recompile something unoptimized (e.g. run ant all.clean build-opt, touch a file, run ant build) I run into crashes like this:
+{noformat}
+
+uncaught exception during compilation: java.lang.IllegalAccessError
+error: java.lang.IllegalAccessError: tried to access field scala.reflect.internal.StdNames$nme$.$outer from class scala.tools.nsc.typechecker.Typers$Typer
+	at scala.tools.nsc.typechecker.Typers$Typer.typedSelect$1(Typers.scala:3816)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:4356)
+{noformat}
+Indeed, the bytecode diff of StdNames with and without -optimise shows:
+{noformat} 
+-private final scala.reflect.internal.SymbolTable $outer;
++public final scala.reflect.internal.SymbolTable $outer;
+{noformat}
+So when compiled under -optimise the $outer field is made public, but when StdNames is compiled  normally it is not, at which point anything which was compiled under -optimise contains a latent IllegalAccessError.

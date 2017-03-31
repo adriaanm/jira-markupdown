@@ -1,0 +1,19 @@
+Vaguely related problem:
+
+{code}
+scala> class Test {
+     |   def c: x.X forSome { val x : {type X <: C}; type C } = ???
+     |   lazy val x = c // lazy vals are borked when dealing with existentials
+     | }
+<console>:9: error: type mismatch;
+ found   : x.type(in lazy value x)#X(in <refinement of AnyRef>)(in <refinement of AnyRef>) where type x.type(in lazy value x) <: AnyRef{type X(in <refinement of AnyRef>)(in <refinement of AnyRef>) <: C} with Singleton
+ required: (some other)x.type(in lazy value x)#X(in <refinement of AnyRef>)(in <refinement of AnyRef>) forSome { type (some other)x.type(in lazy value x) <: AnyRef{type X(in <refinement of AnyRef>)(in <refinement of AnyRef>) <: C} with Singleton; type C }
+         lazy val x = c // lazy vals are borked when dealing with existentials
+                      ^
+<console>:9: error: type mismatch;
+ found   : x.type(in value x)#X(in <refinement of AnyRef>)(in <refinement of AnyRef>) where type x.type(in value x) <: AnyRef{type X(in <refinement of AnyRef>)(in <refinement of AnyRef>) <: C} with Singleton
+ required: x.type(in lazy value x)#X(in <refinement of AnyRef>)(in <refinement of AnyRef>) forSome { type x.type(in lazy value x) <: AnyRef{type X(in <refinement of AnyRef>)(in <refinement of AnyRef>) <: C} with Singleton; type C }
+         lazy val x = c // lazy vals are borked when dealing with existentials
+                  ^
+
+{code}

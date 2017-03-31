@@ -1,0 +1,14 @@
+That patch still, despite avoiding a crash, still discards the SCOPE_EXIT instruction as it is emitted into a basic block after the block has been switched into `ignore` mode:
+
+{code}
+        if (settings.debug) {
+          /* Trying to pin down what it's likely to see after a block has been
+           * put into ignore mode so we hear about it if there's a problem.
+           */
+          instr match {
+            case JUMP(_) | RETURN(_) | THROW(_) | SCOPE_EXIT(_)                  => // ok
+            case STORE_LOCAL(local) if nme.isExceptionResultName(local.sym.name) => // ok
+            case x                                                               => log("Ignoring instruction, possibly at our peril, at " + pos + ": " + x)
+          }
+        }
+{code}

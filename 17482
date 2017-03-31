@@ -1,0 +1,20 @@
+It seems that _Symbol.isOverride_ is not working properly if the _override_ modifier is not set explicitly.
+
+{code}
+scala> trait A { val a: Traversable[Int] }
+defined trait A
+
+scala> trait B extends A { override val a: List[Int] }
+defined trait B
+
+scala> trait C extends A { val a: List[Int] }
+defined trait C
+
+scala> typeOf[B].members.last.isOverride
+res0: Boolean = true
+
+scala> typeOf[C].members.last.isOverride
+res1: Boolean = false
+{code}
+
+The last instruction is returning *false*, despite of being overridding the _a_ attribute.

@@ -1,0 +1,37 @@
+{{.array}} on an empty {{WrappedArray$ofRef}} throws a {{ClassCastException}}.
+
+Here is a simple example where calling {{.array}} on an {{Array}} hits it via an implicit conversion from {{Array}} to {{WrappedArray$ofRef}}:
+{code}
+scala> case class A(n: Int)
+defined class A
+
+scala> val arr: Array[A] = Array()
+arr: Array[A] = Array()
+
+scala> arr.array
+java.lang.ClassCastException: [Ljava.lang.Object; cannot be cast to [LA;
+  ... 32 elided
+{code}
+
+Here's the above implicit unrolled:
+
+{code}
+scala> val wrapped: scala.collection.mutable.WrappedArray[A] = arr
+wrapped: scala.collection.mutable.WrappedArray[A] = WrappedArray()
+
+scala> wrapped.array
+java.lang.ClassCastException: [Ljava.lang.Object; cannot be cast to [LA;
+  ... 32 elided
+{code}
+
+Other, primitive {{WrappedArray}} subclasses seem to not have the issue:
+
+{code}
+scala> val ints: Array[Int] = Array()
+ints: Array[Int] = Array()
+
+scala> ints.array
+res6: Array[Int] = Array()
+{code}
+
+I haven't fully pieced together exactly where/why the exception occurs, but it seems unexpected/buggy for {{Array}} to have an always-available (via an implicit) {{.array}} method that will throw such an inscrutable exception on empty Arrays.

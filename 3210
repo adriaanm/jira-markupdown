@@ -1,0 +1,29 @@
+@shaberman:
+
+This is a duplicate of SI-2767 and the the example you provide translated to Scala is the simplest code that triggers this long standing bug.
+
+A HUGE thanks for submitting this bug report!
+
+@milessabin:
+
+This is a duplicate of SI-2767 and provides the much awaited simple code example that reproduces the Clean&Build bug.
+
+To reproduce the bug use:
+
+{code}
+// file: /src/A.scala
+class A {
+  var a = 10
+}
+{code}
+
+and 
+
+{code}
+// file: /src/B.scala
+class B {
+  val a = new A
+}
+{code}
+
+After saving B, do a Clean&Build and you will get a bogus error message in the editor saying: "A does not have a constructor".

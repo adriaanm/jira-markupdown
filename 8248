@@ -1,0 +1,22 @@
+Any updates on this? (or a possible/recommended workaround)
+
+For the interested reader: I encountered this issue with trying to use 'recursive existential types' to call the following Java method (Titan Graph database v0.5.0):
+{code:java}
+public TitanGraphQuery<? extends TitanGraphQuery> query();
+{code}
+with TitanGraphQuery being
+{code:java}
+public interface TitanGraphQuery<Q extends TitanGraphQuery<Q>> {
+    public Q has(String key, Object value);
+}
+{code}
+
+Example Scala code (without explicit types):
+{code:scala}
+val attrs: Map[String, Any]
+val attrQ = attrs.foldLeft(g.query())({
+  case (q, (name, value)) => q.has(name, value)
+})
+{code}
+
+Does this bug mean I cannot use this method in Scala?

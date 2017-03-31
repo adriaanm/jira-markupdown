@@ -1,0 +1,21 @@
+When combining lazy vals with loops it is easy to get unexpected infinite loops because bitmap is defined outside of the loop instead of inside it.
+See example:
+{code}
+object Test {
+    
+    def start {
+        var d = 10
+        while (d < 20) {
+            lazy val b = d + 1
+            d = b
+            println("Inc : " + d)
+        }
+    }
+
+    def main(args: Array[String]) {
+        start
+    }
+}
+{code}
+
+The solution to SI-3670 might fix the case here as well but I am creating the ticket so that I don't forget it.

@@ -1,0 +1,25 @@
+I am writing a transformer/compiler plug-in and there is obviously a lot of pattern matching involved. I'm using Scala 2.7.5. I happened upon this case where a pattern is not matching in some situations.
+
+When used in the transform(Tree):Tree method of a transformer, this case won't match:
+
+case SCreator(x,y,List(z1,z2)) => tree
+
+But this will:
+
+case Apply(Select(a, b), List(c,d)) =>
+  tree match {
+    case SCreator(x,y,List(z1,z2)) => tree
+    case _ => tree
+  }
+
+What could be the difference?
+
+SCreator is defined like this:
+
+object SCreator {
+  def unapply(tr: Tree) = tr match {
+    case Apply(Select(ScalarizableObject(sc), name), args) 
+      if sc.creators contains name => Some(sc, name, args)
+    case _ => None
+  }
+}

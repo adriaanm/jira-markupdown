@@ -1,0 +1,20 @@
+I'd like to reopen this issue for further consideration.
+
+To me, it's a shame that this behavior is being retained despite all of the effort that has gone into developing the new collection classes with a well-defined and consistent API.  I understand that ++ updated the collection in the 2.7 collections, and that changing it in the 2.8 collections might break some 2.7 code that depends on the current behavior.  But I thought that one of the motivations for rebuilding the collections in 2.8 was to get rid of all the inconsistent and ad-hoc behavior in the 2.7 collections.
+
+If Buffer is ever made to implement ++ according to the specification, then at that point, developers who depend on the old behavior will have to change their code.  The right time to do that is now, because the change is trivial (change "++" to "++=" or "{ x ++= y; x }" at the very worst), the word is already out that the collections have undergone major changes for 2.8, and developers will be scrutinizing their collection-using code when upgrading to 2.8.
+
+Consider also that the goal of retaining the 2.7 behavior has already been compromised.  While in the trival case of using ++ to append to a ListBuffer works in 2.8, this code produces different results in 2.7 in 2.8:
+
+{code}
+import scala.collection.mutable.ListBuffer
+val a = new ListBuffer[Int]
+a ++ List(1, 2, 3)
+val b = a ++ List("a", "b", "c")
+b ++ List(4,5,6)
+b
+{code}
+
+Basically in 2.7 the second-to-last line creates a new collection while in 2.8 it appends to b.
+
+Upgrading any significant body of code that uses collections heavily from 2.7 to 2.8 is going to require effort, and I think that saving developers the incremental  effort of changing their use of ListBuffer.++ (assuming that anyone even depends on the 2.7 behavior) isn't worth leaving a wart in the API that is inconsistent with the brand new specification and will persist for years to come.

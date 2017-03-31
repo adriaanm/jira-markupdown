@@ -1,0 +1,30 @@
+So, while working on SI-3575 I noticed that AnyRef specialization didn't seem to be working. I created a simple test of AnyRef specialization, noted the failure with master, then tried compiling an example with Scala 2.9.1 and it worked.
+
+Here's the program:
+
+{code}
+class C[@specialized(Int, AnyRef) A](v:A)                                                                                   
+                                                                                                                            
+object Test {                                                                                                               
+  def main(args:Array[String]) {                                                                                            
+    println(new C(123).getClass.getName)                                                                                    
+    println(new C("abc").getClass.getName)                                                                                  
+  }                                                                                                                         
+}
+{code}
+
+The output on 2.9.1 is:
+
+{code}
+C$mcI$sp
+C$mcT$sp
+{code}
+
+Whereas on master it is:
+
+{code}
+C$mcI$sp
+C
+{code}
+
+I know that there was a change recently from using the (totally arbitrary) T to the (Java standard) L for referring to Object/AnyRef, as well as other AnyRef bugfixes. I'm currently trying to do a bisect to figure out when this example stopped working, but haven't figured it out yet.

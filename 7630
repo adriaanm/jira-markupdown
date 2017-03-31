@@ -1,0 +1,12 @@
+I do not think this is scala's issue per se.  What I see is that it works fine unless you use /tmp specifically, because /tmp itself is a symlink to /private/tmp.
+
+That means if you do this:
+
+  cd /tmp
+  mkdir bin
+  cd bin
+  ln -s ../path/to/scala
+
+You create a bogus symlink, because bash (wildly guessing you're using bash) "helpfully" resolves .. according to the path by which you arrived.  It acts as if you're in /tmp/bin, but you're in /private/tmp/bin.
+
+To verify this is the problem, try it from /private/tmp instead of /tmp and I think you'll find it works.  (At least, I do.)

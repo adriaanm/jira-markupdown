@@ -1,0 +1,15 @@
+= problem =
+
+Changing the output of the scaladoc tool is difficult, plus there is no facility to provide entirely different output, if desired.
+
+= analysis =
+
+Javadoc allowed for user-provided doclet to be specified that allowed the user to take advantage of the parsing, but do their own output.  This would work the same way.
+
+= enhancement recommendation =
+
+Included is a patch that creates a trait, `Doclet`, that takes the `Universe` as a parameter and then does whatever it wants.  This includes a default implementation that does what scaladoc does now.
+
+If this pattern is deemed acceptable, I believe the next steps are to rigorously document the model classes and traits (which I'd be happy to work on), and for there to be one simple third-party doclet as a proof of concept. 
+
+This makes *very* few changes to how things work now; one can imagine a richer set of doclet support classes, akin to Javadocs, or some hooks into the existing "doclet", but for now, this is enough to let someone get started with custom scaladoc output but not have to worry about the compiler.

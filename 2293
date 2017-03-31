@@ -1,0 +1,38 @@
+Hi.
+
+I don't think that the "synchronized" keyword has anything to do with this. I think that the issue is that the implementation of duck typing tries to reflectively invoke methods on the concrete class' method, even if the concrete class is nonpublic but implements a public interface. Perhaps the compiler should check the accessibility of the class, and then climb up parents to see if an accessible base class or interface implements the required methods before accepting an object as conformant, and it should use the appropriate public base class's reflective method rather than that of the nonpublic concrete method.
+
+Here's a very self-contained example, typed quickly into REPL. Here a Process object is the base class with a nonpublic implementation -- java.lang.UNIXProcess (I haven't tried this example on a non-UNIX-y platform.)
+
+---
+
+Welcome to Scala version 2.7.6.final (OpenJDK 64-Bit Server VM, Java 1.6.0_0).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> val p = Runtime.getRuntime().exec("ls");
+p: java.lang.Process = java.lang.UNIXProcess@18793536
+
+scala> type Destroyable = { def destroy() : Unit }
+defined type alias Destroyable
+
+scala> def doDestroy( obj : Destroyable ) : Unit = obj.destroy(); 
+doDestroy: (Destroyable)Unit
+
+scala> doDestroy( p );
+java.lang.IllegalAccessException: Class  can not access a member of class java.lang.UNIXProcess with modifiers "public"
+	at sun.reflect.Reflection.ensureMemberAccess(Reflection.java:95)
+	at java.lang.reflect.Method.invoke(Method.java:607)
+	at .doDestroy(<console>:5)
+	at .<init>(<console>:8)
+	at .<clinit>(<console>)
+	at RequestResult$$.<init>(<console>:3)
+	at RequestResult$$.<clinit>(<co...
+scala> 
+
+---
+
+I hope this is helpful! Thanks for a fascinating language.
+
+    smiles,
+      Steve Waldman <swaldman@mchange.com>

@@ -1,0 +1,15 @@
+Current Console.printf calls Console.format, which uses java.text.MessageFormat. This is not even close to printf. And scaladoc is misleading.
+
+Please fix and update Console.printf to be true printf.
+
+See user list thread for proposed solution: http://www.nabble.com/Console.printf-is-misleading%21-tt16359307.html#a16359307
+
+One that works nicely might be replace Console.format with:
+{code}
+def format(s: String, x: Any*) = String.format(s, x.asInstanceOf[scala.runtime.BoxedObjectArray].unbox(x.getClass).asInstanceOf[Array[Object]])
+{code}
+--By Christos KK Loverdos
+
+When this is fixed, it should provide solution to another related ticket:
+https://lampsvn.epfl.ch/trac/scala/ticket/705
+

@@ -1,0 +1,30 @@
+The following code causes a {{VerifyError}} to get thrown as soon as a {{Child}} instance is created:
+{code:title=error.scala|borderStyle=solid}
+abstract class Parent(val description: String)
+
+class Child(val opt: Option[String])
+  extends Parent(
+    { opt match {
+        case Some(o) => o
+        case None => "nope"
+    }})
+
+object Main extends App {
+  val javaVersion = System.getProperty("java.version")
+  println(s"${javaVersion}")
+
+  new Child(Some("Foo"))
+}
+{code}
+
+{code:title=build.sbt|borderStyle=solid}
+name := "verify-test"
+
+scalaVersion := "2.11.1"
+
+scalacOptions += "-target:jvm-1.7"
+{code}
+
+Removing the target JVM results in bytecode that doesn't cause a {{VerifyError}}.
+
+Also running this on Java 1.7.0 update 60 or lower does not cause the error to be thrown.

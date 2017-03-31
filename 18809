@@ -1,0 +1,13 @@
+At the moment Assign is context sensitive due to the fact that it can't be distinguished from named argument:
+{code}
+def f(x: Any) = x 
+var x = ...
+f(x = 2) 
+{code}
+In order to minimize ambiguity we can force people who really want to have assign in that position should add extra parens or curly braces to disambiguate:
+{code}
+f(x = 2) // named arg
+f((x = 2)) // assign
+f { x = 2 } // assign
+{code}
+This would allow us to replace AssignOrNamedArg tree with just NamedArg.  

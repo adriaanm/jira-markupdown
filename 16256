@@ -1,0 +1,27 @@
+File test1.scala:
+{code}
+trait Foo { this: Bar => def foo = 7 }
+trait Bar extends Foo
+{code}
+
+File test2.scala:
+{code}
+object Test {
+  def main(args: Array[String]) = {
+    new Bar { }
+  }
+}
+{code}
+
+Compile and run:
+{code}
+$scalac test1.scala
+$scalac test2.scala
+$scala Test
+java.lang.NoSuchMethodError: Foo$class.$init$(LFoo;)V
+	at Test$$anon$1.<init>(test2.scala:3)
+	at Test$.main(test2.scala:3)
+	at Test.main(test2.scala)
+{code}
+
+Javap reveals that method {{Foo$class.$init$}} is generated with parameter type {{Bar}} not {{Foo}}. Compiling both files together works fine. 

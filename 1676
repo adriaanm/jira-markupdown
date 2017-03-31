@@ -1,0 +1,23 @@
+Ok, I understand the rationale. Case class inheritance really seems to be a minefield (I'm sorry I asked for it back on the pre-trac days :).
+
+Anyway, for my use case I just wanted to have the arity of the case class encoded in the type system. I don't need to know the actual types of the arguments. I was hoping to do something like:
+
+{code}
+abstract class Arity
+abstract class N1 extends Arity
+abstract class N2 extends Arity
+abstract class N3 extends Arity
+//...
+
+class FiniteProduct[A <% Arity](val p:Product)
+
+implicit def productArity1(p:Product1[_]) = new FiniteProduct[N1](p)
+implicit def productArity2(p:Product2[_,_]) = new FiniteProduct[N2](p)
+implicit def productArity3(p:Product3[_,_,_]) = new FiniteProduct[N3](p)
+//...
+//Note that the implicit defs above forget the argument types
+
+def table[P <% FiniteProduct[_]](rows:List[P]) = Do something knowing that all products in rows have the same arity
+{code}
+
+Should I take this to the mailing lists or open another ticket (or forget about this kind of guarantee and sulk)?

@@ -1,0 +1,8 @@
+The issue is that your patch needed to merge the list of string into one:
+
+{code}
+def unparse = if(values.isEmpty) Nil 
+              else name :: (value mkString " ") :: Nil
+{code}
+
+I went the less code route, assuming it still parses.   Like I said, I couldn't tell if we had automated tests, I just validated against scalatest and the ant build in that commit.   I think we should add some partest setting tests so we avoid breaking each other!

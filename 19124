@@ -1,0 +1,30 @@
+{noformat}
+% qbin/scala -Ydead-code
+Welcome to Scala version 2.12.0-20140517-230840-07399f255c (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0-ea).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> class C { def f(x: Int): Unit = 100 / x}
+defined class C
+
+scala> :javap C
+ ...
+{
+  public void f(int);
+    descriptor: (I)V
+    flags: ACC_PUBLIC
+    Code:
+      stack=0, locals=2, args_size=2
+         0: return
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       1     0  this   LC;
+            0       1     1     x   I
+      LineNumberTable:
+        line 7: 0
+
+}
+
+scala> new C().f(0)
+ // no exception thrown !
+{noformat}

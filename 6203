@@ -1,0 +1,25 @@
+Using {{receiveWithin}} an actor can drain its mailbox in a way where its thread is not released until the draining is finished:
+
+{code}
+def drainMailbox(): List[Any] = {
+  var drained: List[Any] = List()
+  var done = false
+  while (!done) {
+    self.receiveWithin(0) {
+      case TIMEOUT => done = true
+      case x => drained = x :: drained
+    }
+  }
+  drained
+}
+{code}
+
+However, this method is not very fast. But in some cases it might already be enough to avoid too large mailboxes.
+
+I've also been exploring an alternative which adds a {{protected}} {{drainMailbox}} method to the {{Reactor}} trait and the {{Actor}} object. It converts the mailbox to a list without any synchronization overhead:
+
+{code}
+def drainMailbox(): List[(Any, OutputChannel[Any])]
+{code}
+
+This would be a very efficient way of handling an overflowing mailbox. We should consider adding something like this to the next non-bugfix release.

@@ -1,0 +1,5 @@
+The first two tests failed because of bugs in scalac's Java parser that are fixed in r16453. The third one has to do with parsing of annotations.
+
+Note that it is correct behavior that scalac is given both the Scala and the Java files for compilation. This is needed to handle mutually dependent mixed Scala/Java sources. After scalac has processed these, the Java files are compiled with a regular Java compiler.
+
+So, none of these tests failed because of problems in partest. Instead, they showed up there because partest lets scalac process also any existing Java files. Therefore, I'll close the ticket. For now I leave pos5/misc in pending. There should be a separate ticket filed against nsc.javac (scalac's Java parser).

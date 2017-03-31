@@ -1,0 +1,39 @@
+I have no experience with the compiler, if you need any assistance please let me know and I will see if I can give you additional information.
+
+Project was running, changes I have from the last running version are these:
+
+
+{code:java}
+case class PortfolioVersionsRoot(versions: PortfolioVersions, style3dVersions: List[StyleVersion])
+
+case class StyleVersion(key: String, hash: String)
+{code}
+
+added the Style Version case class and the style3dVersion property to the PortfolioVersionsRoot case class 
+
+and
+
+
+{code:java}
+      val styleObjs = s3.listObjects(new ListObjectsRequest(
+        AmazonService.bucketName,
+        s"global/3dstyles/$mode",
+        "",
+        "",
+        Integer.MAX_VALUE
+      ))
+
+      val styleVersions = styleObjs.getObjectSummaries.toList.map { obj =>
+        StyleVersion(obj.getKey, obj.getETag)
+      }
+{code}
+
+Created this map with the Amazon SDK having
+
+{code:java}
+      import scala.collection.JavaConversions._
+{code}
+
+in scope
+
+stacktrace is in the compilebug.txt in the attachments, all on scala 2.11.7

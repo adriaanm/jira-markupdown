@@ -1,0 +1,32 @@
+Example with more commentary:
+
+{code}
+class Outer {
+  type W = Int
+  object Inner {
+    val x = scala.util.Random.nextInt(100)
+  }
+  // okay, infers `Outer#Inner.type`. Internally, that is `ModuleTypeRef(pre = class Outer, sym = Inner)
+  // But we can't express that in the source syntax of Scala!
+  def foo0(t: Outer) = if (t.Inner.x < Inner.x) t.Inner else Inner
+
+  // okay, we can use an similar existential type instead, but this runs into a bug with
+  // existential expected types where the existential is a prefix of a stable selection.
+  // we need to explicitly push the expected type into each branch of the `if` to workaround.
+  def foo1(t: Outer) : Outer.InnerExistential = if (t.Inner.x < Inner.x) (t.Inner: Outer.InnerExistential) else (Inner: Outer.InnerExistential)
+
+  // fail. the rhs LUBs to `ModuleTypeRef(pre = Outer, sym = Inner)`, the prefix
+  // doesn't conform to `Outer with Singleton`.
+  // 
+  // Note that The existential expected type is widened to
+  // `(? <: Outer with Singleton)#Inner.type forSome { val outer: Outer })
+  def foo2(t: Outer) : Outer.InnerExistential = if (t.Inner.x < Inner.x) t.Inner else Inner
+  
+  val ox : Outer#W = 3
+}
+
+object Outer {
+  type InnerExistential = outer.Inner.type forSome { val outer: Outer }
+}
+
+{code}

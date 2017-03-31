@@ -1,0 +1,47 @@
+I have a trait defined as
+
+{code}
+trait Thing { def name: String }
+{code}
+
+I'm trying to stack it using
+
+{code}
+val t = new Thing with Thing1 with Thing2
+{code}
+
+where Thing1 and Thing2 are defined as
+
+{code}
+trait Thing1 extends Thing { override lazy val name = "One" }
+trait Thing2 extends Thing { abstract override lazy val name = super.name }
+{code}
+
+I'm getting a StackOverflowError when trying to access t.name.  This happens with both Scala 2.9.0.Beta1 and the March 9th nightly build.
+
+{code}
+Welcome to Scala version 2.8.0.r21113-b20100309020141 (Java HotSpot(TM) Server VM, Java 1.6.0_15).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> trait Thing { def name: String }
+defined trait Thing
+
+scala> trait Thing1 extends Thing { override lazy val name = "One" }
+defined trait Thing1
+
+scala> trait Thing2 extends Thing { abstract override lazy val name = super.name }
+defined trait Thing2
+
+scala> val t = new Thing with Thing1 with Thing2
+t: java.lang.Object with Thing with Thing1 with Thing2 = $$anon$$1@91520
+
+scala> t.name
+java.lang.StackOverflowError
+	at $$anon$$1.name(<console>:8)
+	at $$anon$$1.Thing2$$$$super$$name(<console>:8)
+	at Thing2$$class.name(<console>:6)
+	at $$anon$$1.name(<console>:8)
+	at $$anon$$1.Thing2$$$$super$$name(<console>:8)
+	at Thing2$$class.name(<console>:6)
+{code}

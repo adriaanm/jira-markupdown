@@ -1,0 +1,23 @@
+It's easy to add support for partitioning () into all its glorious subtypes.
+I just haven't done that because I couldn't imagine anyone matching on it.
+
+{code}
+$ git diff
+diff --git i/src/compiler/scala/tools/nsc/typechecker/PatternMatching.scala w/src/compiler/scala/tools/nsc/typechecker/PatternMatching.scala
+index 4e8f416b16..5dc7e02781 100644
+--- i/src/compiler/scala/tools/nsc/typechecker/PatternMatching.scala
++++ w/src/compiler/scala/tools/nsc/typechecker/PatternMatching.scala
+@@ -2357,6 +2357,9 @@ trait PatternMatching extends Transform with TypingTransformers with ast.TreeDSL
+     // TODO: domain of feasibly enumerable built-in types (enums, char?)
+     def enumerateSubtypes(tp: Type): Option[List[Type]] =
+       tp.typeSymbol match {
++        case UnitClass =>
++          Some(List(UnitClass.tpe))
+{code}
+
+{code}
+scala> () match { case () => true; case _ => false }
+<console>:8: warning: unreachable code
+              () match { case () => true; case _ => false }
+                                                    ^
+{code}

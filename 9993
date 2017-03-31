@@ -1,0 +1,43 @@
+Thanks for looking into this, Chris.
+
+I tend to agree that the restrictions placed by SI-3873 didn't get to the essence of the unsoundness.
+
+I also agree that the "stability lambda" (nicely coined!) is pretty dubious.
+
+{noformat}
+cat sandbox/test.scala
+object Test {
+  {val x = ""; x: x.type}: Singleton
+}
+
+ticket/8237 ~/code/scala qbin/scalac -Xprint:typer -Xprint-types sandbox/test.scala
+sandbox/test.scala:2: warning: a pure expression does nothing in statement position; you may be omitting necessary parentheses
+  {val x = ""; x: x.type}: Singleton
+                         ^
+[[syntax trees at end of                     typer]] // test.scala
+package <empty>{<empty>.type} {
+  object Test extends scala.AnyRef {
+    def <init>(): Test.type = {
+      Test.super{Test.type}.<init>{()Object}(){Object};
+      (){Unit}
+    }{Unit};
+    ({
+      val x: String = ""{String("")};
+      (x{x.type}: x.type){x.type}
+    }{x.type}: Singleton){Singleton}
+  }
+}
+
+one warning found
+{noformat}
+
+As you point out, this has an ill-scoped reference to `x` in the type of the block. Maybe it should be `x.type forSome { val x: String }`.
+
+Here's an analagous situation where block typing widens to a structural type to avoid leaking a locally scoped type:
+
+{code}
+scala> {class A { def foo = 0 }; new A }
+res1: AnyRef{def foo: Int} = A$1@23905e3
+{code}
+
+With regards to eta-expansion, that's no surprise as you currently can't express dependently typed functions in scala.

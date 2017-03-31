@@ -1,0 +1,25 @@
+Here's mine!
+
+{code}
+  /**
+   * Like {@link scala.collection.Traversable#groupBy} but lets you return both the key and the value for the resulting
+   * Map-of-Lists, rather than just the key.
+   *
+   * @param in the input list
+   * @param f the function that maps A's in the input list to a (K,V) tuple for the output map.
+   * @tparam A the type of elements in the source list
+   * @tparam K the type of the first element of the tuple returned by the function; will be used as keys for the result
+   * @tparam V the type of the second element of the tuple returned by the function; will be used as values for the result
+   * @return a Map-of-Lists
+   */
+  def groupBy2[A,K,V](in: Traversable[A])(f: PartialFunction[A,(K,V)]): Map[K,Seq[V]] = {
+    in.foldLeft(Map[K,Seq[V]]().withDefaultValue(Vector[V]())) { (map, a) ⇒
+      if (f.isDefinedAt(a)) {
+        val (b,c) = f(a)
+        map.updated(b, map(b) :+ c)
+      } else {
+        map
+      }
+    }
+  }
+{code}

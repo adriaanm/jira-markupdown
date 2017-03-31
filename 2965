@@ -1,0 +1,26 @@
+I think the correct fix is the one in erasure. You can't do the change in intersect because that would be legal only if arrays were covariant and they aren't. Not for the Scala type checker, anyway. You really have an Array[T] (for some unknown, unchangeable T) with Array[Int]. This is not the same as Array[T with Int]. The fact that you get Any for the second example is as expected. However, if you change the class to a method you will find that it gives an Int. Why? Scala's type system for patterns has some pretty advanced stuff called GADTs which let you treat type parameters of enclosing methods as if they were indeed type variables for the purposes of pattern matching. This is mainly implemented by method Infer#isPopulated. The only other language doing that is Haskell. Nobody has yet figured out (in theory or implementation) how this stuff is compatible with the open recursion of classes. That's why Scala gives you GADT-like behavior only for type parameters of enclosing methods.
+
+In summary, I believe we need to change intersectionErasure in class Erasure, like this:
+{code}
+    // Compute the erasure of the intersection type with given `parents` according to new spec.
+    private def intersectionErasure(parents: List[Type]): Type =
+      if (parents.isEmpty) erasedTypeRef(ObjectClass) 
+      else apply {
+        val psyms = parents map (_.typeSymbol)
+        if (psyms contains ArrayClass) {
+          // treat arrays specially
+          arrayType(
+            intersectionErasure(
+              parents filter (_.typeSymbol == ArrayClass) map (_.typeArgs.head)))
+        } else {
+          // implement new spec for erasure of refined types.
+          def isUnshadowed(psym: Symbol) =
+            !(psyms exists (qsym => (psym ne qsym) && (qsym isNonBottomSubClass psym)))
+          val cs = parents.iterator.filter { p => // isUnshadowed is a bit expensive, so try classes first
+            val psym = p.typeSymbol
+            psym.isClass && !psym.isTrait && isUnshadowed(psym)
+          }
+          (if (cs.hasNext) cs else parents.iterator.filter(p => isUnshadowed(p.typeSymbol))).next()
+        }
+      }
+{code}

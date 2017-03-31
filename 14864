@@ -1,0 +1,17 @@
+The following needs to be applied to src/library/scala/xml/parsing/MarkupParser.scala -- all's fine with 2.7.7 which uses qname.substring(p.length+1, qname.length).
+
+{code}
+Index: MarkupParser.scala
+===================================================================
+--- MarkupParser.scala	(revision 20326)
++++ MarkupParser.scala	(working copy)
+@@ -581,7 +581,7 @@
+     val pos = this.pos
+     val (qname, aMap, scope) = xTag(pscope)
+     val (pre, local) = Utility.prefix(qname) match {
+-      case Some(p) => (p, qname drop p.length)
++      case Some(p) => (p, qname drop p.length+1)
+       case _       => (null, qname)
+     }
+     val ts = {
+{code}

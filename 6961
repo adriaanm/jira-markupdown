@@ -1,0 +1,58 @@
+It seems you're looking at the wrong place. I'll take the example reduced by Paul, and show that all specialization are performed correctly (unless I'm missing something). I added client call to test if specialization is correctly performed all across the board.
+
+{code}
+class ClassMethod[@specialized(Int) T](x: T) {
+  def m1[@specialized(Int) W](f: T => W): W = f(x)
+  def m2(f: T => T): T = f(x)
+}
+
+class Test {
+  def test() {
+    val x = new ClassMethod(1)
+    x.m1(x => x + 1)
+  }
+}
+{code}
+
+Printing trees after specialization, Test.test looks like this:
+
+{code}
+def test(): Unit = {
+      val x: ClassMethod[Int] = new ClassMethod$mcI$sp(1);
+      {
+        x.m1$mIcI$sp({
+          @SerialVersionUID(0) final <synthetic> class $anonfun extends scala.runtime.AbstractFunction1$mcII$sp with Serializable {
+            def this(): anonymous class $anonfun = {
+              $anonfun.super.this();
+              ()
+            };
+            final def apply(x: Int): Int = $anonfun.this.apply$mcII$sp(x);
+            <specialized> def apply$mcII$sp(v1: Int): Int = v1.+(1)
+          };
+          (new anonymous class $anonfun(): (Int) => Int)
+        });
+        ()
+      }
+    }
+{code}
+
+Looks good to me!
+
+You are looking at {{m1$mcI$sp}}, which is a specialization based only on class parameters. In order to hit the sweet spot, you need to be in a specialized case for both the method and class type parameters. That variant is called {{m1$mIcI$sp}} (the encoding of specialized methods is 'm' followed by instantiations for method type parameters, followed by 'c' and instantiations of the class type parameters). You were looking at {{m1$mcI}}, but that one can not call the int variant of m1, since it still has the type parameter `W` (you don't see it in bytecode, that's why I suggest you use {{-Xprint:spec}}):
+
+{code}
+class ClassMethod[@specialized(scala.Int) T >: Nothing <: Any] extends java.lang.Object with ScalaObject {
+    <paramaccessor> protected[this] val x: T = _;
+    def this(x: T): ClassMethod[T] = {
+      ClassMethod.super.this();
+      ()
+    };
+    def m1[@specialized(scala.Int) W >: Nothing <: Any](f: (T) => W): W = f.apply(ClassMethod.this.x);
+    def m2(f: (T) => T): T = f.apply(ClassMethod.this.x);
+    <specialized> def m1$mcI$sp[@specialized(scala.Int) W >: Nothing <: Any](f: (Int) => W): W = ClassMethod.this.m1[W](f.asInstanceOf[(T) => W]()).asInstanceOf[W]();
+    <specialized> def m1$mIc$sp(f: (T) => Int): Int = f.apply(ClassMethod.this.x);
+    <specialized> def m1$mIcI$sp(f: (Int) => Int): Int = ClassMethod.this.m1$mIc$sp(f.asInstanceOf[(T) => Int]());
+    <specialized> def m2$mcI$sp(f: (Int) => Int): Int = ClassMethod.this.m2(f.asInstanceOf[(T) => T]()).asInstanceOf[Int]()
+  };
+{code}
+

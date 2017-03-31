@@ -1,0 +1,19 @@
+This works:
+
+{code}
+trait SuperC[A,B] {
+  def getB(a: A): B
+  // ...
+}
+
+trait Foo {
+  type A
+  type B
+  type C <: SuperC[A,B]
+  // ...
+}
+
+class Bar[F <: Foo with Singleton](a: F#A, cs: List[F#C]) {
+  cs.head.getB(a)
+}
+{code}

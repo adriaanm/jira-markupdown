@@ -1,0 +1,45 @@
+Hello, 
+
+Using lift 0.7-SNAPSHOT, if I override the definition of Menu I get a "malformed Scala signature of MenuItem" runtime exception.
+
+I have attached an archive of the project with the issue.  To recreate it, expand the tar and run "mvn install"
+
+If you do not include the file "src/main/scala/com/tyler/fb/snippet/Menu.scala"
+no exception appears.
+
+This is my first report, so please, if you need more let me know.
+
+Thanks
+
+
+Here is my scala version and stack trace is at the end:
+{code}
+~/src/_sandbox/fb
+$$ scala -version
+Scala code runner version 2.7.0.r14476-b20080402080027 -- (c) 2002-2008 LAMP/EPFL
+
+~/src/_sandbox/fb
+$$ mvn install[[BR]]
+[INFO] Scanning for projects...
+[INFO] ----------------------------------------------------------------------------
+[INFO] Building fb
+[INFO]    task-segment: [clean, install]
+[INFO] ----------------------------------------------------------------------------
+[INFO] artifact net.sf.alchim:yuicompressor-maven-plugin: checking for updates from scala-tools.org
+[INFO] [clean:clean]
+[INFO] Deleting directory /Users/tjweir/src/_sandbox/fb/target
+[INFO] [resources:resources]
+[INFO] Using default encoding to copy filtered resources.
+[INFO] [yuicompressor:compress {execution: default}]
+[INFO] nb warnings: 0, nb errors: 0
+[INFO] [compiler:compile]
+[INFO] Nothing to compile - all classes are up to date
+[INFO] [scala:compile {execution: default}]
+[INFO] Compiling 5 source files to /Users/tjweir/src/_sandbox/fb/target/classes
+[WARNING] Exception in thread "main" java.lang.RuntimeException: malformed Scala signature of MenuItem at 2891; reference type T of package sitemap refers to nonexisting symbol.
+[WARNING] 	at scala.tools.nsc.symtab.classfile.UnPickler$$UnPickle.errorBadSignature(UnPickler.scala:755)
+[WARNING] 	at scala.tools.nsc.symtab.classfile.UnPickler$$UnPickle.scala$$tools$$nsc$$symtab$$classfile$$UnPickler$$UnPickle$$$$readSymbol(UnPickler.scala:172)
+[WARNING] 	at scala.tools.nsc.symtab.classfile.UnPickler$$UnPickle$$$$anonfun$$scala$$tools$$nsc$$symtab$$classfile$$UnPickler$$UnPickle$$$$readSymbolRef$$1.apply(UnPickler.scala:707)
+[WARNING] 	at scala.tools.nsc.symtab.classfile.UnPickler$$UnPickle$$$$anonfun$$scala$$tools$$nsc$$symtab$$classfile$$UnPickler$$UnPickle$$$$readSymbolRef$$1.apply(UnPickler.scala:707)
+[WARNING] 	at scala.tools.nsc.symtab.classfile.UnPickler$$UnPickle.scala$$tools$$nsc$$symtab$$classfile$$UnPickler$$UnPickle$$$$at(UnPickler.scala:139)
+{code}

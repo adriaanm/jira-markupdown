@@ -1,0 +1,115 @@
+{code}
+abstract class Module {}
+
+abstract class T {
+  type moduleType <: Module
+  val module: moduleType
+}
+
+abstract class Base {
+  type mType = Module
+  type tType = T { type moduleType <: mType }
+}
+
+abstract class Derived extends Base {
+  def f(inputs: List[tType]): Unit = {
+    for (val t <- inputs;
+         val m = t.module) {
+    }
+  }
+}
+{code}
+
+Attempted to compile using nightly build version 2.6.0.13354.20071127-094535
+
+{code}
+exception when traversing ((t: Derived.this.tType) => {
+  val m: t.moduleType = t.module;
+  new (Derived.this.tType, t.moduleType)(t, m)
+})
+exception when traversing inputs.map[(T{type moduleType <: Module}, T{type moduleType <: Module}#moduleType)](((t: Derived.this.tType) => {
+  val m: t.moduleType = t.module;
+  new (Derived.this.tType, t.moduleType)(t, m)
+}))
+exception when traversing inputs.map[(T{type moduleType <: Module}, T{type moduleType <: Module}#moduleType)](((t: Derived.this.tType) => {
+  val m: t.moduleType = t.module;
+  new (Derived.this.tType, t.moduleType)(t, m)
+})).foreach
+exception when traversing inputs.map[(T{type moduleType <: Module}, T{type moduleType <: Module}#moduleType)](((t: Derived.this.tType) => {
+  val m: t.moduleType = t.module;
+  new (Derived.this.tType, t.moduleType)(t, m)
+})).foreach(((x$$1: (Derived.this.tType, Derived.this.tType#moduleType)) => (x$$1: @unchecked (Derived.this.tType, Derived.this.tType#moduleType)) match {
+  case (Derived.this.tType,Derived.this.tType#moduleType)(Derived.this.tType, Derived.this.tType#moduleType)((t @ _), (m @ _)) => ()
+}))
+exception when traversing def f(inputs: List[T{type moduleType <: Module}]): Unit = inputs.map[(T{type moduleType <: Module}, T{type moduleType <: Module}#moduleType)](((t: Derived.this.tType) => {
+  val m: t.moduleType = t.module;
+  new (Derived.this.tType, t.moduleType)(t, m)
+})).foreach(((x$$1: (Derived.this.tType, Derived.this.tType#moduleType)) => (x$$1: @unchecked (Derived.this.tType, Derived.this.tType#moduleType)) match {
+  case (Derived.this.tType,Derived.this.tType#moduleType)(Derived.this.tType, Derived.this.tType#moduleType)((t @ _), (m @ _)) => ()
+}))
+exception when traversing Base with ScalaObject {
+  def this(): Derived = {
+    Derived.super.this();
+    ()
+  };
+  def f(inputs: List[T{type moduleType <: Module}]): Unit = inputs.map[(T{type moduleType <: Module}, T{type moduleType <: Module}#moduleType)](((t: Derived.this.tType) => {
+    val m: t.moduleType = t.module;
+    new (Derived.this.tType, t.moduleType)(t, m)
+  })).foreach(((x$$1: (Derived.this.tType, Derived.this.tType#moduleType)) => (x$$1: @unchecked (Derived.this.tType, Derived.this.tType#moduleType)) match {
+    case (Derived.this.tType,Derived.this.tType#moduleType)(Derived.this.tType, Derived.this.tType#moduleType)((t @ _), (m @ _)) => ()
+  }))
+}
+exception when traversing abstract class Derived extends Base with ScalaObject {
+  def this(): Derived = {
+    Derived.super.this();
+    ()
+  };
+  def f(inputs: List[T{type moduleType <: Module}]): Unit = inputs.map[(T{type moduleType <: Module}, T{type moduleType <: Module}#moduleType)](((t: Derived.this.tType) => {
+    val m: t.moduleType = t.module;
+    new (Derived.this.tType, t.moduleType)(t, m)
+  })).foreach(((x$$1: (Derived.this.tType, Derived.this.tType#moduleType)) => (x$$1: @unchecked (Derived.this.tType, Derived.this.tType#moduleType)) match {
+    case (Derived.this.tType,Derived.this.tType#moduleType)(Derived.this.tType, Derived.this.tType#moduleType)((t @ _), (m @ _)) => ()
+  }))
+}
+exception when traversing package <empty> {
+  abstract class Module extends java.lang.Object with ScalaObject {
+    def this(): Module = {
+      Module.super.this();
+      ()
+    }
+  };
+  abstract class T extends java.lang.Object with ScalaObject {
+    def this(): T = {
+      T.super.this();
+      ()
+    };
+    type moduleType>: Nothing <: Module;
+    <stable> <accessor> def module: T.this.moduleType
+  };
+  abstract class Base extends java.lang.Object with ScalaObject {
+    def this(): Base = {
+      Base.super.this();
+      ()
+    };
+    type mType = Module;
+    type tType = T{type moduleType <: Module}
+  };
+  abstract class Derived extends Base with ScalaObject {
+    def this(): Derived = {
+      Derived.super.this();
+      ()
+    };
+    def f(inputs: List[T{type moduleType <: Module}]): Unit = inputs.map[(T{type moduleType <: Module}, T{type moduleType <: Module}#moduleType)](((t: Derived.this.tType) => {
+      val m: t.moduleType = t.module;
+      new (Derived.this.tType, t.moduleType)(t, m)
+    })).foreach(((x$$1: (Derived.this.tType, Derived.this.tType#moduleType)) => (x$$1: @unchecked (Derived.this.tType, Derived.this.tType#moduleType)) match {
+      case (Derived.this.tType,Derived.this.tType#moduleType)(Derived.this.tType, Derived.this.tType#moduleType)((t @ _), (m @ _)) => ()
+    }))
+  }
+}
+
+Exception in thread "main" scala.tools.nsc.symtab.Types$$TypeError: type mismatch;
+ found   : (Derived.this.tType, t.moduleType)
+ required: (Derived.this.tType, Derived.this.tType#moduleType)
+        at scala.tools.nsc.typechecker.Contexts$$Context.error(Contexts.scala:348)
+{code}

@@ -1,0 +1,17 @@
+Not working in 2.7.2 and trunk.
+
+
+case class Dyn(val value: Any) { def as[T] = value.asInstanceOf[T] }
+implicit def any2dyn(a: Any) = Dyn(a)
+{
+(f: Dyn, x: Dyn) => f.as[Function2[Dyn,Dyn,Dyn]](f,x)}.apply
+(
+	{
+		(f: Dyn, x: Dyn) =>
+			if (x.as[Int] < 2)
+				x
+			else
+				x.as[Int] * f.as[Function2[Dyn,Dyn,Dyn]].apply(f, x.as[Int]-1).as[Int]
+	},
+	5
+)

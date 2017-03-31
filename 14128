@@ -1,0 +1,24 @@
+this is on the trunk at r17416:
+{code}
+  ~/nl/new> cat p/J.java 
+package p ;
+class J { boolean b ; }
+  ~/nl/new> cat p/S.scala
+package p
+object S { (new J).b }
+  ~/nl/new> ~/scala.trunk/dists/latest/bin/scalac -version 
+Scala compiler version 2.8.0.r17416-b20090331140629 -- Copyright 2002-2009, LAMP/EPFL
+  ~/nl/new> ~/scala.trunk/dists/latest/bin/scalac p/S.scala p/J.java 
+p/S.scala:2: error: variable b cannot be accessed in p.J
+object S { (new J).b }
+                   ^
+one error found
+{code}
+
+but it works if you use javac first:
+{code}
+  ~/nl/new> javac p/J.java
+  ~/nl/new> ~/scala.trunk/dists/latest/bin/scalac p/S.scala         
+  ~/nl/new> 
+{code}
+

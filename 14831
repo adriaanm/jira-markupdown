@@ -1,0 +1,11 @@
+The following line crashes scalac:
+{code}
+import javax.tools.JavaFileObject.Kind.SOURCE.extension
+{code}
+{code}
+Exception in thread "main" java.lang.NullPointerException
+	at scala.tools.nsc.typechecker.Namers$$Namer.typeSig(Namers.scala:1167)
+	at scala.tools.nsc.typechecker.Namers$$Namer$$$$anonfun$$typeCompleter$$1.apply(Namers.scala:515)
+	at scala.tools.nsc.typechecker.Namers$$Namer$$$$anonfun$$typeCompleter$$1.apply(Namers.scala:513)
+{code}
+JavaFileObject.Kind is an enum, and the import is referencing a field in one of the enumerated values.

@@ -1,0 +1,61 @@
+compile error in Scala 2.9.3 and 2.10.6
+
+{code:scala}
+Welcome to Scala version 2.9.3 (Java HotSpot(TM) 64-Bit Server VM, Java 1.7.0_79).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> :paste
+// Entering paste mode (ctrl-D to finish)
+
+class A {
+  def compareTo(o: Any): Int = 0
+}
+class B extends A with Comparable[B] {
+  def compareTo(b: B): Int = 0
+}
+object C {
+  def main(args: Array[String]): Unit = {
+    println(new B().compareTo(new Object()))
+  }
+}
+
+// Exiting paste mode, now interpreting.
+
+<console>:10: error: name clash between inherited members:
+method compareTo:(o: Any)Int in class A and
+method compareTo:(x$1: B)Int in trait Comparable
+have same type after erasure: (o: java.lang.Object)Int
+       class B extends A with Comparable[B] {
+             ^
+{code}
+
+{code:scala}
+Welcome to Scala version 2.10.6 (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_102).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> :paste
+// Entering paste mode (ctrl-D to finish)
+
+class A {
+  def compareTo(o: Any): Int = 0
+}
+class B extends A with Comparable[B] {
+  def compareTo(b: B): Int = 0
+}
+object C {
+  def main(args: Array[String]): Unit = {
+    println(new B().compareTo(new Object()))
+  }
+}
+
+// Exiting paste mode, now interpreting.
+
+<console>:10: error: name clash between inherited members:
+method compareTo:(o: Any)Int in class A and
+method compareTo:(x$1: B)Int in trait Comparable
+have same type after erasure: (o: Object)Int
+       class B extends A with Comparable[B] {
+             ^
+{code}

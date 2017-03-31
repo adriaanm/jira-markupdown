@@ -1,0 +1,50 @@
+Scalac refuses to infer the type arguments of {{or}} below, in the definition of {{bippy}}. If however I inline the =?>: alias, it manages. I thought it was a regression, but it's there on every Scala I happen to have around (in 2.9.2, 2.10.3, 2.11.0 and 2.11.1).
+
+{code}
+object Bug {
+  type =?>:[A, B] = PartialFunction[A, B]
+
+  val ??? : Nothing = throw new Exception
+  //Does not work.
+  def or[T, U](f: T =?>: U)(g: T => U): T => U =
+  //Works.
+  //def or[T, U](f: PartialFunction[T, U])(g: T => U): T => U =
+    //x => f applyOrElse (x, g) //Works in everything but 2.9
+    ???
+
+  def bar: String =?>: String = ???
+  def foo: String => String = ???
+  def bippy: String => String =
+    or(bar orElse bar)(foo)
+}
+{code}
+In 2.11.0:
+{code}
+<console>:21: error: type mismatch;
+ found   : PartialFunction[String,String]
+ required: Bug.=?>:[T,String]
+    (which expands to)  PartialFunction[T,String]
+           or(bar orElse bar)(foo)
+                  ^
+{code}
+
+In 2.9.2:
+{code}
+<console>:21: error: type mismatch;
+ found   : PartialFunction[String,String]
+ required: Bug.=?>:[T,String]
+           or(bar orElse bar)(foo)
+                  ^
+{code}
+
+Random/fun facts:
+
+What's more fun is that when {{or}} and its clients are in different files: introducing the breakage in the interface won't change the SBT interface "hash", so the client will not be recompiled right away, only when you're least expecting it (say, you clean).
+
+Original instance here:
+https://github.com/inc-lc/ilc-scala/commit/bea1580a5bd64770dac65d54a976032ba7f3302d#diff-c23523827d5e9b210d097946ecae4a46L6
+
+Error witnessed also on Travis below
+https://travis-ci.org/inc-lc/ilc-scala/jobs/29252425
+
+I thought it was a duplicate, but the only similar issue (at least superficially) seems https://issues.scala-lang.org/browse/SI-3777.

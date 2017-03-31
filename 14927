@@ -1,0 +1,35 @@
+Steps to reproduce:
+
+(1) Create two files:
+
+src/test/BarFile.scala
+{code}
+package test
+
+import test2.BarFile
+
+object Bar {
+  def main(args: Array[String]) {
+    
+  }
+}
+{code}
+
+src/test2/BarFile.scala
+{code}
+package test2
+
+class BarFile {
+
+}
+{code}
+
+(2) Do clean build
+
+(3) Notice error in problems view "Bar is already defined as object Bar". Also, no classfiles are compiled.
+
+(4) Edit and save test/BarFile.scala
+
+(5) Notice that classfiles are generated and the problems view shows no errors
+
+Of course, in my environment the second BarFile was not in the same project (it was in a jar). Strangely, renaming test/BarFile.scala to test/Bar.scala fixes the problem.

@@ -1,0 +1,21 @@
+The following code
+
+{code}
+trait A { type C <: Any }
+
+trait B { this: A =>
+  type C <: D
+  trait D { def foo: Unit }
+  def bar(c: C) = c.foo
+}
+{code}
+
+produces the error:
+
+{code}
+/Users/szeiger/code/stest/typeerror.scala:6: error: value foo is not a member of B.this.C
+  def bar(c: C) = c.foo
+                    ^
+{code}
+
+Apparently C in B's self type A shadows B.C instead of getting unified with it. This compiles if A.C is removed or if B extends A.

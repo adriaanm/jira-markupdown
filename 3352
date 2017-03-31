@@ -1,0 +1,27 @@
+The following code and its variant cause the same error and look related.
+
+Tested on:
+2.8.0Beta1-prerelease and scala-2.8.0.r20879-b20100214020153
+
+{code}
+object Test {
+	trait Bar[X[_]]
+	trait Baz[S[_] <: Bar[S]] {
+		type Apply[T]
+	}
+	trait Foo[V[E[_]]] extends Bar[Baz[V]#Apply]
+}
+{code}
+
+The variant is:
+
+{code}
+object Test {
+	trait Bar[X[_]]
+	trait Qux[S[_] <: Bar[S], T]
+	trait Baz[S[_] <: Bar[S]] {
+		type Apply[T] = Qux[S,T]
+	}
+	trait Foo[V[E[_]]] extends Bar[Baz[V]#Apply]
+}
+{code}

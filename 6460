@@ -1,0 +1,36 @@
+It does something sensible for end users in javac.  It does not appear to do the same thing for scalac, which is why it should be hidden behind -X or -Y.
+
+a/A.scala:
+
+{code}
+package a
+trait A {
+   def x: a.B
+}
+{code}
+
+a/B.scala:
+
+{code}
+package a
+
+class B {
+        val x = 3
+}
+{code}
+
+Run:
+
+{code}
+$ scalac -sourcepath . a/A.scala 
+a/A.scala:4: error: type B is not a member of package a
+	def x: a.B
+                 ^
+one error found
+{code}
+
+It doesn't find a/B.scala like javac would.  This is why the original report quoted:
+
+{quote}
+In fact, I don't believe there is a good usecase for it, except compiling the standard library.
+{quote}

@@ -1,0 +1,92 @@
+A test case from the mailing list, that involves interaction with SI-6169
+
+{code}
+import TestRecursiveTypes._
+
+import language.existentials
+
+object TestRecursiveTypesScala {
+  
+  def main(args: Array[String]): Unit = {
+    val impl = new UpperImpl()
+    
+    impl.map().map().map()
+   
+    val upper = new TestRecursiveTypes().provideUpper()
+    
+    upper.map().map().map()
+  }
+
+  class Consumer extends UpperConsumer {
+    def consume(upper: Upper[_]): Unit = {
+      fbound(upper).map().map()
+    }
+  }
+  // Workaround for the limbo state given that:
+  // a) Java wildcard types propagate bounds (after the fix for https://issues.scala-lang.org/browse/SI-6169)
+  // b) Scala existentials don't https://issues.scala-lang.org/browse/SI-1786
+  def fbound(u: Upper[_]) = u.asInstanceOf[Upper[A] forSome { type A <: Upper[A] }]
+}
+{code}
+
+{code}
+public class TestRecursiveTypes
+{
+	// Base interface for F-Bounded polymorphism
+	public interface Upper<T extends Upper<T>>
+	{
+		public T map();
+	}
+	
+	// Implementation of F-Bounded polymorphism
+	public static class UpperImpl implements Upper<UpperImpl>
+	{
+		@Override
+		public UpperImpl map()
+		{
+			System.out.println(String.format("map@%s",this));
+			return new UpperImpl();
+		}
+	}
+	
+	// Consumer interface
+	public interface UpperConsumer
+	{
+		void consume(Upper<?> upper_);
+	}
+	
+	// Consumer implementation
+	public static class Consumer implements UpperConsumer
+	{
+		@Override
+		public void consume(Upper<?> upper_)
+		{
+			upper_.map().map().map();
+		}
+	}
+	
+	// Upper factory method, returns interface
+	public Upper<?> provideUpper() 
+	{
+		return new UpperImpl();
+	}
+	
+	public static void main(String[] args)
+	{
+		new TestRecursiveTypes().run();
+	}
+
+	private void run()
+	{
+		Upper<?> upper = new UpperImpl();
+		
+		// This is also an upper, without conversio
+		Upper<?> mapped = upper.map();
+		
+		Upper<?> upper2 = provideUpper();
+	
+		new Consumer().consume(upper2.map().map().map());
+	}
+}
+
+{code}

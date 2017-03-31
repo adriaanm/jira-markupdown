@@ -1,0 +1,16 @@
+See my comment in SI-5457. Inlining Class.forName across class boundaries will cause the wrong classloader to be used if the caller and callee were loaded from different classloaders. If the call is first expanded to the three argument form, inlining should be safe (because the call to this.getClass.getClassLoader is explicit rather than being performed by the jvm.)
+
+This issue may very well apply to other classloader-sensitive methods as well.
+
+Here's the skeleton of a test to document the issue. g1 and g2 should not display different behavior regardless of where classes are loaded from.
+{code}
+final class A {
+  @inline def f1(name: String) = Class.forName(name, true, this.getClass.getClassLoader)
+  @inline def f2(name: String) = Class.forName(name)
+}
+
+class B {
+  def g1(name: String) = (new A) f1 "Bippy"
+  def g2(name: String) = (new A) f2 "Bippy"
+}
+{code}

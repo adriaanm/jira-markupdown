@@ -1,0 +1,17 @@
+Variations:
+
+{code}
+scala> def cyclicAliasing[Coll[X]<:Coll[X]](c: Coll[Any]) = ()
+<console>:7: error: cyclic aliasing or subtyping involving type Coll
+       def cyclicAliasing[Coll[X]<:Coll[X]](c: Coll[Any]) = ()
+                          ^
+<console>:7: error: Coll does not take type parameters
+       def cyclicAliasing[Coll[X]<:Coll[X]](c: Coll[Any]) = ()
+                                               ^
+
+scala>   def compilerDeath[Coll[X]<:Coll[_]](c: Coll[Any]) = ()
+
+SOE in ErasureMap
+{code}
+
+The compiler probably should reject `compilerDeath` on the same grounds as `cyclicAliasing`, but I'm a bit sketchy about the rules here.

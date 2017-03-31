@@ -1,0 +1,30 @@
+I ran into a problem described in [this gist|https://gist.github.com/oxbowlakes/84e120026ded7f7834b8] whereby a manually-implemented {{TraversableOnce}} saw incorrect behaviour of the {{reduceLeft}} method because the {{reduceLeft}} implementation assumes that calls to {{TraversableOnce.isEmpty}} are idempotent (i.e. they do not _consume_ the traversable). 
+
+This is, of course, how one would expect the method to be implemented on {{Iterator}} but I believe that the current documentation of the methods falls well short:
+
+{noformat}
+  /** Self-documenting abstract methods. */
+  def foreach[U](f: A => U): Unit
+  def isEmpty: Boolean
+  def hasDefiniteSize: Boolean
+{noformat}
+
+I believe that the documentation should _explicitly say_ that implementations of {{isEmpty}} should be *idempotent*.
+
+Furthermore, I believe that {{hasDefiniteSize}} is absolutely not self-documenting (without understanding where it is called). For example, what does one expect the following to print?
+
+{noformat}
+scala> Stream.continually(1).iterator.hasDefiniteSize //prints 'false' of course
+
+scala> List(1).iterator.hasDefiniteSize //what does this print?
+{noformat}
+
+A quick survey of colleagues resulted in everyone assuming that the latter should return {{true}} (it  doesn't).
+
+Note also that the behaviour of {{Traversable}} and {{Iterator}} in this case:
+
+{noformat}
+scala> val it = List(1).iterator; it foreach (_ => println(it.isEmpty)) //prints 'true'
+
+scala> val it = Traversable(1); it foreach (_ => println(it.isEmpty)) //prints 'false'
+{noformat}

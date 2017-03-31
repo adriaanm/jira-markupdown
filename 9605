@@ -1,0 +1,31 @@
+You can implement this without compiler support in 2.10.0 with a macro.
+
+{code}
+scala> import language.experimental.macros, reflect.macros.Context
+import language.experimental.macros
+import reflect.macros.Context
+
+scala> def __FILE__impl(c: Context) = c.literal(c.macroApplication.pos.source.toString)
+__FILE__impl: (c: scala.reflect.macros.Context)c.Expr[String]
+
+scala> def __FILE__ = macro __FILE__impl
+__FILE__: String
+
+scala> __FILE__
+res1: String = <console>
+
+scala> def __LINE__impl(c: Context) = c.literal(c.macroApplication.pos.line)
+__LINE__impl: (c: scala.reflect.macros.Context)c.Expr[Int]
+
+scala> def __LINE__ = macro __LINE__impl
+__LINE__: Int
+
+scala> __LINE__
+res2: Int = 17
+{code}
+
+There has been a proposal to standardize an extension of this, Source Locations, which would allow you to implicitly pass the source location from a call site to some method.
+
+See: http://docs.scala-lang.org/sips/pending/source-locations.html
+
+That effort was put on hold as it was shows that even this can now be done as a macro. But we haven't moved that out of a prototype.

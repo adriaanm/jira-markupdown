@@ -1,0 +1,22 @@
+This may be obvious, but setters are broken too:
+
+{code}
+import scala.reflect.runtime.universe._
+
+case class Foo(n: Int) extends AnyVal
+class Bar(var foo: Foo)
+
+object Test {
+  def main(args: Array[String]) {
+    val bar = new Bar(Foo(3))
+
+    val mirror = runtimeMirror(getClass.getClassLoader)
+    val im = mirror.reflect(bar)
+    val fooTerm = typeOf[Bar].declaration(newTermName("foo")).asTerm
+    val fooField = im.reflectField(fooTerm)
+    fooField.set(Foo(5)) // java.lang.IllegalArgumentException: Can not set int field Bar.foo to Foo
+    fooField.set(5) // this works but probably shouldn't
+    println(bar.foo)
+  }
+}
+{code}

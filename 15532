@@ -1,0 +1,25 @@
+{code}
+scala> object t { def f(x: Int) = x }
+defined module t
+
+scala> val x = t.f(x = 2)
+<console>:7: error: recursive value x needs type
+       val x = t.f(x = 2)
+                   ^
+{code}
+
+When resolving the named argument, the compiler type checks (using `silent`) the expression `x = 2` (if that type check fails, then it's safe to treat the expression as a named argument). During that type check, the type completer for `x` gets called, which uses the typer to compute the field's type. So it calls the typer on the expression `t.f(x = 2)`.
+
+This provokes a cyclic reference which is not caught by `silent`.
+
+The same thing happens for a `var`:
+
+{code}
+
+scala> var x = t.f(x = 2)
+<console>:7: error: recursive method x needs type
+       var x = t.f(x = 2)
+                   ^
+{code}
+
+Expected behavior: it should work for `val` and there should be an ambiguity for `var` (`x` can be named argument or field).

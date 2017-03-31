@@ -1,0 +1,60 @@
+So, it looks like the culprit was a fix for SI-4570 (specifically commit 679d803402c44c9fcb47eba732d997280345667f).  In that fix, Paul made these changes to src/library/scala/Enumeration.scala:
+{code}
+@@ -157,10 +157,14 @@ abstract class Enumeration(initial: Int, names: String*) extends Serializable {
+   protected final def Value(i: Int, name: String): Value = new Val(i, name)
+ 
+   private def populateNameMap() {
++    val fields = getClass.getDeclaredFields
++    def isValDef(m: JMethod) = fields exists (fd => fd.getName == m.getName && fd.getType == m.getReturnType)
++
+     // The list of possible Value methods: 0-args which return a conforming type
+     val methods = getClass.getMethods filter (m => m.getParameterTypes.isEmpty &&
+                                                    classOf[Value].isAssignableFrom(m.getReturnType) &&
+-                                                   m.getDeclaringClass != classOf[Enumeration])
++                                                   m.getDeclaringClass != classOf[Enumeration] &&
++                                                   isValDef(m))
+{code}
+
+The problem is that *isValDef* only checks to see if it is a val defined in the current class.  If you extends from a class where the actual enumeration value is defined, then it won't find it.
+
+The following diff seems to fix this issue:
+{code}
+diff --git a/src/library/scala/Enumeration.scala b/src/library/scala/Enumeration.scala
+index 45cb3a6..30bb274 100644
+--- a/src/library/scala/Enumeration.scala
++++ b/src/library/scala/Enumeration.scala
+@@ -161,7 +161,10 @@ abstract class Enumeration(initial: Int, names: String*) extends Serializable {
+   protected final def Value(i: Int, name: String): Value = new Val(i, name)
+
+   private def populateNameMap() {
+-    val fields = getClass.getDeclaredFields
++    def getFields(clazz: Class[_]) : Array[JField] = {
++      clazz.getDeclaredFields ++ (if(clazz.getSuperclass != null) getFields(clazz.getSuperclass) else Nil)
++    }
++    val fields = getFields(getClass)
+     def isValDef(m: JMethod) = fields exists (fd => fd.getName == m.getName && fd.getType == m.getReturnType)
+
+     // The list of possible Value methods: 0-args which return a conforming type
+diff --git a/test/files/run/t5147.check b/test/files/run/t5147.check
+new file mode 100644
+index 0000000..f70f10e
+--- /dev/null
++++ b/test/files/run/t5147.check
+@@ -0,0 +1 @@
++A
+diff --git a/test/files/run/t5147.scala b/test/files/run/t5147.scala
+new file mode 100644
+index 0000000..6261336
+--- /dev/null
++++ b/test/files/run/t5147.scala
+@@ -0,0 +1,9 @@
++class Test extends Enumeration {
++  val A = Value
++}
++object Test extends Test
++object Test5147 {
++  def main(args: Array[String]): Unit = {
++    println(Test.A)
++  }
++}
+{code}

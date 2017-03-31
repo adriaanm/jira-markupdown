@@ -1,0 +1,55 @@
+New behaviour will be:
+
+{code}
+Welcome to Scala version 2.8.0.r21963-b20100518213918 (Java HotSpot(TM) Server VM, Java 1.6.0_20).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> val it = (1 to 12).toSeq.iterator
+it: Iterator[Int] = non-empty iterator
+
+scala> it.next
+res0: Int = 1
+
+scala> it.take(2).toList
+res1: List[Int] = List(2, 3)
+
+scala> it.takeWhile(_ < 6).toList
+res2: List[Int] = List(2, 3, 4, 5)
+
+scala> it.next
+res3: Int = 7
+
+scala> it.drop(2)
+res4: Iterator[Int] = non-empty iterator
+
+scala> val d = it.drop(2)
+d: Iterator[Int] = non-empty iterator
+
+scala> d == it
+res6: Boolean = false
+
+scala> it.next
+res7: Int = 8
+
+scala> it.take(2).toList
+res8: List[Int] = List(9, 10)                                                                                                                                                    
+{code}
+
+
+Note that this is not exactly the same as with the list iterator, but this is due to the `it` being consumed by the `take` - `it` shouldn't be used afterwards.
+
+To backup this claim, implementation of `drop` in `Iterator`:
+
+{code}
+  def drop(n: Int): Iterator[A] = {
+    @tailrec
+    def loop(left: Int): Iterator[A] =
+      if (left > 0 && hasNext) { next; loop(left - 1) }
+      else this
+    
+    loop(n)
+  }
+{code}
+
+means there are other places where it's assumed that the original iterator shouldn't be used anymore after invoking a transformer, since the result may alias the old iterator.

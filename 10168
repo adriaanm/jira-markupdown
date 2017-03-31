@@ -1,0 +1,11 @@
+Alternatively, you can make the type parameters of the subclass covariant.
+
+{code}
+trait PushParser[+O] {
+  def flatMap[T](f: O => PushParser[T]) = new FlatMapPushParser(this, f)
+}
+ 
+class FlatMapPushParser[+O, +T](p: PushParser[O], f: O => PushParser[T]) extends PushParser[T]
+{code}
+
+If you're not 100% sure that what you're seeing is a bug, please check first on the mailing list.

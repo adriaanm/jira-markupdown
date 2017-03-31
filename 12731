@@ -1,0 +1,48 @@
+Aladdin: *[http://scala-webapps.epfl.ch/bugtracking/bugs/displayItem.do?id=1298 bug 1298], [http://scala-webapps.epfl.ch/bugtracking/contribs/display.do?id=754 contrib 754]*
+
+== Code ==
+
+{code}
+abstract class M
+{ self =>
+
+    type T
+    final type selfType = M {type T = self.T}
+    type actualSelfType >: self.type <: selfType
+
+
+    def f[U](x: Any) = {}
+
+    // compiles successfully
+    f[Int](self: actualSelfType)
+
+    f[Int](self: selfType)
+/*
+: error: type mismatch;
+ found   : M
+ required: M.this.selfType
+NO_LINE
+one error found
+*/
+
+
+    // def g(x: Any) = {}
+    // g(self: selfType)
+/*
+Test.scala:25: error: type mismatch;
+ found   : M
+ required: M.this.selfType
+    g(self: selfType)
+     ^
+one error found
+*/
+}
+{code}
+
+== What happened ==
+
+": error: .... NO_LINE" reported with no file name or line number. 
+
+== What expected ==
+
+Either successful compilation, as in f[Int](self: actualSelfType), or compilation error report with file name and line number, as in g(self: selfType)

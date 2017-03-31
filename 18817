@@ -1,0 +1,12 @@
+I was happy to get AnyRefMap as a faster version of HashMap. Sadly, it is not a drop-in replacement. I had several places where I inherited from HashMap, typically with something like this
+
+{code}
+    val myMap = new mutable.HashMap{T, Int] {
+       override def default(key: T) = 0
+    }
+{code}
+
+It is annoying to have to choose between fast defaults and a faster map implementation in general. I understand the argument for making AnyRefMap final, but I think it has gone too far. I think here we need to put coherence and flexibility of collections first, and just document that overriding certain protected operations internal to maps risks future version breaks.
+
+Collections are so uniform everywhere else, that's one of their defining characteristics and contributes to no small degree to the good user experience. Making AnyRefMap an exception is a sore.
+

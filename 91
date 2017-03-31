@@ -1,0 +1,28 @@
+I slightly changed the program (though it did not get much shorter...)
+
+I like to think that the problem is not the pattern matcher, which generates the following test (-Xprint:expl)
+
+{{ 
+
+(temp0.==(
+FileImpl.this.test3$$ScalaPresentations$$ProjectImpl$$FileImpl$$$$$$outer()
+.test3$$ScalaPresentations$$ProjectImpl$$$$$$outer()
+.test3$$ScalaPresentations$$ProjectImpl$$FileImpl$$$$$$outer
+.MultiMatch()))
+
+{code}
+
+This test then turns into the following (-Xprint:eras)
+
+{code}
+
+(temp0.==(
+FileImpl$$class.this.test3$$ScalaPresentations$$ProjectImpl$$FileImpl$$$$$$outer()
+.test3$$ScalaPresentations$$ProjectImpl$$$$$$outer()
+.$$asInstanceOf[test3.ScalaPresentations#ProjectImpl#FileImpl]()
+.test3$$ScalaPresentations$$ProjectImpl$$FileImpl$$$$$$outer()
+.MultiMatch()))
+
+{code}
+
+and the cast then fails ...

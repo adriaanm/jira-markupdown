@@ -1,0 +1,51 @@
+The following example compiles fine on 2.7.0-final, but no longer with the current trunk:
+
+{code}
+class InfErr {
+  var i = 0
+  def plus {
+    i = i + 1
+  }
+}
+{code}
+
+The package {{scala.reflect}} is not included when building the .NET library / predef.dll.
+
+{code}
+tsf-wpa-2-223:infer_manifest luc$$ qscalac-net InfErr.scala -Ydebug
+[running phase parser on InfErr.scala]
+[running phase namer on InfErr.scala]
+[running phase typer on InfErr.scala]
+<notype>
+List()
+scala.tools.nsc.FatalError: class scala.reflect.Manifest not found.
+        at scala.tools.nsc.symtab.Definitions$$definitions$$.getModuleOrClass(Definitions.scala:354)
+        at scala.tools.nsc.symtab.Definitions$$definitions$$.getClass(Definitions.scala:325)
+        at scala.tools.nsc.symtab.Definitions$$definitions$$.ManifestClass(Definitions.scala:96)
+        at scala.tools.nsc.typechecker.Typers$$Typer.implicitManifest$$1(Typers.scala:3478)
+        at scala.tools.nsc.typechecker.Typers$$Typer.inferImplicit(Typers.scala:3484)
+        at scala.tools.nsc.typechecker.Typers$$Typer.scala$$tools$$nsc$$typechecker$$Typers$$Typer$$$$inferView(Typers.scala:163)
+        at scala.tools.nsc.typechecker.Typers$$Typer$$$$anon$$2.isCoercible(Typers.scala:144)
+        at scala.tools.nsc.typechecker.Infer$$Inferencer.isCompatible(Infer.scala:421)
+        at scala.tools.nsc.typechecker.Infer$$Inferencer.isWeaklyCompatible(Infer.scala:425)
+        at scala.tools.nsc.typechecker.Infer$$Inferencer.scala$$tools$$nsc$$typechecker$$Infer$$Inferencer$$$$isApplicable(Infer.scala:615)
+        at scala.tools.nsc.typechecker.Infer$$Inferencer.isApplicableSafe(Infer.scala:639)
+        at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$23.apply(Typers.scala:1609)
+        at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$23.apply(Typers.scala:1608)
+        at scala.List.filter(List.scala:806)
+        at scala.tools.nsc.symtab.Symbols$$Symbol.filter(Symbols.scala:743)
+        at scala.tools.nsc.typechecker.Typers$$Typer.doTypedApply(Typers.scala:1608)
+        at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$tryTypedApply$$1$$1.apply(Typers.scala:2432)
+        at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$tryTypedApply$$1$$1.apply(Typers.scala:2432)
+        at scala.tools.nsc.typechecker.Typers$$Typer.silent(Typers.scala:568)
+        at scala.tools.nsc.typechecker.Typers$$Typer.tryTypedApply$$1(Typers.scala:2432)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typedApply$$1(Typers.scala:2483)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:3072)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3175)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typedArg(Typers.scala:1574)
+        at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$typedArgs$$2.apply(Typers.scala:1590)
+        at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$typedArgs$$2.apply(Typers.scala:1590)
+        at scala.List$$.map2(List.scala:287)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typedArgs(Typers.scala:1590)
+        [...]
+{code}

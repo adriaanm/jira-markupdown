@@ -1,0 +1,13 @@
+It gets weirder. When I remove the second parameter ("x"), it compiles fine.
+
+{code}
+object Control {
+  def repeat[T](count: Int = 1)(thunk: => T) : T = (0 until count).map(_ => thunk).last
+  def repeat[T](thunk: => T) : T = repeat()(thunk)
+
+  repeat(3.14)
+  repeat(count=5)(3.14)
+}
+{code}
+
+No error with scalac now.

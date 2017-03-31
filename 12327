@@ -1,0 +1,54 @@
+Here's another possible change. Not benchmarked as of yet.
+
+{noformat}
+diff --git a/src/library/scala/collection/IndexedSeqLike.scala b/src/library/scala/collection/IndexedSeqLike.scala
+index f4bf58f..a9445a4 100644
+--- a/src/library/scala/collection/IndexedSeqLike.scala
++++ b/src/library/scala/collection/IndexedSeqLike.scala
+@@ -8,6 +8,7 @@
+ 
+ package scala
+ package collection
++import scala.collection.generic.CanBuildFrom
+ 
+ /** A template trait for indexed sequences of type `IndexedSeq[A]`.
+  *
+@@ -86,6 +87,19 @@ trait IndexedSeqLike[+A, +Repr] extends Any with SeqLike[A, Repr] {
+   override /*IterableLike*/
+   def iterator: Iterator[A] = new Elements(0, length)
+ 
++
++  override def map[B, That](f: (A) => B)(implicit bf: CanBuildFrom[Repr, B, That]): That = {
++    def builder = { // extracted to keep method size under 35 bytes, so that it can be JIT-inlined
++      val b = bf(repr)
++      b.sizeHint(size)
++      b
++    }
++    val b = builder
++    for (x <- this) b += f(x)
++    b.result
++  }
++
++
+   /* Overridden for efficiency */
+   override def toBuffer[A1 >: A]: mutable.Buffer[A1] = {
+     val result = new mutable.ArrayBuffer[A1](size)
+diff --git a/src/library/scala/collection/TraversableLike.scala b/src/library/scala/collection/TraversableLike.scala
+index d914f2e..8449e87 100644
+--- a/src/library/scala/collection/TraversableLike.scala
++++ b/src/library/scala/collection/TraversableLike.scala
+@@ -225,12 +225,7 @@ trait TraversableLike[+A, +Repr] extends Any
+     (that ++ seq)(breakOut)
+ 
+   def map[B, That](f: A => B)(implicit bf: CanBuildFrom[Repr, B, That]): That = {
+-    def builder = { // extracted to keep method size under 35 bytes, so that it can be JIT-inlined
+-      val b = bf(repr)
+-      b.sizeHint(this)
+-      b
+-    }
+-    val b = builder
++    val b = bf(repr)
+     for (x <- this) b += f(x)
+     b.result
+   }
+{noformat}

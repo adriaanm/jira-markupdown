@@ -1,0 +1,26 @@
+Essentially 'to' method in Sorted does not work for the case when '==' doesn't agree with the ordering provided. The source of the problem I believe is Sorted.scala:77 where '==' is examined rather than ordering equiv.
+The following session demonstrates the problem:
+
+bash-4.1$ scala
+Welcome to Scala version 2.9.0.1 (Java HotSpot(TM) Client VM, Java 1.6.0_19).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> implicit val ord: Ordering[Array[Byte]] = Ordering.by((_: Array[Byte]).toIterable)
+ord: Ordering[Array[Byte]] = scala.math.Ordering$$anon$7@fa8ba9
+
+scala> import collection.immutable.SortedMap
+import collection.immutable.SortedMap
+
+scala> val m = SortedMap(Array[Byte](1) -> 0)
+m: scala.collection.immutable.SortedMap[Array[Byte],Int] = Map([B@1010435 -> 0)
+
+scala> m.to(Array[Byte](1))
+res0: scala.collection.immutable.SortedMap[Array[Byte],Int] = Map()
+
+'from' method works as expected though:
+
+scala> m.from(Array[Byte](1))
+res1: scala.collection.immutable.SortedMap[Array[Byte],Int] = Map([B@1010435 -> 0)
+
+

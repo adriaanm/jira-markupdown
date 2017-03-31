@@ -1,0 +1,87 @@
+Maybe someone can shed a little light on the small patch of the problem I'm looking at.
+
+The difference in behaviour between the original case and the case in which the object is nested in {{val dummy}} hinges on the {{INCONSTRUCTOR}} flag, which is calculated for templates as:
+
+{code}
+    def inConstructorFlag: Long =
+      if (owner.isConstructor && !context.inConstructorSuffix || owner.isEarlyInitialized) INCONSTRUCTOR
+      else 0l
+{code}
+
+{code}
+class ClassSymbol {
+ override def isClassLocalToConstructor = this hasFlag INCONSTRUCTOR
+}
+{code}
+
+Perhaps not relevant to this problem, but for completeness, I'll note that for functions translated into anonymous classes, this flag is set in {{Uncurry}}
+
+{code}
+              if (dd.symbol.isClassConstructor) {
+                atOwner(sym) {
+                  val rhs1 = (rhs: @unchecked) match {
+                    case Block(stats, expr) =>
+                      def transformInConstructor(stat: Tree) =
+                        withInConstructorFlag(INCONSTRUCTOR) { transform(stat) }
+                      val presupers = treeInfo.preSuperFields(stats) map transformInConstructor
+                      val rest = stats drop presupers.length
+                      val supercalls = rest take 1 map transformInConstructor
+                      val others = rest drop 1 map transform
+                      treeCopy.Block(rhs, presupers ::: supercalls ::: others, transform(expr))
+                  }
+                  treeCopy.DefDef(
+                    dd, mods, name, transformTypeDefs(tparams),
+                    transformValDefss(vparamssNoRhs), transform(tpt), rhs1)
+                }
+              } else {
+                super.transform(treeCopy.DefDef(dd, mods, name, tparams, vparamssNoRhs, tpt, rhs))
+              }
+...
+          case Template(_, _, _) =>
+            withInConstructorFlag(0) { super.transform(tree) }
+...
+
+val anonClass = fun.symbol.owner newAnonymousFunctionClass(fun.pos, inConstructorFlag) addAnnotation serialVersionUIDAnnotation
+{code}
+
+The accessor for this flag:
+
+{code}
+    // class C extends D( { class E { ... } ... } ). Here, E is a class local to a constructor
+    def isClassLocalToConstructor = false
+{code}
+
+is only used in {{Symbol#outerClass}}:
+
+{code}
+    /** The class that is logically an outer class of given `clazz`.
+     *  This is the enclosing class, except for classes defined locally to constructors,
+     *  where it is the outer class of the enclosing class.
+     */
+    final def outerClass: Symbol =
+      if (owner.isClass) owner
+      else if (isClassLocalToConstructor) owner.enclClass.outerClass
+      else owner.outerClass
+{code}
+
+Which is in turn only used in {{ExplicitOuter}}.
+
+So, after all that, a question: should {{isClassLocalToConstructor}} also be true for {{class E}} in the following? (I'd say yes.)
+
+{code}
+class C extends D( { val x = { class E } })
+{code}
+
+If so, what about? (I'd say no.)
+
+{code}
+class C extends D( { object O { class E } })
+{code}
+
+And a trickier one:
+
+{code}
+class C extends D( { () => { class E } })
+class C extends D( assert(true, /*by-name*/{ class E } )
+{code}
+

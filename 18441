@@ -1,0 +1,20 @@
+In the following code example, the compiler is completely right by telling me that `SomeClass` could not be found:
+
+{code}
+scala> class SomeClass
+defined class SomeClass
+
+scala> val xs = Seq(SomeClass)
+<console>:16: error: not found: value SomeClass
+       val xs = Seq(SomeClass)
+                    ^
+{code}
+
+Unfortunately this error message could be improved. The compiler knows that there is a class with the same name, thus it can assume that the user accidentally forgotten the `new` keyword. An improved error message could look like:
+
+{code}
+scala> val xs = Seq(SomeClass)
+<console>:16: error: not found: value SomeClass. Class SomeClass found instead, did you mean to create an instance of it?
+       val xs = Seq(SomeClass)
+                    ^
+{code}

@@ -1,0 +1,22 @@
+I'm writing a distributed system, and I'm taking advantage of serialized closures. However, often the enclosing class has a lot of state, and I would like to avoid it being placed in the closure when it's not needed. This can lead to exceptions as in the code below:
+
+{code}
+
+class Foo {
+ def class_foo(x : Int) = { () =>  x}
+}
+
+object Foo {
+ def obj_foo(x : Int) = { () =>  x}
+}
+
+import java.io._;
+
+val out = new ObjectOutputStream(new FileOutputStream("foo"));
+out.writeObject(Foo.obj_foo(3)) // ok!
+out.writeObject(new Foo().class_foo(3)) // error!
+{code}
+
+I would prefer that both of these are serializable when possible.
+
+Thanks!

@@ -1,0 +1,40 @@
+{code}
+Welcome to Scala version 2.10.3 (Java HotSpot(TM) 64-Bit Server VM, Java 1.7.0_45).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> object Mover {
+     |   import scala.reflect.macros.Context
+     |   def moveTreeMacro(c: Context)(e: c.Expr[Any]): c.Expr[Any] = {
+     |     import c._
+     |     import c.universe._
+     |     val ee = c.Expr(c.resetLocalAttrs(e.tree))
+     |     reify {
+     |       new AnyRef {
+     |         def moved = {
+     |           ee.splice
+     |         }
+     |       }
+     |     }
+     |   }
+     |   import scala.language.experimental.macros
+     |   def moveTree(e: Any): Any = macro moveTreeMacro
+     | }
+defined module Mover
+
+scala> trait Container[+A]
+defined trait Container
+
+scala> case class ContainerImpl[A](value: A) extends Container[A]
+defined class ContainerImpl
+
+scala> Mover.moveTree {
+     |   val buf: Seq[_] = null
+     |   val c = ContainerImpl(buf(0))
+     | }
+<console>:14: error: type mismatch;
+ found   : (some other)_$1(in value buf)
+ required: _$1(in value buf)
+                val c = ContainerImpl(buf(0))
+                                         ^
+{code}

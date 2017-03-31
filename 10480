@@ -1,0 +1,23 @@
+Here's a (contrived) TypeMap that might help this discussion. It tries, in one pass, to substitute Longs for Ints and type parameters with their upper bounds:
+
+{noformat}
+scala> object map extends TypeMap {
+  def apply(tp: Type) = tp match {
+    case TypeRef(pre, sym, args) if sym == IntClass   => LongClass.tpe
+    case TypeRef(_, sym, args) if sym.isTypeParameter => mapOver(tp.bounds.hi)
+    case x => mapOver(x)
+  }
+}
+defined object map
+
+scala> trait T { def m[A <: Int](a: A) }
+defined trait T
+
+scala> val m = typeOf[T].member(TermName("m"))
+m: $r.intp.global.Symbol = method m
+
+scala> map(m.info)
+res31: $r.intp.global.Type = [A <: Long](a: Int)Unit
+{noformat}
+
+We could substitute tparams -> tparams1 in result before applying the TypeMap to make this work. But I'm not sure thats the right thing to do.

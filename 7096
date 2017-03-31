@@ -1,0 +1,29 @@
+Transplanting my email to scala-internals: http://groups.google.com/group/scala-internals/browse_thread/thread/ee903d0a2883deef
+{noformat}
+Here is the issue with Array lubs:
+
+For a type CC[T] where T is invariant, the lub of CC[A] and CC[B] should be
+
+  CC[T] forSome { type T >: glb(A, B) <: lub(A, B) }.
+
+But if A=Nothing, that is simplified to
+
+  CC[T] forSome { type T <: B }
+
+You can usually get away with this. Take Set for instance. If you make a
+list with a Set[Nothing] and a Set[Int] in it, it will appear as a Set[_ <: Int].
+Since you can't get any values out of a Set[Nothing], nor put
+any into it, erasure protects you from the lie being revealed. There is
+nothing but a "Set" there under the hood.
+
+With Arrays, there is storage and the storage has a type which is
+stronger than "Array". That means if you discard any information when
+taking the lub, you risk failing at runtime. The lub of Array[Nothing]
+and Array[Int] has to be
+
+  Array[T] forSome { type T <: Int with Nothing }
+
+In other words it cannot simplify "Int with Nothing" to "Int" as it
+does at present. It is not safe to replace "A with B" with "A" in an
+existential bound, even when B is a subtype of A.
+{noformat}

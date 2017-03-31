@@ -1,0 +1,33 @@
+Given the following two files:
+
+A.scala
+{code}
+abstract case class AA(s: Int)
+case class A(i: Int) extends AA(i)
+{code}
+
+B.scala
+{code}
+object B {
+  def main(args: Array[String]) {
+    A(1) match {
+      case A(s) => s
+    }
+  }
+}
+{code}
+
+these steps will produce a !NoClassDefFoundError at runtime:
+
+{code}
+$$ scalac -optimise *.scala
+$$ scala B
+$$ scalac -optimise B.scala
+$$ scala B
+java.lang.NoClassDefFoundError: A$$
+        at B$$.main(B.scala:4)
+        at B.main(B.scala)
+        ...
+{code}
+
+This issue exists with 2.7.2, 2.7.3, and the latest nightly build of 2.7.3 (r16997).  No error is generated if -optimise is not used.

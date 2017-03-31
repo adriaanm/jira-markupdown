@@ -1,0 +1,32 @@
+Calling class.isMemberClass method throws exception instead of returning boolean.
+
+Test Case # 1:
+{code}
+scala> class C
+defined class C
+
+scala> classOf[C].isMemberClass
+java.lang.NoClassDefFoundError: $$iw
+	at java.lang.Class.getDeclaringClass(Native Method)
+	at java.lang.Class.getEnclosingClass(Class.java:1081)
+	at java.lang.Class.getSimpleBinaryName(Class.java:1216)
+	at java.lang.Class.isMemberClass(Class.java:1206)
+	at .<init>(<console>:6)
+	at .<clinit>(<console>)
+	at RequestResult$$.<init>(<console>:3)
+	at RequestResult$$.<clinit>(<console>)
+	at Req...
+scala> 
+{code}
+
+Test Case # 2:
+{code}
+//file: test.scala
+class A {
+  class B
+}
+println(classOf[A#B].isLocalClass)
+println(classOf[A#B].isMemberClass)
+{code}
+
+Above runs fines when saved into file, but error in interpreter on last line.

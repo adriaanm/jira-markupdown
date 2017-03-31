@@ -1,0 +1,25 @@
+I'm unlikely to fix this, but here's a test case.
+{code}
+trait Base[A]
+
+// SHOULD FAIL
+trait Neg1[-A] extends Base[A1 forSome { type A1 <: A }]
+trait Neg2[-A, A1 <: A] extends Base[A1]
+trait Neg3[+A] extends Base[A1 forSome { type A1 >: A }]
+trait Neg4[+A, A1 >: A] extends Base[A1]
+
+// SHOULD COMPILE
+trait Pos1[-A] extends Base[A1 forSome { type A1 >: A }]
+trait Pos2[-A, A1 >: A] extends Base[A1]
+trait Pos3[+A] extends Base[A1 forSome { type A1 <: A }]
+trait Pos4[+A, A1 <: A] extends Base[A1]
+
+// a.scala:4: error: contravariant type A occurs in invariant position in type [-A]Base[A1 forSome { type A1 <: A }] of trait Neg1
+//   --- should be "in covariant position"
+// a.scala:6: error: covariant type A occurs in invariant position in type [+A]Base[A1 forSome { type A1 >: A }] of trait Neg3
+//   --- should be "in contravariant position"
+// a.scala:10: error: contravariant type A occurs in invariant position in type [-A]Base[A1 forSome { type A1 >: A }] of trait Pos1
+//   --- should compile
+// a.scala:12: error: covariant type A occurs in invariant position in type [+A]Base[A1 forSome { type A1 <: A }] of trait Pos3
+//   --- should compile
+{code}

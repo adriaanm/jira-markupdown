@@ -1,0 +1,23 @@
+The implementation of awaitAll calls receiveWithin multiple times to receive each future value. Since the total wait time can be up to the sum of each individual call to receiveWithin, its possible for the total wait time to exceed the time requested by the caller.
+
+For example, the program below waits for about 9000ms, even though the timeout is set to 5000ms.
+
+{code}
+import scala.actors._
+import scala.actors.Actor._
+
+object Bug extends Application {
+  // get a future that will return a value in 'delay' milliseconds
+  def delayed(delay: Long) = {
+    actor {
+      react {
+	case _ => Thread.sleep(delay) ; reply(())
+      }
+    } !! ()
+  }
+  val start = System.currentTimeMillis
+  Futures.awaitAll(5000, delayed(3000), delayed(6000), delayed(9000))
+  val end = System.currentTimeMillis
+  println("awaitAll took " + (end - start) + "ms")
+}
+{code}

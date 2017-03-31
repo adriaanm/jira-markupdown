@@ -1,0 +1,239 @@
+The following code is wrong ("reset" shouldn't be there):
+{code}
+import scala.util.continuations._
+
+object Test {
+  val f: (String => Unit @cps[Unit]) = null
+  val v: (Unit => Unit @cps[Unit]) = reset { _:Unit => f("") }
+}
+{code}
+Trying to compile it with Scala 2.8.0.final crashes the compiler:
+{code}
+C:\Users\szeiger\Desktop\continuations>scalac -version
+Scala compiler version 2.8.0.final -- Copyright 2002-2010, LAMP/EPFL
+
+C:\Users\szeiger\Desktop\continuations>scalac -P:continuations:enable Test.scala
+exception when traversing ((x$$1: Unit) => Test.this.f.apply(""))
+exception when traversing package.this.shiftUnitR[(Unit) => Unit @util.continuations.package.cps[Unit], (Unit) => Unit @util.continuations.package.cps[Unit]](((x$$1: Unit) => Test.this.f.apply("")))
+exception when traversing final def apply(): scala.util.continuations.ControlContext[(Unit) => scala.util.continuations.ControlContext[Unit,Unit,Unit],(Unit) => scala.util.continuations.ControlContext[Unit,Unit,Unit],(Unit) => scala.util.continuations.ControlContext[Unit,Unit,Unit]] = package.this.shiftUnitR[(Unit) => Unit @util.continuations.package.cps[Unit], (Unit) => Unit @util.continuations.package.cps[Unit]](((x$$1: Unit) => Test.this.f.apply("")))
+exception when traversing scala.runtime.AbstractFunction0[scala.util.continuations.ControlContext[(Unit) => scala.util.continuations.ControlContext[Unit,Unit,Unit],(Unit) => scala.util.continuations.ControlContext[Unit,Unit,Unit],(Unit) => scala.util.continuations.ControlContext[Unit,Unit,Unit]]] {
+  def this(): anonymous class $$anonfun = {
+    $$anonfun.super.this();
+    ()
+  };
+  final def apply(): scala.util.continuations.ControlContext[(Unit) => scala.util.continuations.ControlContext[Unit,Unit,Unit],(Unit) => scala.util.continuations.ControlContext[Unit,Unit,Unit],(Unit) => scala.util.continuations.ControlContext[Unit,Unit,Unit]] = package.this.shiftUnitR[(Unit) => Unit @util.continuations.package.cps[Unit], (Unit) => Unit @util.continuations.package.cps[Unit]](((x$$1: Unit) => Test.this.f.apply("")))
+}
+exception when traversing final <synthetic> class $$anonfun extends scala.runtime.AbstractFunction0[scala.util.continuations.ControlContext[(Unit) => scala.util.continuations.ControlContext[Unit,Unit,Unit],(Unit) => scala.util.continuations.ControlContext[Unit,Unit,Unit],(Unit) => scala.util.continuations.ControlContext[Unit,Unit,Unit]]] {
+  def this(): anonymous class $$anonfun = {
+    $$anonfun.super.this();
+    ()
+  };
+  final def apply(): scala.util.continuations.ControlContext[(Unit) => scala.util.continuations.ControlContext[Unit,Unit,Unit],(Unit) => scala.util.continuations.ControlContext[Unit,Unit,Unit],(Unit) => scala.util.continuations.ControlContext[Unit,Unit,Unit]] = package.this.shiftUnitR[(Unit) => Unit @util.continuations.package.cps[Unit], (Unit) => Unit @util.continuations.package.cps[Unit]](((x$$1: Unit) => Test.this.f.apply("")))
+}
+exception when traversing {
+  final <synthetic> class $$anonfun extends scala.runtime.AbstractFunction0[scala.util.continuations.ControlContext[(Unit) => scala.util.continuations.ControlContext[Unit,Unit,Unit],(Unit) => scala.util.continuations.ControlContext[Unit,Unit,Unit],(Unit) => scala.util.continuations.ControlContext[Unit,Unit,Unit]]] {
+    def this(): anonymous class $$anonfun = {
+      $$anonfun.super.this();
+      ()
+    };
+    final def apply(): scala.util.continuations.ControlContext[(Unit) => scala.util.continuations.ControlContext[Unit,Unit,Unit],(Unit) => scala.util.continuations.ControlContext[Unit,Unit,Unit],(Unit) => scala.util.continuations.ControlContext[Unit,Unit,Unit]] = package.this.shiftUnitR[(Unit) => Unit @util.continuations.package.cps[Unit], (Unit) => Unit @util.continuations.package.cps[Unit]](((x$$1: Unit) => Test.this.f.apply("")))
+  };
+  (new anonymous class $$anonfun(): () => scala.util.continuations.ControlContext[(Unit) => scala.util.continuations.ControlContext[Unit,Unit,Unit],(Unit) => scala.util.continuations.ControlContext[Unit,Unit,Unit],(Unit) => scala.util.continuations.ControlContext[Unit,Unit,Unit]])
+}
+exception when traversing scala.util.continuations.package.reset[(Unit) => scala.util.continuations.ControlContext[Unit,Unit,Unit], (Unit) => scala.util.continuations.ControlContext[Unit,Unit,Unit]](package.this.shiftUnitR[(Unit) => Unit @util.continuations.package.cps[Unit], (Unit) => Unit @util.continuations.package.cps[Unit]](((x$$1: Unit) => Test.this.f.apply(""))))
+exception when traversing private[this] val v: (Unit) => scala.util.continuations.ControlContext[Unit,Unit,Unit] = scala.util.continuations.package.reset[(Unit) => scala.util.continuations.ControlContext[Unit,Unit,Unit], (Unit) => scala.util.continuations.ControlContext[Unit,Unit,Unit]](package.this.shiftUnitR[(Unit) => Unit @util.continuations.package.cps[Unit], (Unit) => Unit @util.continuations.package.cps[Unit]](((x$$1: Unit) => Test.this.f.apply(""))))
+exception when traversing java.lang.Object with ScalaObject {
+  def this(): object Test = {
+    Test.super.this();
+    ()
+  };
+  private[this] val f: (String) => scala.util.continuations.ControlContext[Unit,Unit,Unit] = null;
+  <stable> <accessor> def f: (String) => scala.util.continuations.ControlContext[Unit,Unit,Unit] = Test.this.f;
+  private[this] val v: (Unit) => scala.util.continuations.ControlContext[Unit,Unit,Unit] = scala.util.continuations.package.reset[(Unit) => scala.util.continuations.ControlContext[Unit,Unit,Unit], (Unit) => scala.util.continuations.ControlContext[Unit,Unit,Unit]](package.this.shiftUnitR[(Unit) => Unit @util.continuations.package.cps[Unit], (Unit) => Unit @util.continuations.package.cps[Unit]](((x$$1: Unit) => Test.this.f.apply(""))));
+  <stable> <accessor> def v: (Unit) => scala.util.continuations.ControlContext[Unit,Unit,Unit] = Test.this.v
+}
+exception when traversing final class Test extends java.lang.Object with ScalaObject {
+  def this(): object Test = {
+    Test.super.this();
+    ()
+  };
+  private[this] val f: (String) => scala.util.continuations.ControlContext[Unit,Unit,Unit] = null;
+  <stable> <accessor> def f: (String) => scala.util.continuations.ControlContext[Unit,Unit,Unit] = Test.this.f;
+  private[this] val v: (Unit) => scala.util.continuations.ControlContext[Unit,Unit,Unit] = scala.util.continuations.package.reset[(Unit) => scala.util.continuations.ControlContext[Unit,Unit,Unit], (Unit) => scala.util.continuations.ControlContext[Unit,Unit,Unit]](package.this.shiftUnitR[(Unit) => Unit @util.continuations.package.cps[Unit], (Unit) => Unit @util.continuations.package.cps[Unit]](((x$$1: Unit) => Test.this.f.apply(""))));
+  <stable> <accessor> def v: (Unit) => scala.util.continuations.ControlContext[Unit,Unit,Unit] = Test.this.v
+}
+Exception in thread "main" scala.tools.nsc.symtab.Types$$TypeError: class ControlContext needs to be a trait to be mixed in
+	at scala.tools.nsc.typechecker.Contexts$$Context.error(Contexts.scala:273)
+	at scala.tools.nsc.typechecker.Infer$$Inferencer.error(Infer.scala:213)
+	at scala.tools.nsc.typechecker.Typers$$Typer.validateParentClass$$1(Typers.scala:1209)
+	at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$validateParentClasses$$1.apply(Typers.scala:1241)
+	at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$validateParentClasses$$1.apply(Typers.scala:1241)
+	at scala.collection.LinearSeqOptimized$$class.foreach(LinearSeqOptimized.scala:61)
+	at scala.collection.immutable.List.foreach(List.scala:45)
+	at scala.tools.nsc.typechecker.Typers$$Typer.validateParentClasses(Typers.scala:1241)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedTemplate(Typers.scala:1495)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedClassDef(Typers.scala:1283)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:3733)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:4078)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedStat$$1(Typers.scala:2067)
+	at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$20.apply(Typers.scala:2135)
+	at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$20.apply(Typers.scala:2135)
+	at scala.collection.immutable.List.loop$$1(List.scala:115)
+	at scala.collection.immutable.List.mapConserve(List.scala:132)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedStats(Typers.scala:2135)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedBlock(Typers.scala:1889)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:3769)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:4078)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:4126)
+	at scala.tools.nsc.transform.UnCurry$$UnCurryTransformer.transformFunction(UnCurry.scala:374)
+	at scala.tools.nsc.transform.UnCurry$$UnCurryTransformer.mainTransform(UnCurry.scala:624)
+	at scala.tools.nsc.transform.UnCurry$$UnCurryTransformer.transform(UnCurry.scala:164)
+	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transformTrees$$1.apply(Trees.scala:838)
+	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transformTrees$$1.apply(Trees.scala:838)
+	at scala.collection.immutable.List.loop$$1(List.scala:115)
+	at scala.collection.immutable.List.mapConserve(List.scala:132)
+	at scala.tools.nsc.ast.Trees$$Transformer.transformTrees(Trees.scala:838)
+	at scala.tools.nsc.transform.UnCurry$$UnCurryTransformer$$$$anonfun$$mainTransform$$3.apply(UnCurry.scala:605)
+	at scala.tools.nsc.transform.UnCurry$$UnCurryTransformer$$$$anonfun$$mainTransform$$3.apply(UnCurry.scala:603)
+	at scala.tools.nsc.transform.UnCurry$$UnCurryTransformer.withNeedLift$$1(UnCurry.scala:501)
+	at scala.tools.nsc.transform.UnCurry$$UnCurryTransformer.mainTransform(UnCurry.scala:603)
+	at scala.tools.nsc.transform.UnCurry$$UnCurryTransformer.transform(UnCurry.scala:164)
+	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transform$$5.apply(Trees.scala:750)
+	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transform$$5.apply(Trees.scala:748)
+	at scala.tools.nsc.ast.Trees$$Transformer.atOwner(Trees.scala:864)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:38)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:31)
+	at scala.tools.nsc.ast.Trees$$Transformer.transform(Trees.scala:747)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.transform(TypingTransformers.scala:53)
+	at scala.tools.nsc.transform.UnCurry$$UnCurryTransformer.scala$$tools$$nsc$$transform$$UnCurry$$UnCurryTransformer$$$$super$$transform(UnCurry.scala:557)
+	at scala.tools.nsc.transform.UnCurry$$UnCurryTransformer$$$$anonfun$$mainTransform$$1.apply(UnCurry.scala:557)
+	at scala.tools.nsc.transform.UnCurry$$UnCurryTransformer$$$$anonfun$$mainTransform$$1.apply(UnCurry.scala:540)
+	at scala.tools.nsc.transform.UnCurry$$UnCurryTransformer.withNeedLift$$1(UnCurry.scala:501)
+	at scala.tools.nsc.transform.UnCurry$$UnCurryTransformer.mainTransform(UnCurry.scala:539)
+	at scala.tools.nsc.transform.UnCurry$$UnCurryTransformer.transform(UnCurry.scala:164)
+	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transformStats$$1.apply(Trees.scala:856)
+	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transformStats$$1.apply(Trees.scala:854)
+	at scala.collection.immutable.List.loop$$1(List.scala:115)
+	at scala.collection.immutable.List.mapConserve(List.scala:132)
+	at scala.collection.immutable.List.loop$$1(List.scala:119)
+	at scala.collection.immutable.List.mapConserve(List.scala:132)
+	at scala.tools.nsc.ast.Trees$$Transformer.transformStats(Trees.scala:854)
+	at scala.tools.nsc.ast.Trees$$Transformer.transform(Trees.scala:764)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.scala$$tools$$nsc$$transform$$TypingTransformers$$TypingTransformer$$$$super$$transform(TypingTransformers.scala:49)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer$$$$anonfun$$transform$$1.apply(TypingTransformers.scala:49)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer$$$$anonfun$$transform$$1.apply(TypingTransformers.scala:49)
+	at scala.tools.nsc.ast.Trees$$Transformer.atOwner(Trees.scala:864)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:38)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:31)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.transform(TypingTransformers.scala:49)
+	at scala.tools.nsc.transform.UnCurry$$UnCurryTransformer.mainTransform(UnCurry.scala:627)
+	at scala.tools.nsc.transform.UnCurry$$UnCurryTransformer.transform(UnCurry.scala:164)
+	at scala.tools.nsc.ast.Trees$$Transformer.transformTemplate(Trees.scala:840)
+	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transform$$2.apply(Trees.scala:734)
+	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transform$$2.apply(Trees.scala:733)
+	at scala.tools.nsc.ast.Trees$$Transformer.atOwner(Trees.scala:864)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:38)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:31)
+	at scala.tools.nsc.ast.Trees$$Transformer.transform(Trees.scala:732)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.transform(TypingTransformers.scala:53)
+	at scala.tools.nsc.transform.UnCurry$$UnCurryTransformer.mainTransform(UnCurry.scala:630)
+	at scala.tools.nsc.transform.UnCurry$$UnCurryTransformer.transform(UnCurry.scala:164)
+	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transformStats$$1.apply(Trees.scala:856)
+	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transformStats$$1.apply(Trees.scala:854)
+	at scala.collection.immutable.List.loop$$1(List.scala:115)
+	at scala.collection.immutable.List.mapConserve(List.scala:132)
+	at scala.tools.nsc.ast.Trees$$Transformer.transformStats(Trees.scala:854)
+	at scala.tools.nsc.ast.Trees$$Transformer.transform(Trees.scala:766)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.transform(TypingTransformers.scala:53)
+	at scala.tools.nsc.transform.UnCurry$$UnCurryTransformer.mainTransform(UnCurry.scala:630)
+	at scala.tools.nsc.transform.UnCurry$$UnCurryTransformer.transform(UnCurry.scala:164)
+	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transformTrees$$1.apply(Trees.scala:838)
+	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transformTrees$$1.apply(Trees.scala:838)
+	at scala.collection.immutable.List.loop$$1(List.scala:115)
+	at scala.collection.immutable.List.mapConserve(List.scala:132)
+	at scala.tools.nsc.ast.Trees$$Transformer.transformTrees(Trees.scala:838)
+	at scala.tools.nsc.transform.UnCurry$$UnCurryTransformer$$$$anonfun$$mainTransform$$3.apply(UnCurry.scala:605)
+	at scala.tools.nsc.transform.UnCurry$$UnCurryTransformer$$$$anonfun$$mainTransform$$3.apply(UnCurry.scala:603)
+	at scala.tools.nsc.transform.UnCurry$$UnCurryTransformer.withNeedLift$$1(UnCurry.scala:501)
+	at scala.tools.nsc.transform.UnCurry$$UnCurryTransformer.mainTransform(UnCurry.scala:603)
+	at scala.tools.nsc.transform.UnCurry$$UnCurryTransformer.transform(UnCurry.scala:164)
+	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transform$$4.apply(Trees.scala:744)
+	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transform$$4.apply(Trees.scala:743)
+	at scala.tools.nsc.ast.Trees$$Transformer.atOwner(Trees.scala:864)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:38)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:31)
+	at scala.tools.nsc.ast.Trees$$Transformer.transform(Trees.scala:742)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.transform(TypingTransformers.scala:53)
+	at scala.tools.nsc.transform.UnCurry$$UnCurryTransformer.scala$$tools$$nsc$$transform$$UnCurry$$UnCurryTransformer$$$$super$$transform(UnCurry.scala:557)
+	at scala.tools.nsc.transform.UnCurry$$UnCurryTransformer$$$$anonfun$$mainTransform$$2.apply(UnCurry.scala:566)
+	at scala.tools.nsc.transform.UnCurry$$UnCurryTransformer$$$$anonfun$$mainTransform$$2.apply(UnCurry.scala:566)
+	at scala.tools.nsc.transform.UnCurry$$UnCurryTransformer.withNeedLift$$1(UnCurry.scala:501)
+	at scala.tools.nsc.transform.UnCurry$$UnCurryTransformer.mainTransform(UnCurry.scala:566)
+	at scala.tools.nsc.transform.UnCurry$$UnCurryTransformer.transform(UnCurry.scala:164)
+	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transformStats$$1.apply(Trees.scala:856)
+	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transformStats$$1.apply(Trees.scala:854)
+	at scala.collection.immutable.List.loop$$1(List.scala:115)
+	at scala.collection.immutable.List.mapConserve(List.scala:132)
+	at scala.collection.immutable.List.loop$$1(List.scala:119)
+	at scala.collection.immutable.List.mapConserve(List.scala:132)
+	at scala.collection.immutable.List.loop$$1(List.scala:119)
+	at scala.collection.immutable.List.mapConserve(List.scala:132)
+	at scala.tools.nsc.ast.Trees$$Transformer.transformStats(Trees.scala:854)
+	at scala.tools.nsc.ast.Trees$$Transformer.transform(Trees.scala:764)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.scala$$tools$$nsc$$transform$$TypingTransformers$$TypingTransformer$$$$super$$transform(TypingTransformers.scala:49)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer$$$$anonfun$$transform$$1.apply(TypingTransformers.scala:49)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer$$$$anonfun$$transform$$1.apply(TypingTransformers.scala:49)
+	at scala.tools.nsc.ast.Trees$$Transformer.atOwner(Trees.scala:864)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:38)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:31)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.transform(TypingTransformers.scala:49)
+	at scala.tools.nsc.transform.UnCurry$$UnCurryTransformer.mainTransform(UnCurry.scala:627)
+	at scala.tools.nsc.transform.UnCurry$$UnCurryTransformer.transform(UnCurry.scala:164)
+	at scala.tools.nsc.ast.Trees$$Transformer.transformTemplate(Trees.scala:840)
+	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transform$$2.apply(Trees.scala:734)
+	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transform$$2.apply(Trees.scala:733)
+	at scala.tools.nsc.ast.Trees$$Transformer.atOwner(Trees.scala:864)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:38)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:31)
+	at scala.tools.nsc.ast.Trees$$Transformer.transform(Trees.scala:732)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.transform(TypingTransformers.scala:53)
+	at scala.tools.nsc.transform.UnCurry$$UnCurryTransformer.mainTransform(UnCurry.scala:630)
+	at scala.tools.nsc.transform.UnCurry$$UnCurryTransformer.transform(UnCurry.scala:164)
+	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transformStats$$1.apply(Trees.scala:856)
+	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transformStats$$1.apply(Trees.scala:854)
+	at scala.collection.immutable.List.loop$$1(List.scala:115)
+	at scala.collection.immutable.List.mapConserve(List.scala:132)
+	at scala.tools.nsc.ast.Trees$$Transformer.transformStats(Trees.scala:854)
+	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transform$$1.apply(Trees.scala:728)
+	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transform$$1.apply(Trees.scala:728)
+	at scala.tools.nsc.ast.Trees$$Transformer.atOwner(Trees.scala:864)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:38)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:31)
+	at scala.tools.nsc.ast.Trees$$Transformer.transform(Trees.scala:727)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.scala$$tools$$nsc$$transform$$TypingTransformers$$TypingTransformer$$$$super$$transform(TypingTransformers.scala:49)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer$$$$anonfun$$transform$$2.apply(TypingTransformers.scala:51)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer$$$$anonfun$$transform$$2.apply(TypingTransformers.scala:51)
+	at scala.tools.nsc.ast.Trees$$Transformer.atOwner(Trees.scala:864)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:38)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:31)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.transform(TypingTransformers.scala:51)
+	at scala.tools.nsc.transform.UnCurry$$UnCurryTransformer.mainTransform(UnCurry.scala:630)
+	at scala.tools.nsc.transform.UnCurry$$UnCurryTransformer.transform(UnCurry.scala:164)
+	at scala.tools.nsc.transform.UnCurry$$UnCurryTransformer.transformUnit(UnCurry.scala:158)
+	at scala.tools.nsc.transform.UnCurry$$UnCurryTransformer.transformUnit(UnCurry.scala:147)
+	at scala.tools.nsc.transform.Transform$$Phase.apply(Transform.scala:30)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$applyPhase$$1.apply(Global.scala:276)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$applyPhase$$1.apply(Global.scala:276)
+	at scala.tools.nsc.reporters.Reporter.withSource(Reporter.scala:48)
+	at scala.tools.nsc.Global$$GlobalPhase.applyPhase(Global.scala:276)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:252)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:252)
+	at scala.collection.Iterator$$class.foreach(Iterator.scala:631)
+	at scala.collection.mutable.ListBuffer$$$$anon$$1.foreach(ListBuffer.scala:304)
+	at scala.tools.nsc.Global$$GlobalPhase.run(Global.scala:252)
+	at scala.tools.nsc.Global$$Run.compileSources(Global.scala:733)
+	at scala.tools.nsc.Global$$Run.compile(Global.scala:813)
+	at scala.tools.nsc.Main$$.process(Main.scala:108)
+	at scala.tools.nsc.Main$$.main(Main.scala:122)
+	at scala.tools.nsc.Main.main(Main.scala)
+{code}

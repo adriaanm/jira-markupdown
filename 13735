@@ -1,0 +1,20 @@
+The equals method of case classes uses "instanceof" and is therefor not symmetric. This means that a.equals(b) doesn't imply b.equals(a), such as in this example:
+
+scala> case class A{}
+defined class A
+
+scala> case class B extends A{}
+defined class B
+
+scala> val a = A()
+a: A = A()
+
+scala> val b = B()
+b: B = B()
+
+scala> a == b
+res0: Boolean = true
+
+scala> b == a
+res1: Boolean = false
+

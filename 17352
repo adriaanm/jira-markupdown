@@ -1,0 +1,25 @@
+Filed against my branch VladUreche/scala/issue/4767-redo:
+{code}
+$ cat test.scala
+
+package scala {
+  trait Function1[@specialized(scala.Long) -T1, @specialized(scala.Unit) +R] extends AnyRef { self =>
+    def apply(v1: T1): R
+  }
+}
+
+package Test {
+  abstract class SL[A] extends Function1[Int, A] { self =>
+    def apply(idx: Int): A
+    def view = new Function1[Int, A] {
+      def apply(idx: Int) = self.apply(idx)
+    }
+  }
+}
+
+$ rm -rf classes/* && build/quick/bin/scalac test.scala -d classes -Yclosure-elim -Yinline
+
+$ java -cp classes Test.SL\$\$anon\$1
+Exception in thread "main" java.lang.VerifyError: (class: Test/SL$$anon$1, method: apply$mcVJ$sp signature: (J)V) Expecting to find integer on stack
+Could not find the main class: Test.SL$$anon$1.  Program will exit.
+{code}

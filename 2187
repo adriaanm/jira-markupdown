@@ -1,0 +1,18 @@
+You can reclose this if you want, but I thought this was interesting enough.
+{code}
+class A 
+trait B[T <: B[T]] extends A
+class C extends B[C]
+class D extends B[D]
+
+class E {
+  val ys = List(List(new C), Stream(new D))
+}
+{code}
+If you compile with -Ydebug you can watch the malformed lubs as they are discarded.  Eventually it admits defeat:
+
+{noformat}
+./a.scala:10: error: type arguments [B[_ >: D with C <: B[_ >: D with C <: A]],scala.collection.immutable.LinearSeq[B[_ >: D with C <: A]] with scala.collection.LinearSeqOptimized[B[_ >: D with C <: A],scala.collection.immutable.LinearSeq[A] with scala.collection.LinearSeqOptimized[A,scala.collection.immutable.LinearSeq[Any] with scala.collection.LinearSeqOptimized[Any,Any]]]] do not conform to trait LinearSeqOptimized's type parameter bounds [+A,+Repr <: scala.collection.LinearSeqOptimized[A,Repr]]
+  val ys = List(List(new C), Stream(new D))
+      ^
+{noformat}

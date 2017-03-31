@@ -1,0 +1,25 @@
+Another failing example ([http://stackoverflow.com/questions/3915866/number-number-matches-float-int-but-does-not-match-int-float])
+
+{code}
+import junit.framework._
+import Assert._
+
+class BugTest extends TestCase {
+
+  def compare(first: Any, second: Any): Int = {
+      (first, second) match {
+        case (k: Int, o: Int) => k compare o
+        //why the next case matches (Float, Int) but does not match (Int, Float) ???
+        case (k: Number, o: Number) => k.doubleValue() compare o.doubleValue()
+        case _ => throw new Exception("Unsupported compare " + first + "; " + second)
+    }
+  }
+
+  def testCompare() {
+    assertEquals("Both Int", -1, compare(0, 1))
+    assertEquals("Both Float", 1, compare(1.0, 0.0))
+    assertEquals("Float then Int", 0, compare(10.0, 10))
+    assertEquals("Int then Float", 0, compare(10, 10.0))//this fails with an exception
+  }
+}
+{code}

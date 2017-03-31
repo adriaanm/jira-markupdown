@@ -1,0 +1,35 @@
+A common use case is to assign a button and a textfield the same action, so the user can trigger the action via clicking the button _or_ pressing the return key. Example:
+
+{code}
+val actSearch = Action("Search") { ... }
+
+btnSearch.action = actSearch
+tfSearch.action = actSearch
+{code}
+
+=== Possible Workarounds: ===
+
+ * Use `EditDone`: works, but is not very convenient for this use case and doesn't provide the proper level of abstraction. At last, we want to trigger an action.
+
+ * Write a trait like:
+
+{code}
+trait ActionSupport extends UIElement {
+
+	var action: Action = Action.NoAction
+
+	// @todo avoid explicit case here - but how?
+	peer.asInstanceOf[JTextField].addActionListener(ActionListener { ev => action() })
+}
+
+// usage:
+val tf = new TextField with ActionSupport
+{code}
+
+This works for me, but I think it should be there in the library already.
+
+So, could you please provide "action" support for `TextField`. The implementation should be painless.
+
+And, BTW could you please give some hint on how to use `Action.Trigger[.Wrapper]` in the documentation. I couldn't figure out... ;)
+
+Thank you! Great library anyway! :)

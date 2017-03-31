@@ -1,0 +1,17 @@
+I think this should be fixed in `Contexts.scala`, in `def implicitss: List[List[ImplicitInfo]]`.
+The method should collect package members as well. Smaller example:
+
+Single file `package.scala`:
+{code}
+package foo {
+  package object bar {
+    implicit def s2f(s: String) = new java.io.File(s)
+  }
+}
+
+package foo.bar {
+  object test {
+    val f: java.io.File = "."
+  }
+}
+{code}

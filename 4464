@@ -1,0 +1,39 @@
+This bug seems to be still present in Scala 2.8.1 -- see below. After discussing on the user-mailinglist, it seems to be necessary to reopen this ticket
+
+{code}
+Welcome to Scala version 2.8.1.final (Java HotSpot(TM) Client VM, Java 1.6.0_22).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> class Klass[@specialized A]( val a: A )
+defined class Klass
+
+scala> case class LongKlass( override val a: Long ) extends Klass[Long](a)
+defined class LongKlass
+
+scala> LongKlass(10)
+java.lang.StackOverflowError
+	at Klass$$mcL$$sp.a(<console>:5)
+	at LongKlass.a$$mcL$$sp(<console>:6)
+	at Klass$$mcL$$sp.a(<console>:5)
+	at LongKlass.a$$mcL$$sp(<console>:6)
+	at Klass$$mcL$$sp.a(<console>:5)
+	at LongKlass.a$$mcL$$sp(<console>:6)
+	at Klass$$mcL$$sp.a(<console>:5)
+	at LongKlass.a$$mcL$$sp(<console>:6)
+	at Klass$$mcL$$sp.a(<console>:5)
+	at LongKlass.a$$mcL$$sp(<console>:6)
+	at Klass$$mcL$$sp.a(<console>:5)
+	at LongKlass.a$$mcL$$sp(<console>:6)
+	at Klass$$mcL$$sp.a(<console>:5)
+	at LongKlass.a$$mcL$$sp(<console>:6)
+	at Klass$$mcL$$sp.a(<console>:5)
+	at LongKlass.a$$mcL$$sp(<console>:6)
+	at Klass$$mcL$$sp.a(<console>:5)
+	at LongKlass.a$$mcL$$sp(<console>:6)
+	at Klass$$mcL$$sp.a(<console>:5)
+	at LongKlass.a$$mcL$$sp(<console>:6)
+	at Klass$$mcL$$sp.a(<console>:5)
+	at LongKlass.a$$mcL$$sp(<console>:6)
+	at Klass$$mcL$$sp.a(<...
+{code}

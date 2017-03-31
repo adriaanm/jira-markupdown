@@ -1,0 +1,7 @@
+Ticket SI-2009 really contains two issues.   The basic idea is that message sends to an actor should never propagate an exception into the sender's thread.  Propagating errors (e.g. OOME) is ok.
+
+The downside to doing this is that the sender is potentially unknowingly sending a message down a black hole.  It's also a little more subtle in the case of synchronous message sends, because it means the sender will potentially block forever while it waits for a defunct actor to respond.
+
+Consequently I'm not sure if this is a legitimate defect or a design decision with which some people may disagree.
+
+Of course, this raises the question:  What should be done with the exception?  But that's a broader question as there are many places where exceptions can occur and no defined means of capturing the information.

@@ -1,0 +1,17 @@
+When trying to use XMLEventReader with an utf-8 encoded XML document that starts with a byte order mark (EF BB BF), an empty iterator is returned, and an error message is printed to stderr.
+
+{code:java|title=test.scala}
+import scala.io.Source
+import scala.xml.pull.XMLEventReader
+
+val t = new XMLEventReader(Source.fromFile("hasBOM.xml"))
+
+println(t)
+{code}
+
+{code:title=Output of scala test.scala}
+file:/tmp/hasBOM.xml:1:1: < expected<?xml version="1.0" encoding="UTF-8" standalone="yes"?>^
+empty iterator
+{code}
+
+The attached file hasBOM.xml has CR+LF newlines, but LF or CR newlines do not change the behaviour.

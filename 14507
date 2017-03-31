@@ -1,0 +1,20 @@
+The following code 
+{code}
+   null match { case x: AnyRef => 1 case _ => 0 }
+{code}
+gives <console>:5: error: unreachable code. On the other hand, tricking it into acceptance like this
+{code}
+   scala> (null: Any) match { case x: AnyRef => 1 case _ => 0 }
+   res10: Int = 0
+{code}
+gives 0, so clearly the second case was reachable. 
+There are variations of the same problem. Here is another one:
+{code}
+scala> def foo[T](x: Array[T]) = x match {
+     |   case y: Array[AnyRef] => 1
+     |   case y: Array[Int] => 2
+     | }
+<console>:6: error: unreachable code
+         case y: Array[Int] => 2
+                               ^
+{code}

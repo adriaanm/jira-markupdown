@@ -1,0 +1,41 @@
+=== What steps will reproduce the problem (please be specific and use wikiformatting)? ===
+{code}
+Seq(1,2,3,4,5).lastIndexOfSlice(Seq(4,5),3)
+Seq(1,2,3,4,5).lastIndexOfSlice(Seq(4),3)
+Seq(1,2,3,4,5).lastIndexOfSlice(Seq(5),4)
+{code}
+
+
+
+=== What is the expected behavior? ===
+
+The description for the method lastIndexOfSlice in SeqLike.scala states the following:
+
+@return  the last index `<= end` such that the elements of this $$coll starting at this index
+match the elements of sequence `that`, or `-1` of no such subsequence exists. 
+
+Based on that description all the expressions given above should give results greater than zero.
+
+The first two expressions should give the result 3 because the index 3 is indeed "<= end" (end is equal to 3) and the elements of "that" match the sequence starting at index 3 in both cases.
+
+The last expression should give the result 4.
+
+=== What do you see instead? ===
+
+Instead they all give the result -1.
+
+{code}
+scala> Seq(1,2,3,4,5).lastIndexOfSlice(Seq(4,5),3)
+res0: Int = -1
+
+scala> Seq(1,2,3,4,5).lastIndexOfSlice(Seq(4),3)
+res1: Int = -1
+
+scala> Seq(1,2,3,4,5).lastIndexOfSlice(Seq(5),4)
+res2: Int = -1
+{code} 
+
+
+=== What versions of the following are you using? ===
+
+2.8.1, 1.6.0_21, Windows Vista

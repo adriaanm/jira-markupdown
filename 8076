@@ -1,0 +1,87 @@
+This is actually worse than I thought:
+{code}
+object ImplicitAmbiguity {
+
+  class N[T]
+  class NC[T] extends N[T]
+  class ND[T] extends N[T]
+  class NE[T] extends N[T]
+  class NF[T] extends N[T]
+
+  class AA[A]
+  class BB[A]
+
+  class Foo
+
+  implicit def conv1(i: Float) = new NC[Float]
+  implicit def conv2(i: Float) = new NF[Float]
+  implicit def conv3(op: AA[String]) = new N[String]
+  implicit def conv4(op: AA[Float]) = new N[Float]
+  implicit def conv5(op: AA[Foo]) = new N[Foo]
+
+  implicit def conv6(e: BB[String]) = new N[String]
+
+  def aFunc[A](a: NC[A]) = new AA[A]
+
+  def aFunc[A](a: NF[A]) = new AA[Float]
+
+  def aFunc[A](a: ND[A]) = new BB[A]
+
+  def aFunc[A](a: NE[A]) = new BB[A]
+
+  def bFunc[T](e1: N[T]) = {}
+  
+  // OK
+  def bar02 {
+    bFunc(aFunc(4F))
+  }
+}
+{code}
+
+-Ydebug will reveal that we do that all the time, even when the code compiles.
+{code}
+[running phase namer on longerrormsg.scala]
+[running phase packageobjects on longerrormsg.scala]
+[running phase typer on longerrormsg.scala]
+warning: issue error: type mismatch;
+ found   : ImplicitAmbiguity.this.AA[?A]
+ required: ImplicitAmbiguity.this.N[?]
+Note that implicit conversions are not applicable because they are ambiguous:
+ both method conv3 in module class ImplicitAmbiguity of type (<param> op: ImplicitAmbiguity.this.AA[String])ImplicitAmbiguity.this.N[String]
+ and method conv5 in module class ImplicitAmbiguity of type (<param> op: ImplicitAmbiguity.this.AA[ImplicitAmbiguity.this.Foo])ImplicitAmbiguity.this.N[ImplicitAmbiguity.this.Foo]
+ are possible conversion functions from ImplicitAmbiguity.this.AA[?A] to ImplicitAmbiguity.this.N[?]
+warning: issue error: type mismatch;
+ found   : ImplicitAmbiguity.this.AA[?A]
+ required: ImplicitAmbiguity.this.N[?]
+Note that implicit conversions are not applicable because they are ambiguous:
+ both method conv3 in module class ImplicitAmbiguity of type (<param> op: <empty>.this.ImplicitAmbiguity.AA[String])<empty>.this.ImplicitAmbiguity.N[String]
+ and method conv4 in module class ImplicitAmbiguity of type (<param> op: <empty>.this.ImplicitAmbiguity.AA[scala.this.Float])<empty>.this.ImplicitAmbiguity.N[scala.this.Float]
+ are possible conversion functions from ImplicitAmbiguity.this.AA[?A] to ImplicitAmbiguity.this.N[?]
+warning: update buffer: Set(scala.tools.nsc.typechecker.ContextErrors$AmbiguousTypeError, scala.tools.nsc.typechecker.ContextErrors$AmbiguousTypeError)
+warning: issue error: overloaded method value aFunc with alternatives:
+  [A(in method aFunc)(in method aFunc)(in method aFunc)(in method aFunc)(in method aFunc)(in method aFunc)(in method aFunc)(in method aFunc)](<param> a: ImplicitAmbiguity.this.NE[A(in method aFunc)(in method aFunc)(in method aFunc)(in method aFunc)(in method aFunc)(in method aFunc)(in method aFunc)(in method aFunc)])ImplicitAmbiguity.this.BB[A(in method aFunc)(in method aFunc)(in method aFunc)(in method aFunc)(in method aFunc)(in method aFunc)(in method aFunc)(in method aFunc)] <and>
+  [A(in method aFunc)(in method aFunc)(in method aFunc)(in method aFunc)(in method aFunc)(in method aFunc)(in method aFunc)(in method aFunc)](<param> a: ImplicitAmbiguity.this.ND[A(in method aFunc)(in method aFunc)(in method aFunc)(in method aFunc)(in method aFunc)(in method aFunc)(in method aFunc)(in method aFunc)])ImplicitAmbiguity.this.BB[A(in method aFunc)(in method aFunc)(in method aFunc)(in method aFunc)(in method aFunc)(in method aFunc)(in method aFunc)(in method aFunc)] <and>
+  [A(in method aFunc)(in method aFunc)(in method aFunc)(in method aFunc)(in method aFunc)(in method aFunc)(in method aFunc)(in method aFunc)](<param> a: ImplicitAmbiguity.this.NF[A(in method aFunc)(in method aFunc)(in method aFunc)(in method aFunc)(in method aFunc)(in method aFunc)(in method aFunc)(in method aFunc)])ImplicitAmbiguity.this.AA[scala.this.Float] <and>
+  [A(in method aFunc)(in method aFunc)(in method aFunc)(in method aFunc)(in method aFunc)(in method aFunc)(in method aFunc)(in method aFunc)](<param> a: ImplicitAmbiguity.this.NC[A(in method aFunc)(in method aFunc)(in method aFunc)(in method aFunc)(in method aFunc)(in method aFunc)(in method aFunc)(in method aFunc)])ImplicitAmbiguity.this.AA[A(in method aFunc)(in method aFunc)(in method aFunc)(in method aFunc)(in method aFunc)(in method aFunc)(in method aFunc)(in method aFunc)]
+ cannot be applied to (scala.this.Float)
+warning: issue error: type mismatch;
+ found   : ImplicitAmbiguity.this.AA[?A]
+ required: ImplicitAmbiguity.this.N[?]
+Note that implicit conversions are not applicable because they are ambiguous:
+ both method conv3 in module class ImplicitAmbiguity of type (<param> op: ImplicitAmbiguity.this.AA[String])ImplicitAmbiguity.this.N[String]
+ and method conv5 in module class ImplicitAmbiguity of type (<param> op: ImplicitAmbiguity.this.AA[ImplicitAmbiguity.this.Foo])ImplicitAmbiguity.this.N[ImplicitAmbiguity.this.Foo]
+ are possible conversion functions from ImplicitAmbiguity.this.AA[?A] to ImplicitAmbiguity.this.N[?]
+warning: issue error: type mismatch;
+ found   : ImplicitAmbiguity.this.AA[?A]
+ required: ImplicitAmbiguity.this.N[?]
+Note that implicit conversions are not applicable because they are ambiguous:
+ both method conv3 in module class ImplicitAmbiguity of type (<param> op: <empty>.this.ImplicitAmbiguity.AA[String])<empty>.this.ImplicitAmbiguity.N[String]
+ and method conv4 in module class ImplicitAmbiguity of type (<param> op: <empty>.this.ImplicitAmbiguity.AA[scala.this.Float])<empty>.this.ImplicitAmbiguity.N[scala.this.Float]
+ are possible conversion functions from ImplicitAmbiguity.this.AA[?A] to ImplicitAmbiguity.this.N[?]
+warning: update buffer: Set(scala.tools.nsc.typechecker.ContextErrors$AmbiguousTypeError, scala.tools.nsc.typechecker.ContextErrors$AmbiguousTypeError)
+[running phase patmat on longerrormsg.scala]
+[running phase superaccessors on longerrormsg.scala]
+[running phase extmethods on longerrormsg.scala]
+{code}
+
+This could be a performance killer with all those strings created along the way.

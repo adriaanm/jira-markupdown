@@ -1,0 +1,8 @@
+I initially did that, then backed off in terror from the hundreds if not thousands of warnings the compiler emitted. The prevailing style inside the compiler involves a lot of pattern matches like this:
+{code}
+      case ValDef(mods, name, tpt, rhs) =>
+        ctx // we use the symbol to add fields
+      case DefDef(mods, name, tparams, vparamss, tpt, rhs) =>
+        // let's do nothing!
+{code}
+That's ten unused warnings, now multiply by one billion. Maybe this problem is unique to the compiler.

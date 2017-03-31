@@ -1,0 +1,22 @@
+See a session shown below. First beep definition results in error. Direct awt's beep call is ok. Next beep definition is ok also.
+
+{code}
+Welcome to Scala version 2.7.1.r15829-b20080819110356 (Java HotSpot(TM) 
+64-Bit Server VM, Java 1.6.0_07).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> def beep = java.awt.Toolkit.getDefaultToolkit.beep
+<console>:4: error: illegal cyclic reference involving class Dialog
+       def beep = java.awt.Toolkit.getDefaultToolkit.beep
+                           ^
+
+scala> java.awt.Toolkit.getDefaultToolkit.beep
+
+scala> def beep = java.awt.Toolkit.getDefaultToolkit.beep
+beep: Unit
+
+scala> beep
+
+scala>
+{code}

@@ -1,0 +1,28 @@
+A variation of the minimized snippet, which also exercises the "non-early-return" control-flow path:
+
+{noformat}
+object Test {
+
+  def main(args: Array[String]) {
+    println(foo(true))
+    println(foo(false))
+  }
+
+  def foo(b: Boolean): String = {
+    try {
+      if(b)
+        return "Hello"
+      else
+        "abc"
+    } finally {
+      10 match {case x => ()}
+    }
+  }
+
+}
+{noformat}
+
+The problem does not surface in the new backend (ok, after fixing a typo) because a more structured approach is followed to emit try-catch-finally,
+
+  https://github.com/magarciaEPFL/scala/compare/master...GenRefactored27
+

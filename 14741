@@ -1,0 +1,26 @@
+This happen when the code has compilation errors and the bogus error messages persist even if we fix the code and recompile.
+
+*How to trigger the bug*
+ 1. Create a file A.scala and save it to compile
+{code}
+//file: /bugs/A.scala
+package bugs
+class A
+{code}
+ 3. Create a file B.scala with two classes B and C and save it to compile
+{code}
+//file: /bugs/B.scala
+package bugs
+class B(a: A, c: C)
+class C
+{code}
+ 4. Comment out class C in B.scala and save the file (no error appears because of SI-2581)
+ 5. Do a Clean and Build
+
+At this stage the Problems View has one error (that appears twice) _not found type: C_, but the editor has two errors (they also appear twice) one for class C and one for class A (_not found type: A_). The problem here is that class A is valid and compiled (the A.class file exists on disk and the compilation was a result of a _clean_ operation in Eclipse).
+
+Now if we uncomment the _class C_ in file _B.scala_ (to bring the code in a correct state again) and save the file to trigger a compilation, all the files get compiled, the error gets removed from the Problems View but the bogus error for class A still exists in the editor. To remove this bogus message we need to do again a Clean&Build.
+
+I found this bug while investigating the bug outlined in [http://old.nabble.com/Re%3A--scala-tools--Error-highlights-in-Eclipse-Scala-p26480821.html this] message and I suspect that they might be related.
+
+Tested with Eclipse 3.5.1 and SDT r19784.

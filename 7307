@@ -1,0 +1,34 @@
+I took a look and submitted a pull request.
+
+https://github.com/scala/scala/pull/317
+
+The problem seems to be that when default-getters for constructors are added to the companion module, the expression has the module in scope.
+
+Adding constrTyperIf(flag) before entering typedDefDef seems to work.
+
+Since there is no flag for default-getter for ctor, it does a name compare. It might be preferable to add a flag or abuse an existing flag instead.
+
+This change includes renaming init$default$ to init$$default$ to avoid collisions with default-getters for an ordinary method on the module named init. 
+
+That change is not trivial, so guidance is needed. Alternatively, one could live with the possibility of name collision and just allow that there are interactions that impose limits, similar to SI-5366.
+
+More example: 
+
+{code}
+object A {
+  val v = 7
+  class B(val x: Int = v)
+  object B {
+    val v = 5
+    //def init(y: Int = v) = y  // names collide
+  }
+  def main(args: Array[String]) {
+    println(new B().x) // 5
+  }
+}
+
+{code}
+
+
+
+

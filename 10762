@@ -1,0 +1,129 @@
+I have now completed a preliminary set of benchmarks for simple "foreach" lambdas (but not closures) using JMH; the results are extremely interesting!
+
+// Here's the Java version
+@State(Scope.Thread)
+public class Main
+{
+  private final List<String> testValues = Arrays.asList("a", "bb", "c", "dd", "e", "ff");
+
+  @GenerateMicroBenchmark
+  public void myTest()
+      throws InterruptedException
+  {
+    testValues.forEach( p -> p.length() );
+  }
+}
+
+Iteration   1: 129700.223 ops/ms
+Iteration   2: 129887.216 ops/ms
+Iteration   3: 129932.265 ops/ms
+Iteration   4: 129925.015 ops/ms
+Iteration   5: 129940.037 ops/ms
+Iteration   6: 130211.447 ops/ms
+Iteration   7: 130111.218 ops/ms
+Iteration   8: 130020.330 ops/ms
+Iteration   9: 129785.982 ops/ms
+Iteration  10: 130034.805 ops/ms
+Iteration  11: 130027.400 ops/ms
+Iteration  12: 129799.267 ops/ms
+Iteration  13: 130067.029 ops/ms
+Iteration  14: 129933.144 ops/ms
+Iteration  15: 129782.205 ops/ms
+Iteration  16: 130047.119 ops/ms
+Iteration  17: 129964.672 ops/ms
+Iteration  18: 129829.663 ops/ms
+Iteration  19: 130142.463 ops/ms
+Iteration  20: 129720.404 ops/ms
+
+Result : 129943.095 ±(99.9%) 123.534 ops/ms
+  Statistics: (min, avg, max) = (129700.223, 129943.095, 130211.447), stdev = 142.262
+  Confidence interval (99.9%): [129819.561, 130066.629]
+
+
+// Here's the Scala version
+@State(Scope.Thread)
+class MyBenchmark {
+
+  final val testValues = Array("a", "bb", "c", "dd", "e", "ff").toBuffer
+
+  @GenerateMicroBenchmark
+  def test() {
+  	testValues.foreach(x => x.length())
+  }
+}
+
+Iteration   1: 121176.798 ops/ms
+Iteration   2: 121206.352 ops/ms
+Iteration   3: 122627.047 ops/ms
+Iteration   4: 122361.254 ops/ms
+Iteration   5: 122044.951 ops/ms
+Iteration   6: 121160.859 ops/ms
+Iteration   7: 121245.793 ops/ms
+Iteration   8: 122784.802 ops/ms
+Iteration   9: 121072.250 ops/ms
+Iteration  10: 121485.324 ops/ms
+Iteration  11: 121488.497 ops/ms
+Iteration  12: 121888.145 ops/ms
+Iteration  13: 120965.945 ops/ms
+Iteration  14: 121130.525 ops/ms
+Iteration  15: 121521.937 ops/ms
+Iteration  16: 122170.860 ops/ms
+Iteration  17: 122369.025 ops/ms
+Iteration  18: 121495.005 ops/ms
+Iteration  19: 122511.899 ops/ms
+Iteration  20: 121582.566 ops/ms
+
+Result : 121714.492 ±(99.9%) 504.060 ops/ms
+  Statistics: (min, avg, max) = (120965.945, 121714.492, 122784.802), stdev = 580.476
+  Confidence interval (99.9%): [121210.432, 122218.552]
+
+
+So basically it seems the Java version of lambdas executing a simple foreach lambda is a bit faster than Scala's version, when using the defacto mutable list data structure in each language. However this could be attributed to the differences in implementation of mutable lists of each language; it is not conclusive (although most people will realistically see this kind of performance for lists).
+
+The best results we could get would be from some data structure which is implemented in the same way in both languages (or is exactly the same) such as an array.
+However, the reason I benchmarked against lists is that (and this is baffling... can it really be the case?), I could not find a foreach() method on Java 8 arrays.
+This is very frustrating...
+
+On the other hand, Scala does allow me to run a foreach lambda on an array, so I tried this as well, as I tend to use *a lot* of arrays in my Scala code.
+Actually I try to avoid mutable collections due to their drawbacks and prefer Arrays/Seqs.
+
+
+// Scala array version
+@State(Scope.Thread)
+class MyBenchmark {
+
+  final val testValues = Array("a", "bb", "c", "dd", "e", "ff")
+
+  @GenerateMicroBenchmark
+  def test() {
+  	testValues.foreach(x => x.length())
+  }
+}
+
+Iteration   1: 158810.042 ops/ms
+Iteration   2: 158133.661 ops/ms
+Iteration   3: 158151.405 ops/ms
+Iteration   4: 157634.051 ops/ms
+Iteration   5: 158225.598 ops/ms
+Iteration   6: 158189.632 ops/ms
+Iteration   7: 158677.971 ops/ms
+Iteration   8: 158221.994 ops/ms
+Iteration   9: 158284.515 ops/ms
+Iteration  10: 157807.267 ops/ms
+Iteration  11: 158571.406 ops/ms
+Iteration  12: 158202.246 ops/ms
+Iteration  13: 158525.803 ops/ms
+Iteration  14: 158286.323 ops/ms
+Iteration  15: 157755.862 ops/ms
+Iteration  16: 158437.783 ops/ms
+Iteration  17: 158230.546 ops/ms
+Iteration  18: 158245.174 ops/ms
+Iteration  19: 158617.236 ops/ms
+Iteration  20: 158382.108 ops/ms
+
+Result : 158269.531 ±(99.9%) 260.444 ops/ms
+  Statistics: (min, avg, max) = (157634.051, 158269.531, 158810.042), stdev = 299.928
+  Confidence interval (99.9%): [158009.087, 158529.975]
+
+
+So there, Scala lambdas may execute faster than Java's, if you use arrays; not necessarily because of their implementation, but because of their flexibility!

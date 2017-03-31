@@ -1,0 +1,12 @@
+The following code causes ParallelMatching to blow up:
+{code}
+object Test extends Application {
+val o = new { self =>
+              override def equals(other : Any) : Boolean =
+                 other match {
+                   case that : self.type => true
+                   case _ => false
+                 }
+      }
+}
+{code}

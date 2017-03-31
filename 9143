@@ -1,0 +1,18 @@
+Could the following be used as workaround in some case (seems to work in my case as far as I can see).
+
+{code:java}
+val cls: ClassSymbol = sub.asClass
+
+println(s"knownDirectSubclasses = ${cls.knownDirectSubclasses}")
+// print "knownDirectSubclasses = Set()"
+
+val subsub = cls.owner.typeSignature.decls.filter {
+  case c: ClassSymbol =>
+    cls != c && c.selfType.baseClasses.contains(cls)
+
+  case _ => false
+}
+
+println(s"subsub = $subsub")
+// print the actual sub classes
+{code}

@@ -1,0 +1,29 @@
+Workaround is to use {{-Yrepl-sync}}.
+
+{noformat}
+scala>   ~/code/scala scala210 -Yrepl-sync
+Welcome to Scala version 2.10.0-M1 (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_29).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> Thread.currentThread.getContextClassLoader
+res0: ClassLoader = Cl#611660851
+
+scala> reflect.mirror.classToSymbol(classOf[List[_]])
+res1: reflect.mirror.Symbol = class List
+
+scala> 
+
+scala>   ~/code/scala scala210
+Welcome to Scala version 2.10.0-M1 (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_29).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> Thread.currentThread.getContextClassLoader
+res0: ClassLoader = null
+
+scala> reflect.mirror.classToSymbol(classOf[List[_]])
+java.lang.NullPointerException
+	at scala.reflect.runtime.JavaToScala$class.javaClass(JavaToScala.scala:48)
+	at scala.reflect.runtime.Universe.javaClass(Universe.scala:11)
+{noformat}

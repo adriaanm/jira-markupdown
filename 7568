@@ -1,0 +1,44 @@
+All of these compile:
+{code}
+  Nil map // foo
+  identity
+
+  Nil map
+  // foo
+  identity
+  
+  Nil map
+  // foo
+  // foo
+  identity
+  
+  Nil map /* foo 
+  */ identity
+  
+  Nil map /* foo */
+  identity
+  
+  Nil map /* 
+  foo 
+  */
+  identity
+  
+  Nil map /* 
+  foo 
+  foo
+  foo
+  */
+  identity
+{code}
+But THIS does not (compare with last example.)
+{code}
+  Nil map /* 
+
+
+
+  */
+  identity
+{code}
+So you can make code uncompilable by changing the content of the comment, without even changing the number of newlines in it! It looks like a completely blank line is being counted as an nl token even if it's inside a block comment, but a line with any non-whitespace is not.
+
+I can find pretty much nothing on how comments translate into whitespace in the spec.

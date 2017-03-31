@@ -1,0 +1,56 @@
+The following code raises the error:
+{code}
+java.lang.Error: no-symbol does not have owner
+        at scala.tools.nsc.symtab.SymbolTable.abort(SymbolTable.scala:33)
+        at scala.tools.nsc.symtab.Symbols$$NoSymbol$$.owner(Symbols.scala:2048)
+        at
+scala.tools.nsc.transform.ExplicitOuter$$OuterPathTransformer.outerSelect(ExplicitOuter.scala:190)
+        at
+scala.tools.nsc.transform.ExplicitOuter$$OuterPathTransformer.outerPath(ExplicitOuter.scala:217)
+        at
+scala.tools.nsc.transform.ExplicitOuter$$ExplicitOuterTransformer.transform(ExplicitOuter.scala:456)
+        at
+scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transform$$4.apply(Trees.scala:736)
+        at
+scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transform$$4.apply(Trees.scala:735)
+        at scala.tools.nsc.ast.Trees$$Transformer.atOwner(Trees.scala:856)
+        at
+scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:35)
+        at
+scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:28)
+        at scala.tools.nsc.ast.Trees$$Transformer.transform(Trees.scala:734) 
+{code}
+
+
+{code}
+package test
+import scala.util.continuations._
+object NoSymbolTest {
+   
+  def sum(a: Int, b: Int): Int = a + b
+ 
+  def main(args: Array[String]) = {
+       
+    def capture(): Int @suspendable =
+      shift { k: (Int => Unit) => {
+        k(42)
+      }}
+   
+    def loop(): Unit @suspendable = {
+      var x = 0
+      while (x < 3) {
+        val y = capture()
+//        val s = sum(x, y) // java.lang.Error: no-symbol does not have owner
+//        x = s
+         x = sum(x,y) // WORKS
+      }
+      println("x: " + x)
+    }
+   
+    reset[Unit,Unit] {
+      loop()
+    }
+  }
+}
+{code}
+

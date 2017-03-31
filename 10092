@@ -1,0 +1,19 @@
+Partest also seems the swallow the stack trace.
+
+{noformat}
+# partest /Users/jason/code/scala/test/files/neg/t7494-right-after-before
+% scalac t7494-right-after-before/ThePlugin.scala
+% scalac t7494-right-after-before/sample_2.scala
+error: Uninitialized field: PluginComponent.scala: 19
+
+
+% cat test/files/neg/t7494-right-after-before-neg.log
+error: Uninitialized field: PluginComponent.scala: 19
+topic/checkinit /code/scala
+{noformat}
+
+This commit included code to display it:
+
+  https://github.com/scala/scala-partest/commit/29cd685d55df5a2a1875e8bff6859d2dcfd24861#L14R88
+
+But that is never called.

@@ -1,0 +1,32 @@
+bug.scala:
+
+class Base
+trait Foo
+
+type ID = Base with Foo
+
+val Base1 = new Base().asInstanceOf[ID]
+val Base2 = new Base().asInstanceOf[ID]
+
+val id = new Base()
+
+id match {
+  case Base1 => "1"
+  case Base2 => "2"
+  case _ => "n/a"
+}
+
+Warning in console:
+
+scala> :load bug.scala
+Loading bug.scala...
+defined class Base
+defined trait Foo
+defined type alias ID
+Base1: ID = Base@10acdfa4
+Base2: ID = Base@571c4505
+id: Base = Base@235cf118
+<console>:81: warning: unreachable code
+                case Base2 => "2"
+                              ^
+res8: String = n/a

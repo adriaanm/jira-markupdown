@@ -1,0 +1,12 @@
+I'm not sure. I'd say that a pattern {{Apply( x ): SelectorType}} should type check iff exists T in (SelectorType, Nothing) so that {{Apply.unapply(<sel: T>)}} type checks (must allow type slack on the unapply's arg since we'll insert a type test before the unapply call if necessary).
+
+However, replacing {{val Apply( x ) = tree}} by {{Apply.unapply(tree)}} in your example causes the following error:
+
+{code}
+both method Apply in trait TreesApi of type (x: String)Unit
+and  value Apply in trait TreesBase of type => tapi.ApplyExtractor
+match expected type ?
+      Apply.unapply(tree)
+{code}
+
+So, either we should fix that, or this pattern should not type check.

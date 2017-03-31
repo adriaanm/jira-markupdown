@@ -1,0 +1,14 @@
+There is no error in the attached code, as far as I can see. (It does not require type inference either, though.)
+
+In fact,  the last line
+
+{code}
+toResultMatcher[String, Iterable](new Result[Iterable[String]]).size(0) // this fails to show a type error in eclipse
+{code}
+
+gets adapted to 
+{code}
+stringWrapper(toResultMatcher[String, Iterable](new Result[Iterable[String]]()).size).apply(0)
+{code}
+
+which is type correct by the implicit conversion `stringWrapper`, and the fact that String has a method `apply`

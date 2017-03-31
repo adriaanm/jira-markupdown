@@ -1,0 +1,22 @@
+I realize only now. With the following change in trait 
+
+{{scala.tools.nsc.ast.parser.Parsers}}
+
+a compiler plugin can see range positions, irrespective of {{-Yrangepos}}
+
+{code}
+def r2p(start: Int, mid: Int, end: Int): Position = new util.RangePosition(source, start, mid, end)
+{code}
+
+I mean, you don't need the rest of {{-Yrangepos}} functionlity, right? 
+
+Higher up in the override hierarchy one can also do that change at
+
+{code}
+method rangePos in 
+
+trait scala.tools.nsc.symtab.Positions
+{code}
+
+(call it a workaround if you like). 
+

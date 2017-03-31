@@ -1,0 +1,12 @@
+> What I wanted is that 'operator' would only be applicable to other instantiation of Base class of the _same_ type A. 
+
+Achievable with
+
+{code}
+  def operatorImpl[B >: A <: A](sf: Base[B])  = {
+    sf match {
+      case DerivClass1(value) => println("this should work (and it does)")
+      case DerivClass2(value) => println("and this does to")
+    }
+  }
+{code}

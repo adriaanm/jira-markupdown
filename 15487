@@ -1,0 +1,29 @@
+A freebsd user found no scripts would run.
+
+[Side note: the fact that scripts by default connect to the compilation daemon without advertising that fact means that the many network related issues we have with fsc such as blocked ports, dns not resolving, /etc/hosts being malformed, and the issue in this ticket all materialize as extremely puzzling errors in scripts.  People often have no idea the network could even be involved.  We need to make such errors more transparent.]
+
+The scripts were hanging because of fsc and ipv6, as shown here:
+{code}
+$$ fsc -verbose
+[Server arguments: -d /storage/home/cpj/doc/dev/2010/06/scala-hello/.
+-verbose]
+[VM arguments: ]
+[Temp directory: /var/tmp/scala-devel/cpj]
+[Executed command: List(/storage/home/cpj/src/scala-2.8.0.RC6/bin/scala,
+scala.tools.nsc.CompileServer)]
+[Port number: 34832]
+java.net.SocketException: Invalid argument
+[Connecting to compilation daemon at port 34832 failed; re-trying...]
+[Executed command: List(/storage/home/cpj/src/scala-2.8.0.RC6/bin/scala,
+scala.tools.nsc.CompileServer)]
+[Port number: 11285]
+java.net.SocketException: Invalid argument
+[Connecting to compilation daemon at port 11285 failed; re-trying...]
+[Port number: 11285]
+java.net.SocketException: Invalid argument
+[Connecting to compilation daemon at port 11285 failed; re-trying...]
+[Executed command: List(/storage/home/cpj/src/scala-2.8.0.RC6/bin/scala,
+scala.tools.nsc.CompileServer)]
+{code}
+
+User supplied -Djava.net.preferIPv4Stack=true to the JVM and the problem went away.  We should do one of the following: fail more transparently, fail more gracefully, or not fail.

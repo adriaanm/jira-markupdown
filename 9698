@@ -1,0 +1,70 @@
+
+The new optimizer explains in more detail ( {{-Ydebug -neo:o3 -Ylog:jvm -Yinline-warnings}} ) why that inlining is unfeasible.
+
+Summary: because of the local method in {{List.dropWhile}} , which becomes private to {{immutable.List}}
+
+Snippet:
+
+{noformat}
+class C {
+  def m() {
+    List(0).dropWhile(_ < 1)
+  }
+}
+{noformat}
+
+
+
+{noformat}
+warning: Closure-inlining failed because
+  scala/collection/immutable/List::dropWhile(Lscala/Function1;)Lscala/collection/immutable/List;
+contains instruction 
+  INVOKESPECIAL 
+    scala/collection/immutable/List.loop$3
+    (Lscala/collection/immutable/List;Lscala/Function1;)Lscala/collection/immutable/List;
+that would cause IllegalAccessError from class C
+    List(0).dropWhile(_ < 1)
+                     ^
+[log jvm] Failed closure-inlining Callsite:
+            INVOKEVIRTUAL
+            scala/collection/immutable/List.dropWhile
+            (Lscala/Function1;)Lscala/collection/immutable/List; 
+          in method C::m()V
+[log jvm] Bytecode of callee, declared by scala/collection/immutable/List 
+
+  // access flags 0x11
+  // signature (Lscala/Function1<TA;Ljava/lang/Object;>;)Lscala/collection/immutable/List<TA;>;
+  // declaration: scala.collection.immutable.List<A> dropWhile(scala.Function1<A, java.lang.Object>)
+  public final dropWhile(Lscala/Function1;)Lscala/collection/immutable/List;
+   L0
+    LINENUMBER 284 L0
+    ALOAD 0
+    ALOAD 0
+    ALOAD 1
+    INVOKESPECIAL 
+      scala/collection/immutable/List.loop$3 
+     (Lscala/collection/immutable/List;Lscala/Function1;)Lscala/collection/immutable/List;
+    ARETURN
+   L1
+    LOCALVARIABLE this Lscala/collection/immutable/List; L0 L1 0
+    LOCALVARIABLE p Lscala/Function1; L0 L1 1
+    MAXSTACK = 3
+    MAXLOCALS = 2
+{noformat}
+
+Where does that private method come from? From the {{@tailrec}}-optimized {{loop()}}:
+
+{noformat}
+  @inline final override def dropWhile(p: A => Boolean): List[A] = {
+    @tailrec
+    def loop(xs: List[A]): List[A] =
+      if (xs.isEmpty || !p(xs.head)) xs
+      else loop(xs.tail)
+
+    loop(this)
+  }
+{noformat}
+
+
+It's not a bug of the old optimizer.
+

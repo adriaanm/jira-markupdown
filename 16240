@@ -1,0 +1,22 @@
+The following code fails to compile:
+
+{code}
+trait M[F[_]]  
+case class S[X[_] <: M[X], A](x:X[A])
+
+error: constructor of type S[X,A] cannot be uniquely instantiated to expected type Any
+ --- because ---
+cyclic instantiation
+       case class S[X[_] <: M[X], A](x:X[A])                ^
+{code}
+
+The issue is specific to case classes because the workaround below is accepted without any cyclic instantiation error:
+
+{code}
+trait M[F[_]]  
+class S[X[_] <: M[X], A](val x:X[A])
+  
+object S {
+  def apply[X[_] <: M[X], A](x:X[A]):S[X, A] = new S[X, A](x)
+}
+{code}

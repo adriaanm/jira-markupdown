@@ -1,0 +1,20 @@
+Hello.
+
+The compiler complains when one tries to define a class with a volatile member in the constructor.
+
+Example:
+
+{code}
+class Cls(@volatile var v: Int)
+{code}
+
+
+Error message:
+
+{code}
+error: values cannot be volatile
+class Cls(@volatile var v: Int)
+{code}
+
+The reason is because v gets expanded into a field and both an argument to the constructor. The field becomes a variable, but the argument to the constructor is a value, still having the same annotation - so the typechecker complains.
+

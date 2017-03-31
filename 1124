@@ -1,0 +1,29 @@
+First, I want to thank you for implementing this feature!
+
+I tried it already and it worked fine in my first test case. But there's still an open issue. Consider the following classes:
+
+ * ScalaSeqInterface.java
+{code}
+public interface ScalaSeqInterface {
+  public String f(String... seq);
+}
+{code}
+ * ScalaSeq.scala
+{code}
+class ScalaSeq extends ScalaSeqInterface {
+  def f(seq: String*): String = "asdf"
+}
+{code}
+ * ScalaSeqTest.java
+{code}
+public class ScalaSeqTest {
+  public static void main(String[] args) {
+    System.out.println(((ScalaSeqInterface) new ScalaSeq()).f(""));  // compiles
+    System.out.println(new ScalaSeq().f(""));                        // does not compile
+  }
+}
+{code}
+
+Why can't I use {{new ScalaSeq().f("")}} in a Java class? Why do I have to cast the Scala class first?
+
+PS: But since there's a workaround (via casting) for this problem, there might be more urgent issues at the moment.

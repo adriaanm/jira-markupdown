@@ -1,0 +1,21 @@
+Here's a summary:
+
+we've got now 4 more or less different failure scenarios: the original three in this report (which are in the test file in the pull request) plus the one from the previous comment (I'm putting both previous ones into one category). Archaeological research showed the following:
+
+ * In 2.8.0.Beta1-RC5 (that's the release before the tentative fix) none of the tests failed
+ * In 2.9.0.RC1 still none of the tests failed
+ * Between RC1 and 2.9.0.RC2 the three cases reported here originally started to fail
+ * With the two workarounds (r24922 and r24968, which I figured are probably 124cf3f9c and 7127d829) only one test is failing which is the one where the self-type is the singleton type
+ * With my proposed "fix" which reverts cb4fd6582, 124cf3f9c, and 7127d829, only the test from the previous comment fails (which is a scenario not observed before)
+
+My previous explanation that the tentative fix was the original commit introducing the regression is definitely wrong simply because it was already in the codebase long before the regression (actually I can't figure out any more from where I dug this commit out). It is a curious thing that the commit still is related otherwise reverting wouldn't have such an effect.
+
+I'm not so sure where to go from here: I wouldn't say the best solution is reverting a bunch of stuff if the outcome is at least one new previously unknown regression. In contrast, it isn't probably too hard to extend the current workaround to handle the last known remaining issue (self-type is singleton-type). The price is that we still have a workaround in the codebase for an issue for that no one seems to understand exactly where it comes from and which other variations may exist.
+
+Maybe I'll start a bisect between 2.9.0.RC1 and 2.9.0.RC2 to find out where it really showed up first.
+
+(In the meantime while scalac is compiling I read [one of Alan Turing's articles|http://www.loebner.net/Prizef/TuringArticle.html], here's an excerpt about the "Learning Machine":
+
+bq.An important feature of a learning machine is that its teacher will often be very largely ignorant of quite what is going on inside, although he may still be able to some extent to predict his pupil's behavior. This should apply most strongly to the later education of a machine arising from a child machine of well-tried design (or programme). This is in clear contrast with normal procedure when using a machine to do computations one's object is then to have a clear mental picture of the state of the machine at each moment in the computation. This object can only be achieved with a struggle. The view that "the machine can only do what we know how to order it to do,"' appears strange in face of this. Most of the programmes which we can put into the machine will result in its doing something that we cannot make sense.
+
+Sometimes I worry we are getting more and more into the area of trying to educate the compiler what to do instead of having "a clear mental picture of the state of the machine at each moment" but maybe that's just my ignorance)

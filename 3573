@@ -1,0 +1,13 @@
+And, just to capture a little more information about the problem...
+
+Leaving -Ypmat-debug out of the picture, this line crashes due to this (or similar) bug:
+
+{{ case app @ Apply(x,y,z) => ... }}
+
+When any of x, y or z are there, it crashes.  But this doesn't:
+
+{{ case app @ Apply(_,_,_) => ... }}
+
+And finally, this version avoids the extractor and therefore can't possibly fail:
+
+{{ case app: Apply[_] => ... }}

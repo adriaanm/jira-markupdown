@@ -1,0 +1,37 @@
+[Update: I hit this again and here is how you can hit it too.]
+{code}
+  def f1(t: String) = {
+    trait T {
+      def xs = Nil map (_ => t)
+    }
+    ()
+  }
+{code}
+{code}
+Exception in thread "main" java.lang.AssertionError: assertion failed
+	at scala.Predef$$.assert(Predef.scala:79)
+	at scala.tools.nsc.transform.Mixin$$MixinTransformer.scala$$tools$$nsc$$transform$$Mixin$$MixinTransformer$$$$postTransform(Mixin.scala:1031)
+	at scala.tools.nsc.transform.Mixin$$MixinTransformer$$$$anonfun$$16.apply(Mixin.scala:1057)
+	at scala.tools.nsc.transform.Mixin$$MixinTransformer$$$$anonfun$$16.apply(Mixin.scala:1057)
+	at scala.tools.nsc.symtab.SymbolTable.atPhase(SymbolTable.scala:104)
+	at scala.tools.nsc.transform.Mixin$$MixinTransformer.transform(Mixin.scala:1057)
+{code}
+
+[Original report follows]
+I haven't reduced this yet, but it's easy to reproduce: take current trunk as (r20482 right now) and one line in IndexedSeqViewLike.scala.
+{code}
+  trait Filtered extends Transformed[A] with super.Filtered {
+    // add this override
+    override def foreach[U](f: A => U) = super[Transformed].foreach(f)
+  }
+{code}
+And scalac will crash with:
+{code}
+[scalacfork] Exception in thread "main" java.lang.AssertionError: assertion failed
+[scalacfork] 	at scala.Predef$$.assert(Predef.scala:89)
+[scalacfork] 	at scala.tools.nsc.transform.Mixin$$MixinTransformer.scala$$tools$$nsc$$transform$$Mixin$$MixinTransformer$$$$postTransform(Mixin.scala:1012)
+[scalacfork] 	at scala.tools.nsc.transform.Mixin$$MixinTransformer$$$$anonfun$$16.apply(Mixin.scala:1060)
+[scalacfork] 	at scala.tools.nsc.transform.Mixin$$MixinTransformer$$$$anonfun$$16.apply(Mixin.scala:1060)
+[scalacfork] 	at scala.tools.nsc.symtab.SymbolTable.atPhase(SymbolTable.scala:99)
+[...]
+{code}

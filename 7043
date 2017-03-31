@@ -1,0 +1,10 @@
+For reference, there's an implementation of this in trunk I use in the repl, which looks pretty much identical except for the type parameter names.
+{code}
+  implicit def enrichAnyRefWithTap[T](x: T) = new TapMaker(x)
+  class TapMaker[T](x: T) {
+    def tap[U](f: T => U): T = {
+      f(x)
+      x
+    }
+  }
+{code}

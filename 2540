@@ -1,0 +1,23 @@
+minimal test-case, can't remove any of the classes
+
+it seems like the `A` type parameter is not properly re-interpreted using `memberType` while comparing overriding members in `Symbol::matchingSymbol`
+
+{code}
+abstract class Buffer[A] {
+  def update(idx: Int, elem: A): Unit
+}
+
+trait ResizableArray[A] {
+  def update(idx: Int, elem: A): Unit = error("")
+}
+
+class ArrayBuffer[A] extends Buffer[A] with ResizableArray[A] 
+
+trait SB[A] extends Buffer[A] {
+  abstract override def update(n: Int, newelem: A): Unit = super.update(n, newelem)
+}
+
+object Test {
+  new ArrayBuffer[Int] with SB[Int]
+}
+{code}

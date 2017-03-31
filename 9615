@@ -1,0 +1,7 @@
+As seen in the pull request, it has only a minor impact on the Scala distribution itself and I expect that actual effect on "real world" to be a lot smaller.
+
+I'm currently not sure what's the appropriate way to create the deprecation warnings. Ideas:
+
+- Type check it with java.lang.* available and check whether any type uses it without explicitly importing it
+- Type check without java.lang.* and re-type check code with java.lang.* if some type is not/value is not found
+- Another option would be to implement the generate-companion-objects-functionality Paul described here https://groups.google.com/d/msg/scala-internals/ECY6vBzlx3A/Dobx9xDhF6gJ and then just alias the complete java.lang.* namespace into Predef with @deprecated annotations on everything. This would work without some special casing of java.lang.* in the compiler.

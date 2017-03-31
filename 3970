@@ -1,0 +1,21 @@
+ok, I think I fixed the delta wrt SI-796, which consists of setting the info for the variable that's bound to the pattern before typing the pattern
+
+now my test crashes in the same way as SI-796, which is due to a missing variable declaration for Bind nodes
+
+-Xprint:cleanup says:
+
+{code}
+    def thisSI-9142(): object TestSI-73 = {
+      TestSI-73.super.thisSI-5862();
+      TestSI-73.this.aSI-9147 = new Test$$ASI-9143(42);
+      {
+        <synthetic> val temp5SI-20987: Test$$ASI-9143 = TestSI-73.this.aSI-9146();
+        if (temp5SI-20987.neSI-5886(null))
+          {
+            <synthetic> val temp6SI-20989: IntSI-4425 = temp5SI-20987.xSI-9226();
+            <synthetic> val temp7SI-20991: OptionSI-1651 = aSI-11256.ExSI-9229().unapplySI-10962(temp6SI-20989);
+{code}
+
+if only there were a `<synthetic> val aSI-11256: Test$$ASI-9143 = temp5SI-20987;` somewhere
+
+I'll wander around in the pattern matcher a little  (if I don't return by tonight, please call search&rescue)

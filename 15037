@@ -1,0 +1,40 @@
+Checked against 2.8 Beta 1 (in Eclipse plugin 2.8.0.r20879-b20100214035850) (Nightly build of 2010-02-20.)
+
+{code}
+import scala.swing._
+
+object Test extends Application {
+    val f = new Frame {
+    	contents = new FlowPanel() 
+    }
+    println(f.peer.getContentPane.getComponent(0)) // it's there ok
+    println(f.contents) // throws ClassCastException 
+}
+
+/*
+Result:
+
+javax.swing.JPanel[,0,0,115x10,layout=java.awt.FlowLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+Exception in thread "main" java.lang.ExceptionInInitializerError
+	at Test.main(Test.scala)
+Caused by: java.lang.ClassCastException: scala.swing.FlowPanel cannot be cast to scala.runtime.Null$$
+	at scala.swing.RootPanel$$$$anonfun$$contents$$1.apply(RootPanel.scala:27)
+	at scala.swing.RootPanel$$$$anonfun$$contents$$1.apply(RootPanel.scala:26)
+	at scala.Option.map(Option.scala:75)
+	at scala.swing.RootPanel$$class.contents(RootPanel.scala:26)
+	at scala.swing.Window.contents(Window.scala:26)
+	at Test$$.<init>(Test.scala:8)
+	at Test$$.<clinit>(Test.scala)
+	... 1 more
+
+
+
+//// RootPanel.scala:27
+25:  def contents: Seq[Component] = {
+26:    Swing.toOption[Any](peer.getContentPane.getComponent(0)).map { c => 
+27:      UIElement.cachedWrapper(c.asInstanceOf[javax.swing.JComponent])    // <-- THE CAUSE OF THE EXCEPTION
+28:    }.toList
+29:  }
+ 
+*/
+{code}

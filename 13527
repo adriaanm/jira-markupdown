@@ -1,0 +1,14 @@
+Example `vectors.scala` compiles with 2.7.1, but not with trunk version:
+{code}
+scalac -d ./classes sources/docu/examples/files/vectors.scala
+sources/docu/examples/files/vectors.scala:59: error: type mismatch;
+ found   : Double
+ required: ?{val +(?>: examples.vectors.DoubleVector <: Any): Any}
+Note that implicit conversions are not applicable because they are ambiguous:
+ both method raiseToVector in object vectors of type [N](N)examples.vectors.Raised[N]
+ and method any2stringadd in object Predef of type (Any)scala.runtime.StringAdd
+ are possible conversion functions from Double to ?{val +(?>: examples.vectors.DoubleVector <: Any): Any}
+    println(4.0 + v)
+            ^
+one error found
+{code}

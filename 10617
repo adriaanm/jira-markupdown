@@ -1,0 +1,42 @@
+Minimized:
+
+{noformat}
+javac Raw.java -d . && scalac-hash v2.10.3 -Xprint:typer Client.scala
+[[syntax trees at end of                     typer]] // Client.scala
+package <empty> {
+  abstract trait X extends Raw[X];
+  class Client extends scala.AnyRef {
+    def <init>(): Client = {
+      Client.super.<init>();
+      ()
+    };
+    def c(s: X): Raw[_] = s.raw()
+  }
+}
+
+master.2.11 ~/code/intellij-scala javac Raw.java -d . && scalac-hash v2.11.0-M7 -Xprint:typer Client.scala
+[[syntax trees at end of                     typer]] // Client.scala
+package <empty> {
+  abstract trait X extends Raw[X];
+  class Client extends scala.AnyRef {
+    def <init>(): Client = {
+      Client.super.<init>();
+      ()
+    };
+    def c(s: X): Raw[X] = s.raw()
+  }
+}
+
+master.2.11 ~/code/intellij-scala tail Raw.java Client.scala
+==> Raw.java <==
+public class Raw<T>{
+	public Raw raw() { return null; }
+}
+
+==> Client.scala <==
+trait X extends Raw[X]
+
+class Client {
+  def c(s: X) = s.raw
+}
+{noformat}

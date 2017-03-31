@@ -1,0 +1,7 @@
+Most of the warnings are legit, but some may require improving -Xlint.
+
+- the repl is full of code which looks like the interpolator has been forgotten, but it is generating names like '$line' and there is a line in scope. This is not the common case outside of the compiler. Not sure how to deal with it, but you could use different identifiers in generated code than are used in the repl.
+
+- if you have a thing like "var (a, b) = bippy" and one of those vars is never set, it will say "that could be a val." But it can't be a val without some shuffling, because you only get one keyword.
+
+- constant folding happens before it sees anything, which means "private object Bar { final val x = 123 }" will generate a warning that Bar is never used, even if x is inlined somewhere. Not sure how to handle this one either.

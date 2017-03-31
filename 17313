@@ -1,0 +1,24 @@
+this is a less severe form of SI-6049. SI-6049 was closed because the back end no longer crashes, but there are still spurious warnings.
+
+so e.g. borrowing Miguel's minimized code from SI-6049:
+
+{noformat}
+Welcome to Scala version 2.10.0-M6 (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_33).
+
+scala> :paste
+object O {
+  while(true) {
+    var j = 0
+    try j
+    catch { case t: Throwable => }
+  }
+}
+// Exiting paste mode, now interpreting.
+
+<console>:11: warning: Visited SCOPE_EXIT before visiting corresponding SCOPE_ENTER. SI-6049
+           try j
+           ^
+defined module O
+{noformat}
+
+at SI-6049 Miguel said this warning could also be a sign of issues with "whether the debugger shows the variable in question"

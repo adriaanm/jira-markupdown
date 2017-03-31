@@ -1,0 +1,30 @@
+ScalaSignature contains different bytes compared to what ScalaSigParser.parse(clazz) returns at least for some classes in standard library:
+
+{code}
+Compare ScalaAnnotation to ScalaSig attribute for scala.Predef
+04824: 0xff != 0x7f
+07098: 0xff != 0x7f
+08288: 0xff != 0x7f
+
+Compare ScalaAnnotation to ScalaSig attribute for scala.package
+02458: 0xff != 0x3f
+02920: 0xff != 0x7f
+04159: 0xff != 0x7f
+05678: 0xff != 0x3f
+07504: 0xff != 0x7f
+08890: 0xff != 0x7f
+09598: 0xff != 0x7f
+10221: 0xff != 0x3f
+{code}
+
+This is how I get both byte arrays:
+{code}
+val clazz = Class.forName(className)
+val bytes = clazz.getAnnotation(classOf[ScalaSignature]).bytes.getBytes("UTF-8")
+val len = ByteCodecs.decode(bytes)
+
+val scalaSig = ScalaSigParser.parse(clazz).get
+val bytesAttr = scalaSig.getEntry(0).byteCode.bytes
+{code}
+
+Obviously, bytes from annotation are unparseable.

@@ -1,0 +1,12 @@
+the outline doesn't slow all the type information.
+
+for example, it will show part of the type of _fields_; *Map* only instead of Map[String,List[(Int,Int)]](), for simple types such as _message_{_1_,_2_} it works fine.  But for methods return types are just ignored, even when specified explicitly, e.g., _getFields_{_1_,_2_}.
+
+class Test {
+  private var fields = Map[String,List[(Int,Int)]]()
+  private var message1 = "hello"
+  private var message2 : String = "world"
+  
+  private def getFields1 = { fields }  
+  private def getFields2 : Map[String,List[(Int,Int)]] = { fields }
+}

@@ -1,0 +1,21 @@
+{code}
+import java.lang.Class
+import scala.reflect.mirror._
+import scala.reflect.runtime.Mirror.ToolBox
+import scala.reflect.Code
+
+final class table extends StaticAnnotation
+@table class A
+
+object Test extends App{
+  val c = new A
+  val s = classToSymbol(classOf[A])
+
+  assert( 1 == s.annotations.length ) // FAILS as length is 0 here
+
+  val tree = Code.lift{c}.tree
+  new ToolBox().typeCheck( tree )
+
+  assert( 1 == s.annotations.length ) // SUCCEEDS
+}
+{code}

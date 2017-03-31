@@ -1,0 +1,31 @@
+{noformat}
+tail -n1000 test/files/pos/existential-java-fbound/{ProcessorDefinition,Client}.*
+==> test/files/pos/existential-java-fbound/ProcessorDefinition.java <==
+public abstract class ProcessorDefinition<Type extends ProcessorDefinition<Type>> {
+}
+
+==> test/files/pos/existential-java-fbound/Client.scala <==
+case class ConsumerConfig(onRouteDefinition: Any => ProcessorDefinition[_])
+
+// Workaround 1.
+// Explicitly define the companion object.
+// Otherwise, the synthetic companion extends `Function1` with a
+// mismatch between the existential between the type arg and the apply signature.
+//
+// object ConsumerConfig
+
+/*
+<synthetic>
+object ConsumerConfig
+  extends scala.runtime.AbstractFunction1[Any => ProcessorDefinition[X] forSome { type X <: ProcessorDefinition[X] },ConsumerConfig]
+     with Serializable {
+  ...
+  case <synthetic> def apply(onRouteDefinition: Any => ProcessorDefinition[_]): ConsumerConfig = new ConsumerConfig(onRouteDefinition);
+  ...
+}
+*/
+
+// Workaround 2: be explicit in the existential type, this will be accurately copied to the
+// apply method
+case class Okay(onRouteDefinition: Any => (ProcessorDefinition[X] forSome { type X <: ProcessorDefinition[X]}))
+{noformat}

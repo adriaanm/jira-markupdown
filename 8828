@@ -1,0 +1,22 @@
+Looks like trees were behaving like this for ages, given that they have their `equals` overriden as follows:
+
+{code}
+override def equals(that: Any) = this eq that.asInstanceOf[AnyRef]
+{code}
+
+By the way I found something that might be of interest: Tree.equalsStructure.
+
+{code}
+
+scala> Ident(newTermName("x"))
+res0: $r.intp.global.Ident = x
+
+scala> Ident(newTermName("x"))
+res1: $r.intp.global.Ident = x
+
+scala> res0 == res1
+res2: Boolean = false
+
+scala> res0.equalsStructure(res1)
+res3: Boolean = true
+{code}

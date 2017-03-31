@@ -1,0 +1,27 @@
+When the code 
+
+{code}
+trait PushParser[+O] {
+  def flatMap[T](f: O => PushParser[T]) = new FlatMapPushParser(this, f)
+}
+
+class FlatMapPushParser[O, T](p: PushParser[O], f: O => PushParser[T]) extends PushParser[T]
+{code}
+
+is compiled then an error is reported:
+
+{code}
+covariant type O occurs in invariant position in type [T](f: O => main.scala.eu.swdev.xml.token.PushParser[T])main.scala.eu.swdev.xml.token.FlatMapPushParser[O,T] of method flatMap
+{code}
+
+This error disappears when the obvious return type of the flatMap method is specified, i.e.
+
+{code}
+trait PushParser[+O] {
+  def flatMap[T](f: O => PushParser[T]): PushParser[T] = new FlatMapPushParser(this, f)
+}
+
+class FlatMapPushParser[O, T](p: PushParser[O], f: O => PushParser[T]) extends PushParser[T]
+{code}
+
+compiles without error.

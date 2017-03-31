@@ -1,0 +1,19 @@
+Seeing this very intermittently when constructing scala.tools.nsc.Settings
+
+Ever-so-slightly similar to SI-7269
+
+{code}
+java.util.ConcurrentModificationException
+	at java.util.Hashtable$Enumerator.next(Hashtable.java:1200)
+	at scala.collection.convert.Wrappers$JPropertiesWrapper$$anon$3.next(Wrappers.scala:458)
+	at scala.collection.convert.Wrappers$JPropertiesWrapper$$anon$3.next(Wrappers.scala:454)
+	at scala.collection.Iterator$class.find(Iterator.scala:779)
+	at scala.collection.AbstractIterator.find(Iterator.scala:1157)
+	at scala.tools.util.PathResolver$Environment$.searchForBootClasspath(PathResolver.scala:43)
+	at scala.tools.util.PathResolver$Environment$.javaBootClassPath(PathResolver.scala:52)
+	at scala.tools.util.PathResolver$Defaults$.javaBootClassPath(PathResolver.scala:82)
+	at scala.tools.nsc.settings.StandardScalaSettings$class.$init$(StandardScalaSettings.scala:25)
+	at scala.tools.nsc.settings.MutableSettings.<init>(MutableSettings.scala:19)
+	at scala.tools.nsc.Settings.<init>(Settings.scala:12)
+	at scala.tools.nsc.doc.Settings.<init>(Settings.scala:15)
+{code}

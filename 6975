@@ -1,0 +1,91 @@
+But how common is the case that code does not get inlined because of this? I worry because a very common and simple and often micro-benchmarked case is suffering precisely because of the issues I mentioned. Consider this code:
+
+{code}
+class XXS {
+  private val array = Array.range(0, 100)                                                                              
+  def tst = { var sum = 0; for (i <- 0 until array.length) sum += array(i); sum }       
+}
+{code}
+
+The method tst is compiled like this:
+
+{code}
+public int tst();
+  Code:
+   0:	new	#15; //class scala/runtime/IntRef
+   3:	dup
+   4:	iconst_0
+   5:	invokespecial	#19; //Method scala/runtime/IntRef."<init>":(I)V
+   8:	astore	5
+   10:	new	#21; //class scala/runtime/RichInt
+   13:	dup
+   14:	iconst_0
+   15:	invokespecial	#22; //Method scala/runtime/RichInt."<init>":(I)V
+   18:	aload_0
+   19:	getfield	#11; //Field XXS$$array:[I
+   22:	arraylength
+   23:	istore_2
+   24:	astore_1
+   25:	getstatic	#28; //Field scala/collection/immutable/Range$.MODULE$:Lscala/collection/immutable/Range$;
+   28:	aload_1
+   29:	invokevirtual	#31; //Method scala/runtime/RichInt.self:()I
+   32:	iload_2
+   33:	invokevirtual	#35; //Method scala/collection/immutable/Range$.apply:(II)Lscala/collection/immutable/Range;
+   36:	dup
+   37:	astore	7
+   39:	invokevirtual	#40; //Method scala/collection/immutable/Range.length:()I
+   42:	iconst_0
+   43:	if_icmple	87
+   46:	aload	7
+   48:	invokevirtual	#43; //Method scala/collection/immutable/Range.last:()I
+   51:	istore_3
+   52:	aload	7
+   54:	invokevirtual	#46; //Method scala/collection/immutable/Range.start:()I
+   57:	istore	8
+   59:	iload	8
+   61:	iload_3
+   62:	if_icmpne	93
+   65:	iload	8
+   67:	istore	4
+   69:	aload	5
+   71:	aload	5
+   73:	getfield	#50; //Field scala/runtime/IntRef.elem:I
+   76:	aload_0
+   77:	getfield	#11; //Field XXS$$array:[I
+   80:	iload	4
+   82:	iaload
+   83:	iadd
+   84:	putfield	#50; //Field scala/runtime/IntRef.elem:I
+   87:	aload	5
+   89:	getfield	#50; //Field scala/runtime/IntRef.elem:I
+   92:	ireturn
+   93:	iload	8
+   95:	istore	6
+   97:	aload	5
+   99:	aload	5
+   101:	getfield	#50; //Field scala/runtime/IntRef.elem:I
+   104:	aload_0
+   105:	getfield	#11; //Field XXS$$array:[I
+   108:	iload	6
+   110:	iaload
+   111:	iadd
+   112:	putfield	#50; //Field scala/runtime/IntRef.elem:I
+   115:	iload	8
+   117:	aload	7
+   119:	invokevirtual	#53; //Method scala/collection/immutable/Range.step:()I
+   122:	iadd
+   123:	istore	8
+   125:	goto	59
+{code}
+
+The overheads here are:
+
+0-8: var sum is kept on an IntRef because it would have been used in the closure that got inlined. This field is then accessed 5 times, with at least one of them being redundant (stack -> intref followed by intref -> stack).
+
+10-15, 24, 28, 29: a RichInt is created because of the "until" method, which actually got inlined.
+
+25, 33: a Range is created because of foreach, which is actually inlined. A bunch of fields are read from it. With the current level of optimization, I don't see how this could be avoided, unless the whole Range class could actually be inlined on the stack, if its reference didn't escape the method.
+
+65-92: the duplicated apply that you have mentioned.
+
+Now, eliminating Range seems very hard. Eliminating RichInt seems difficult. But IntRef... it was *created* because of the Closure that got eliminated. Can't the process that created it be reversed during or after ClosureElimination?

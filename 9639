@@ -1,0 +1,22 @@
+This might be relevant:
+
+{code}
+    private def updateTypeCache() {
+      if (tpeCache eq NoType)
+        throw CyclicReference(this, typeConstructor)
+
+      if (isInitialized)
+        tpePeriod = currentPeriod
+
+      tpeCache = NoType // cycle marker
+      val noTypeParams = phase.erasedTypes && this != ArrayClass || unsafeTypeParams.isEmpty
+      tpeCache = newTypeRef(
+        if (noTypeParams) Nil
+        else unsafeTypeParams map (_.typeConstructor)
+      )
+      // Avoid carrying around different types in tyconCache and tpeCache
+      // for monomorphic types.
+      if (noTypeParams && tyconCacheNeedsUpdate)
+        setTyconCache(tpeCache)
+    }
+{code}

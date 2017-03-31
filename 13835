@@ -1,0 +1,57 @@
+To see this error in action, just unzip the attachment and run compile.bat followed with run.bat. 
+
+I have a base class (Java) with one method:
+
+{code}
+public abstract class AbstractBase {
+  abstract void doStuff(Object... params);
+}
+{code}
+ 
+
+I create an implementation for it in scala:
+
+
+{code}
+class Concrete extends AbstractBase {
+  override def doStuff(params:java.lang.Object*) = println("doStuff invoked")
+}
+{code}
+
+Finally, I have a Caller class (Java) which just calls the abovementioned method, as follows:
+
+{code}
+public class Caller {
+   public void callDoStuff(AbstractBase impl) {
+	impl.doStuff(new Object());
+   }
+}
+{code}
+
+Now, a direct call succeeds:
+
+{code}
+  val impl = new Concrete
+  impl.doStuff(null)
+{code}
+
+whereas the following fails
+
+{code}
+  val impl = new Concrete
+  val caller = new Caller
+  caller.callDoStuff(impl)
+{code}
+
+javac -version gives "1.6.0"
+scalac -version gives "Scala compiler version 2.7.2.RC4"
+
+I am running on Windows XP SP2 with scala 2.7.2.RC4. 
+
+{code}
+java.lang.AbstractMethodError: base.AbstractBase.doStuff([Ljava/lang/Object;)V
+        at base.Caller.callDoStuff(Caller.java:5)
+        at foo.App$$.<init>(App.scala:17)
+        at foo.App$$.<clinit>(App.scala)
+        at foo.App.main(App.scala)
+{code}

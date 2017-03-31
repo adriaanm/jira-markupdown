@@ -1,0 +1,13 @@
+You know, the definition of toArray in Seq is
+
+{code}
+  override def toArray[B >: A]: Array[B] = {
+    val result = new Array[B](length)
+    copyToArray(result, 0)
+    result
+  }
+{code}
+
+Funny fact about this definition? s/length/size and it works *perfectly* as a generic implementation for toArray in Collection. 
+
+So, in conclusion, this can be fixed in a way that decreases the number of lines of code in the standard library. 

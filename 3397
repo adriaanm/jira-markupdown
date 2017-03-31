@@ -1,0 +1,17 @@
+even minimaler...:
+
+{code}
+class UnApp[P] {
+  def unapply(a: P): Option[P] = Some(a)
+}
+
+object Test extends Application {
+  val b: UnApp[_] = new UnApp[String]
+  val b(foo) = "foo" 
+}
+{code}
+
+I'm not sure, but I assume this is not meant to compile.
+
+Changing the call to `freshArgType` to read `freshArgType(unappType skolemizeExistential(context.owner, context.tree))`
+avoids the crash and reports an error that seems correct...

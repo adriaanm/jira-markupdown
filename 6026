@@ -1,0 +1,36 @@
+My current theory is that the following is happening. When reading the last closing tag sent, this method is called:
+
+{code}
+  def xEndTag(startName: String) {
+    xToken('/')
+    if (xName != startName)
+      errorNoEnd(startName)
+
+    xSpaceOpt
+    xToken('>')
+  }
+{code}
+
+Since that tag is properly sent, it runs up to {{xToken('>')}}, which is defined thus:
+
+{code}
+  def xToken(that: Char) {
+    if (ch == that) nextch
+    else xHandleError(that, "'%s' expected instead of '%s'".format(that, ch))
+  }
+{code}
+
+Evidently, it calls {{nextch}}, which does the obvious thing:
+
+{code}
+  def nextch = {
+    if (curInput.hasNext) {
+      ch = curInput.next
+      pos = curInput.pos
+    } else {
+{code}
+
+The point here is that it needs to know if there is a next or not. Since this is a stream, it blocks until the stream is closed or something else is sent.
+
+Unfortunately, the whole parser is based on having {{ch}} available (it is a {{var}}), so it doesn't look like there's an easy fix for it.
+

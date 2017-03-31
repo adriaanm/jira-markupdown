@@ -1,0 +1,9 @@
+Double.Range produces wrong results, leaving out the last element whenever (end-start) == ((end-start) / step) * step in BigDecimals. Just browsing through the sources, I can't find any reason why BigDecimalAsIfIntegral.quot, DoubleAsIfIntegral.quot and FloatAsIfIntegral.quot are implemented with regular division operator / instead of BigDecimal.quot.
+
+Bug example:
+> Double.Range(0, 1, 0.7)
+res1: NumericRange(0.0)
+> Double.Range(0, 0.6, 0.25)
+res2: NumericRange(0.0, 0.25)
+
+There is a related issue from 2011 at https://issues.scala-lang.org/browse/SI-4985 

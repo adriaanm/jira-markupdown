@@ -1,0 +1,57 @@
+There are two problems illustrated by this code:
+
+a) @BeanProperty's setter can't delegate explicitly to the explicitly defined setter of the same property (it has no way of knowing what the name of the explicit setter is); therefore you'd need two setters and a delegate method to handle the common validation logic, which seems messy. The same applies to the getter, but this is less problematic.
+
+b) @BeanProperty exposed setters and getters must have a different name than the explicit Scala style getter and setter, which causes messy APIs. See the class usage below.
+
+{code}
+class Goat {
+
+    @scala.reflect.BeanProperty
+    var hooves_ = 0  // note, cannot name it _hooves, because @BeanProperty objects
+    
+    def hooves:Int = hooves_
+   
+    def hooves_=(hooves:Int) {
+      require(hooves < 5)
+      hooves_ = hooves
+    }
+}
+
+scala> val g = new Goat
+g: Goat = Goat@19eef79
+
+scala> g.setHooves_(12)
+// works just fine
+ 
+scala> g.hooves = 12
+java.lang.IllegalArgumentException: requirement failed
+
+scala> g.getHooves_
+res9: Int = 12
+
+scala> g.hooves
+res10: Int = 12
+{code}
+
+==================================
+
+Two suggested improvements:
+
+1) allow implicit getters in combination with explicit setters. 
+2) if the above condition is detected, then @BeanProperty's setter should delegate to the explicit setter matching the name of the property.
+
+This does not catch the rare case where the getter does special business logic, but it does make the more general pattern (setter with validation) much friendlier to use.
+
+{code}
+class Goat {
+
+    @scala.reflect.BeanProperty
+    private[this] var hooves = 0
+
+    def hooves_=(hoovesV:Int) {
+      require(hoovesV < 5)
+      hooves = hoovesV
+    }
+}
+{code}

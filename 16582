@@ -1,0 +1,76 @@
+{code}
+import scala.tools.nsc.reporters._
+import scala.tools.nsc.Settings
+import reflect.runtime.Mirror.ToolBox
+
+object Foo extends App {
+  val code = scala.reflect.Code.lift{
+    class C {
+      val x = 2
+    }
+
+    println(new C().x)
+  };
+
+  val reporter = new ConsoleReporter(new Settings)
+  val toolbox = new ToolBox(reporter)
+  val ttree = toolbox.typeCheck(code.tree)
+  println("result = " + toolbox.showAttributed(ttree))
+
+  val evaluated = toolbox.runExpr(ttree)
+  println("evaluated = " + evaluated)
+}
+{code}
+
+{code}
+D:\Dropbox\Scratchpad\Scala>scala Foo
+scala.reflect.internal.Types$TypeError: value x is not a member of C
+        at scala.tools.nsc.typechecker.Contexts$Context.error(Contexts.scala:283)
+        at scala.tools.nsc.typechecker.TypeDiagnostics$class.notAMemberError(TypeDiagnostics.scala:135)
+        at scala.tools.nsc.Global$$anon$1.notAMemberError(Global.scala:405)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedSelect$1(Typers.scala:3669)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:4217)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:4311)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedArg(Typers.scala:2162)
+        at scala.tools.nsc.typechecker.Typers$Typer.loop$1(Typers.scala:2181)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedArgs(Typers.scala:2186)
+        at scala.tools.nsc.typechecker.Typers$Typer.doTypedApply(Typers.scala:2415)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedApply$1(Typers.scala:3431)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:4156)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:4311)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedBlock(Typers.scala:1875)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:4022)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:4311)
+        at scala.reflect.runtime.ToolBoxes$ToolBox.importAndTypeCheck(ToolBoxes.scala:132)
+        at scala.reflect.runtime.ToolBoxes$ToolBox.typeCheck(ToolBoxes.scala:138)
+        at scala.reflect.runtime.ToolBoxes$ToolBox.typeCheck(ToolBoxes.scala:143)
+        at Foo$delayedInit$body.apply(Foo.scala:19)
+        at scala.Function0$class.apply$mcV$sp(Function0.scala:34)
+        at scala.runtime.AbstractFunction0.apply$mcV$sp(AbstractFunction0.scala:12)
+        at scala.App$$anonfun$main$1.apply(App.scala:61)
+        at scala.App$$anonfun$main$1.apply(App.scala:61)
+        at scala.collection.LinearSeqOptimized$class.foreach(LinearSeqOptimized.scala:59)
+        at scala.collection.immutable.List.foreach(List.scala:77)
+        at scala.collection.generic.TraversableForwarder$class.foreach(TraversableForwarder.scala:31)
+        at scala.collection.mutable.ListBuffer.foreach(ListBuffer.scala:42)
+        at scala.App$class.main(App.scala:61)
+        at Foo$.main(Foo.scala:8)
+        at Foo.main(Foo.scala)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+        at java.lang.reflect.Method.invoke(Method.java:597)
+        at scala.tools.nsc.util.ScalaClassLoader$$anonfun$run$1.apply(ScalaClassLoader.scala:90)
+        at scala.tools.nsc.util.ScalaClassLoader$class.asContext(ScalaClassLoader.scala:38)
+        at scala.tools.nsc.util.ScalaClassLoader$URLClassLoader.asContext(ScalaClassLoader.scala:159)
+        at scala.tools.nsc.util.ScalaClassLoader$class.run(ScalaClassLoader.scala:90)
+        at scala.tools.nsc.util.ScalaClassLoader$URLClassLoader.run(ScalaClassLoader.scala:159)
+        at scala.tools.nsc.CommonRunner$class.run(ObjectRunner.scala:28)
+        at scala.tools.nsc.ObjectRunner$.run(ObjectRunner.scala:45)
+        at scala.tools.nsc.CommonRunner$class.runAndCatch(ObjectRunner.scala:35)
+        at scala.tools.nsc.ObjectRunner$.runAndCatch(ObjectRunner.scala:45)
+        at scala.tools.nsc.MainGenericRunner.runTarget$1(MainGenericRunner.scala:70)
+        at scala.tools.nsc.MainGenericRunner.process(MainGenericRunner.scala:92)
+        at scala.tools.nsc.MainGenericRunner$.main(MainGenericRunner.scala:101)
+        at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
+{code}

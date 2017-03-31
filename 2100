@@ -1,0 +1,13 @@
+Paul,
+
+I think you may be mistaken that this was an intentional change.
+
+The reason addString behaves that way is to support this behavior of toString which is the same in both 2.7.5 and trunk:
+{code}
+scala> Stream.from(1).toString
+res1: String = Stream(1, ?)
+{code}
+
+were you aware of this when you closed the ticket...?
+
+I really think the new behavior of mkString is nonsensical. It's good for toString not to force, because toString is used during debugging, in the REPL, etc. But if I use mkString, I am explicitly saying I want to build a string out of the contents of the stream.

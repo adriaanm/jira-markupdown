@@ -1,0 +1,24 @@
+Minimization using lemon juice for the invisible ink:
+{code}
+scala> class Y ; def y = { val yy = new Y { class Z ; def z = new Z().getClass }; yy.z }
+warning: there were 1 feature warning(s); re-run with -feature for details
+defined class Y
+y: Class[_ <: AnyRef]
+
+scala> y.getEnclosingClass.getName replaceAll ("\\Q$\\E", "%")
+res3: String = %line4.%read%%iw%%iw%
+{code}
+or possibly more perspicaciously,
+{code}
+scala> object X { class Y; def y = new Y { class Z ; def z = classOf[Z] } } ; (X.y.getClass, X.y.z)
+warning: there were 2 feature warning(s); re-run with -feature for details
+defined object X
+res0: (Class[?0], Class[_1.Z]) forSome { type ?0 <: X.Y; val _1: X.Y{type Z <: AnyRef; def z: Class[this.Z]} } = (class X$$anon$1,class X$$anon$1$Z)
+
+scala> (res0._1.getEnclosingClass, res0._2.getEnclosingClass)
+warning: there were 1 feature warning(s); re-run with -feature for details
+res1: (Class[?0], Class[?0]) forSome { type ?0; type ?0 } = (class X$,class X$)
+{code}
+The encloser of Z should be {{X$$anon$1}}.
+
+

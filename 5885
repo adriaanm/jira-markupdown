@@ -1,0 +1,41 @@
+As long as fsc does not allow to set the fsc port Linux users/administrators can use the following bash script as workaround.
+Note that the variables in the head have to be adopted to the specific environment, redir has to be installed, and FSC_TMP_DIR needs to be shared by server and client machines.
+The script is also suitable to run different fsc instances (e.g. different versions of fsc) on different ports.
+
+{code}
+#!/bin/bash
+
+export JAVA_OPTS="-Xms128M -Xmx1024M -XX:MaxPermSize=512m"
+
+NEW_PORT=50290
+
+SCALA_VERSION=2.9.0
+SCALA_HOME=/YOUR/PATH/TO/YOUR/SCALA/DISTS/scala-$SCALA_VERSION.final
+FSC_TMP_DIR=/YOUR/PATH/TO/YOUR/FSC_TMP_DIRS/$SCALA_VERSION
+
+# determine own IP
+IP=`curl -s http://whatismyip.org/`
+
+# clean up old port redirects
+PID=`lsof -i -n -sTCP:LISTEN | grep redir | grep :$NEW_PORT | sed -r -e "s/ +/ /g" | cut -d" " -f 2`
+if [[ "$PID" != "" ]]; then
+        kill $PID
+fi
+if [ -e $FSC_TMP_DIR/scala-devel/$USER/scalac-compile-server-port/$NEW_PORT ]; then
+        rm $FSC_TMP_DIR/scala-devel/$USER/scalac-compile-server-port/$NEW_PORT
+fi
+
+# start fsc with random port
+fsc -Djava.io.tmpdir=$FSC_TMP_DIR -max-idle 0
+
+# determine used port
+PORT=`ls $FSC_TMP_DIR/scala-devel/$USER/scalac-compile-server-port | head`
+if [[ "$PORT" == "" ]]; then
+        echo "Failed to start fsc" >&2
+        exit 1
+fi
+# link/redirect our port to fsc's port
+cd $FSC_TMP_DIR/scala-devel/$USER/scalac-compile-server-port
+ln -s $PORT $NEW_PORT
+redir --lport $NEW_PORT --laddr $IP --cport $PORT --caddr $IP &
+{code}

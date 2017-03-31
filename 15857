@@ -1,0 +1,35 @@
+Scala version 2.8.1.final
+{code}
+scala> class Foo[T](v: T) {}
+scala> new Foo[Boolean](Boolean.FALSE)
+<console>:7: error: value FALSE is not a member of object Boolean
+       new Foo[Boolean](Boolean.FALSE)
+                                ^
+Exception in thread "main" java.lang.AssertionError: assertion failed
+        at scala.Predef$$.assert(Predef.scala:77)
+        at scala.tools.nsc.ast.TreeGen.gd3$$1(TreeGen.scala:130)
+        at scala.tools.nsc.ast.TreeGen.stableTypeFor(TreeGen.scala:127)
+        at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$27.apply(Typers.scala:2429)
+        at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$27.apply(Typers.scala:2429)
+        at scala.collection.TraversableLike$$$$anonfun$$map$$1.apply(TraversableLike.scala:206)
+        at scala.collection.TraversableLike$$$$anonfun$$map$$1.apply(TraversableLike.scala:206)
+        at scala.collection.LinearSeqOptimized$$class.foreach(LinearSeqOptimized.scala:61)
+        at scala.collection.immutable.List.foreach(List.scala:45)
+        at scala.collection.TraversableLike$$class.map(TraversableLike.scala:206)
+{code} 
+
+
+
+What is the expected behavior?
+Nice compiler error message rather than stacktrace
+
+
+
+What do you see instead?
+Stacktrace
+
+
+What versions of the following are you using?
+Scala:2.8.1.final
+Java:1.6.0_22 64-Bit Server
+Operating system: Linux

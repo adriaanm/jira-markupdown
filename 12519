@@ -1,0 +1,51 @@
+Here is a procedure to reproduce the issue:
+
+{code}
+git clone https://github.com/skinny-framework/skinny-micro.git
+cd skinny-micro
+sbt ++2.12.0 micro/compile:doc
+{code}
+
+Output:
+
+{code}
+$ sbt ++2.12.0 micro/compile:doc
+[info] Loading global plugins from /Users/kazuhirosera/.sbt/0.13/plugins
+[info] Loading project definition from /Users/kazuhirosera/tmp/skinny-micro/project
+[info] Updating skinny-micro-build
+[info] Resolved skinny-micro-build dependencies
+[info] Fetching artifacts of skinny-micro-build
+[info] Fetched artifacts of skinny-micro-build
+[info] Compiling 1 Scala source to /Users/kazuhirosera/tmp/skinny-micro/project/target/scala-2.10/sbt-0.13/classes...
+[info] Set current project to skinny-micro (in build file:/Users/kazuhirosera/tmp/skinny-micro/)
+[info] Setting version to 2.12.0
+[info] Reapplying settings...
+[info] Set current project to skinny-micro (in build file:/Users/kazuhirosera/tmp/skinny-micro/)
+[info] Updating micro
+[info] Resolved micro dependencies
+[info] Fetching artifacts of micro
+[info] Fetched artifacts of micro
+[info] Updating microCommon
+[info] Resolved microCommon dependencies
+[info] Fetching artifacts of microCommon
+[info] Fetched artifacts of microCommon
+[info] Formatting 10 Scala sources {file:/Users/kazuhirosera/tmp/skinny-micro/}microCommon(compile) ...
+[info] Compiling 10 Scala sources to /Users/kazuhirosera/tmp/skinny-micro/micro-common/target/scala-2.12/classes...
+[info] Main Scala API documentation to /Users/kazuhirosera/tmp/skinny-micro/micro/target/scala-2.12/api...
+java.lang.StackOverflowError
+	at scala.tools.nsc.util.JavaCharArrayReader.next(JavaCharArrayReader.scala:28)
+	at scala.tools.nsc.doc.ScaladocSyntaxAnalyzer$ScaladocJavaUnitScanner.putCommentChar(ScaladocAnalyzer.scala:234)
+	at scala.tools.nsc.javac.JavaScanners$JavaScanner.skipBlockComment(JavaScanners.scala:585)
+	at scala.tools.nsc.doc.ScaladocSyntaxAnalyzer$ScaladocJavaUnitScanner.skipBlockComment(ScaladocAnalyzer.scala:245)
+	at scala.tools.nsc.javac.JavaScanners$JavaScanner.skipBlockComment(JavaScanners.scala:585)
+	at scala.tools.nsc.doc.ScaladocSyntaxAnalyzer$ScaladocJavaUnitScanner.skipBlockComment(ScaladocAnalyzer.scala:245)
+	at scala.tools.nsc.javac.JavaScanners$JavaScanner.skipBlockComment(JavaScanners.scala:585)
+	at scala.tools.nsc.doc.ScaladocSyntaxAnalyzer$ScaladocJavaUnitScanner.skipBlockComment(ScaladocAnalyzer.scala:245)
+	at scala.tools.nsc.javac.JavaScanners$JavaScanner.skipBlockComment(JavaScanners.scala:585)
+	at 
+...
+scala.tools.nsc.javac.JavaScanners$JavaScanner.skipBlockComment(JavaScanners.scala:585)
+	at scala.tools.nsc.doc.ScaladocSyntaxAnalyzer$ScaladocJavaUnitScanner.skipBlockComment(ScaladocAnalyzer.scala:245)
+[error] (micro/compile:doc) java.lang.StackOverflowError
+[error] Total time: 11 s, completed Nov 3, 2016 1:08:50 PM
+{code}

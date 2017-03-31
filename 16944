@@ -1,0 +1,49 @@
+The following code compiles, but yields a runtime error:
+
+{code}
+package m
+
+import language.experimental.macros
+import scala.reflect.makro.Context
+
+object Level extends Enumeration {
+  val Error = Value(5)
+}
+
+object Logger {
+  def error(message: String): Unit = macro LoggerMacros.error
+}
+
+private object LoggerMacros {
+
+  type LoggerContext = Context { type PrefixType = Logger.type }
+
+  def error(c: LoggerContext)(message: c.Expr[String]): c.Expr[Unit] =
+    log(c)(c.reify(Level.Error), message)
+
+  private def log(c: LoggerContext)(level: c.Expr[Level.Value], message: c.Expr[String]): c.Expr[Unit] = 
+    if (level.eval.id < 4) // TODO Remove hack!
+      c.reify(())
+    else {
+      c.reify(println(message.eval))
+    }
+}
+
+scala> import m._
+import m._
+
+scala> Logger.error("err")
+<console>:11: error: exception during macro expansion: 
+scala.tools.nsc.ToolBoxes$ToolBox$ToolBoxError: reflective compilation has failed: 
+
+object Error is not a member of package Level
+	at scala.tools.nsc.ToolBoxes$ToolBox.runExpr(ToolBoxes.scala:48)
+	at scala.reflect.api.Exprs$Expr.eval(Exprs.scala:15)
+	at m.LoggerMacros$.log(M.scala:22)
+	at m.LoggerMacros$.error(M.scala:19)
+
+              Logger.error("err")
+                          ^
+{code}
+
+When you remove the package clause everything works.

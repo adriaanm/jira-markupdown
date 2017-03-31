@@ -1,0 +1,17 @@
+This code compiles on Scala 2.9.2 and 2.10.0-M2, causes warning on 2.10.0-M3, and does not compile on 2.10.0-M4, 2.10.0-M7, 2.10.0-RC1. I have not tried on other versions.
+{code}
+import scala.util.continuations._
+object WhileMatch {
+  def main(args: Array[String]) {
+    reset {
+      while (true) {
+        "foo" match {
+          case _ => {
+            shiftUnit[Unit, Unit, Unit]()
+          }
+        }
+      }
+    }
+  }
+}
+{code}

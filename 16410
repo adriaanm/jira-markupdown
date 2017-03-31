@@ -1,0 +1,30 @@
+There are so many access related tickets open I can't tell in a reasonable amount of time if this already exists.  Not so great.
+{code}
+package foo {
+  class A {
+    private[foo] trait Foo
+    // Public type alias is disallowed if Foo is private or private[this].
+    // But allowed if private[foo] or private[A].
+    type Bar = Foo
+  
+    def f(x: Foo) = 5
+  }
+}
+
+package bar {
+  class B extends foo.A {
+    // Disallowed as expected.
+    //
+    // val x1 = new Foo { }
+    // ./a.scala:12: error: trait Foo in class A cannot be accessed in bar.B
+    //     val x1 = new Foo { }
+    //                  ^
+    // one error found
+    
+    // allowed
+    val x2 = new Bar { }
+    // allowed
+    override def f(x: Bar) = 10
+  }
+}
+{code}

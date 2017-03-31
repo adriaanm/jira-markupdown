@@ -1,0 +1,28 @@
+I've noticed that `LinkedHashMap` works as expected, but it also (same as `mutable.ListMap`) seems to have 0 tests for ordering (https://github.com/scala/scala/blob/2.12.x/test/junit/scala/collection/mutable/LinkedHashMapTest.scala).
+
+
+{code:java}
+scala> val m = collection.mutable.LinkedHashMap[Int, Int]()
+m: scala.collection.mutable.LinkedHashMap[Int,Int] = Map()
+
+scala> m += 1 -> 1
+res42: m.type = Map(1 -> 1)
+
+scala> m += 2 -> 2
+res43: m.type = Map(1 -> 1, 2 -> 2)
+
+scala> m += 3 -> 3
+res44: m.type = Map(1 -> 1, 2 -> 2, 3 -> 3)
+
+scala> m += 4 -> 4
+res45: m.type = Map(1 -> 1, 2 -> 2, 3 -> 3, 4 -> 4)
+
+scala> m += 5 -> 5
+res46: m.type = Map(1 -> 1, 2 -> 2, 3 -> 3, 4 -> 4, 5 -> 5)
+
+scala> m -= 99
+res47: m.type = Map(1 -> 1, 2 -> 2, 3 -> 3, 4 -> 4, 5 -> 5)
+
+scala> m -= 3
+res48: m.type = Map(1 -> 1, 2 -> 2, 4 -> 4, 5 -> 5)
+{code}

@@ -1,0 +1,42 @@
+The following code:
+{code}
+trait SymbolLoaders {
+  class SymbolLoader
+  type LoadersPlatform <: Platform      { type PlatformLoaders <: SymbolLoaders.this.type }
+  
+  val platform: LoadersPlatform
+}
+ 
+trait Platform {
+  type PlatformLoaders <: SymbolLoaders { type LoadersPlatform <: Platform.this.type }
+
+  val loaders: PlatformLoaders
+}
+
+trait JavaPlatform extends Platform {
+  type PlatformLoaders = loaders.type 
+
+  object loaders extends SymbolLoaders {
+    type LoadersPlatform = JavaPlatform.this.type  
+    
+    val platform: JavaPlatform.this.type = ???    
+  }
+}
+{code}
+
+doesn't compile with the cyclic error reported:
+
+{code}
+illegal cyclic reference involving type PlatformLoaders
+  type PlatformLoaders = loaders.type
+{code}
+
+According to Adriaan, this should compile. We tried to debug it for a while and the cyclic error is thrown at [Types.scala:3507|https://github.com/scala/scala/blob/master/src/reflect/scala/reflect/internal/Types.scala#L3507]:
+{code}
+    if (sym1.isAliasType && sameLength(sym1.info.typeParams, args) && !sym1.lockOK)
+      throw new RecoverableCyclicReference(sym1)
+{code}
+
+because it calls to {{sym1.info}}.
+
+I'm not sure if we'll have time to look more deeply into this. However, I can refer to this ticket from a code where I need to insert casts as work-arounds for this problem.

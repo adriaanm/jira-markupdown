@@ -1,0 +1,22 @@
+Looks like this one:
+
+  https://github.com/scala/scala/commit/ae5ff66
+
+{code}
+(bisect/bad) ~/code/scala git bisect log
+# bad: [58f6a1346093db2f407879246884d480ff8d7904] Fix for SI-3718.
+# good: [cfd037271ebf96b977d4ef06dbcd7814cfcc20a0] Merge branch 'apr30-checkin' of /scala/trunk into develop
+git bisect start '58f6a13460' 'cfd037271e'
+# bad: [4b8c54cd9e52dbacc239d05c8149d7f249bbebab] Merge commit 'refs/pull/457/head'; commit 'refs/pull/458/head'; commit 'refs/pull/459/head'; commit 'refs/pull/460/head'; commit 'refs/pull/461/head'; commit 'refs/pull/462/head'; commit 'refs/pull/463/head'; commit 'refs/pull/464/head'; commit 'refs/pull/465/head' into develop
+git bisect bad 4b8c54cd9e52dbacc239d05c8149d7f249bbebab
+# bad: [89d069792717c206da21abecf3f825756182f465] un-cps expected type in translateMatch
+git bisect bad 89d069792717c206da21abecf3f825756182f465
+# good: [15e05a400be378b012903411179f2a4114f890ef] A little clarity for AddInterfaces.
+git bisect good 15e05a400be378b012903411179f2a4114f890ef
+# bad: [b27abca41a2503747b3aeeecf8b8cb355159265f] tpe -> tpeHK here and there.
+git bisect bad b27abca41a2503747b3aeeecf8b8cb355159265f
+# bad: [e69ee3676dec6023a0d552a6dbabf9ffd29a7111] Hackaround for people who like to instantiate the uninstantiable.
+git bisect bad e69ee3676dec6023a0d552a6dbabf9ffd29a7111
+# bad: [ae5ff6628bb74c16d871a2ada0664cdd5d2399a5] Fixes #SI-5578. ResetAttrs shouldn't be side-effecting on the original tree, since it can lead to NPEs in erroneous trees (or maybe even for valid ones?). Review by @odersky
+git bisect bad ae5ff6628bb74c16d871a2ada0664cdd5d2399a5
+{code}

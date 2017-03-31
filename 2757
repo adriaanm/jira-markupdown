@@ -1,0 +1,16 @@
+minimal testcase:
+
+{code}
+object Test {
+  def meh(xs: List[Any]) {
+    xs map { x =>  (new AnyRef {}) }
+  }
+}
+{code}
+
+{{
+fatal: $$anon has owner meh, but a class owner is required
+owners: method meh.object Test.package <empty>.package <root>
+{code}
+
+note that it's the anonymous inner class `AnyRef{}` that triggers the assert

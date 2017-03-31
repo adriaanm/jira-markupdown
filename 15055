@@ -1,0 +1,46 @@
+I want to propose a better heuristic for pureness of constructors in the dead code elimination.
+This is important because right now the pimp-my-library pattern leaves over the instantiations of the helper objects even if the call to the method itself can be inlined:
+
+{code}
+trait WithX{
+  def x: Int
+}
+
+implicit def anyWithX(str: String): WithX = 
+  new WithX{def x = 15 + str.length}
+
+"test".x
+
+// becomes (by applying the implicit conversion)
+anyWithX("test").x
+
+// after inlining anyWithX becomes
+val str = "test"
+val helper = new WithX{ def x = 15 + str.length }
+helper.x
+
+// after inlining x becomes
+val str = "test"
+val helper = new WithX{ def x = 15 + str.length }
+15 + str.length
+{code}
+
+In the last step, the allocation of `helper` isn't removed because DCE doesn't reason about the pureness of the constructor of the anonymous subclass of `WithX`.
+
+Pureness of constructors is right now evaluated with the following clause from `isSideEffecting`:
+
+{code}
+(sym.isConstructor 
+           && !(sym.owner == method.symbol.owner && method.symbol.isConstructor) // a call to another constructor  
+           && sym.owner.owner == RuntimePackage.moduleClass)
+       || (sym.isConstructor && inliner.isClosureClass(sym.owner))
+{code}
+
+If I understand it correctly a constructor is considered pure if a) it is the constructor of a closure class or b) if it somehow belongs to the scala RuntimePackage.
+
+I would add a heuristic for other constructors at well: A constructor is pure if
+ a. it calls only pure methods
+ b. it sets no static fields
+ c. it sets no instance fields of its parameters, only of the new instance itself
+
+Because we don't want to reason about the purity of all methods, for practical reasons, we only consider calls to other constructors in the pureness calculation (because we know that there is no recursion involved; a constructor can only call another constructor of this class itself or the superclass and the inheritance chain is finite).

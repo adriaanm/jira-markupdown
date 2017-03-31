@@ -1,0 +1,27 @@
+Instead of
+
+{code}
+def collectFirst[B](pf: PartialFunction[A, B]): Option[B] = {
+  for (x <- self.toIterator) { // make sure to use an iterator or `seq`
+    if (pf isDefinedAt x)
+      return Some(pf(x))
+  }
+  None
+}
+{code}
+
+let's have
+
+{code}
+def collectFirst[B](pf: PartialFunction[A, B]): Option[B] = {
+  val f = pf.lift
+  for (x <- self.toIterator) { // make sure to use an iterator or `seq`
+    val result = f(x)
+    if (result.isDefined)
+      return result
+  }
+  None
+}
+{code}
+
+which I think is no worse for native PartialFunctions and, in the case of PartialFunctions that have been unlifted from A => Option[B]s, calls the underlying function one fewer time.

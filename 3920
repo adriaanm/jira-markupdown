@@ -1,0 +1,5 @@
+Thanks for testing, igorrumiha. After more digging I think the reason Dalvik is being forced to validate and initialize ForkJoinTask is because ActorTask inherits from ForkJoinTask indirectly via RecursiveAction, and ActorTask is instantiated regardless of which scheduler is being used.
+
+So far, the only place I've seen where this inheritance matters is in ForkJoinScheduler.scala, line 121, where a Runnable is cast to a RecursiveAction.
+
+Eliminating this inheritance looks like it prevents the crash on Android 1.5 but it also breaks a bunch of tests.

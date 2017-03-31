@@ -1,0 +1,50 @@
+Running this (test case) code
+{code}
+import scala.swing._
+
+object TestContainer {
+
+  def main(args : Array[String]) {
+    val panel = new GridBagPanel {
+      layout(new Button) = new Constraints
+      layout.clear
+    }
+  }
+}
+{code}
+(as well as removing something from layout with '-=' method) results in
+
+{code}
+Exception in thread "main" java.lang.ClassCastException: scala.swing.Button cannot be cast to scala.runtime.Nothing$$
+        at scala.swing.Container$$Wrapper$$Content.apply(Container.scala:38)
+        at scala.swing.Container$$Wrapper$$Content.apply(Container.scala:28)
+        at scala.swing.BufferWrapper$$$$anonfun$$iterator$$1.apply(BufferWrapper.scala:41)
+        at scala.swing.BufferWrapper$$$$anonfun$$iterator$$1.apply(BufferWrapper.scala:41)
+        at scala.collection.Iterator$$$$anon$$17.next(Iterator.scala:327)
+        at scala.collection.Iterator$$class.foreach(Iterator.scala:536)
+        at scala.collection.Iterator$$$$anon$$17.foreach(Iterator.scala:325)
+        at scala.collection.IterableLike$$class.foreach(IterableLike.scala:71)
+        at scala.swing.BufferWrapper.foreach(BufferWrapper.scala:20)
+        at scala.collection.SeqLike$$$$anonfun$$indexWhere$$1.apply(SeqLike.scala:197)
+        at scala.collection.SeqLike$$$$anonfun$$indexWhere$$1.apply(SeqLike.scala:197)
+        at scala.util.control.Breaks.breakable(Breaks.scala:33)
+        at scala.collection.SeqLike$$class.indexWhere(SeqLike.scala:196)
+        at scala.swing.BufferWrapper.indexWhere(BufferWrapper.scala:20)
+        at scala.collection.SeqLike$$class.indexOf(SeqLike.scala:227)
+        at scala.swing.BufferWrapper.indexOf(BufferWrapper.scala:20)
+        at scala.collection.SeqLike$$class.indexOf(SeqLike.scala:218)
+        at scala.swing.BufferWrapper.indexOf(BufferWrapper.scala:20)
+        at scala.collection.mutable.BufferLike$$class.$$minus$$eq(BufferLike.scala:115)
+        at scala.swing.BufferWrapper.$$minus$$eq(BufferWrapper.scala:20)
+        at scala.swing.LayoutContainer$$$$anon$$1.$$minus$$eq(LayoutContainer.scala:59)
+        at scala.swing.LayoutContainer$$$$anon$$1.$$minus$$eq(LayoutContainer.scala:58)
+        at scala.collection.mutable.MapLike$$$$anonfun$$clear$$1.apply(MapLike.scala:194)
+        at scala.collection.mutable.MapLike$$$$anonfun$$clear$$1.apply(MapLike.scala:194)
+        at scala.collection.Iterator$$class.foreach(Iterator.scala:536)
+        at scala.collection.Iterator$$$$anon$$17.foreach(Iterator.scala:325)
+        at scala.collection.mutable.MapLike$$class.clear(MapLike.scala:194)
+        at scala.swing.LayoutContainer$$$$anon$$1.clear(LayoutContainer.scala:58)
+        at zgstest.TestContainer$$$$anon$$1.<init>(TestContainer.scala:10)
+        at zgstest.TestContainer$$.main(TestContainer.scala:8)
+        at zgstest.TestContainer.main(TestContainer.scala)
+{code}

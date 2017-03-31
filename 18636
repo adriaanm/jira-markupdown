@@ -1,0 +1,76 @@
+SyntacticClassDef fails if class doesn't have member that corresponds to ctor argument:
+
+{code}
+import reflect.runtime.universe._, build.SyntacticClassDef, Flag._
+object A extends App {
+  val PARAMACCESSOR = (1 << 29).toLong.asInstanceOf[FlagSet]
+  val SyntacticClassDef(_, _, _, _, _, _, _, _, _) =
+    ClassDef(
+      Modifiers(), TypeName("Foo"), List(),
+      Template(
+        List(Select(Ident(TermName("scala")), TypeName("AnyRef"))),
+        noSelfType,
+        List(
+          //ValDef(Modifiers(PRIVATE | LOCAL | PARAMACCESSOR), TermName("x"), Ident(TypeName("Int")), EmptyTree),
+          DefDef(Modifiers(), nme.CONSTRUCTOR, List(), List(List(ValDef(Modifiers(PARAM | PARAMACCESSOR), TermName("x"),
+            Ident(TypeName("Int")), EmptyTree))), TypeTree(), Block(List(pendingSuperCall), Literal(Constant(())))))))
+}
+{code}
+
+{noformat}
+java.util.NoSuchElementException: key not found: x
+	at scala.collection.MapLike$class.default(MapLike.scala:228)
+	at scala.collection.AbstractMap.default(Map.scala:59)
+	at scala.collection.MapLike$class.apply(MapLike.scala:141)
+	at scala.collection.AbstractMap.apply(Map.scala:59)
+	at scala.reflect.internal.BuildUtils$BuildImpl$UnMkTemplate$$anonfun$5.apply(BuildUtils.scala:221)
+	at scala.reflect.internal.BuildUtils$BuildImpl$UnMkTemplate$$anonfun$5.apply(BuildUtils.scala:220)
+	at scala.collection.TraversableLike$$anonfun$map$1.apply(TraversableLike.scala:245)
+	at scala.collection.TraversableLike$$anonfun$map$1.apply(TraversableLike.scala:245)
+	at scala.collection.immutable.List.foreach(List.scala:302)
+	at scala.collection.TraversableLike$class.map(TraversableLike.scala:245)
+	at scala.collection.AbstractTraversable.map(Traversable.scala:104)
+	at scala.reflect.internal.util.Collections$$anonfun$mmap$1.apply(Collections.scala:36)
+	at scala.reflect.internal.util.Collections$$anonfun$mmap$1.apply(Collections.scala:36)
+	at scala.collection.TraversableLike$$anonfun$map$1.apply(TraversableLike.scala:245)
+	at scala.collection.TraversableLike$$anonfun$map$1.apply(TraversableLike.scala:245)
+	at scala.collection.immutable.List.foreach(List.scala:302)
+	at scala.collection.TraversableLike$class.map(TraversableLike.scala:245)
+	at scala.collection.AbstractTraversable.map(Traversable.scala:104)
+	at scala.reflect.internal.util.Collections$class.mmap(Collections.scala:36)
+	at scala.reflect.internal.SymbolTable.mmap(SymbolTable.scala:14)
+	at scala.reflect.internal.BuildUtils$BuildImpl$UnMkTemplate$.unapply(BuildUtils.scala:220)
+	at scala.reflect.internal.BuildUtils$BuildImpl$SyntacticClassDef$.unapply(BuildUtils.scala:250)
+	at scala.reflect.internal.BuildUtils$BuildImpl$SyntacticClassDef$.unapply(BuildUtils.scala:230)
+	at A$.delayedEndpoint$A$1(test.scala:4)
+	at A$delayedInit$body.apply(test.scala:1)
+	at scala.Function0$class.apply$mcV$sp(Function0.scala:40)
+	at scala.runtime.AbstractFunction0.apply$mcV$sp(AbstractFunction0.scala:12)
+	at scala.App$$anonfun$main$1.apply(App.scala:71)
+	at scala.App$$anonfun$main$1.apply(App.scala:71)
+	at scala.collection.immutable.List.foreach(List.scala:302)
+	at scala.collection.generic.TraversableForwarder$class.foreach(TraversableForwarder.scala:35)
+	at scala.collection.mutable.ListBuffer.foreach(ListBuffer.scala:44)
+	at scala.App$class.main(App.scala:71)
+	at A$.main(test.scala:1)
+	at A.main(test.scala)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:601)
+	at scala.reflect.internal.util.ScalaClassLoader$$anonfun$run$1.apply(ScalaClassLoader.scala:68)
+	at scala.reflect.internal.util.ScalaClassLoader$class.asContext(ScalaClassLoader.scala:31)
+	at scala.reflect.internal.util.ScalaClassLoader$URLClassLoader.asContext(ScalaClassLoader.scala:99)
+	at scala.reflect.internal.util.ScalaClassLoader$class.run(ScalaClassLoader.scala:68)
+	at scala.reflect.internal.util.ScalaClassLoader$URLClassLoader.run(ScalaClassLoader.scala:99)
+	at scala.tools.nsc.CommonRunner$class.run(ObjectRunner.scala:22)
+	at scala.tools.nsc.ObjectRunner$.run(ObjectRunner.scala:39)
+	at scala.tools.nsc.CommonRunner$class.runAndCatch(ObjectRunner.scala:29)
+	at scala.tools.nsc.ObjectRunner$.runAndCatch(ObjectRunner.scala:39)
+	at scala.tools.nsc.MainGenericRunner.runTarget$1(MainGenericRunner.scala:72)
+	at scala.tools.nsc.MainGenericRunner.process(MainGenericRunner.scala:94)
+	at scala.tools.nsc.MainGenericRunner$.main(MainGenericRunner.scala:103)
+	at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
+{noformat}
+
+Original discussion: https://groups.google.com/d/msg/scala-language/C7Pm6ab1sPs/RShAtpQb9WAJ

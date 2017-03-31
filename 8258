@@ -1,0 +1,18 @@
+I believe this is unfixable in general case. Let's consider the following code:
+{code}
+trait Function1[T,U]
+class Foo(val x: AnyRef) extends AnyVal
+object FooUnwrap extends Function1[Foo, AnyRef] {
+  def apply(f: Foo): AnyRef = f.x
+}
+{code}
+
+Now, let's consider a code that uses those classes and objects:
+{code}
+val fooStr = new Foo("str") // erases to val fooStr: String = "str"
+val f: Function1[Foo, AnyRef] = FooUnwrap // erases to val f: Function1[AnyRef, AnyRef] = FooUnwrap
+f.apply(fooStr) // erases to f.apply(new Foo(fooStr)) must dispatch to apply(AnyRef)AnyRef method
+FooUnwrap.apply(fooStr) // erases to FooUnwrap.apply(fooStr) must dispatch to apply(AnyRef)AnyRef method
+{code}
+
+I've put erasure of each line in a comment. You can see that we have two calls to an apply where in one case we should unwrap the argument and in another one we shouldn't but the target (erased) signature is the same. Am I missing something?

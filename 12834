@@ -1,0 +1,50 @@
+The code below
+{code}
+import java.rmi.Remote
+import java.rmi.server.UnicastRemoteObject
+
+import scala.runtime.ObjectRef
+
+@remote
+trait RemoteObjectRef { // extends Remote {
+  def elem: ObjectRef
+}
+
+class RemoteObjectRefImpl(x: ObjectRef)
+extends UnicastRemoteObject with RemoteObjectRef {
+  def elem: ObjectRef = x
+  override def toString() = x.toString()
+}
+
+object test extends Application {
+
+  def bind(x: Remote): Remote = {
+    println("RemoteRef.bind (Remote)"); x
+  }
+
+  def bind(x: RemoteObjectRef): RemoteObjectRef = {
+    println("bind (RemoteObjectRef)"); x
+  }
+
+  bind(new RemoteObjectRefImpl(new ObjectRef()))
+}
+{code}
+produces the following type error:
+{code}
+test.scala:27: error: ambiguous reference to overloaded definition,
+both method bind in object test of type (RemoteObjectRef)RemoteObjectRef
+and  method bind in object test of type (java.rmi.Remote)java.rmi.Remote
+match argument types (RemoteObjectRefImpl)
+  bind(new RemoteObjectRefImpl(new ObjectRef()))
+  ^
+one error found
+{code}
+but it compiles fine if you replace
+{code}
+@remote
+trait RemoteObjectRef { def elem: ObjectRef }
+{code}
+by
+{code}
+trait RemoteObjectRef extends Remote { def elem: ObjectRef }
+{code}

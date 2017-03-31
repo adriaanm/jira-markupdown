@@ -1,0 +1,16 @@
+The type-checker fails to find an implicit definition that has an F-bounded type parameter.
+Here's a minimized example:
+
+{code:scala}
+object Test {
+  trait A[-T]
+  trait B[-T]
+  class C extends B[C]
+  implicit def AfromB[T <: B[T]]: A[T] = null
+
+  implicitly[A[C]]  // fails
+  implicitly[A[C]](AfromB[C]) // ok if argument is given explicitly
+}
+{code}
+
+Dotty compiles this OK. The example came up in an attempt to provide multiversal equality for Scala.

@@ -1,0 +1,9 @@
+Thank you for the report!
+
+This doesn't have anything to do with {{indexOfSlice}} in particular; substituting e.g. {{last}} shows the same behavior.
+
+The underlying issue here is that at runtime, calling .toSeq on Iterator returns a scala.collection.immutable.Stream, which is a very expensive data structure (both in space and time) — though the fact that its tail is lazy means that you don't pay the cost until you actually traverse it.
+
+In general, {{toSeq}} is something of a trap in that as a type, {{Seq}} gives you almost no guarantees. The Seq you get back might be strict or lazy, compact or memory hungry, finite or infinite, stack overflow prone or stack safe, etc etc etc. For small collections it often doesn't matter but as soon as you're slinging big amounts of data around you probably want to be working with concrete collection types so you know what you're getting. Substitute {{toVector}} for {{toSeq}} here, and it will run pretty fast.
+
+So, I've responded here on JIRA, but not to all of your questions. They are good questions, but I suggest asking them on scala-user, the scala/scala Gitter channel, or Stack Overflow. (If you have followup questions about what I've said here, same recommendation about where to take the discussion.)

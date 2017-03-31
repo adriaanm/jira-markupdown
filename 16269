@@ -1,0 +1,24 @@
+In the following code, adding @SerialVersionUID to the class results in the static forwarders missing from the byte code. 
+
+{code}object WithoutUID {
+ val instance = new WithoutUID
+}
+class WithoutUID extends scala.Serializable
+
+object WithUID {
+ val instance = new WithUID
+}
+@SerialVersionUID(0) 
+class WithUID extends scala.Serializable{code}
+
+Here is the relevant decompiled byte code:
+
+{code}public class WithoutUID implements Serializable, ScalaObject {
+  public static final WithoutUID instance(){
+    return WithoutUID.MODULE$.instance();
+  }
+}
+
+public class WithUID implements Serializable, ScalaObject {
+  public static final long serialVersionUID = 0L;
+}{code}

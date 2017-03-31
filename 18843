@@ -1,0 +1,27 @@
+I'm not sure I understand what happened in SI-5005. It's clearly a bug, I opened it with a clear description of the bug, but it ended up being closed because it had become "confused". Okay, I will unconfuse things. Here is the same report again. One should not have to choose between @specialize working and @inline working.
+{code}
+class C[U]() {
+  @inline final def apply(x: U): U = x
+}
+
+class C2[@specialized(Boolean) U]() {
+  @inline final def apply(x: U): U = x
+}
+
+class B {
+  private val cNormal = new C[Boolean]()
+  private val cSpec   = new C2[Boolean]()
+  
+  final def m1 = cNormal(true)
+  final def m2 = cSpec(true)
+  // ./a.scala:14: warning: Could not inline required method apply$mcZ$sp because it can be overridden.
+  //   final def m2 = cSpec(true)
+  //                       ^
+  // one warning found
+
+  // however, here it inlines
+  cNormal(true)
+  cSpec(true)
+}
+{code}
+To answer the question of what it would take to be considered fixed - it's fixed with respect to this ticket when the bytecode of methods m1 and m2 both is constant true.

@@ -1,0 +1,24 @@
+{code:java}
+scala> val a = Iterator.from(1)
+a: Iterator[Int] = non-empty iterator
+
+scala> val b = a.toTraversable
+b: Traversable[Int] = Stream(1, ?)
+
+scala> b foreach {x=>()}
+Exception in thread "main" java.lang.OutOfMemoryError: GC overhead limit exceeded
+{code}
+
+Well, this is expected thinking that there is a Stream and `b` holds its head.
+But that is the reason to create Stream (and introduce its problems) when only Traversable is needed ?
+
+{code:java}
+class Iterator[T] { outer =>
+  // Why there is this code
+  def toTraversable = toStream
+  // And not something like this?
+  def toTraversable = new Traversable[T] { 
+    def foreach[U](callback: T=>U) { outer foreach callback }
+  }
+}
+{code}

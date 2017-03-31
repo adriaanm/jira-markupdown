@@ -1,0 +1,47 @@
+Hm, strange. At runtime the accessors actually exist but I still get a compile-error compiling using Maven. I use the following maven-settings:
+{code}
+<dependency>
+	<groupId>org.scala-lang</groupId>
+	<artifactId>scala-library</artifactId>
+	<version>2.8.0-SNAPSHOT</version>
+</dependency>
+<dependency>
+	<groupId>org.scala-lang</groupId>
+	<artifactId>scala-compiler</artifactId>
+	<version>2.8.0-SNAPSHOT</version>
+	<scope>test</scope>
+</dependency>
+...
+...
+<plugin>
+	<groupId>org.scala-tools</groupId>
+	<artifactId>maven-scala-plugin</artifactId>
+	<executions>
+		<execution>
+			<id>scala-compile-first</id>
+			<phase>process-resources</phase>
+			<goals>
+				<goal>add-source</goal>
+				<goal>compile</goal>
+			</goals>
+		</execution>
+		<execution>
+			<id>scala-test-compile</id>
+			<phase>process-test-resources</phase>
+			<goals>
+				<goal>testCompile</goal>
+			</goals>
+		</execution>
+	</executions>
+</plugin>
+{code}
+
+I have compiled r18003 from source and installed in my local mvn-repo like this:
+{code}
+ant
+ant distpack
+cd dists/maven/latest
+ant deploy.snapshot.local
+{code}
+
+What's going on here, I'm I using the maven-scala-plugin incorrectly?

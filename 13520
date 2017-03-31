@@ -1,0 +1,296 @@
+{code}
+object Test {
+  trait T { self0 =>
+    trait U { self1 =>
+      type X <: Any
+      val x : { type Y  = self1.type#X } = new { type Y = self1.type#X }
+    }
+  }
+
+  val y = new AnyRef with T#U { type X = Nothing }
+}
+{code}
+yields
+{code}
+exception when transforming final <synthetic> class $$anon extends java.lang.Object with Test.T#U {
+  def this(): template $$anon = {
+    $$anon.super.this();
+    ()
+  };
+  type X = Nothing
+}
+exception when transforming {
+  final <synthetic> class $$anon extends java.lang.Object with Test.T#U {
+    def this(): template $$anon = {
+      $$anon.super.this();
+      ()
+    };
+    type X = Nothing
+  };
+  new template $$anon()
+}
+exception when transforming private[this] val y: java.lang.Object with Test.T#U{type X = Nothing} = {
+  final <synthetic> class $$anon extends java.lang.Object with Test.T#U {
+    def this(): template $$anon = {
+      $$anon.super.this();
+      ()
+    };
+    type X = Nothing
+  };
+  new template $$anon()
+}
+exception when transforming java.lang.Object with ScalaObject {
+  def this(): object Test = {
+    Test.super.this();
+    ()
+  };
+  abstract trait T extends java.lang.Object with ScalaObject { self0 =>
+    def /*T*/$$init$$(): Unit = {
+      ()
+    };
+    abstract trait U extends java.lang.Object with ScalaObject { self1 =>
+      def /*U*/$$init$$(): Unit = {
+        ()
+      };
+      type X>: Nothing <: Any;
+      private[this] val x: java.lang.Object{type Y = U.this.X} = {
+        final <synthetic> class $$anon extends java.lang.Object {
+          def this(): template $$anon = {
+            $$anon.super.this();
+            ()
+          };
+          type Y = U.this.X
+        };
+        new template $$anon()
+      };
+      <stable> <accessor> def x(): java.lang.Object{type Y = U.this.X} = U.this.x
+    }
+  };
+  private[this] val y: java.lang.Object with Test.T#U{type X = Nothing} = {
+    final <synthetic> class $$anon extends java.lang.Object with Test.T#U {
+      def this(): template $$anon = {
+        $$anon.super.this();
+        ()
+      };
+      type X = Nothing
+    };
+    new template $$anon()
+  };
+  <stable> <accessor> def y(): java.lang.Object with Test.T#U{type X = Nothing} = Test.this.y
+}
+exception when transforming final class Test extends java.lang.Object with ScalaObject {
+  def this(): object Test = {
+    Test.super.this();
+    ()
+  };
+  abstract trait T extends java.lang.Object with ScalaObject { self0 =>
+    def /*T*/$$init$$(): Unit = {
+      ()
+    };
+    abstract trait U extends java.lang.Object with ScalaObject { self1 =>
+      def /*U*/$$init$$(): Unit = {
+        ()
+      };
+      type X>: Nothing <: Any;
+      private[this] val x: java.lang.Object{type Y = U.this.X} = {
+        final <synthetic> class $$anon extends java.lang.Object {
+          def this(): template $$anon = {
+            $$anon.super.this();
+            ()
+          };
+          type Y = U.this.X
+        };
+        new template $$anon()
+      };
+      <stable> <accessor> def x(): java.lang.Object{type Y = U.this.X} = U.this.x
+    }
+  };
+  private[this] val y: java.lang.Object with Test.T#U{type X = Nothing} = {
+    final <synthetic> class $$anon extends java.lang.Object with Test.T#U {
+      def this(): template $$anon = {
+        $$anon.super.this();
+        ()
+      };
+      type X = Nothing
+    };
+    new template $$anon()
+  };
+  <stable> <accessor> def y(): java.lang.Object with Test.T#U{type X = Nothing} = Test.this.y
+}
+exception when transforming package <empty> {
+  final class Test extends java.lang.Object with ScalaObject {
+    def this(): object Test = {
+      Test.super.this();
+      ()
+    };
+    abstract trait T extends java.lang.Object with ScalaObject { self0 =>
+      def /*T*/$$init$$(): Unit = {
+        ()
+      };
+      abstract trait U extends java.lang.Object with ScalaObject { self1 =>
+        def /*U*/$$init$$(): Unit = {
+          ()
+        };
+        type X>: Nothing <: Any;
+        private[this] val x: java.lang.Object{type Y = U.this.X} = {
+          final <synthetic> class $$anon extends java.lang.Object {
+            def this(): template $$anon = {
+              $$anon.super.this();
+              ()
+            };
+            type Y = U.this.X
+          };
+          new template $$anon()
+        };
+        <stable> <accessor> def x(): java.lang.Object{type Y = U.this.X} = U.this.x
+      }
+    };
+    private[this] val y: java.lang.Object with Test.T#U{type X = Nothing} = {
+      final <synthetic> class $$anon extends java.lang.Object with Test.T#U {
+        def this(): template $$anon = {
+          $$anon.super.this();
+          ()
+        };
+        type X = Nothing
+      };
+      new template $$anon()
+    };
+    <stable> <accessor> def y(): java.lang.Object with Test.T#U{type X = Nothing} = Test.this.y
+  }
+}
+Exception in thread "main" java.lang.AssertionError: assertion failed: Test.T
+        at scala.Predef$$.assert(Predef.scala:92)
+        at scala.tools.nsc.ast.TreeGen.mkAttributedQualifier(TreeGen.scala:76)
+        at scala.tools.nsc.ast.TreeGen.mkAttributedQualifier(TreeGen.scala:42)
+        at scala.tools.nsc.transform.ExplicitOuter$$ExplicitOuterTransformer.mixinOuterAccessorDef(ExplicitOuter.scala:310)
+        at scala.tools.nsc.transform.ExplicitOuter$$ExplicitOuterTransformer$$$$anonfun$$transform$$1$$$$anonfun$$apply$$1.apply(ExplicitOuter.scala:342)
+        at scala.tools.nsc.transform.ExplicitOuter$$ExplicitOuterTransformer$$$$anonfun$$transform$$1$$$$anonfun$$apply$$1.apply(ExplicitOuter.scala:340)
+        at scala.List.foreach(List.scala:827)
+        at scala.tools.nsc.transform.ExplicitOuter$$ExplicitOuterTransformer$$$$anonfun$$transform$$1.apply(ExplicitOuter.scala:340)
+        at scala.tools.nsc.transform.ExplicitOuter$$ExplicitOuterTransformer$$$$anonfun$$transform$$1.apply(ExplicitOuter.scala:333)
+        at scala.tools.nsc.ast.Trees$$Transformer.atOwner(Trees.scala:1409)
+        at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:33)
+        at scala.tools.nsc.transform.ExplicitOuter$$ExplicitOuterTransformer.transform(ExplicitOuter.scala:332)
+        at scala.tools.nsc.ast.Trees$$Transformer.transformTemplate(Trees.scala:1387)
+        at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transform$$2.apply(Trees.scala:1281)
+        at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transform$$2.apply(Trees.scala:1281)
+        at scala.tools.nsc.ast.Trees$$Transformer.atOwner(Trees.scala:1409)
+        at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:33)
+        at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:27)
+        at scala.tools.nsc.ast.Trees$$Transformer.transform(Trees.scala:1280)
+        at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.transform(TypingTransformers.scala:46)
+        at scala.tools.nsc.transform.ExplicitOuter$$OuterPathTransformer.transform(ExplicitOuter.scala:207)
+        at scala.tools.nsc.transform.ExplicitOuter$$ExplicitOuterTransformer.transform(ExplicitOuter.scala:497)
+        at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transformStats$$1.apply(Trees.scala:1403)
+        at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transformStats$$1.apply(Trees.scala:1401)
+        at scala.List$$.loop$$1(List.scala:293)
+        at scala.List$$.mapConserve(List.scala:310)
+        at scala.tools.nsc.ast.Trees$$Transformer.transformStats(Trees.scala:1401)
+        at scala.tools.nsc.ast.Trees$$Transformer.transform(Trees.scala:1311)
+        at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.transform(TypingTransformers.scala:46)
+        at scala.tools.nsc.transform.ExplicitOuter$$OuterPathTransformer.transform(ExplicitOuter.scala:207)
+        at scala.tools.nsc.transform.ExplicitOuter$$ExplicitOuterTransformer.transform(ExplicitOuter.scala:497)
+        at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transform$$4.apply(Trees.scala:1289)
+        at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transform$$4.apply(Trees.scala:1289)
+        at scala.tools.nsc.ast.Trees$$Transformer.atOwner(Trees.scala:1409)
+        at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:33)
+        at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:27)
+        at scala.tools.nsc.ast.Trees$$Transformer.transform(Trees.scala:1288)
+        at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.transform(TypingTransformers.scala:46)
+        at scala.tools.nsc.transform.ExplicitOuter$$OuterPathTransformer.transform(ExplicitOuter.scala:207)
+        at scala.tools.nsc.transform.ExplicitOuter$$ExplicitOuterTransformer.transform(ExplicitOuter.scala:497)
+        at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transformStats$$1.apply(Trees.scala:1403)
+        at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transformStats$$1.apply(Trees.scala:1401)
+        at scala.List$$.loop$$1(List.scala:293)
+        at scala.List$$.mapConserve(List.scala:310)
+        at scala.List$$.loop$$1(List.scala:297)
+        at scala.List$$.mapConserve(List.scala:310)
+        at scala.tools.nsc.ast.Trees$$Transformer.transformStats(Trees.scala:1401)
+        at scala.tools.nsc.ast.Trees$$Transformer.transform(Trees.scala:1309)
+        at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.scala$$tools$$nsc$$transform$$TypingTransformers$$TypingTransformer$$$$super$$transform(TypingTransformers.scala:44)
+        at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer$$$$anonfun$$transform$$1.apply(TypingTransformers.scala:44)
+        at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer$$$$anonfun$$transform$$1.apply(TypingTransformers.scala:44)
+        at scala.tools.nsc.ast.Trees$$Transformer.atOwner(Trees.scala:1409)
+        at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:33)
+        at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:27)
+        at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.transform(TypingTransformers.scala:44)
+        at scala.tools.nsc.transform.ExplicitOuter$$OuterPathTransformer.transform(ExplicitOuter.scala:207)
+        at scala.tools.nsc.transform.ExplicitOuter$$ExplicitOuterTransformer.transform(ExplicitOuter.scala:345)
+        at scala.tools.nsc.ast.Trees$$Transformer.transformTemplate(Trees.scala:1387)
+        at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transform$$2.apply(Trees.scala:1281)
+        at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transform$$2.apply(Trees.scala:1281)
+        at scala.tools.nsc.ast.Trees$$Transformer.atOwner(Trees.scala:1409)
+        at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:33)
+        at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:27)
+        at scala.tools.nsc.ast.Trees$$Transformer.transform(Trees.scala:1280)
+        at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.transform(TypingTransformers.scala:46)
+        at scala.tools.nsc.transform.ExplicitOuter$$OuterPathTransformer.transform(ExplicitOuter.scala:207)
+        at scala.tools.nsc.transform.ExplicitOuter$$ExplicitOuterTransformer.transform(ExplicitOuter.scala:497)
+        at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transformStats$$1.apply(Trees.scala:1403)
+        at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transformStats$$1.apply(Trees.scala:1401)
+        at scala.List$$.loop$$1(List.scala:293)
+        at scala.List$$.mapConserve(List.scala:310)
+        at scala.tools.nsc.ast.Trees$$Transformer.transformStats(Trees.scala:1401)
+        at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transform$$1.apply(Trees.scala:1277)
+        at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transform$$1.apply(Trees.scala:1277)
+        at scala.tools.nsc.ast.Trees$$Transformer.atOwner(Trees.scala:1409)
+        at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:33)
+        at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:27)
+        at scala.tools.nsc.ast.Trees$$Transformer.transform(Trees.scala:1276)
+        at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.transform(TypingTransformers.scala:46)
+        at scala.tools.nsc.transform.ExplicitOuter$$OuterPathTransformer.transform(ExplicitOuter.scala:207)
+        at scala.tools.nsc.transform.ExplicitOuter$$ExplicitOuterTransformer.transform(ExplicitOuter.scala:497)
+        at scala.tools.nsc.ast.Trees$$Transformer.transformUnit(Trees.scala:1404)        at scala.tools.nsc.transform.ExplicitOuter$$ExplicitOuterTransformer.scala$$tools$$nsc$$transform$$ExplicitOuter$$ExplicitOuterTransformer$$$$super$$transformUnit(ExplicitOuter.scala:507)
+        at scala.tools.nsc.transform.ExplicitOuter$$ExplicitOuterTransformer$$$$anonfun$$transformUnit$$1.apply(ExplicitOuter.scala:507)
+        at scala.tools.nsc.transform.ExplicitOuter$$ExplicitOuterTransformer$$$$anonfun$$transformUnit$$1.apply(ExplicitOuter.scala:507)
+        at scala.tools.nsc.symtab.SymbolTable.atPhase(SymbolTable.scala:105)
+        at scala.tools.nsc.transform.ExplicitOuter$$ExplicitOuterTransformer.transformUnit(ExplicitOuter.scala:507)
+        at scala.tools.nsc.transform.ExplicitOuter$$ExplicitOuterTransformer.transformUnit(ExplicitOuter.scala:276)
+        at scala.tools.nsc.transform.Transform$$Phase.apply(Transform.scala:30)
+        at scala.tools.nsc.Global$$GlobalPhase.applyPhase(Global.scala:257)
+        at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:243)
+        at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:243)
+        at scala.Iterator$$class.foreach(Iterator.scala:395)
+        at scala.collection.mutable.ListBuffer$$$$anon$$1.foreach(ListBuffer.scala:266)
+        at scala.tools.nsc.Global$$GlobalPhase.run(Global.scala:243)
+        at scala.tools.nsc.Global$$Run.compileSources(Global.scala:555)
+        at scala.tools.nsc.Global$$Run.compile(Global.scala:640)
+        at scala.tools.nsc.Main$$.process(Main.scala:84)
+        at scala.tools.nsc.Main$$.main(Main.scala:98)
+        at scala.tools.nsc.Main.main(Main.scala)
+% ~/svnroot/research/lamp/scala-trunk/build/quick/bin/scalac Test.scala
+Exception in thread "main" java.lang.IncompatibleClassChangeError: class scala.tools.nsc.typechecker.SuperAccessors has interface scala.tools.nsc.transform.Transform as super class
+        at java.lang.ClassLoader.defineClass1(Native Method)
+        at java.lang.ClassLoader.defineClass(ClassLoader.java:620)
+        at java.security.SecureClassLoader.defineClass(SecureClassLoader.java:124)
+        at java.net.URLClassLoader.defineClass(URLClassLoader.java:260)
+        at java.net.URLClassLoader.access$$100(URLClassLoader.java:56)
+        at java.net.URLClassLoader$$1.run(URLClassLoader.java:195)
+        at java.security.AccessController.doPrivileged(Native Method)
+        at java.net.URLClassLoader.findClass(URLClassLoader.java:188)
+        at java.lang.ClassLoader.loadClass(ClassLoader.java:306)
+        at sun.misc.Launcher$$AppClassLoader.loadClass(Launcher.java:268)
+        at java.lang.ClassLoader.loadClass(ClassLoader.java:251)
+        at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:319)
+        at java.lang.ClassLoader.defineClass1(Native Method)
+        at java.lang.ClassLoader.defineClass(ClassLoader.java:620)
+        at java.security.SecureClassLoader.defineClass(SecureClassLoader.java:124)
+        at java.net.URLClassLoader.defineClass(URLClassLoader.java:260)
+        at java.net.URLClassLoader.access$$100(URLClassLoader.java:56)
+        at java.net.URLClassLoader$$1.run(URLClassLoader.java:195)
+        at java.security.AccessController.doPrivileged(Native Method)
+        at java.net.URLClassLoader.findClass(URLClassLoader.java:188)
+        at java.lang.ClassLoader.loadClass(ClassLoader.java:306)
+        at sun.misc.Launcher$$AppClassLoader.loadClass(Launcher.java:268)
+        at java.lang.ClassLoader.loadClass(ClassLoader.java:251)
+        at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:319)
+        at scala.tools.nsc.Global.superAccessors(Global.scala:284)
+        at scala.tools.nsc.Global.builtInPhaseDescriptors(Global.scala:404)
+        at scala.tools.nsc.plugins.Plugins$$class.computePhaseDescriptors(Plugins.scala:154)
+        at scala.tools.nsc.Global.computePhaseDescriptors(Global.scala:35)
+        at scala.tools.nsc.Global.phaseDescriptors(Global.scala:442)
+        at scala.tools.nsc.Global$$Run.<init>(Global.scala:490)
+        at scala.tools.nsc.Main$$.process(Main.scala:83)
+        at scala.tools.nsc.Main$$.main(Main.scala:98)
+        at scala.tools.nsc.Main.main(Main.scala)
+{code}

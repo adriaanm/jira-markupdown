@@ -1,0 +1,24 @@
+Minimized:
+
+{code}
+trait T {
+
+  def crashy(ma: Any) {
+    // okay
+    val f1 = (u: Unit) => ma
+    foo(f1)()
+
+    // okay
+    foo((u: Unit) => ma)
+
+    // okay
+    foo((u: Unit) => ma)(())
+
+    // crash
+    foo((u: Unit) => ma)()
+    ???
+  }
+
+  def foo(f: Any): Any => Any
+}
+{code}

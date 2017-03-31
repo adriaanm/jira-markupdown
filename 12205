@@ -1,0 +1,15 @@
+I'm not sure there's anything we could do in a binary compatible way, so I'm scheduling it for 2.13.
+
+The current translation scheme for empty varargs doesn't exactly look great:
+
+{code:scala}
+  val m1 = Map.empty[Int, Unit]
+  m1 + (1 -> ()) + (2 -> ())
+  // MapBenchmark.this.m1().+[Unit](scala.this.Predef.ArrowAssoc[Int](1).->[Unit](())).+[Unit](scala.this.Predef.ArrowAssoc[Int](2).->[Unit](()));
+
+  val m2 = Map.empty[Int, Unit]
+  m2 + (1 -> (), 2 -> ())
+  // MapBenchmark.this.m2().+[Unit](scala.this.Predef.ArrowAssoc[Int](1).->[Unit](()), scala.this.Predef.ArrowAssoc[Int](2).->[Unit](()), scala.this.Predef.wrapRefArray[(Int, Unit)](Array[(Int, Unit)]{}))
+{code}
+
+There's a new empty array that gets wrapped instead of using something like `Nil`, but in the end it doesn't matter. Passing a pre-computed empty collection as the varargs argument is just as slow.

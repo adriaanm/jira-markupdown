@@ -1,0 +1,15 @@
+I can't replicate that... I'm still seeing the "correct" version of barA$mcI$sp. What (if any) compiler flags are you using?
+
+Here are the steps I'm taking:
+
+{code}
+$ rm -f *.class
+$ ~/w/scala/build/quick/bin/scalac test.scala
+$ javap -c 'Foo$mcI$sp' | grep -A 6 'int barA$mcI$sp'
+public int barA$mcI$sp(int);  Code:
+   0:   aload_0
+   1:   iload_1   2:   invokevirtual   #18; //Method Foo.barB$mIc$sp:(I)I
+   5:   ireturn
+{code}
+
+This is with the 2.10.x as of last night. Could you be using a different scalac than you expect?

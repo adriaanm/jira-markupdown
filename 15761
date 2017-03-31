@@ -1,0 +1,15 @@
+revealed during Paul's resurrection of the tree checkers 
+
+this fails to -Ycheck:typer
+
+{code}
+class A {
+  class C[x]
+  val cs = new scala.collection.mutable.HashMap[C[_], Int]
+  def c: C[_] = error("")
+  val eval: C[_] = c
+  cs(c) += 1
+}
+{code}
+
+the problem is the synthetic `val ev$$1: C[_$$2] = c` that's generated, where `C[_$$2]` is unpacked since it just reuses the type of the tree `c`.

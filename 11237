@@ -1,0 +1,38 @@
+More stuff I didn't know:
+{code}
+scala> sys.props("hi")
+res0: String = null
+
+scala> sys.props + ("hi" -> "bye")
+res1: scala.collection.mutable.Map[String,String] =
+Map(env.emacs -> "", java.runtime.name -> Java(TM) SE Runtime Envir...
+
+scala> sys.props("hi")
+res2: String = bye
+
+scala> sys.props.clear()
+java.util.ConcurrentModificationException
+  at java.util.Hashtable$Enumerator.next(Hashtable.java:1367)
+  at scala.collection.convert.Wrappers$JPropertiesWrapper$$anon$3.next(Wrappers.scala:438)
+  at scala.collection.convert.Wrappers$JPropertiesWrapper$$anon$3.next(Wrappers.scala:434)
+  at scala.collection.MapLike$$anon$1.next(MapLike.scala:184)
+  at scala.collection.Iterator$class.foreach(Iterator.scala:743)
+  at scala.collection.AbstractIterator.foreach(Iterator.scala:1177)
+  at scala.collection.mutable.MapLike$class.clear(MapLike.scala:173)
+  at scala.collection.mutable.AbstractMap.clear(Map.scala:80)
+  ... 33 elided
+
+scala> sys.props filterNot { case (k,v) => k == "hi" }
+java.util.ConcurrentModificationException
+  at java.util.Hashtable$Enumerator.next(Hashtable.java:1367)
+  at scala.collection.convert.Wrappers$JPropertiesWrapper$$anon$3.next(Wrappers.scala:438)
+  at scala.collection.convert.Wrappers$JPropertiesWrapper$$anon$3.next(Wrappers.scala:434)
+  at scala.collection.Iterator$class.foreach(Iterator.scala:743)
+  at scala.collection.AbstractIterator.foreach(Iterator.scala:1177)
+  at scala.collection.IterableLike$class.foreach(IterableLike.scala:72)
+  at scala.collection.AbstractIterable.foreach(Iterable.scala:54)
+  at scala.collection.MapLike$class.filterNot(MapLike.scala:317)
+  at scala.collection.AbstractMap.filterNot(Map.scala:59)
+  ... 33 elided
+{code}
+

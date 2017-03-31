@@ -1,0 +1,20 @@
+Unfortunately, this can't be done unless you create the Array yourself. The code above is using the 'apply' method defined in object {{scala.Array}}. Here it is:
+
+{code}
+  def apply[A <: AnyRef](xs: A*): Array[A] = {
+    val array = new Array[A](xs.length)
+    var i = 0
+    for (x <- xs.elements) { array(i) = x; i += 1 }
+    array
+  }
+{code}
+
+the first line, {{new Array[A]}}, can't possibly know the type {{A}} because of erasure. So the compiler creates a {{BoxedArray}} instead. Primitive types work fine because there are overloaded versions of {{apply}} for each primitive type.
+
+You can achieve what you want by inlining (sort of) the above code so that the concrete type of {{A}} is known:
+
+{code}
+val arr = new Array[String](1)
+arr(0) = "bar"
+args.put(...)
+{code}

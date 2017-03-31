@@ -1,0 +1,9 @@
+I was going to be surprised if this still existed in trunk given the wide range of arity-mismatch things I've fixed, and indeed, it doesn't.
+{code}
+Bar.scala:1: error: class Bar needs to be abstract, since method foo in trait Foo of type [G[_]](implicit n: N[G,F])X[F] is not defined
+(Note that N[G,F] does not match M[G])
+class Bar[F[_]] extends Foo[F] {
+      ^
+one error found
+{code}
+Or, make Bar abstract and enjoy it compiling.  If that method is supposed to implement that other method, well I don't know about anyone else but I'd be pretty surprised if that worked (assuming it's supposed to.)

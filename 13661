@@ -1,0 +1,22 @@
+The following crashes with the current trunk. It worked in 2.7.1.
+
+{code}
+class Test {
+  class A
+  def a: Array[A] = null
+}
+{code}
+
+gives
+
+{code}
+Exception in thread "main" java.lang.RuntimeException
+        at ch.epfl.lamp.compiler.msil.emit.TypeBuilder.testRaw(TypeBuilder.scala:187)
+        at ch.epfl.lamp.compiler.msil.emit.TypeBuilder.GetNestedType(TypeBuilder.scala:144)
+        at ch.epfl.lamp.compiler.msil.Type.GetType(Type.java:384)
+        at ch.epfl.lamp.compiler.msil.Type.GetType(Type.java:358)
+        at scala.tools.nsc.symtab.clr.CLRTypes.getType(CLRTypes.scala:137)
+        at scala.tools.nsc.symtab.clr.CLRTypes.mkArrayType(CLRTypes.scala:145)
+{code}
+
+Once this is solved, the new {{scala.collections.mutable.OpenHashMap}} will compile fine on .NET, make sure to remove the corresponding class is {{dotnet-library}}.

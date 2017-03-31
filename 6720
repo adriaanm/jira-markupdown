@@ -1,0 +1,28 @@
+The bug is in {{Implicits#depoly}}. It uses {{ApproximateDependentMap}} to type to wildcard away dependent type prefixes based on parameter values. But it goes too far, and ends up converting the result type of {{toFor}} from:
+
+{code}
+=> m1.__For
+{code}
+
+to:
+
+{code}
+"=> ?#__For"
+{code}
+
+It only affects the {{use1}}, because of {{m}}'s coincidental position in an enclosing parameter list.
+
+This mapped type no longer conforms to the expected type, {{ AnyRef{ def map: Int} }}.
+
+How can we be more discriminating here? We only want to find types that are dependent on a method parameter in the method that provides the candiate implicit.
+
+...
+
+Oh, just found this:
+
+{code}
+
+    // more precise conceptually, but causes cyclic errors:    (paramss exists (_ contains sym))
+    override def isImmediatelyDependent = (sym ne NoSymbol) && (sym.owner.isMethod && sym.isValueParameter)
+
+{code}

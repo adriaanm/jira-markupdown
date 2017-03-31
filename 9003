@@ -1,0 +1,57 @@
+So inspecting the code in {{inferExprAlternative}}, it would appear that it could fall through if {{best != NoSymbol && !competing.isEmpty && !noAlternatives && pt.isErroneous}}.
+
+{code}
+        if (best == NoSymbol) {
+          // ...
+          NoBestExprAlternativeError(tree, pt, isSecondTry)
+        } else if (!competing.isEmpty) {
+          if (noAlternatives) NoBestExprAlternativeError(tree, pt, isSecondTry)
+          else if (!pt.isErroneous) AmbiguousExprAlternativeError(tree, pre, best, competing.head, pt, isSecondTry)
+        } else {
+          tree.setSymbol(best).setType(pre.memberType(best))
+        }
+{code}
+
+This commit seems relevant:
+
+https://github.com/scala/scala/commit/b10b58
+
+{code}
++        // since inferMethodAlternative modifies the state of the tree 
++        // we have to set the type of tree to ErrorType only in the very last
++        // fallback action that is done in the inference (tracking it manually is error prone).
++        // This avoids entering infinite loop in doTypeApply.
++        // TODO: maybe we should do the same thing with inferExprAlternative.
++        if (implicitly[Context].reportErrors) setError(tree)
+{code}
+
+It was refined later in: 
+
+https://github.com/scala/scala/commit/1ddc93
+
+See also:
+
+{code}
+      // side-effect on the tree, break the overloaded type cycle in infer
+      private def setErrorOnLastTry(lastTry: Boolean, tree: Tree) = if (lastTry) setError(tree)
+{code}
+
+Actually, digging back a bit further:
+
+https://github.com/scala/scala/commit/c800d1
+
+{code}
+         } else if (!competing.isEmpty) {
+-          if (secondTry) {
+-            typeErrorTree(tree, tree.symbol.tpe, pt)
+-          } else {
+-            if (!pt.isErroneous)
+-              context.ambiguousError(tree.pos, pre, best, competing.head, "expected type " + pt)
+-            setError(tree)
+-          }
++          if (secondTry) NoBestExprAlternativeError(tree, pt)
++          else { if (!pt.isErroneous) AmbiguousExprAlternativeError(tree, pre, best, competing.head, pt) }
+         } else {
+{code}
+
+Before that change, in the condition mentioned above, {{setError(tree)}} was called, which would have broken the loop.

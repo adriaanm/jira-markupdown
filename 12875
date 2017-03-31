@@ -1,0 +1,75 @@
+Try to compile this code:
+
+{code}
+object Program {
+ trait A { type T }
+ type B = A { type T = String }
+ trait C extends B
+}
+{code}
+
+Compilation fails:
+
+
+{code}
+Exception in thread "main" java.lang.AssertionError: assertion failed: trait C
+        at scala.Predef$$.assert(Predef.scala:96)
+        at scala.tools.nsc.transform.AddInterfaces.transformMixinInfo(AddInterfaces.scala:196)
+        at scala.tools.nsc.transform.Erasure.transformInfo(Erasure.scala:167)
+        at scala.tools.nsc.transform.InfoTransform$$Phase$$$$anon$$0.transform(InfoTransform.scala:31)
+        at scala.tools.nsc.symtab.Symbols$$Symbol.rawInfo(Symbols.scala:526)
+        at scala.tools.nsc.symtab.Symbols$$Symbol.info(Symbols.scala:473)
+        at scala.tools.nsc.transform.AddInterfaces$$$$anon$$0.transform(AddInterfaces.scala:318)
+        at scala.tools.nsc.ast.Trees$$Transformer.transformTemplate(Trees.scala:1333)
+        at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$21.apply(Trees.scala:1231)
+        at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$21.apply(Trees.scala:1231)
+        at scala.tools.nsc.ast.Trees$$Transformer.atOwner(Trees.scala:1355)
+        at scala.tools.nsc.ast.Trees$$Transformer.transform(Trees.scala:1230)
+        at scala.tools.nsc.transform.AddInterfaces$$$$anon$$0.transform(AddInterfaces.scala:346)
+        at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$33.apply(Trees.scala:1349)
+        at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$33.apply(Trees.scala:1347)
+        at scala.List$$.loop$$0(List.scala:244)
+        at scala.List$$.mapConserve(List.scala:261)
+        at scala.List$$.loop$$0(List.scala:248)
+        at scala.List$$.mapConserve(List.scala:261)
+        at scala.tools.nsc.ast.Trees$$Transformer.transformStats(Trees.scala:1347)
+        at scala.tools.nsc.transform.AddInterfaces$$$$anon$$0.transformStats(AddInterfaces.scala:305)
+        at scala.tools.nsc.ast.Trees$$Transformer.transform(Trees.scala:1259)
+        at scala.tools.nsc.transform.AddInterfaces$$$$anon$$0.transform(AddInterfaces.scala:346)
+        at scala.tools.nsc.ast.Trees$$Transformer.transformTemplate(Trees.scala:1333)
+        at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$21.apply(Trees.scala:1231)
+        at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$21.apply(Trees.scala:1231)
+        at scala.tools.nsc.ast.Trees$$Transformer.atOwner(Trees.scala:1355)
+        at scala.tools.nsc.ast.Trees$$Transformer.transform(Trees.scala:1230)
+        at scala.tools.nsc.transform.AddInterfaces$$$$anon$$0.transform(AddInterfaces.scala:346)
+        at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$33.apply(Trees.scala:1349)
+        at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$33.apply(Trees.scala:1347)
+        at scala.List$$.loop$$0(List.scala:244)
+        at scala.List$$.mapConserve(List.scala:261)
+        at scala.tools.nsc.ast.Trees$$Transformer.transformStats(Trees.scala:1347)
+        at scala.tools.nsc.transform.AddInterfaces$$$$anon$$0.transformStats(AddInterfaces.scala:305)
+        at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$20.apply(Trees.scala:1227)
+        at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$20.apply(Trees.scala:1227)
+        at scala.tools.nsc.ast.Trees$$Transformer.atOwner(Trees.scala:1355)
+        at scala.tools.nsc.ast.Trees$$Transformer.transform(Trees.scala:1226)
+        at scala.tools.nsc.transform.AddInterfaces$$$$anon$$0.transform(AddInterfaces.scala:346)
+        at scala.tools.nsc.transform.Erasure$$ErasureTransformer$$$$anonfun$$26.apply(Erasure.scala:887)
+        at scala.tools.nsc.transform.Erasure$$ErasureTransformer$$$$anonfun$$26.apply(Erasure.scala:886)
+        at scala.tools.nsc.symtab.SymbolTable.atPhase(SymbolTable.scala:85)
+        at scala.tools.nsc.transform.Erasure$$ErasureTransformer.transform(Erasure.scala:886)
+        at scala.tools.nsc.ast.Trees$$Transformer.transformUnit(Trees.scala:1350)
+        at scala.tools.nsc.transform.Transform$$Phase.apply(Transform.scala:30)
+        at scala.tools.nsc.Global$$GlobalPhase.applyPhase(Global.scala:249)
+        at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$2.apply(Global.scala:238)
+        at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$2.apply(Global.scala:238)
+        at scala.Iterator$$class.foreach(Iterator.scala:375)
+        at scala.collection.mutable.ListBuffer$$$$anon$$0.foreach(ListBuffer.scala:255)
+        at scala.tools.nsc.Global$$GlobalPhase.run(Global.scala:238)
+        at scala.tools.nsc.Global$$Run.compileSources(Global.scala:534)
+        at scala.tools.nsc.Global$$Run.compile(Global.scala:615)
+        at scala.tools.nsc.Main$$.process(Main.scala:86)
+        at scala.tools.nsc.Main$$.main(Main.scala:107)
+        at scala.tools.nsc.Main.main(Main.scala)
+
+
+{code}

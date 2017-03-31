@@ -1,0 +1,42 @@
+The insert fails correctly ...
+
+{code}
+scala> import collection.mutable.ListBuffer
+import collection.mutable.ListBuffer
+
+scala> val lb = ListBuffer('a, 'b , 'c)
+lb: scala.collection.mutable.ListBuffer[Symbol] = ListBuffer('a, 'b, 'c)
+
+scala> lb.insert(9, 'x)
+java.lang.IndexOutOfBoundsException: 9
+	at scala.collection.mutable.ListBuffer.insertAll(ListBuffer.scala:249)
+	at scala.collection.mutable.BufferLike$class.insert(BufferLike.scala:166)
+	at scala.collection.mutable.AbstractBuffer.insert(Buffer.scala:48)
+{code}
+
+... but the buffer instance is corrupted afterwards:
+
+{code}
+scala> lb
+java.util.NoSuchElementException: head of empty list
+	at scala.collection.immutable.Nil$.head(List.scala:329)
+	at scala.collection.immutable.Nil$.head(List.scala:326)
+	at scala.collection.mutable.ListBuffer$$anon$1.next(ListBuffer.scala:406)
+	at scala.collection.Iterator$$anon$10.next(Iterator.scala:312)
+	at scala.collection.Iterator$$anon$11.next(Iterator.scala:328)
+	at scala.collection.Iterator$class.foreach(Iterator.scala:727)
+	at scala.collection.AbstractIterator.foreach(Iterator.scala:1156)
+	at scala.collection.TraversableOnce$class.addString(TraversableOnce.scala:306)
+	at scala.collection.AbstractIterator.addString(Iterator.scala:1156)
+	at scala.collection.TraversableOnce$class.mkString(TraversableOnce.scala:272)
+	at scala.collection.AbstractIterator.mkString(Iterator.scala:1156)
+	at scala.runtime.ScalaRunTime$.scala$runtime$ScalaRunTime$$inner$1(ScalaRunTime.scala:323)
+	at scala.runtime.ScalaRunTime$.stringOf(ScalaRunTime.scala:332)
+	at scala.runtime.ScalaRunTime$.replStringOf(ScalaRunTime.scala:340)
+
+scala> println(lb)
+ListBuffer('a, 'b, 'c)
+
+scala> lb.length
+res16: Int = 4
+{code}

@@ -1,0 +1,35 @@
+I use Guice for dependency injection. However, I'm not able to use [http://google-guice.googlecode.com/svn/trunk/javadoc/com/google/inject/ImplementedBy.html @ImplementedBy(...)] annotation, which refers to the class implementing my trait. While this is acceptable in java:
+{code}
+@com.google.inject.ImplementedBy(Provider.class)
+public interface Service {
+  void someMethod();
+}
+
+public class Provider
+    implements Service
+{
+  public void someMethod() { }
+}
+{code}
+the same code in Scala gives an error:
+{code}
+@com.google.inject.ImplementedBy(classOf[Provider])
+trait Service {
+  def someMethod()
+}
+
+class Provider
+    extends Service
+{
+  def someMethod() = ()
+}
+{code}
+compiling:
+{code}
+$$ scalac -cp guice-1.0.jar Service.scala
+Service.scala:6: error: illegal cyclic reference involving trait Service
+class Provider
+{code}
+which prevents me from using the annotation.
+
+_(Guice is available at http://code.google.com/p/google-guice/.)_

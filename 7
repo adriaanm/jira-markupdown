@@ -1,0 +1,12 @@
+The example now causes a type error:
+
+{code}
+bug1279a.scala:34: error: no type parameters for method all4ImplSI-4259: (MSI-3759{type TSI-4288 <: USI-4285})StreamSI-437[MSI-3759{type TSI-4291 <: USI-4285}] exist so that it can be applied to arguments (firstSI-4262.selfTypeSI-3770)
+ --- because ---
+result type StreamSI-437[MSI-3759{type TSI-4291 <: USI-4285}] is incompatible with expected type StreamSI-437[MSI-3759{type TSI-4264 <: USI-4261}]
+    def all4Impl[U](first: M {type T <: U}): Stream[M {type T <: U}] = Stream.cons(first, all4Impl(first.next))
+{code}
+
+Not ideal, but workable. I lowered priority but leave it open.
+
+[martin]

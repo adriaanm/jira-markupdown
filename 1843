@@ -1,0 +1,20 @@
+I think I'm running into a similar issue. I'm trying to create a simple class:
+
+{code}
+class Topping(var name:String)}}
+{code}
+
+That class definition should create the implicit getter and setter for its name attribute. Then, I create a trait this way:
+
+{code}
+trait LoggingNameTrait extends Topping {
+
+  override def name_=(aName:String) {
+    print(aName)
+    super.name_=(aName) // this line doesn't compile
+  }
+
+}
+{code}
+
+The Scala compiler doesn't let me trait-overwrite the setter for the name attribute. Is this supposed to work this way (some kind of a language limitation)?

@@ -1,0 +1,5 @@
+I don't think this is a bug.
+
+If you want to use more than 256 "receive" actors active at the same time, then you need to increase the maximum size of the thread pool by specifying -Dactors.maxPoolSize=X, with X greater or equal to the number of active receive-based actors you want.
+
+I think the performance difference between 2.7.(2, 3, 4) and 2.7.5 is expected.  In pre-2.7.5 versions, start tasks associated with new actors spawned by other actors and tasks resulting from messages sends from actors would bypass the central task queue and be placed directly on the current work thread's queue.  Task stealing was used to allow idle workers to take tasks out of the queues of busy workers.  This was eliminated in 2.7.5 due to bugs.  I think it will be coming back in 2.8.

@@ -1,0 +1,23 @@
+Here's a small accompaniment.
+{code}
+trait Boo {
+  type A1 >: Int <: Int
+  type A2 = Int
+}
+class Foo(val in: Boo) {
+  type A1 = in.A1
+  type A2 = in.A2
+
+  type B1 = A1
+  type B2 = A2
+}
+object Baz extends Foo(new Boo { })
+
+/**
+scala> typeOf[Baz.type].members filter (_.isType) map (typeOf[Baz.type] memberType _ normalize)  >
+Int
+Baz.in.A1
+Int
+Baz.in.A1
+**/
+{code}

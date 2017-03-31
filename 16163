@@ -1,0 +1,41 @@
+Pasting the following snippet into the interpreter leads to a crash of the interpreter:
+
+{noformat} 
+def analyze(x: Any) = x match {
+  case s: String => println("It's a string: " + s)
+  case 1 => println("It's a one")
+  case (a: Int, b) => println("It's a pair of and int " + a +
+                              " and something " + b)
+  case 1 :: 2 :: _ => println("It's a list starting with 1, 2")
+  case List(a, b, c) => println("It's a three-element list with " +
+                                a + ", " + b + ", " + c)
+  case _ => println("It's something different")
+}
+{noformat} 
+
+Here's the beginning of the interpreter's output:
+
+{noformat} 
+<console>:13: warning: No binding
+         case List(a, b, c) => println("It's a three-element list with " +
+                   ^
+<console>:13: warning: No binding
+         case List(a, b, c) => println("It's a three-element list with " +
+                      ^
+<console>:13: warning: No binding
+         case List(a, b, c) => println("It's a three-element list with " +
+                         ^
+scala.tools.nsc.symtab.Types$TypeError: not enough arguments for method body%41: (val a: A, val b: A, val c: A)Unit.
+Unspecified value parameters a, b, c.
+        at scala.tools.nsc.typechecker.Contexts$Context.error(Contexts.scala:291)
+        at scala.tools.nsc.typechecker.Infer$Inferencer.error(Infer.scala:205)
+        at scala.tools.nsc.typechecker.Infer$Inferencer.errorTree(Infer.scala:209)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$tryNamesDefaults$1$4.apply(Typers.scala:2395)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$tryNamesDefaults$1$4.apply(Typers.scala:2395)
+        at scala.Option.getOrElse(Option.scala:109)
+        at scala.tools.nsc.typechecker.Typers$Typer.tryNamesDefaults$1(Typers.scala:2395)
+        at scala.tools.nsc.typechecker.Typers$Typer.doTypedApply(Typers.scala:2405)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedApply$1(Typers.scala:3344)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:4062)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:4217)
+{noformat}

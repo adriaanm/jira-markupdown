@@ -1,0 +1,40 @@
+Given this Java code in ./rrs/Outer.java:
+{code}
+// package rrs; "Inadvertently" ommitted package declaration
+
+public
+class Outer
+{
+    public
+    static
+    class InnerS
+    {
+        public static int twenty_three = 23;
+    }
+}
+{code}
+
+...and this Scala in ./JavaInner.scala:
+{code}
+object JavaInner
+{
+    def
+    main(args: Array[String]): Unit =
+        printf("rrs.Outer.InnerS.twenty_three=%d%n",
+               rrs.Outer.InnerS.twenty_three)
+}
+{code}
+...and compiling thusly:
+
+{code}
+% javac rrs/Outer.java
+% scalac -cp . JavaInner.scala
+{code}
+
+The following exception results:
+
+scala.tools.nsc.FatalError: package <empty> does not have a member Outer
+
+(The complete stack trace is attached.)
+
+If the "inadvertently" ommitted package declaration is reinstated, comilation succeeds and the resulting code executes as expected.

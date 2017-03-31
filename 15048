@@ -1,0 +1,23 @@
+That's a nice vague summary! It's OK though because I'm assigning it to myself.  My motivation of the moment is as described in an email quoted below, but I have others in mind, and hopefully people can remind me of their least favorites in the comments.
+{code}
+I have a method that takes a List[A] as a parameter, where A was unbounded,
+and was matching on the list and calling .getClass on its head.  It's pretty
+clear in retrospect that this won't work, since A is effectively Any, and
+.getClass is only applicable to AnyRef, but the resulting error message
+could use some work:
+    
+>                                                                               
+/home/acruise/dev/subserveo/svn/SkyHook-trunk/util/src/main/scala/com/subserve  
+o/util/ScalaUtils.scala:7:                                                      
+> error: type mismatch;                                                         
+>  found   : A                                                                  
+>  required: ?{val getClass: ?}                                                 
+> Note that implicit conversions are not applicable because they are            
+> ambiguous:                                                                    
+>  both method any2stringadd in object Predef of type (x:                       
+> Any)scala.runtime.StringAdd                                                   
+>  and method any2ArrowAssoc in object Predef of type [A](x: A)ArrowAssoc[A]    
+>  are possible conversion functions from A to ?{val getClass: ?}               
+>         case x :: xs if manifestB.erasure.isAssignableFrom(x.getClass) =>     
+    
+{code}

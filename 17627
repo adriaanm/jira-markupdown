@@ -1,0 +1,69 @@
+There is a off-by-one error in the computation of `count1`, which fails to trigger an exception in the following case:
+
+Removing one item from an invalid position where position == length works ...
+
+{code}
+scala> val lb = ListBuffer('a, 'b , 'c)
+lb: scala.collection.mutable.ListBuffer[Symbol] = ListBuffer('a, 'b, 'c)
+
+scala> lb.remove(3, 1)
+
+scala> lb
+res21: scala.collection.mutable.ListBuffer[Symbol] = ListBuffer('a, 'b, 'c)
+{code}
+
+... but fails for a different invalid position, even if we don't actually remove an element ...
+
+{code}
+scala> lb.remove(9, 0)
+java.lang.UnsupportedOperationException: tail of empty list
+	at scala.collection.immutable.Nil$.tail(List.scala:331)
+	at scala.collection.immutable.Nil$.tail(List.scala:326)
+	at scala.collection.mutable.ListBuffer.remove(ListBuffer.scala:283)
+{code}
+
+Invalid position + removing more items than existing, is OK again:
+
+{code}
+scala> lb.remove(3, 4)
+
+scala> lb
+res26: scala.collection.mutable.ListBuffer[Symbol] = ListBuffer('a, 'b, 'c)
+{code}
+
+
+If position and amount of items to be removed == length, the operation succeeds, but the buffer is corrupted afterwards:
+
+{code}
+scala> lb.remove(4, 4)
+
+scala> lb
+java.util.NoSuchElementException: head of empty list
+	at scala.collection.immutable.Nil$.head(List.scala:329)
+	at scala.collection.immutable.Nil$.head(List.scala:326)
+	at scala.collection.mutable.ListBuffer$$anon$1.next(ListBuffer.scala:406)
+	at scala.collection.Iterator$$anon$10.next(Iterator.scala:312)
+	at scala.collection.Iterator$$anon$11.next(Iterator.scala:328)
+	at scala.collection.Iterator$class.foreach(Iterator.scala:727)
+	at scala.collection.AbstractIterator.foreach(Iterator.scala:1156)
+	at scala.collection.TraversableOnce$class.addString(TraversableOnce.scala:306)
+	at scala.collection.AbstractIterator.addString(Iterator.scala:1156)
+	at scala.collection.TraversableOnce$class.mkString(TraversableOnce.scala:272)
+	at scala.collection.AbstractIterator.mkString(Iterator.scala:1156)
+	at scala.runtime.ScalaRunTime$.scala$runtime$ScalaRunTime$$inner$1(ScalaRunTime.scala:323)
+	at scala.runtime.ScalaRunTime$.stringOf(ScalaRunTime.scala:332)
+	at scala.runtime.ScalaRunTime$.replStringOf(ScalaRunTime.scala:340)
+{code}
+
+The underlying cause of this is that the whole bounds-fixing code is highly questionable, especially because it isn't mentioned in the documentation at all:
+
+{code}
+  override def remove(n: Int, count: Int) {
+    val n1 = n max 0
+    val count1 = count min (len - n1)
+    ...
+{code}
+
+Imho we should kill this behaviour completely and replace it with appropriate bound checks throwing IOOBEs.
+
+What do you think?

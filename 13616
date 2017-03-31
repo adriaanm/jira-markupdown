@@ -1,0 +1,18 @@
+In trunk r15632, the following (simplified from files/run/bugs) prints "null" instead of "a":
+{code}
+object Test extends Application {
+object Bug399Test {
+  def f(x: String): String = {
+    trait C { def f: String = x; }
+    val y = new C { }
+    y.f
+  }
+
+  def test(args: Array[String]) {
+    Console.println(f("a"));
+  }
+}
+
+val _ = Bug399Test.test(Array[String]())
+}
+{code}

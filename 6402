@@ -1,0 +1,15 @@
+3 is a bug, not cleverness.  In trunk it's a compile-time error.
+
+<console>:9: error: forward reference extends over definition of value result
+              val result = prefix + suffix;
+                                    ^
+
+This ticket is a duplicate of about a thousand others, but I'll leave it open since it gave me an idea.  Your advice at the end is impossible unless you want to prohibit overriding vals.
+
+Here's a val referring to itself and making the fibonacci sequence.
+
+scala> val fib: Stream[Int] = 1 #:: ((0 #:: fib zip fib) map { case (x, y) => x + y })
+fib: Stream[Int] = Stream(1, ?)
+
+scala> fib take 10 toList
+res0: List[Int] = List(1, 1, 2, 3, 5, 8, 13, 21, 34, 55)

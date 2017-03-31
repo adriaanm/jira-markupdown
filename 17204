@@ -1,0 +1,25 @@
+The summary (title) of this issue is fairly involved but I couldn't find better one. I think it's the best to present code at this point:
+{code}
+trait Foo[@specialized(AnyRef, Int) A, @specialized(Boolean) B] {
+  def apply(x: A): Boolean
+}
+abstract class Inter extends Foo[String, Boolean]
+class Baz extends Inter {
+  def apply(x: String) = false
+}
+{code}
+
+We are interested in apply method of Baz class. Let's see the javap output:
+{code}
+Compiled from "check-both.scala"
+public class Baz extends Inter{
+    public boolean apply(java.lang.String);
+    public boolean apply(java.lang.Object);
+    public Baz();
+}
+{code}
+
+we see here that specialized overrides are missing so default specialized implementations will be used (from Inter class) that forward to Foo$class and thus box.
+
+This problem is caused by the fact that AnyRef specialization is a bit more tricky than specialization on primitive types. When we specialize on AnyRef and then we check if given type argument for specialized type parameter is valid we have to use subtyping relationship instead of equality. The relevant piece of code is here:
+https://github.com/scala/scala/blob/39f01d4f48e59c2037a3af759eb6d55d0da50e70/src/compiler/scala/tools/nsc/transform/SpecializeTypes.scala#L162

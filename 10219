@@ -1,0 +1,15 @@
+The code that prompted that test:
+
+{code}
+    // unlink existing symbols in the package
+    for (member <- container.info.decls.iterator) {
+      if (!member.isPrivate && !member.isConstructor) {
+        // todo: handle overlapping definitions in some way: mark as errors
+        // or treat as abstractions. For now the symbol in the package module takes precedence.
+        for (existing <- dest.info.decl(member.name).alternatives)
+          dest.info.decls.unlink(existing)
+      }
+    }
+{code}
+
+It only considers the `decls` of the package object, rather than `members`.

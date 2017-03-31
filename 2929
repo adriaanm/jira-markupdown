@@ -1,0 +1,10 @@
+Reformatted code to reproduce bug:
+
+{code}
+val bigmap = Map[Int,Int] ++ (0 to 7000 map (i=>(i,i))) 
+val submap = bigmap filter (_._2>6000) 
+println ("Filtered map has " + submap.size + " entries") 
+//filter again 
+val submap1 = bigmap filter (_._2>6000) //will fail 
+println ("Filtered map has " + submap1.size + " entries") 
+{code}

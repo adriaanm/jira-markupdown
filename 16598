@@ -1,0 +1,27 @@
+{code}
+import scala.util.continuations._
+object CPSBool {
+  def noncpsBool(): Boolean = {
+    println("noncpsBool")
+    true
+  }
+  def cpsBool():Boolean @suspendable = {
+    println("cpsBool")
+    shiftUnit0[Boolean, Unit](true)
+  }
+  def main(args: Array[String]) {
+    val _ = noncpsBool() || noncpsBool()
+    reset {
+      val _ = cpsBool() || cpsBool()
+    }
+  }
+}
+{code}
+
+I expect cpsBool() is only evaluated once like noncps expression, but it is actually evaluated twice:
+{code}
+$ scala -P:continuations:enable CPSBool.scala
+noncpsBool
+cpsBool
+cpsBool
+{code}

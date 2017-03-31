@@ -1,0 +1,15 @@
+The potential deadlock in case of cyclic dependencies is speced:
+
+{quote}
+Note that the value deﬁned by an object deﬁnition is instantiated lazily. The
+new m$cls constructor is evaluated not at the point of the object deﬁnition, but is
+instead evaluated the ﬁrst time m is dereferenced during execution of the program
+(which might be never at all). An attempt to dereference m again in the course
+of evaluation of the constructor leads to a inﬁnite loop or run-time error. Other
+threads trying to dereference m while the constructor is being evaluated block until
+evaluation is complete.
+{quote}
+
+See Scala Specification (5.4).
+
+One could wish we would just throw an exception at runtime in case of cyclic dependencies between objects or lazy vals. I believe we could do that but without invokedynamic cycle detection would be probably rather expensive.

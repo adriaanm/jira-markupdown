@@ -1,0 +1,8 @@
+I have no idea whether there's a principled solution here, since I have only superficial knowledge of how type inference is supposed to work, but luckily there's a very simple workaround that involves converting latent whiteboxity of Generic to explicit whiteboxity of Generic.Aux:
+
+{noformat}
+- implicit def materializeGeneric[T]: Generic[T] = macro Macros.impl[T]
++ implicit def materializeGeneric[T, Repr]: Generic.Aux[T, Repr] = macro Macros.impl[T]
+{noformat}
+
+This, however, requires 2.11 and is not going to work in 2.10, because fundep materialization was only merged into 2.11 (https://github.com/scala/scala/pull/2499).

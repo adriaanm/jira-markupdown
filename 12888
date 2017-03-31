@@ -1,0 +1,22 @@
+My understanding is that the - method on a Set should return a new set with the specified element removed, leaving the underlying set unchanged. On some instances of !HashSet, I am seeing strange behaviour that suggests that the original set is changing:
+
+{code}
+Welcome to Scala version 2.6.0-final.
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> val s = Set() ++ List(0, 1, 2, 3, -8)
+s: scala.collection.immutable.Set[Int] = HashSet(0, 3, -8, 1, 2)
+
+scala> var ss = s
+ss: scala.collection.immutable.Set[Int] = HashSet(0, 3, -8, 1, 2)
+
+scala> s.foreach{e => ss = ss - e}
+
+scala> ss
+res1: scala.collection.immutable.Set[Int] = HashSet(-8)
+{code}
+
+I would expect ss at the end of the above code to be the empty set, not the set containing -8.
+
+Attached is !ScalaCheck code that uncovered this issue.

@@ -1,0 +1,26 @@
+Side issue noticed in SI-8367, the error message related to a synthetic super call is positioned confusingly at a comment.
+
+{code}
+class C
+
+
+
+// comment
+{code}
+
+Positioned as:
+{code}
+[[syntax trees at end of                    parser]] // newSource1.scala
+[6]package [6]<empty> {
+  [6]class C extends [7][21]scala.AnyRef {
+    [21]def <init>() = [21]{
+      [NoPosition][NoPosition][NoPosition]super.<init>();
+      [21]()
+    }
+  }
+}
+{code}
+
+This led me to try this patch: https://github.com/scala/scala/pull/3612
+
+But there is a bit more work needed to finesse this (as always with positions), so I'm lodging this as a ticket for now.

@@ -1,0 +1,28 @@
+In the following example, a {{Float}} and a {{Double}} is compared with a {{Number}}. They are all equal, and {{==}} returns {{true}}. 
+However, the compiler gives the warning "comparing values of types Double and Number using `==' will *always* yield false" and this is not true!
+
+{code}
+scala> val d = (BigInt(1) << 64).toDouble
+d: Double = 1.8446744073709552E19
+
+scala> val f: Float = d.toFloat
+f: Float = 1.8446744E19
+
+scala> val n: java.lang.Number = d
+n: Number = 1.8446744073709552E19
+
+scala> d == f
+res37: Boolean = true
+
+scala> d == n
+<console>:10: warning: comparing values of types Double and Number using `==' will always yield false
+              d == n
+                ^
+res38: Boolean = true
+
+scala> f == n
+<console>:11: warning: comparing values of types Float and Number using `==' will always yield false
+              f == n
+                ^
+res39: Boolean = true
+{code}

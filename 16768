@@ -1,0 +1,32 @@
+{code}
+package repro
+
+trait HasString {
+  def string: String
+}
+
+class CausesProblems {
+  def problems = (
+    if ("don't optimize me away!".length == 0)
+      new HasString { def string = "wut" }
+    else
+      new HasString { def string = "okay" }
+  ).string
+}
+{code}
+
+Compiles fine without FSC. Compiles fine with FSC too, the first time. Attempting to recompile it without kicking FSC results in:
+
+{noformat}
+    Error:Error:line (3)error: overriding method string in trait HasString of type ()String;
+method string in class Object of type ()java.lang.String has incompatible type;
+(Note that method string in trait HasString of type ()String is abstract,
+and is therefore overridden by concrete method string in class Object of type ()java.lang.String)
+trait HasString {
+    Error:Error:line (10)error: overriding method string in class Object of type ()java.lang.String;
+method string needs `override' modifier
+new HasString { def string = "wut" }
+    Error:Error:line (12)error: overriding method string in class Object of type ()java.lang.String;
+method string needs `override' modifier
+new HasString { def string = "okay" }
+{noformat}

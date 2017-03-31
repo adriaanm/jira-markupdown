@@ -1,0 +1,14 @@
+Only part of the way but the following is already possible in Macros Paradise:
+
+{code}
+import reflect.macros.Context
+
+type NotNothing[A] = macro notNothingImpl[A]
+def notNothingImpl[A: c.WeakTypeTag](c: Context) = {
+  import c.universe._
+  val isNothing = weakTypeOf[A] =:= typeOf[Nothing]
+  if (isNothing)
+    c.error(NoPosition, "An explicit type parameter is required.")
+  TypeTree(weakTypeOf[A])
+}
+{code}

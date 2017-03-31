@@ -1,0 +1,23 @@
+Here's a somewhat narrowed reproduction which doesn't use the repl.  The call to super.computePluginPhases() is necessary for the crash.
+{code}
+import scala.tools.nsc._
+
+object Test {
+  val x = {
+    object cc extends Global(new Settings()) { 
+      // object dummy   //<-- uncomment to make the error go away
+      object sbtAnalyzer { }
+
+      override def computePluginPhases() = {
+        super.computePluginPhases()
+        assert(sbtAnalyzer ne null, "FAIL!")
+      }
+    }
+    println(new cc.Run)
+  }
+  
+  def main(args: Array[String]): Unit = {
+    
+  }
+}
+{code}

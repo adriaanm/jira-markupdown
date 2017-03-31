@@ -1,0 +1,21 @@
+Reassign to Gilles. It works if the implicit conversion returns an anonymous class instead of a structural type.
+
+This runs fine:
+{code}
+object Test {
+  abstract   class Cons[A] {
+    def ::(e: A): Stream[A]
+  }
+
+  implicit def convertStream[A](str: =>Stream[A]) = new Cons[A] {
+    def ::(e: A) = Stream.cons(e, str)
+  }
+
+  def main(args: Array[String]) {
+    def gen(n: Int): Stream[Int] = n :: convertStream[Int](gen(n + 1))
+    val nats = gen(0)
+
+    nats take 10 foreach println
+  }
+}
+{code}

@@ -1,0 +1,12 @@
+Well, it turns out that it won't come easily.  The problem is that most any other operation on a BufferedIterator returns a regular iterator again.  So if you do make takeWhile work the way we'd like, you get this situation:
+{code}
+val it = (1 to 100).iterator.buffered
+it takeWhile (_ < 30) toList;
+println(it.next)
+30
+// but...
+val it = (1 to 100).iterator.buffered map (x => x)
+...
+31
+{code}
+That's not a situation I want to invite with or without warning signs.  I implemented span in r23678 and am closing this.

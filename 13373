@@ -1,0 +1,15 @@
+Making lazy vals stable by default violates the substitution principle of singleton types.  The following code illustrates this:
+{code}
+  object Test extends Application {
+    val x = "foo"
+    lazy val y : x.type = throw new Error("not really foo")
+
+    def f(z : => x.type) = try { z } catch { case e => e }
+
+    val f1 = f(x)
+    val f2 = f(x)
+    val f3 = f(y)
+    println(f1 eq f2)
+    println(f1 eq f3)
+  }
+{code}

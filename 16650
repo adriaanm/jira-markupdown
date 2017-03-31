@@ -1,0 +1,60 @@
+Returning a CPS value causes a runtime error CPS tranformed. The same statement without CPS annotations works properly so the code structure itself is OK.
+
+This form should be able to be transformed without a runtime error.
+
+{noformat}
+import scala.util.continuations._
+
+object Test {
+
+  def one: Int @cps[Int] = 1
+
+  def test1(): Int @cps[Int] = {
+    return one
+  }
+
+  def main(args: Array[String]): Any = {
+    println(reset(test1()))
+  }
+
+}
+{noformat}
+
+{noformat}
+$ ~/opt/scala-2.10.0.dev-1302-g6a33a20/bin/scala -P:continuations:enable returnY.scala
+java.lang.ClassCastException: java.lang.Integer cannot be cast to scala.util.continuations.ControlContext
+	at Main$.test1(returnY.scala:10)
+	at Main$$anonfun$main$1.apply(returnY.scala:14)
+	at Main$$anonfun$main$1.apply(returnY.scala:14)
+	at scala.util.continuations.package$.reset(package.scala:133)
+	at Main$.main(returnY.scala:14)
+	at Main.main(returnY.scala)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at scala.tools.nsc.util.ScalaClassLoader$$anonfun$run$1.apply(ScalaClassLoader.scala:90)
+	at scala.tools.nsc.util.ScalaClassLoader$class.asContext(ScalaClassLoader.scala:38)
+	at scala.tools.nsc.util.ScalaClassLoader$URLClassLoader.asContext(ScalaClassLoader.scala:159)
+	at scala.tools.nsc.util.ScalaClassLoader$class.run(ScalaClassLoader.scala:90)
+	at scala.tools.nsc.util.ScalaClassLoader$URLClassLoader.run(ScalaClassLoader.scala:159)
+	at scala.tools.nsc.CommonRunner$class.run(ObjectRunner.scala:28)
+	at scala.tools.nsc.ObjectRunner$.run(ObjectRunner.scala:45)
+	at scala.tools.nsc.CommonRunner$class.runAndCatch(ObjectRunner.scala:35)
+	at scala.tools.nsc.ObjectRunner$.runAndCatch(ObjectRunner.scala:45)
+	at scala.tools.nsc.ScriptRunner.scala$tools$nsc$ScriptRunner$$runCompiled(ScriptRunner.scala:171)
+	at scala.tools.nsc.ScriptRunner$$anonfun$runScript$1.apply(ScriptRunner.scala:188)
+	at scala.tools.nsc.ScriptRunner$$anonfun$runScript$1.apply(ScriptRunner.scala:188)
+	at scala.tools.nsc.ScriptRunner$$anonfun$withCompiledScript$1.apply$mcZ$sp(ScriptRunner.scala:157)
+	at scala.tools.nsc.ScriptRunner$$anonfun$withCompiledScript$1.apply(ScriptRunner.scala:131)
+	at scala.tools.nsc.ScriptRunner$$anonfun$withCompiledScript$1.apply(ScriptRunner.scala:131)
+	at scala.tools.nsc.util.package$.trackingThreads(package.scala:49)
+	at scala.tools.nsc.util.package$.waitingForThreads(package.scala:33)
+	at scala.tools.nsc.ScriptRunner.withCompiledScript(ScriptRunner.scala:130)
+	at scala.tools.nsc.ScriptRunner.runScript(ScriptRunner.scala:188)
+	at scala.tools.nsc.ScriptRunner.runScriptAndCatch(ScriptRunner.scala:201)
+	at scala.tools.nsc.MainGenericRunner.runTarget$1(MainGenericRunner.scala:72)
+	at scala.tools.nsc.MainGenericRunner.process(MainGenericRunner.scala:92)
+	at scala.tools.nsc.MainGenericRunner$.main(MainGenericRunner.scala:101)
+	at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
+{noformat}

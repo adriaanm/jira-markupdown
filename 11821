@@ -1,0 +1,14 @@
+Similarly, the type is wrong in this example from scala-user:
+
+{code}
+import scala.language.higherKinds
+trait Proxiable {
+  def source: String
+}
+trait Proxy[+T <: Proxiable] {
+  def source: String
+}
+case class Data(source: String) extends Proxiable
+// generates ill-kinded type in the isInstanceOf of canEqual:
+case class Stuff[+P[PP <: Proxiable] <: Proxy[PP]](content: P[Data])
+{code}

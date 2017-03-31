@@ -1,0 +1,58 @@
+Given
+
+{code:scala}
+trait StringVal extends Any { def value: String ; final override def toString = value }
+
+final case class Foo(value: String) extends AnyVal with StringVal
+final case class Bar(value: String) extends AnyVal { override def toString = value }
+
+def foo(x: Foo) = println(x.toString)
+def bar(x: Bar) = println(x.toString)
+{code}
+
+{{javap}} shows a difference in bytecode:
+
+{code:scala}
+  public void foo(java.lang.String);
+    descriptor: (Ljava/lang/String;)V
+    flags: ACC_PUBLIC
+    Code:
+      stack=4, locals=2, args_size=2
+         0: getstatic     #19                 // Field scala/Predef$.MODULE$:Lscala/Predef$;
+         3: new           #21                 // class Foo
+         6: dup
+         7: aload_1
+         8: invokespecial #23                 // Method Foo."<init>":(Ljava/lang/String;)V
+        11: invokevirtual #27                 // Method Foo.toString:()Ljava/lang/String;
+        14: invokevirtual #31                 // Method scala/Predef$.println:(Ljava/lang/Object;)V
+        17: return
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      18     0  this   L;
+            0      18     1     x   Ljava/lang/String;
+      LineNumberTable:
+        line 14: 0
+
+  public void bar(java.lang.String);
+    descriptor: (Ljava/lang/String;)V
+    flags: ACC_PUBLIC
+    Code:
+      stack=3, locals=2, args_size=2
+         0: getstatic     #19                 // Field scala/Predef$.MODULE$:Lscala/Predef$;
+         3: getstatic     #24                 // Field Bar$.MODULE$:LBar$;
+         6: aload_1
+         7: invokevirtual #28                 // Method Bar$.toString$extension:(Ljava/lang/String;)Ljava/lang/String;
+        10: invokevirtual #32                 // Method scala/Predef$.println:(Ljava/lang/Object;)V
+        13: return
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      14     0  this   L;
+            0      14     1     x   Ljava/lang/String;
+      LineNumberTable:
+        line 13: 0
+{code}
+
+For more context see https://gitter.im/scala/scala?at=56fd99f0d9b73e635f6823bb where I discovered this with @ichoran.
+
+(meta: Unsure if to classify this as a bug or an improvement, I've opted for bug)
+(meta: Also unsure how best to detail this ticket in the summary)

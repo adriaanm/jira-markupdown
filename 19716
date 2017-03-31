@@ -1,0 +1,36 @@
+Example code:
+
+{code:scala}
+val (x, y) = Iterator.iterate(0)(_ + 1).take(6).span(_ != 1)
+println(x.next(), x.hasNext, y.next(), x.hasNext, x.toVector)
+{code}
+
+Expected result:
+
+{code:scala}
+(0,false,1,false,Vector())
+{code}
+
+Actual result:
+
+{code:scala}
+(0,false,1,true,Vector(2, 3, 4, 5))
+{code}
+
+The problem is in the implementation of the {{Leading}} class in {{Iterator.span}}, which doesn't remember that the test condition ({{p(self.head) == false}}) has already been reached.
+
+A solution is to add a class variable {{var finished = false}}, which is set when the condition fails in {{advance()}}:
+
+{code:scala}
+def advance() = {
+  !finished && self.hasNext && (if (p(self.head)) {
+      lookahead += self.next
+      true
+    } else {
+      finished = true
+      false
+    })
+}
+{code}
+
+The implementation remains non-thread-safe.

@@ -1,0 +1,19 @@
+Given this code:
+{code:borderStyle=solid}
+object Return {
+  def test(oi:Option[Int]):Option[String] =
+    oi.map(i => return Some(i.toString))
+}
+{code}
+
+When the {{return}} keyword is explicitly used and you try to compile it with {{-optimize}}, it causes the compiler to fail with the following message:
+
+  {{could not find init in: Return.test}}
+
+The full trace is at https://gist.github.com/dkristian/6348965 (also attached).
+
+It compiles fine without the {{-optimize}} flag, and works with the flag if the method definition is changed to
+{code:borderStyle=solid}
+  oi.map(i => i.toString)
+{code}
+Discussion started at https://groups.google.com/forum/#!topic/scala-language/WTzjZ5dpPdo

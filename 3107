@@ -1,0 +1,18 @@
+I just found something much worse.
+
+{code}
+scala> l
+res21: scala.collection.jcl.LinkedList[Int] = [10, 11, 12]
+
+scala> l.addAll(0, List(1,2,3,4))
+java.util.NoSuchElementException
+        at java.util.LinkedList$$ListItr.next(LinkedList.java:698)
+        at scala.collection.jcl.MutableIterator$$Wrapper.next(MutableIterator.scala:16)
+        at scala.collection.jcl.Buffer$$$$anonfun$$addAll$$1.apply(Buffer.scala:111)
+        at scala.collection.jcl.Buffer$$$$anonfun$$addAll$$1.apply(Buffer.scala:110)
+        at scala.List.foreach(List.scala:841)
+        at scala.collection.jcl.Buf...
+
+scala> l
+res23: scala.collection.jcl.LinkedList[Int] = [10, 1, 11, 2, 12, 3]
+{code}

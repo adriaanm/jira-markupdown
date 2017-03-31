@@ -1,0 +1,44 @@
+I think it's pretty reasonable to expect to be able to write a method like this:
+{code}
+def f[A](xs: Thing[_, A]): A = xs.bippy
+{code}
+If Thing's first type argument is kind *, you can. If it isn't, then god help you. There's no way most people will ever come up with this. The usual surrender probably involves adding an otherwise pointless type parameter to method f. This is not always an option and definitely shouldn't be mandated.
+
+Here are a few things one might try before hitting upon the syntax which actually works.
+{code}
+scala> trait Foo[CC[+X], +A]
+defined trait Foo
+
+scala> trait Foo[CC[+X], +A] ; def f[A](x: Foo[_, A]): A = ???
+<console>:8: error: _$1 takes no type parameters, expected: one
+       trait Foo[CC[+X], +A] ; def f[A](x: Foo[_, A]): A = ???
+                                               ^
+
+// That's not what you said about _$1 a minute ago, you sadist.
+scala> trait Foo[CC[+X], +A] ; def f[A](x: Foo[_[_], A]): A = ???
+<console>:8: error: _$1 does not take type parameters
+       trait Foo[CC[+X], +A] ; def f[A](x: Foo[_[_], A]): A = ???
+                                               ^
+// If you're lucky enough to come up with the existential syntax for
+// higher order type parameters, you will still be burned if you get the
+// variance wrong. Remember we're doing all this just to IGNORE IT.
+scala> trait Foo[CC[+X], +A] ; def f[A](x: Foo[CC forSome { type CC[X] }, A]): A = ???
+<console>:8: error: kinds of the type arguments (CC forSome { type CC[X] <: Any },A) \
+do not conform to the expected kinds of the type parameters \
+(type CC,type A) in trait Foo.
+CC forSome { type CC[X] <: Any }'s type parameters do not match \
+type CC's expected parameters:
+type X is invariant, but type X (in trait Foo) is declared covariant
+       trait Foo[CC[+X], +A] ; def f[A](x: Foo[CC forSome { type CC[X] }, A]): A = ???
+                                           ^
+{code}
+
+Colonel Mustard in the conservatory:
+
+{code}
+// Nice, three feature warnings for the only way to write it.
+scala> trait Foo[CC[+X], +A] ; def f[A](x: Foo[CC forSome { type CC[+X] }, A]): A = ???
+warning: there were 3 feature warning(s); re-run with -feature for details
+defined trait Foo
+f: [A](x: Foo[CC forSome { type CC[+X] <: Any },A])A
+{code}

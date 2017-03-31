@@ -1,0 +1,39 @@
+Crashes as far back as 2.10.0-M1 (we don't have historical builds easily available earlier).
+
+{code}
+% sbt -scala-home `scala-hash -h v2.10.0-M1` compile
+...
+[error] Player in trait AbstractRole cannot be instantiated from AbstractRole.this.type with Player
+scala.reflect.internal.FatalError: Player in trait AbstractRole cannot be instantiated from AbstractRole.this.type with Player
+{code}
+
+The API extraction calls:
+
+{noformat}
+<AbstractRole.this.type with Player>.members
+{noformat}
+
+
+This leads to the errant as-seen-from computation:
+
+{noformat}
+this = {scala.reflect.internal.Types$NullaryMethodType@7215}"=> Player"
+clazz = {scala.reflect.internal.Symbols$ClassSymbol@7271}"trait AbstractRole"
+pre = {scala.reflect.internal.Types$UniqueThisType@7216}"scala.roles.internal.Collaboration.AbstractRole.<refinement>.type"
+pre.underlying.sym.info() ={scala.reflect.internal.Types$RefinedType0@7218}"AbstractRole.this.type with Player"
+
+<AbstractRole.this.type with Player>.baseTypeSeq =
+[0] = {scala.reflect.internal.Types$RefinementTypeRef@8082}"AbstractRole.this.type with Player"
+[1] = {scala.reflect.internal.Types$UniqueThisType@8084}"AbstractRole.this.type"
+[2] = {scala.reflect.internal.Types$TypeRef$$anon$5@8273}"Collaboration.this.AbstractRole[Player]"
+[3] = {scala.reflect.internal.Types$TypeRef$$anon$5@8274}"scala.roles.internal.HasCore[Player]"
+[4] = {scala.reflect.internal.Types$TypeRef$$anon$4@8163}"Player"
+[5] = {scala.reflect.internal.Types$TypeRef$$anon$6@8275}"Object"
+[6] = {scala.reflect.internal.Types$TypeRef$$anon$6@8276}"Any"
+
+<AbstractRole.this.type with Player>.baseType(<trait AbstractRole>) = <AbstractRole.this.type>
+
+{noformat}
+
+The {{ThisType}} is not expected in {{toInstance}}, only {{TypeRef}}-s and {{ExistentialTypes}} as treated.
+

@@ -1,0 +1,41 @@
+There seems to be an edge case left. If you give the GC enough to work on,
+everything looks fine. This seems to work in constant memory:
+
+{code}
+scala> var x = 0                                                                              
+x: Int = 0
+
+scala> def t(s: Stream[Int]) = s.map(_ => new Array[Int](10000000)).foreach(a => x = a.hashCode ^ x)         
+t: (Stream[Int])Unit
+
+scala> t(Stream.from(1))
+{code}
+
+But if you do not allocate enough, you run out of memory (this may be related to what David said above about the churn rate):
+
+{code}
+scala> var x = 0
+x: Int = 0
+
+scala> def t(s: Stream[Int]) = s.map(_ => new Array[Int](10)).foreach(a => x = a.hashCode ^ x)               
+t: (Stream[Int])Unit
+
+scala> t(Stream.from(1))                                                                      
+java.lang.OutOfMemoryError: Java heap space
+	at $$anonfun$$t$$1.apply(<console>:5)
+	at $$anonfun$$t$$1.apply(<console>:5)
+	at scala.Stream.map(Stream.scala:361)
+	at scala.Stream$$$$anonfun$$map$$1.apply(Stream.scala:361)
+	at scala.Stream$$$$anonfun$$map$$1.apply(Stream.scala:361)
+	at scala.Stream$$cons$$$$anon$$2.tail(Stream.scala:69)
+	at scala.Stream.foreach(Stream.scala:370)
+	at .t(<console>:5)
+	at ....
+{code}
+
+This is on 32bit i386 Linux with
+java version "1.6.0_10"
+Java(TM) SE Runtime Environment (build 1.6.0_10-b33)
+Java HotSpot(TM) Client VM (build 11.0-b15, mixed mode, sharing)
+
+

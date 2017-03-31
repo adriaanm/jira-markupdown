@@ -1,0 +1,25 @@
+1. When I run  scala-plugin/build.xml target "devel.prep":
+
+Line 870 of build.xml in the Scala project...
+
+<fixcrlf srcdir="${build-docs.dir}/manual" eol="unix" includes="**/*.1"/>
+
+... fails with an IOException about being unable to delete files. Restarting/retry repeatedly didnt help. From googling, apparently, its a weakness in Sun's Windows JVM. Workaround: Commented the line out.
+
+2. When running scala-plugin "devel.dist" target, I noticed that many tests under the partest task fail like this:
+
+[partest] Compiling and running files
+  [partest] testing: [...]\files\run\retsynch.scala                               [FAILED]
+  [partest] java.lang.NoClassDefFoundError: Files\Java\jre1/6/0\bin\java
+  [partest] Exception in thread "main"
+  [partest] testing: [...]\files\jvm5\annotations.scala                           [FAILED]
+  [partest] java.lang.NoClassDefFoundError: Files\Java\jre1/6/0\bin\java
+  [partest] Exception in thread "main"
+  [partest] testing: [...]\files\run\bug429.scala                                 [FAILED]
+  [partest] java.lang.NoClassDefFoundError: Files\Java\jre1/6/0\bin\java
+  [partest] Exception in thread "main"
+
+Thats part of the path to JAVA_HOME (in default Windows location), ie its seems to be a "whitespace in path" problem somewhere.
+
+OS: Windows Vista
+Scala version: trunk as of 9th July 08

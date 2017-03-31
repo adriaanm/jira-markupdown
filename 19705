@@ -1,0 +1,32 @@
+I'm running into some issues trying to combine Trees with quasiquoting:
+
+This is no problem:
+{code}
+scala> q"package foo { sealed class Hello; object Bar extends Hello }"
+res18: reflect.runtime.universe.PackageDef
+{code}
+
+But:
+{code}
+scala> val inner = q"sealed class Hello; object Bar extends Hello"
+inner: reflect.runtime.universe.Tree
+
+scala> showCode(inner)
+res46: String =
+{
+  sealed class Hello;
+  object Bar extends Hello;
+  ()
+}
+
+scala> q"package foo { $inner }"
+java.lang.IllegalArgumentException: not legal package stat: { ...
+{code}
+
+And:
+{code}
+scala> q"package foo { ..${inner.children} }"
+java.lang.IllegalArgumentException: not legal package stat: ()
+{code}
+
+Sorry if not a bug!

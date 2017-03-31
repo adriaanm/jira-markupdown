@@ -1,0 +1,32 @@
+{code}
+  ~/code/scratch/20120128 scala210 -Xexperimental 
+Welcome to Scala version 2.10.0-M1 (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_29).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> s"""0"""
+{code}
+
+Running with scalac, rather than the REPL:
+
+{code}
+error: unclosed string literal
+	s"""0"""
+                ^
+{code}
+
+jstack:
+
+{code}
+
+"main" prio=5 tid=7fc9b5000800 nid=0x104434000 runnable [104432000]
+   java.lang.Thread.State: RUNNABLE
+	at scala.Function0$class.$init$(Function0.scala:30)
+	at scala.runtime.AbstractFunction0.<init>(AbstractFunction0.scala:12)
+	at scala.runtime.AbstractFunction0$mcV$sp.<init>(AbstractFunction0.scala:12)
+	at scala.tools.nsc.reporters.Reporter$$anonfun$error$1.<init>(Reporter.scala:65)
+	at scala.tools.nsc.reporters.Reporter.error(Reporter.scala:65)
+	at scala.tools.nsc.CompilationUnits$CompilationUnit.error(CompilationUnits.scala:82)
+	at scala.tools.nsc.ast.parser.Scanners$UnitScanner.error(Scanners.scala:1190)
+	at scala.tools.nsc.ast.parser.Scanners$Scanner.syntaxError(Scanners.scala:991)
+{code}

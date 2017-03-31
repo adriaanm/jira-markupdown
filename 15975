@@ -1,0 +1,39 @@
+I'm opening a separate ticket from SI-4288 so I can close that when I fix slice.
+
+Here are the methods I found in either Traversable or TraversableOnce, but not in TraversableForwarder, excluding the methods singled out for exclusion in TraversableForwarder's scaladoc.  The list is so long I'm afraid I'm missing something about how this is supposed to work.
+
+I realize that it's not uncommon that one can get away with not forwarding some methods because they are implemented in terms of other methods (and given that fundamental methods like map and flatMap are on this list, I assume that logic was being applied) but with nothing in place to verify that that is the case for any given combination of methods, nothing checking if it is made untrue via method overrides, nothing documenting the intentions, and nothing preventing some future change from making it untrue, it seems like we have to forward everything if we want to even have a glimpse of correctness.
+
+Here is the opening list.  I am sure there are more once we move upward from Traversable.
+{code}
+collect
+collectFirst
+drop
+dropWhile
+filter
+filterNot
+flatMap
+groupBy
+init
+inits
+isTraversableAgain
+map
+maxBy
+minBy
+partition
+scanLeft
+scanRight
+slice
+span
+splitAt
+tail
+tails
+take
+takeWhile
+toParIterable
+toParMap
+toParSeq
+toParSet
+toTraversable
+withFilter
+{code}

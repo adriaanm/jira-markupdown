@@ -1,0 +1,28 @@
+With the latest nightly of the plugin installed in Eclipse 3.6M5, it's not possible to open a Scala source editor. The first time you try you get this exception:
+
+java.lang.ExceptionInInitializerError
+at scala.tools.eclipse.ScalaSourceViewerConfiguration$$$$anonfun$$getHyperlinkDetectors$$1.apply(ScalaSourceViewerConfiguration.scala:67)
+at scala.tools.eclipse.ScalaSourceViewerConfiguration$$$$anonfun$$getHyperlinkDetectors$$1.apply(ScalaSourceViewerConfiguration.scala:66)
+at scala.collection.TraversableLike$$$$anonfun$$map$$1.apply(TraversableLike.scala:238)
+at scala.collection.TraversableLike$$$$anonfun$$map$$1.apply(TraversableLike.scala:238)
+at scala.collection.IndexedSeqLike$$class.foreach(IndexedSeqLike.scala:87)
+at scala.collection.mutable.ArrayOps.foreach(ArrayOps.scala:20)
+at scala.collection.TraversableLike$$class.map(TraversableLike.scala:238)
+at scala.collection.mutable.ArrayOps.map(ArrayOps.scala:20)
+at scala.tools.eclipse.ScalaSourceViewerConfiguration.getHyperlinkDetectors(ScalaSourceViewerConfiguration.scala:66)
+at org.eclipse.jface.text.source.SourceViewer.configure(SourceViewer.java:482)
+...
+Caused by: java.lang.NoSuchMethodException: org.eclipse.jdt.internal.ui.text.java.hover.BestMatchHover.addTextHover(org.eclipse.jface.text.ITextHover)
+at java.lang.Class.getDeclaredMethod(Class.java:1937)
+at scala.tools.eclipse.util.ReflectionUtils$$$$anonfun$$getDeclaredMethod$$1.apply(ReflectionUtils.scala:42)
+at scala.tools.eclipse.util.ReflectionUtils$$$$anonfun$$getDeclaredMethod$$1.apply(ReflectionUtils.scala:41)
+at scala.tools.eclipse.util.ReflectionUtils$$$$anon$$1.run(ReflectionUtils.scala:57)
+at java.security.AccessController.doPrivileged(Native Method)
+at scala.tools.eclipse.util.ReflectionUtils$$class.privileged(ReflectionUtils.scala:56)
+at scala.tools.eclipse.ScalaSourceViewerConfigurationUtils$$.privileged(ScalaSourceViewerConfiguration.scala:122)
+at scala.tools.eclipse.util.ReflectionUtils$$class.getDeclaredMethod(ReflectionUtils.scala:41)
+at scala.tools.eclipse.ScalaSourceViewerConfigurationUtils$$.getDeclaredMethod(ScalaSourceViewerConfiguration.scala:122)
+at scala.tools.eclipse.ScalaSourceViewerConfigurationUtils$$.<init>(ScalaSourceViewerConfiguration.scala:124)
+at scala.tools.eclipse.ScalaSourceViewerConfigurationUtils$$.<clinit>(ScalaSourceViewerConfiguration.scala)
+
+I realize 3.6 isn't released yet, and the official API freeze isn't scheduled until 03/12/2010 (with 3.6M6), but I wanted to let the community know about this.

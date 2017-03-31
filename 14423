@@ -1,0 +1,34 @@
+When passing an Array as a vararg, Java and Scala 2.7.x will pass a reference, but Scala 2.8 is passing a copy.
+
+The following Java code cannot be written in Scala 2.8:
+
+{code}
+String[] array = new String[]{"a", "b", "c"};
+
+// Shuffle the array; works because the list returned by Arrays.asList() is backed by the arrayCollections.
+shuffle(Arrays.asList(array));
+{code}
+
+It works on 2.7:
+
+{code}
+scala> val a = Array("a", "b", "c"); val b = java.util.Arrays.asList(a: _*)
+a: Array[java.lang.String] = Array(a, b, c)
+b: java.util.List[java.lang.String] = [a, b, c]
+
+scala> java.util.Collections.shuffle(b); println(a.toString+" "+b.toString)
+Array(c, b, a) [c, b, a]
+{code}
+
+But it doesn't on 2.8:
+
+{code}
+scala> val a = Array("a", "b", "c"); val b = java.util.Arrays.asList(a: _*)
+a: Array[java.lang.String] = Array(a, b, c)
+b: java.util.List[java.lang.String] = [a, b, c]
+
+scala> java.util.Collections.shuffle(b); println(a.toString+" "+b.toString)
+Array(a, b, c) [a, c, b]
+{code}
+
+I tested it against 2.7.4, and 2.8.0.r18375-b20090722020147.

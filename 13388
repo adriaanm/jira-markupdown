@@ -1,0 +1,18 @@
+Given that 
+{code}
+scala> classOf[Int]
+res6: java.lang.Class[Int] = int
+{code}
+It should be the case that the following works
+{code}
+scala> 1.getClass
+<console>:5: error: type mismatch;
+ found   : Int
+ required: ?{val getClass: ?}
+Note that implicit conversions are not applicable because they are ambiguous:
+ both method int2Integer in object Predef of type (Int)java.lang.Integer
+ and method intWrapper in object Predef of type (Int)scala.runtime.RichInt
+ are possible conversion functions from Int to ?{val getClass: ?}
+       1.getClass
+       ^
+{code}

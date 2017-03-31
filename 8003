@@ -1,0 +1,25 @@
+You need to provide some evidence they are not equivalent types.  They look equivalent to me.
+
+{code}
+scala> def f(xs: List[_]): List[Any] = xs
+f: (xs: List[_])List[Any]
+
+scala> def f(xs: List[Any]): List[_] = xs
+f: (xs: List[Any])List[_]
+{code}
+Maybe you are not accounting for variance.
+{code}
+scala> def f(xs: Set[_]): Set[Any] = xs
+<console>:7: error: type mismatch;
+ found   : Set[_$1] where type _$1
+ required: Set[Any]
+Note: _$1 <: Any, but trait Set is invariant in type A.
+You may wish to investigate a wildcard type such as `_ <: Any`. (SLS 3.2.10)
+       def f(xs: Set[_]): Set[Any] = xs
+                                     ^
+
+scala> implicitly[Set[Any] =:= Set[_]]
+<console>:8: error: Cannot prove that Set[Any] =:= Set[_].
+              implicitly[Set[Any] =:= Set[_]]
+                        ^
+{code}

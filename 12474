@@ -1,0 +1,35 @@
+The root problem is a Kotlin bug: https://youtrack.jetbrains.com/issue/KT-14069, which has been accepted by the developers and is "in progress" at the time of writing. `org.mapdb.DB$HashMapMaker` refers to an inner class without a corresponding entry in its `InnerClasses` attribute:
+
+{noformat}
+javap -cp /Users/jz/.ivy2/cache/org.mapdb/mapdb/bundles/mapdb-3.0.2.jar -v 'org.mapdb.DB$HashMapMaker' | grep 'Class.*DB$Maker'
+    #5 = Class              #4            // org/mapdb/DB$Maker
+~/code/scala on 2.12.x*
+⚡ javap -cp /Users/jz/.ivy2/cache/org.mapdb/mapdb/bundles/mapdb-3.0.2.jar -v 'org.mapdb.DB$HashMapMaker' | tail -n 12
+  1207#4,3:1890
+  *E
+InnerClasses:
+     static final #103; //class org/mapdb/DB$HashMapMaker$layout$1
+     static final #228; //class org/mapdb/DB$HashMapMaker$verify$1
+     static final #235; //class org/mapdb/DB$HashMapMaker$verify$listener$1
+     static final #450; //class org/mapdb/DB$HashMapMaker$create2$1
+     static final #620; //class org/mapdb/DB$HashMapMaker$open2$1
+     static final #681; //class org/mapdb/DB$HashMapMaker$1
+{noformat}
+
+Changes in scalac in 2.12.1 (https://github.com/scala/scala/pull/5482/commits/bde2854588eea4e3199fc97e0af92a8b35ce1705) removed some code that must have served as a backstop to this sort of bytecode problem.
+
+Javac seems to treat the class as a regular class and continue. By contrast, when scalac processes some other classfile that lists `Foo$Inner` as an inner class of `Foo`, it unlinks `Foo$Inner` from the package, so later attempts to use it as a top-level class result in a failed lookup. See `unlinkIfPresent` in `parseInnerClasses`.
+
+As an experiment, removing the calls to `unlinkIfPresent` (which were added as part of a fix for SI-1329. The compiler then is able to typecheck client code of this JAR, but trips an assertion in the backend:
+
+{code}
+java.lang.AssertionError: assertion failed: List(Lorg/mapdb/DB$AtomicStringMaker;, Lorg/mapdb/DB$TreeSetMaker;, Lorg/mapdb/DB$AtomicIntegerMaker;, Lorg/mapdb/DB$AtomicVarMaker;, Lorg/mapdb/DB$AtomicLongMaker;, Lorg/mapdb/DB$TreeMapSink;, Lorg/mapdb/DB$IndexTreeListMaker;, Lorg/mapdb/DB$Keys;, Lorg/mapdb/DB$Maker;, Lorg/mapdb/DB$IndexTreeLongLongMapMaker;, Lorg/mapdb/DB$AtomicBooleanMaker;, Lorg/mapdb/DB$HashMapMaker;, Lorg/mapdb/DB$CatVal;, Lorg/mapdb/DB$HashSetMaker;, Lorg/mapdb/DB$Companion;, Lorg/mapdb/DB$TreeMapMaker;)
+	at scala.Predef$.assert(Predef.scala:219)
+	at scala.tools.nsc.backend.jvm.BTypes$ClassBType.checkInfoConsistency(BTypes.scala:896)
+	at scala.tools.nsc.backend.jvm.BTypes$ClassBType.info_$eq(BTypes.scala:868)
+	at scala.tools.nsc.backend.jvm.BTypesFromSymbols.setClassInfo(BTypesFromSymbols.scala:446)
+{code}
+
+Perhaps this assertion might be too strict.
+
+I still need to take a look at reverting part of the commit in 2.12.1 to see how that avoids the problem. At the time, the code that was removed was believed to be dead code.

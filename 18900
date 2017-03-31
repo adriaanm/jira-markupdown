@@ -1,0 +1,11 @@
+This line is correct:
+{code}
+scala> val q"$mods class A(..$_) extends ..$_" = q"case class A(x: Int)"
+mods: reflect.runtime.universe.Modifiers = Modifiers(case, , Map())
+{code}
+But if add outer block, there is a problem:
+{code}
+scala> val q"{ $mods class A(..$_) extends ..$_ }" = q"{ case class A(x: Int) }"
+<console>:14: error: ';' expected but 'class' found.
+       val q"{ $mods class A(..$_) extends ..$_ }" = q"{ case class A(x: Int) }"
+{code}

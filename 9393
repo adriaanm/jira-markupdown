@@ -1,0 +1,136 @@
+The same ArrayStoreException is generated under 2.9.
+
+{code}
+% scalac29 -Xprint:jvm -unchecked test/files/run/t7268.scala && scala29 Test
+test/files/run/t7268.scala:34: warning: non variable type-argument T in type pattern scala.collection.mutable.WrappedArray[T] is unchecked since it is eliminated by erasure
+      case xs: WrappedArray[T] =>
+               ^
+[[syntax trees at end of jvm]]// Scala source: t7268.scala
+package <empty> {
+  final object Test extends java.lang.Object with ScalaObject {
+    def main(args: Array[java.lang.String]): Unit = {
+      val test: ArrayWrapper = new ArrayWrapper(reflect.this.Manifest.Double());
+      test.update(scala.this.Predef.wrapDoubleArray(Array[Double]{1.0}));
+      test.updateOne(scala.Double.box(1.0))
+    };
+    def this(): object Test = {
+      Test.super.this();
+      ()
+    }
+  };
+  class ArrayWrapper extends java.lang.Object with ScalaObject {
+    private[this] val array: java.lang.Object = _;
+    <stable> <accessor> def array(): java.lang.Object = ArrayWrapper.this.array;
+    def updateOne(elem: java.lang.Object): Unit = ArrayWrapper.this.update(scala.this.Predef.genericWrapArray(Array[java.lang.Object]{elem}));
+    def update(elems: Seq): Unit = ArrayWrapper.this.updateAll(elems);
+    def updateAll(elems: Traversable): Unit = {
+      scala.this.Predef.println(elems.getClass());
+      {
+        <synthetic> val temp1: Traversable = elems;
+        if (temp1.$isInstanceOf[scala.collection.mutable.WrappedArray]())
+          {
+            <synthetic> val temp2: scala.collection.mutable.WrappedArray = temp1.$asInstanceOf[scala.collection.mutable.WrappedArray]();
+            val xs: scala.collection.mutable.WrappedArray = temp2;
+            scala.this.Predef.println(xs.array());
+            runtime.this.ScalaRunTime.array_update(ArrayWrapper.this.array(), 0, runtime.this.ScalaRunTime.array_apply(xs.array(), 0));
+            java.this.lang.System.arraycopy(xs.array(), 0, ArrayWrapper.this.array(), 0, xs.length());
+            scala.this.Predef.println("== ok ==")
+          }
+        else
+          {
+            ()
+          }
+      }
+    };
+    def this(implicit evidence$1: scala.reflect.ClassManifest): ArrayWrapper = {
+      ArrayWrapper.super.this();
+      ArrayWrapper.this.array = evidence$1.newArray(2);
+      ()
+    }
+  }
+}
+
+one warning found
+
+class scala.collection.mutable.WrappedArray$ofDouble
+[D@518f5824
+== ok ==
+class scala.collection.mutable.WrappedArray$ofRef
+[Ljava.lang.Object;@19e3cd51
+java.lang.ArrayStoreException
+	at java.lang.System.arraycopy(Native Method)
+	at ArrayWrapper.updateAll(t7268.scala:42)
+	at ArrayWrapper.update(t7268.scala:25)
+	at ArrayWrapper.updateOne(t7268.scala:20)
+	at Test$.main(t7268.scala:9)
+	at Test.main(t7268.scala)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at scala.tools.nsc.util.ScalaClassLoader$$anonfun$run$1.apply(ScalaClassLoader.scala:78)
+	at scala.tools.nsc.util.ScalaClassLoader$class.asContext(ScalaClassLoader.scala:24)
+	at scala.tools.nsc.util.ScalaClassLoader$URLClassLoader.asContext(ScalaClassLoader.scala:88)
+	at scala.tools.nsc.util.ScalaClassLoader$class.run(ScalaClassLoader.scala:78)
+	at scala.tools.nsc.util.ScalaClassLoader$URLClassLoader.run(ScalaClassLoader.scala:101)
+	at scala.tools.nsc.ObjectRunner$.run(ObjectRunner.scala:33)
+	at scala.tools.nsc.ObjectRunner$.runAndCatch(ObjectRunner.scala:40)
+	at scala.tools.nsc.MainGenericRunner.runTarget$1(MainGenericRunner.scala:56)
+	at scala.tools.nsc.MainGenericRunner.process(MainGenericRunner.scala:80)
+	at scala.tools.nsc.MainGenericRunner$.main(MainGenericRunner.scala:89)
+	at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
+
+% cat test/files/run/t7268.scala import scala.collection.mutable.WrappedArray
+//import scala.reflect.ClassTag
+
+object Test {
+
+  def main(args: Array[String]) {
+    val test = new ArrayWrapper[Double]
+    test.update(1.0)    // ok
+    test.updateOne(1.0) // failure with ArrayStoreExcpetion
+  }
+}
+
+class ArrayWrapper[T: ClassManifest] {
+  val array = new Array[T](2)
+
+  // elem will be boxed to java.lang.Object (java.lang.Double), then wrapped as
+  // Array[Object] and passed to scala.LowPriorityImplicits.genericWrapArray[T](xs: Array[T])
+  // becaues of update(elems: T*), and causes ArrayStoreException.
+  def updateOne(elem: T) {
+    update(elem)
+  }
+
+  // ok when called outside directly
+  def update(elems: T*) {
+    updateAll(elems)
+  }
+
+  def updateAll(elems: scala.collection.Traversable[T]) {
+    println(elems.getClass)
+    // class scala.collection.mutable.WrappedArray$ofDouble -- when via update
+    // class scala.collection.mutable.WrappedArray$ofRef    -- when via updateOne
+
+    elems match {
+      case xs: WrappedArray[T] =>
+        println(xs.array)
+        // [D@504ad009                  --- when via update
+        // [Ljava.lang.Object;@3b87bd31 --- when via updateOne
+
+        array(0) = xs.array(0)
+        // ok
+
+        System.arraycopy(xs.array, 0, array, 0, xs.length)
+        // ok             --- when via update
+        // failure with java.lang.ArrayStoreException --- when via updateOne
+
+        println("== ok ==")
+      case _ =>
+    }
+  }
+}
+{code}
+
+The difference is that 2.10 doesn't issue the unchecked pattern match warning.
+

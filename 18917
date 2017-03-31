@@ -1,0 +1,45 @@
+Rex [ran|https://github.com/scala/scala/pull/3498] into it while working on optimizing List operations. Minimized version looks like this:
+
+{code}
+package abc
+
+class Bar(head: AnyRef)
+
+class A {
+  @inline
+  final def mapp(f: AnyRef => AnyRef): AnyRef = {
+    new Bar(f(null))
+  }
+  def f: Boolean = {
+    mapp (_ => return false)
+    true
+  }
+}
+{code}
+
+when compiled with {{-optimize}} we get:
+
+{code}
+error: could not find init in: abc.A.f
+error: scala.reflect.internal.FatalError:
+  could not find init in: abc.A.f
+     while compiling: OptimizerCrash.scala
+        during phase: dce
+[..]
+
+== Source file context for tree position ==
+
+    11   }
+    12   def f: Boolean = {
+    13     mapp (_ => return false)
+    14     true
+    15   }
+    16 }
+	at scala.reflect.internal.SymbolTable.abort(SymbolTable.scala:57)
+	at scala.tools.nsc.Global.abort(Global.scala:268)
+	at scala.tools.nsc.backend.opt.DeadCodeElimination$DeadCode.scala$tools$nsc$backend$opt$DeadCodeElimination$DeadCode$$findInstruction(DeadCodeElimination.scala:432)
+	at scala.tools.nsc.backend.opt.DeadCodeElimination$DeadCode.mark(DeadCodeElimination.scala:261)
+	at scala.tools.nsc.backend.opt.DeadCodeElimination$DeadCode.dieCodeDie(DeadCodeElimination.scala:103)
+	at scala.tools.nsc.backend.opt.DeadCodeElimination$DeadCode$$anonfun$analyzeClass$2.apply(DeadCodeElimination.scala:60)
+	at scala.tools.nsc.backend.opt.DeadCodeElimination$DeadCode$$anonfun$analyzeClass$2.apply(DeadCodeElimination.scala:58)
+{code}

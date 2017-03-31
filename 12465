@@ -1,0 +1,21 @@
+Here's a variant minimized form (eliminating a type parameter, but introducing a type variable):
+
+{code:scala}
+trait Compute[A] {
+  type Start
+  val start: Compute[Start]
+}
+
+object Test {
+  def foo(c: Any): Unit =
+    c match {
+      case c: Compute[a] =>
+        new Compute[a] {
+          type Start = c.Start
+          val start = c.start
+        }
+    }
+}
+{code}
+
+It's not that interestingly different, because in both versions, the type parameter on Compute isn't actually used anywhere. Regardless, as far as I can tell, you do need to have a type parameter in order to trigger the issue. (Throwing away the type member instead makes the issue vanish, too.)

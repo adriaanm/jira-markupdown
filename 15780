@@ -1,0 +1,14 @@
+In 2.8.0.final and 2.8.1.RC4,
+{code}
+class ElidableCrashTest {
+    trait My
+
+    @elidable(ALL)
+    def foo[a >: My <: My]: scala.Unit = ()
+
+    foo[My] // crash
+
+}
+{code}
+
+crashes the compiler with java.lang.NullPointerException.

@@ -1,0 +1,30 @@
+I'm having trouble reproducing this outside the compiler, so I'm going to report it as is.  Here is a diff:
+{noformat}
+git diff -U1 head^
+diff --git c/src/reflect/scala/reflect/api/Trees.scala w/src/reflect/scala/reflect/api/Trees.scala
+index bbd5d00be3..2c30343a16 100644
+--- c/src/reflect/scala/reflect/api/Trees.scala
++++ w/src/reflect/scala/reflect/api/Trees.scala
+@@ -100,2 +100,3 @@ trait Trees { self: Universe =>
+     def symbol: Symbol
++    def symbolBug: Symbol
+ 
+@@ -223,2 +224,3 @@ trait Trees { self: Universe =>
+     def symbol: Symbol
++    def symbolBug: Symbol
+   }
+diff --git c/src/reflect/scala/reflect/internal/Trees.scala w/src/reflect/scala/reflect/internal/Trees.scala
+index 4bb88145b3..72287a60d9 100644
+--- c/src/reflect/scala/reflect/internal/Trees.scala
++++ w/src/reflect/scala/reflect/internal/Trees.scala
+@@ -30,2 +30,3 @@ trait Trees extends api.Trees { self: SymbolTable =>
+ 
++    final def symbolBug: Symbol = ???
+     def symbol: Symbol = null //!!!OPT!!! symbol is about 3% of hot compile times -- megamorphic dispatch?
+{noformat}
+If you build the compiler with those additional lines, it will immediately fail like so:
+{noformat}
+    Exception in thread "main" 
+java.lang.VerifyError: class scala.reflect.internal.Trees$SymTree
+overrides final method symbolBug.()Lscala/reflect/api/Symbols$SymbolApi;
+{noformat}

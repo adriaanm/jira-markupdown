@@ -1,0 +1,165 @@
+The following code
+{code}
+object lazy1 {
+  def fun = {
+    import scala.collection.jcl._
+    class Foo {}
+    lazy val logs = new BufferWrapper[Foo] {val underlying = java.util.Arrays.asList(Array[Foo](new Foo, new Foo))}
+    logs
+  }
+}
+{code}
+produces a lot of exceptions, like
+{code}
+No message
+
+java.lang.AssertionError: assertion failed: lazy value logs$$lzy
+at scala.Predef$$.assert(Predef.scala:92)
+at scala.tools.nsc.symtab.Symbols$$TermSymbol.setLazyAccessor(Symbols.scala:1302)
+at scala.tools.nsc.typechecker.Namers$$Namer.enterSym(Namers.scala:357)
+at scala.tools.nsc.typechecker.IdeSupport$$Namer.enterSym(IdeSupport.scala:93)
+at scala.tools.nsc.typechecker.IdeSupport$$MemoizedTree$$$$anonfun$$updateNamer$$2$$$$anonfun$$apply$$4.apply(IdeSupport.scala:257)
+at scala.tools.nsc.typechecker.IdeSupport$$MemoizedTree$$$$anonfun$$updateNamer$$2$$$$anonfun$$apply$$4.apply(IdeSupport.scala:252)
+at scala.List.foreach(List.scala:788)
+at scala.tools.nsc.typechecker.IdeSupport$$MemoizedTree$$$$anonfun$$updateNamer$$2.apply(IdeSupport.scala:252)
+at scala.tools.nsc.typechecker.IdeSupport$$MemoizedTree$$$$anonfun$$updateNamer$$2.apply(IdeSupport.scala:251)
+at scala.tools.editor.Typers$$ParseNodeImpl$$$$anon$$2.doType0(Typers.scala:73)
+at scala.tools.editor.Typers$$ParseNodeImpl$$$$anon$$2.doType0(Typers.scala:72)
+at lampion.compiler.Typers$$TypedElementImpl$$DoType$$class.apply(Typers.scala:24)
+at scala.tools.editor.Typers$$ParseNodeImpl$$$$anon$$2.apply(Typers.scala:72)
+at scala.tools.editor.Typers$$ParseNodeImpl$$class.activate(Typers.scala:74)
+at scala.tools.editor.Driver$$ProjectImpl$$FileImpl$$ParseNode.activate(Driver.scala:19)
+at scala.tools.nsc.typechecker.IdeSupport$$MemoizedTree$$class.updateNamer(IdeSupport.scala:251)
+at scala.tools.editor.Driver$$ProjectImpl$$FileImpl$$ParseNode.updateNamer(Driver.scala:19)
+at scala.tools.nsc.typechecker.IdeSupport$$MemoizedTree$$class.updateTyper(IdeSupport.scala:303)
+at scala.tools.editor.Driver$$ProjectImpl$$FileImpl$$ParseNode.updateTyper(Driver.scala:19)
+at scala.tools.nsc.typechecker.IdeSupport$$Typer.typed1(IdeSupport.scala:120)
+at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3175)
+at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3212)
+at scala.tools.nsc.typechecker.Typers$$Typer.typedStat$$1(Typers.scala:1523)
+at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$19.apply(Typers.scala:1568)
+at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$19.apply(Typers.scala:1568)
+at scala.List$$.loop$$1(List.scala:254)
+at scala.List$$.mapConserve(List.scala:271)
+at scala.tools.nsc.typechecker.Typers$$Typer.typedStats(Typers.scala:1568)
+at scala.tools.nsc.typechecker.Typers$$Typer.typedBlock(Typers.scala:1373)
+at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:2937)
+at scala.tools.nsc.typechecker.IdeSupport$$Typer.typed1(IdeSupport.scala:122)
+at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3175)
+at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3223)
+at scala.tools.nsc.typechecker.Typers$$Typer.computeType(Typers.scala:3265)
+at scala.tools.nsc.typechecker.Namers$$Namer.methodSig(Namers.scala:692)
+at scala.tools.nsc.typechecker.Namers$$Namer.typeSig(Namers.scala:814)
+at scala.tools.nsc.typechecker.Namers$$Namer$$$$anonfun$$typeCompleter$$1.apply(Namers.scala:404)
+at scala.tools.nsc.typechecker.Namers$$Namer$$$$anonfun$$typeCompleter$$1.apply(Namers.scala:402)
+at scala.tools.nsc.typechecker.Namers$$$$anon$$1.complete(Namers.scala:988)
+at scala.tools.nsc.typechecker.IdeSupport$$Namer$$tpe0$$2$$$$anonfun$$complete$$1.apply(IdeSupport.scala:61)
+at scala.tools.nsc.typechecker.IdeSupport$$Namer$$tpe0$$2$$$$anonfun$$complete$$1.apply(IdeSupport.scala:60)
+at scala.tools.editor.Typers$$ParseNodeImpl$$$$anon$$2.doType0(Typers.scala:73)
+at scala.tools.editor.Typers$$ParseNodeImpl$$$$anon$$2.doType0(Typers.scala:72)
+at lampion.compiler.Typers$$TypedElementImpl$$DoType$$class.apply(Typers.scala:24)
+at scala.tools.editor.Typers$$ParseNodeImpl$$$$anon$$2.apply(Typers.scala:72)
+at scala.tools.editor.Typers$$ParseNodeImpl$$class.activate(Typers.scala:74)
+at scala.tools.editor.Driver$$ProjectImpl$$FileImpl$$ParseNode.activate(Driver.scala:19)
+at scala.tools.nsc.typechecker.IdeSupport$$Namer$$tpe0$$2$$.complete(IdeSupport.scala:60)
+at scala.tools.nsc.symtab.Symbols$$Symbol.info(Symbols.scala:492)
+at scala.tools.nsc.symtab.Symbols$$Symbol.initialize(Symbols.scala:606)
+at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:2894)
+at scala.tools.nsc.typechecker.IdeSupport$$Typer.typed1(IdeSupport.scala:122)
+at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3175)
+at scala.tools.nsc.typechecker.IdeSupport$$MemoizedTree$$$$anonfun$$updateTyper$$1$$$$anonfun$$apply$$5.apply(IdeSupport.scala:309)
+at scala.tools.nsc.typechecker.IdeSupport$$MemoizedTree$$$$anonfun$$updateTyper$$1$$$$anonfun$$apply$$5.apply(IdeSupport.scala:309)
+at scala.List.map(List.scala:759)
+at scala.tools.nsc.typechecker.IdeSupport$$MemoizedTree$$$$anonfun$$updateTyper$$1.apply(IdeSupport.scala:309)
+at scala.tools.nsc.typechecker.IdeSupport$$MemoizedTree$$$$anonfun$$updateTyper$$1.apply(IdeSupport.scala:308)
+at scala.tools.editor.Typers$$ParseNodeImpl$$$$anon$$2.doType0(Typers.scala:73)
+at scala.tools.editor.Typers$$ParseNodeImpl$$$$anon$$2.doType0(Typers.scala:72)
+at lampion.compiler.Typers$$TypedElementImpl$$DoType$$class.apply(Typers.scala:24)
+at scala.tools.editor.Typers$$ParseNodeImpl$$$$anon$$2.apply(Typers.scala:72)
+at scala.tools.editor.Typers$$ParseNodeImpl$$class.activate(Typers.scala:74)
+at scala.tools.editor.Driver$$ProjectImpl$$FileImpl$$ParseNode.activate(Driver.scala:19)
+at scala.tools.nsc.typechecker.IdeSupport$$MemoizedTree$$class.updateTyper(IdeSupport.scala:308)
+at scala.tools.editor.Driver$$ProjectImpl$$FileImpl$$ParseNode.updateTyper(Driver.scala:19)
+at scala.tools.nsc.typechecker.IdeSupport$$Typer.typed1(IdeSupport.scala:120)
+at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3175)
+at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3212)
+at scala.tools.nsc.typechecker.Typers$$Typer.typedStat$$1(Typers.scala:1523)
+at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$19.apply(Typers.scala:1568)
+at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$19.apply(Typers.scala:1568)
+at scala.List$$.loop$$1(List.scala:254)
+at scala.List$$.mapConserve(List.scala:271)
+at scala.tools.nsc.typechecker.Typers$$Typer.typedStats(Typers.scala:1568)
+at scala.tools.nsc.typechecker.Typers$$Typer.typedTemplate(Typers.scala:1161)
+at scala.tools.nsc.typechecker.Typers$$Typer.typedModuleDef(Typers.scala:1059)
+at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:2907)
+at scala.tools.nsc.typechecker.IdeSupport$$Typer.typed1(IdeSupport.scala:122)
+at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3175)
+at scala.tools.nsc.typechecker.IdeSupport$$MemoizedTree$$$$anonfun$$updateTyper$$1$$$$anonfun$$apply$$5.apply(IdeSupport.scala:309)
+at scala.tools.nsc.typechecker.IdeSupport$$MemoizedTree$$$$anonfun$$updateTyper$$1$$$$anonfun$$apply$$5.apply(IdeSupport.scala:309)
+at scala.List.map(List.scala:759)
+at scala.tools.nsc.typechecker.IdeSupport$$MemoizedTree$$$$anonfun$$updateTyper$$1.apply(IdeSupport.scala:309)
+at scala.tools.nsc.typechecker.IdeSupport$$MemoizedTree$$$$anonfun$$updateTyper$$1.apply(IdeSupport.scala:308)
+at scala.tools.editor.Typers$$ParseNodeImpl$$$$anon$$2.doType0(Typers.scala:73)
+at scala.tools.editor.Typers$$ParseNodeImpl$$$$anon$$2.doType0(Typers.scala:72)
+at lampion.compiler.Typers$$TypedElementImpl$$DoType$$class.apply(Typers.scala:24)
+at scala.tools.editor.Typers$$ParseNodeImpl$$$$anon$$2.apply(Typers.scala:72)
+at scala.tools.editor.Typers$$ParseNodeImpl$$class.activate(Typers.scala:74)
+at scala.tools.editor.Driver$$ProjectImpl$$FileImpl$$ParseNode.activate(Driver.scala:19)
+at scala.tools.nsc.typechecker.IdeSupport$$MemoizedTree$$class.updateTyper(IdeSupport.scala:308)
+at scala.tools.editor.Driver$$ProjectImpl$$FileImpl$$ParseNode.updateTyper(Driver.scala:19)
+at scala.tools.nsc.typechecker.IdeSupport$$Typer.typed1(IdeSupport.scala:120)
+at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3175)
+at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3212)
+at scala.tools.nsc.typechecker.Typers$$Typer.typedStat$$1(Typers.scala:1523)
+at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$19.apply(Typers.scala:1568)
+at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$19.apply(Typers.scala:1568)
+at scala.List$$.loop$$1(List.scala:254)
+at scala.List$$.mapConserve(List.scala:271)
+at scala.tools.nsc.typechecker.Typers$$Typer.typedStats(Typers.scala:1568)
+at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:2900)
+at scala.tools.nsc.typechecker.IdeSupport$$Typer.typed1(IdeSupport.scala:122)
+at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3175)
+at scala.tools.nsc.typechecker.IdeSupport$$MemoizedTree$$$$anonfun$$updateTyper$$1$$$$anonfun$$apply$$5.apply(IdeSupport.scala:309)
+at scala.tools.nsc.typechecker.IdeSupport$$MemoizedTree$$$$anonfun$$updateTyper$$1$$$$anonfun$$apply$$5.apply(IdeSupport.scala:309)
+at scala.List.map(List.scala:759)
+at scala.tools.nsc.typechecker.IdeSupport$$MemoizedTree$$$$anonfun$$updateTyper$$1.apply(IdeSupport.scala:309)
+at scala.tools.nsc.typechecker.IdeSupport$$MemoizedTree$$$$anonfun$$updateTyper$$1.apply(IdeSupport.scala:308)
+at scala.tools.editor.Typers$$ParseNodeImpl$$$$anon$$2.doType0(Typers.scala:73)
+at scala.tools.editor.Typers$$ParseNodeImpl$$$$anon$$2.doType0(Typers.scala:72)
+at lampion.compiler.Typers$$TypedElementImpl$$DoType$$class.apply(Typers.scala:24)
+at scala.tools.editor.Typers$$ParseNodeImpl$$$$anon$$2.apply(Typers.scala:72)
+at scala.tools.editor.Typers$$ParseNodeImpl$$class.activate(Typers.scala:74)
+at scala.tools.editor.Driver$$ProjectImpl$$FileImpl$$ParseNode.activate(Driver.scala:19)
+at scala.tools.nsc.typechecker.IdeSupport$$MemoizedTree$$class.updateTyper(IdeSupport.scala:308)
+at scala.tools.editor.Driver$$ProjectImpl$$FileImpl$$ParseNode.updateTyper(Driver.scala:19)
+at scala.tools.nsc.typechecker.IdeSupport$$MemoizedTree$$class.doTyper(IdeSupport.scala:278)
+at scala.tools.editor.Driver$$ProjectImpl$$FileImpl$$ParseNode.doTyper(Driver.scala:19)
+at scala.tools.editor.Typers$$$$anonfun$$flushTyper0$$2.apply(Typers.scala:152)
+at scala.tools.editor.Typers$$$$anonfun$$flushTyper0$$2.apply(Typers.scala:151)
+at scala.List.foreach(List.scala:788)
+at scala.tools.editor.Typers$$class.flushTyper0(Typers.scala:151)
+at scala.tools.eclipse.Driver$$Project.flushTyper0(Driver.scala:10)
+at lampion.compiler.Typers$$class.flushTyper(Typers.scala:171)
+at scala.tools.eclipse.Driver$$Project.flushTyper(Driver.scala:10)
+at lampion.compiler.Typers$$class.afterParsing(Typers.scala:197)
+at scala.tools.eclipse.Driver$$Project.afterParsing(Driver.scala:10)
+at lampion.presentation.Presentations$$ProjectImpl$$class.protected$$afterParsing(Presentations.scala:335)
+at scala.tools.eclipse.Driver$$Project.protected$$afterParsing(Driver.scala:10)
+at lampion.presentation.Presentations$$ProjectImpl$$Job.run(Presentations.scala:335)
+{code}
+
+Workaround (inspired by [http://scala.sygneca.com/faqs/language#what-s-the-difference-between-a-lazy-argument-a-no-arg-function-argument-and-a-lazy-value wiki]), which uses "lazy val" as well, produces no errors:
+{code}
+object lazy1 {
+  def lazy_[T] (fun: =>T) = new Function0[T] {lazy val lv = fun; override def apply = lv}
+  def fun = {
+    import scala.collection.jcl._
+    class Foo {}
+    val logs = lazy_ {new BufferWrapper[Foo] {val underlying = java.util.Arrays.asList(Array[Foo](new Foo, new Foo))}}
+    logs()
+  }
+}
+{code}
+
+Still, it would be very cool to make the original "lazy val" fully functional!
+Thanks.

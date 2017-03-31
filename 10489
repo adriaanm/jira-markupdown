@@ -1,0 +1,10 @@
+Just pushed another commit that shows a way to make `AsSeenFrom::classParameterAsSeen` figure out the correct `nextBase` in light of refinement types.
+
+{code}
+        def nextBase = {
+          val base = if (clazz.isRefinementClass) {
+            pre.baseTypeSeq.toList.find(_ <:< clazz.info).getOrElse(NoType)
+          } else pre baseType clazz
+          base.deconst
+        }
+{code}

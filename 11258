@@ -1,0 +1,18 @@
+So this is interesting: https://github.com/sbt/sbt/blob/68e7c9a2b67975a77f62f5465a598f12af223282/compile/interface/src/main/scala/xsbt/CompilerInterface.scala#L104
+
+Looking at the SBT it looks like it is calling the Scala compiler with the foo=bar option:
+
+{quote}
+[debug] Running cached compiler 777fd22d, interfacing (CompilerInterface) with Scala compiler version 2.11.2
+[debug] Calling Scala compiler with arguments  (CompilerInterface):
+[debug] 	-language:experimental.macros
+[debug] 	-Ymacro-debug-lite
+[debug] 	-Dprop=foo
+[debug] 	-bootclasspath
+[debug] 	/Library/Java/JavaVirtualMachines/jdk1.8.0_05.jdk/Contents/Home/jre/lib/resources.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_05.jdk/Contents/Home/jre/lib/rt.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_05.jdk/Contents/Home/jre/lib/sunrsasign.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_05.jdk/Contents/Home/jre/lib/jsse.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_05.jdk/Contents/Home/jre/lib/jce.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_05.jdk/Contents/Home/jre/lib/charsets.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_05.jdk/Contents/Home/jre/lib/jfr.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_05.jdk/Contents/Home/jre/classes:/Users/eric/.ivy2/cache/org.scala-lang/scala-library/jars/scala-library-2.11.2.jar
+[debug] 	-classpath
+[debug] 	/Users/eric/Work/scalaide-example-property-command-line-option/core/target/scala-2.11/classes:/Users/eric/Work/scalaide-example-property-command-line-option/macros/target/scala-2.11/classes:/Users/eric/.ivy2/cache/org.scala-lang/scala-reflect/jars/scala-reflect-2.11.2.jar
+[debug] Scala compilation took 0.717373 s
+{quote}
+
+Is there a difference between the "scalac" command line and the Compiler Interface?  the shell script supports it, but the lib call doesn't?

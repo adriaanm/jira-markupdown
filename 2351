@@ -1,0 +1,15 @@
+Yeah, it is definitely incorrect. The core of the issue may be that JMenu is not really a JComponent container but Scala treats it so. To work around it, use the peer:
+{code}
+import scala.swing.Menu
+import scala.swing.MenuItem
+
+object Test extends App {
+  val menu = new Menu("m1") {
+    contents += new MenuItem("a")
+  }
+  
+  println(menu.contents.size)
+  println(menu.peer.getItemCount())
+  
+}
+{code}

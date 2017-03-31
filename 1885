@@ -1,0 +1,38 @@
+> The problem here is that, to maintain left-to-right evaluation semantics
+
+My first thought is that for right-associative operators (i.e. operators ending in a colon ‘:’), right-to-left evaluation makes more sense:-
+
+For
+{code}
+    lazy val three: Int = { println("three"); 3 }
+    lazy val nil: List[Int] = { println("nil"); Nil }
+
+    three :: nil
+{code}
+the output could sanely be
+{code}
+nil
+three
+{code}
+instead of the current
+{code}
+three
+nil
+{code}
+
+I expect this avoids the parser complications.
+
+The spec would change from
+
+{code}
+A left-associative binary operation e1 op e2 is interpreted
+as e1.op(e2). If op is right associative, the same operation
+is interpreted as { val x=e1; e2.op(x ) }, where x is a
+fresh name.
+{code}
+to the simpler
+{code}
+A left-associative binary operation e1 op e2 is interpreted
+as e1.op(e2). If op is right associative, the same operation
+is interpreted as e2.op(e1)
+{code}

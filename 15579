@@ -1,0 +1,35 @@
+I installed Scala IDE for Eclipse and create sources below.
+{code}
+case class Test { var list : java.util.List[String] = null }
+{code}
+{code}
+public class GenTest {
+	public void test() {
+		Test test = new Test();
+		for (String item : test.list() ) {
+			System.out.println(item);
+		}
+	}
+}
+{code}
+Then I got unexpected compile error on GenTest at line 4.
+
+'Type mismatch: cannot convert from element type Object to String'
+{code}
+		for (String item : test.list() ) {
+{code}
+But Generics Signature check program below output 'java.util.List<java.lang.String>'
+{code}
+public class ShowMethods {
+	public static void main(String[] args) throws Exception {
+		System.out.println(Test.class.
+			getMethod("list").getGenericReturnType() );
+	}
+}
+{code}
+It seems Scala compiler correctly generate .class with generics signature but Scala Plug-in not.
+
+Eclipse Java EE IDE for Web Developers - Build id: 20100218-1602
+(Galileo)
+[[BR]]
+Scala IDE for Eclipse - 2.8.0.final

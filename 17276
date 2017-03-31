@@ -1,0 +1,25 @@
+I was making this inline, and on the way found that it doesn't even warn right now.  (So my test doesn't fail like it should.)
+{code}
+sealed abstract class Foo {
+  @inline def bar(x: Int) = x + 1
+}
+object Foo {
+  def mkFoo(): Foo = new Baz2
+}
+
+object Baz1 extends Foo
+final class Baz2 extends Foo
+
+object Test {
+  // bar should be inlined now
+  def f = Foo.mkFoo() bar 10
+}
+{code}
+In 2.9 it correctly says
+{noformat}
+scalac29 -optimise test/files/pos/sealed-final.scala
+test/files/pos/sealed-final.scala:13: warning: Could not inline required method bar because it is not final.
+  def f = Foo.mkFoo() bar 10
+                      ^
+one warning found
+{noformat}

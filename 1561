@@ -1,0 +1,20 @@
+The examples work now.
+
+The triple plus is not invalid:
+{code}
+scala> val + = 12
++: Int = 12
+
+scala> + + +
+<console>:9: error: ambiguous reference to overloaded definition,
+both method + in class Int of type (x: Char)Int
+and  method + in class Int of type (x: Byte)Int
+match expected type ?
+              + + +
+                  ^
+
+scala> val f: Int => Int = + + +
+warning: there was one feature warning; re-run with -feature for details
+f: Int => Int = <function1>
+{code}
+The rule is that it takes the first plus in the traditional way if it can.

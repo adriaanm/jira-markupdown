@@ -1,0 +1,16 @@
+Which of course prompts me to check this:
+
+{code}
+scala> implicit def a2xx(a: Any) = new { def a(x: String) = x }
+a2xx: (a: Any)java.lang.Object{def a(x: String): String}
+
+scala> object A { a("") }
+<console>:10: error: not found: value a
+       object A { a("") }
+                  ^
+
+scala> object A { def a(x: Int) = x; a("") }
+defined module A
+{code}
+
+Not so intuitive, but as per the spec, AFAICT.

@@ -1,0 +1,10 @@
+The issue is specific to closures. Workaround: manually create an accessor.
+
+{code}
+class ClassTwo extends ClassOne {
+  def fBody(s: String, i: Int) = super[ClassOne].m(s, i)
+  val f: (Int) => Int = fBody("two", _)
+}
+{code}
+
+Or use {{-Ydelambdafy:method}}, which happens to do just that.

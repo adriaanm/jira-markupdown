@@ -1,0 +1,59 @@
+Any news on that? I'm having the same problems when working on scala.tools.nsc.typechecker.Typers (fresh checkout from trunk, working with nightly plugin from March 11 2009). All you need to do is open the file, then every 2-3 seconds, the Error Log displays a pair of error messages (see below). The symptoms are similar to what Iulian observed (no or only partial syntax highlighting, hyperlinking not working on un-highlightet parts).
+
+1) "Error in JDT Core during AST creation"
+{code}
+java.lang.IllegalArgumentException
+	at org.eclipse.jdt.core.dom.ASTNode.setSourceRange(ASTNode.java:2611)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:430)
+	at org.eclipse.jdt.core.dom.ASTConverter.buildBodyDeclarations(ASTConverter.java:179)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2692)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1262)
+	at org.eclipse.jdt.core.dom.CompilationUnitResolver.convert(CompilationUnitResolver.java:256)
+	at org.eclipse.jdt.core.dom.ASTParser.internalCreateAST(ASTParser.java:905)
+	at org.eclipse.jdt.core.dom.ASTParser.createAST(ASTParser.java:656)
+	at org.eclipse.jdt.internal.ui.javaeditor.ASTProvider$$1.run(ASTProvider.java:540)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:37)
+	at org.eclipse.jdt.internal.ui.javaeditor.ASTProvider.createAST(ASTProvider.java:533)
+	at org.eclipse.jdt.internal.ui.javaeditor.ASTProvider.getAST(ASTProvider.java:474)
+	at org.eclipse.jdt.ui.SharedASTProvider.getAST(SharedASTProvider.java:129)
+	at org.eclipse.jdt.ui.OverrideIndicatorLabelDecorator.getOverrideIndicators(OverrideIndicatorLabelDecorator.java:158)
+	at org.eclipse.jdt.ui.OverrideIndicatorLabelDecorator.computeAdornmentFlags(OverrideIndicatorLabelDecorator.java:133)
+	at org.eclipse.jdt.ui.OverrideIndicatorLabelDecorator.decorate(OverrideIndicatorLabelDecorator.java:269)
+	at org.eclipse.ui.internal.decorators.LightweightDecoratorDefinition.decorate(LightweightDecoratorDefinition.java:269)
+	at org.eclipse.ui.internal.decorators.LightweightDecoratorManager$$LightweightRunnable.run(LightweightDecoratorManager.java:72)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:37)
+	at org.eclipse.ui.internal.decorators.LightweightDecoratorManager.decorate(LightweightDecoratorManager.java:356)
+	at org.eclipse.ui.internal.decorators.LightweightDecoratorManager.getDecorations(LightweightDecoratorManager.java:338)
+	at org.eclipse.ui.internal.decorators.DecorationScheduler$$1.ensureResultCached(DecorationScheduler.java:374)
+	at org.eclipse.ui.internal.decorators.DecorationScheduler$$1.run(DecorationScheduler.java:334)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:55)
+{code}
+
+2) "Problems occurred when invoking code from plug-in: "org.eclipse.jdt.ui"."
+{code}
+java.lang.IllegalArgumentException
+	at org.eclipse.jdt.core.dom.ASTNode.setSourceRange(ASTNode.java:2611)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:430)
+	at org.eclipse.jdt.core.dom.ASTConverter.buildBodyDeclarations(ASTConverter.java:179)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2692)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1262)
+	at org.eclipse.jdt.core.dom.CompilationUnitResolver.convert(CompilationUnitResolver.java:256)
+	at org.eclipse.jdt.core.dom.ASTParser.internalCreateAST(ASTParser.java:905)
+	at org.eclipse.jdt.core.dom.ASTParser.createAST(ASTParser.java:656)
+	at org.eclipse.jdt.internal.ui.javaeditor.ASTProvider$$1.run(ASTProvider.java:540)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:37)
+	at org.eclipse.jdt.internal.ui.javaeditor.ASTProvider.createAST(ASTProvider.java:533)
+	at org.eclipse.jdt.internal.ui.javaeditor.ASTProvider.getAST(ASTProvider.java:474)
+	at org.eclipse.jdt.ui.SharedASTProvider.getAST(SharedASTProvider.java:129)
+	at org.eclipse.jdt.ui.OverrideIndicatorLabelDecorator.getOverrideIndicators(OverrideIndicatorLabelDecorator.java:158)
+	at org.eclipse.jdt.ui.OverrideIndicatorLabelDecorator.computeAdornmentFlags(OverrideIndicatorLabelDecorator.java:133)
+	at org.eclipse.jdt.ui.OverrideIndicatorLabelDecorator.decorate(OverrideIndicatorLabelDecorator.java:269)
+	at org.eclipse.ui.internal.decorators.LightweightDecoratorDefinition.decorate(LightweightDecoratorDefinition.java:269)
+	at org.eclipse.ui.internal.decorators.LightweightDecoratorManager$$LightweightRunnable.run(LightweightDecoratorManager.java:72)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:37)
+	at org.eclipse.ui.internal.decorators.LightweightDecoratorManager.decorate(LightweightDecoratorManager.java:356)
+	at org.eclipse.ui.internal.decorators.LightweightDecoratorManager.getDecorations(LightweightDecoratorManager.java:338)
+	at org.eclipse.ui.internal.decorators.DecorationScheduler$$1.ensureResultCached(DecorationScheduler.java:374)
+	at org.eclipse.ui.internal.decorators.DecorationScheduler$$1.run(DecorationScheduler.java:334)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:55)
+{code}

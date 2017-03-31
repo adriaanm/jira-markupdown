@@ -1,0 +1,24 @@
+This is similar to but not the same as SI-2515
+
+Running Scala 2.7.7RC2 on Windows XP Pro (dual core processor)
+
+In the attached programm, sometimes the Futures.awaitAll
+returns and sometimes it does not. In all cases, however,
+the actual block that the futures are running do run to
+completion very quickly (subsecond). The blocks passed to
+the Futures.future function are just some while loops, implementing matrix multiply based on a Jama matmul algorithm.
+However, in this case, unlike SI-2515, I use a very long timeout so earlier timeouts are not causing the futures in the current iteration to be canceled. Instead, just the opposite is happening: the blocks complete normally but awaitAll still waits. Perhaps they complete too quickly. The deadlock occurs
+much more frequently with smaller matrices, i.e.
+
+  scala scala_track.FuturesDeadlock2 8
+
+deadlocks almost every time, whereas
+
+  scala scala_track.FuturesDeadlock2 256
+
+deadlocks only about 1/6 of the time.
+
+As in SI-2515, ignore the poor concurrency granularity here
+(one future per column...); this code was simplified to
+demonstrate the deadlock.
+

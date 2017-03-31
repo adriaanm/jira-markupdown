@@ -1,0 +1,18 @@
+The RE is more successful if you replace the eager dot-stars with something more discriminating, such as 
+
+{code}
+"[^(]*\("  // etc
+{code}
+
+to wit,
+
+{code}
+scala> val expr = """[^(]*\(?(\d{3})\)?[ \.-]{0,1}(\d{3})[ \.-]{0,1}(\d{4})[^\w]*(?:Host:|Server:)\s+(?:((?:\w+\s{0,1})+))[^\d]*\s+(\d{1,2}/\d{1,2}/\d{2,4})[^\d]+(\d{1,2}:\d{2}\s[AP]M)\s+\d+/(\d{5})"""   // no idea if this is as intended
+
+[snip]
+scala> .find
+res2: Boolean = false
+
+scala> re findFirstMatchIn str
+res3: Option[scala.util.matching.Regex.Match] = None
+{code}

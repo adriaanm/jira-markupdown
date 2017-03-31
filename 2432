@@ -1,0 +1,69 @@
+Replying to [comment:9 extempore]:
+> Replying to [comment:6 dragos]:
+> > Thanks for coming up with such a small example. This look similar to SI-2175 (an undeclared local variable is used in the pattern match translation). 
+> 
+> I don't think 2429B has anything to do with the pattern matcher.  The synthetic e$$1 which is crashing it doesn't make its first appearance until lambdalifter, right here:
+
+It's already there after explicit outer (I renamed 'e' to 'eee' to be easier to spot). There's only one appearance of 'eee', when it's used as a return value from a case branch:
+
+{code}
+[[syntax trees at end of explicitouter]]// Scala source: 2429.scala
+package <empty> {
+  final class Bug2429B extends java.lang.Object with ScalaObject {
+    def this(): object Bug2429B = {
+      Bug2429B.super.this();
+      ()
+    };
+    abstract trait T extends java.lang.Object;
+    abstract trait T1 extends java.lang.Object with Bug2429B.T;
+    abstract trait TSeq extends java.lang.Object;
+    final class TSeq extends java.lang.Object with ScalaObject {
+      def this(): object Bug2429B.TSeq = {
+        TSeq.super.this();
+        ()
+      };
+      implicit def fromSeq(s: Seq[Bug2429B.T]): Bug2429B.TSeq = scala.this.Predef.error("stub")
+    };
+    def item(text: Bug2429B.TSeq): Bug2429B.TSeq = Bug2429B.this.TSeq.fromSeq(immutable.this.Nil.map[Bug2429B.T, List[Bug2429B.T]]({
+      final <synthetic> class $$anonfun extends java.lang.Object with (Nothing) => Bug2429B.T with ScalaObject {
+        def this(): anonymous class $$anonfun = {
+          $$anonfun.super.this();
+          ()
+        };
+        final def apply(name: Nothing): Bug2429B.T = {
+          var temp1: Bug2429B.T = (null: Bug2429B.T);
+          if (temp1.isInstanceOf[Bug2429B.T1]())
+            {
+              {
+                var temp2: Bug2429B.T1 = temp1.asInstanceOf[Bug2429B.T1]();
+                {
+                  {
+                    {
+                      eee
+                    }
+                  }
+                }
+              }
+            }
+          else
+            {
+              {
+                {
+                  temp1
+                }
+              }
+            }
+        }
+      };
+      (new anonymous class $$anonfun(): (Nothing) => Bug2429B.T)
+    }, immutable.this.List.builderFactory[Bug2429B.T]()))
+  }
+}
+{code}
+
+
+> {code}
+>     def item(text: Bug2429B#TSeq): Bug2429B#TSeq = Bug2429B.this.TSeq.fromSeq(immutable.this.Nil.map({
+>       (new anonymous class $$anonfun$$item$$1(e$$1): Function1)
+>     }, immutable.this.List.builderFactory()).$$asInstanceOf[Seq]());
+> }}

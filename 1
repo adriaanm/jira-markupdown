@@ -1,0 +1,7 @@
+I don't think there's any bug there, the code is type correct. getOrElse is instantiated with 'Product', and Option is a subclass of Product. Then, the pattern match is well typed, since the scrutinee is a supertype of the cases (pair is a product too). If you want to get an error, you need to override the type inferencer:
+
+{code}
+val (a: Boolean, b: String) = Some(Some(4)).getOrElse[(Boolean, String)]((false, "Foo"))
+{code}
+
+By the way, why is Option a Product?

@@ -1,0 +1,63 @@
+Thanks dragos, but it didn't really work :-/ I saw the classes sometimes, but the objects are still missing:
+
+{code}
+object B {
+  class B1
+  private class B2
+  object B3
+  private object B4
+  object B5 extends B1
+  private object B6 extends B2 
+ 
+  val valuesTry1 = this.getClass.getDeclaredClasses
+  val valuesTry2 = B.getClass.getDeclaredClasses
+  val valuesTry3 = getClass.getDeclaredClasses
+        
+  def main(args: Array[String]) {
+    println("Try 1: (" + valuesTry1.length + " classes)")
+    valuesTry1.foreach(println)
+    println("Try 2: (" + valuesTry2.length + " classes)")
+    valuesTry2.foreach(println)
+    println("Try 3: (" + valuesTry3.length + " classes)")
+    valuesTry3.foreach(println)
+
+    val b = new B
+    println("Try 4: (" + b.valuesTry4.length + " classes)")
+    b.valuesTry4.foreach(println)
+    println("Try 5: (" + b.valuesTry5.length + " classes)")
+    b.valuesTry5.foreach(println)
+    println("Try 6: (" + b.valuesTry6.length + " classes)")
+    b.valuesTry6.foreach(println)
+    println("Try 7: (" + b.valuesTry7.length + " classes)")
+    b.valuesTry7.foreach(println)
+
+  }
+}
+
+class B {
+  val valuesTry4 = this.getClass.getDeclaredClasses
+  val valuesTry5 = B.getClass.getDeclaredClasses
+  val valuesTry6 = getClass.getDeclaredClasses
+  val valuesTry7 = classOf[B].getDeclaredClasses
+}
+{code}
+
+
+{code}
+ scala B
+Try 1: (0 classes)
+Try 2: (0 classes)
+Try 3: (0 classes)
+Try 4: (2 classes)
+class B$$B1
+class B$$B2
+Try 5: (0 classes)
+Try 6: (2 classes)
+class B$$B1
+class B$$B2
+Try 7: (2 classes)
+class B$$B1
+class B$$B2
+{code}
+
+I really wonder what the difference between B.getClass and classOf[B] is though ...

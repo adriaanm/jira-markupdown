@@ -1,0 +1,89 @@
+
+{code}
+Welcome to Scala version 2.8.0.Beta1-prerelease (Java HotSpot(TM) Client VM, Java 1.5.0_22).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> import scala.continuations._
+import scala.continuations._
+import scala.continuations._
+
+scala> import scala.continuations.ControlContext._
+import scala.continuations.ControlContext._
+import scala.continuations.ControlContext._
+
+scala> import java.io._
+import java.io._
+import java.io._
+
+scala> case class Generator[+A,-B,+C]( val fun: (A => (B @cps[Any,Any])) => (C @cps[Any,Any]) ) { def copy = null; final def foreach(f: (A => B @cps[Any,Any])): C @cps[Any,Any] = { fun( f ) } }
+case class Generator[+A,-B,+C]( val fun: (A => (B @cps[Any,Any])) => (C @cps[Any,Any]) ) { def copy = null; final def foreach(f: (A => B @cps[Any,Any])): C @cps[Any,Any] = { fun( f ) } }
+defined class Generator
+
+scala> Generator { k : ( String => Unit @cps[Any,Any] ) => println( "In Generator Body" ); print( "> " ); k( new BufferedReader(new InputStreamReader(System.in)).readLine() ) }
+Generator { k : ( String => Unit @cps[Any,Any] ) => println( "In Generator Body" ); print( "> " ); k( new BufferedReader(new InputStreamReader(System.in)).readLine() ) }
+res1: Generator[String,Unit,Unit] = Generator(<function1>)
+
+scala> () => res1
+() => res1
+res2: () => Generator[String,Unit,Unit] = <function0>
+
+scala> ( kg : (() => Generator[String,Unit,Unit]) ) => Generator { k : ( Generator[String,Unit,Unit] => Unit @cps[Any,Any] ) => println( "In Generator Generator Body" ); k( kg() ) }
+( kg : (() => Generator[String,Unit,Unit]) ) => Generator { k : ( Generator[String,Unit,Unit] => Unit @cps[Any,Any] ) => println( "In Generator Generator Body" ); k( kg() ) }
+res3: (() => Generator[String,Unit,Unit]) => Generator[Generator[String,Unit,Unit],Unit,Unit] = <function1>
+
+scala> () => res1
+() => res1
+res6: () => Generator[String,Unit,Unit] = <function0>
+
+scala> for( g <- res3( res6 ) ){ for( s <- g ) { println( "input : " + s )} }
+for( g <- res3( res6 ) ){ for( s <- g ) { println( "input : " + s )} }
+In Generator Generator Body
+In Generator Body
+> hello world
+input : hello world
+res8: Unit @scala.continuations.cps[Any,Any] = ()
+
+scala> def gforce( kg : (() => Generator[String,Unit,Unit]) ) = shift{ hK : ( Unit => Unit ) => { Generator { k : ( Generator[String,Unit,Unit] => Unit @cps[Any,Any] ) => println( "In Generator Generator Body" ); k( kg() ) }; hK() } }
+def gforce( kg : (() => Generator[String,Unit,Unit]) ) = shift{ hK : ( Unit => Unit ) => { Generator { k : ( Generator[String,Unit,Unit] => Unit @cps[Any,Any] ) => println( "In Generator Generator Body" ); k( kg() ) }; hK() } }
+gforce: (kg: () => Generator[String,Unit,Unit])Unit @scala.continuations.cps[Unit,Unit]
+
+scala> reset{ gforce( res6 ) }
+reset{ gforce( res6 ) }
+java.lang.NoSuchMethodError: scala.continuations.ControlContext$$.shift(Lscala/Function1;)Ljava/lang/Object;
+	at .gforce(<console>:15)
+	at $$anonfun$$1.apply(<console>:19)
+	at $$anonfun$$1.apply(<console>:19)
+	at scala.continuations.ControlContext$$.reifyR(ControlContext.scala:93)
+	at scala.continuations.ControlContext$$.reset(ControlContext.scala:61)
+	at .<init>(<console>:19)
+	at .<clinit>(<console>)
+	at RequestResult$$.<init>(<console>:4)
+	at RequestResult$$.<clinit>(<console>)
+	at RequestResult$$scala_repl_result(<console>)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:592)
+	at scala.tools.nsc.Interpreter$$Request$$$$anonfun$$loadAndRun$$1$$$$anonfun$$apply$$13.apply(Interpreter.scala:827)
+	at scala.tools.nsc.Interpreter$$Request$$$$anonfun$$loadAndRun$$1$$$$anonfun$$apply$$13.apply(Interpreter.scala:827)
+	at scala.util.control.Exception$$Catch.apply(Exception.scala:79)
+	at scala.tools.nsc.Interpreter$$Request$$$$anonfun$$loadAndRun$$1.apply(Interpreter.scala:826)
+	at scala.tools.nsc.Interpreter$$Request$$$$anonfun$$loadAndRun$$1.apply(Interpreter.scala:826)
+	at scala.util.control.Exception$$Catch.apply(Exception.scala:79)
+	at scala.tools.nsc.Interpreter$$Request.loadAndRun(Interpreter.scala:825)
+	at scala.tools.nsc.Interpreter.interpret(Interpreter.scala:467)
+	at scala.tools.nsc.Interpreter.interpret(Interpreter.scala:457)
+	at scala.tools.nsc.InterpreterLoop.interpretStartingWith(InterpreterLoop.scala:391)
+	at scala.tools.nsc.InterpreterLoop.command(InterpreterLoop.scala:367)
+	at scala.tools.nsc.InterpreterLoop.processLine$$1(InterpreterLoop.scala:249)
+	at scala.tools.nsc.InterpreterLoop.repl(InterpreterLoop.scala:267)
+	at scala.tools.nsc.InterpreterLoop.main(InterpreterLoop.scala:439)
+	at scala.tools.nsc.MainGenericRunner$$.createLoop$$1(MainGenericRunner.scala:118)
+	at scala.tools.nsc.MainGenericRunner$$.main(MainGenericRunner.scala:143)
+	at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Me...
+{code}

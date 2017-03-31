@@ -1,0 +1,15 @@
+That's a different bug, really, but I'm not in any position to tell you whether to open a new bug or not.
+
+The solution you provided is still suboptimal, however, because whenever you call "next", it will only return after the the _following_ line has read. In other words, you fixed it for first/second line, but it will still happen with second/third, third/fourth, etc. For an example of the sort of problem this can give, see SI-4599.
+
+I think the following would fix it for {{next}}:
+
+{code:scala}
+  override def next(): String = {
+    if (unread) {
+      nextLine = bufReader.readLine
+    }
+    unread = true
+    nextLine
+  }
+{code}

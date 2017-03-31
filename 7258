@@ -1,0 +1,40 @@
+I merged Aleksandar's commit but unfortunately it doesn't fix either of these cases:
+
+runDirect() is correctly getting inlining:
+
+{code}
+
+   0:   new     #28; //class C$mcI$sp
+   3:   dup
+   4:   bipush  13
+   6:   invokespecial   #32; //Method C$mcI$sp."<init>":(I)V
+   9:   invokevirtual   #37; //Method C$mcI$sp.a:()I
+   12:  ireturn
+
+{code}
+
+But runLocal() still is not:
+
+{code}
+
+   0:   new     #28; //class C$mcI$sp
+   3:   dup
+   4:   bipush  13
+   6:   invokespecial   #32; //Method C$mcI$sp."<init>":(I)V
+   9:   astore_1
+   10:  aload_1
+   11:  invokevirtual   #25; //Method C.get$mcI$sp:()I
+   14:  ireturn
+
+{code}
+
+Neither is runIndirect(); also, c's accessor and field are not being specialized:
+
+{code}
+
+   0:   aload_0
+   1:   invokevirtual   #20; //Method c:()LC;
+   4:   invokevirtual   #25; //Method C.get$mcI$sp:()I
+   7:   ireturn
+
+{code}

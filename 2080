@@ -1,0 +1,43 @@
+Fixed in my working copy. Running test suite to verify I didn't break anything else (seems unlikely...)
+
+The fix consists of generating the javasig of the erasure of higher-order type parameters, instead of emitting a reference to the type parameter itself (which does not exist as far as Java is concerned, obviously). 
+
+Here's a self-contained test:
+
+ticket2163.scala
+{code}
+class Ticket2163Scala[CC[X]](x: CC[Int]) {
+  def bar[DD[X]](meh: DD[Int]): CC[Int] = x
+}
+{code}
+
+ticket2163.java
+{code}
+import java.util.*;
+
+public class ticket2163 {
+    public void test() {
+      List<Integer> array = new ArrayList<Integer>();
+      Ticket2163Scala<List> foo = new Ticket2163Scala<List>(array);
+      foo.bar(array);
+    }
+}
+{code}
+
+Here's the patch:
+
+{code}
+diff --git a/src/compiler/scala/tools/nsc/transform/Erasure.scala b/src/compiler/scala/tools/nsc/transform/Erasure.scala
+index 8cfa61b..accd51c 100644
+--- a/src/compiler/scala/tools/nsc/transform/Erasure.scala
++++ b/src/compiler/scala/tools/nsc/transform/Erasure.scala
+@@ -194,7 +194,7 @@ abstract class Erasure extends AddInterfaces with typechecker.Analyzer with ast.
+             "."+sym.name
+           if (sym == ArrayClass)
+             ARRAY_TAG.toString+(args map jsig).mkString
+-          else if (sym.isTypeParameterOrSkolem)
++          else if (sym.isTypeParameterOrSkolem && !sym.owner.isTypeParameterOrSkolem /*not a higher-order type parameter, as these are suppressed*/)
+             TVAR_TAG.toString+sym.name+";"
+           else if (sym == AnyClass || sym == AnyValClass || sym == SingletonClass) 
+             jsig(ObjectClass.tpe)
+{code}

@@ -1,0 +1,26 @@
+the classOf[C] thingy was due to asSeenFrom not dealing directly with class-constants. see https://github.com/adriaanm/scala/commit/86c59b5ef0b4c2f9f492bd35195c054a5b35a13d
+
+the compilation order dependent problem with collections can be reduced to (minimally):
+{code}
+// 1.scala
+trait Derived[+SA, +This <: Derived[SA, This]] extends Base[SA, This] {
+  trait Reversed extends super.Reversed with super.Transformed[SA]
+  protected override def newReversed: super.Transformed[SA] = new Reversed { } 
+}
+{code}
+
+
+{code}
+// 2.scala
+trait Base[+A, +This <: Base[A, This]] {
+  trait Transformed[+B] {
+    override def toString: String = error("")
+  }
+  
+  trait Reversed extends Transformed[A] {
+    private def x: Unit = {x: A => error("") }
+  }
+
+  protected def newReversed: Transformed[A] = new Reversed { }
+}
+{code}

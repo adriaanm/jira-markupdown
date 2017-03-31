@@ -1,0 +1,36 @@
+The following works 
+{code}
+scala> class Bar(arg: Int) { def frob = arg }
+defined class Bar
+
+scala> implicit def test1(arg: Int) : Bar = new Bar(arg)
+test1: (Int)Bar
+
+scala> 3.frob
+res0: Int = 3
+{code}
+And so does the following
+{code}
+scala> class Bar(arg: Int) { def frob = arg }           
+defined class Bar
+
+scala> implicit def test2(arg: => Int) : Bar = new Bar(arg * 2)
+test2: (=> Int)Bar
+
+scala> 3.frob                                                  
+res0: Int = 6
+{code}
+However, the following should report an ambiguity error:
+{code}
+scala> class Bar(arg: Int) { def frob = arg }                  
+defined class Bar
+
+scala> implicit def test1(arg: Int) : Bar = new Bar(arg)       
+test1: (Int)Bar
+
+scala> implicit def test2(arg: => Int) : Bar = new Bar(arg * 2)
+test2: (=> Int)Bar
+
+scala> 3.frob
+res0: Int = 3
+{code}

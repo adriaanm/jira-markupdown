@@ -1,0 +1,40 @@
+BTW try
+{code}
+io.Source.stdin.getLines.foreach(println)
+{code}
+It shows first line only after we entered second line.
+
+AFAIK it happens 'cause {{BufferedSource.BufferedLineIterator}} has
+{code}
+var nextLine = bufReader.readLine
+{code}
+So when we create {{BufferedLineIterator}} by calling {{getLines}} we also wait for a user input.
+
+I guess the correct code is something like this:
+{code}
+class BufferedLineIterator extends Iterator[String] {
+  val bufReader = BufferedSource.this.bufferedReader()
+  var nextLine = null
+  var unread = true
+
+  override def hasNext() = {
+    if (unread) {
+      nextLine = bufReader.readLine
+      unread = false
+    }
+    nextLine != null
+  }
+
+  override def next(): String = {
+    val result = nextLine
+    if (unread) {
+      nextLine = bufReader.readLine
+    } else {
+      unread = true
+    }
+    result
+  }
+}
+{code}
+
+Should I create a new bug for this or these bugs are same?

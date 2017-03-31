@@ -1,0 +1,27 @@
+Sometimes the compiler stops throwing an  java.lang.NegativeArraySizeException. This is not deterministic and changing some arbitrary code can solve this problem until it reappears suddenly.
+
+It is may be related to  this [issue|https://issues.scala-lang.org/browse/SI-6547]
+
+Disable the optimization with
+{code:java}
+      scalacOptions in Compile ++= Seq(
+        "-Ynooptimise"
+      )
+{code}
+seems to solve it. But that is no solution of course.
+
+This is the trace:
+{noformat}
+java.lang.NegativeArraySizeException
+	at scala.tools.asm.Frame.merge(Frame.java:1343)
+	at scala.tools.asm.MethodWriter.visitMaxs(MethodWriter.java:1483)
+	at scala.tools.nsc.backend.jvm.GenASM$JPlainBuilder.genMethod(GenASM.scala:1472)
+	at scala.tools.nsc.backend.jvm.GenASM$JPlainBuilder.genClass(GenASM.scala:1337)
+	at scala.tools.nsc.backend.jvm.GenASM$AsmPhase.emitFor$1(GenASM.scala:198)
+	at scala.tools.nsc.backend.jvm.GenASM$AsmPhase.run(GenASM.scala:204)
+	at scala.tools.nsc.Global$Run.compileUnitsInternal(Global.scala:1501)
+	at scala.tools.nsc.Global$Run.compileUnits(Global.scala:1486)
+	at scala.tools.nsc.Global$Run.compileSources(Global.scala:1481)
+	at scala.tools.nsc.Global$Run.compile(Global.scala:1582)
+
+{noformat}

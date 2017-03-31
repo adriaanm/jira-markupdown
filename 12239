@@ -1,0 +1,22 @@
+This is as designed. You can suppress the semi-colon inference by enclosing the entire application in parentheses:
+
+{code}
+scala> def greet(firstName: String, lastName: String) = println(s"Hello $firstName $lastName")
+greet: (firstName: String, lastName: String)Unit
+
+scala>  (
+     |    greet
+     |    ("", "")
+     | )
+Hello
+
+scala> {
+     |   greet
+     |   ("", "")
+     | }
+<console>:14: error: missing argument list for method greet
+Unapplied methods are only converted to functions when a function type is expected.
+You can make this conversion explicit by writing `greet _` or `greet(_,_)` instead of `greet`.
+         greet
+         ^
+{code}

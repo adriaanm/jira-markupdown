@@ -1,0 +1,37 @@
+{code}
+class A {
+  protected def x = 0
+  protected[A] def y = 0
+}
+
+class B extends A {
+  override def x = 1
+  println(super[A].y)
+  override def y = 1
+}
+{code}
+
+gives the following compile error:
+
+{code}
+P.scala:9: error: method y overrides nothing
+  override def y = 1
+               ^
+one error found
+{code}
+
+This is either a misleading error message, since A.y is definitely visible in B or as I think a plain error. Section 5.1.4 of the spec doesn't disallow this.
+
+The same applies for qualified private members as in:
+
+{code}
+class A {
+  class B {
+    private[A] def x = 0
+  }
+
+  class C extends B {
+    override def x = 1
+  }
+}
+{code}

@@ -1,0 +1,33 @@
+Another example from the mailing lists (https://groups.google.com/d/msg/scala-user/izL9tkKrj-c/a-V92vTdLRoJ):
+
+{code}
+class Outer {
+  type W = Int
+  object Inner {
+    val x = scala.util.Random.nextInt(100)
+  }
+  def foo1(t: Outer) : outer.Inner.type forSome { val outer: Outer } = if (t.Inner.x < Inner.x) t.Inner else Inner
+  def foo2(t: Outer) : W = if (t.Inner.x < Inner.x) t.Inner.x else Inner.x
+  def foo3(t: Outer) : Inner.type = Inner
+  
+  val ox : Outer#W = 3
+}
+{code}
+
+{noformat}
+qbin/scalac -explaintypes sandbox/test1.scala
+sandbox/test1.scala:6: error: type mismatch;
+ found   : Outer#Inner.type
+ required: outer.Inner.type( forSome { val outer: Outer })
+  def foo1(t: Outer) : outer.Inner.type forSome { val outer: Outer } = if (t.Inner.x < Inner.x) t.Inner else Inner
+                                                                       ^
+Outer#Inner.type <: outer.Inner.type( forSome { val outer: Outer })?
+  Outer = ?0outer.type?
+  true
+  Nothing <: Outer?
+  true
+  Outer <: Outer with Singleton?
+  false
+false
+one error found
+{noformat}

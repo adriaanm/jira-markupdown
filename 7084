@@ -1,0 +1,28 @@
+How would you guys feel like this as an alternative, on MapLike.  (It could be more general, this is a prototype.) It does less, but more straightforwardly, and it covers the main thing I find myself doing repeatedly.  The collections mostly stick to functions with one non-implicit argument and I think that's a good thing.
+{code}
+  /** Returns a new immutable map, the keys of which are the unique values
+   *  resulting from applying the given function to each of the keys of this
+   *  map, and the values of which are sequences containing the
+   *  corresponding values.  If there is an implicit Ordering available
+   *  for the value type, the sequences will be sorted according to it;
+   *  otherwise they are in arbitrary order.
+   *
+   *  @param    f   a function from old key type to new key type
+   *  @return   a Map from the new key type to a sequence of values
+   *  @example  Map(1 -> "a", 2 -> "b", 3 -> "c").groupValuesBy(_ % 2) == Map(0 -> Seq("b"), 1 -> Seq("a", "c"))
+   */
+  def groupValuesBy[C, B1 >: B, That](f: A => C)(implicit bf: CanBuildFrom[This, (C, immutable.Seq[B1]), That], ord: Ordering[B1] = null): That = {
+    val m = mutable.Map[C, List[B1]]() withDefaultValue Nil
+    for ((k, v) <- self)
+      m(f(k)) ::= v
+    
+    val b = bf()
+    if (ord eq null)
+      b ++= m
+    else for ((k, vs) <- m)
+      b += ((k, vs.sorted))
+
+    b.result
+  }
+{
+{code}

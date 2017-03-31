@@ -1,0 +1,19 @@
+IIUC, the only approach you could try would be to use more inheritance:
+
+{code}
+trait A{ trait Foo }
+trait B extends A {
+  trait Foo extends super.Foo { def xxx = 0 }
+}
+
+// extension
+trait C extends B with A {
+  type AFoo = super[A].Foo
+}
+
+object Test extends App {
+  val c = new C {}
+  val afoo = new c.AFoo {}
+  afoo.xxx // does not compile
+}
+{code}

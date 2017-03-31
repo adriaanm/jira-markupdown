@@ -1,0 +1,50 @@
+I could reproduce the error:
+
+{noformat}
+# Generate some clones of the test
+% for i in {1..100}; do cp test/disabled/neg/t7020.scala test/disabled/neg/t7020-$i.scala; cp test/disabled/neg/t7020.flags test/disabled/neg/t7020-$i.flags; cat test/disabled/neg/t7020.check | sed "s/t7020/t7020-$i/" > test/disabled/neg/t7020-$i.check; done
+
+/code/scala test/partest --terse --srcpath disabled test/disabled/neg/t7020*.scala
+Selected 101 tests drawn from specified tests
+
+# starting 101 tests in neg
+........................................................................
+.............................
+
+101/101 passed (elapsed time: 00:00:34)
+Test Run PASSED
+ticket/7020-2 /code/scala test/partest --terse --srcpath disabled test/disabled/neg/t7020*.scala
+Selected 101 tests drawn from specified tests
+
+# starting 101 tests in neg
+........................................................................
+.............................
+
+101/101 passed (elapsed time: 00:00:34)
+Test Run PASSED
+ticket/7020-2 /code/scala test/partest --terse --srcpath disabled test/disabled/neg/t7020*.scala
+Selected 101 tests drawn from specified tests
+
+# starting 101 tests in neg
+........................................................................
+.............................
+
+101/101 passed (elapsed time: 00:00:34)
+Test Run PASSED
+ticket/7020-2 /code/scala test/partest --terse --srcpath disabled test/disabled/neg/t7020*.scala
+Selected 101 tests drawn from specified tests
+
+# starting 101 tests in neg
+........................................................................
+..
+!!   1 - neg/t7020-76.scala                        [output differs]
+..........................
+# 100/101 passed, 1 failed in neg
+
+# Failed test paths (this command will update checkfiles)
+test/partest --update-check \
+  /Users/jason/code/scala/test/disabled/neg/t7020-76.scala
+
+100/101 passed, 1 failed (elapsed time: 00:00:32)
+Test Run FAILED
+{noformat}

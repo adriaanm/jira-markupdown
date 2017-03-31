@@ -1,0 +1,16 @@
+{code}
+scala> class Category[M[_, _]]
+defined class Category
+
+scala> trait Monoid2[F] {
+     |   final def category: Category[({type l[a, b]=F})#l] = null
+     | }
+defined trait Monoid2
+
+scala> abstract class C extends Monoid2[Float]
+defined class C
+
+scala> classOf[C].getMethods.map(_.toGenericString)
+java.lang.reflect.GenericSignatureFormatError
+	at sun.reflect.generics.parser.SignatureParser.error(SignatureParser.java:103)
+{code}

@@ -1,0 +1,24 @@
+I have just finished an "EmptyUniverse" implementing the various scala.reflect.generic._ bits.   There are a bunch of abstract extractor interfaces, which the compiler implements like so:
+{code}
+  case class AnnotationInfo(atp: Type, args: List[Tree], assocs: List[(Name, ClassfileAnnotArg)])
+  object AnnotationInfo extends AnnotationInfoExtractor
+{code}
+Not sure I would have guessed to even try that as a means of using synthetic methods to implement an interface.  Are we suggesting by virtue of embedding it in the reflection interface that it's a  mechanism people can expect to keep working?
+
+In any case, it does work if you mimic the compiler structure, having individual traits extending the generic traits, and then mixing them together in Universe.  However if you try it directly in the class, like this:
+
+{code}
+class MyUniverse extends Universe {
+ ...
+  case class AnnotationInfo(atp: Type, args: List[Tree], assocs: List[(Name, ClassfileAnnotArg)])
+  object AnnotationInfo extends AnnotationInfoExtractor
+}
+{code}
+Then you get the assertion failure seen previously in SI-2130 and SI-2779, that a duplicated symbol exists.
+{code}
+[scalacfork] Exception in thread "main" java.lang.AssertionError: assertion failed: List(object AnnotationInfo, object AnnotationInfo)
+[scalacfork] 	at scala.Predef$$.assert(Predef.scala:95)
+[scalacfork] 	at scala.tools.nsc.symtab.Symbols$$Symbol.suchThat(Symbols.scala:1037)
+[scalacfork] 	at scala.tools.nsc.symtab.Symbols$$Symbol.linkedModuleOfClass0(Symbols.scala:1223)
+{code}
+It trips the assertion even if I explicitly list generic.AnnotationInfos in the MyUniverse parents, so it's not a result of being indirectly inherited.

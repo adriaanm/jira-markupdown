@@ -1,0 +1,48 @@
+Given the following code:
+
+{code}
+class A {    
+    var current = ">>> "
+    def append(str: String) = {
+        current = current + str
+        this
+    }    
+}
+
+class B extends A
+
+val a: A = new A() append "hello"
+println(a.current)
+
+val b: B = new B() append "hello"
+println(b.current)
+{code}
+
+I would expect a correct compilation, as class B does not override append.
+
+Rather than that, I get the following compilation error:
+
+{code}
+jponge@eduroinsa143:Temp $$ scala fail_inference.scala 
+(fragment of fail_inference.scala):14: error: type mismatch;
+ found   : this.A
+ required: this.B
+val b: B = new B() append "hello"
+                    ^
+one error found
+!!!
+discarding <script preamble>
+{code}
+
+If I remove the explicit type on the following declaration:
+
+{{val b = new B() append "hello"}}
+
+then the code compiles. However, the instance b is really of type B!
+
+This example is a showcase for similar problems we get in our API design.
+
+What versions of the following are you using?
+Scala: 2.7.7 or 2.8.0
+Java: 6
+Operating system: Mac OS X

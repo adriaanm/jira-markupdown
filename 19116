@@ -1,0 +1,34 @@
+{code}
+package api {
+  class Trees {
+    type Symbol <: SymbolApi
+
+    trait SymbolApi
+
+    trait TreeApi {
+      def symbol: SymbolApi
+    }
+
+    trait SymTreeApi extends TreeApi {
+      def symbol: Symbol
+    }
+  }
+}
+
+package internal {
+  class Trees extends api.Trees {
+    class Symbol extends SymbolApi
+    abstract class Tree extends TreeApi {
+       final def symbol: Symbol = null
+    }
+    class SymTree extends Tree with SymTreeApi
+  }
+}
+
+object Test extends App {
+  val u = new internal.Trees {}
+  new u.SymTree() // java.lang.VerifyError: class internal.Trees$SymTree overrides final method symbol.()Lapi/Trees$SymbolApi;
+}
+
+
+{code}

@@ -1,0 +1,34 @@
+In the following example, the pattern match against `FooBar` is not correctly propagated to the case body, producing a compiler error:
+
+Preparation:
+
+{code}
+sealed trait Bar[S] {
+  def system: S
+}
+
+trait Foo { def bar(): Unit }
+
+trait FooBar extends Bar[Foo]
+{code}
+
+Example:
+
+{code}
+trait Test[S] {
+  val bar: Bar[S]
+
+  bar match {
+    case fb: FooBar => fb.system.bar() // error
+    case _ =>
+  }
+}
+{code}
+
+The error here is: "error: value bar is not a member of _2"
+
+The following shows that the type is actually accepted by the compiler:
+
+{code}
+case fb: FooBar => (fb: FooBar).system.bar()
+{code}

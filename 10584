@@ -1,0 +1,7 @@
+I made a change which causes this test case to compile as-is without apparent effect on anything else. In particular all the neg and tcpoly tests still pass (that's as much of the test suite as I ran) and the test for SI-3873 still passes. A couple neg tests slightly changed their output, that's it.
+
+Strangely, or not so strangely, it's essentially the same change as I made for SI-8177, only in a different spot. Here's the whole change, this time in InstantiateDependentMap.
+{code}
+      case tp1 if tp1 ne tp1.dealias => apply(tp1.dealias)
+{code}
+I really have a great deal of trouble believing this is a soundness issue and not simply compiler bugs. Perhaps someone could demonstrate the unsoundness for me.

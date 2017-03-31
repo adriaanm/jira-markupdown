@@ -1,0 +1,62 @@
+Hi Simon,
+
+Thanks for testing this. This is expected in the light of how we encode inner classes inside of top-level objects. See commit message for my change for details: https://codereview.scala-lang.org/fisheye/changelog/scala-svn?cs=25639
+
+I tried hard to make encoding regular and not introduce special case for top-level objects but found it impossible if we want both Sun's javac compiler and Eclipse compiler happy.
+
+There's an easy work-around for top-level objects:
+{code}
+
+object B {
+  class B1
+  private class B2
+  object B3
+  private object B4
+  object B5 extends B1
+  private object B6 extends B2 
+  
+  def mirrorClassForTopLevelObject(x: Class[_]): Class[_] = Class.forName(x.getName stripSuffix "$")
+ 
+  val valuesTry1 = mirrorClassForTopLevelObject(this.getClass).getDeclaredClasses
+  val valuesTry2 = mirrorClassForTopLevelObject(B.getClass).getDeclaredClasses
+  val valuesTry3 = mirrorClassForTopLevelObject(getClass).getDeclaredClasses
+        
+  def main(args: Array[String]) {
+    println("Try 1: (" + valuesTry1.length + " classes)")
+    valuesTry1.foreach(println)
+    println("Try 2: (" + valuesTry2.length + " classes)")
+    valuesTry2.foreach(println)
+    println("Try 3: (" + valuesTry3.length + " classes)")
+    valuesTry3.foreach(println)
+  }
+}
+{code}
+
+this code prints:
+{code}
+Try 1: (6 classes)
+class B$B1
+class B$B2
+class B$B3$
+class B$B4$
+class B$B5$
+class B$B6$
+Try 2: (6 classes)
+class B$B1
+class B$B2
+class B$B3$
+class B$B4$
+class B$B5$
+class B$B6$
+Try 3: (6 classes)
+class B$B1
+class B$B2
+class B$B3$
+class B$B4$
+class B$B5$
+class B$B6$
+{code}
+
+How do you feel about it?
+
+At the end of the day, all those problems will disappear once we get native Scala reflection which is in the works.

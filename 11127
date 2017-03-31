@@ -1,0 +1,12 @@
+This relates to SI-5304, which shows other examples where the object initialization is elided.
+
+This particular instance comes down to:
+
+{code}
+//src/compiler/scala/tools/nsc/transform/TypeAdaptingTransformer.scala
+          case UnitClass  =>
+            if (treeInfo isExprSafeToInline tree) REF(BoxedUnit_UNIT)
+            else BLOCK(tree, REF(BoxedUnit_UNIT))
+{code}
+
+`isExprSafeToInline` is insufficient, we have to check whether the tree is safe to elide. 

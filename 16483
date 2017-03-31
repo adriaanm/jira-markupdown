@@ -1,0 +1,69 @@
+Consider this code, defining a simple class with a method named `**`:
+
+{code}
+class Foo() {
+  def **(s: String) = "Foo"
+}
+{code}
+
+Now we add a new classes and correspondent implicits to "add more supported types" to `Foo`s `**` method:
+
+{code}
+class Weird(foo: Foo) {
+  def **[M](w: Weird) = new Weird(foo)
+}
+
+implicit def foo2weird(foo: Foo) = new Weird(foo)
+{code}
+
+
+{code}
+class Weirder[T](foo: T) {
+  def **[M](w: Weirder[T]) = new Weirder(foo)
+}
+
+implicit def foo2weirder(foo: Foo) = new Weirder(foo)
+{code}
+
+{code}
+class Weirdest[T](foo: T) {
+  def **(w: Weirdest[T]) = new Weirdest(foo)
+}
+
+implicit def foo2weirdest(foo: Foo) = new Weirdest(foo)
+{code}
+
+While the first and the last work, the second one fails:
+{code}
+// Works:
+foo ** new Weird(new Foo)
+{code}
+
+{code}
+// Fails:
+foo ** new Weirder(new Foo)
+/*
+error: type mismatch;
+ found   : Weirder[Foo]
+ required: String
+              f ** new Weirder(new Foo)
+                   ^
+*/
+{code}
+
+{code}
+// Works again:
+foo ** new Weirdest(new Foo)
+{code}
+
+The only difference between the second and the third example is the removal of the (unused) type parameter `M`.
+
+It looks like as if the implicit method didn't even get considered when it had the type parameter.
+
+This bug report is a result of http://stackoverflow.com/questions/7649517/
+
+I already tried to read the spec to figure out if this is as expected or if this is a bug, but especially in 6.26.3 I haven't understood it fully.
+
+I hope this can be fixed, because this behavior precludes any possibility of working with numbers where one of arguments is a parametrized type.
+
+So while `5 * BigInt(5)` will work, things like `5 * Complex[Long](...)` (math), `5 * Currency[€](...)` (money), 5 * Quantity[Mass](...)` will not be possible.

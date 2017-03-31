@@ -1,0 +1,29 @@
+Outer.java
+{code:java}
+public class Outer {
+    public class Inner {
+    }
+}
+{code}
+Fail.scala
+{code:scala}
+object Fail {
+  val o = new Outer
+  val i = new o.Inner
+}
+{code}
+
+Result:
+
+{code}
+$ javac -parameters Outer.java 
+$ scalac -cp . Fail.scala 
+error: error while loading Inner, class file './Outer$Inner.class' is broken
+(class java.lang.IndexOutOfBoundsException/0)
+Fail.scala:3: error: Fail.o.Inner does not have a constructor
+  val i = new o.Inner
+          ^
+two errors found
+{code}
+
+This is a 2.12 regression, it works fine in 2.11.8. Java version is 1.8.0_121

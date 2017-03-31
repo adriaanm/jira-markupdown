@@ -1,0 +1,114 @@
+Got it (I think this is the same bug but maybe I am wrong):
+bug/Global.java
+{code}
+package bug;
+
+import bug.action.Action;
+import java.util.List;
+import java.util.LinkedList;
+
+public class Global {
+  public int items() {
+    return 0;
+  }
+
+  public int items(int i) {
+    return i + ls.size();
+  }
+
+  private List<Action> ls = new LinkedList<Action>();
+
+  public void putAction(Action a) {
+    a.setGlobal(this);
+    ls.add(a);
+  }
+
+  public void runActions() {
+    for (Action action:  ls) {
+      System.out.println("RUNNING ACTION");
+      action.run(0);
+    }
+  }
+}
+{code}
+
+bug/Display.java
+{code}
+package bug;
+
+public class Display {
+  protected Global m_glob;
+
+  public void start() {
+    m_glob.runActions();
+  }
+}
+{code}
+
+bug/action/Action.java
+{code}
+package bug.action;
+
+import bug.Global;
+
+public abstract class Action {
+  protected Global m_glob;
+
+  public Action(Global glob0) {
+    m_glob = glob0;
+  }
+  
+  public Action() {
+    this(null);
+  }
+
+  public abstract void run(int v);
+
+  public void setGlobal(Global g) {
+    m_glob = g;
+  }
+}
+{code}
+
+test/ScalaActivity.scala
+{code}
+package test
+
+import bug.Display
+import bug.action.Action
+
+abstract class Outer extends Display {
+
+  def init() {
+    m_glob.putAction(ScalaActivity)
+  }
+
+  object ScalaActivity extends Action {
+    def run(v: Int) {
+      val testSet = List(1,2,3)
+      testSet.map(p => m_glob.items(p)) // crash with illegal access
+    }
+  }
+}
+{code}
+
+test/Test.scala
+{code}
+package test
+
+import bug.Global
+
+object Test {
+  def main(args: Array[String]) {
+    val m = new Main()
+    m.init()
+    m.start()
+  }
+}
+
+class Main extends Outer {
+  m_glob = new Global()
+}
+{code}
+
+Making ScalaAction a class instead of an object fixed the problem. Closure in run method is necessary to trigger the illegal access error.

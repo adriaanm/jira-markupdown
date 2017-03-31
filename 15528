@@ -1,0 +1,34 @@
+When an abstract type is bound by several super types then the order of the super types influences the information that is used for the abstract type. It seems that only the first super type does count.
+
+In the following example the abstract types Element and Document behave differently if the super type "Node" is given first or is given last.
+
+{code}
+  trait Nodes {
+
+    trait INode
+    trait IElement extends INode
+    trait IDocument extends INode
+
+    type Node <: INode
+//    type Element <: IElement with Node
+//    type Document <: IDocument with Node
+    type Element <: Node with IElement
+    type Document <: Node with IDocument
+
+  }
+{code}
+
+If "Node" is given first then in the following match expression the first case matches instance of type Document:
+
+{code}
+  def apply(node: Node): Unit = node match {
+    case n: Element => println("element")
+    case n: Document => println("document")
+  }
+{code}
+
+If "Node" is given last when defining the abstract types then the match expressions works as expected.
+
+The attached test program output "element element" or "element document" depending on whether "Node" is given first or last.
+
+I think the situation could be improved by using the most specific type that is available as an upper bound for an abstract type.

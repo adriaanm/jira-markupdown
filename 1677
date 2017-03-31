@@ -1,0 +1,20 @@
+(extempore in [r25725|https://codereview.scala-lang.org/fisheye/changelog/scala-svn?cs=25725]) ProductN, and method synthesis toolbox.
+
+- Finished giving case classes a ProductN parent, and flipped it on.
+The "finish" part involved not breaking existing code where case classes
+manually extend the appropriate ProductN.  (Like, Tuple 1-22.)
+
+- Generalized most of SyntheticMethods to ease method creation
+and class manipulation in general.
+
+- Fixed bugs related to the above, like the fact that this used to
+be a compile error:
+
+  scala> case class Foo() extends Serializable
+  <console>:28: error: trait Serializable is inherited twice
+         case class Foo() extends Serializable
+                                  ^
+It feels like there's a better way to eliminate the duplicate parents,
+but after spending a lot of time chasing my tail in that peril-fraught
+zone between namer and typer, I don't see an easy path to improve on
+it.  Closes SI-1799.  For that modification to Typers, review by odersky.

@@ -1,0 +1,24 @@
+Superficial fix:
+
+  https://github.com/retronym/scala/compare/ticket/5683
+
+Things seem to go wrong in {{elimHigherOrderTypeParam}}:
+
+
+{code}
+ts0 = List(Test.NT[X], Test.NT[Int])
+ts0 map elimHigherOrderTypeParam = List(Test.NT, Test.NT[Int])
+{code}
+
+
+{code}
+private def lubList(ts: List[Type], depth: Int): List[Type] = {
+    // Matching the type params of one of the initial types means dummies.
+    val initialTypeParams = ts map (_.typeParams)
+    def isHotForTs(xs: List[Type]) = initialTypeParams contains xs.map(_.typeSymbol)
+
+    def elimHigherOrderTypeParam(tp: Type) = tp match {
+      case TypeRef(pre, sym, args) if args.nonEmpty && isHotForTs(args) => tp.typeConstructor
+      case _                                                            => tp
+    }
+{code}

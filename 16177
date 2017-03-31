@@ -1,0 +1,84 @@
+The compiler does not honor the stop (or stopAfter, in 2.9.0) setting across multiple runs. This used to work fine in Scala version 2.8.1. 
+
+Outline of steps to reproduce:
+
+- Specify settings.stop to be "typer"
+- Compile some code
+- Print output tree. The tree at the end of typer gets printed
+- Specify settings.stop to be "jvm"
+- Do another run using the same compiler instance
+- Print output tree. Even now, the tree at the end of typer gets printed. The new settings.stop does not get picked up.
+
+Test code below :
+{code}
+package interpreterplay
+
+import scala.tools.nsc._
+import reporters._
+import util._
+import io._
+
+object CompilerAndRunner {
+  
+  def newSettings = {
+    val iSettings = new scala.tools.nsc.Settings 
+//    iSettings.classpath.append("""C:\Users\lalit\work\scala-2.8.1\lib\scala-library.jar;C:\Users\lalit\work\scala-2.8.1\lib\scala-compiler.jar""")
+    iSettings.classpath.append("""C:\Users\lalit\work\scala-2.9.0\lib\scala-library.jar;C:\Users\lalit\work\scala-2.9.0\lib\scala-compiler.jar""")
+    iSettings.outputDirs.setSingleOutput(new VirtualDirectory("(memory)", None))
+    iSettings
+  }
+  
+  def main(args: Array[String]) {
+    val code = """
+class X
+"""
+    
+    val iSettings = newSettings
+    
+    val car = new CompilerAndRunner(iSettings)
+    car.printTree(code, "typer")
+    println("********************")
+    car.printTree(code, "jvm")
+  }
+}
+
+class CompilerAndRunner(settings: Settings) {
+  val prefix = """object Wrapper {
+""" 
+
+  val codeTemplate = """%s
+%s
+
+  def entry() {
+    // noop
+  }
+}
+"""
+
+  val reporter = new Reporter {
+    override def info0(position: Position, msg: String, severity: Severity, force: Boolean) = {
+    }
+  }
+
+  val compiler = new Global(settings, reporter)
+
+  def printTree(code0: String, phase: String) {
+//    compiler.settings = CompilerAndRunner.newSettings
+    val pfx = prefix 
+    val code = codeTemplate format(pfx, code0)
+    compiler.settings.stop.value = List(phase)
+    val run = new compiler.Run
+    reporter.reset
+    run.compileSources(List(new BatchSourceFile("scripteditor", code)))
+
+    if (reporter.hasErrors) {
+      println("Problems")
+    }
+      else {
+//      val tree = run.units.next.body
+//      println(tree.toString)
+      compiler.printAllUnits()
+    }
+  }
+}
+{code}

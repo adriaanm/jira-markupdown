@@ -1,0 +1,30 @@
+In Haskell there is also an error on ground level so this behaviour might be right (or else someone with a strong category theory background must say that Haskell's behaviour is also wrong). Probably idempotency is not a requirement for join.
+
+So there is only the change of context for None
+
+
+Below behaviour of join in Haskell
+==================================
+Prelude Control.Monad.Writer> join (Just 5)
+
+<interactive>:1:12:
+    No instance for (Num (Maybe a0))
+      arising from the literal `5'
+    Possible fix: add an instance declaration for (Num (Maybe a0))
+    In the first argument of `Just', namely `5'
+    In the first argument of `join', namely `(Just 5)'
+    In the expression: join (Just 5)
+Prelude Control.Monad.Writer> join Nothing
+Nothing
+Prelude Control.Monad.Writer> join [1]
+
+<interactive>:1:7:
+    No instance for (Num [a0])
+      arising from the literal `1'
+    Possible fix: add an instance declaration for (Num [a0])
+    In the expression: 1
+    In the first argument of `join', namely `[1]'
+    In the expression: join [1]
+Prelude Control.Monad.Writer> join []
+[]
+

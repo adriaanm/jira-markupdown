@@ -1,0 +1,16 @@
+The check in https://github.com/scala/scala/blob/master/src/library/scala/collection/parallel/package.scala#L44 ...
+
+{code}
+  private[parallel] def getTaskSupport: TaskSupport =
+    if (scala.util.Properties.isJavaAtLeast("1.6")) {
+      val vendor = scala.util.Properties.javaVmVendor
+      if ((vendor contains "Oracle") || (vendor contains "Sun") || (vendor contains "Apple")) new ForkJoinTaskSupport
+      else new ThreadPoolTaskSupport
+    } else new ThreadPoolTaskSupport
+{code}
+
+... is not sufficient to choose the “best” task support library available.
+
+Example case is Avian where, despite the existence of ForkJoin, ThreadPools are used.
+
+One approach could be to check for {{scala.util.Properties.isJavaAtLeast("1.7"))}} and enable ForkJoin without further vendor checks, because one can reasonably expect that if a platform declares Java 7 support it actually does.

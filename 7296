@@ -1,0 +1,43 @@
+Thanks for the diff.  It doesn't seem to apply to Scala 2.9.1.  Here's a patch that seems to work for me:
+
+{noformat}
+*** scala       Mon Aug 29 11:44:19 2011
+--- scala.fixed Tue Feb 28 14:18:48 2012
+***************
+*** 111,116 ****
+--- 111,117 ----
+
+  # default to the boot classpath for speed.
+  CPSELECT="-Xbootclasspath/a:"
++ CPCLEAR="-classpath \"\""
+
+  while [ $# -gt 0 ]; do
+    case "$1" in
+***************
+*** 134,139 ****
+--- 135,141 ----
+        ;;
+      -nobootcp)
+        CPSELECT="-classpath "
++       CPCLEAR=""
+        shift
+        ;;
+      *)
+***************
+*** 153,159 ****
+  "${JAVACMD:=java}" \
+    $JAVA_OPTS \
+    "${java_args[@]}" \
+!   ${CPSELECT}${TOOL_CLASSPATH} \
+    -Dscala.usejavacp=true \
+    -Dscala.home="$SCALA_HOME" \
+    -Denv.emacs="$EMACS" \
+--- 155,161 ----
+  "${JAVACMD:=java}" \
+    $JAVA_OPTS \
+    "${java_args[@]}" \
+!   ${CPSELECT}${TOOL_CLASSPATH} ${CPCLEAR}\
+    -Dscala.usejavacp=true \
+    -Dscala.home="$SCALA_HOME" \
+    -Denv.emacs="$EMACS" \
+{noformat}

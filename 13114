@@ -1,0 +1,37 @@
+Neither Seq.Projection or Iterable.Projection override drop or dropWhile, so they end up inheriting Iterable's strict versions. Seq.Projection needs to override these with non-strict versions based on Iterator's drop and dropWhile.
+
+The dropWhile is particularly a problem since it also affects Range and can force an otherwise lazy computation using Ranges to suddently blow up.
+
+{code}
+scala> (1 to 10000).map{i => if (i == 100) error("100 hit") else i}.dropWhile(_ < 10)(0)
+java.lang.Error: 100 hit
+	at scala.Predef$$.error(Predef.scala:80)
+	at $$anonfun$$1.apply(<console>:11)
+	at $$anonfun$$1.apply(<console>:11)
+	at scala.Seq$$Projection$$MapProjection.apply(Seq.scala:73)
+	at scala.Seq$$Projection$$MapProjection.apply(Seq.scala:70)
+	at scala.RandomAccessSeq$$$$anon$$12.next(RandomAccessSeq.scala:135)
+	at scala.Iterator$$$$anon$$13.next(Iterator.scala:242)
+	at s...
+scala> def frm(start:int) = new Seq.Projection[int] {
+  def apply(i:int) = start + i;
+  def elements = Iterator.from(start);
+  def length:int = throw new UnsupportedOperationException
+}
+
+frm: (int)java.lang.Object with Seq.Projection[int]
+
+scala> 
+scala> frm(1).map{i => if (i == 100) error("100 hit") else i}.drop(10)(0)
+java.lang.Error: 100 hit
+	at scala.Predef$$.error(Predef.scala:80)
+	at $$anonfun$$1.apply(<console>:12)
+	at $$anonfun$$1.apply(<console>:12)
+	at scala.Iterator$$$$anon$$12.next(Iterator.scala:233)
+	at scala.Seq$$class.drop(Seq.scala:313)
+	at scala.Seq$$Projection$$MapProjection.drop(Seq.scala:70)
+	at .<init>(<console>:12)
+	at .<clinit>(<console>)
+	at RequestResult$$.<init>(<console>:3)
+...
+{code}

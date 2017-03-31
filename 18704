@@ -1,0 +1,39 @@
+You know, if I could get through one freaking day without some all-new bug paralyzing development for an hour or two at least, it would be some wonderful dream. I'm not even asking not to discover new compiler bugs every single day, I'm not greedy. I'd just like to enjoy the occasional day when I don't have to whittle down a few hundred lines of code to find out why sbt freezes every time I try to run the tests, or whatever the day's manifestation is.
+
+This freezes in typer.
+{code}
+trait M[F[_]]
+
+trait P[A] {
+  type CC[X] = P[X]
+  def f(p: A => Boolean): M[CC]
+}
+
+trait Other {
+  def g[A](p: A => Boolean): P[A] => M[P] = _ f p
+}
+{code}
+It's a regression. It compiles in 2.9 and 2.10.0, freezes in 2.10.1 and 2.11.0-M7.
+
+Here's the last gasp via -Ytyper-debug
+{noformat}
+|    |    |-- _root_.scala.Function1[A, Boolean] TYPEmode (site: value p in Other)
+|    |    |    |-- Boolean TYPEmode (site: value p in Other)
+|    |    |    |    \-> Boolean
+|    |    |    \-> A => Boolean
+|    |    |-- _root_.scala.Function1[P[A], M[P]] TYPEmode (site: method g in Other)
+|    |    |    |-- P[A] TYPEmode (site: method g in Other)
+|    |    |    |    \-> P[A]
+|    |    |    |-- M[F] TYPEmode (site: method g in Other)
+|    |    |    |    \-> M[P]
+|    |    |    \-> P[A] => M[P]
+|    |    |-- ((x$1) => x$1.f(p)) : pt=P[A] => M[P] EXPRmode (site: method g in Other)
+|    |    |    |-- x$1.f(p) : pt=M[P] EXPRmode (site: value $anonfun in Other)
+|    |    |    |    |-- x$1.f BYVALmode-EXPRmode-FUNmode-POLYmode (silent: value $anonfun in Other)
+|    |    |    |    |    |-- x$1 EXPRmode-POLYmode-QUALmode (silent: value $anonfun in Other)
+|    |    |    |    |    |    \-> x$1.type (with underlying type P[A])
+|    |    |    |    |    \-> (p: A => Boolean)M[x$1.CC]
+|    |    |    |    |-- p : pt=A => Boolean BYVALmode-EXPRmode (silent: value $anonfun in Other)
+|    |    |    |    |    \-> A => Boolean
+|    |    |    |    \-> M[x$1.CC]
+{noformat}

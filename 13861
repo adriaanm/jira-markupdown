@@ -1,0 +1,29 @@
+It's currently not possible to define companion objects for inner classes and refer to them without having an instance of the outer class.
+
+Since there should be a way to achieve something like statics on inner classes as well (the spec suggests that with [companion] objects java statics can be achieved, Chapter 5.4, example 5.4.1), I'd suggest the following syntax:
+
+{code}
+object TestComponent {
+  object TestService {
+    final val TESTSTRING = "TestString"
+  }
+}
+
+trait TestComponent {
+  trait TestService {
+  }
+}
+{code}
+
+ATM, this doesn't compile due to a name clash within object and trait. This should treat objects within companion objects as the companion objects of classes nested within the class linked to the companion object.
+
+The corresponding Java syntax is as follows:
+
+{code}
+public interface TestComponent {
+  public interface TestService {
+    public final String TESTSTRING = "TestString";
+  }
+}
+{code}
+

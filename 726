@@ -1,0 +1,10 @@
+The problem is that the anonymous function `() => baz` gets an unnecessary outer pointer, initialized in its constructor. And its constructor is called before the super constructor of the IP class:
+
+{code}
+IP.this.baz = baz$$1;
+IP.super.this({
+  (new IP$$$$anonfun$$$$init$$$$1(IP.this, baz$$1): Function0)
+});
+{code}
+
+Either the anonfun should not get the useless outer pointer, or this code should be forbidden by the type checker.

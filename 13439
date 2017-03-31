@@ -1,0 +1,225 @@
+Probably, -Xprint:* should be allowed in scalac, to easier learn how compiler works.
+
+{code}
+Index: Settings.scala
+===================================================================
+--- Settings.scala	(revision 15037)
++++ Settings.scala	(working copy)
+@@ -467,7 +467,7 @@
+     override def helpSyntax = name + ":<phase>"
+ 
+     def contains(phasename: String): Boolean =
+-      value exists (str => phasename startsWith str)
++      value exists (str => (phasename startsWith str) || str == "*")
+ 
+     def unparse: List[String] =
+       (value.foldLeft[List[String]]
+{code}
+
+example output with -Xprint:* :
+
+{code}
+[[syntax trees at end of parser]]// Scala source: hello.scala
+package <empty> {
+  object A extends Application with scala.ScalaObject {
+    def <init>() = {
+      super.<init>();
+      ()
+    };
+    println("hello world")
+  }
+}
+
+[[syntax trees at end of namer]]// Scala source: hello.scala
+package <empty> {
+  final object A extends Application with scala.ScalaObject {
+    def <init>() = {
+      super.<init>();
+      ()
+    };
+    println("hello world")
+  }
+}
+
+[[syntax trees at end of typer]]// Scala source: hello.scala
+package <empty> {
+  final object A extends java.lang.Object with Application with ScalaObject {
+    def this(): object A = {
+      A.super.this();
+      ()
+    };
+    scala.this.Predef.println("hello world")
+  }
+}
+
+[[syntax trees at end of superaccessors]]// Scala source: hello.scala
+package <empty> {
+  final object A extends java.lang.Object with Application with ScalaObject {
+    def this(): object A = {
+      A.super.this();
+      ()
+    };
+    scala.this.Predef.println("hello world")
+  }
+}
+
+[[syntax trees at end of pickler]]// Scala source: hello.scala
+package <empty> {
+  final object A extends java.lang.Object with Application with ScalaObject {
+    def this(): object A = {
+      A.super.this();
+      ()
+    };
+    scala.this.Predef.println("hello world")
+  }
+}
+
+[[syntax trees at end of refchecks]]// Scala source: hello.scala
+package <empty> {
+  final class A extends java.lang.Object with Application with ScalaObject {
+    def this(): object A = {
+      A.super.this();
+      ()
+    };
+    scala.this.Predef.println("hello world")
+  }
+}
+
+[[syntax trees at end of liftcode]]// Scala source: hello.scala
+package <empty> {
+  final class A extends java.lang.Object with Application with ScalaObject {
+    def this(): object A = {
+      A.super.this();
+      ()
+    };
+    scala.this.Predef.println("hello world")
+  }
+}
+
+[[syntax trees at end of uncurry]]// Scala source: hello.scala
+package <empty> {
+  final class A extends java.lang.Object with Application with ScalaObject {
+    def this(): object A = {
+      A.super.this();
+      ()
+    };
+    scala.this.Predef.println("hello world")
+  }
+}
+
+[[syntax trees at end of tailcalls]]// Scala source: hello.scala
+package <empty> {
+  final class A extends java.lang.Object with Application with ScalaObject {
+    def this(): object A = {
+      A.super.this();
+      ()
+    };
+    scala.this.Predef.println("hello world")
+  }
+}
+
+[[syntax trees at end of explicitouter]]// Scala source: hello.scala
+package <empty> {
+  final class A extends java.lang.Object with Application with ScalaObject {
+    def this(): object A = {
+      A.super.this();
+      ()
+    };
+    scala.this.Predef.println("hello world")
+  }
+}
+
+[[syntax trees at end of erasure]]// Scala source: hello.scala
+package <empty> {
+  final class A extends java.lang.Object with Application with ScalaObject {
+    def this(): object A = {
+      A.super.this();
+      A.this.$$asInstanceOf[Application$$class]()./*Application$$class*/$$init$$();
+      ()
+    };
+    scala.this.Predef.println("hello world")
+  }
+}
+
+[[syntax trees at end of lazyvals]]// Scala source: hello.scala
+package <empty> {
+  final class A extends java.lang.Object with Application with ScalaObject {
+    def this(): object A = {
+      A.super.this();
+      A.this.$$asInstanceOf[Application$$class]()./*Application$$class*/$$init$$();
+      ()
+    };
+    scala.this.Predef.println("hello world")
+  }
+}
+
+[[syntax trees at end of lambdalift]]// Scala source: hello.scala
+package <empty> {
+  final class A extends java.lang.Object with Application with ScalaObject {
+    def this(): object A = {
+      A.super.this();
+      A.this.$$asInstanceOf[Application$$class]()./*Application$$class*/$$init$$();
+      ()
+    };
+    scala.this.Predef.println("hello world")
+  }
+}
+
+[[syntax trees at end of constructors]]// Scala source: hello.scala
+package <empty> {
+  final class A extends java.lang.Object with Application with ScalaObject {
+    def this(): object A = {
+      A.super.this();
+      A.this.$$asInstanceOf[Application$$class]()./*Application$$class*/$$init$$();
+      scala.this.Predef.println("hello world");
+      ()
+    }
+  }
+}
+
+[[syntax trees at end of flatten]]// Scala source: hello.scala
+package <empty> {
+  final class A extends java.lang.Object with Application with ScalaObject {
+    def this(): object A = {
+      A.super.this();
+      A.this.$$asInstanceOf[Application$$class]()./*Application$$class*/$$init$$();
+      scala.this.Predef.println("hello world");
+      ()
+    }
+  }
+}
+
+[[syntax trees at end of mixin]]// Scala source: hello.scala
+package <empty> {
+  final class A extends java.lang.Object with Application with ScalaObject {
+    final <stable> <accessor> def executionStart(): Long = A.this.executionStart;
+    private[this] val executionStart: Long = _;
+    final <accessor> def executionStart_=(x$$1: Long): Unit = A.this.executionStart = x$$1;
+    def main(x$$1: Array[java.lang.String]): Unit = scala.Application$$class.main(A.this, x$$1);
+    def $$tag(): Int = scala.ScalaObject$$class.$$tag(A.this);
+    def this(): object A = {
+      A.super.this();
+      scala.Application$$class./*Application$$class*/$$init$$(A.this);
+      scala.this.Predef.println("hello world");
+      ()
+    }
+  }
+}
+
+[[syntax trees at end of cleanup]]// Scala source: hello.scala
+package <empty> {
+  final class A extends java.lang.Object with Application with ScalaObject {
+    final <stable> <accessor> def executionStart(): Long = A.this.executionStart;
+    private[this] val executionStart: Long = _;
+    final <accessor> def executionStart_=(x$$1: Long): Unit = A.this.executionStart = x$$1;
+    def main(x$$1: Array[java.lang.String]): Unit = scala.Application$$class.main(A.this, x$$1);
+    def $$tag(): Int = scala.ScalaObject$$class.$$tag(A.this);
+    def this(): object A = {
+      A.super.this();
+      scala.Application$$class./*Application$$class*/$$init$$(A.this);
+      scala.this.Predef.println("hello world");
+      ()
+    }
+  }
+}
+{code}

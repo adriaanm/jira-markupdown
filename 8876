@@ -1,0 +1,19 @@
+So I'm tempted to close this as "not a bug". But perhaps we could include some static analysis to warn about this.
+
+For example, FindBugs has a check [1]
+
+{quote}
+SC: Constructor invokes Thread.start() (SC_START_IN_CTOR)
+
+The constructor starts a thread. This is likely to be wrong if the class is ever extended/subclassed, since the thread will be started before the subclass constructor is started.
+{quote}
+
+It's not quite the same thing, though: they are defending against subclassing, we are seeing something different here.
+
+...
+
+Okay, I think I see it now. It's the same deadlock pattern that led to the deprecation of {{scala.Application}}. [2] [3]
+
+[1] http://findbugs.sourceforge.net/bugDescriptions.html#SC_START_IN_CTOR
+[2] http://jaroslav-sedlacek.blogspot.ch/2011/03/java-static-initialization-part-2.html
+[3] http://www.scala-lang.org/api/current/scala/Application.html

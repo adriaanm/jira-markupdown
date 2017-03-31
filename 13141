@@ -1,0 +1,19 @@
+If there's a [_] type in a case class parameter, compilation of code that pattern matches against the case class results in a compiler crash.
+
+File CC.scala:
+case class Moose[T](in: T)
+
+case class Cow(what: String, in: List[Moose[_]])
+
+File Match.scala:
+object Match {
+  def foo(which: Cow) = which match {
+    case Cow("hello", _) => "1"
+    case Cow("bye", _) => "2"
+    case _ => "3"
+  }
+}
+
+Compile both files (scalac *.scala).  Then touch Match.scala and type "scalac Match.scala"
+
+The compiler fails looking for type _$$1

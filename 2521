@@ -1,0 +1,17 @@
+looks like the issue requires a bit more attention
+it still doesn't compile in case of several overloads and error message is really misleading:
+{code}
+class c {def f(a:Int, b:Int) = 1; def f() = 1}
+new c().f(a=1,2)
+{code}
+
+fails with
+{code}
+<console>:18: error: overloaded method value f with alternatives:
+  ()Int <and>
+  (a: Int,b: Int)Int
+ cannot be applied to (a: Int, Int)
+              new c().f(a=1,2)
+{code}
+
+tested with 2.8.0, 2.9.1 and scala-2.10.0.r25912-b20111031024940

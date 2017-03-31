@@ -1,0 +1,44 @@
+Download http://www.java2s.com/Code/Jar/STUVWXYZ/Downloadjavaxpersistencejar.htm
+and put in say /tmp
+
+create test class FieldAnnonTest
+{code}
+class Test(@javax.persistence.OneToMany var s:String)
+
+object FieldAnnonTest {
+
+def isThere:Boolean = {
+    for (i <- classOf[Test].getDeclaredFields) for (a<-i.getDeclaredAnnotations) return true
+    return false
+}
+
+def main(args: Array[String]) {
+  assert (isThere == true)
+}
+}
+{code}
+
+/opt/local/lib/scala28rc2/bin/scalac -classpath /tmp/javax.persistence.jar:. FieldAnnonTest.scala
+
+/opt/local/lib/scala28rc2/bin/scala -classpath /tmp/javax.persistence.jar:. FieldAnnonTest
+
+{code}
+
+java.lang.AssertionError: assertion failed: should find annotations
+	at scala.Predef$$.assert(Predef.scala:93)
+	at FieldAnnonTest$$.main(FieldAnnonTest.scala:11)
+	at FieldAnnonTest.main(FieldAnnonTest.scala)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at scala.tools.nsc.util.ScalaClassLoader$$$$anonfun$$run$$1.apply(ScalaClassLoader.scala:81)
+	at scala.tools.nsc.util.ScalaClassLoader$$class.asContext(ScalaClassLoader.scala:24)
+	at scala.tools.nsc.util.ScalaClassLoader$$URLClassLoader.asContext(ScalaClassLoader.scala:86)
+	at scala.tools.nsc.util.ScalaClassLoader$$class.run(ScalaClassLoader.scala:81)
+	at scala.tools.nsc.util.ScalaClassLoader$$URLClassLoader.run(ScalaClassLoader.scala:86)
+	at scala.tools.nsc.MainGenericRunner$$.main(MainGenericRunner.scala:78)
+	at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
+{code}
+
+it worked with scala 2.8beta

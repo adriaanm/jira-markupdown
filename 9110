@@ -1,0 +1,29 @@
+Regarding unreachable code. The new backend solves that issue, and the fix can be ported to GenASM. Here's the gist:
+
+{noformat}
+    /**
+     *  When writing classfiles with "optimization level zero" (ie -neo:GenBCode)
+     *  the very least we want to do is remove dead code beforehand,
+     *  so as to prevent an artifact of stack-frames computation from showing up,
+     *  the artifact described at http://asm.ow2.org/doc/developer-guide.html#deadcode
+     *  That artifact results from the requirement by the Java 6 split verifier
+     *  that a stack map frame be available for each basic block, even unreachable ones.
+     *
+     *  Just removing dead code might leave stale LocalVariableTable entries
+     *  thus `cleanseMethod()` also gets rid of those.
+     * */
+    final def removeDeadCode() {
+      for(mnode <- cnode.toMethodList; if Util.hasBytecodeInstructions(mnode)) {
+        Util.computeMaxLocalsMaxStack(mnode)
+        cleanseMethod(cnode.name, mnode) // remove unreachable code
+      }
+    }
+{noformat}
+
+Excerpt from https://github.com/magarciaEPFL/scala/blob/GenRefactored/src/compiler/scala/tools/nsc/backend/jvm/BCodeOptIntra.scala
+
+The ASM visitors used in {{cleanseMethod()}} can be found at https://github.com/magarciaEPFL/scala/tree/GenRefactored/src/asm/scala/tools/asm/optimiz
+
+
+
+

@@ -1,0 +1,21 @@
+I can't figure out what the logic is here.  The typer only seems interested in whether A is a subtype of B, but the match is equally possible if B is a subtype of A, like it is.  This same confused relationship is a component of the brokenness in the core pattern matcher logic.
+
+{code}
+object obj
+{
+  case class A(x: Int)
+  class B extends A(5)
+
+  val x: Unit = (new B) match {
+    case A(_) => println("found A")
+    case _ => println("something else happened?")
+  }
+}
+{code}
+{code}
+a.scala:7: error: constructor cannot be instantiated to expected type;
+ found   : obj.A
+ required: obj.B
+    case A(_) => println("found A")
+         ^
+{code}

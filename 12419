@@ -1,0 +1,25 @@
+Reduced it a bit - not the number of classes, but the cruft around:
+
+{code}
+trait T {
+  def m: T
+}
+
+trait U extends T {
+  override def m: U
+}
+
+trait V extends U {
+  abstract override def m: U = super.m
+}
+
+class W extends T {
+  override def m: T = new W
+}
+
+class C extends W with U with V
+
+object Test extends App {
+    new C().m // bum
+}
+{code}

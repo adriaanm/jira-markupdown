@@ -1,0 +1,37 @@
+I went further and restored the names of all symbols captured by lifted free variables.
+
+{code}
+ticket/6028 ~/code/scala cat test/files/pos/t6028.scala 
+class T {
+  def foo(a: Int) = {val b = 0 ; () => a + b }
+}
+ticket/6028 ~/code/scala diff -u pre-6028.txt post-6028.txt 
+--- pre-6028.txt	2012-07-07 11:49:06.000000000 +0200
++++ post-6028.txt	2012-07-07 11:47:53.000000000 +0200
+@@ -1,14 +1,14 @@
+-[[syntax trees at end of lambdalift]]// Scala source: t6028.scala
++[[syntax trees at end of                lambdalift]] // t6028.scala
+ package <empty> {
+   class T extends Object {
+     def <init>(): T = {
+       T.super.<init>();
+       ()
+     };
+-    def foo(a$1: Int): Function0 = {
+-      val b$1: Int = 0;
++    def foo(a: Int): Function0 = {
++      val b: Int = 0;
+       {
+-        (new anonymous class $anonfun$foo$1(T.this, a$1, b$1): Function0)
++        (new anonymous class $anonfun$foo$1(T.this, a, b): Function0)
+       }
+     };
+     @SerialVersionUID(0) final <synthetic> class $anonfun$foo$1 extends scala.runtime.AbstractFunction0$mcI$sp with Serializable {
+@@ -25,5 +25,4 @@
+       <synthetic> <paramaccessor> private[this] val b$1: Int = _
+     }
+   }
+-}
+-
++}
+{code}

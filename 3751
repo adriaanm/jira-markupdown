@@ -1,0 +1,24 @@
+This code produces the same result:
+{code}
+object Bug3241 {
+  def main(args : Array[String]) : Unit = {
+    val m = collection.mutable.Map[Int, List[String]]()
+    for (i <- 1 to 10) m.put(i, List(i.toString))
+    recurse(collection.immutable.Map() ++ m)
+  }
+
+ def recurse(map: collection.immutable.Map[Int, List[String]]): Unit = {
+    if (map.isEmpty) {
+    } else {
+      val x = map.keys.head // throws NoSuchElementException
+      val ss = map.get(x)
+      for (s <- ss) recurse(map - x)
+    }
+  }
+
+}
+{code}
+
+If I change the implementation to collection.immutable.ListMap (in the following line:)
+{{recurse(collection.immutable.Map() ++ m)}}
+then it works fine.

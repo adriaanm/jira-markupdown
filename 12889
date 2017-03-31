@@ -1,0 +1,29 @@
+If I attempt to load the following carved down example into 2.6.0-final:
+{code}
+trait APQ {  
+  abstract class Placement {
+  }
+
+  type P <: Placement
+
+  def pq(numQueens: int, numRows: int) : List[Placement] = {
+    List(new P) 
+  }
+}
+{code}
+
+the interpretor crashes with a 800+ line stack trace that starts with:
+{code}
+Welcome to Scala version 2.6.0-final.
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> Loading d:\Home\test\play\scala\b.scala...
+Exception in thread "main" scala.tools.nsc.symtab.Types$$TypeError: class Placement is abstract; cannot be instantiated
+	at scala.tools.nsc.typechecker.Contexts$$Context.error(Contexts.scala:283)
+	at scala.tools.nsc.typechecker.Infer$$Inferencer.error(Infer.scala:218)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedNew$$0(Typers.scala:2109)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:2783)
+....
+{code}
+

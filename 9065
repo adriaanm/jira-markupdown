@@ -1,0 +1,15 @@
+Related to that, I just noticed that in this commit:
+
+https://github.com/scala/scala/commit/b9e01a04618764cceb251830400b1a74ff8f02d3
+
+a part of the test just got commented out. That part of the test was supposed to check if legacy list deserialization works.
+The commit message says:
+
+> Hmmm, the giant blob of binary data embedded in a test
+> suddenly stopped working. What does one do in this spot.
+
+As I was unsure what are binary compatibility requirements exactly say on serialization, I've implemented legacy deserialization for lists deserialized from 2.9.x.
+It seems that just prior to that change, somebody changed something in {{List}} and legacy deserialization stopped working (could this have also been due to a different JVM version?).
+
+I've just implemented a fallback for legacy deserialization for lists serialized with 2.10.0.
+I can send it in, however, I see no way of writing a test for it other than the one I've had in {{test/files/run/t5374.scala}}.

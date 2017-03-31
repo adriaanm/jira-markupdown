@@ -1,0 +1,36 @@
+Ha, I hadn't tried it in the REPL.
+
+I think that assigning in the context of Nothing has to result in an error.  In particular, eliding the call (and continuing execution) breaks the guarantee that you don't return.
+
+Adding this check
+{code}
+if (expectedType.isNothingType) unit.error(tree.pos, "Cannot elide where Nothing is required.")
+{code}
+results in
+{code}
+$ spalac -Xelide-below 1000 elysian.scala
+elysian.scala:18: error: Cannot elide where Nothing is required.
+    val junk: Nothing = elided()
+                              ^
+{code}
+Also, I think the isInstanceOf test is covered by the method:
+{code}
+//expectedType.isInstanceOf[ValueTypeKind]
+generatedType = if (expectedType.isValueType) expectedType else NullReference
+{code}
+
+For a use case for using the result of an elidable: in development, there's often a "mode" flag for testing, that might affect not only logging but feature behavior, perhaps stubbing or mocking expensive operations, or features that aren't implemented yet.
+
+{code}
+var icon: Char = TestDefaults.icon
+if (icon == 0) icon = '@'
+
+object TestDefaults {
+  @elidable(-100) def icon: Char = 't'
+}
+{code}
+
+In this scenario, elision level < 0 means features may be stubbed or disabled.  A milestone release might require elision at 1000, with logging disabled.
+
+I don't work this way, but maybe I would if I could.
+

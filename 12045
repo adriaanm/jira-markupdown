@@ -1,0 +1,13 @@
+I think the principled solution here is for constant folding to operate on types only and leave terms alone. This is actually on our wishlist for 2.12, but an area where help would be much appreciated!
+
+The idea is to take the best of both worlds terms are left as written, but the types are constant folded.
+
+So {{1 + 1}} would give {{(1 + 1): 2.type}}. Right now, the regular compiler gives: {{2 : 2.type}}, and Scaladoc / pressy gives: {{1 + 1: Int}}.
+
+Here's my moth-balled attempt at this: https://github.com/scala/scala/compare/2.11.x...retronym:topic/const-type-fold
+
+The problem will be to adapt later compiler phases that match on {{Literal(Constant(...))}} to instead check whether the tree has a constant type. This of course gets slightly harder when the code you need to update is in other projects like scala-{ide,refactoring}.
+
+A stepping stone solution would be just to use this new approach for scaladoc, and keep it off by default for other compilation modes. We could then get downstream code changed, before enabling this by default or (by edict).
+
+See https://groups.google.com/forum/#!topic/scala-internals/b95Y-GbXVGA for another beneficiary of such a move, the incremental compiler.

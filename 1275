@@ -1,0 +1,19 @@
+This bug is still in trunk.  The reason is this "except" business in UnCurry:
+{noformat}
+ *  - for every repeated Scala parameter `x: T*' --> x: Seq[T].
+ *  - for every repeated Java parameter `x: T...' --> x: Array[T], except:
+ *    if T is an unbounded abstract type, replace --> x: Array[Object]
+{noformat}
+Referring to joe's comment above mine, this:
+{code}
+public abstract class AbstractBase<T> {
+  abstract void doStuff(T... params);
+}
+{code}
+What happens is that after uncurry that method looks like doStuff(Array[Object]), and so the overriding pair checks during erasure which would insert the necessary bridge do not recognize that the methods have the same signature, because the override's parameter is Array[Integer], not Array[Object].
+
+I put a shameful hack here which makes the problem go away in this instance:
+
+  https://github.com/paulp/scala/tree/ticket/SI-1459
+
+But I can't commit that so it's only there for reference.

@@ -1,0 +1,22 @@
+That quasiquote expands into: 
+{code}
+withFreshTermName("doWhile$")(((nn$1) => LabelDef(nn$1, List(), SyntacticBlock(List($iw.this.test(typeOf[String]({
+  val $u: reflect.runtime.universe.type = scala.reflect.runtime.`package`.universe;
+  val $m: $u.Mirror = runtimeMirror(this.getClass().getClassLoader());
+  $u.TypeTag.apply[String]($m, {
+    final class $typecreator1 extends TypeCreator {
+      def <init>(): $typecreator1 = {
+        $typecreator1.super.<init>();
+        ()
+      };
+      def apply[U <: scala.reflect.api.Universe with Singleton]($m$untyped: scala.reflect.api.Mirror[U]): U#Type = {
+        val $u: U = $m$untyped.universe;
+        val $m: $u.Mirror = $m$untyped.asInstanceOf[$u.Mirror];
+        $u.TypeRef.apply($u.SingleType.apply($u.ThisType.apply($m.staticPackage("scala").asModule.moduleClass), $m.staticModule("scala.Predef")), $u.build.selectType($m.staticModule("scala.Predef").asModule.moduleClass, "String"), immutable.this.Nil)
+      }
+    };
+    new $typecreator1()
+  })
+})), If(Literal(Constant(true)), SyntacticApplied(SyntacticIdent(nn$1, false), List(List())), Literal(Constant(()))))))))
+{code}
+Looks like problem of interaction between macros (crash is within expansion of typeOf). 

@@ -1,0 +1,11 @@
+By the way, anonymous classes don't have anything to do with this bug. Replacing `new A((1, 'b')) {}` with `class X extends A[(Int, Char),shapeless.::[Int,shapeless.::[Char,shapeless.HNil]]]((1, 'b'))` leads to the same compilation error
+
+{code}
+23:58 ~/Projects/shapeless-test$ sbt compile
+[info] Set current project to shapeless-test (in build file:/Users/xeno_by/Projects/shapeless-test/)
+[info] Compiling 1 Scala source to /Users/xeno_by/Projects/shapeless-test/target/scala-2.11.0-M7/classes...
+X.super.<init>(scala.Tuple2.apply[Int, Char](1, 'b'))
+[error] /Users/xeno_by/Projects/shapeless-test/Test.scala:13: could not find implicit value for parameter tupleGeneric: shapeless.Generic.Aux[(Int, Char),shapeless.::[Int,shapeless.::[Char,shapeless.HNil]]]
+[error]   class X extends A[(Int, Char),shapeless.::[Int,shapeless.::[Char,shapeless.HNil]]]((1, 'b'))
+[error]                   ^
+{code}

@@ -1,0 +1,31 @@
+This is a consequence of specializing Function1 on AnyRef.  If you look more closely you will see that the function is indeed called.  It is part of the interface and called from the superclass AbstractFunction1$mcIL$sp. (Before specializing on AnyRef, the superclass was AbstractFunction1.)
+
+Here is a sanitized bytecode diff.  The parts other than the new method are the important ones.
+{code}
+
+-public final class AnonFun$$anonfun$f$## extends scala.runtime.AbstractFunction1 implements scala.Serializable{
++public final class AnonFun$$anonfun$f$## extends scala.runtime.AbstractFunction1$mcIL$sp implements scala.Serializable{
+ public static final long serialVersionUID;
+   Signature: J
+ 
+@@ -29,10 +29,18 @@ public final java.lang.Object apply(java.lang.Object);
+ ##:    invokestatic    ###; //Method scala/runtime/BoxesRunTime.boxToInteger:(I)Ljava/lang/Integer;
+ ##:    areturn
+ 
++public final int apply(java.lang.Object);
++  Signature: (Ljava/lang/Object;)I
++  Code:
++##:    aload_1
++##:    checkcast       ###; //class java/lang/String
++##:    invokevirtual   ###; //Method apply:(Ljava/lang/String;)I
++##:    ireturn
++
+ public AnonFun$$anonfun$f$##(AnonFun);
+   Signature: (LAnonFun;)V
+   Code:
+-##:    invokespecial   ###; //Method scala/runtime/AbstractFunction1."<init>":()V
++##:    invokespecial   ###; //Method scala/runtime/AbstractFunction1$mcIL$sp."<init>":()V
+ ##:    return
+ 
+ }
+{code}

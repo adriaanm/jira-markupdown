@@ -1,0 +1,62 @@
+Not sure why you put that ancient link under "On compiling." Was the discussion post not clear enough how to reproduce? Copying here:
+
+git clone git://github.com/lift/framework.git
+cd framework
+git checkout origin/nafg_wip_scala210
+
+Then apply this patch:
+
+{noformat}
+diff --git a/persistence/mapper/src/main/scala/net/liftweb/mapper/ManyToMany.scala b/persistence/mapper/src/main/scala/net/liftweb/mapper/ManyToMany.scala
+index 2872cb2..d28cb9e 100644
+--- a/persistence/mapper/src/main/scala/net/liftweb/mapper/ManyToMany.scala
++++ b/persistence/mapper/src/main/scala/net/liftweb/mapper/ManyToMany.scala
+@@ -106,7 +106,8 @@ trait ManyToMany extends BaseKeyedMapper {
+               removedJoin // well, noLongerRemovedJoin...
+             case None =>
+               val newJoin = joinMeta.create
+-              thisFK(newJoin)(_.apply(ManyToMany.this))
++              thisFK(newJoin)(_.apply(ManyToMany.this.primaryKeyField.is.asInstanceOf[K]))
++              // thisField.actualField(newJoin) match { case mfk: MappedForeignKey[K,O,T] => mfk apply ManyToMany.this }
+               otherFK(newJoin)(_.apply(e))
+               newJoin
+           }
+@@ -190,7 +191,7 @@ trait ManyToMany extends BaseKeyedMapper {
+      * Discard the cached state of this MappedManyToMany's children and reinitialize it from the database
+      */
+     def refresh = {
+-      val by = new Cmp[O, TheKeyType](thisField, OprEnum.Eql, Full(primaryKeyField.is), Empty, Empty)
++      val by = new Cmp[O, TheKeyType](thisField, OprEnum.Eql, Full(primaryKeyField.is.asInstanceOf[K]), Empty, Empty)
+ 
+       _joins = joinMeta.findAll( (by :: qp.toList): _*)
+       all
+@@ -210,7 +211,9 @@ trait ManyToMany extends BaseKeyedMapper {
+       _joins = joins.filter { join =>
+         otherFK(join)(f => f.is != f.defaultValue)
+       }
+-      _joins foreach { thisFK(_)(_ set ManyToMany.this.primaryKeyField.is) }
++      _joins foreach {
++        thisFK(_)(_ set ManyToMany.this.primaryKeyField.is.asInstanceOf[K])
++      }
+ 
+       removedJoins.forall {_.delete_!} & ( // continue saving even if deleting fails
+         children.forall(_.save) &&
+diff --git a/persistence/mapper/src/main/scala/net/liftweb/mapper/MappedField.scala b/persistence/mapper/src/main/scala/net/liftweb/mapper/MappedField.scala
+index 0832874..a4f969b 100644
+--- a/persistence/mapper/src/main/scala/net/liftweb/mapper/MappedField.scala
++++ b/persistence/mapper/src/main/scala/net/liftweb/mapper/MappedField.scala
+@@ -17,7 +17,7 @@
+ package net.liftweb
+ package mapper
+ 
+-import scala.collection.mutable._
++import scala.collection.mutable.{ Node => _, _ }
+ import java.lang.reflect.Method
+ import scala.xml._
+ import java.util.Date
+{noformat}
+
+Then execute:
+
+./liftsh 'project lift-mapper' compile  # custom sbt bash script, using sbt 0.12-something
+

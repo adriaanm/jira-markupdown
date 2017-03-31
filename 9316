@@ -1,0 +1,36 @@
+This will fix your project:
+
+{noformat}
+diff --git a/src/main/scala/cernoch/scalogic/package.scala
+index b894eb6..c03f24c 100644
+--- a/src/main/scala/cernoch/scalogic/package.scala
++++ b/src/main/scala/cernoch/scalogic/package.scala
+@@ -3,7 +3,8 @@ package cernoch.scalogic
+ import collection.mutable.ListBuffer
+ import collection.mutable
+
+-object `package` { pac =>
++object `package` {
++       val pac = this;
+        implicit def atom2blc (a: Atom) = BLC(a)
+        implicit def blc2atom (m: BLC)  = m.head
+
+{noformat}
+
+Minimized:
+
+{code}
+object `package` { self =>
+  def foo = self // infinite loop
+
+  // okay
+  def bar = this
+  // okay
+  def baz: Any = self
+}
+
+object obj { self =>
+  // okay
+  def foo = self
+}
+{code}

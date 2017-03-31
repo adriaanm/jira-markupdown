@@ -1,0 +1,26 @@
+Minimized:
+
+{code}
+object Test {
+  trait T
+  implicit val t: T = ???
+  
+  implicit def f2(a: Any): Some[Any] = ??? // makes C coercible to ?F[_]
+
+  def fail1[F[X]](f: F[_])(implicit T: T) = ???
+  def fail2[F[+X]](f: F[Any])(implicit T: T) = ???
+
+  def okay1[F[X]](f: F[_]) = ???
+  def okay2[F[X]](f: F[Any])(implicit T: T) = ???
+
+  class C[A, B]
+  val c = new C
+  
+  fail1(c)
+  fail2(c)
+
+  // "okay", meaning type errors are reported.
+  // okay1(c)
+  // okay2(c)
+}
+{code}

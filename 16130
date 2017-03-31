@@ -1,0 +1,62 @@
+=== What steps will reproduce the problem? ===
+Try one of these:
+{code}
+  val \u
+  val \u2
+  val \u22
+  val \u222
+{code} 
+
+=== What is the expected behavior? ===
+After pressing the Return key the cursor should go to the next line waiting for further input, like this:
+
+{code}
+scala> val \u2222
+     | 
+{code}
+
+
+=== What do you see instead? ===
+The REPL crashes:
+
+{code}
+scala> val \u2
+java.lang.ArrayIndexOutOfBoundsException: 7
+	at scala.tools.nsc.util.CharArrayReader.udigit$$1(CharArrayReader.scala:71)
+	at scala.tools.nsc.util.CharArrayReader.potentialUnicode(CharArrayReader.scala:79)
+	at scala.tools.nsc.util.CharArrayReader.nextChar(CharArrayReader.scala:45)
+	at scala.tools.nsc.ast.parser.Scanners$$Scanner.fetchToken(Scanners.scala:285)
+	at scala.tools.nsc.ast.parser.Scanners$$Scanner.nextToken(Scanners.scala:204)
+	at scala.tools.nsc.ast.parser.Parsers$$Parser.patDefOrDcl(Parsers.scala:2230)
+	at scala.tools.nsc.ast.parser.Parsers$$Parser.defOrDcl(Parsers.scala:2205)
+	at scala.tools.nsc.ast.parser.Parsers$$Parser.nonLocalDefOrDcl(Parsers.scala:2221)
+	at scala.tools.nsc.ast.parser.Parsers$$Parser$$$$anonfun$$templateStatSeq$$1$$$$anonfun$$apply$$5.apply(Parsers.scala:2719)
+	at scala.tools.nsc.ast.parser.Parsers$$Parser$$$$anonfun$$templateStatSeq$$1$$$$anonfun$$apply$$5.apply(Parsers.scala:2719)
+	at scala.tools.nsc.ast.parser.Parsers$$Parser.joinComment(Parsers.scala:673)
+	at scala.tools.nsc.ast.parser.Parsers$$Parser$$$$anonfun$$templateStatSeq$$1.apply(Parsers.scala:2719)
+	at scala.tools.nsc.ast.parser.Parsers$$Parser$$$$anonfun$$templateStatSeq$$1.apply(Parsers.scala:2688)
+	at scala.tools.nsc.ast.parser.Parsers$$Parser.checkNoEscapingPlaceholders(Parsers.scala:416)
+	at scala.tools.nsc.ast.parser.Parsers$$Parser.templateStatSeq(Parsers.scala:2688)
+	at scala.tools.nsc.interpreter.IMain$$$$anonfun$$parse$$2.simpleParse$$1(IMain.scala:390)
+	at scala.tools.nsc.interpreter.IMain$$$$anonfun$$parse$$2.apply(IMain.scala:392)
+	at scala.tools.nsc.interpreter.IMain$$$$anonfun$$parse$$2.apply(IMain.scala:383)
+	at scala.tools.nsc.reporters.Reporter.withIncompleteHandler(Reporter.scala:88)
+	at scala.tools.nsc.interpreter.IMain.parse(IMain.scala:383)
+	at scala.tools.nsc.interpreter.IMain$$$$anonfun$$isParseable$$1.apply$$mcZ$$sp(IMain.scala:402)
+	at scala.tools.nsc.interpreter.IMain$$$$anonfun$$isParseable$$1.apply(IMain.scala:402)
+	at scala.tools.nsc.interpreter.IMain$$$$anonfun$$isParseable$$1.apply(IMain.scala:402)
+	at scala.tools.nsc.interpreter.IMain.beSilentDuring(IMain.scala:208)
+	at scala.tools.nsc.interpreter.IMain.isParseable(IMain.scala:401)
+	at scala.tools.nsc.interpreter.ILoop.interpretStartingWith(ILoop.scala:774)
+	at scala.tools.nsc.interpreter.ILoop.command(ILoop.scala:677)
+	at scala.tools.nsc.interpreter.ILoop.processLine$$1(ILoop.scala:571)
+	at scala.tools.nsc.interpreter.ILoop.loop(ILoop.scala:578)
+	at scala.tools.nsc.interpreter.ILoop.process(ILoop.scala:845)
+	at scala.tools.nsc.MainGenericRunner.runTarget$$1(MainGenericRunner.scala:67)
+	at scala.tools.nsc.MainGenericRunner.process(MainGenericRunner.scala:80)
+	at scala.tools.nsc.MainGenericRunner$$.main(MainGenericRunner.scala:89)
+	at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
+{code}
+
+=== What versions of the following are you using? ===
+  - Scala: 2.10.0.r24921-b20110511020205

@@ -1,0 +1,67 @@
+I just found this bug while I was preparing my preso for the JVM language summit.
+
+Seems to me that something this critical should be fixed in less than 15 months.
+
+Btw, here's code that triggers the bug:
+
+package jvm_summit
+
+object Structural {
+  def getLen(in: {def length: Int}): Int =
+    in.length
+
+  def main(in: Array[String]) {
+    for (i <- 1 to 500) {
+      new Thread(new Runnable() {
+	def run() {
+	  try {
+	    while(true) {
+	      getLen("Hello")
+	      getLen(Array(1,2,3))
+	      getLen(Frog)
+	      getLen(Frog2)
+	      getLen(Frog3)
+	      getLen(Frog4)
+	      getLen(Frog5)
+	      getLen(Frog6)
+	      getLen(Frog7)
+	    }
+	  } catch {
+	    case e =>
+	      e.printStackTrace
+	    System.exit(-1)
+	  }
+	}
+      }).start()
+    }
+  }
+}
+
+object Frog {
+  def length = 4
+}
+
+object Frog2 {
+  def length = 4
+}
+
+object Frog3 {
+  def length = 4
+}
+
+object Frog4 {
+  def length = 4
+}
+
+object Frog5 {
+  def length = 4
+}
+
+object Frog6 {
+  def length = 4
+}
+
+object Frog7 {
+  def length = 4
+}
+

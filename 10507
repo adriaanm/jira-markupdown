@@ -1,0 +1,13 @@
+Aggressively dealiasing early in the piece also robs people of their abstractions:
+
+{code}
+class C {
+  type T = Int
+  def foo: T = 0
+  def bar = foo
+}
+{code}
+
+Here, we don't want to expose the Int in inferred the return type of `bar`.
+
+Not saying that the proposed patches actually change that exact sample, but that's another thing we have to take care with.

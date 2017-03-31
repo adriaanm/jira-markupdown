@@ -1,0 +1,78 @@
+I had a clean ant test fail two tests which happened to deal with packages.
+
+Dirty output dirs will fail such tests:
+
+{noformat}
+apm@mara:~/projects/snytt$ test/partest test/files/neg/t5954.scala 
+Selected 1 tests drawn from specified tests
+
+# starting 1 test in neg
+ok 1 - neg/t5954.scala                         
+
+1/1 passed (elapsed time: 00:00:03)
+Test Run PASSED
+apm@mara:~/projects/snytt$ test/partest --debug test/files/neg/t5954.scala 
+Selected 1 tests drawn from specified tests
+
+# starting 1 test in neg
+ok 1 - neg/t5954.scala                         
+
+1/1 passed (elapsed time: 00:00:03)
+Test Run PASSED
+apm@mara:~/projects/snytt$ test/partest --debug test/files/neg/t5954.scala 
+Selected 1 tests drawn from specified tests
+
+# starting 1 test in neg
+!! 1 - neg/t5954.scala                           [output differs]
+# 0/1 passed, 1 failed in neg
+
+# Failed test paths (this command will update checkfiles)
+test/partest --update-check \
+  /home/apm/projects/snytt/test/files/neg/t5954.scala
+
+0/1 passed, 1 failed (elapsed time: 00:00:02)
+Test Run FAILED
+apm@mara:~/projects/snytt$ test/partest --debug test/files/neg/t5954.scala 
+Selected 1 tests drawn from specified tests
+
+# starting 1 test in neg
+!! 1 - neg/t5954.scala                           [output differs]
+# 0/1 passed, 1 failed in neg
+
+# Failed test paths (this command will update checkfiles)
+test/partest --update-check \
+  /home/apm/projects/snytt/test/files/neg/t5954.scala
+
+0/1 passed, 1 failed (elapsed time: 00:00:02)
+Test Run FAILED
+apm@mara:~/projects/snytt$ test/partest test/files/neg/t5954.scala 
+Selected 1 tests drawn from specified tests
+
+# starting 1 test in neg
+!! 1 - neg/t5954.scala                           [output differs]
+# 0/1 passed, 1 failed in neg
+
+# Failed test paths (this command will update checkfiles)
+test/partest --update-check \
+  /home/apm/projects/snytt/test/files/neg/t5954.scala
+
+0/1 passed, 1 failed (elapsed time: 00:00:02)
+Test Run FAILED
+apm@mara:~/projects/snytt$ test/partest test/files/neg/t5954.scala 
+Selected 1 tests drawn from specified tests
+
+# starting 1 test in neg
+ok 1 - neg/t5954.scala                         
+
+1/1 passed (elapsed time: 00:00:03)
+Test Run PASSED
+{noformat}
+
+The failure mode is:
+
+{noformat}
+error: EmptyScope.enter
+error: 
+     while compiling: t5954.scala
+        during phase: extmethods
+{noformat}

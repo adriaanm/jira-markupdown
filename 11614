@@ -1,0 +1,33 @@
+{code}
+class Z (depends: Any)
+
+object D {
+  object D1 extends Z(D)
+  // object D2 extends Z(D.hashCode) // 'null' when calling D.D2 first time
+  
+  println(Thread.currentThread.getStackTrace.mkString("\n", "\n", ""))
+  // D$.<init>(test.scala:9)
+  // D$.<clinit>(test.scala)
+  // D$D1$.<init>(test.scala:6)
+  // D$D1$.<clinit>(test.scala)
+  // Test$.main(test.scala:25)
+  // Test.main(test.scala)
+  System.out.println(D1)
+}
+
+object Test {
+  def main(args: Array[String]): Unit = {
+    // Due to SI-5304, the compiler initializes the class
+    // D$D1$ *before* D$. the constructor for D$D1 then
+    // initializes D$, which reveals the unitialized value of
+    // D$D1$.MODULE$ (this singleton instance of D.D1)
+    D.D1
+
+    // This would have avoided the initialization order trap:
+    {D; D.D1}
+    // It has been argued that the compiler really should do automatically,
+    // (SI-5304), but changing the semantics like this comes with
+    // its own set of risks (e.g performance)
+  }
+}
+{code}

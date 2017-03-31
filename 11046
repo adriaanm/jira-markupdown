@@ -1,0 +1,12 @@
+Update: this isn't related to value classes, remove `extends AnyVal` for:
+
+{noformat}
++ qbin/scalac -optimize -Yinline-warnings sandbox/a.scala
++ qbin/scalac -optimize -Yinline-warnings sandbox/b.scala
+sandbox/b.scala:4: warning: Could not inline required method getOrElse because bytecode unavailable.
+  def foo = new Optional("").getOrElse("!!!")
+                                      ^
+sandbox/b.scala:4: warning: At the end of the day, could not inline @inline-marked method getOrElse
+  def foo = new Optional("").getOrElse("!!!")
+                                      ^
+{noformat}

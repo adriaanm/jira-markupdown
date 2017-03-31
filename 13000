@@ -1,0 +1,19 @@
+The following code shows that in some cases a by-name parameter is not
+evaluated immediately:
+
+{code}
+scala> def f(block : => Unit) = { () => {println("calling block"); block } }
+f: (=> Unit)() => Unit
+
+scala> val g = f { println("doing work") }
+g: () => Unit = <function>
+
+scala> g()
+calling block
+doing work
+{code}
+
+It would be nice if the ScalaReference.pdf section 4.6.1 would add a
+note on this indicating that this is the case.  I was reading the new
+Scala book today and it used this to not immediately evaluate a by-name
+parameter.

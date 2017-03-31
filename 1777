@@ -1,0 +1,21 @@
+There are no differences between the compiler and libraries in version x.y.z of the command line tools and version x.y.z of the Scala IDE.
+
+So I you're not seeing those errors with the command line build then I think it must be a misconfiguration of your Eclipse environment.
+
+Things to check ...
+
+* Make sure that the scalac options configured for your Scala projects (either globally or per-project) match those for the command line build (other things being equal I would expect you to be using the defaults in both cases).
+
+* Make sure your inter-project references are correct, ie. that if project A depends on project B make sure that B is on the *Java* build path of project A (irrespective of whether A or B or both are Scala projects).
+
+* Check that the JVM args for your Eclipse instance are set appropriately (I'm fairly sure we've been through that one already).
+
+* Check the Eclipse Error log and let me know if you get a repeatable "scalac crashed" report when you do a build.
+
+One final thing. You're describing the problem as though you don't have very much to do with the Scala side of things but are the innocent victim of an bad interaction between whoever does and the Scala IDE.
+
+If that's the case, then I'd strongly recommend that you get that person to help deal with the issues ... esp. the scalac options and inter project references points above.
+
+If, for whatever reason, that person doesn't want to have anything to do with Eclipse (crazy, I know, but it happens ;-) then I think you really should reconsider the choice of Eclipse at least for the Scala components.
+
+And as I mentioned before: If you are able to extract out a minimal, reproducible test case, please pass it my way. As a PL developer yourself, I'm sure you appreciate that it's next to impossible to debug secondary issues in large established projects with complex setup requirements and many dependencies.

@@ -1,0 +1,108 @@
+Ignoring the terribleness of the design of this class hierarchy, I am seeing invalid byte-code problems with 2.8.Beta1 that I didn't see in 2.7.7 land:
+
+here is the file that causes the issue:
+{code}
+package bizz
+
+trait DecXTMaker[DTM <: DecXT[DTM]] {
+def mkA(ctorData: Long): DTM;
+val hashPrecision: Int
+}
+trait DecXTFactory[DTF <: DecXT[DTF]] extends DecXTMaker[DTF] 
+abstract class DecXT[DT <: DecXT[DT]](val raw: Long) extends DecXTFactory[DT]
+
+trait DecXMaker extends DecXTMaker[DecX] {
+  override def mkA(ctorData: Long): DecX = new DecX(ctorData)
+  override val hashPrecision = 9
+}
+object DecX extends DecXTFactory[DecX] with DecXMaker
+class DecX(raw: Long) extends DecXT[DecX](raw) with DecXMaker
+{code}
+
+Here is the javap output for the DecX class scalac generates:
+{code}
+$$ javap bizz.DecXCompiled from "Foo.scala"
+public class bizz.DecX extends bizz.DecXT implements bizz.DecXMaker,scala.ScalaObject{
+    public static final void bizz$$DecXMaker$$_setter_$$hashPrecision_$$eq(int);
+    public bizz.DecX(long);
+    public bizz.DecXT mkA(long);
+    public bizz.DecX mkA(long);
+    public void bizz$$DecXMaker$$_setter_$$hashPrecision_$$eq(int);
+    public int hashPrecision();
+}
+{code}
+
+Finally here the exception i get in java land 
+
+{code}
+Welcome to Scala version 2.8.0.Beta1-prerelease (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_15).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> import bizz.DecX
+import bizz.DecX
+
+scala> val hp = DecX.hashPrecision
+java.lang.ClassFormatError: Duplicate method name&signature in class file bizz/DecX
+	at java.lang.ClassLoader.defineClass1(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:621)
+	at java.security.SecureClassLoader.defineClass(SecureClassLoader.java:124)
+...
+
+scala> val hp = DecX.mkA(4)       
+java.lang.ClassFormatError: Duplicate method name&signature in class file bizz/DecX
+	at java.lang.ClassLoader.defineClass1(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:621)
+{code}
+
+Curiously enough it if placed in the _root_ package (aka no package name given) the bytecode generated looks like this instead!
+{code}
+javap DecX
+Compiled from "Foo.scala"
+public class DecX extends DecXT implements DecXMaker,scala.ScalaObject{
+    public DecX(long);
+    public DecXT mkA(long);
+    public DecX mkA(long);
+    public void DecXMaker$$_setter_$$hashPrecision_$$eq(int);
+    public int hashPrecision();
+}
+{code}
+
+and the console works
+{code}
+Welcome to Scala version 2.8.0.Beta1-prerelease (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_15).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> val hp = DecX.hashPrecision
+hp: Int = 9
+
+scala> val hp = DecX.mkA(4)       
+hp: DecX = DecX@4df2868
+{code}
+
+finally just make life a little easier here is the old 2.7.7 javap's
+first, with no package name
+{code}
+Compiled from "Foo.scala"
+public class DecX extends DecXT implements DecXMaker,scala.ScalaObject{
+    public DecX(long);
+    public DecXT mkA(long);
+    public DecX mkA(long);
+    public void hashPrecision_$$eq(int);
+    public int hashPrecision();
+}
+{code}
+secondly, in the bizz package (looks the same as 2.7.7 no package to me)
+{code}
+Compiled from "Foo.scala"
+public class bizz.DecX extends bizz.DecXT implements bizz.DecXMaker,scala.ScalaObject{
+    public bizz.DecX(long);
+    public bizz.DecXT mkA(long);
+    public bizz.DecX mkA(long);
+    public void hashPrecision_$$eq(int);
+    public int hashPrecision();
+}
+{code}
+
+out of curiosity why is a setter method being generated for a val? ( i don't know all that much about how the stuff ends up compiling) & where is that static one coming from?

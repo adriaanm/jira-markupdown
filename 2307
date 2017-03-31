@@ -1,0 +1,15 @@
+I'm going to revert r19670 (https://github.com/scala/scala/commit/6063bf3d78 and https://github.com/scala/scala/commit/44e60b3ae6) in master as I cannot reproduce the failure after having replaced localizedOwner by the identity. It seems this workaround is no longer needed.
+
+There's no test in the suite for this, so I compiled the following:
+{code}
+trait T
+trait U
+
+object C { val c = List(1).map(e => (e, new T with U { def x: this.type = ???})) }
+
+object A { val a = C.c }
+{code}
+
+and then accessed `A.a` in the repl -- everything works fine.
+
+I'll first try to find out how this works now exactly. After reverting, I see the same RefinedType being created in SI-6596 whether unpickling or typing directly.

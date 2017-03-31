@@ -1,0 +1,21 @@
+Replying to [comment:2 eengbrec]:
+> This problem bit me a while ago.  Fixing it now is a good idea.  My concern with your approach is that by returning an immutable map instead of a Map you're basically having to generate the map twice.
+
+I think it's generated twice anyway, unless the compiler is currently being a lot more clever than I'm aware of.  The map which is built up incrementally is/was of type Map[K, Builder[A, Repr]] and the map which is returned is Map[K, Repr] created by mapping the first map.
+
+I'll measure, but look at the existing code:
+{code}
+  def groupBy[K](f: A => K): Map[K, Repr] = {
+    var m = Map[K, Builder[A, Repr]]()
+    for (elem <- this) {
+      val key = f(elem)
+      val bldr = m get key match {
+        case None => val b = newBuilder; m = m updated (key, b); b
+        case Some(b) => b
+      }
+      bldr += elem
+    }
+    m map { case (k, b) => (k, b.result) }
+  }
+{code}
+Independently of that, I don't think it matters that much if it's slower.  People who care can write their own.  The ship sailed when the decision was made to put immutable.Map in the default namespace.  It is more important to interoperate smoothly with your own choices for defaults than it is to deliver maximum efficiency.

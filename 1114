@@ -1,0 +1,13 @@
+
+I haven't benchmarked (with and without -optimize) to see whether the current compilation scheme for "simple loops" is good enough. 
+
+But in case it isn't, looks like the single place to change in the compiler is method TreeBuilder.makeFor(). 
+
+According to its comment, 
+
+http://lampsvn.epfl.ch/trac/scala/browser/scala/trunk/src/compiler/scala/tools/nsc/ast/parser/TreeBuilder.scala
+
+it performs five transformations. Prepending as special case a transformation for "simple loops" would not change semantics. (Well, assuming that a local definition does not shadow the usual ones: "to" in "1 to 10", "Range", and so on)
+
+Miguel 
+http://www.sts.tu-harburg.de/people/mi.garcia/

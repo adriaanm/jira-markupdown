@@ -1,0 +1,17 @@
+definitions inside annotations are not visible
+
+{code}
+class ann(x: Int) extends Annotation
+
+object Bug1 {
+  @ann({val x = 1; x}) def u = ()
+}
+{code}
+
+gives
+
+{code}
+Bug1.scala:4: error: not found: value x
+  @ann({val x = 2; x}) def u = ()
+                   ^
+{code}

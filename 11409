@@ -1,0 +1,45 @@
+bq. {{scala/Product}}  isn't present as a class constant in the bytecode.
+Oh, I had completely missed that; that's very wrong.  And it happens for any interface:
+
+{code}
+trait Foo
+
+trait Foo1 extends Foo
+
+class A extends Foo1 with Foo
+{code}
+{code:bash}
+% javap -v A.class | grep '= Class.*Foo' # where is Foo...
+#6 = Class              #5             // Foo1
+{code}
+
+This seems to have regressed in Scala 2.9.2:
+
+{code:bash}
+% java -jar ~/Downloads/proguard5.0/lib/proguard.jar \
+  -dontshrink \
+  -dontoptimize \
+  -dontobfuscate \
+  -dontpreverify \
+  -dump \
+  -injars ~/scaladev/packs/scala-v2.9.1-1/pack/lib/scala-library.jar'(scala/Tuple1.class)' \
+  | grep 'Interfaces' -A 4
+Interfaces (count = 4):
+  - Class [scala/Product1]
+  - Class [scala/ScalaObject]
+  - Class [scala/Product]
+  - Class [scala/Serializable]
+% java -jar ~/Downloads/proguard5.0/lib/proguard.jar \
+  -dontshrink \
+  -dontoptimize \
+  -dontobfuscate \
+  -dontpreverify \
+  -dump \
+  -injars ~/scaladev/packs/scala-v2.9.2/pack/lib/scala-library.jar'(scala/Tuple1.class)' \
+  | grep 'Interfaces' -A 4
+Interfaces (count = 2):
+  - Class [scala/Product1]
+  - Class [scala/Serializable]
+
+Constant Pool (count = 184):
+{code}

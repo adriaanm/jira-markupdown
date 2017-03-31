@@ -1,0 +1,32 @@
+On Windows, where line.separator is \r\n, the scala compiler 2.8.0.Beta1 converts the platform newlines in multiline strings to \n.
+
+This is wrong.
+
+Steps to reproduce:
+Create nl.scala with:
+{code}
+println("""
+""".getBytes.length)
+{code}
+Make sure it has Windows line separator \r\n.
+
+scala-2.8.0.Beta1-prerelease:
+{code}
+scala nl.scala
+1
+{code}
+
+Expected results (scala 2.7.7):
+{code}
+scala nl.scala
+2
+{code}
+
+I was also able to reproduce this also with scala-2.8.0-20100214.025735-327 (latest from maven snaphots repo).
+
+Specs way to reproduce:
+{code}
+"""
+""" must_== "\r\n"
+{code}
+Note you can force the windows line separators in file from SVN by setting the _svn:eol-style_ property to _CRLF_.

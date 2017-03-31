@@ -1,0 +1,76 @@
+The following crashes the compiler (2.9.0-1, 2.9.1.RC4, 2.10.0.r25581-b20110829020423),
+
+{code}
+object Bug {
+  trait H[F[_]]
+  def f[F[_], T, FT <: F[T]](h : H[F]) = 1
+  f(new H[Set]{})
+}
+{code}
+
+with the following stacktrace (this one for trunk in reflect.internal, in symtab for the others),
+
+{code}
+error: java.lang.Error: trying to do lub/glb of typevar ?FT
+        at scala.reflect.internal.SymbolTable.abort(SymbolTable.scala:32)
+        at scala.reflect.internal.Types$class.stripType$1(Types.scala:5438)
+        at scala.reflect.internal.Types$$anonfun$44.apply(Types.scala:5441)
+        at scala.reflect.internal.Types$$anonfun$44.apply(Types.scala:5441)
+        at scala.collection.immutable.List.loop$1(List.scala:150)
+        at scala.collection.immutable.List.mapConserve(List.scala:166)
+        at scala.reflect.internal.Types$class.stripExistentialsAndTypeVars(Types.scala:5441)
+        at scala.reflect.internal.Types$class.lub1$1(Types.scala:5536)
+        at scala.reflect.internal.Types$class.lub0$1(Types.scala:5530)
+        at scala.reflect.internal.Types$class.lub(Types.scala:5615)
+        at scala.reflect.internal.SymbolTable.lub(SymbolTable.scala:12)
+        at scala.reflect.internal.Types$class.solveOne$1(Types.scala:5222)
+        at scala.reflect.internal.Types$$anonfun$solve$2.apply(Types.scala:5231)
+        at scala.reflect.internal.Types$$anonfun$solve$2.apply(Types.scala:5230)
+        at scala.collection.LinearSeqOptimized$class.foreach(LinearSeqOptimized.scala:59)
+        at scala.collection.immutable.List.foreach(List.scala:77)
+        at scala.reflect.internal.Types$class.solve(Types.scala:5230)
+        at scala.reflect.internal.SymbolTable.solve(SymbolTable.scala:12)
+        at scala.tools.nsc.typechecker.Infer$class.solvedTypes(Infer.scala:142)
+        at scala.tools.nsc.Global$analyzer$.solvedTypes(Global.scala:381)
+        at scala.tools.nsc.typechecker.Infer$Inferencer.methTypeArgs(Infer.scala:728)
+        at scala.tools.nsc.typechecker.Infer$Inferencer.inferMethodInstance(Infer.scala:1269)
+        at scala.tools.nsc.typechecker.Typers$Typer.doTypedApply(Typers.scala:2558)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedApply$1(Typers.scala:3438)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:4174)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:4329)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedStat$1(Typers.scala:2162)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$24.apply(Typers.scala:2246)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$24.apply(Typers.scala:2246)
+        at scala.collection.immutable.List.loop$1(List.scala:150)
+        at scala.collection.immutable.List.mapConserve(List.scala:166)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:2246)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedTemplate(Typers.scala:1567)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedModuleDef(Typers.scala:1375)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:3983)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:4329)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedStat$1(Typers.scala:2162)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$24.apply(Typers.scala:2246)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$24.apply(Typers.scala:2246)
+        at scala.collection.immutable.List.loop$1(List.scala:150)
+        at scala.collection.immutable.List.mapConserve(List.scala:166)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:2246)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:3976)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:4329)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:4388)
+        at scala.tools.nsc.typechecker.Analyzer$typerFactory$$anon$3.apply(Analyzer.scala:94)
+        at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:359)
+        at scala.tools.nsc.typechecker.Analyzer$typerFactory$$anon$3$$anonfun$run$1.apply(Analyzer.scala:86)
+        at scala.tools.nsc.typechecker.Analyzer$typerFactory$$anon$3$$anonfun$run$1.apply(Analyzer.scala:86)
+        at scala.collection.Iterator$class.foreach(Iterator.scala:583)
+        at scala.collection.mutable.ListBuffer$$anon$1.foreach(ListBuffer.scala:316)
+        at scala.tools.nsc.typechecker.Analyzer$typerFactory$$anon$3.run(Analyzer.scala:86)
+        at scala.tools.nsc.Global$Run.compileSources(Global.scala:1013)
+        at scala.tools.nsc.Global$Run.compile(Global.scala:1101)
+        at scala.tools.nsc.Driver.doCompile(Driver.scala:31)
+        at scala.tools.nsc.Main$.doCompile(Main.scala:81)
+        at scala.tools.nsc.Driver.process(Driver.scala:52)
+        at scala.tools.nsc.Driver.main(Driver.scala:65)
+        at scala.tools.nsc.Main.main(Main.scala)
+{code}
+
+This looks to be closely related to SI-4090.

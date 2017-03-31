@@ -1,0 +1,26 @@
+The following test fails (It works in 2.8.1.final):
+
+
+{noformat} 
+val traversable = 1 to 30 map {_.toString}
+def normalize(m:Map[Char,Traversable[String]]) = m.map{case (k,v) => (k,v.toList)}
+val groupedFromView = (traversable view).groupBy(_(0))
+val groupedFromStrict = traversable.groupBy(_(0))
+
+assert(normalize(groupedFromView) == normalize(groupedFromStrict))
+{noformat} 
+
+groupBy throws an exception in 2.9.0 but in 2.9.0.1 just returns the wrong value.
+
+Essentially what is happening is the groups are formed correctly but the values in each group are always the entire collection.  I believe the bug is in TraversableViewLike:170.  Look at the implementation:
+
+{noformat} 
+  override def groupBy[K](f: A => K): immutable.Map[K, This] =
+    thisSeq.groupBy(f).mapValues(xs => newForced(thisSeq))
+{noformat} 
+
+
+The section *newForced(thisSeq)* probably should be *newForced(xs)*.
+
+I have tried this in a subclass and the fix worked.
+

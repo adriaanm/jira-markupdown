@@ -1,0 +1,4 @@
+I spent all day on this, but I don't know how to generalize this fix. Clearly, the current approach is a hack.
+Co-evolution should be pushed to AsSeenFromMap and SubstMap and only rebind symbols when going from TypeRef(pre, sym, args) 
+to TypeRef(pre', sym', args'), where pre is now "discarded" and thus it makes no sense to refer to the symbols it defines.
+We don't have this information in the current approach, so we can't fix the first half of SI-6493, which requires a broader approach to rebinding these symbols. neg/t4137.scala is a good example of where we don't want to rebind: A#EPC2 and B#EPC2 are both valid typerefs, so when you're doing an ASF that rewrite a this type from A to B, you still don't want to change EPC2 (the one defined in A) to the other EPC2 (the one defined in B). Maybe a check like pre1.typeSymbolDirect.isNonBottomSubclass(pre2.typeSymbolDirect) could work... it's still feels like it pushes the hack into no-go territory

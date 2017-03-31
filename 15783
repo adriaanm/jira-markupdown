@@ -1,0 +1,52 @@
+In 2.8.1.RC4, Java 1.6.0_22, the following program (which creates hashed sets with elements whose hash codes collide):
+
+{code}
+object SetBug {
+
+  import scala.collection.immutable.{ Set => ImmutSet }
+  import scala.collection.mutable.{ Set => MutSet }
+
+  case class IH (i: Int, h: Int) {
+    override def hashCode: Int = h
+  }
+
+  def main (args: Array[String]) {
+    var is = ImmutSet.empty[IH]
+    var ms = MutSet.empty[IH]
+    for (ih <- List(IH(2,0),IH(0,0),IH(4,4),IH(6,4),IH(-8,1520786080))) {
+      is = is + ih
+      ms = ms + ih
+    }
+    println("ImmutSet: " + is)
+    println("MutSet: " + ms)
+    println("Sets are equal: " + (is == ms))
+    val x = IH(6,4)
+    is = is - x
+    ms = ms - x
+    println("Removed " + x)
+    println("ImmutSet: " + is)
+    println("MutSet: " + ms)
+    println("Sets are equal: " + (is == ms))
+  }
+
+}
+{code}
+
+throws the following exception:
+
+{code}
+java.util.NoSuchElementException: next on empty iterator
+        at scala.collection.immutable.ListSet$$$$anon$$1.next(ListSet.scala:81)
+        at scala.collection.immutable.HashSet$$HashTrieSet$$$$anon$$1.next(HashSet.scala:257)
+        at scala.collection.Iterator$$class.forall(Iterator.scala:642)
+        at scala.collection.immutable.HashSet$$HashTrieSet$$$$anon$$1.forall(HashSet.scala:243)
+        at scala.collection.IterableLike$$class.forall(IterableLike.scala:82)
+        at scala.collection.immutable.HashSet.forall(HashSet.scala:32)
+        at scala.collection.SetLike$$class.subsetOf(SetLike.scala:179)
+        at scala.collection.immutable.HashSet.subsetOf(HashSet.scala:32)
+        at scala.collection.SetLike$$class.liftedTree1$$1(SetLike.scala:205)
+        at scala.collection.SetLike$$class.equals(SetLike.scala:205)
+        at scala.collection.immutable.HashSet.equals(HashSet.scala:32)
+        at SetBug$$.main(SetBug.scala:26)
+        at SetBug.main(SetBug.scala)
+{code}

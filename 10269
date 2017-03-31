@@ -1,0 +1,11 @@
+Then I propose that the fix is:
+
+{code}
+require(boxedClass ne null)
+map(s => {
+  try boxedClass.cast(s).asInstanceOf[S] catch {
+    case c: ClassCastException if c.getMessage eq null => // is it null or "null"?
+      throw new ClassCastException(s.getClass.getName + " cannot be cast to " + boxedClass.getName)
+  }
+})
+{code}

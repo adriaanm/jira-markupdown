@@ -1,0 +1,27 @@
+This is an odd problem, since abstract override protected[pkg] works.
+
+Example:
+{code}
+package pkg1 {
+    class C {
+        private[pkg1] def foo: Int
+    }
+
+    trait T extends C {
+        abstract override private[pkg1] def foo = super.foo + 1
+    }
+}
+{code}
+{code}
+error: `abstract' modifier can be used only for classes;
+it should be omitted for abstract members
+{code}
+
+None of the combinations compile:
+{code}
+abstract override private[pkg]
+abstract private[pkg] override
+private[pkg] abstract override
+{code}
+
+Tested on 2.7.7.final and 2.7.3.final with the same result.

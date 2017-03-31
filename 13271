@@ -1,0 +1,28 @@
+Array.concat is not correctly implemented. There was a change last year to accept Seqs rather than Arrays as arguments, but the implementation wasn't touched.
+
+{code}
+scala> Array.concat(List(3, 3), List(35, 3))
+> java.lang.ArrayStoreException
+
+{code}
+
+Eric Willinger the following in a recent thread:
+
+"Yes, if this function is to accept an arbitrary sequence of Seq[T], then 
+the comment should be "Concatenate all argument sequences" and a working 
+implementation would simply add a .toArray call inside the loop:
+   
+{code}
+def concat[T](xs: Seq[T]*) = {
+     var len = 0
+     for (x <- xs) len += x.length
+     val result = new Array[T](len)
+     var start = 0
+     for (x <- xs) {
+       copy(x.toArray, 0, result, start, x.length)
+       start += x.length
+     }
+     result
+   }
+{code}
+"

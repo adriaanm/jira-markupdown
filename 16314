@@ -1,0 +1,12 @@
+{code:java}
+object Main {
+  def main(args: Array[String]) {
+    class C
+    val z: C = classOf.newInstance() //NPE ?!
+    val n: C = classOf[Nothing].newInstance() //InstantiationException, It's ok
+    val x: C = classOf[C].newInstance() //Works, It's ok
+  }
+}
+{code}
+
+According to specification classOf generic parameter should be C (local type inference from expected type).

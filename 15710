@@ -1,0 +1,12 @@
+Currently, {{scala.tools.nsc.MainGenericRunner}} insists on calling exit; there is no way to avoid this, e.g., when one wants to call {{MainGenericRunner.main}} from within a test or benchmark harness.
+
+In contrast, {{scala.tools.nsc.Main}}, solves this problem quite neatly by separating the main functionality from the call to exit:
+
+{code}
+def main(args: Array[String]) {
+  process(args)
+  exit(if (reporter.hasErrors) 1 else 0)
+}
+{code}
+
+It would be great if {{scala.tools.nsc.MainGenericRunner}} could follow the lead of {{scala.tools.nsc.Main}}.

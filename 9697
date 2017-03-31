@@ -1,0 +1,18 @@
+Yes, it happens at 64k chars.
+{noformat}
+$ scalac -d /tmp LongStringLiteral.scala 
+error: java.lang.IllegalArgumentException
+	at scala.tools.asm.ByteVector.encodeUTF8(ByteVector.java:273)
+	at scala.tools.asm.ByteVector.putUTF8(ByteVector.java:234)
+	at scala.tools.asm.ClassWriter.newUTF8(ClassWriter.java:1092)
+	at scala.tools.asm.ClassWriter.newString(ClassWriter.java:1525)
+	at scala.tools.asm.ClassWriter.newConstItem(ClassWriter.java:1042)
+	at scala.tools.asm.MethodWriter.visitLdcInsn(MethodWriter.java:1134)
+	at scala.tools.nsc.backend.jvm.GenASM$JPlainBuilder.genConstant(GenASM.scala:1578)
+	at scala.tools.nsc.backend.jvm.GenASM$JPlainBuilder.scala$tools$nsc$backend$jvm$GenASM$JPlainBuilder$$genInstr$1(GenASM.scala:2292)
+	at scala.tools.nsc.backend.jvm.GenASM$JPlainBuilder$$anonfun$genBlock$1$2.apply(GenASM.scala:2223)
+	at scala.tools.nsc.backend.jvm.GenASM$JPlainBuilder$$anonfun$genBlock$1$2.apply(GenASM.scala:2209)
+	at scala.collection.IndexedSeqOptimized$class.foreach(IndexedSeqOptimized.scala:33)
+	at scala.collection.mutable.ArrayOps$ofRef.foreach(ArrayOps.scala:186)
+	at scala.tools.nsc.backend.icode.BasicBlocks$BasicBlock.foreach(BasicBlocks.scala:195)
+{noformat}

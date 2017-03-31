@@ -1,0 +1,17 @@
+Another test case from SI-10186 for the same problem. This is also fixed by my patch.
+
+{code}
+trait Foo {
+  type A
+  type F[P <: A]
+}
+ 
+object Test {
+  def noop[A1, F1[P <: A1]]: Unit = ()
+
+  def f(foo: Foo): Unit = {
+    noop[foo.A, foo.F] // does not compile
+  }
+}
+{code}
+

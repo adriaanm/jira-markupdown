@@ -1,0 +1,12 @@
+I've just noticed SI-2441 is a duplicate of this, so I'm closing that and keeping this one - but that one is worth checking out as well.  The situation there looks to be specific to companions, and is along the lines of:
+{code}
+class T
+trait A { def f: T }
+object Bob {
+  private class X extends T
+}
+class Bob extends A {
+  def f = new Bob.X
+}  
+{code}
+That should either fail to compile, or the type inferred for f in Bob should be T.  Instead it is Bob.X.

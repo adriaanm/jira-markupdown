@@ -1,0 +1,98 @@
+I'm migrating my project from {{Maven}} to {{SBT}}.
+It's a mixed Java/Scala project.
+I'm using Scala 2.11.4.
+
+I'm getting a very strange and unexplicative error:
+{code}
+[error] 
+[error]   last tree to typer: TypeTree(trait PropsTarea)
+[error]               symbol: trait PropsTarea in package tareas (flags: <interface> abstract <java> <trait>)
+[error]    symbol definition: abstract interface PropsTarea extends Object
+[error]                  tpe: jima.administracion.tareas.PropsTarea
+[error]        symbol owners: trait PropsTarea -> package tareas
+[error]       context owners: constructor PropsTarea -> trait PropsTarea -> package tareas
+[error] 
+[error] == Enclosing template or block ==
+[error] 
+[error] DefDef( // def <init>(): jima.administracion.tareas.PropsTarea in trait PropsTarea
+[error]   <method> <java>
+[error]   "<init>"
+[error]   []
+[error]   List(Nil)
+[error]   <tpt> // tree.tpe=jima.administracion.tareas.PropsTarea
+[error]   "_"
+[error] )
+[error] 
+[error] == Expanded type of tree ==
+[error] 
+[error] TypeRef(TypeSymbol(abstract interface PropsTarea extends Object))
+[error] 
+[error] Unknown type: List[fcc.vision.modelo.PortalUsuario], <error> [class scala.reflect.internal.Types$TypeRef$$anon$1, class scala.reflect.internal.Types$ErrorType$] TypeRef? true
+{code}
+
+My code used to compile ok with Maven.
+
+Here is the code of the offending classes (luckily quite simple):
+{code:java}
+package jima.administracion.tareas;
+
+public interface PropsTarea {
+	///############### Clase Configurar
+	final String PROP_SMTP = "smtp";
+	final String PROP_DIAS_MANTENER_HISTORICO = "diasMantenerHistorico";
+
+	///############### Relativo a JobDetail
+	final String PROP_ID = "id";
+	final String PROP_GRUPO = "grupo";
+	final String PROP_DESCRIPC = "descripcion";
+	final String PROP_ACTIVO = "activo";
+
+	///############### Relativo a cuando
+	final String PROP_CUANDO = "cuando";
+	final String PROP_MINUTO = "minuto";
+	final String PROP_HORA = "hora";
+	final String PROP_TIPO_DIA = "tipoDia";
+	final String PROP_DIA = "dia";
+	final String PROP_MES = "mes";
+	final String PROP_AÑO = "anyo";
+
+	///############### Relativo a URI
+	final String PROP_TIPO_AREA = "tipoArea";
+	final String PROP_ENTORNO = "entorno";
+	final String PROP_AREA = "area";
+	final String PROP_URI = "uri";
+	final String PROP_URI_COMPLETA = "params_uri";
+	final String PROP_PARAMS = "params";
+	final String PROP_DESCRIPC_PARAMS = "params_descripc";
+
+	///############### Validacion
+	final String PROP_TIPO_VALIDACION = "tipoValid";
+	final String PROP_USR = "usr";
+	final String PROP_CONTRASEÑA = "clave";
+
+	///############### Relativo a correo
+	final String PROP_TIPO_NOTIF = "tipoNotif";
+	final String PROP_CORREOS = "correos";
+	final String PROP_CORREO = "correo";
+	final String PROP_SOLO_ERROR = "soloError";
+
+	/**Propiedades de tipo {@link String} q van en {@link org.quartz.JobDataMap}*/
+	final String[] PROPS_DET = {
+		PROP_TIPO_VALIDACION, PROP_TIPO_AREA, PROP_URI, PROP_URI_COMPLETA, PROP_PARAMS, PROP_DESCRIPC_PARAMS, PROP_TIPO_NOTIF,
+	};
+}
+{code}
+
+{code}
+package fcc.vision.modelo
+
+@ApiModel(description = "Portal de Usuario")
+case class PortalUsuario(
+   `type`: String,
+	 id: String,
+   name: String,
+	 description: String,
+   icon: Option[String],
+   areas: Iterable[Area]
+)
+{code}

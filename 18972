@@ -1,0 +1,39 @@
+It's hard to know how many more places -Xsource 2.10 might need to be respected for what I want to work, because compilation tends to halt before one has a clear picture. But there are at least the two shown here. First:
+{code}
+class Foo[+CC[X]] { type Coll = CC[_] }
+{code}
+That compiles in 2.10 but not in 2.11.
+
+"What I want to work" is to be able to compile the 2.10 sources with 2.11. For y'all to push through the errors seems like an easy way to find some of the holes in -Xsource.
+
+The other place, which arises first:
+{code}
+/l/trunk1/src/compiler/scala/tools/nsc/backend/icode/Printers.scala:19: error: reference to Linearizer is ambiguous;
+it is both defined in trait Linearizers and imported subsequently by
+import global.icodes._
+  class TextPrinter(writer: PrintWriter, lin: Linearizer) {
+                                              ^
+one error found
+onExit 1
+{code}
+It only became possible to even try this after 0fbd4422b2 which fixed "scala.reflect.internal.FatalError: class Universe does not have a member Quasiquote", thanks for that.
+
+In case you want to pursue this I made a script to embody what I think should work, which might even serve as the basis of a test.
+{code}
+#!/usr/bin/env bash
+#
+# Run one version of scala compiling against a different one.
+#
+# Sample usage:
+# find /path/to/scala-2.10/src/{asm,library,reflect,compiler} -name '*.scala' -o -name '*.java' | egrep -v '/ant/') | \
+#   runner.sh -verbose
+
+runlib=/scala/trunk/build/pack/lib
+otherlib=/scala/inst/210/lib
+
+java -Xmx2g \
+  -cp "$runlib"/'*' scala.tools.nsc.Main \
+  -cp "$otherlib"/'*' \
+  -Xsource:2.10 \
+  "$@"
+{code}

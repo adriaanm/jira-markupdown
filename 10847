@@ -1,0 +1,12 @@
+While debugging this, I noted this suspect code:
+
+{code}
+  class SubstWildcardMap(from: List[Symbol]) extends TypeMap {
+    def apply(tp: Type): Type = try {
+      tp match {
+        case TypeRef(_, sym, _) if from contains sym =>
+          BoundedWildcardType(sym.info.bounds)
+        ...
+{code}
+
+Why is it okay to discard the prefix and type arguments? Shouldn't they be used to calculate the bounds?

@@ -1,0 +1,52 @@
+
+{code:scala}
+sealed trait Base
+case class Up() extends Base
+case class Down() extends Base
+
+sealed trait Tracker[B <: Base] {
+
+  def bar = this match {
+    case UpTracker() => ???
+    case DownTracker() => ???
+  }
+
+}
+case class UpTracker() extends Tracker[Up]
+case class DownTracker() extends Tracker[Down]
+{code}
+
+produces
+
+{code:scala}
+PatternMatch.scala:8: error: constructor cannot be instantiated to expected type;
+ found   : UpTracker
+ required: Tracker[B]
+    case UpTracker() => ???
+         ^
+PatternMatch.scala:9: error: constructor cannot be instantiated to expected type;
+ found   : DownTracker
+ required: Tracker[B]
+    case DownTracker() => ???
+         ^
+two errors found
+{code}
+
+This does not occur if we move the method into a separate object:
+
+{code:scala}
+sealed trait Base
+case class Up() extends Base
+case class Down() extends Base
+
+sealed trait Tracker[B <: Base]
+case class UpTracker() extends Tracker[Up]
+case class DownTracker() extends Tracker[Down]
+
+object Foo {
+  def bar[B <: Base](t: Tracker[B]) = t match {
+    case UpTracker() => ???
+    case DownTracker() => ???
+  }
+}
+{code}

@@ -1,0 +1,32 @@
+Here comes the evidence:
+
+
+{code}
+// File test.scala
+
+package test
+
+import scala.annotation.elidable
+
+object TestElidable  {
+  def main(args: Array[String]) {
+    areYouThere_?()
+  }
+  @elidable(1000) def areYouThere_?() {
+    println("I am here!")
+  }
+}
+
+// End of file test.scala
+
+{code}
+
+
+{code}
+$$ fsc test.scala // Look Ma, no -Xelide-below!
+$$ scala test.TestElidable
+$$
+
+{code}
+
+As you can see you cannot see anything. But IMHO "I should be here!"

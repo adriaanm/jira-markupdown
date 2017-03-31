@@ -1,0 +1,16 @@
+I absolutely agree with this; currently we are discussing half-solutions to a sub-question of a quite hard problem. 
+
+bq. the problem is that making it more predictable 
+What do you mean by inference not being predictable? 
+
+bq. (AFAIK) a hard research problem
+Do you have any specific ongoing research in mind?
+
+bq. Moreover, it would probably change behavior in some cases, so it would be hard to push this in for Scala 2.
+
+What comes to my mind are cases where implicits are explicitly passed; the order of parameters matters here a lot and mixing them up might sometimes cause bugs only detected at run time. 
+
+Maybe a less intrusive patch that should not break existing code and not result in the complete rewrite of the inference algorithms could be proposed along the lines of the following:
+1. Annotate context bound-generated evidences with @weakEvidence
+2. *Iff* the language feature *weakEvidences* is enabled, let the inference algorithm consider the un-annotated parameters first. 
+3. If the language feature is turned off and implicit resolution ultimately fails but turning it on would work, a compiler hint could be given.

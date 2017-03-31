@@ -1,0 +1,16 @@
+That's because there is a very unfortunately named class called java.sql.Array, which you are importing and corrupting your main method.  This works:
+{code}
+def main (args: scala.Array[String]) = {
+{code}
+Or this:
+{code}
+import java.sql.{ Array => _, _ }
+{code}
+Or happily in trunk it won't even compile.
+{code}
+$$ scalac28 a.scala 
+a.scala:5: error: java.sql.Array does not take type parameters
+  def main (args: Array[String]) = {
+                  ^
+one error found
+{code}

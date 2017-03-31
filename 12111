@@ -1,0 +1,13 @@
+This is trickier than it looks. Unlike most other operations (notably including "filter"), "filterKeys" is specified as returning a view of the original map:
+
+bq. @return an immutable map consisting only of those key value pairs of this map where the key satisfies the predicate `p`. The resulting map wraps the original map without copying any elements.
+
+This is at odds with wanting to get a mutable Map back. Possible ways out:
+
+# Leave "filterKeys" as a special case. When you want an eagerly evaluated operation, just use "filter".
+# Remove "filterKeys". The difference in semantics to "filter" is not obvious. Having these methods behave differently can be confusing to users.
+# Give "filterKeys" the same semantics as "filter".
+
+Since we're going to focus on the collections library in 2.13, I'm inclined to go with 1) for now and defer a decision until 2.13.
+
+You could easily build a case for 2) or 3) if we had proper Map views. ".filterKeys" with the current view-like semantics should really be ".view.filterKeys" but that's not possible because Map.view only gives you an IterableView.

@@ -1,0 +1,53 @@
+When I compile finalval.scala with content:
+{code}
+object A {
+   final val c = 1234
+}
+{code}
+an unused private attribute "private final int c;" in A$$.class is created (JD-GUI output):[[BR]]
+[[BR]]
+A.class[[BR]]
+=======
+{code}
+import scala.reflect.ScalaSignature;
+
+@ScalaSignature(bytes="\006\001\t:Q!\001\002\t\006\025\t\021!\021\006\002\007\0059A(Z7qift4\001\001\t\003\r\035i\021A\001\004\006\021\tA)!\003\002\002\003N\031qA\003\n\021\005-\001R\"\001\007\013\0055q\021\001\0027b]\036T\021aD\001\005U\0064\030-\003\002\022\031\t1qJ\0316fGR\004\"a\005\f\016\003QQ\021!F\001\006g\016\fG.Y\005\003/Q\0211bU2bY\006|%M[3di\")\021d\002C\0015\0051A(\0338jiz\"\022!\002\005\b9\035\021\r\021\"\002\036\003\005\031W#\001\020\020\003}i\"\001\002j\t\r\005:\001\025!\004\037\003\t\031\007\005")
+public final class A
+{
+  public static final int c()
+  {
+    return A..MODULE$$.c();
+  }
+}
+{code}
+A$$.class[[BR]]
+========
+{code}
+import scala.ScalaObject;
+
+public final class A$$
+  implements ScalaObject
+{
+  public static final  MODULE$$;
+  private final int c;
+
+  static
+  {
+    new ();
+  }
+
+  public final int c()
+  {
+    return 1234;
+  }
+
+  private A$$()
+  {
+    MODULE$$ = this;
+  }
+}
+{code}
+
+
+Scala version was 2.9.0.final
+java compiler version was 1.6.0_18

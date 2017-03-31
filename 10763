@@ -1,0 +1,73 @@
+If we remove the `ArrayBuffer` vs `ArrayList` noise and just profile lambda vs anon functions against `ArrayList`
+
+{code}
+/*
+ * Copyright (c) 2005, 2013, Oracle and/or its affiliates. All rights reserved.
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ * This code is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License version 2 only, as
+ * published by the Free Software Foundation.  Oracle designates this
+ * particular file as subject to the "Classpath" exception as provided
+ * by Oracle in the LICENSE file that accompanied this code.
+ *
+ * This code is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+ * version 2 for more details (a copy is included in the LICENSE file that
+ * accompanied this code).
+ *
+ * You should have received a copy of the GNU General Public License version
+ * 2 along with this work; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ * Please contact Oracle, 500 Oracle Parkway, Redwood Shores, CA 94065 USA
+ * or visit www.oracle.com if you need additional information or have any
+ * questions.
+ */
+
+package org.sample;
+
+import org.openjdk.jmh.annotations.GenerateMicroBenchmark;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.logic.BlackHole;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Consumer;
+
+@State(Scope.Benchmark)
+public class MyBenchmark {
+    private final List<String> testValues = Arrays.asList("a", "bb", "c", "dd", "e", "ff");
+
+    @GenerateMicroBenchmark
+    public void lambda() throws InterruptedException { testValues.forEach(p -> new BlackHole().consume(p.length())); }
+
+    @GenerateMicroBenchmark
+    public void anonClass() throws InterruptedException {
+        Consumer<String> action = new Consumer<String>() {
+            public void accept(String x) {
+                new BlackHole().consume(x.length());
+            }
+        };
+        testValues.forEach(action);
+    }
+}
+{code}
+
+{noformat}
+% (export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0.jdk/Contents/Home/; $JAVA_HOME/bin/java -version )
+
+java version "1.8.0-ea"
+Java(TM) SE Runtime Environment (build 1.8.0-ea-b124)
+Java HotSpot(TM) 64-Bit Server VM (build 25.0-b66, mixed mode)
+
+% (export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0.jdk/Contents/Home/; $JAVA_HOME/bin/java -jar target/microbenchmarks.jar )
+...
+Benchmark                     Mode   Samples         Mean   Mean error    Units
+o.s.MyBenchmark.anonClass    thrpt       200     1656.678        7.368   ops/ms
+o.s.MyBenchmark.lambda       thrpt       200     1627.326        9.527   ops/ms
+{noformat}
+
+I suspect the slight win for the lambda is the fact it is statically hoisted, as it doesn't close over any free variables.

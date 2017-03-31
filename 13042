@@ -1,0 +1,61 @@
+I have two Java classes:
+
+{code}
+public class Par<T> {}
+
+public class Foo {
+  public Foo(Par p) {} // note the raw type
+}
+{code}
+
+Trying to create a Foo instance in Scala with
+
+{code}
+object Main {
+  new Foo(new Par)
+}
+{code}
+
+gives a compile error:
+
+{code}
+Main.scala:2: error: no type parameters for constructor Par: ()Par[T] exist so that it can be applied to arguments ()
+ --- because ---
+result type Par[T] is incompatible with expected type Par
+  new Foo(new Par)
+{code}
+
+Alternatively for
+{code}
+object Main {
+  new Foo(new Par[Int])
+}
+{code}
+
+I get
+
+{code}
+Main.scala:2: error: type mismatch;
+ found   : Par[Int]
+ required: Par
+  new Foo(new Par[Int])
+          ^
+one error found
+{code}
+
+
+When the parameter type in Foo is changed from Par to Par<?>, the compiler bails out with a stack overflow:
+
+{code}
+Exception in thread "main" java.lang.StackOverflowError
+        at scala.tools.nsc.typechecker.Infer$$class.instantiate(Infer.scala:92)
+        at scala.tools.nsc.Global$$analyzer$$.instantiate(Global.scala:261)
+        at scala.tools.nsc.typechecker.Infer$$class.instantiate(Infer.scala:96)
+        at scala.tools.nsc.Global$$analyzer$$.instantiate(Global.scala:261)
+        at scala.tools.nsc.typechecker.Infer$$class.instantiate(Infer.scala:96)
+        at scala.tools.nsc.Global$$analyzer$$.instantiate(Global.scala:261)
+        at scala.tools.nsc.typechecker.Infer$$class.instantiate(Infer.scala:96)
+        at scala.tools.nsc.Global$$analyzer$$.instantiate(Global.scala:261)
+...
+{code}
+

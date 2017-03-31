@@ -1,0 +1,103 @@
+Currently class name of anonymous function contains only name of containing class, but does not contain owner method name.
+
+So it is hard to read stack traces: people cannot find where anonymous function (shown as $$anonfun) is declared. Example:
+
+{code}
+        at java.lang.Thread.dumpStack(Thread.java:1158)
+        at scala.tools.nsc.transform.LambdaLift$$LambdaLifter$$$$anonfun$$5.apply(LambdaLift.scala:254)
+        at scala.tools.nsc.transform.LambdaLift$$LambdaLifter$$$$anonfun$$5.apply(LambdaLift.scala:246)
+        at scala.Iterator$$class.foreach(Iterator.scala:375)
+        at scala.Iterator$$$$anon$$12.foreach(Iterator.scala:240)
+        at scala.tools.nsc.transform.LambdaLift$$LambdaLifter.computeFreeVars(LambdaLift.scala:246)
+        at scala.tools.nsc.transform.LambdaLift$$LambdaLifter.transformUnit(LambdaLift.scala:419)
+        at scala.tools.nsc.transform.LambdaLift$$LambdaLifter.transformUnit(LambdaLift.scala:45)
+        at scala.tools.nsc.transform.Transform$$Phase.apply(Transform.scala:30)
+        at scala.tools.nsc.Global$$GlobalPhase.applyPhase(Global.scala:249)
+        at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$2.apply(Global.scala:238)
+        at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$2.apply(Global.scala:238)
+        at scala.Iterator$$class.foreach(Iterator.scala:375)
+        at scala.collection.mutable.ListBuffer$$$$anon$$0.foreach(ListBuffer.scala:255)
+        at scala.tools.nsc.Global$$GlobalPhase.run(Global.scala:238)
+        at scala.tools.nsc.Global$$Run.compileSources(Global.scala:534)
+        at scala.tools.nsc.ScriptRunner.compile$$0(ScriptRunner.scala:302)
+        at scala.tools.nsc.ScriptRunner.withCompiledScript(ScriptRunner.scala:337)
+        at scala.tools.nsc.ScriptRunner.runScript(ScriptRunner.scala:362)
+        at scala.tools.nsc.MainGenericRunner$$.main(MainGenericRunner.scala:165)
+        at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
+{code}
+
+It is not clear, what is {{Global$$GlobalPhase$$$$anonfun$$2}}.
+
+I'm attaching patch that adds function name to the class name of anonymous function. With patch applied stack trace becomes:
+
+{code}
+java.lang.Exception: Stack trace
+        at java.lang.Thread.dumpStack(Thread.java:1158)
+        at scala.tools.nsc.transform.LambdaLift$$LambdaLifter$$computeFreeVars$$anonfun$$2.apply(LambdaLift.scala:254)
+        at scala.tools.nsc.transform.LambdaLift$$LambdaLifter$$computeFreeVars$$anonfun$$2.apply(LambdaLift.scala:246)
+        at scala.Iterator$$class.foreach(Iterator.scala:375)
+        at scala.Iterator$$$$anon$$13.foreach(Iterator.scala:240)
+        at scala.tools.nsc.transform.LambdaLift$$LambdaLifter.computeFreeVars(LambdaLift.scala:246)
+        at scala.tools.nsc.transform.LambdaLift$$LambdaLifter.transformUnit(LambdaLift.scala:419)
+        at scala.tools.nsc.transform.LambdaLift$$LambdaLifter.transformUnit(LambdaLift.scala:45)
+        at scala.tools.nsc.transform.Transform$$Phase.apply(Transform.scala:30)
+        at scala.tools.nsc.Global$$GlobalPhase.applyPhase(Global.scala:249)
+        at scala.tools.nsc.Global$$GlobalPhase$$run$$anonfun$$1.apply(Global.scala:238)
+        at scala.tools.nsc.Global$$GlobalPhase$$run$$anonfun$$1.apply(Global.scala:238)
+        at scala.Iterator$$class.foreach(Iterator.scala:375)
+        at scala.collection.mutable.ListBuffer$$$$anon$$1.foreach(ListBuffer.scala:255)
+        at scala.tools.nsc.Global$$GlobalPhase.run(Global.scala:238)
+        at scala.tools.nsc.Global$$Run.compileSources(Global.scala:534)
+        at scala.tools.nsc.ScriptRunner.compile$$1(ScriptRunner.scala:302)
+        at scala.tools.nsc.ScriptRunner.withCompiledScript(ScriptRunner.scala:337)
+        at scala.tools.nsc.ScriptRunner.runScript(ScriptRunner.scala:362)
+        at scala.tools.nsc.MainGenericRunner$$.main(MainGenericRunner.scala:165)
+        at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
+{code}
+
+That anonymous function — {{Global$$GlobalPhase$$run$$anonfun$$1}} — is declared in method run.
+
+Another illustration is list of classes generated for Seq.scala. Original:
+
+{code}
+Seq.class
+Seq$$.class
+Seq$$class.class
+Seq$$Projection$$$$anon$$0.class
+Seq$$Projection$$$$anon$$1.class
+Seq$$Projection$$$$anon$$2$$$$anonfun$$0.class
+Seq$$Projection$$$$anon$$2$$$$anonfun$$1.class
+Seq$$Projection$$$$anon$$2$$$$anonfun$$2.class
+Seq$$Projection$$$$anon$$2.class
+Seq$$Projection$$$$anon$$3$$$$anonfun$$3.class
+Seq$$Projection$$$$anon$$3.class
+Seq$$Projection.class
+Seq$$Projection$$class.class
+Seq$$Projection$$ComputeSize.class
+Seq$$Projection$$MapProjection.class
+{code}
+
+With patch applied:
+
+{code}
+Seq.class
+Seq$$.class
+Seq$$class.class
+Seq$$contains$$anonfun$$1.class
+Seq$$Projection$$$$anon$$1.class
+Seq$$Projection$$$$anon$$2.class
+Seq$$Projection$$$$anon$$3$$apply$$anonfun$$1.class
+Seq$$Projection$$$$anon$$3.class
+Seq$$Projection$$$$anon$$3$$elements$$anonfun$$1.class
+Seq$$Projection$$$$anon$$3$$length$$anonfun$$1.class
+Seq$$Projection$$$$anon$$4.class
+Seq$$Projection$$$$anon$$4$$elements$$anonfun$$2.class
+Seq$$Projection.class
+Seq$$Projection$$class.class
+Seq$$Projection$$ComputeSize.class
+Seq$$Projection$$MapProjection.class
+{code}
+
+I've rebuilt scala itself with patch applied with patch applied, but didn't run tests.
+
+TBD: similar enhancement for anonymous classes.

@@ -1,0 +1,41 @@
+1) Create a directory {{myBug}} in {{neg}} in Partest with:
+
+file_1.scala:
+
+{code}
+class Const { val x = 1 }
+{code}
+
+file_2.java:
+
+{code}
+public class file_2 {
+    public static void foo() {
+        Const c = new Const();
+        c.x = 2;
+    }
+}
+{code}
+
+Running:
+
+{code}
+test/partest --show-log test/files/neg/
+{code}
+
+gives:
+
+{code}
+Testing individual files
+test/files/neg/myBug/file_2.java:4: error: x has private access in Const
+        c.x = 2;
+         ^
+1 error
+testing: [...]/files/neg/myBug                                        [  OK  ]
+All of 1 tests were successful (elapsed time: 00:00:02)
+{code}
+
+although there is no {{check}} file with the produced output.
+
+
+2) Also, there are no compilation errors being printed out for {{run}} tests.

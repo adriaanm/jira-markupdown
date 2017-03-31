@@ -1,0 +1,23 @@
+isolated and minimized:
+
+{code:scala}
+trait Compute[A] {
+  type Start
+  val start: Compute[Start]
+}
+
+object Test {
+  def foo[A](c: Compute[A]): Unit =
+    c match {
+      case c: Compute[A] =>
+        new Compute[A] {
+          type Start = c.Start
+          val start = c.start
+        }
+    }
+}
+{code}
+
+Perhaps it can be minimized further, but I got stuck here. In particular, I did not succeed in getting rid of the pattern match.
+
+This almost certainly has to do with the changes in type inference for valdefs that came in https://github.com/scala/scala/pull/5141. As evidence, compiling with 2.12.0-M5 makes the error go away, as does compiling with -Xsource:2.11.

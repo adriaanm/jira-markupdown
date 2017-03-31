@@ -1,0 +1,13 @@
+Last time I checked, SyncVar class was an auxilary part of implementation of Actor.receive(long) for example - and there performance matters, matters really alot: will anyone argue against the fact that actors library is one of the few most important parts of Scala - and actors performance is among its strongest points?
+
+Is there any way I could help to expedite the suggested corrections go into the source code repository ASAP?
+
+I don't think JIT is allowed to optimize out @volatile even within syncrhonized block, or will do that any time soon. The problem is, nothing really prevents JVM code to asynchronously change the same variable without holding an appropriate lock (or any lock at all, for that matter). Also, all the 'synchronized' magic applies at the synchronized block boundaries only, it does not change semantics nor place any limits on inner operations at all. Indeed, looking at the source code, the facts that
+
+-- a variable is private
+-- all its usages are 'right here'
+-- all its usages are synchronized
+
+give a hope, but hope no more. First, JIT always worked and works by compiling/optimizing separate method separately (inlining callees, but not bothering about neighbours) - compliling class at once (inluding those methods that will not be called at all, and those which will end executed just once of twice during VM lifetime and thus are better interpreted not compiled) would slow down JVM program starting phase quite a bit. Second, the value of the private variable might be changed (without proper synchronization again) asynchronously via reflection API - ugly, but true. Only precompiling a whole program (and disabling reflection API) might perform so deep optimisation as needed here to automatically eliminate @volatile (gcj, maybe, by year 2030...)
+
+We all expect that noone sane will be messing with the isDefined/value variables using reflection (if someone did - he/she is to blame his/herself only, of course). So by simply using the appropriate synchronized blocks, we declare "if someone plays dirty reflection games with the object internals they will be bitten as expected, while ligitimate service users will be enjoying optimal performance"; while having both @volatile and synchronized is a declaration "we will consciously harm performance of every program to ensure that people who play dirty reflection tricks are shielded from the race conditions", why.

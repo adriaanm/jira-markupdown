@@ -1,0 +1,20 @@
+Note - I have not contributed to scala or the collections library at all.
+
+I've noticed that other Iterator.scala code, as well as your PR, @Rui, included var's.
+
+Why not implement `indexWhere` in a functional way? Something like:
+
+{code}
+  override def indexWhere[B >: A](p: A => Boolean, from: Int): Int = 
+   self.zipWithIndex.drop(from).find(p(_._1)) match {
+      case None             => -1
+      case Some((_, index)) => index
+    } 
+{code}
+
+Note - I don't know if `self` is correct here. But this REPL examples shows a few simple examples working:
+
+{code}
+scala> Iterator(1,2,3).zipWithIndex.drop(0).find(_._1 == 3)
+res2: Option[(Int, Int)] = Some((3,2))
+{code}

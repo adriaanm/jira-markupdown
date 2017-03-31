@@ -1,0 +1,4 @@
+There's a similar issue when private methods used in closures. For example if you look at "javap -p Enumeration" output for scala.Enumeration you may notice public methods
+  public scala.collection.mutable.Map<java.lang.Object, java.lang.String> scala$Enumeration$$nmap();
+  public void scala$Enumeration$$populateNameMap();
+despite the fact that nmap field and populateNameMap method are private in Scala code and aren't used anywhere beyond Enumeration class, but inside that class there are few closures that operate with private fields.

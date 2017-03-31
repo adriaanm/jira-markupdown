@@ -1,0 +1,21 @@
+One more example:
+
+{code}
+class Entity extends DelayedInit {
+ 
+  def delayedInit(x: => Unit) {x}
+ 
+  class Field
+ 
+  protected def EntityField[T <: Entity: Manifest] = new Field
+ 
+  def find[T <: Entity: Manifest] {
+    Nil.map(dbo => {
+      class EntityHolder extends Entity {
+        val entity = EntityField[T]
+      }
+    })
+  }
+ 
+}
+{code}

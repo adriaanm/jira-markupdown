@@ -1,0 +1,21 @@
+The following snippet fails to complete:
+{code}
+   future {
+     System.out.println(1)
+     future {
+       System.out.println(2)
+       future {
+         System.out.println(3)
+         future {
+           System.out.println(4)
+           future {
+             System.out.println(5)
+           }()
+         }()
+       }()
+     }()
+   }()
+{code}
+It prints 1 2 3 4 and then hangs
+
+NB. This is using Futures.future from within scala.actors

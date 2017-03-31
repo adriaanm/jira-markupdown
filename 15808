@@ -1,0 +1,86 @@
+[Edit: adding a more serious super-related crash.]
+
+{code}
+trait C1[+A] {
+  def head: A = sys.error("")
+}
+trait C2[@specialized +A] extends C1[A] {
+  override def head: A = super.head
+}
+class C3 extends C2[Char] 
+// 
+// error: java.lang.AssertionError: assertion failed: method head
+//  at scala.Predef$.assert(Predef.scala:160)
+//  at scala.tools.nsc.transform.Mixin$$anonfun$scala$tools$nsc$transform$Mixin$$rebindSuper$1.apply(Mixin.scala:129)
+//  at scala.tools.nsc.transform.Mixin$$anonfun$scala$tools$nsc$transform$Mixin$$rebindSuper$1.apply(Mixin.scala:95)
+//  at scala.reflect.internal.SymbolTable.atPhase(SymbolTable.scala:103)
+//  at scala.tools.nsc.transform.Mixin.scala$tools$nsc$transform$Mixin$$rebindSuper(Mixin.scala:95)
+//  at scala.tools.nsc.transform.Mixin$$anonfun$mixinTraitMembers$1$1.apply(Mixin.scala:351)
+//  at scala.tools.nsc.transform.Mixin$$anonfun$mixinTraitMembers$1$1.apply(Mixin.scala:304)
+{code}
+
+[Original report]
+
+{code}
+trait Super[@specialized(Int) A] {
+  def superb = 0
+}
+
+object Sub extends Super[Int] {
+  super[Super].superb // scala.tools.nsc.symtab.Types$$TypeError: Super does not name a parent class of object Sub
+  super.superb        // okay    
+  override def superb: Int = super.superb // okay
+}
+{code} 
+{code}
+scala.tools.nsc.symtab.Types$$TypeError: Super does not name a parent class of object Sub
+	at scala.tools.nsc.typechecker.Contexts$$Context.error(Contexts.scala:273)
+	at scala.tools.nsc.typechecker.Infer$$Inferencer.error(Infer.scala:213)
+	at scala.tools.nsc.typechecker.Typers$$Typer.findMixinSuper$$1(Typers.scala:3417)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedSuper$$1(Typers.scala:3434)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:3951)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:4078)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedQualifier(Typers.scala:4145)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedQualifier(Typers.scala:4151)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:3964)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:4078)
+	at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$typedApply$$1$$1.apply(Typers.scala:3284)
+	at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$typedApply$$1$$1.apply(Typers.scala:3284)
+	at scala.tools.nsc.typechecker.Typers$$Typer.silent(Typers.scala:705)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedApply$$1(Typers.scala:3284)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:3924)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:4078)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:4126)
+	at scala.tools.nsc.transform.SpecializeTypes$$$$anon$$6.transform(SpecializeTypes.scala
+[snip]
+{code}
+
+In the original code, I originally got a different error during mixins, using an unqualified super reference. I haven't reproduced that yet in isolation. It can be reproduced by compiling scalala with SBT from: https://github.com/retronym/Scalala/tree/ab592a34bc1b5492ab2df65d4ba96d6c585ff724
+
+This results in:
+
+{code}
+[info] [running phase mixin on Domain.scala]
+exception when traversing <root>#java#lang#Object with
+<root>#scala#Product2 with
+<root>#scalala#tensor#domain#Product2Domain$$mcII$$sp with
+<root>#scalala#tensor#domain#Product2DomainLike$$mcII$$sp with
+<root>#scala#ScalaObject with <root>#scala#Product {
+
+[snip]
+
+java.lang.UnsupportedOperationException: tail of empty list
+       at scala.collection.immutable.Nil$$.tail(List.scala:388)
+       at scala.collection.immutable.Nil$$.tail(List.scala:383)
+       at scala.tools.nsc.transform.Mixin$$$$anonfun$$scala$$tools$$nsc$$transform$$Mixin$$$$rebindSuper$$1.apply(Mixin.scala:95)
+       at scala.tools.nsc.transform.Mixin$$$$anonfun$$scala$$tools$$nsc$$transform$$Mixin$$$$rebindSuper$$1.apply(Mixin.scala:94)
+       at scala.tools.nsc.symtab.SymbolTable.atPhase(SymbolTable.scala:103)
+{code}
+
+I'll try and get a smaller test case for this one, and update this ticket.
+
+See also SI-3651
+
+What versions of the following are you using?
+Scala: 2.8.0 / 2.8.1
+Java: 1.6

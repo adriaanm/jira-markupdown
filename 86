@@ -1,0 +1,47 @@
+Possibly regression in scala 2.10/2.11/2.12
+See:
+http://stackoverflow.com/a/25738632/651140
+{code}
+// Java API
+public interface JavaAPI {
+  JustSomeAPISpecificType clone();
+}
+{code}
+
+{code}
+public enum JustSomeAPISpecificType{
+INSTANCE
+}
+
+{code}
+
+{code}
+public class Factory {
+
+        public static class JavaApiImpl implements JavaAPI{
+
+                public JustSomeAPISpecificType clone(){
+                        return JustSomeAPISpecificType.INSTANCE;
+                }
+        }
+
+        public static JavaAPI getAPI(){
+                return new JavaApiImpl();
+        }
+}
+{code}
+
+Test with sbt/scala console:
+
+{code}
+scala> val api = Factory.getAPI
+api: JavaAPI = Factory$JavaApiImpl@57a645
+
+scala> api.clone
+<console>:9: error: method clone in class Object cannot be accessed in JavaAPI
+ Access to protected method clone not permitted because
+ prefix type JavaAPI does not conform to
+ object $iw where the access take place
+              api.clone
+
+{code}

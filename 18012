@@ -1,0 +1,39 @@
+When you're invoking a"" for the code which is written below:
+
+{code}
+import scala.reflect.macros.Context
+
+object AImpl {
+  def a(ctx: Context)(args: ctx.Expr[Any]*): ctx.Expr[Unit] = {
+    import ctx.universe._
+    ctx.Expr[Unit](q"println(1)")
+  }
+}
+
+implicit class A(context: StringContext) {
+  def a(args: Any*): Unit = macro AImpl.a
+}
+{code}
+
+you'll get this error:
+
+{code}
+ error: too few arguments for macro invocation
+{code}
+
+But if you change var args to single arg, the problem would be resolved.
+
+{code}
+import scala.reflect.macros.Context
+
+object AImpl {
+  def a(ctx: Context)(args: ctx.Expr[Any]): ctx.Expr[Unit] = {
+    import ctx.universe._
+    ctx.Expr[Unit](q"println(1)")
+  }
+}
+
+implicit class A(context: StringContext) {
+  def a(args: Any): Unit = macro AImpl.a
+}
+{code}

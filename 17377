@@ -1,0 +1,13 @@
+{code}
+def foo = {
+  var a = ArrayBuffer[Int]()
+  println (a.isInstanceOf[Seq[Int]])
+}
+{code}
+gives the following warning under -checked:
+{code}
+warning: non variable type-argument Int in type scala.collection.mutable.Seq[Int] is unchecked since it is eliminated by erasure
+  println (a.isInstanceOf[Seq[Int]])
+{code}
+
+Surely there should be no complaint about erasure in a purely local analysis. I'm telling it that it is a buffer of Int, and expect it to infer that it is a seq of Int. 

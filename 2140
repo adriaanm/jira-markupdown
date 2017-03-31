@@ -1,0 +1,14 @@
+How about simply supporting `@BeanProperty` on methods? If the annotated method looks like `def someName: SomeType` then it generates `def getSomeName() = someName`, and if the annotated method looks like `def someName_=(val: SomeType): Unit` then it generates `def setSomeName(val: SomeType) { someName = val }`. This would work even if there is no var that backs both methods, that is, for calculated properties. Annotated methods that doesn't follow any of the above patterns should cause a compilation error. (Later this could be extended to support indexed properties as well.)
+
+A drawback is that it's a bit verbose in this common case (two `@BeanProperty`-es):
+
+{code}
+private _someName: SomeType
+@BeanProperty def someName = _someName
+@BeanProperty def someName_=(val: SomeType) {
+  /* do some extra things here */
+  _someName = val
+}
+{code}
+
+But even this is better that we have now. To improve this further, there should be a standard way of naming those private vars (like `_${propertyName}`), because then one could just annotate the private var with `@BeanProperty`, and it could deduce the method names from the var name. If the var name doesn't follow the proper format or there's no matching method then that should be a compilation error, rather than a silent no-op.

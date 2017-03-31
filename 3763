@@ -1,0 +1,23 @@
+This is some kind of companion unhappiness.  In the example above you are giving scala.actors.Actor, but the class it's complaining about is a member of scala.actors.Actor$$, not Actor.  It looks like it happens pretty easily.
+{code}
+% cat a.scala 
+object A { def f[T] = (x: T) => 5 }
+
+% scalac a.scala 
+% javac -cp .:scala-library.jar -Xprint 'A$$'
+
+public final class A$$ implements scala.ScalaObject {
+  public static final A$$ MODULE$$;
+
+  public <T> scala.Function1<T,java.lang.Integer> f();
+
+  private A$$();
+}
+% javac -cp .:scala-library.jar -Xprint 'A'
+error: cannot access A.$$anonfun$$f$$1
+bad class file: ./A$$$$anonfun$$f$$1.class
+undeclared type variable: T
+Please remove or make sure it appears in the correct subdirectory of the classpath.
+1 error
+
+{code}

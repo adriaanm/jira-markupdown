@@ -1,0 +1,33 @@
+{code}
+import scala.reflect.runtime.universe._
+
+trait Foo {
+  type Bar
+}
+
+object Test extends App {
+  def foo[E <: Foo : TypeTag] = {
+    val x = typeOf[E#Bar]
+    println(x)
+  }
+}
+{code}
+
+{code}
+19:03 ~/Projects/210x/sandbox (2.10.x)$ sli
+Test.scala:9: materializing requested reflect.runtime.universe.type.TypeTag[E#Bar] using `package`.this.materializeTypeTag[E#Bar](scala.reflect.runtime.`package`.universe)
+    val x = typeOf[E#Bar]
+                  ^
+Test.scala:9: materializing requested reflect.runtime.universe.type.TypeTag[E#Bar] using `package`.this.materializeTypeTag[E#Bar](scala.reflect.runtime.`package`.universe)
+    val x = typeOf[E#Bar]
+                  ^
+Test.scala:9: `package`.this.materializeTypeTag[E#Bar](scala.reflect.runtime.`package`.universe) is not a valid implicit value for reflect.runtime.universe.TypeTag[E#Bar] because:
+failed to typecheck the materialized tag:
+cannot create a TypeTag having unresolved type parameter E#Bar: use WeakTypeTag instead
+    val x = typeOf[E#Bar]
+                  ^
+Test.scala:9: error: No TypeTag available for E#Bar
+    val x = typeOf[E#Bar]
+                  ^
+one error found
+{code}

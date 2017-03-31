@@ -1,0 +1,14 @@
+[~gelisam] [~retronym] I agree with Jason's reasoning.  Java's use cases anticipate a lot of use and mutation of collections.  While they often do a pretty good job of failing fast, even Java collections only promise to do so on a best-effort basis in most cases.
+
+I think the general principle for mutable collections in Scala is, as Jason says, that mutation cannot safely occur during traversal (whether you have an iterator or no).
+
+It would be great for the docs to be much clearer about what is and is not okay.  Intuitively it probably seems kind of sketchy to use transform inside transform, so people probably don't do it, but simple traversal and addition?  It often seems okay in the simplest cases, but breaks when things get more involved.  For example, consider
+
+{code}
+val m = collection.mutable.HashSet((1 to 10): _*)
+m.foreach{ i => m += i+100; m += i+200; m += i+300; m -= i+1 }
+{code}
+
+If you try simpler variations of this, it looks like it magically all works: e.g. if you just have the removal, every second of the original indices is removed.  But with this you get gobbledygook, as the foreach is just running down the original array, and slots appear and disappear willy-nilly, and then the array is resized to be larger partway through which isn't reflected in the foreach!
+
+So, bottom line is: good documentation for what happens would be awesome.  But don't put mutation inside of map & friends, whether the collections are parallel or sequential.

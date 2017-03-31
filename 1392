@@ -1,0 +1,22 @@
+It is worth noting that is it not necessary to use "this.type" or an equivalent self-name:
+{code}
+object Test extends Application {
+ trait A
+ trait B extends A
+
+  trait C {
+    val x : AnyRef
+    trait D { type T >: B <: A }
+    val y: (D with x.type)#T = new B { }
+  }
+
+  class D extends C {
+    trait E
+    val x : AnyRef { type T = E} = null
+    def frob(arg : E) : E = arg
+    frob(y)
+  }
+
+  new D
+}
+{code}

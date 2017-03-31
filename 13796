@@ -1,0 +1,60 @@
+Compiling the following two .java files with javac succeeds as expected,
+
+{code}
+OuterInterface.java:
+
+public interface OuterInterface {
+  public interface InnerInterface {
+    public void foo();
+  }
+}
+{code}
+
+{code}
+AbstractImpl.java:
+
+public abstract class AbstractImpl implements OuterInterface {
+  public abstract InnerInterface create();
+}
+{code}
+
+However, if the following .scala class is added,
+
+{code}
+ConcreteImpl.scala:
+
+class ConcreteImpl extends AbstractImpl {
+  def create : InnerInterface = null
+}
+{code}
+
+and all three are compiled with scalac 2.7.2.RC2, the following unexpected errors are reported against both the Scala *and* the Java,
+
+{code}
+miles@frege:test$$ scalac *
+ConcreteImpl.scala:2: error: not found: type InnerInterface
+  def create : InnerInterface = null
+               ^
+AbstractImpl.java:2: error: not found: type InnerInterface
+  public abstract InnerInterface create();
+                  ^
+two errors found
+{code}
+
+The only workaround is to add redundant qualifiers to *both* the Java and the Scala sources,
+
+{code}
+AbstractImpl2.java:
+
+public abstract class AbstractImpl implements OuterInterface {
+  public abstract OuterInterface.InnerInterface create();
+}
+{code}
+
+{code}
+ConcreteImpl2.scala:
+
+class ConcreteImpl extends AbstractImpl {
+  def create : OuterInterface.InnerInterface = null
+}
+{code}

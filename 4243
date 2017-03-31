@@ -1,0 +1,26 @@
+I did some hacking on the source to get the interpreter working again on AppEngine; I'd consider submitting a patch/commit but I'm not familiar with the procedure.  But I think I understand the extent of the problem and how it might be fixed.
+
+The createTempFile problem in nsc.io.File could be fixed as follows (I added IOException just for good measure):
+{code}
+  // this is a workaround for http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6503430
+  // we are using a static initializer to statically initialize a java class so we don't
+  // trigger java.lang.InternalErrors later when using it concurrently.
+  {
+    try {
+      val tmp = JFile.createTempFile("bug6503430", null, null)
+      val in = new FileInputStream(tmp).getChannel()
+      val out = new FileOutputStream(tmp, true).getChannel()
+      out.transferFrom(in, 0, 0)
+    }
+    catch {
+      // no problem if we don't have write access to the file system
+      case _: SecurityException => ()
+      case _: IOException => ()
+    }
+    ()
+  }
+{code}
+
+There is one additional problem which is that nsc.Interpreter uses a future, which fails creating the thread pool (you can't create threads on AppEngine).  I would settle for being able to subclass Interpreter in a way that initializes the compiler synchronously, for example "override def initializeCompilerAsync = false", or some less contrived way.
+
+Thanks for the response.

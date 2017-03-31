@@ -1,0 +1,23 @@
+As an aside, it's possible to synthesize a type equivalent to `Nothing` which _won't_ cause the typer to retract the solution,
+
+{code}
+type ReallyNothing = Nothing { type T = Unit }
+{code}
+
+ie. `Nothing` with a dummy refinement. Repl session ...
+
+{code}
+scala> :paste
+// Entering paste mode (ctrl-D to finish)
+
+trait Stuff[A]
+def take[A](st: Stuff[A]): Stuff[A] = st
+ 
+take(??? : Stuff[ReallyNothing])
+
+// Exiting paste mode, now interpreting.
+
+scala.NotImplementedError: an implementation is missing
+  at scala.Predef$.$qmark$qmark$qmark(Predef.scala:225)
+  ... 37 elided
+{code}

@@ -1,0 +1,52 @@
+Why would enum members not be singletons?
+Anyway, here is an improved version (see below).
+{code}
+class CaseEnum extends Enumeration {
+  type CASE <: Case
+  private val _cases = new scala.collection.mutable.HashMap[Int, CASE]
+  trait Case { this: CASE =>
+    private lazy val _id = nextId
+    private lazy val _name = {
+      val name = getClass.getName
+      if(name.endsWith("$$"))
+        name.substring(name.lastIndexOf("$$", name.length-2)+1, name.length-1)
+      else
+        name.substring(name.lastIndexOf("$$") + 1)
+    }
+    def name = _name
+    def id = _id
+    lazy val value = Value(id, name)
+    private[CaseEnum] def init = {
+      _cases += (value.id -> this)
+    }
+  }
+  
+  def cases(v: Value) = _cases(v.id)
+  def cases(id: Int) = _cases(id)
+  def cases(name: String) = _cases.values.find(_.name==name).get
+  import scala.util.Sorting._
+  def cases = stableSort(_cases.values.collect, (c:CASE)=>c.id)
+  import java.lang.reflect.Method
+  for {
+    m <- stableSort(getClass.getMethods.toSeq, (a:Method,b:Method)=>(a.getName < b.getName))
+    if m.getReturnType.getName.endsWith("$$"+m.getName+"$$") &&
+      m.getParameterTypes.length==0 &&
+      classOf[Case].isAssignableFrom(m.getReturnType)
+  } {
+    m.invoke(this).asInstanceOf[Case].init
+  }
+}
+{code}
+This version has a small improvement to a basic problem; maybe you have a better solution. Previously, the members were essentially assigned ids in the order they were returned by reflection. This order is not stable between rebuilds of the program. I therefore added code to sort them alphabetically. This of course does not solve the problem of adding elements later. Support was also added for setting the id. For example:
+{code}
+class Priorities extends CaseEnum {
+  type CASE = Priority
+  case class Priority(override val id: Int) extends Case
+  case object Routine extends Priority(0)
+  case object Urgent extends Priority(1)
+  case object Emergency extends Priority(2)
+}
+{code}
+More methods were added for looking up members, Also, a type member was added to solve a basic problem: CaseEnum needs to know the exact type it's supposed to return from cases().
+I may have omitted any other improvements; these modifications were made quite a while back, and I didn't get around to posting them.
+Thanks.

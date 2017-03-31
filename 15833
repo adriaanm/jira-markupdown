@@ -1,0 +1,24 @@
+= problem =
+`<:<` and `=:=` can't be composed
+
+= analysis =
+
+Workaround is to cast:
+
+{code}
+  implicit val `<:<_Category` : Category[<:<] = new Category[<:<] {
+    def compose[X, Y, Z](f: <:<[Y, Z], g: <:<[X, Y]) = f.asInstanceOf[X <:< Z]
+
+    def id[A] = implicitly[A <:< A]
+  }
+
+  implicit val `=:=_Category` : Category[=:=] = new Category[=:=] {
+    def compose[X, Y, Z](f: =:=[Y, Z], g: =:=[X, Y]) = f.asInstanceOf[X =:= Z]
+
+    def id[A] = implicitly[A =:= A]
+  }
+{code}
+
+= enhancement recommendation =
+
+Add a compose method to each of these classes.

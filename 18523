@@ -1,0 +1,5 @@
+Specialization tests are written in a way which counts how many boxing operations are performed when running a given piece of code to make sure that specialization kicks in. The box counting is achieved by prepending partest classpath with {{test/files/speclib/instrumented.jar}} that contains modified version of {{BoxesRunTime.java}} which includes call counters. See {{test/instrumented}} for source code of modified version of {{BoxesRuntime.java}} and script that builds it.
+
+We can easily express the same instrumentation using {{instrumented}} partest category which allows one to count arbitrary method calls (including boxing operations). The {{intrumented}} testing category is clearly documented and uses standard mechanism (Java agent) for instrumentation.
+
+Once we migrate specialization tests to be instrumented tests, we should deprecate {{specialized}} test category in partest project.

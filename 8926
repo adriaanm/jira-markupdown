@@ -1,0 +1,50 @@
+Even a def macro in 2.10.1 should handle this: we're likely to backport the Eugene's improvements to def macros to allow polymorphic macros to abide by the usual inference rules.
+
+{code}
+% scala-hash origin/paradise/macros
+[info] downloading http://scala-webapps.epfl.ch/artifacts/a49722990655633c2c97ddf5699adf25bc8bea76/pack.tgz ...done.
+[info] scala revision from 2013-01-14 11:39:03 -0800 downloaded to /Users/jason/usr/scala-v2.11.0-M1-80-ga497229
+[info] origin/par => /Users/jason/usr/scala-v2.11.0-M1-80-ga497229
+Welcome to Scala version 2.11.0-20130114-113903-a497229906 (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_27).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> class NotNothing[T]
+defined class NotNothing
+
+scala> object NotNothing {
+     |   val NotNothingShared = new NotNothing[Any]
+     | } 
+defined object NotNothing
+warning: previously defined class NotNothing is not a companion to object NotNothing.
+Companions must be defined together; you may wish to use :paste mode for this.
+
+scala> import language.experimental.macros
+import language.experimental.macros
+
+scala> def impl[A: c.WeakTypeTag](c: reflect.macros.Context): c.Expr[NotNothing[A]] = {
+     |   import c.universe._
+     |   val isNothing = weakTypeOf[A] =:= typeOf[Nothing]
+     |   if (isNothing)
+     |     c.error(NoPosition, "An explicit, non-Nothing type parameter is required.")
+     |   reify { NotNothing.NotNothingShared.asInstanceOf[NotNothing[A]] }
+     | }
+impl: [A](c: scala.reflect.macros.Context)(implicit evidence$1: c.WeakTypeTag[A])c.Expr[NotNothing[A]]
+
+scala> implicit def notNothing[A]: NotNothing[A] = macro impl[A]
+defined term macro notNothing: [A]=> NotNothing[A]
+
+scala> def foo[A: NotNothing] = ()
+foo: [A](implicit evidence$1: NotNothing[A])Unit
+
+scala> foo[Int]
+
+scala> foo[Nothing]
+<console>:20: error: could not find implicit value for evidence parameter of type NotNothing[Nothing]
+              foo[Nothing]
+                 ^
+scala> foo
+<console>:20: error: could not find implicit value for evidence parameter of type NotNothing[A]
+              foo
+              ^
+{code}

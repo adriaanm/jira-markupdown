@@ -1,0 +1,17 @@
+When generating Scaladoc, I get a deluge of warnings about inheritdoc:
+
+{noformat}
+ [scaladoc] /Users/heather/git/scala/src/library/scala/collection/GenIterableLike.scala:142: The "@tparam B" annotation of the method zipAll comment contains @inheritdoc, but the corresponding section in the parent is not defined.
+ [scaladoc]   def zipAll[B, A1 >: A, That](that: GenIterable[B], thisElem: A1, thatElem: B)(implicit bf: CBF[Repr, (A1, B), That]): That
+ [scaladoc]       ^
+ [scaladoc] /Users/heather/git/scala/src/library/scala/collection/GenIterableLike.scala:111: The "@example" annotation of the method zipWithIndex comment contains @inheritdoc, but the corresponding section in the parent is not defined.
+ [scaladoc]   def zipWithIndex[A1 >: A, That](implicit bf: CBF[Repr, (A1, Int), That]): That
+ [scaladoc]       ^
+ [scaladoc] /Users/heather/git/scala/src/library/scala/collection/parallel/ParIterableLike.scala:778: The "@tparam B" annotation of the method zipAll comment contains @inheritdoc, but the corresponding section in the parent is not defined.
+ [scaladoc]   def zipAll[S, U >: T, That](that: GenIterable[S], thisElem: U, thatElem: S)(implicit bf: CanBuildFrom[Repr, (U, S), That]): That = if (bf(repr).isCombiner && that.isParSeq) {
+ [scaladoc]       ^
+ [scaladoc] /Users/heather/git/scala/src/library/scala/collection/parallel/ParIterableLike.scala:776: The "@example" annotation of the method zipWithIndex comment contains @inheritdoc, but the corresponding section in the parent is not defined.
+ [scaladoc]   def zipWithIndex[U >: T, That](implicit bf: CanBuildFrom[Repr, (U, Int), That]): That = this zip immutable.ParRange(0, size, 1, false)
+{noformat}
+
+...

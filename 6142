@@ -1,0 +1,12 @@
+Hijinx break out in typer when it goes hunting for a way to satisfy new Foo(1, 2).  Only happens if Foo has no non-private constructors and at least two constructor parameters.
+
+?{val this: ?}? is an interesting thing to be looking for.
+
+{noformat}
+Beginning implicit search for new Foo expecting (Foo) => ?{val this: ?} looking for a view
+ ...
+    typed implicit scala.this.Predef.any2stringadd(<argument>):scala.runtime.StringAdd, pt = (Foo) => ?{val this: ?}
+    adapted implicit method any2stringadd:(x: Any)scala.runtime.StringAdd to (Foo) => ?{val this: ?}
+    tvars = List()/List()
+RESULT = SearchResult(scala.this.Predef.any2stringadd, TreeTypeSubstituter(List(),List()))
+{noformat}

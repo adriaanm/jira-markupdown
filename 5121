@@ -1,0 +1,9 @@
+I think NumericRange is essentially an over-abstraction, not worth the troubles it causes. We should make sure things work for int and long ranges, by systematically overriding methods like contains, if necessary. If the rest can't be made to work it should be deprecated.
+
+Note that for numeric primitive ranges the right test goes something like this (say for Long):
+{code}
+  def contains(elem: Any) = elem match {
+    case n: Number => ... stuff with n.longValue ...
+    case _ => false
+  }
+{code}

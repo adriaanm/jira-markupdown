@@ -1,0 +1,19 @@
+A class with type parameters is always considered to have changed, even if it isn't modified.
+
+ 1. Compile A.scala and B.scala above.
+ 1. Mark A.scala as modified.  B.scala is recompiled.
+
+Using !BuildManagerTest:
+
+{code}
+$$ scala scala.tools.nsc.interactive.BuildManagerTest A.scala B.scala
+compiling Set(A.scala, B.scala)
+Changes: Map()
+builder > A.scala
+compiling Set(A.scala)
+Changes: Map(trait A -> List(Changed(Class(A))[ tparams: List((type T,type T))]))
+invalidate B.scala because parents have changed [Changed(Class(A))[ tparams: List((type T,type T))]]
+compiling Set(B.scala)
+Changes: Map(trait B -> List(Changed(Class(B))[ tparams: List((type T,type T))]))
+builder >
+{code}

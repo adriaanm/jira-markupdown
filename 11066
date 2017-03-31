@@ -1,0 +1,42 @@
+Thanks, I'll pull the branch over and take a look. The biggest win, by far, appears to be by-name args, so that would be the main focus.
+
+For the use case of functions that take explicit arguments, perhaps making it an exposed API would be easier and more clear in intent? For instance (not counting specialization):
+
+{code}
+package scala.runtime
+
+final class Const1[A, T](x: T) extends AbstractFunction1[A, T] {
+  def apply(a: A) = x
+}
+
+final class Const2[A, B, T](x: T) extends AbstractFunction2[A, B, T] {
+  def apply(a: A, b: B) = x
+}
+
+// =====
+
+package scala
+
+object Const {
+  @inline def apply[T, A](x: T): (A) => T = new Const1[A, T](x)
+  @inline def apply[T, A, B](x: T): (A, B) => T = new Const2[A, B, T](x)
+}
+
+// =====
+
+def foo(f: (String) => String)
+// ...
+foo(Const("bar"))
+{code}
+
+The type parameters disambiguate the apply() method for the compiler, and the return types disambiguate it for the VM (Function1, Function2, ...).
+
+This _could_ even be implicit, though I'm wary of that usage as it would need a very loud warning to potential users. As implicit, the above {{foo}} function could be called as:
+
+{code}
+foo("bar")
+{code}
+
+which has both good points (such as conciseness) and bad (human ambiguity of function name overloading, and most importantly, *non*-deferral of evaluation).
+
+I've had a "Const" helper class in my personal utility library for ages and haven't really considered how it would best fit into the main library.

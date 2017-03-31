@@ -1,0 +1,40 @@
+calling
+{code:scala}scala.reflect.runtime.universe.typeOf[Option[_]]{code}
+creates new instances for each call in
+{code:scala}scala.reflect.runtime.SynchronizedTypes.uniques{code}
+
+
+How to reproduce:
+
+{code:scala}
+object TypeLeak extends App {
+
+  def getUniques:scala.collection.mutable.WeakHashMap[_,_] = {
+    classOf[scala.reflect.runtime.JavaUniverse].getMethods.find(_.getName.endsWith("SynchronizedTypes$$uniques"))
+      .map(_.invoke(scala.reflect.runtime.universe).asInstanceOf[scala.collection.mutable.WeakHashMap[_,_]])
+      .getOrElse(scala.collection.mutable.WeakHashMap())
+  }
+
+  scala.reflect.runtime.universe.typeOf[Option[Nothing]] <:< scala.reflect.runtime.universe.typeOf[Option[Any]]
+  val uniques = getUniques.toMap[Any, Any]
+  println("Leaking...")
+  1 to 2 foreach{ _ ⇒
+    if(scala.reflect.runtime.universe.typeOf[Option[_]] <:< scala.reflect.runtime.universe.typeOf[Option[Any]])
+      println(getUniques.size)
+  }
+  1 to 2 foreach{ _ ⇒
+    if(scala.reflect.runtime.universe.typeOf[Option[Any]] <:< scala.reflect.runtime.universe.typeOf[Option[_]])
+      println(getUniques.size)
+  }
+
+  println("Not leaking...")
+  1 to 2 foreach{ _ ⇒
+    if(scala.reflect.runtime.universe.typeOf[Option[Nothing]] <:< scala.reflect.runtime.universe.typeOf[Option[Any]])
+      println(getUniques.size)
+  }
+
+  println("Leaked references:")
+  (getUniques.toMap[Any, Any] -- uniques.keys).foreach(println)
+
+}
+{code}

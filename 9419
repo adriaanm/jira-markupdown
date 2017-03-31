@@ -1,0 +1,51 @@
+An interesting twist of events is that this bug is fixed in scalad, the type debugger. Now the question is how exactly this happened.
+
+{code}
+11:40 ~/Projects/Master/sandbox (master)$ scalad Test.scala -Xprint:typer
+Initial compilation of sources...
+[[syntax trees at end of                     typer]] // Test.scala
+package <empty> {
+  abstract trait Fooable[T >: Nothing <: Any] extends scala.AnyRef;
+  object Fooable extends scala.AnyRef {
+    def <init>(): Fooable.type = {
+      Fooable.super.<init>();
+      ()
+    };
+    implicit def conjure[T >: Nothing <: Any]: Fooable[T] = {
+      scala.this.Predef.println("conjure");
+      {
+        final class $anon extends AnyRef with Fooable[T] {
+          def <init>(): anonymous class $anon = {
+            $anon.super.<init>();
+            ()
+          };
+          <empty>
+        };
+        new $anon()
+      }
+    }
+  };
+  object Test extends AnyRef with App {
+    def <init>(): Test.type = {
+      Test.super.<init>();
+      ()
+    };
+    implicit def traversable[T >: Nothing <: Any, Coll[_ >: Nothing <: Any] >: [_]Nothing <: [_]Traversable[_]](implicit elem: Fooable[T]): Fooable[Coll[T]] = {
+      scala.this.Predef.println("traversable");
+      {
+        final class $anon extends AnyRef with Fooable[Coll[T]] {
+          def <init>(): anonymous class $anon = {
+            $anon.super.<init>();
+            ()
+          };
+          <empty>
+        };
+        new $anon()
+      }
+    };
+    scala.this.Predef.implicitly[Fooable[List[Any]]](Test.this.traversable[Any, List](Fooable.conjure[Any]))
+  }
+}
+
+Initial compilation finished. Starting UI...
+{code}

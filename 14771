@@ -1,0 +1,76 @@
+I wrote code to test how Scala deals with the "don't call overridable method from constructor" anti-pattern.
+
+  http://benpryor.com/blog/2008/01/02/dont-call-subclass-methods-from-a-superclass-constructor/
+
+Everything works fine except when accessing the private subclass variable from subclass constructor. Then it acts like Java, and the var has an unexpected value. Please see the code sample below.
+
+{code}
+/**
+ * Checking what Scala does against the anti-pattern
+ * DontCallOverridableMethodsInConstructor
+ * 
+ * @author Fritz Ritzberger 2009-11-29
+ */
+object DontCallOverridableMethodsInConstructor {
+	def main(args: Array[String])	{
+		val namedFlag = new NamedFlag
+		println("NamedFlag name is: \""+namedFlag.getName()+"\"")
+	}
+
+	class Flag	{
+		// this is constructor code
+		println("Flag constructing ...")
+		setFlag(true)	// test calling overridable from constructor ...
+  
+		protected var flag: Boolean = _
+
+		protected def setFlag(newValue: Boolean): Unit =  {
+			this.flag = newValue
+			println("Flag.setFlag to "+newValue)
+		}
+	}
+
+	class NamedFlag extends Flag	{
+		// this is constructor code
+		println("Named Flag constructing ... name: \""+name+"\"")
+
+		private var name: String = "undefined"
+  
+		override protected def setFlag(newValue: Boolean): Unit =  {
+			println("before super call, NamedFlag.name: \""+name+"\"")
+			super.setFlag(newValue)
+			name = "Flag_name_"+flag
+		}
+
+		def getName(): String = name
+	}
+}
+
+{code}
+
+The output then is:
+
+{code}
+Flag constructing ...
+before super call, NamedFlag.name: "null"
+Flag.setFlag to true
+Named Flag constructing ... name: "Flag_name_true"
+NamedFlag name is: "undefined"
+{code}
+
+while when commenting out the line
+
+{code}
+		println("Named Flag constructing ... name: \""+name+"\"")
+
+{code}
+
+the output is
+
+{code}
+Flag constructing ...
+before super call, NamedFlag.name: "undefined"
+Flag.setFlag to true
+NamedFlag name is: "Flag_name_true"
+{code}
+

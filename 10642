@@ -1,0 +1,18 @@
+For maximum confusion:
+{code}
+class Bippy { trait Foo[A] }
+
+object p {
+  final class Implicits[C <: Bippy with Singleton](val c: C) {
+    def f: Int = 1
+    def f[A](x: A)(ev: c.Foo[A]): Int = 2
+  }
+
+  val c  = new Bippy
+  val d0 = new Implicits[c.type](c)
+  def d1 = new Implicits[c.type](c)
+
+  def f0 = d0.f[Int](5)(null: c.Foo[Int])  // ok
+  def f1 = d1.f[Int](5)(null: c.Foo[Int])  // fails - but only if it's overloaded
+}
+{code}

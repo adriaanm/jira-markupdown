@@ -1,0 +1,78 @@
+Replying to [comment:31 nilskp]:
+> Try implementing any generic trait in a pure Java project, or extending any generic class. I suggested AbstractFunction1.
+
+Thanks. Eclipse spits:
+
+{code}
+Multiple markers at this line
+	- Inconsistent classfile encountered: The undefined type parameter A is referenced from within Function1<T1,R>.$$anonfun
+	 $$compose$$1
+	- Inconsistent classfile encountered: The undefined type parameter A is referenced from within Function1<T1,R>.$$anonfun
+	 $$compose$$1
+{code}
+
+
+Ant (javac) compiles though.
+
+I tried with the patched jar and the problem is still there, so I guess some other signature declaration issue.
+
+(https://github.com/mmikulicic/scala-test-generics, branch "function1")
+
+----
+
+Here's the dump of the generic signatures for class Function1.$$anonfun$$compose$$1
+
+{code}
+visiting class scala/Function1$$$$anonfun$$compose$$1, signature null
+method <clinit> signature: null 
+method apply signature: (TA;)TR; 
+method <init> signature: (Lscala/Function1<TT1;TR;>;)V 
+{code}
+
+I tried to encode the similar idea in plain java:
+
+{code}
+public abstract class Test<T1,R> {
+    public abstract R apply(T1 v);
+    
+    public <A> Test<A, R> compose(final Test<A, T1> g) {
+        final Test<T1, R> self = this;
+        return new Test<A, R>() {
+            public R apply(A x) {
+                return self.apply(g.apply(x));
+            }
+        };
+    }
+}
+{code}
+
+{code}
+visiting class Test$$1, signature LTest<TA;TR;>;
+method <init> signature: null 
+method apply signature: (TA;)TR; 
+
+visiting class Test, signature <T1:Ljava/lang/Object;R:Ljava/lang/Object;>Ljava/lang/Object;
+method <init> signature: null 
+method apply signature: (TT1;)TR; 
+method compose signature: <A:Ljava/lang/Object;>(LTest<TA;TT1;>;)LTest<TA;TR;>
+{code}
+
+Where Test is the equivalent of AbstractFunction1 and Test$$1 is the equivalent of scala/Function1$$$$anonfun$$compose$$1.
+
+So I suspect that the scala compiler is not emitting the generic declaration for the anonymous class
+representing the anonymous function expanded from (I omitted the @specialized anno for readability):
+
+{code}
+trait Function1[-T1, +R] extends AnyRef { self =>
+  def apply(v1:T1): R
+  override def toString() = "<function1>"
+
+  /** (f compose g)(x) ==  f(g(x))
+   */
+  def compose[A](g: A => T1): A => R = { x => apply(g(x)) }
+{code}
+
+Does this always happen? or only when there is some recursive type definition like this one?
+(Actually the (A => R) return type should mean Function1[A, R])
+
+Perhaps it's better to handle this in another ticket, since it seems that it's not caused by a malformed signature but a missing signature.

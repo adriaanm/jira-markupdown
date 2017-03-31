@@ -1,0 +1,9 @@
+So inner objects are not reported anywhere, that indeed looks wrong. I'll have a look in the coming days.
+
+About the different ways to get a `Class` for `B`: you have two entities in your program that are called `B`:
+  * one is a type (`class B`) 
+  * the other is a value (`object B`). 
+
+`classOf` takes a type parameter, therefore there is no ambiguity when you say `classOf[B]`: it will always resolve to the type `B`.
+
+`B.getClass` is again non-ambiguous, because it is an expression, therefore the receiver must be a value (in this case, object `B`). Each of these have their own `Class` object, since they are different (different methods and fields), and different classfiles on disk (the object will be in `B$$`).

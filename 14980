@@ -1,0 +1,37 @@
+Here's how to reproduce :
+
+1) The following annotation (defined in Java)
+
+@Retention(RetentionPolicy.RUNTIME)
+public @interface MyAnnotation {
+    Class<?> optionType() default Object.class;
+}
+
+2) The scala code :
+
+class C(
+ @MyAnnotation(typeParam=classOf[String] 
+ var p: Option[String])
+
+
+val colAnotations =
+   classOf[C].getDeclaredFields.toList.map(
+   f => f.getAnnotations.toList).flatten
+
+val t3 = colAnotations.apply(0).asInstanceOf[Column].optionType
+
+assert(classOf[String].isAssignableFrom(t3), 
+  "expected classOf[String], got " + t3.getName)
+
+//t3 holds a reference to java.lang.Object,
+//it should be java.lang.String.
+
+Interestingly 
+
+@MyAnnotation(typeParam=classOf[Int] and
+@MyAnnotation(typeParam=classOf[Long] 
+Will work correctly, in a previous version,
+none would work, so something in that area
+was fixed recently.
+
+This is on version : scala.versions=2.8.0.Beta1-RC8

@@ -1,0 +1,25 @@
+Interesting. I guess the g(Object...) case is really sign for a compiler bug. I wonder how type inference with generic methods plays into this kind of interoperability, i.e. when the signature is something like:
+
+{code}
+  public <T> void h(T... o) {
+    System.out.println("t...");
+  }
+{code}
+
+On a bytecode level, T... is really erased again to Object[], but on a language level, there is a lot of (false) type-safety and type-inference that is applied. I'm saying false, because any list of parameters will be viable, in principle.
+
+This becomes particularly interesting when the T type has side-effects on the call site, such as:
+
+{code}
+  public <T> T h(T... o) {
+    System.out.println("t...");
+    return o != null && o.length > 0 ? o[0] : null;
+  }
+{code}
+
+I wonder if this would produce the same behaviour in Scala as in Java, e.g. (pseudo-repl):
+
+{code}
+scala> 1 == t.h(1)
+true
+{code}

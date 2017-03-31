@@ -1,0 +1,114 @@
+Reason: In the definition of collection.immutable.Stream.Cons
+
+{code}
+  final class Cons[+A](hd: A, tl: => Stream[A]) extends Stream[A] {
+    override def isEmpty = false
+    override def head = hd
+    private[this] var tlVal: Stream[A] = _
+    def tailDefined = tlVal ne null
+    override def tail: Stream[A] = {
+      if (!tailDefined) { tlVal = tl }
+      tlVal 
+    }
+  }
+{code}
+
+there is no locking meachanism, and tl may be executed
+multiple times for the same position in the Stream.
+
+Demonstration: The following script
+
+{code}
+import actors.Futures._
+
+def rndStream: Stream[Int] = Stream.cons(
+  { Thread.sleep(200); util.Random.nextInt(99) },
+  rndStream
+)
+
+val s = rndStream.take(10)
+val (fa, fb) = ( future {s.toList}, future {s.toList} )
+
+println( fa() )
+println( fb() )
+{code}
+
+Produces an output like this:
+{code}
+List(79, 44, 10, 86, 49, 37, 78, 12, 62, 68)
+List(79, 67, 98, 87, 15, 52, 67, 86, 35, 32)
+{code}
+
+
+Proposed solution: Make tail a lazy val, e.g. like this
+
+{code}
+final class Cons[+A](hd: A, tl: => Stream[A]) extends Stream[A] {
+  override def isEmpty = false
+  override val head = hd
+  @volatile var tailDefined = false
+  override lazy val tail: Stream[A] = {
+    tailDefined = true
+    tl
+  }
+}
+{code}
+
+
+Demo:
+
+{code}
+import actors.Futures._
+
+final class Cons[+A](hd: A, tl: => Stream[A]) extends Stream[A] {
+  override def isEmpty = false
+  override val head = hd
+  @volatile var tailDefined = false
+  override lazy val tail: Stream[A] = {
+    tailDefined = true
+    tl
+  }
+}
+
+def rndStream: Stream[Int] = new Cons(
+  { Thread.sleep(100); util.Random.nextInt(99) },
+  rndStream
+)
+
+val s = rndStream.take(10)
+val (fa, fb) = ( future {s.toList}, future {s.toList} )
+
+println( fa() )
+println( fb() )
+{code}
+
+produces something like this:
+
+{code}
+List(98, 46, 77, 46, 94, 32, 33, 50, 40, 56)
+List(98, 46, 77, 46, 94, 32, 33, 50, 40, 56)
+{code}
+
+While Stream is not specified to be thread-safe in the API docs, Scala's
+immutable collections are usually expected to be (since inherent
+thread-safety is one of their major strengths). So i propose to classify
+this as a defect.
+
+I'd vote to include this in 2.8.0.RC4, if accepted.
+
+System information, for completeness:
+{code}
+$$ scala
+Welcome to Scala version 2.8.0.RC3 (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_20).
+
+$$ java -version                                           
+java version "1.6.0_20"
+Java(TM) SE Runtime Environment (build 1.6.0_20-b02)
+Java HotSpot(TM) 64-Bit Server VM (build 16.3-b01, mixed mode)
+
+$$ uname -a
+Linux host 2.6.31-21-generic SI-59-Ubuntu SMP Wed Mar 24 07:28:27 UTC 2010 x86_64 GNU/Linux
+
+$$ lsb_release -d -s
+Ubuntu 9.10
+{code}

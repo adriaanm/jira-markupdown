@@ -1,0 +1,17 @@
+Turns out supporting GC of bindings in the {{:reset}} command is much easier, we just need to make sure the classloader we're discarding is not retained as the context classloader of any thread or in a field of a runtime reflection mirror that we're storing in the REPL.
+
+https://github.com/scala/scala/pull/4841
+
+Fixing that perhaps doesn't go far enough to provide a useful answer for the enhancement request, however. From my commit comment:
+
+{quote}
+    While this commit makes :reset perform its advertised function,
+    it doesn't go further to making it a particulary useful command.
+    Ideally we'd offer a mechanism to transport some data across a :reset
+    boundary. The user could do something like this manually by stashing
+    data in a `java.util.Map` hosted in some class in the same classloader
+    as IMain. They would also have to restrict this to sending "pure data"
+    rather than instances of data types defined in the REPL session
+    itself.
+{quote}
+

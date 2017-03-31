@@ -1,0 +1,7 @@
+Anytime a particular test run involves running several commands the output of the last command overwrites the previous ones. This is caused by passing around the log file as a File inside partest and opening the log file in truncate mode.
+
+Just an example: this causes all warnings to be ignored in test/files/run tests because the output of the test overwrites the output from scalac.
+
+A related issue is that by default test/partest runs all test with "-deprecation" option while the ant and sbt runners use no option. AFAIK currently it does not make any difference but if this bug is fixed, the test outputs will differ.
+
+You can find the WIP fix including the changes needed to *.check files: [https://github.com/khernyo/scala/commits/unstable/issue/7003]. This is mixed up with a WIP fix for SI-6289 which I will clean up later.

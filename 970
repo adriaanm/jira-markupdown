@@ -1,0 +1,28 @@
+This machinery behind this fix is pretty surprising, and leads to:
+
+{code}
+object Test {
+  def x = "!!!"
+  def main(args: Array[String]) {
+    Test.x
+  }
+}
+{code}
+
+{noformat}
+qbin/scala -nc -Xprint:typer sandbox/test.scala
+sandbox/test.scala:4: error: not found: value Test
+    Test.x
+    ^
+[[syntax trees at end of                     typer]] // test.scala
+package <empty> {
+  object Main extends scala.AnyRef {
+    def <init>(): Main.type = {
+      Main.super.<init>();
+      ()
+    };
+    def x: String = "!!!";
+    def main(args: Array[String]): Unit = <error: <none>>.x
+  }
+}
+{noformat}

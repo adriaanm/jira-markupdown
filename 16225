@@ -1,0 +1,20 @@
+In {{GenJVM}}, one of the differences between {{genMethod}} and {{addStaticInit}} is that the latter doesn't add local vars. This is no problem with the current compilation pipeline (because no such vars show up). I'm applying an AST lowering that stores intermediate results in temp vars (to accomodate an MSIL restriction, "Attempt to enter try-block with non-empty stack") and with that static class initializers do get local temp vars. 
+
+The following additions in {{addStaticInit}} seems to do the trick, not sure what to do about {{legacyEmitBootstrapMethodInstall}}. 
+
+{noformat}
+      mopt match {
+       	case Some(m) =>
+
+           computeLocalVarsIndex(m)   // <----- ADDED
+
+           if (clasz.bootstrapClass.isDefined) legacyEmitBootstrapMethodInstall(clinit)
+
+           assert(m.params.isEmpty)   
+           for (local <- m.locals) { // <----- ADDED
+             if (settings.debug.value)
+               log("add local var: " + local)
+             clinitMethod.addNewLocalVariable(javaType(local.kind), javaName(local.sym))
+           }
+ 
+{noformat}

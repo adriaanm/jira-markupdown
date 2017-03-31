@@ -1,0 +1,35 @@
+Not in the official specification, but according to the unofficial one:
+
+The first translates to
+{code}
+  new UnprefixedAttribute("attr", x, xml.Null)
+{code}
+while the second translates to
+{code}
+  val buffer = new xml.NodeBuffer
+  buffer &+ x
+  new xml.Elem(null, "sometag", xml.Null, scope, buffer)
+{code}
+!UnprefixedAttribute has overloaded constructors:
+{code}
+    new UnprefixedAttribute(key: String, value: String, next: MetaData)
+    new UnprefixedAttribute(key: String, value: Seq[Node], next1: MetaData)
+    new UnprefixedAttribute(key: String, value: Option[Seq[Node]], next: MetaData)
+{code}
+The signature of `&+` is:
+{code}
+   &+(o: Any): NodeBuffer
+{code}
+
+So, an attribute value must conform to `String`, `Seq[Node]`, or `Option[Seq[Node]]`.  Element content is allowed to be anything and so implicits are never considered.
+
+This is also why
+{code}
+  <sometag attr={1}/>
+{code}
+doesn't work, but this does:
+{code}
+  <sometag>{1}</sometag>
+{code}
+
+In any case, this is essentially the same issue as SI-1787 and should probably be closed as a duplicate.

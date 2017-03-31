@@ -1,0 +1,46 @@
+I downloaded the 'scala' project from SVN into Eclipse
+
+When I open the source src/library/scala/Enumeration.scala
+there is an exception in the Error log with the message
+
+error in presentation normal compile  opening scala file
+
+scala.tools.nsc.FatalError: object scala.Predef not found.
+
+The editor opens on the source, but the Outline is empty.
+Also, there is an empty panel above the source and below the tabs.
+If I click in that panel, I get an event error
+
+A handler conflict occurred.  This may disable some commands.
+
+An exception stack trace is not available.
+{code}
+Warning
+Thu Nov 20 17:06:11 EST 2008
+Conflict for 'org.eclipse.ui.edit.copy':
+HandlerActivation(commandId=org.eclipse.ui.edit.copy,
+	handler=ActionHandler(org.eclipse.ui.texteditor.TextOperationAction@108228c),
+	expression=AndExpression(LegacyEditorActionBarExpression(scala.tools.eclipse.Editor),WorkbenchWindowExpression(org.eclipse.ui.internal.WorkbenchWindow@da1515)),sourcePriority=4210689)
+HandlerActivation(commandId=org.eclipse.ui.edit.copy,
+	handler=ActionHandler(org.eclipse.jdt.internal.ui.refactoring.reorg.CopyToClipboardAction@11442fe),
+	expression=AndExpression(LegacyEditorActionBarExpression(scala.tools.eclipse.Editor),WorkbenchWindowExpression(org.eclipse.ui.internal.WorkbenchWindow@da1515)),sourcePriority=4210689)
+{code}
+
+I get more errors when I click elsewhere in the source, etc.
+
+This project is configured such that src/library is not
+one of the project source folders, so this is a unparented
+scala source file.
+
+Full traceback is in the attachment
+
+My Eclipse env is 
+{code}
+eclipse.buildId=M20080911-1700
+java.version=1.6.0
+java.vendor=Sun Microsystems Inc.
+BootLoader constants: OS=win32, ARCH=x86, WS=win32, NL=en_US
+Command-line arguments:  -os win32 -ws win32 -arch x86 -consolelog -debug c:\djb\eclipse-workspaces\.options -data c:\djb\eclipse-workspaces\acl
+
+
+{code}

@@ -1,0 +1,44 @@
+Multi parameter implicit defs aren't 100% useless, as I found out when asking once why they were allowed without warning.
+
+{code}
+scala> implicit def foo(a: Int, b: String) = 0
+foo: (a: Int, b: String)Int
+
+scala> implicitly[(Int, String) => Int].apply(0, "")
+res3: Int = 0
+{code}
+
+But I've never seen this used.
+
+For the record, default parameters don't kick in in time to render multi-parameter implicit defs as views.
+
+{code}
+scala> implicit def foo(a: Int, b: String = "") = ""
+foo: (a: Int, b: String)String
+
+scala> 0 : String
+<console>:17: error: type mismatch;
+ found   : Int(0)
+ required: String
+              0 : String
+              ^
+{code}
+
+Multi parameter list implicit classes can be useful if the second paramater list is implicit:
+
+{code}
+scala> implicit class Foo(a: Int)(implicit c: reflect.ClassTag[Int]) { def bar = "" }
+defined class Foo
+
+scala> 0.bar
+res8: String = ""
+{code}
+
+But we don't enforce that:
+
+{code}
+scala> implicit class Foo(a: Int)(b: Any) { def bar = "" }
+defined class Foo
+{code}
+
+Overall, I think that the status quo is acceptable.

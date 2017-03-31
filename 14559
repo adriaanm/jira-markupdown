@@ -1,0 +1,102 @@
+If a local var is accessed by two closures, each of which is run by a different
+thread, the Java memory model won't guarantee one thread will see the changes made by the other thread. A natural way for people to think they can get the Scala compiler to synchronize access to such a variable is to mark it volatile with an @volatile annotation, however, the Scala compiler currently does not implement volatile semantics in this case, nor does it provide an error message.
+
+Currently a shared Int, whether it is marked volatile or not gets promoted to the heap in a scala.runtime.IntRef, which looks like this:
+
+{code}
+package scala.runtime;
+
+public class IntRef implements java.io.Serializable {
+   private static final long serialVersionUID = 1488197132022872888L;
+
+   public int elem;
+   public IntRef(int elem) { this.elem = elem; }
+   public String toString() { return Integer.toString(elem); }
+}
+{code}
+
+Public data is hard to synchronize. So at a minimum, to make this volatile there would need to be a VolatileIntRef class that has a final int elem, which is marked volatile. David Pollak suggested the compiler could simply reuse java.util.concurrent.atomic.AtomicInteger for this, and access the Int via its get and set methods.
+
+It is difficult to try and demonstrate the lack of volatile semantics, because there is a Heisenberg uncertainty problem. To know that thread A has written to the variable before thread B tries to read it, you have to synchronized the two threads. Which means they are synchronized and so the problem can't be detected. Running this code, for example, did not produce a failure:
+
+{code}
+import org.scalatest.FunSuite
+import org.scalatest.concurrent.ConductorMethods
+import org.scalatest.matchers.ShouldMatchers._
+import java.util.concurrent.ArrayBlockingQueue
+
+class HeisenbergSuite extends FunSuite with ConductorMethods {
+
+ test("can't see closure concurrency problem by looking directly at it") {
+
+   var buf = 0
+
+   thread("ping") {
+     for (i <- 2 to 100000 by 2) {
+       buf = i
+       waitForBeat(i)
+       buf should be (i + 1)
+     }
+   }
+
+   thread("pong") {
+     for (i <- 1 to 100000 by 2) {
+       waitForBeat(i)
+       buf should be (i + 1)
+       buf = i + 2
+     }
+   }
+ }
+}
+{code}
+
+However, the problem can be seen indirectly, via a technique suggested by Heinz Kabutz:
+
+{code}
+import org.scalatest.FunSuite
+import org.scalatest.concurrent.ConductorMethods
+import org.scalatest.matchers.ShouldMatchers._
+import java.util.concurrent.ArrayBlockingQueue
+
+class ClosureProblemSuite extends FunSuite with ConductorMethods {
+
+ test("closure access to mutable shared state isn't synchronized") {
+
+   var buf = 0
+
+   thread("ping") {
+
+     var ok = 0
+     var mistake = 0
+
+     while (true) {
+       buf = 42
+       if (buf != 42)
+         mistake += 1
+       else {
+         ok += 1
+         println("ok: " + ok + " mistake: " + mistake)
+       }
+     }
+   }
+
+   thread("pong") {
+     while (true) {
+       buf = 0
+     }
+   }
+ }
+}
+{code}
+
+If you run this with:
+
+java -server -cp scalatest-1.0-SNAPSHOT.jar:scala-library.jar
+org.scalatest.tools.Runner -p . -o -s ClosureProblemSuite
+
+What you'll see is that eventually the number of mistakes stays
+constant. The reason is that because the elem field in IntRef isn't
+private and volatile, hotspot will after a while perform some
+optimization that prevents the ping thread from seeing pong's updates. Mark the vars as @volatile and you'll see the same problem.
+
+The trouble is that because it compiles, it _looks_ volatile, but isn't. So either it should either fail to compile or actually provide volatile semantics, and preferrably the latter. It may be rare that people need to use volatile in this way, but it is handy. It would happen fairly regularly, for example, when doing multi-threaded tests with Conductor, which is what the above example uses. The examples are taken from ScalaTest 1.0-SNAPSHOT by the way, and the same problem happens in 2.7.5 and 2.8 nightly.

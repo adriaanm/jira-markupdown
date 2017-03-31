@@ -1,0 +1,32 @@
+{code}
+val pf0 = new PartialFunction[Unit, Unit] {
+  def apply(u: Unit) { println("0:apply") }
+  def isDefinedAt(u: Unit) = { println("0:isDefinedAt"); false }
+}
+val pf1 = new PartialFunction[Unit, Unit] {
+  def apply(u: Unit) { println("1:apply") }
+  def isDefinedAt(u: Unit) = { println("1:isDefinedAt"); false }
+}
+val pf2 = new PartialFunction[Unit, Unit] {
+  def apply(u: Unit) { println("2:apply") }
+  def isDefinedAt(u: Unit) = { println("2:isDefinedAt"); true }
+}
+
+val chained = pf0 orElse pf1 orElse pf2
+chained()
+{code}
+
+Result in Scala 2.9.1 (correct):
+{noformat}
+0:isDefinedAt
+1:isDefinedAt
+2:apply
+{noformat} 
+
+Result in Scala 2.10 trunk (incorrect):
+{noformat}
+0:isDefinedAt
+1:apply
+{noformat}
+
+May have been introduced with AbstractPartialFunction.

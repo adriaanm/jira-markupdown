@@ -1,0 +1,55 @@
+In the android application line 88 
+01-21 00:31:36.339: E/AndroidRuntime(625):      at 
+com.android.demo.notepad1.Notepadv1.fillData(Activity.scala:88) 
+
+
+is a runtime initialization error raised "Could not find method scala.collection.immutable.StringLike.toString, referenced from method scala.collection.immutable.StringLike$class.apply" 
+
+{code}
+var to = Array[Int](R.id.text1) 
+{code}
+
+in 
+
+{code}
+  private def fillData() { 
+        // Get all of the notes from the database and create the item list 
+        val notesCursor = mDbHelper.fetchAllNotes() 
+        startManagingCursor(notesCursor) 
+
+
+        var from = Array[String](mDbHelper.KEY_TITLE) 
+        var to = Array[Int](R.id.text1) 
+
+
+        // Now create an array adapter and set it to display using our row 
+        val notes = new SimpleCursorAdapter(this, R.layout.notes_row, 
+notesCursor, from, to) 
+        setListAdapter(notes) 
+  } 
+
+{code}
+
+
+
+see for full logcat stacktrace(also attached):
+http://groups.google.com/group/scala-internals/browse_thread/thread/9b8f2d51da6cadcc?hl=nl
+
+attached is the zipped android app project notepadv1.zip
+used:
+android-sbt git cloned publish-local 0.6.1-SNAPSHOT
+sbt 0.11.2
+
+
+One guess to point in a direction is that this is a regression bug:
+
+Johannes Rudolph 2:
+"That seems to be the same problem which Paul already tried to fix
+ where an `invokeinterface` bytecode is used to call `toString()`
+ 
+From StringLike$class.split:
+ 
+1: invokeinterface #12, 1; //InterfaceMethod
+ scala/collection/immutable/StringLike.toString:()Ljava/lang/String;
+ 
+Strange that it has reappeared."

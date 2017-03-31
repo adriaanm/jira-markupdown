@@ -1,0 +1,18 @@
+[~ruippeixotog] - I don't think any extra work should be done in a success case in order to make the exception message nicer.  Given that exceptions are already really expensive compared to most things, making the message nicer when you are guaranteed to have to throw it, and it's easy and O(1) or even O(log n), is great.  Just be cautious that you don't turn a method that is really tiny into one which is huge, so you don't lose automatic JIT inlining.  You may need to introduce an extra private method to handle the exception in some cases.
+
+For example, in 
+
+{code}
+class TinyException {
+  var n,m = 0;
+  def foo() { println("The real work is here.") }
+  def bar(b: Boolean) {
+    if (b) foo else throw new Exception("Argh.")
+  }
+  def baz(b: Boolean) {
+    if (b) foo else throw new Exception("n is " + n + " and m is " + m)
+  }
+}
+{code}
+
+bar is under the automatic inlining limit but baz is not.

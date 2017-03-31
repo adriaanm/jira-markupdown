@@ -1,0 +1,24 @@
+Yes, this does not work. In fact a better test case is:
+{code}
+  def f[T](a: Array[T])  = a match { 
+    case x: Array[Int]    => x(0)
+    case x: Array[Double] => 5
+  }
+{code}
+This should implement GADT like behavior where type variables in f get instantiated by matching patterns. GADTs are tricky as witnessed by the rich recent literature on them. But they are essential to understand how Scala's pattern matching is supposed to behave. One thing you need to know is that GADTs only work for type variables of methods, not of classes. That's why I changed the test code. What then should work is that the code in inferTypedPattern (or inferConstructorInstance, which is similar) is invoked. Unfortunately the test
+{code}
+pt.isFinalType && !(pt matchesPattern pattp))
+{code}
+short-circuits this so that we never get to the interesting code. 
+
+My proposed fix would be to tighten isFinalType, so that types with free type parameters in them do not count. You probably want to say that the type contains no parts which are AbstractTypes where owner.isTerm is true. I.e. something like:
+{code}
+def isFinalType = 
+      typeSymbol.isFinal &&
+      (typeSymbol.typeParams forall (_.variance == 0)) &&
+      !exists(part => part.isAbstractType && part.owner.isTerm)
+{code}
+I have not tested it, though.
+
+
+

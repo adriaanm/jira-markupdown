@@ -1,0 +1,32 @@
+{code}
+trait Base {
+  def t          = 0
+  def t(n: Int)  = 0
+  def bt         = 0
+  def bt(n: Int) = 0
+}
+trait Derived extends Base {
+  override def t          = super.t
+  override def t(n: Int)  = super.t(n)
+  override def bt         = super.bt
+  override def bt(n: Int) = super.bt(n)
+}
+{code}
+
+{noformat}
+sandbox/test.scala:11: error: double definition:
+def super$bt(n: Int): Int at line 11 and
+def super$bt(n: Int): Int at line 11
+have same type
+  override def bt(n: Int) = super.bt(n)
+                                  ^
+sandbox/test.scala:9: error: double definition:
+def super$t(n: Int): Int at line 9 and
+def super$t(n: Int): Int at line 9
+have same type
+  override def t(n: Int)  = super.t(n)
+                                  ^
+two errors found
+{noformat}
+
+As seen in Spec2.

@@ -1,0 +1,24 @@
+Merging with SI-8273, which reported this as a crasher under 2.10.1
+
+{code}
+trait Execution
+trait Batch
+object M {
+  def batch(executions: List[Execution]): Batch = ???
+}
+ 
+abstract class Bug {
+ 
+  def batch(executions: List[Execution]): Batch 
+  def recordBatch(batch: Batch): Batch 
+  def checkBatchData(recordedBatch: Batch) 
+  def foo(p: Any) 
+ 
+  foo {
+    val batch = recordBatch(M.batch(executions = Nil))
+    checkBatchData(batch)
+    val executions = batch
+  }
+ 
+}
+{code}

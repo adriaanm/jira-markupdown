@@ -1,0 +1,21 @@
+Methods like
+{code}
+def test[T](a: Array[T])
+{code}
+
+in Scala are compiled to a Java method with signature
+
+{code}
+Signature: (Ljava/lang/Object;)Lscala/runtime/Null$$;
+{code}
+
+So they use `Object` as parameter type because primitive valued and reference valued arrays share no common supertype.
+
+The generated generic Java signature, however, is
+{code}
+<T:Ljava/lang/Object;>([TT;)Lscala/runtime/Null$$;;
+{code}
+
+javac uses the the erasure of the generic signature when it references a method, so you get treated by a `java.lang.NoSuchMethodError` at runtime if you call such a method from Java code.
+
+Since Java cannot handle primitive and reference arrays generically, the best would be to completely omit the generic signatures in these cases.

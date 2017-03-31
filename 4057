@@ -1,0 +1,21 @@
+A related issue is that overriding a specialized method with an non-specialized method doesn't override the variants in the parent.  The result of calling the method then depends on the static type at the call site.
+
+{code}
+class P {
+  def a[@specialized T](t: T): List[T] = List(t)
+}
+class FX extends P {
+  override def a[T](t: T): List[T] = Nil
+}
+val fx = new FX
+val p = new P
+
+scala> p.a(3)
+res0: List[Int] = List(3)
+
+scala> fx.a(3)
+res1: List[Int] = List()
+
+scala> (fx: P).a(3)
+res2: List[Int] = List(3)
+{code}

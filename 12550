@@ -1,0 +1,33 @@
+Thanks [~ichoran]. I've tried your pattern matching unrolling, but for some reason it only slowed down my test ({{30k}} vs {{32k}} ops/s):
+
+{code:java}
+public static class Test extends Base {
+    scala.collection.mutable.HashMap<Object, Object> map = HashMap$.MODULE$.empty();
+
+    @State(Scope.Thread)
+    public class Initialized {
+        @Setup(Level.Invocation)
+        public void initializeMutable(Base state) {
+            for (int i = 0; i < state.CONTAINER_SIZE; i++) {
+                map.put(i, i);
+            }
+        }
+
+        @TearDown(Level.Invocation)
+        public void tearDown() {
+            map.clear();
+        }
+    }
+
+    @Benchmark
+    public void scala_persistent_some(Blackhole bh) {
+        for (int i = 0; i < CONTAINER_SIZE; i++) {
+            Object value = map.getOrElseUpdate(i, () -> 0);
+            bh.consume(value);
+        }
+        assert map.size() == CONTAINER_SIZE;
+    }
+}
+{code}
+
+Note: I prefer testing {{Scala}} speed from {{Java}}, as the bugs we're testing might affect the outcome if we're self-diagnosing.

@@ -1,0 +1,19 @@
+Hmmm.  When you supply the type parameter, here's what the superconstructor access check looks like:
+{code}
+checkAccessible(
+myDataView.super.<init>,
+constructor DataView,
+myDataView.super.type,
+myDataView.super)
+{code}
+When you leave it off, here's what it looks like:
+{code}
+checkAccessible(
+new [<deferred> <param> <java> T]jfiles.this.DataView[T][T].<init>,
+constructor DataView,
+jfiles.this.DataView[T],
+new [<deferred> <param> <java> T]jfiles.this.DataView[T][T])
+{code}
+In other words it looks like if the type parameter is still unknown, the access check it performs is whether it can instantiate the superclass rather than extend it, which will naturally fail in this very case - the protected superconstructor.  (I don't know why it shows [T][T] or whether that's indicative of anything important.)
+
+This is not caused by SI-1240 like SI-1840 is, but it is well within the range of the issues I'm talking about in my comment to SI-1840.

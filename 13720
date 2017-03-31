@@ -1,0 +1,28 @@
+Sorry for the interpreter log, but the following error only occurs in the interpreter. I can't reproduce it in the compiler or the script runner.
+
+{code}
+scala> val it = Array(0, 1,2)
+it: Array[Int] = Array(0, 1, 2)
+
+scala> it.toArray[Any]
+java.lang.ClassCastException: [I
+	at .<init>(<console>:6)
+	at .<clinit>(<console>)
+	at RequestResult$$.<init>(<console>:3)
+	at RequestResult$$.<clinit>(<console>)
+	at RequestResult$$result(<console>)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl...
+{code}
+
+I'm assuming the issue is something to do with the way the interpreter displays the result, but I can't think what. Note that the following works:
+
+
+{code}
+scala> val it = Array(0, 1, 2)
+it: Array[Int] = Array(0, 1, 2)
+
+scala> println(it.toArray[Any])
+Array(0, 1, 2)
+{code}

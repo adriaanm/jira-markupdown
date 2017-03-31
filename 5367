@@ -1,0 +1,18 @@
+Ok, a bit more information.   We're running a fowl of variance restrictions (and correctness) here.
+
+(1) mutable.IndexedViewSeq  will *actually* manipulate the underlying collection at the view given. 
+(2) Any mapping operation drops from mutable.IndexedSeqView to SeqView.   This in inherent in the fact that any mapping operation returns a *new collection* for mutable collections.  This is actually expected and 'ok'.  Otherwise what should the following do?
+
+{code}
+val x = collection.mutable.ArrayBuffer(1,2,3)
+val y = x.view map (_ + "0")
+val z = y.update(0, "O NOES")
+{code}
+
+(3) the "indexed" part of the type implies fast indexed lookup.  That's not the case for views that have transformations.
+
+
+It may be confusing to drop from an mutable.IndexSeqView to SeqView, but given the three points above,  I'm thinking we have "correct" behavior here.   
+
+I'll try to flush out all the ClassCastExceptions and make sure you can't accidentally assign to IndexedSeq once you loose the "Indexed"-ness.
+

@@ -1,0 +1,20 @@
+no longer crashes, but is unable to infer correct type. maybe the same as SI-2261 ?
+
+{code}
+scala> import scala.collection.JavaConversions._
+import scala.collection.JavaConversions._
+
+scala> val m:java.util.Map[String,String]= collection.mutable.Map("1"->"2")
+<console>:7: error: type mismatch;
+ found   : scala.collection.mutable.Map[java.lang.String,java.lang.Object]
+ required: java.util.Map[String,String]
+       val m:java.util.Map[String,String]= collection.mutable.Map("1"->"2")
+                                                                 ^
+
+scala> val m:java.util.Map[String,String]= collection.mutable.Map[String, String]("1"->"2")
+m: java.util.Map[String,String] = {1=2}
+
+scala> collection.mutable.Map("1"->"2")
+res0: scala.collection.mutable.Map[java.lang.String,java.lang.String] = Map(1 -> 2)
+
+{code}

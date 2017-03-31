@@ -1,0 +1,33 @@
+The type it is inferring is GenSeq[Int] { refinement }.  This is by definition also a GenSeq[Int].  You're seeing the the same thread in all 8 because 8 is such a low number it doesn't bother spreading the load.
+
+{noformat}
+
+scala> def numbers(isPar: Boolean): scala.collection.GenSeq[Int] = if (isPar) (1 to 256).par else 1 to 256
+numbers: (isPar: Boolean)scala.collection.GenSeq[Int]
+
+scala> numbers(true) map { _ => Thread.currentThread.getName } groupBy (x => x) mapValues (_.length) foreach println
+(ForkJoinPool-1-worker-2,64)
+(ForkJoinPool-1-worker-5,48)
+(ForkJoinPool-1-worker-4,40)
+(ForkJoinPool-1-worker-3,64)
+(ForkJoinPool-1-worker-0,8)
+(ForkJoinPool-1-worker-1,32)
+
+scala> numbers(false) map { _ => Thread.currentThread.getName } groupBy (x => x) mapValues (_.length) foreach println
+(Thread-17,256)
+
+scala> def numbers(isPar: Boolean) = if (isPar) (1 to 256).par else 1 to 256
+numbers: (isPar: Boolean)scala.collection.GenSeq[Int] with Serializable{def companion: scala.collection.generic.GenericCompanion[scala.collection.GenSeq{def seq: scala.collection.immutable.Seq[Any]}]; def par: scala.collection.parallel.immutable.ParSeq[Int]; def seq: scala.collection.immutable.Seq[Int]; def distinct: scala.collection.GenSeq[Int]{def seq: scala.collection.immutable.Seq[Int]; def distinct: scala.collection.GenSeq[Int]{def seq: scala.collection.immutable.Seq[Int]; protected def parCombiner: scala.collection.parallel.Combiner[Int,scala.collection.parallel.immutable.ParSeq[Int]]}; def intersect[U >: Int](that: scala.collection.GenSeq[U]): scala.collection.GenSeq[Int]{def seq: scala.collection.immutable.Seq[Int]; protected def parCombiner: scala.collection.parallel.Combiner[I...
+
+scala> numbers(true) map { _ => Thread.currentThread.getName } groupBy (x => x) mapValues (_.length) foreach println
+(ForkJoinPool-1-worker-2,32)
+(ForkJoinPool-1-worker-3,64)
+(ForkJoinPool-1-worker-4,24)
+(ForkJoinPool-1-worker-5,24)
+(ForkJoinPool-1-worker-0,80)
+(ForkJoinPool-1-worker-1,32)
+
+scala> numbers(false) map { _ => Thread.currentThread.getName } groupBy (x => x) mapValues (_.length) foreach println
+(Thread-20,256)
+
+{noformat}

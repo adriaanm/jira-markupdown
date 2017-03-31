@@ -1,0 +1,70 @@
+As was discussed on the list, Enumeration lacks the advantages of being object oriented, while case classes/objects lack the advantages of being enumeratable. A simple subclass of Enumeration, which I would like to contribute to the standard library, solves this problem. The idea of using reflection to solve the problem of lazy object intialization comes from lift's MetaMapper.
+
+ This only works for
+{code}
+val enums = new CaseEnum { ... }
+{code}
+or
+{code}
+class Enums extends CaseEnum { ... }
+object Enums extends Enums
+{code}
+but for
+{code}
+object Enums extends CaseEnum { ... }
+{code}
+you have to reference the members in the body,
+e.g.
+{code}
+A; B; C
+{code}
+Example usage:
+{code}
+val Colors = new CaseEnum {
+  sealed abstract class Color extends Case
+  object Red extends Color
+  object Blue extends Color
+}
+/*OR*/ object Colors extends CaseEnum {
+  sealed abstract class Color extends Case
+  object Red extends Color
+  object Blue extends Color
+  (Red,Blue)
+}
+Colors.foreach {c=> println("Value "+c+" is mapped to "+Colors.cases(c))}
+/* should print
+Red is mapped to Red
+Blue is mapped to Blue
+*/
+{code}
+Note that members do not actually have to be case classes or case objects.
+Also, I haven't tested it on 2.8. Is there a significant difference in Enumeration?
+
+Here is my source code:
+
+{code}
+class CaseEnum extends Enumeration {
+  private val _cases = new scala.collection.mutable.HashMap[Value, Case]
+  trait Case {
+    private val name = {
+      val name = getClass.getName
+      if(name.endsWith("$$"))
+        name.substring(name.lastIndexOf("$$", name.length-2)+1, name.length-1)
+      else
+          name.substring(name.lastIndexOf("$$")+1)
+    }
+    val value = Value(name)
+    _cases += (value -> this)
+  }
+  
+  def cases(v: Value) = _cases(v)
+  for {
+    m <- getClass.getMethods
+    if m.getReturnType.getName.endsWith("$$"+m.getName+"$$") &&
+      m.getParameterTypes.length==0 &&
+      classOf[Case].isAssignableFrom(m.getReturnType)
+  } {
+    m.invoke(this)
+  }
+}
+{code}

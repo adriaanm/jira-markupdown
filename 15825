@@ -1,0 +1,54 @@
+Param.java
+{code}
+package x;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Target( ElementType.PARAMETER )
+@Retention( RetentionPolicy.RUNTIME )
+public @interface Param {
+
+    From from() default From.QUERY;
+
+    public static enum From {
+        QUERY, PATH, BODY
+    }
+
+}
+{code} 
+
+test.scala
+{code}
+package x
+
+object test {
+    def m(@Param(from=Param.QUERY) a:Int) = a
+}
+{code}
+
+This should compile.
+
+{code}
+> scalac -verbose x/*.scala x/*.java
+....
+[parsing test.scala]
+[parsing Param.java]
+....
+x/test.scala:4: error: annotation argument needs to be a constant; found: Param.From.QUERY
+    def m(@Param(from=Param.From.QUERY) a:Int) = a
+                                 ^
+                            ^
+[typer in 564ms]
+[total in 962ms]
+one error found
+
+{code}
+
+Compilation goes fine if Param.java is already compiled by javac.
+
+What versions of the following are you using?
+Scala:
+Scala compiler version 2.8.1.r0-b20101123105656 -- Copyright 2002-2010, LAMP/EPFL
+Scala compiler version 2.8.0.RC7 -- Copyright 2002-2010, LAMP/EPFL

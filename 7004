@@ -1,0 +1,26 @@
+I've just realized a new side of this issue, which might or might not be solved by your new virtualized pattern-matcher. Type bounds are also ignored by "GADT-like type inference", but the above workaround helps there too. Can you add this to your testcases, if that's relevant for the changes you're doing?
+
+To wit, here's an example REPL session, with the above definitions in scope:
+{code}
+scala> (_: Any) match {
+     | case View1(base) => base.map(identity)
+     | }
+<console>:12: error: value map is not a member of Any
+              case View1(base) => base.map(identity)
+scala>  (_: Any) match {
+     | case ViewNoTypeAnnotWorkingInference(base) => base.map(identity)
+     | }
+<console>:12: error: Cannot construct a collection of type That with elements of type Any based on a collection of type Any.
+              case ViewNoTypeAnnotWorkingInference(base) => base.map(identity)
+//Slightly better, but implicit search got confused. However, base has type TraversableLike, maybe that's the problem...
+scala> case class ViewNoTypeAnnotWorkingInference[T, Repr <:  TraversableLike[T, Repr] with Traversable[T]](base: Repr with TraversableLike[T, Repr] with Traversable[T]) {
+     | def copy(base: Repr) = ViewNoTypeAnnotWorkingInference(base)
+     | }
+defined class ViewNoTypeAnnotWorkingInference
+
+scala> (_: Any) match {
+     | case ViewNoTypeAnnotWorkingInference(base) => base.map(identity)
+     | }
+res4: Any => Traversable[Any] = <function1>
+{code}
+Now I'm going to clutter my case classes definitions with this trick and unclutter my pattern matching code :-)

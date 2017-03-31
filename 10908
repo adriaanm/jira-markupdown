@@ -1,0 +1,12 @@
+Reported again by the Spark team:
+
+{quote}
+Spark users have been running into an annoying issue where they can't launch Spark using the `scala` command because it automatically injects a fixed version of akka on the classpath[1]. Spark uses a different version of akka that is incompatible with that included with Scala 2.10 (or at least seems to be based on these binary errors). We are using akka 2.2.3.
+I'd guess that other projects have run into this, so I wonder if there is a more straightforward work-around.
+My proposal was to have a flag that doesn't load extra libraries:
+scala -langonly XXX
+scala -noakka XXX
+Right now we tell the users to launch with `java` which is definitely more clunky.
+[1] http://apache-spark-developers-list.1001551.n3.nabble.com/Akka-problem-when-using-scala-command-to-launch-Spark-applications-in-the-current-0-9-0-SNAPSHOT-td2.html
+
+{quote}

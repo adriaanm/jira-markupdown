@@ -1,0 +1,48 @@
+In akka-stream we use reactive-stream Publisher and Subscriber interfaces, which are implemented in Java. At several places we had to add uncheckedVariance annotation. A suggestion by @retronym was to define those in a type alias instead.
+
+It turns out that the type alias is expanded and the uncheckedVariance annotation is not used.
+
+Discussion and example that illustrates the problem can be found here: https://github.com/akka/akka/pull/15643
+
+[edit] Reproducing the example here:
+
+Indeed, variance validation seems to dealias, which thwarts the attempt to indirect through an unchecked alias.
+
+{code}
+scala> trait F1[/* - */T, /* + */ R]; import scala.annotation.unchecked._; type VariantF1[-T, +R] = F1[T @uncheckedVariance, R @uncheckedVariance]
+defined trait F1
+import scala.annotation.unchecked._
+defined type alias VariantF1
+
+scala> trait C[+T] { def foo: VariantF1[Any, T] }
+<console>:27: error: covariant type T occurs in invariant position in type => VariantF1[Any,T] of method foo
+       trait C[+T] { def foo: VariantF1[Any, T] }
+                         ^
+{code}
+
+Contrast with:
+
+{code}
+scala> trait F1[/* - */T, /* + */ R]; import scala.annotation.unchecked._; trait VariantF1[-T, +R] extends F1[T @uncheckedVariance, R @uncheckedVariance]
+defined trait F1
+import scala.annotation.unchecked._
+defined trait VariantF1
+
+scala> trait C[+T] { def foo: VariantF1[Any, T] }
+defined trait C
+Or:
+
+scala> trait F1[/* - */T, /* + */ R]; import scala.annotation.unchecked._; trait O { type VariantF1[-T, +R] <: F1[T @uncheckedVariance, R @uncheckedVariance]}; object O extends O
+warning: there was one feature warning; re-run with -feature for details
+defined trait F1
+import scala.annotation.unchecked._
+defined trait O
+defined object O
+
+scala> trait C[+T] { def foo: O.VariantF1[Any, T] }
+defined trait C
+{code}
+
+I'm not sure whether or not subclassing or using a upper bounded type declaration would work for your use case.
+
+

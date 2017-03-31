@@ -1,0 +1,61 @@
+Parser generator
+
+{code}
+def rep1[T](first: => Parser[T], p: => Parser[T]): Parser[List[T]]
+{code}
+
+in scala.util.parsing.combinator.Parsers never returns error. So if first or p parser returns error this error is not propagated further.
+
+It is almost obvious from code of this method:
+
+
+{code}
+  def rep1[T](first: => Parser[T], p: => Parser[T]): Parser[List[T]] = Parser{ in0 =>
+    val xs = new scala.collection.mutable.ListBuffer[T]
+    var in = in0
+
+    var res = first(in)
+
+    while(res.successful) {
+      xs += res.get
+      in = res.next
+      res = p(in)
+    }
+
+    // assert(res.isInstanceOf[NoSuccess])
+
+    if (!xs.isEmpty) {
+      // the next parser should start parsing where p failed, 
+      // since `!p(in).successful', the next input to be consumed is `in'
+      Success(xs.toList, in)  // TODO: I don't think in == res.next holds
+    }
+    else {
+      Failure(res.asInstanceOf[NoSuccess].msg, in0)
+    }
+  }
+{code}
+
+Suppose that after while finished res is an Error. This error is not propagated further - the result of rep1 depends only on emptiness of list xs!
+
+res should be tested. The implementation of this method should be changed to something like this:
+
+
+{code}
+  def rep1[T](first: => Parser[T], p: => Parser[T]): Parser[List[T]] = Parser{ in0 =>
+    val xs = new scala.collection.mutable.ListBuffer[T]
+    var in = in0
+    var res = first(in)
+    while(res.successful) {
+      xs += res.get
+      in = res.next
+      res = p(in)
+    }
+    
+    res match {
+      case e: Error => e
+      case _  => if (!xs.isEmpty) Success(xs.toList, in) else Failure(res.asInstanceOf[NoSuccess].msg, in0) 
+    }
+  }
+{code}
+
+As a result of incorrect rep1, combinators * and + work also incorrectly (they finally call mentioned method).

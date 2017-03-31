@@ -1,0 +1,26 @@
+The following code compiles with 2.10.3 but fails with 2.11.0-M8:
+{code:scala}
+  val skinnable = new javafx.scene.control.Skinnable {
+    def skinProperty = null
+    def getSkin = null
+    def setSkin(s: javafx.scene.control.Skin[_]) {}
+  }
+{code}
+fails with error message:
+{noformat}
+[error] ...: object creation impossible, since method setSkin in trait Skinnable of type (x$1: javafx.scene.control.Skin
+[_])Unit is not defined
+[error] (Note that javafx.scene.control.Skin[_] does not match javafx.scene.control.Skin[_ <: javafx.scene.control.Skinnable]: their type parameters differ)
+[error]   val skinnable = new javafx.scene.control.Skinnable {
+[error]                       ^
+{noformat}
+
+In Java "setSkin" is defines as:
+{code:java}
+void setSkin(Skin<?> value)
+{code}
+see http://docs.oracle.com/javafx/2/api/javafx/scene/control/Skinnable.html
+
+This is a critical bug since there is no workaround, that I can see.
+
+A sample SBT project is attached (you need to define variable JAVA_HOME pointing to Java 1.7 SDK installation).

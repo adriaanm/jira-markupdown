@@ -1,0 +1,61 @@
+Just to say that I've just run into this problem too on the Scala 2.8 beta 1, while implementing a (I thought simple) tokeniser of some input. I doubt it helps, but just in case it does, my code follows, with as much pulled out as possible in order to reproduce the problem:
+
+{code}
+import scala.util.matching.Regex
+
+object Tokeniser {
+  val prefix = """[0-9a-f]{8}:[\s]+"""
+  val StatusRegex    = new Regex(prefix + """status=0""")
+  val ResetRegex     = new Regex(prefix + """reset=0""")
+  val DensityRegex   = new Regex(prefix + """density=(\d)""")
+  val MinTrackRegex  = new Regex(prefix + """min_track=(\d+)""")
+  val MaxTrackRegex  = new Regex(prefix + """max_track=(\d+)""")
+  val MotorRegex     = new Regex(prefix + """motor=([0-1])""")
+  val TrackRegex     = new Regex(prefix + """track=(\d+)""")
+  val SideRegex      = new Regex(prefix + """side=([0-1])""")
+  val StreamRegex    = new Regex(prefix + """stream=([0-1])""")
+
+  def go(text: String): String = text.trim match {
+    case StatusRegex() => ""
+    case ResetRegex() => ""
+    case DensityRegex(density) => ""
+    case MinTrackRegex(track) => ""
+    case MaxTrackRegex(track) => ""
+    case MotorRegex(on) => ""
+    case TrackRegex(track) => ""
+    case SideRegex(side) => ""
+    case StreamRegex(on) => ""
+  }
+}
+{code}
+
+And the exception I get is:
+
+{code}
+Exception in thread "main" java.lang.Error: ch.epfl.lamp.fjbg.JCode$$OffsetTooBigException: offset to
+o big to fit in 16 bits: 55087
+        at ch.epfl.lamp.fjbg.JFieldOrMethod.writeTo(JFieldOrMethod.java:114)
+        at ch.epfl.lamp.fjbg.JClass.writeTo(JClass.java:315)
+        at scala.tools.nsc.backend.jvm.GenJVM$$BytecodeGenerator.emitClass(GenJVM.scala:150)
+        at scala.tools.nsc.backend.jvm.GenJVM$$BytecodeGenerator.genClass(GenJVM.scala:241)
+        at scala.tools.nsc.backend.jvm.GenJVM$$JvmPhase.apply(GenJVM.scala:57)
+        at scala.tools.nsc.backend.jvm.GenJVM$$JvmPhase$$$$anonfun$$run$$3.apply(GenJVM.scala:53)
+        at scala.tools.nsc.backend.jvm.GenJVM$$JvmPhase$$$$anonfun$$run$$3.apply(GenJVM.scala:53)
+        at scala.collection.Iterator$$class.foreach(Iterator.scala:582)
+        at scala.collection.mutable.HashMap$$$$anon$$4.foreach(HashMap.scala:82)
+        at scala.tools.nsc.backend.jvm.GenJVM$$JvmPhase.run(GenJVM.scala:53)
+        at scala.tools.nsc.Global$$Run.compileSources(Global.scala:749)
+        at scala.tools.nsc.Global$$Run.compile(Global.scala:839)
+        at scala.tools.nsc.Main$$.process(Main.scala:110)
+        at scala.tools.nsc.Main$$.main(Main.scala:124)
+        at scala.tools.nsc.Main.main(Main.scala)
+Caused by: ch.epfl.lamp.fjbg.JCode$$OffsetTooBigException: offset too big to fit in 16 bits: 55087
+        at ch.epfl.lamp.fjbg.JCode.checkOffset16(JCode.java:896)
+        at ch.epfl.lamp.fjbg.JCode.patchAllOffset(JCode.java:975)
+        at ch.epfl.lamp.fjbg.JCode.freeze(JCode.java:95)
+        at ch.epfl.lamp.fjbg.JMethod.freeze(JMethod.java:81)
+        at ch.epfl.lamp.fjbg.JFieldOrMethod.writeTo(JFieldOrMethod.java:111)
+        ... 14 more
+{code}
+
+If I remove any of the cases, it works fine, so I will try to break it up as suggested. I did have a lot more cases to add too :)

@@ -1,0 +1,20 @@
+Check out this code:
+
+{code:title=Bug.scala}
+object Bug {
+  def main(args: Array[String]) {
+    import scala.reflect.runtime.{universe => ru}
+    val m = ru.runtimeMirror(getClass.getClassLoader)
+    println(m.classSymbol(classOf[java.util.ArrayList[_]]).toType)
+    println(m.classSymbol(classOf[java.util.ArrayList[_]]).toType)
+  }
+}
+{code}
+
+Its output doesn't look good:
+
+{noformat}
+$ scalac Bug.scala && scala Bug
+java.util.ArrayList
+java.util.ArrayList[E]
+{noformat}

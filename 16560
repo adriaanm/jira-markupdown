@@ -1,0 +1,84 @@
+The current scala.math.Numeric is adequate for representing the common integer and decimal number types used on the JVM. However, its a coarse interface that defines alot of operations in a one indivisible trait, and this makes it difficult to generalise or extend to "number-like" entities for which the full Numeric interface is not appropriate, such as non-scalar values. 
+
+The proposal, which includes a modified version of the Scala source that implements that change, is to lift out of Numeric four finer-grained traits modelling the arithmetic operations; 
+- Additive
+- Subtractive
+- Multiplicative
+- Divisive 
+
+Data types can supports a subset of the Numeric operations without needing to support those semantics of Numeric which are problematic for non-scalar data: 
+- Total ordering via Ordering
+- Conversion to/from scalar values
+
+
+h3. Motivating Use Cases 
+
+Here are examples of such data for which a total ordering, or conversions to/from scalar values, is not easily defined:
+
+(a) Intervals (ie regions of the number line). Interval/Affine arithmetic defines arithmetic operations over intervals, but not a total ordering [http://en.wikipedia.org/wiki/Interval_arithmetic]. 
+
+(b) Vectors. While Vectors of like dimension can be added and subtracted, they cannot in general be multiplied using a (Vector, Vector) => Vector operator. They are only partially ordered.
+
+(c) Matrices. Addition is defined for one subset of matrices, while multiplication is defined for another. If matrix dimensions are encoded into their type (eg Matrix[T, _2, _1]), then it is possible to define additive or multiplicative operators where appropriate, and yet be unable to support the full Numeric interface.
+
+
+h3. Compatibility
+
+The proposed change varies the current API only by lifting the division operator from Fractional/Integral up to Divisive, a super trait of Numeric. This change has been requested by a number of users on the mailing lists [eg recently mentioned in these threads http://www.scala-lang.org/node/10871 http://www.scala-lang.org/node/11392]. 
+
+Clients code calling Numeric should be unaffected. The division change will break existing implementers of Numeric outside the standard library, but anecdotal evidence suggests there are few of these (I've tried, which led to this patch).
+
+This patch likely break binary compatibility (although Im far from an expert on the matter). 
+
+I don't believe it will obstruct specialisation of Numeric typeclasses for the common JVM types to address boxing issues.
+
+
+h3. Patch
+
+I offer a patch to the standard library which implements this separation in commits:
+https://github.com/benhutchison/scala/commit/e7166f6aad25f4ae1ae55
+https://github.com/benhutchison/scala/commit/de30205a9e305c2494027
+
+h3. Example code 
+
+Shows the integration of the new typeclasses with the collections API:
+{noformat}
+package example
+import math._
+
+object Example extends App {
+ implicit val stringAddition = new Additive[String] {
+   def zero = ""
+     
+   def plus(s1: String, s2: String) = s1 + s2 
+ }
+ 
+ type complex[T] = (T, T)
+ implicit def complexMultiplication[T: Numeric](implicit n: Numeric[T]) = new Multiplicative[complex[T]] {
+   import n._
+   
+   def one = (n.one, n.zero)
+   
+   def times(z1: complex[T], z2: complex[T]) = {
+     val (r1, i1) = z1
+     val (r2, i2) = z2
+     val real = (r1 * r2) - (i1 * i2)
+     val imag = (r1 * i2) + (r2 * i1) 
+     (real , imag)
+   }
+ }
+ 
+ println(Seq("a", "b", "c").sum)
+ 
+ val i = (0.0, 1.0)
+ println(Seq(i, i).product)
+}
+{noformat}
+
+h3. Wisdom from Haskell
+
+Haskell has a Num typeclass that pre-dates Scala. Accordingly, they have more accumulated experience. There's evidence of a similar desire to break up the typeclasses and make the Haskell interfaces more minimal. We should take the opportunity to do this in Scala now, before the weight of existing code makes changes more difficult.
+
+http://osdir.com/ml/libraries@haskell.org/2011-09/msg00009.html
+http://www.haskell.org/haskellwiki/Numeric_Prelude
+http://repetae.net/recent/out/classalias.html

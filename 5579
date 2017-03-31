@@ -1,0 +1,17 @@
+Reduced and clarified: this has remained hidden because it is order dependent.
+
+{code}
+# compiles this way 
+% scalac29 src/library/scala/collection/SeqViewLike.scala src/library/scala/collection/immutable/StreamViewLike.scala
+# not this way
+% scalac29 src/library/scala/collection/immutable/StreamViewLike.scala src/library/scala/collection/SeqViewLike.scala
+error: java.lang.Error: A in trait TraversableViewLike cannot be instantiated from [+A,+Coll,+This <: scala.collection.TraversableView[A,Coll] with scala.collection.TraversableViewLike[A,Coll,This]]scala.collection.TraversableViewLike[A,Coll,This]
+	at scala.tools.nsc.symtab.SymbolTable.abort(SymbolTable.scala:35)
+	at scala.tools.nsc.symtab.Types$$AsSeenFromMap.throwError$$1(Types.scala:3389)
+	at scala.tools.nsc.symtab.Types$$AsSeenFromMap.instParam$$1(Types.scala:3392)
+	at scala.tools.nsc.symtab.Types$$AsSeenFromMap.toInstance$$1(Types.scala:3403)
+	at scala.tools.nsc.symtab.Types$$AsSeenFromMap.apply(Types.scala:3419)
+	at scala.tools.nsc.symtab.Types$$AsSeenFromMap.apply(Types.scala:3289)
+	at scala.tools.nsc.symtab.Types$$TypeMap$$$$anonfun$$mapOverArgs$$1.apply(Types.scala:3114)
+{code}
+I am going to kick this up to high for now because these source file order dependent bugs are maddening so if something can be done in the short term it would be great, but if someone wants to de-high it I won't complain.

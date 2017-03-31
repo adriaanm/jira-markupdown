@@ -1,0 +1,31 @@
+OK, maybe this should be a separate ticket?  I am not really sure if it's the same issue or not, but it still fails with 2.8.0-20091106.025327.  Here's an example - the jgrapht references are what I am using in my application, but "MyGraph" is sufficient to show the problem:
+
+{code}
+
+package bug
+
+//import org.jgrapht.graph.SimpleGraph
+//import org.jgrapht.graph.DefaultWeightedEdge
+
+object Main extends Application {
+
+  class MyGraph[V <: Any] {
+    def addVertex(v: V): Boolean = true
+  }
+
+  type DuckGraph = {
+    def addVertex(vertex: Int): Boolean
+  }
+
+  def crash(graph: DuckGraph) {
+    println("trying...")
+    graph.addVertex(1)
+    println("success")
+  }
+
+  crash(new MyGraph[Int])
+//  crash(new SimpleGraph[Int, DefaultWeightedEdge](classOf[DefaultWeightedEdge]))
+}
+{code}
+
+Cheers + thanks for what is (otehrwise) a pretty nice *practical* language that I hope one day to use at work...

@@ -1,0 +1,33 @@
+{code}
+object Foo {
+  import scala.util.continuations._
+  def throwException():Unit @suspendable =
+    throw new Exception
+
+  // OK!
+  def f1() = {
+    val a = 5
+    if (a != 3) {
+      throwException()
+    } else {
+      shiftUnit0[Unit, Unit]()
+    }
+  }
+
+  // Error!
+  def f2() = {
+    val a = 5
+    if (a != 3) {
+      throw new Exception
+    } else {
+      shiftUnit0[Unit, Unit]()
+    }
+  }
+}
+{code}
+
+{code}
+<console>:28: error: then and else parts must both be cps code or neither of them
+           if (a != 3) {
+           ^
+{code}

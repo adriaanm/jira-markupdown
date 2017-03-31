@@ -1,0 +1,37 @@
+Best to show a sample. This was checked against 2.10.x and master
+
+{code}
+class Foo[@specialized(Int) A] {
+  def barA(a: A): A = barB[A](a)
+  def barB[@specialized(Int) B](b: B): B = b
+}
+
+object Test {
+  def main(args: Array[String]) {
+    var foo = new Foo[Int]
+    println(foo.barA(1))
+    println(foo.barB(2))
+  }
+}
+{code}
+
+Checking javap -verbose Foo, we see that barA$mcI$sp calls its generic counterpart.
+
+{code}
+public int barA$mcI$sp(int);
+  Code:
+   Stack=2, Locals=2, Args_size=2
+   0:   aload_0
+   1:   iload_1
+   2:   invokestatic    #27; //Method scala/runtime/BoxesRunTime.boxToInteger:(I)Ljava/lang/Integer;
+   5:   invokevirtual   #29; //Method barA:(Ljava/lang/Object;)Ljava/lang/Object;
+   8:   invokestatic    #33; //Method scala/runtime/BoxesRunTime.unboxToInt:(Ljava/lang/Object;)I
+   11:  ireturn
+  LocalVariableTable: 
+   Start  Length  Slot  Name   Signature
+   0      12      0    this       LFoo;
+   0      12      1    a       I
+
+  LineNumberTable: 
+   line 2: 0
+{code}

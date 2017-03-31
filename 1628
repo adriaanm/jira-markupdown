@@ -1,0 +1,16 @@
+OK, it took me 2.5 years but I have to reopen this (reminded of it by SI-4871.) Why would this imply special casing asInstanceOf? As far as I can see it's the opposite: asInstanceOf is being given special status by not having to act the way everything else does.
+
+Easily summarized:
+
+{code}
+scala> class Bip { def empty[T: Manifest, CC[_]] = { println(manifest[T]) ; null.asInstanceOf[CC[T]] } }
+defined class Bip
+
+scala> val x: Set[Int] = (new Bip).empty
+Int
+x: Set[Int] = null
+
+scala> val x: Set[Int] = (new Bip).asInstanceOf
+java.lang.ClassCastException: Bip cannot be cast to scala.runtime.Nothing$
+{code}
+Upon what basis should it infer Set[Int] when given nothing to go upon but the expected type, but in the same situation asInstanceOf should infer Nothing?

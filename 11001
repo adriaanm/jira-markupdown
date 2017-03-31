@@ -1,0 +1,15 @@
+{code}
+scala> val Literal(Constant(x1)) = q""" "bob's" """
+x1: Any = bob's
+
+scala> x1.asInstanceOf[String].length
+res2: Int = 5
+
+scala> val Literal(Constant(x2)) = q""" "bob\'s" """
+x2: Any = bob's
+
+scala> x2.asInstanceOf[String].length
+res4: Int = 5
+{code}
+
+Looks like the former is just a repl printing bug, whereas the latter seems to be a genuine problem. Maybe that's caused by one of the string interpolation issues?

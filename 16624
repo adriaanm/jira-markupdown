@@ -1,0 +1,18 @@
+It seems that PriorityQueue from the standard Scala library gives the wrong order.
+
+The following code fails:
+
+  def main(args: Array[String]) {
+    val p = new PriorityQueue[Int]()
+    val r = new Random(0)
+    Stream.continually(r.nextInt(5000000)).take(100000).foreach(p.enqueue(_))
+    var last = p.dequeue()
+    while (!p.isEmpty) {
+      val current = p.dequeue()
+      assert(current >= last, current + " should be >= " + last);
+      last = current;
+    }
+  }
+
+
+with following error: java.lang.AssertionError: 4999931 should be >= 4999999

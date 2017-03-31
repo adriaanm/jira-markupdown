@@ -1,0 +1,17 @@
+When the interpreter catches an exception that wraps another exception (i.e. `getCause` is non-null), the interpreter silently unwraps the exception chain and displays only the innermost exception. Thus the exception displayed is not the one that was caught, and information about outer exceptions is silently discarded.
+
+== To reproduce ==
+
+{{Scala code runner version 2.7.2.final -- Copyright 2002-2008, LAMP/EPFL}}
+
+Enter the following at the interpreter:
+
+{code}
+throw new IllegalArgumentException(new ClassCastException)
+{code}
+
+== Expected behaviour ==
+The interpreter prints a stack trace for the _outermost_ exception in the chain (`IllegalArgumentException` in the example).
+
+== Actual behaviour ==
+The interpreter prints a stack trace for the _innermost_ exception (`ClassCastException` in the example), and discards all outer exceptions without notice.

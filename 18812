@@ -1,0 +1,15 @@
+This is a regression (from 2.11.0-M7). When I compile specs2 I get some new compilation errors in such code:
+
+{code:scala}
+class UserGuide extends Specification { def is = s2"""
+  this is some code which you can use ${snippet {
+     import org.specs2._
+     class MySpec extends Specification { def is = ok }
+  }}
+"""
+}
+{code}
+
+{{snippet}} is a macro which captures some code and displays it in the s2 interpolated string (and optionally executes it). The issue is that the {{import org.specs2._}} is not seen anymore and then I have a compilation error on {{class MySpec extends Specification}}
+
+Unfortunately I haven't been able to reduce the example yet.

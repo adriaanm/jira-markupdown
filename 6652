@@ -1,0 +1,21 @@
+The same thing also happens with non-diamond multiple usage of static super references
+
+{code}
+trait Left {
+    class Num(val value: Int)
+}  
+
+trait Right  {
+    class Num(val value: Int)
+}
+
+trait BottomLeftOnly extends Left { //compiles
+    class Num(v: Int) extends super[Left].Num(v)   
+} 
+trait BottomRightOnly extends Right { //compiles
+    class Num(v: Int) extends super[Right].Num(v)    
+}
+trait BottomDiamond extends Left with Right { // compile error: traits or objects may not have parameters
+    class Num(v: Int) extends super[Left].Num(v) with super[Right].Num(v)    
+} 
+{code}

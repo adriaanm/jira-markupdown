@@ -1,0 +1,51 @@
+{noformat}
+scala> val syms = List(definitions.ListModule)
+syms: List[reflect.runtime.universe.ModuleSymbol] = List(object List)
+
+scala> q"List(..$syms)"
+ReplGlobal.abort: unreachable
+error: unreachable
+<console>:33: error: exception during macro expansion:
+scala.reflect.internal.FatalError:
+  unreachable
+     while compiling: <console>
+        during phase: globalPhase=typer, enteringPhase=namer
+     library version: version 2.11.0-20140314-172837-492624d729
+    compiler version: version 2.11.0-20140314-172837-492624d729
+  reconstructed args:
+
+  last tree to typer: Select(Select(Select(Select(Select(This(package scala), reflect), runtime), package), universe), Liftable)
+       tree position: line 33 of <console>
+            tree tpe: reflect.runtime.universe.Liftable.type
+              symbol: object Liftable in trait Liftables
+   symbol definition: object Liftable (a ModuleSymbol)
+      symbol package: scala.reflect.api
+       symbol owners: object Liftable -> trait Liftables
+           call site: object $iw in package $line12
+
+<Cannot read source file>
+	at scala.reflect.internal.SymbolTable.abort(SymbolTable.scala:58)
+	at scala.tools.nsc.Global.abort(Global.scala:269)
+	at scala.tools.nsc.interpreter.IMain$$anon$1.scala$tools$nsc$interpreter$ReplGlobal$$super$abort(IMain.scala:235)
+	at scala.tools.nsc.interpreter.ReplGlobal$class.abort(ReplGlobal.scala:20)
+	at scala.tools.nsc.interpreter.IMain$$anon$1.abort(IMain.scala:235)
+	at scala.tools.reflect.quasiquotes.Holes$ApplyHole.scala$tools$reflect$quasiquotes$Holes$ApplyHole$$iterated(Holes.scala:174)
+	at scala.tools.reflect.quasiquotes.Holes$ApplyHole.<init>(Holes.scala:92)
+	at scala.tools.reflect.quasiquotes.Holes$Hole$.apply(Holes.scala:72)
+	at scala.tools.reflect.quasiquotes.Placeholders$class.appendHole$1(Placeholders.scala:38)
+	at scala.tools.reflect.quasiquotes.Placeholders$$anonfun$code$1.apply(Placeholders.scala:50)
+	at scala.tools.reflect.quasiquotes.Placeholders$$anonfun$code$1.apply(Placeholders.scala:47)
+	at scala.reflect.internal.util.Collections$class.foreach2(Collections.scala:218)
+	at scala.reflect.internal.SymbolTable.foreach2(SymbolTable.scala:16)
+	at scala.tools.reflect.quasiquotes.Placeholders$class.code(Placeholders.scala:47)
+	at scala.tools.reflect.quasiquotes.Quasiquotes.code$lzycompute(Quasiquotes.scala:6)
+	at scala.tools.reflect.quasiquotes.Quasiquotes.code(Quasiquotes.scala:6)
+	at scala.tools.reflect.quasiquotes.Quasiquotes.expandQuasiquote(Quasiquotes.scala:48)
+	at scala.tools.reflect.FastTrack$$anonfun$1$$anonfun$apply$7$$anonfun$applyOrElse$7.apply(FastTrack.scala:53)
+	at scala.tools.reflect.FastTrack$$anonfun$1$$anonfun$apply$7$$anonfun$applyOrElse$7.apply(FastTrack.scala:53)
+	at scala.tools.reflect.FastTrack$FastTrackEntry.apply(FastTrack.scala:37)
+	at scala.tools.reflect.FastTrack$FastTrackEntry.apply(FastTrack.scala:32)
+	at scala.tools.nsc.typechecker.Macros$class.macroExpandWithRuntime(Macros.scala:743)
+
+              q"List(..$syms)"
+{noformat}

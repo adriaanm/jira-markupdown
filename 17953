@@ -1,0 +1,26 @@
+In 2.10.0 the Utility.sort(md: MetaData) function has broken. An example of when the problem occurs is below, it is for a case where alphabetically the first attribute comes after the proceeding attributes.
+
+{code:title=REPL|borderStyle=solid | syntaxHighlighting=scala}
+
+scala> val node:Node = <a d="1" b="2" c="3"></a>
+node: scala.xml.Node = <a d="1" b="2" c="3"></a>
+
+scala> Utility.sort(node)
+res8: scala.xml.Node = <a b="2" d="1"/> //attribute c is missing
+
+{code}
+
+This works in 2.9.2 where the only difference in any of the sorting functions is in the MetaData sorting function. The value that is returned after sorting some attributes is:
+
+{code:title=2.9.2 Utility.scala|borderStyle=solid | syntaxHighlighting=scala}
+smaller.append( Null ).append(md.copy ( greater ))
+
+{code}
+
+{code:title=2.10.0 Utility.scala|borderStyle=solid | syntaxHighlighting=scala}
+smaller.copy(md.copy ( greater ))
+
+{code}
+
+In 2.10.0 omitting smaller.append( Null ) loses attributes in some cases. I believe this change should be reverted to 2.9.2.
+

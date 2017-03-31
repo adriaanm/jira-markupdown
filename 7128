@@ -1,0 +1,34 @@
+The ForkJoin detection was already added to 2.9.2.
+
+{noformat}
+2.9.x ~/code/scala2 git show 9eb9682f792e26bf99e74e777b776d5ce841a595
+commit 9eb9682f792e26bf99e74e777b776d5ce841a595
+Author: Aleksandar Pokopec <aleksandar.prokopec@epfl.ch>
+Date:   Fri Nov 11 16:59:45 2011 +0000
+
+    Changes the fork join pool detection for JVM1.7...
+    
+    Changes the fork join pool detection for JVM1.7, for actors and parallel
+    collections libraries.
+    
+    Review by phaller.
+
+diff --git a/src/actors/scala/actors/scheduler/ThreadPoolConfig.scala b/src/acto
+index d514d94..a7bf8ec 100644
+--- a/src/actors/scala/actors/scheduler/ThreadPoolConfig.scala
++++ b/src/actors/scala/actors/scheduler/ThreadPoolConfig.scala
+@@ -45,7 +45,7 @@ private[actors] object ThreadPoolConfig {
+ 
+         // on IBM J9 1.6 do not use ForkJoinPool
+         // XXX this all needs to go into Properties.
+-        isJavaAtLeast("1.6") && ((javaVmVendor contains "Sun") || (javaVmVendor
++        isJavaAtLeast("1.6") && ((javaVmVendor contains "Oracle") || (javaVmVen
+       })
+     catch {
+       case _: SecurityException => false
+2.9.x ~/code/scala2 git tag --contains 9eb9682f792e26bf99e74e777b776d5ce841a595
+v2.9.2
+v2.9.2-RC2
+v2.9.2-RC3
+v2.9.3-RC1
+{noformat}

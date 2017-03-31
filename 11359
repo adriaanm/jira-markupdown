@@ -1,0 +1,8 @@
+Hmm, that's a bug in case class synthetic methods. The compiler wrongly keeps the {{@volative}} annotation in the generated apply constructor:
+
+{code}
+object X extends AbstractFunction1[Int,X] with Serializable {
+...
+def apply(@volatile x: Int): X = new X(x) // that's wrong
+}
+{code}

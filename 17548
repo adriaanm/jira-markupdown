@@ -1,0 +1,16 @@
+30 errors is a lot of errors for something which should be a no-op.  It's supposed to mean "extends AnyRef" already!
+{code}
+# 2.10.0-RC1, compiles
+% scalac src/library/scala/collection/convert/Wrap*.scala 
+# add 'extends AnyRef' to WrapAsScala
+% git diff
+-trait WrapAsScala extends LowPriorityWrapAsScala {
++trait WrapAsScala extends AnyRef with LowPriorityWrapAsScala {
+
+% scalac src/library/scala/collection/convert/Wrap*.scala
+src/library/scala/collection/convert/WrapAsScala.scala:13: error: illegal cyclic reference involving object Wrappers
+import Wrappers._
+       ^
+[snip]
+30 errors found.
+{code}

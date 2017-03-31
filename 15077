@@ -1,0 +1,23 @@
+{code}
+  ~> cat S.scala
+package p
+
+class S {
+  private def foo = 1
+  private[p] def bar = 2
+  def baz = 3
+  private[this] def qux = 4
+  protected def quux = 5
+}
+  ~> /usr/local/scala-2.8.0.Beta1-RC1/bin/scalac S.scala         
+  ~> /usr/local/scala-2.8.0.Beta1-RC1/bin/scalap -classpath . p.S
+package p
+class S extends java.lang.Object with scala.ScalaObject {
+  def this() = { /* compiled code */ }
+  def bar : scala.Int = { /* compiled code */ }
+  def baz : scala.Int = { /* compiled code */ }
+  protected def quux : scala.Int = { /* compiled code */ }
+}
+{code}
+
+"protected" is preserved, but all of the other information is lost. perhaps it's showing the Java access levels instead of the Scala access levels.

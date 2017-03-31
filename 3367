@@ -1,0 +1,10 @@
+This is by now fixed. You now get
+{code}
+t2998.scala:5: error: type mismatch;
+ found   : scala.collection.mutable.GenericArray[A.this.T]
+ required: Array[A.this.T]
+    m(a.map((t:T)=>t))
+           ^
+one error found
+{code}
+The error message is admittedly opaque, but what it says is that map could not produce a new Array (because of a missing manifest), so it picked a GenericArray as the next best option. 

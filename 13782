@@ -1,0 +1,26 @@
+In my attempts to get a more scala friendly library for Hadoop, I've
+come across this in ScalaRuntime
+
+84        def _hashCode(x: Product): Int = {
+85          var code = x.getClass().hashCode()
+86          val arr =  x.productArity
+87          var i = 0
+88          while (i < arr) {
+89            code = code * 41 + x.productElement(i).hashCode()
+90            i += 1
+91          }
+92          code
+93        }
+94
+
+Sadly, x.getClass.getHashCode doesn't seem to be consistent across
+different machines or different executions (not sure which), which
+makes it useless in Hadoop, since Hadoop assumes that hashCode is the same no matter the machine. Any chance we could get this changed?
+
+How about:
+
+var code = x.productPrefix.hashCode();
+
+or var code = x.getClass.getName.hashCode() ?
+
+-- David

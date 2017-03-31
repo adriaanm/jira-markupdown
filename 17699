@@ -1,0 +1,24 @@
+{code}
+import language.dynamics
+
+class Dyn extends Dynamic {
+  def selectDynamic(s: String): Dyn = new Dyn
+  def get[T]: T = null.asInstanceOf[T]
+}
+
+object Foo {
+  val dyn = new Dyn
+  dyn.foo.bar.baz.get[String]
+}
+{code}
+
+{code}
+dynamic.scala:10: error: method selectDynamic: (s: String)Dyn does not take type parameters
+error after rewriting to Foo.this.dyn.selectDynamic[String]("foo")
+possible cause: maybe a wrong Dynamic method signature?
+  dyn.foo.bar.baz.get[String]
+  ^
+one error found
+{code}
+
+It looks like the fix to SI-6320 (incidentally not marked as resolved yet, but the fix is in 2.10-RC2) applies the type parameter to the selectDynamic method, instead of the get method.

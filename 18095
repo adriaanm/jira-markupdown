@@ -1,0 +1,18 @@
+{code}
+Last login: Tue Mar 19 09:37:02 on ttys001
+09:37 ~$ 210x
+09:37 ~/Projects/210x (2.10.x)$ parse -Xprint-pos 's"foo${bar}baz"'
+[[syntax trees at end of parser]]// Scala source: tmpOh6bpd
+[6]package [6]<empty> {
+  [6]class wrapper extends [14][33]scala.AnyRef {
+    [14]def <init>() = [14]{
+      [14][14][14]super.<init>();
+      [14]()
+    };
+    [16][16][16][16]StringContext([16]"foo", [16]"baz").s([23]bar)
+  }
+}
+PackageDef(Ident(newTermName("<empty>")), List(ClassDef(Modifiers(), newTypeName("wrapper"), List(), Template(List(Select(Ident(scala), newTypeName("AnyRef"))), emptyValDef, List(DefDef(Modifiers(), nme.CONSTRUCTOR, List(), List(List()), TypeTree(), Block(List(Apply(Select(Super(This(tpnme.EMPTY), tpnme.EMPTY), nme.CONSTRUCTOR), List())), Literal(Constant(())))), Apply(Select(Apply(Ident(newTermName("StringContext")), List(Literal(Constant("foo")), Literal(Constant("baz")))), newTermName("s")), List(Ident(newTermName("bar")))))))))
+{code}
+
+Note the [16] tokens next to "foo" and "baz". They mean that all those three trees are considered to originate from the beginning of the interpolated string, which is incorrect.

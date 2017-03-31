@@ -1,0 +1,59 @@
+
+A few "reflMethod" DefDefs were missing after CleanUp when running in forMSIL mode, i.e. without the flatten phase. 
+In terms of: 
+
+[https://lampsvn.epfl.ch/trac/scala/browser/scala/trunk/src/compiler/scala/tools/nsc/transform/CleanUp.scala CleanUp.scala]
+
+in particular 
+
+{code}
+522	      case Template(parents, self, body) =>
+523	        localTyper = typer.atOwner(tree, currentClass)
+524	        newStaticMembers.clear
+525	        newStaticInits.clear
+526	        symbolsStoredAsStatic.clear
+527	        val transformedTemplate: Template =
+528	          if (!forMSIL || forMSIL) {
+529	            var newBody =
+530	              transformTrees(body)
+531	            treeCopy.Template(tree, parents, self, transformTrees(newStaticMembers.toList) ::: newBody)
+532	          }
+533	          else super.transform(tree).asInstanceOf[Template]
+534	        addStaticInits(transformedTemplate) // postprocess to include static ctors
+{code}
+
+Debugging showed that those DefDefs had been added to the newStaticMembers list, and were waiting to be entered into scope. 
+However, visiting a nested class resulted in re-enterering the case clause above,  whose 
+
+newStaticMembers.clear
+
+made them go away. Saving and later restoring those contents is needed when dealing with nested classes, along the lines of: 
+
+{code}
+      case Template(parents, self, body) =>
+        localTyper = typer.atOwner(tree, currentClass)
+        val savedNewStaticMembers = newStaticMembers.clone
+        val savedNewStaticInits = newStaticInits.clone
+        val savedSymbolsStoredAsStatic = symbolsStoredAsStatic.clone
+        newStaticMembers.clear
+        newStaticInits.clear
+        symbolsStoredAsStatic.clear
+        val transformedTemplate: Template =
+          if (!forMSIL || forMSIL) {
+            var newBody =
+              transformTrees(body)
+            treeCopy.Template(tree, parents, self, transformTrees(newStaticMembers.toList) ::: newBody)
+          }
+          else super.transform(tree).asInstanceOf[Template]
+        val res = addStaticInits(transformedTemplate) // postprocess to include static ctors
+        newStaticMembers.clear
+        newStaticMembers ++= savedNewStaticMembers
+        newStaticInits.clear
+        newStaticInits ++= savedNewStaticInits
+        symbolsStoredAsStatic.clear
+        symbolsStoredAsStatic ++= savedSymbolsStoredAsStatic
+        res 
+{code}
+
+I haven't checked other case handlers for re-entrancy due to nested classes. Moreover, I've been running CleanUp only with -Ystruct-dispatch:no-cache. 
+

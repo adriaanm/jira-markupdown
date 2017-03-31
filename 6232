@@ -1,0 +1,3 @@
+That implies it has nothing to do with java/scala or the annotations, but with the trait encoding.  I don't know anything about hibernate, but when you write "trait RefDataEntity" its implementations will be in "class RefDataEntity$class".  Can you compare the bytecode for "abstract class RefDataEntity" to the bytecode of RefDataEntity and RefDataEntity$class when you make it a trait? Because whatever differs there should illuminate the issue.
+
+I'm guessing the implementation methods in RefDataEntity$class have the annotation, but concrete classes which extend the trait are given forwarders which probably do not.

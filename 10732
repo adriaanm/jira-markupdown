@@ -1,0 +1,64 @@
+Okay, here's a more faithful whittlin'
+
+{code}
+trait Covariant[+A]
+trait Invariant[A] extends Covariant[A @annotation.unchecked.uncheckedVariance] 
+ 
+trait Combinable[G] {
+  def combined = 0
+}
+
+trait CanBuildFrom[+C]
+ 
+object C {
+  implicit def convert1[G, TRAVONCE[+e] <: Covariant[e]]
+    (xs: TRAVONCE[G]): Combinable[G] = ???
+ 
+  implicit def convert2[G, SET[e] <: Invariant[e]]
+    (xs: SET[_ <: G])
+    (implicit cbf: CanBuildFrom[SET[G]]): Combinable[G] = ???
+
+  implicit def cbf[A]: CanBuildFrom[Invariant[A]] = ???
+}
+
+class Test1 {
+  import C.{cbf, convert1, convert2}
+  val s: Invariant[Nothing] = ???
+  s.combined // fail
+}
+
+class Test2 {
+  import C.{cbf, convert2, convert1}
+
+  val s: Invariant[Nothing] = ???
+  s.combined // okay
+}
+
+class Test3 {
+  import C.{cbf, convert1, convert2}
+  val s: Invariant[Null] = ???
+  s.combined // okay
+}
+
+class Test4 {
+  import C.{cbf, convert2, convert1}
+
+  val s: Invariant[Null] = ???
+  s.combined // okay
+}
+{code}
+
+Running that with the patch above to remove usage-count-based implicit sorting:
+
+{noformat}
+qbin/scalac  test/files/pos/t8431.scala; rm *.class 2>/dev/null
+test/files/pos/t8431.scala:24: error: type mismatch;
+ found   : CanBuildFrom[Invariant[Nothing]]
+ required: CanBuildFrom[Invariant[G]]
+  s.combined // fail
+  ^
+test/files/pos/t8431.scala:24: error: value combined is not a member of Invariant[Nothing]
+  s.combined // fail
+    ^
+two errors found
+{noformat}

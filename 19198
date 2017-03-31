@@ -1,0 +1,45 @@
+The following works:
+
+{code}
+trait T[_]
+sealed trait A
+sealed trait C
+
+
+object A {
+  implicit object AA extends T[A]
+}
+
+object C {
+  implicit object CC extends T[C]
+}
+
+object B {
+  implicitly[T[A]]
+  implicitly[T[C]]
+}
+{code}
+
+While the the following can not find the implicit T[C] instance:
+
+{code}
+trait T[_]
+sealed trait A
+sealed trait C
+
+
+object A {
+  implicit object AA extends T[A]
+}
+
+object B {
+  implicitly[T[A]]
+  implicitly[T[C]]
+}
+
+object C {
+  implicit object CC extends T[C]
+}
+{code}
+
+The only difference is the order of appearance for the B and C objects.

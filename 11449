@@ -1,0 +1,134 @@
+I cleaned the reproducer up a little bit and added some debug output.
+
+{code}
+import scala.annotation.unchecked.uncheckedVariance
+import scala.concurrent.forkjoin._
+
+trait Task {
+  def leaf()
+
+  def shouldSplitFurther: Boolean
+
+  def split: Seq[Task]
+
+  def tryLeaf() {
+    leaf()
+  }
+}
+
+class WrappedTask(val body: Task) extends RecursiveTask[Unit] {
+  @volatile var next: WrappedTask = null
+  @volatile var shouldWaitFor = true
+
+  def start() = fork
+  def sync() = join
+  def tryCancel() = tryUnfork
+  def release() {}
+
+  def split: Seq[WrappedTask] = body.split.map(b => new WrappedTask(b))
+
+  def compute() = {
+    if (body.shouldSplitFurther) internal()
+    else body.tryLeaf()
+
+    release()
+  }
+
+  def internal() = {
+    var last = spawnSubtasks()
+
+    last.body.tryLeaf()
+    last.release()
+
+    while (last.next != null) {
+      last = last.next
+      if (last.tryCancel()) {
+        last.body.tryLeaf()
+        last.release()
+      } else {
+        last.sync()
+      }
+
+    }
+  }
+
+  def spawnSubtasks() = {
+    var last: WrappedTask = null
+    var head: WrappedTask = this
+    do {
+      val subtasks = head.split
+      head = subtasks.head
+      for (t <- subtasks.tail.reverse) {
+        t.next = last
+        last = t
+        t.start()
+      }
+    } while (head.body.shouldSplitFurther)
+    head.next = last
+    head
+  }
+}
+
+class DefaultThreadFactory(val maxThreads: Int) extends ForkJoinPool.ForkJoinWorkerThreadFactory {
+  val currentNumberOfThreads = new java.util.concurrent.atomic.AtomicInteger(0)
+  val hasMaxedOut = new java.util.concurrent.atomic.AtomicInteger(0)
+
+    private final def deregisterThread(): Boolean = currentNumberOfThreads.get() match {
+      case 0 => false
+      case other => currentNumberOfThreads.compareAndSet(other, other - 1) || deregisterThread()
+    }
+
+    private final def reserveThread(): Boolean = currentNumberOfThreads.get() match {
+      case `maxThreads` | Int.`MaxValue` => false
+      case other => currentNumberOfThreads.compareAndSet(other, other + 1) || reserveThread()
+    }
+
+  override def newThread(fjp: ForkJoinPool): ForkJoinWorkerThread =
+    if (reserveThread()) new ForkJoinWorkerThread(fjp) {
+      final override def onTermination(exception: Throwable): Unit =
+        if (!deregisterThread()) new Exception("Couldn't deregister worker!!!").printStackTrace(System.err)
+       else println("Releasing worker: " + this)
+    } else {
+      if(hasMaxedOut.compareAndSet(0, 1))
+        new Exception("Tried to spawn new worker but couldn't").printStackTrace(System.err)
+      null
+    }
+}
+
+object Test {
+
+  val size = 10000
+
+  val parallelismLevel = 8
+
+  class Foreach[S](val sz: Int) extends Task {
+    def leaf() = ()
+
+    def shouldSplitFurther = sz > 1
+
+    def split = if (sz < 2) Seq(this) else Seq(new Foreach[S](sz / 2), new Foreach[S](sz / 2))
+  }
+
+  val pool = new ForkJoinPool(parallelismLevel, new DefaultThreadFactory(parallelismLevel / 2), null, false)
+
+  def test() {
+    val fjtask = new WrappedTask(new Foreach(size))
+
+    pool.execute(fjtask)
+    fjtask.sync()
+
+    print('.')
+  }
+
+  def main(args: Array[String]): Unit = {
+    val repeats = 100000
+    for (i <- 1 to repeats) test()
+    println("Done.")
+    sys.exit()
+  }
+}
+
+Test.main(null)
+{code}
+
+

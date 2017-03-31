@@ -1,0 +1,42 @@
+The problem is not with SBT.
+
+@sciss: to track down the problem outside of SBT, use 'debug' then 'compile' Copy the compiler arguments to a file, and then you can run scalac directly, as below.
+
+I'm looking further into this and will report back.
+
+
+{code}
+ ~/code/scalaaudiofile_2.8.0.RC2-0.10-project: scalac -version
+Scala compiler version 2.8.0.RC2 -- Copyright 2002-2010, LAMP/EPFL
+
+ ~/code/scalaaudiofile_2.8.0.RC2-0.10-project: scalac @compile.args
+Exception in thread "main" scala.tools.nsc.symtab.Types$$TypeError: type mismatch;
+ found   : Product with de.sciss.synth.io.SampleFormat{def bidiFactory(): Some[Any]; def writerFactory(): Some[Any]; def readerFactory(): Some[Any]}
+ required: Product with de.sciss.synth.io.SampleFormat{def bidiFactory(): Some[Any]; def writerFactory(): Some[Any]; def readerFactory(): Some[Any]} with NotNull
+	at scala.tools.nsc.typechecker.Contexts$$Context.error(Contexts.scala:274)
+	at scala.tools.nsc.typechecker.Infer$$Inferencer.error(Infer.scala:214)
+	at scala.tools.nsc.typechecker.Infer$$Inferencer.typeError(Infer.scala:224)
+	at scala.tools.nsc.typechecker.Infer$$Inferencer.typeErrorTree(Infer.scala:239)
+	at scala.tools.nsc.typechecker.Typers$$Typer.adapt(Typers.scala:991)
+	
+[snip]
+	at scala.tools.nsc.Main$$.main(Main.scala:123)
+	at scala.tools.nsc.Main.main(Main.scala)
+
+ ~/code/scalaaudiofile_2.8.0.RC2-0.10-project: cat compile.args 
+-deprecation
+-d
+/Users/jason/code/scalaaudiofile_2.8.0.RC2-0.10-project/target/scala_2.8.0.RC2/classes
+-bootclasspath
+/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/jsfd.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/classes.jar:/System/Library/Frameworks/JavaVM.framework/Frameworks/JavaRuntimeSupport.framework/Resources/Java/JavaRuntimeSupport.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/ui.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/laf.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/sunrsasign.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/jsse.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/jce.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/charsets.jar:/Users/jason/code/scalaaudiofile_2.8.0.RC2-0.10-project/project/boot/scala-2.8.0.RC2/lib/scala-library.jar
+-cp
+/Users/jason/code/scalaaudiofile_2.8.0.RC2-0.10-project/target/scala_2.8.0.RC2/classes:/Users/jason/code/scalaaudiofile_2.8.0.RC2-0.10-project/project/boot/scala-2.8.0.RC2/lib/scala-compiler.jar
+/Users/jason/code/scalaaudiofile_2.8.0.RC2-0.10-project/src/main/scala/de/sciss/synth/io/AudioFileSpec.scala
+/Users/jason/code/scalaaudiofile_2.8.0.RC2-0.10-project/src/main/scala/de/sciss/synth/io/SampleFormat.scala
+/Users/jason/code/scalaaudiofile_2.8.0.RC2-0.10-project/src/main/scala/de/sciss/synth/io/BufferHandler.scala
+/Users/jason/code/scalaaudiofile_2.8.0.RC2-0.10-project/src/main/scala/de/sciss/synth/io/AudioFile.scala
+/Users/jason/code/scalaaudiofile_2.8.0.RC2-0.10-project/src/main/scala/de/sciss/synth/io/impl/AIFFHeader.scala
+/Users/jason/code/scalaaudiofile_2.8.0.RC2-0.10-project/src/main/scala/de/sciss/synth/io/AudioFileType.scala
+/Users/jason/code/scalaaudiofile_2.8.0.RC2-0.10-project/src/main/scala/de/sciss/synth/io/AudioFileHeader.scala
+/Users/jason/code/scalaaudiofile_2.8.0.RC2-0.10-project/src/main/scala/de/sciss/synth/io/ScalaAudioFile.scala
+{code}

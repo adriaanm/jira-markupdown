@@ -1,0 +1,27 @@
+It's easiest to just look at the attachment in order to understand the problem.
+
+The Java class _my.test.bl.bo.CashDrawer.getDrawer()_ is returning a type of _my.test.bl.bo.location.Drawer_. Scala thinks it's returning a type of _my.test.bl.bo.Drawer_ even though _CashDrawer_ specifically imports _my.test.bl.bo.location.Drawer_.
+
+{code:title=CashDrawer.java}
+package my.test.bl.bo;
+
+import my.test.bl.bo.location.Drawer;
+
+public class CashDrawer {
+    public static Drawer getDrawer() {
+        return new Drawer();
+    }
+}
+{code}
+
+Scala will interpret it correctly only if the type names are all fully qualified.
+
+{code:title=CashDrawer.java}
+package my.test.bl.bo;
+
+public class CashDrawer {
+    public static my.test.bl.bo.location.Drawer getDrawer() {
+        return new my.test.bl.bo.location.Drawer();
+    }
+}
+{code}

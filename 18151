@@ -1,0 +1,26 @@
+{code}
+object Test {
+
+  trait Foo
+
+  trait TC[A]
+
+  object TC {
+    implicit def tc1[F <: Foo] = new TC[F] {}
+    implicit def tc2[F1 <: Foo, F2 <: Foo] = new TC[(F1, F2)] {}
+  }   
+
+  object Bar {
+    trait X
+    val c = new Foo with X
+    def bar[A](a: this.type => A)(implicit tc: TC[A]) = 1
+  }
+
+  Bar bar (_.c)
+
+  Bar bar (b => (b.c, b.c))  // <- does not compile
+
+  Bar bar (b => (b.c: Foo, b.c))
+}
+{code}
+The next-to-last line does not compile due to implicit not being found. The last line compiles. It seems that the type of b.c is inferred to be Foo with b.X instead of Foo with Bar.X.

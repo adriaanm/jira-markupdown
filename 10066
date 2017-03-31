@@ -1,0 +1,28 @@
+I've run into a second problem related to this:
+
+{noformat}
+object Test {
+  class Observable[+T](val asJava: JObservable[_ <: T]) extends AnyVal {
+    private def foo[X](a: JObservable[X]): JObservable[X] = ???
+    def window(count: Int): Observable[Observable[T]] = {
+      // this line makes the compiler crash (if it's the last line of this method):
+      // convert(asJava.window())
+      
+      // this line gives an error:
+      // "type mismatch; found : Test.JObservable[Test.JObservable[_$1]] required: Test.JObservable[Test.JObservable[T]]"
+      // convert(asJava.window(): JObservable[JObservable[T]])
+      
+      // workaround:
+      convert(asJava.window().asInstanceOf[JObservable[JObservable[T]]])
+    }
+  }
+  
+  class JObservable[T] {
+    def window(): JObservable[JObservable[T]] = ???
+  }
+  
+  def convert[T](jObs: JObservable[JObservable[T]]): Observable[Observable[T]] = ???
+}
+{noformat}
+
+The only workaround I found was a typecast. Is there a safer workaround?

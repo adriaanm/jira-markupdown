@@ -1,0 +1,86 @@
+I'm currently running a simple benchmark to decide which ScriptEngine I should incorporate in my project. This project requires for a massive amount of *small, short-lived, yet changing* script executions to be made concurrently (meaning that I can't just cache these scripts).
+
+Therefore, the overhead of the method "AbstractScriptEngine.eval" and of the general ScriptEngine mechanism is crucial to me. I also care about the performance of "ScriptEngineManager.getEngineByName" but it's less critical, because in my context the engine itself can be cached much longer than the scripts themselves.
+
+Based on my results and as of the scala compiler in version 2.12.0, it seems I'd have to pay, approximately, a 200 ms toll for evaluating a script that only prints a simple value to the standard output, and a 3500 to 4500 seconds toll for invoking the engine.
+
+This basically means I can not use scala or at least this implementation of the compiler in my project.
+
+I compared the performance of scala's implementation of JSR 223 to other engines (groovy, rhino, nashorn, jython, I also tried jruby but I'm running into a bug there). In every of the other three working scenarios, not only is the execution time of both methods much faster but it reduces dramatically when the process is repeated inside the same JVM, which leads me to believe that :
+
+1- other JSR-223 implementations cache the compiler classes (and possibly more)
+2- the scala implementation could probably be optimized in the same way, which means in turn that I could use scala in my project
+
+So I went ahead and started profiling both calls (getEngineByName and eval). Here are the response time distributions in the sub-packages:
+
+getEngineByName : !getEngineByName.JPG|thumbnail!
+
+eval : !eval.JPG|thumbnail!
+
+
+I might not be the only one facing this problem and I think this would improve scala's chances to be adopted by people with more of a Java background like myself.
+
+I'm also copy-pasting the code the test program I used to compare the different engines (see below). For profiling I just iterated many times over the scala one.
+
+Could someone please look at these findings and tell me if the suggested optimization (caching) can be implemented and if yes, would someone do it / by when?
+
+Best Regards,
+
+Dorian Cransac
+
+{code:java}
+
+import javax.script.Bindings;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+import javax.script.SimpleBindings;
+
+public class TestEngine {
+
+	public static void main(String...strings){
+
+	for(String s : new String[] {"groovy", "scala", "rhino", "nashorn", "jython", "jruby"})
+		//for(String s : new String[] {"scala"})
+		{
+			for(int i = 0; i <3; i++)
+				speedTest(s);
+		}		
+	}
+	
+	public static void speedTest(String engineKey){
+		long s1 = System.currentTimeMillis();
+		ScriptEngine engine = new ScriptEngineManager().getEngineByName(engineKey);
+		long end1 = System.currentTimeMillis();
+		
+		if(engine == null){
+			System.out.println(engineKey + " engine not found.");
+			return;
+		}
+		
+		String script = null;
+		if(engineKey.equals("jython"))
+			script = "from java.lang import System as javasystem\njavasystem.out.println(\""+engineKey+"\")";
+		else{
+			script = "java.lang.System.out.println(\""+engineKey+"\")";
+		}
+		
+		Bindings b = new SimpleBindings();
+		//b.put("n", 10);
+		
+
+		
+		try {
+			long s2 = System.currentTimeMillis();
+			//engine.eval("1 to n.asInstanceOf[Int] foreach java.lang.System.out.println", b);
+			engine.eval(script);
+			long end2 = System.currentTimeMillis();
+			System.out.println("getEngineByName:" + (end1 - s1) + ", eval:" + (end2-s2));
+		} catch (ScriptException e) {
+			e.printStackTrace();
+		}
+	}
+
+}
+
+{code}

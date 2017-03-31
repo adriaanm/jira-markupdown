@@ -1,0 +1,36 @@
+Suppose we have the following Java source file:
+
+{code}
+package example;
+
+public class Example {
+}
+{code}
+
+And suppose we also have the following Scala source file:
+
+{code}
+package object example {
+	def Example() = new Example()
+}
+{code}
+
+If we compile like this:
+
+{code}
+$$ scalac -sourcepath . example/package.scala
+./example/Example.java:3: error: Example is already defined as method Example
+public class Example {
+             ^
+one error found
+{code}
+
+But if we compile like this:
+
+{code}
+$$ scalac -sourcepath . example/package.scala example/Example.java
+{code}
+
+…it works fine.
+
+This behavior does not appear to be intentional.

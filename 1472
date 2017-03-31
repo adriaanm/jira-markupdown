@@ -1,0 +1,54 @@
+I've just been bitten by this bug too, in 2.7.7.RC2.
+
+I assume that the comment above by DRMacIver that immutable hash maps are broken by design in concurrent situations does not reflect the overall goals of the Scala team. An immutable data structure that is not thread-safe does not have much reason for existing.
+
+The Clojure folks have made a big deal of their immutable maps (see, for example, http://blog.higher-order.net/2009/09/08/understanding-clojures-persistenthashmap-deftwice/), so to see whether they indeed behave better, I downloaded Clojure 1.0.0 and replaced scala.collection.immutable.Map with a wrapper for its PersistentHashMap:
+
+{code}
+    import clojure.lang.PersistentHashMap
+    
+    object Map {
+    
+        def empty[A,B]: Map[A,B] = new PersistentMap[A,B](PersistentHashMap.EMPTY)
+    
+        def apply[A,B] (elems: (A,B)*) = empty[A,B] ++ elems
+    
+    }
+    
+    class PersistentMap[A,B] (private val m: PersistentHashMap) extends Map[A,B] {
+    
+        def empty[C]: Map[A,C] = Map.empty[A,C]
+    
+        def get (key: A): Option[B] = {
+            val e = m.entryAt(key)
+            if (e == null) None
+            else Some(e.getValue.asInstanceOf[B])
+        }
+    
+        def update[B1 >: B] (key: A, value: B1): Map[A,B1] =
+            new PersistentMap[A,B1](
+                m.assoc(key,value).asInstanceOf[PersistentHashMap])
+    
+        def - (key: A): Map[A,B] =
+            new PersistentMap[A,B](m.without(key).asInstanceOf[PersistentHashMap])
+    
+        override def size: Int = m.size
+    
+        def elements =
+            new Iterator[(A,B)] {
+                val it = m.iterator
+                def hasNext = it.hasNext
+                def next: (A,B) = {
+                    val e = it.next.asInstanceOf[java.util.Map.Entry[A,B]]
+                    (e.getKey,e.getValue)
+                }
+            }
+    
+    }
+{code}
+
+I reran my test where scala.collection.immutable.HashMap had failed, and the test completed without error.
+
+Other tests I have performed suggest that, when a map has been extensively modified, clojure.lang.PersistentHashMap also has a much smaller memory footprint than scala.collection.immutable.HashMap.
+
+You may want to consider reimplementing Scala's hash map to resemble Clojure's.

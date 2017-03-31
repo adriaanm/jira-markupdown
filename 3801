@@ -1,0 +1,57 @@
+Replying to [comment:9 SethTisue]:
+> this discussion is difficult to follow. Eastsun proposes a fix, but what bug does it fix? I'm not clear on why this is a separate ticket from SI-2634.
+> 
+> is there something short I can type into the REPL to see for myself that Stream.iterator needs to be "more lazy"?
+
+{code}
+scala> val num1: Stream[Int] = 1 #:: num1.map{ _+1 }
+num1: Stream[Int] = Stream(1, ?)
+
+scala> num1.take(10).toList
+res1: List[Int] = List(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+
+scala> val num2: Stream[Int] = 1 #:: num2.iterator.map{ _+1 }.toStream
+num2: Stream[Int] = Stream(1, ?)
+
+scala> num2.take(10).toList
+java.lang.StackOverflowError
+        at scala.collection.LinearSeqLike$$$$anon$$1.hasNext(LinearSeqLike.scala:54)
+        at scala.collection.Iterator$$$$anon$$19.hasNext(Iterator.scala:368)
+        at scala.collection.Iterator$$class.toStream(Iterator.scala:1011)
+        at scala.collection.Iterator$$$$anon$$19.toStream(Iterator.scala:367)
+        at $$anonfun$$1.apply(<console>:5)
+        at $$anonfun$$1.apply(<console>:5)
+        at scala.collection.immutable.Stream$$Cons.tail(Stream.scala:571)
+        at scala.collection.immutable.Stream$$Cons.tail(Stream.scala:565)
+        at scala.collection.LinearSeqLike$$$$anon$$1.next(LinearSeqLike.scala:57)
+        at scala.collection.Iterator$$$$anon$$19.next(Iterator.scala:369)
+        at scala.collection.Iterator$$class.toStream(Iterator.scala:1011)
+        at scala.collection.Iterator$$$$anon$$19.toStream(Iterator.scala:367)
+        at $$anonfun$$1.apply(<...
+{code}
+
+And with lazy iterator:
+{code}
+scala> def lazyItr[A](xs: Stream[A]): Iterator[A] = new Iterator[A] {
+     |
+     |     class LazyCell(st: => Stream[A]){ lazy val v = st }
+     |
+     |     var these = new LazyCell(xs)
+     |     def hasNext: Boolean = !these.v.isEmpty
+     |     def next: A =
+     |       if (hasNext) {
+     |         val cur = these.v
+     |         val result = cur.head
+     |         these = new LazyCell(cur.tail)
+     |         result
+     |       } else Iterator.empty.next
+     | }
+lazyItr: [A](xs: Stream[A])Iterator[A]
+
+scala> val num3: Stream[Int] = 1 #:: lazyItr(num3).map{ _+1 }.toStream
+num1: Stream[Int] = Stream(1, ?)
+
+scala> num3.take(10).toList
+res0: List[Int] = List(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+{code}
+

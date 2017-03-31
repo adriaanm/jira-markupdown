@@ -1,0 +1,17 @@
+The Scala REPL should load dependencies referenced in MANIFEST.MF files of other JARs on the classpath.
+
+As described in https://support.typesafe.com/tickets/1585:
+
+{quote}
+We have JAR files that contain standard META-INF/MANIFEST.MF files with the Class-Path: entry. This entry points to a number of other JARs that should be loaded transitively by the ClassLoader. Unfortunately the REPL does not load these transitive dependencies, instead dependency JARs need to be placed on the classpath explicitly one by one.
+
+As an example let's say I have A.jar and B.jar. I also have a C.jar that has nothing else in it than a MANIFEST.MF with 'Class-Path: A.jar B.jar'. If I use
+
+> scala -classpath A.jar;B.jar
+
+everything is ok. I can e.g import A and import B. However, if I use
+
+> scala -classpath C.jar
+
+I couldn't import or use any classes from A.jar or B.jar.
+{quote}

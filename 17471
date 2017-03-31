@@ -1,0 +1,33 @@
+I keep getting crashes like the one below in the IDE. I mentioned it in one of the Scala meetings and Martin's comment was that 'updateInfo' is *not* supposed to be used inside the type checker.
+
+Unfortunately I can't reproduce it at will, but using the IDE for a while, you'll start noticing it.
+
+{code}
+[org.scalaide.worksheet] ScriptCompilationUnit.scala:1: Presentation compiler crashed while type checking this file: java.lang.AssertionError: assertion failed: (2,1)
+[org.scalaide.worksheet] type checking: ScalaReconcilingStrategy.scala
+2012-09-25 18:15:40,667 ERROR [Worker-3541] - SemanticHighlightingAnnotationsManager - Error performing semantic highlighting
+java.lang.AssertionError: assertion failed: (2,1)
+	at scala.reflect.internal.Symbols$Symbol.updateInfo(Symbols.scala:1243)
+	at scala.reflect.internal.Symbols$Symbol.makeSerializable(Symbols.scala:1473)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedModuleDef(Typers.scala:1705)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:5300)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:5357)
+	at scala.tools.nsc.typechecker.Typers$Typer.scala$tools$nsc$typechecker$Typers$Typer$$typedStat$1(Typers.scala:2684)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$55.apply(Typers.scala:2784)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$55.apply(Typers.scala:2784)
+	at scala.collection.immutable.List.loop$1(List.scala:164)
+	at scala.collection.immutable.List.mapConserve(List.scala:180)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:2784)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedPackageDef$1(Typers.scala:5026)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:5303)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:5357)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:5408)
+	at scala.tools.nsc.typechecker.Analyzer$typerFactory$$anon$3.apply(Analyzer.scala:98)
+	at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:461)
+	at scala.tools.nsc.interactive.Global$TyperRun$$anonfun$applyPhase$1.apply(Global.scala:1084)
+	at scala.tools.nsc.interactive.Global$TyperRun$$anonfun$applyPhase$1.apply(Global.scala:1084)
+	at scala.reflect.internal.SymbolTable.atPhase(SymbolTable.scala:201)
+	at scala.tools.nsc.interactive.Global$TyperRun.applyPhase(Global.scala:1084)
+	at scala.tools.nsc.interactive.Global$TyperRun.typeCheck(Global.scala:1077)
+	at scala.tools.nsc.interactive.Global.scala$tools$nsc$interactive$Global$$typeCheck(Global.scala:563)
+{code}

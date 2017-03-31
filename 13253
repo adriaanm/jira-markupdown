@@ -1,0 +1,31 @@
+The Parser expects a semicolon or an additional newline after the annotated type.
+
+{code}
+class ann extends Annotation
+object A {
+  type t = Int @ann
+  def a: t = 1
+}
+
+
+TypeNl.scala:5: error: ';' expected but 'def' found.
+  def a: t = 1
+  ^
+one error found
+{code}
+
+
+This is because annotations may be separated by newlines, which makes sense when they're used as prefix (e.g. at a definition). The following is recognized by the parser:
+
+{code}
+object B {
+  @ann
+  @ann
+  def a = 1
+
+  type t = int @ann
+  @ann
+
+  def b: t = 1
+}
+{code}

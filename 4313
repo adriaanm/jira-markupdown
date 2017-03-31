@@ -1,0 +1,68 @@
+I'm not sure if it is exactly the same, but I can get the crash in Scala version 2.10.0.r25323-b20110719020429 with much simpler code:
+
+{code}
+import scala.reflect.Code
+def codeOf[A](code: Code[A]) = code
+{code}
+
+{code}
+codeOf((x: Iterator[A]) => x.sum)
+{code}
+
+results in a StackOverflowError:
+
+{code}
+scala> codeOf((x: Iterable[Int]) => x.head)
+java.lang.StackOverflowError
+	at scala.tools.nsc.transform.LiftCode.reify(LiftCode.scala:21)
+	at scala.tools.nsc.transform.Reifiers$class.reify(Reifiers.scala:57)
+	at scala.tools.nsc.transform.LiftCode.reify(LiftCode.scala:21)
+	at scala.tools.nsc.transform.Reifiers$class.reify(Reifiers.scala:64)
+	at scala.tools.nsc.transform.LiftCode.reify(LiftCode.scala:21)
+	at scala.tools.nsc.transform.Reifiers$$anonfun$3.apply(Reifiers.scala:89)
+	at scala.tools.nsc.transform.Reifiers$$anonfun$3.apply(Reifiers.scala:87)
+	at scala.collection.TraversableLike$$anonfun$map$1.apply(TraversableLike.scala:197)
+	at scala.collection.TraversableLike$$anonfun$map$1.apply(TraversableLike.scala:197)
+	at scala.collection.LinearSeqOptimized$class.foreach(LinearSeqOptimized.scala:59)
+	at scala.collection.immutable.List.foreach(List.scala:45)
+	at scala.collection.TraversableLike$class.map(TraversableLike.scala:197)
+	at scala.collection.immutable.List.map(List.scala:45)
+	at scala.tools.nsc.transform.Reifiers$class.reify(Reifiers.scala:87)
+	at scala.tools.nsc.transform.LiftCode.reify(LiftCode.scala:21)
+	at scala.tools.nsc.transform.Reifiers$class.mkGlobalSymbol(Reifiers.scala:20)
+	at scala.tools.nsc.transform.Reifiers$class.reify(Reifiers.scala:38)
+	at scala.tools.nsc.transform.LiftCode.reify(LiftCode.scala:21)
+	at scala.tools.nsc.transform.Reifiers$class.reify(Reifiers.scala:32)
+	at scala.tools.nsc.transform.LiftCode.reify(LiftCode.scala:21)
+	at scala.tools.nsc.transform.Reifiers$$anonfun$reify$2.apply(Reifiers.scala:92)
+	at scala.tools.nsc.transform.Reifiers$$anonfun$reify$2.apply(Reifiers.scala:92)
+	at scala.collection.TraversableLike$$anonfun$map$1.apply(TraversableLike.scala:197)
+	at scala.collection.TraversableLike$$anonfun$map$1.apply(TraversableLike.scala:197)
+	at scala.collection.LinearSeqOptimized$class.foreach(LinearSeqOptimized.scala:59)
+	at scala.collection.immutable.List.foreach(List.scala:45)
+	at scala.collection.TraversableLike$class.map(TraversableLike.scala:197)
+	at scala.collection.immutable.List.map(List.scala:45)
+	at scala.tools.nsc.transform.Reifiers$class.reify(Reifiers.scala:92)
+	at scala.tools.nsc.transform.LiftCode.reify(LiftCode.scala:21)
+	at scala.tools.nsc.transform.Reifiers$class.mkGlobalSymbol(Reifiers.scala:20)
+	at scala.tools.nsc.transform.Reifiers$class.reify(Reifiers.scala:38)
+	at scala.tools.nsc.transform.LiftCode.reify(LiftCode.scala:21)
+	at scala.tools.nsc.transform.Reifiers$class.reify(Reifiers.scala:32)
+	at scala.tools.nsc.transform.LiftCode.reify(LiftCode.scala:21)
+	at scala.tools.nsc.transform.Reifiers$$anonfun$reify$2.apply(Reifiers.scala:92)
+	at scala.tools.nsc.transform.Reifiers$$anonfun$reify$2.apply(Reifiers.scala:92)
+	at scala.collection.TraversableLike$$anonfun$map$1.apply(TraversableLike.scala:197)
+	at scala.collection.TraversableLike$$anonfun$map$1.apply(TraversableLike.scala:197)
+	at scala.collection.LinearSeqOptimized$class.foreach(LinearSeqOptimized.scala:59)
+	at scala.collection.immutable.List.foreach(List.scala:45)
+	at scala.collection.TraversableLike$class.map(TraversableLike.scala:197)
+	at scala.collection.immutable.List.map(List.scala:45)
+        ...
+{code}
+
+Replacing the type with an existential does not reify it, but prevents the crash.
+{code}
+scala> codeOf((x: Iterable[_]) => null)
+could not reify: Iterable[_]
+res14: scala.reflect.Code[Iterable[_] => Null] = scala.reflect.Code@3c21251c
+{code}

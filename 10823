@@ -1,0 +1,48 @@
+If this is not a bug, then it could be a feature improvement for the compiler to not warn against it. The following will properly catch a ^C and shutdown in a way that allows all the futures to finish. I feel that this is useful and not an "unused val." Yet compiling warns against it.
+
+{code}
+object Test {
+
+  import scala.concurrent.Future
+  import scala.concurrent.ExecutionContext.Implicits.global
+  import scala.collection.mutable
+
+  private val shutdownHook = sys.addShutdownHook(shutdown())
+  private var shouldRun = true
+  private var workers = new mutable.HashSet[Future[Long]]
+  private var lastCompletedWorker = 0L
+  private lazy val SYSTEM_SHUTDOWN_TIMEOUT = 3000L
+
+  def main(args: Array[String]) {
+    receive()
+  }
+
+  private def receive(): Unit = {
+
+    workers += Future {
+      Thread.sleep(1000)
+      val t = System.currentTimeMillis
+      println(t)
+      t
+    }
+    println("Workers: " + workers.size)
+    lazy val completed = workers.filter(_.isCompleted)
+
+    if (completed.size > 0) lastCompletedWorker = System.currentTimeMillis
+
+    workers --= completed
+    Thread.sleep(100)
+    if (shouldRun) receive()
+  }
+
+  private def shutdown() {
+    println("Shutting down")
+    shouldRun = false
+    while (workers.size > 0 && System.currentTimeMillis - lastCompletedWorker < SYSTEM_SHUTDOWN_TIMEOUT) {
+      // do nothing
+    }
+    println("Workers done")
+  }
+
+}
+{code}

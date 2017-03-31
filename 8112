@@ -1,0 +1,35 @@
+Note that if I define child in A2 like this:
+{code}
+override def child(e: A2.super.Element):Unit = super.child(e)
+{code}
+Then the signatures match and the override is fine, but we have a different and also true error:
+{noformat}
+./a.scala:18: error: class Element needs to be abstract, since method child in trait Elt of type (e: A2.this.Element)Unit is not defined
+(Note that A.this.Element does not match A2.this.Element)
+  class Element extends super.Element {
+        ^
+one error found
+{noformat}
+...because the method signature in A2#Element no longer matches the abstract signature defined in A#Elt. Just for fun I will call super.child from THAT method so we can see all the types at play. This compiles.
+{code}
+trait A {
+  type Element<:Elt
+  trait Elt {
+    def doIt(x:Int):Int
+    def child(e:Element):Unit
+  }
+}
+class A1 extends A {
+  class Element extends Elt {
+    def doIt(x:Int):Int = x+3
+    def child(e: A1.this.Element):Unit = ()
+  }
+}
+class A2 extends A1 {
+  class Element extends super.Element {
+    override def doIt(x:Int):Int = super.doIt(x)+1
+    override def child(e: A2.super.Element):Unit = super.child(e)
+    def child(e: A2.this.Element):Unit = super.child(e: A2.super.Element)
+  }
+}
+{code}

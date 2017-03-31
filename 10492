@@ -1,0 +1,32 @@
+Noting that my patch can lead to SOE.
+
+{code}
+scala> trait T[A] { val foo: { type B = A } = ???; def bar(b: foo.B) = () }
+defined trait T
+
+scala> object O extends T[Int] { /*bar(0)*/ }
+defined object O
+
+scala> val bar = typeOf[T[_]].member(newTermName("bar"))
+bar: $r.intp.global.Symbol = method bar
+
+scala> typeOf[O.type].memberInfo(bar)
+res0: $r.intp.global.Type = (b: O.foo.B)Unit
+
+scala> val seenFromParamType = typeOf[O.type].memberInfo(bar).params.head.info
+seenFromParamType: $r.intp.global.Type = O.foo.B
+
+scala> val paramType = bar.info.params.head.info
+paramType: $r.intp.global.Type = T.this.foo.B
+
+scala> val seenFromParamTypePreInfo = seenFromParamType.asInstanceOf[TypeRef].pre.typeSymbol.info
+seenFromParamTypePreInfo: $r.intp.global.Type = AnyRef{type B = Int}
+
+scala> val paramTypePreInfo = paramType.asInstanceOf[TypeRef].pre.typeSymbol.info
+paramTypePreInfo: $r.intp.global.Type = AnyRef{type B = A}
+
+scala> seenFromParamTypePreInfo <:< paramTypePreInfo
+KABOOM
+{code}
+
+The `<:<` added to `nextBase` can recursively call `asSeenFrom` by way of `specializedSym`.

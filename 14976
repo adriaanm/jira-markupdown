@@ -1,0 +1,20 @@
+Compiler error when using multiple <- clauses and yield statement:
+    val res = for {
+      line <- Source.fromFile(file).getLines();
+      item <- getStr(line)
+    } yield item
+
+Scala compiler version 2.8.0.Beta1-prerelease -- Copyright 2002-2010, LAMP/EPFL
+~/workspace/ssim/EventLogger/trunk/tools/makeddl$$ scalac src/test/Main.scala 
+src/test/Main.scala:30: error: type mismatch;
+ found   : Option[String]
+ required: Iterator[?]
+      item <- getStr(line)
+           ^
+one error found
+
+However the same code compiles if the yield is replaced with simple println:
+    for {
+      line <- Source.fromFile(file).getLines();
+      item <- getStr(line)
+    } println(item)

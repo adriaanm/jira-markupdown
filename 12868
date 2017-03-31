@@ -1,0 +1,13 @@
+This implicit removes too much type safety, and can lead to confusing results.
+
+I think this is more important than the '+' operator being symmetric.
+
+
+_UPDATE 2015-07-29_:
+*Workaround*: You can opt-out on a per-file basis by unimporting it.
+{code}
+import Predef.{any2stringadd => _,_}
+object foo extends App{
+  println(new java.util.Date + " sfsdf") // error: value + is not a member of java.util.Date
+}
+{code}

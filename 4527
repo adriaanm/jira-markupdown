@@ -1,0 +1,24 @@
+One solution is special-casing:
+
+{code}
+  @inline private def buildsThis[B, That](bf: CanBuildFrom[Stream[A], B, That]) = bf.isInstanceOf[Stream.StreamCanBuildFrom[_]]
+  @inline private def ifTargetThis[B, That](bf: CanBuildFrom[Stream[A], B, That])(ifStream: => Stream[B])(notStream: => That): That =
+    if (buildsThis(bf)) ifStream.asInstanceOf[That]
+    else notStream
+
+  override final def map[B, That](f: A => B)(implicit bf: CanBuildFrom[Stream[A], B, That]): That = {
+    val r = ifBuildStream[B, That](bf) {
+      if (isEmpty) Stream.Empty
+      else new Stream.Cons(f(head), asStream[B](tail map f))
+    } {
+      super.map(f)(bf)
+    }
+    r
+  }
+
+{code}
+
+and refactoring it to extract common functionality for all collections with custom build rules.
+
+Or, change `breakOut` to disallow breaking out custom collections.
+

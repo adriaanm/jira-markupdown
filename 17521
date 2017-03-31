@@ -1,0 +1,20 @@
+The generated html files (e.g. index.html) contains both an XML processing instruction:
+
+    <?xml version='1.0' encoding='UTF-8'?>
+
+and a doctype declaration:
+
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+But some browsers (e.g. Google Chrome) are so strict that when this page is served as an XML document, it will complain about a lot of problems and will refuse to render the page as expected.
+
+When serving a document from a web server without a Context-Type HTTP header, Firefox will treat it as text/html, but Chrome will treat it as XML.
+
+It is easy to workaround. Directly opening an index.html file from the local filesystem has no problem. Serving the document as Content-Type: text/html also works.
+
+But this does not change the fact that the document is invalid.
+
+See the validation result:
+
+    http://validator.w3.org/check?uri=http%3A%2F%2Fwww.scala-lang.org%2Fapi%2Fcurrent%2Findex.html&charset=%28detect+automatically%29&doctype=Inline&group=0
+

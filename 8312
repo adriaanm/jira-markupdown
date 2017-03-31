@@ -1,0 +1,41 @@
+One reasonably easy way to reproduce this is to type: something<tab><tab><enter>
+If I wait few seconds before typing it doesn't happen.
+Also, it cannot be reproduced if some (simple) expression is evaluated first, like integer 1.
+
+I've seen few times the stack trace mentioned in this bug and those mentioned in SI-6510.
+In addition there where plenty of new assertion errors and exceptions thrown.
+
+Some of the new errors I saw:
+{code}
+unrecoverable error
+        at scala.reflect.internal.SymbolTable.abort(SymbolTable.scala:48)
+        at scala.tools.nsc.Global.abort(Global.scala:253)
+        at scala.tools.nsc.interpreter.IMain$$anon$1.scala$tools$nsc$interpreter$ReplGlobal$$super$abort(IMain.scala:265)
+{code}
+{code}
+posterasure
+        at scala.Predef$.assert(Predef.scala:179)
+        at scala.tools.nsc.Global.assert(Global.scala:238)
+        at scala.tools.nsc.transform.Erasure$ErasureTransformer.bridgeDefs(Erasure.scala:971)
+{code}
+{code}
+This is a bug, please, report it along with the error diagnostics printed below.
+java.lang.AssertionError: assertion failed: TypeHistory(namer:2,()List[Imports.this.global.TypeName],TypeHistory(patmat:2,=> List[Imports.this.global.TypeName],null))
+        at scala.Predef$.assert(Predef.scala:179)
+        at scala.reflect.internal.Symbols$TypeHistory.<init>(Symbols.scala:3280)
+{code}
+{code}
+This is a bug, please, report it along with the error diagnostics printed below.
+java.lang.AssertionError: assertion failed: TypeHistory(namer:2,Object
+        with scala.tools.nsc.interpreter.Imports {
+  private[this] val initialSettings: scala.tools.nsc.Settings
+... 
+  def typeOfExpression$default$2: Boolean @scala.annotation.unchecked.uncheckedVariance
+},null))
+        at scala.Predef$.assert(Predef.scala:179)
+        at scala.reflect.internal.Symbols$TypeHistory.<init>(Symbols.scala:3280)
+        at scala.reflect.internal.Symbols$Symbol.rawInfo(Symbols.scala:1301)
+{code}
+
+
+I was testing with 2.10.0-RC1. 

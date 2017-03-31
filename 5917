@@ -1,0 +1,26 @@
+Using r24861, with {{-optimise -Xprint-icode}} the loop gets compiled to 
+
+{code}
+  def main(args: Array[java.lang.String] (ARRAY[REF(class String)])): Unit {
+  locals: value args
+  startBlock: 1
+  blocks: r1
+  
+  1: 
+    4	LOAD_MODULE object Predef
+    4	CONSTANT(1)
+    4	CALL_METHOD scala.LowPriorityImplicits.intWrapper (dynamic)
+    4	CONSTANT(1000)
+    4	CALL_METHOD scala.runtime.RichInt.to (dynamic)
+    4	NEW REF(anonymous class SpeedTest$$$$anonfun$$main$$1)
+    4	DUP(REF(anonymous class SpeedTest$$$$anonfun$$main$$1))
+    4	CALL_METHOD SpeedTest$$$$anonfun$$main$$1.<init> (static-instance)
+    4	CALL_METHOD scala.collection.immutable.Range.foreach$$mVc$$sp (dynamic)
+    4	RETURN(UNIT)
+    
+  }
+{code}
+
+Compiling in 2.8.1 delivers the same except the call is on {{Range.forach}} and not {{Range.foreach$$mVc$$sp}}
+
+The warning in 2.9 provides useful information, I guess. 

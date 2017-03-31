@@ -1,0 +1,30 @@
+The following code behaves inconsistently when executed as it creates a forward reference to Wanted.Default:
+
+{code}
+object Wants {
+
+  implicit val nope = new AnyRef with Wanted
+
+  def main(args: Array[String]) {
+    import Wanted._
+    println(nope eq implicitly[Wanted])
+    println(Wanted.Default eq implicitly[Wanted])
+    println(nope eq implicitly[Wanted])
+  }
+}
+
+trait Wanted
+
+object Wanted {
+  implicit object Default extends Wanted
+}
+{code}
+
+It produces the following output:
+{code}
+true
+true
+false
+{code}
+
+When moving {{object Wants}} to the bottom of the file the expected output is produced.

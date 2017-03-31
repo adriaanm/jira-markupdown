@@ -1,0 +1,44 @@
+{code}
+import scala.language.experimental.macros
+import scala.reflect.macros.Context
+
+trait Exprs {
+  self: Universe =>
+
+  class Expr[T]
+}
+
+trait Reifiers {
+  self: Universe =>
+
+  type Expr[T]
+
+  def reify[T](expr: T): Expr[T] = macro Impls.reify[T]
+}
+
+trait Universe extends Exprs with Reifiers
+
+object Impls {
+  def reify[T](cc: Context{ type PrefixType = Reifiers })(expr: cc.Expr[T]): cc.Expr[cc.prefix.value.Expr[T]] = ???
+}
+{code}
+
+{code}
+17:16 ~/Projects/210x/sandbox (2.10.x)$ s
+Test.scala:15: error: macro implementation has incompatible shape:
+ required: (c: scala.reflect.macros.Context)(expr: c.Expr[T]): c.Expr[c.prefix.value.Expr[T]]
+ found   : (cc: scala.reflect.macros.Context{type PrefixType = Reifiers})(expr: cc.Expr[T]): cc.Expr[cc.prefix.value.Expr[T]]
+type mismatch for return type: c.Expr[c.prefix.value.Expr[?T]] does not conform to c.Expr[c.prefix.value.Expr[T]]
+  def reify[T](expr: T): Expr[T] = macro Impls.reify[T]
+                                               ^
+Test.scala:13: warning: higher-kinded type should be enabled
+by making the implicit value scala.language.higherKinds visible.
+This can be achieved by adding the import clause 'import scala.language.higherKinds'
+or by setting the compiler option -language:higherKinds.
+See the Scala docs for value scala.language.higherKinds for a discussion
+why the feature should be explicitly enabled.
+  type Expr[T]
+       ^
+one warning found
+one error found
+{code}

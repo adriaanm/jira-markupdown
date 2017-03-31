@@ -1,0 +1,31 @@
+Weird, I just logged in to report this same bug.  How could it exist for so long and then be reported by two people on the same day, I don't know.
+
+It's even more problematic than illustrated above.  Here is how I ran into it:
+{code}
+trait Foo {
+  object bar {
+    private[this] def fn() = 5
+  }
+}
+
+trait Foo2 {
+  object bip {
+    def fn() = 10
+  }
+}
+
+class Bob extends AnyRef with Foo with Foo2 {
+  import bip._
+  import bar._
+  
+  def go() = fn()
+}
+
+// a.scala:17: error: reference to fn is ambiguous;
+// it is imported twice in the same scope by
+// import bar._
+// and import bip._
+//   def go() = fn()
+//              ^
+{code}
+It fails no matter what visibility restrictions one places on it - private, private[foo], private[this].

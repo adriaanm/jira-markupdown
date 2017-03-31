@@ -1,0 +1,12 @@
+I believe this is as it should be. Ret is an existential type. r1 has this existential type. Using r1 twice will give two different instantiations on T. I slightly changed the type disgnostic to make this clearer:
+{code}
+t0519.scala:10: error: type mismatch;
+ found   : (Test.Type[_1] forSome { type _1 >: T with T }, (T with T) => String) where type T, (some other)type T
+ required: Test.Ret
+val r2: Ret = if (true) r1 else r1
+              ^
+one error found
+{code}
+Aside: This is exactly the reason why dependent types are ``better_ than existential ones: Equalities don't get lost just by opening up a type of a value twice.
+
+

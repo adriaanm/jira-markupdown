@@ -1,0 +1,18 @@
+With "try-and-see method" I have found a way to partially resolve the issue. With replacing
+
+
+{code}
+    val reader = readers(file.getCharset)
+{code}
+
+with
+
+
+{code}
+    val reader = readers(project.underlying.getDefaultCharset)
+{code}
+
+in the method shown above we get first step to resolve the issue. Next (and last) step is to get IFile which is appropriate to 'g' or 'file' in terms of the method, and use iFile.getDefaultCharset instead of iProject.getDefaultCharset. Being absolutely zero in PDE (and having night transformed to early morning :) ) I have not found a way to get IFile yet.
+
+
+

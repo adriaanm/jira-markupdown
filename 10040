@@ -1,0 +1,23 @@
+A more focussed test case:
+
+{code}
+object Return {
+  class Box[A](a: A) {
+    // @noinline avoids crash.
+    final def map[B](f: A => B): Box[B] = new Box(f(a))
+  }
+
+  def test(oi: Box[Int]) {
+    var res: Any = null;
+    try {
+      res = {
+        val f = (a: Any) => throw new RuntimeException()
+        oi.map(f)
+        ()
+      }
+    } finally ()
+    ()
+  }
+}
+
+{code}

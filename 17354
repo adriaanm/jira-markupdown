@@ -1,0 +1,40 @@
+Given:
+
+{code}
+trait Foo[@specialized(Int) A] {
+  def foo[@specialized(Int) B](init: B)(f: (B, A) => B): B = init
+}
+
+class Bar[@specialized(Int) A] extends Foo[A] {
+  def bar1(init: A)(f: (A, A) => A): A = foo[A](init)(f)
+  def bar2(init: A)(f: (A, A) => A): A = super.foo[A](init)(f)
+}
+{code}
+
+In Bar$mcI$sp, we see the following: method bar2 delegates to the abstract base class specialized method Foo$mcI$sp$class.foo$mIcI$sp, without boxing; and method bar1 delegates to the inherited Foo$mcI$sp.foo (non-specialized) method.
+
+{code}
+public int bar1$mcI$sp(int, scala.Function2<java.lang.Object, java.lang.Object, java.lang.Object>);
+    Code:
+       0: aload_0       
+       1: iload_1       
+       2: invokestatic  #43                 // Method scala/runtime/BoxesRunTime.boxToInteger:(I)Ljava/lang/Integer;
+       5: aload_2       
+       6: invokeinterface #45,  3           // InterfaceMethod Foo$mcI$sp.foo:(Ljava/lang/Object;Lscala/Function2;)Ljava/lang/Object;
+      11: invokestatic  #49                 // Method scala/runtime/BoxesRunTime.unboxToInt:(Ljava/lang/Object;)I
+      14: ireturn       
+    
+  public int bar2$mcI$sp(int, scala.Function2<java.lang.Object, java.lang.Object, java.lang.Object>);
+    Code:
+       0: aload_0       
+       1: iload_1       
+       2: aload_2       
+       3: invokestatic  #33                 // Method Foo$mcI$sp$class.foo$mIcI$sp:(LFoo$mcI$sp;ILscala/Function2;)I
+       6: ireturn
+{code}
+
+Eric Osheim adds: 
+
+Using -Ydebug -Ylog:specialize and diffing the logs for the two methods I can see where they diverge, but I don't totally understand why (I think it will have something to do with the "<triedcooking>" flag that appears in the "this" case but not the "super" case).
+
+The two-second summary is that for the "this" case, by the time it starts looking at "foo" it has eagerly replaced the A's with Int, which means that when it goes to actually see if foo$mcI$sp is a valid method, it croaks because its A's have already been replaced.

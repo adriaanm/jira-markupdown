@@ -1,0 +1,84 @@
+OK so I'm not sure if I understand whether this is intentional, or a bug, or a symptom from Java wildcard type compatibility, but it's not what I expected. Maybe someone can clarify - let me talk you through what I tried to do and what I expected.
+
+The issue is with a type like this:
+
+{code}
+List[Foo[A,A] forSome {type A}]
+{code}
+
+I would expect this this to allow a list, each of whose values is a Foo[A,A] forSome {type A}, possibly each with a different value for the type A.
+
+I'm using my own Pair[A,B] rather than Tuple2 here because where there's variance the problem goes away (but where there's variance you don't need the existential types anyway):
+
+{code}
+scala> case class Pair[A,B](a : A, b : B)
+defined class Pair
+{code}
+
+Let's make some pairs. Here I don't care what the particular types A and B are, just that the two of them agree - existentially-scoped type to the rescue!
+
+{code}
+scala> val x : Pair[A,A] forSome {type A} = Pair(1,1)
+x: Pair[_, _] = Pair(1,1)
+
+scala> val y : Pair[A,A] forSome {type A} = Pair("a","a")
+y: Pair[_, _] = Pair(a,a)
+{code}
+
+OK, great, although are the two underscores in this inferred type separate type parameters (not what I wanted) or actually the same existentially-scoped type variable A (which isn't clear, and isn't consistent with how _ works for value arguments, acting as a different argument each time it appears in an expression) ?
+
+Let's try doing something bad to check:
+
+{code}
+scala> val y : Pair[A,A] forSome {type A} = Pair("a",1)
+<console>:6: error: type mismatch;
+ found   : Pair[java.lang.String,Int]
+ required: Pair[_, _]
+       val y : Pair[A,A] forSome {type A} = Pair("a",1)
+{code}
+
+OK, so it was the same type variable and it is enforcing that, in both places where it appeared, the same type is being used. This is what I wanted.
+
+Now let's try make a list of these different "Pair[A,A] forSome {type A}" values.
+
+{code}
+scala> List(x,y)
+res0: List[Pair[_ >: A with A, _ >: A with A]] forSome { type A; type A } = List(Pair(1,1), Pair(a,a))
+{code}
+
+Uh-oh, that type looks rather dodgy, and not what I wanted. Why are there two A's, why has it not just inferred List[Pair[A,A] forSome {type A}], since I stated that type explicitly for both x and y?
+
+Let me try explicitly typing it as the type which I wanted to use:
+
+{code}
+scala> val z : List[Pair[A,A] forSome {type A}] = List(x,y)
+<console>:8: error: type mismatch;
+ found   : List[Pair[_ >: A(in value z) with A, _ >: A(in value z) with A]] where type A, type A(in value z)
+ required: scala.List[Pair[_, _]]
+       val z : List[Pair[A,A] forSome {type A}] = List(x,y)
+{code}
+
+Damn. Now I'm really confused. It seems the type system has some language to differentiate between the scope of its two "A" parameters after all - "A(in value z)" - but I still have no idea what it's thinking here. To my mind this should type-check.
+
+Perhaps it's getting confused between List[Pair[A,A] forSome {type A}] and List[Pair[A,A]] forSome {type A} ? Perhaps something else?
+
+Interestingly I note that it works fine with only one type parameter:
+
+{code}
+scala> case class Wrapper[A](a: A)
+defined class Wrapper
+
+scala> val z : List[Wrapper[A] forSome {type A}] = List(Wrapper(1), Wrapper("s"))
+z: List[Wrapper[_]] = List(Wrapper(1), Wrapper(s))
+{code}
+
+So I wonder if it's specific to the case where the existentially-scoped type parameter occurs more than once?
+
+
+If anyone's interested, the motivation for this was something along these lines
+
+{code}
+class SQLUpdateStatement(val updatePairs : Iterable[(Column[A], ColumnExpr[A]) forSome {type A}], ...
+{code}
+
+I wanted a list of pairs where the type parameter agrees between the column and the value of each pair.

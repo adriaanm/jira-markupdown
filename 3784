@@ -1,0 +1,14 @@
+This is because the xml package object now defines an alias for IOException.
+I think this is a bad idea, precisely because you can get these ambiguities.
+That's why I'd remove:
+{code}
+  type IOException                  = java.io.IOException
+  type UnsupportedEncodingException = java.io.UnsupportedEncodingException
+  
+  type URL                    = java.net.URL
+  type MalformedURLException  = java.net.MalformedURLException
+{code}
+These are generally known classes, so the value of aliasing them is small, and the potential downside is large.
+
+This is a release blocking bug, so I gave it high priority.
+

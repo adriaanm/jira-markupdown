@@ -1,0 +1,14 @@
+When converting string to numbers, the behaviour between natural numbers and floating points is different with regard to leading and trailing spaces:
+
+{code:scala}
+scala> " 1".toInt
+  java.lang.NumberFormatException
+scala > "1 ".toLong
+  java.lang.NumberFormatException
+scala> " 1 ".toFloat
+  res3: Float = 1.0
+scala> " 1 ".toDouble
+  res4: Double = 1.0
+{code}
+
+The documentation is exactly the same in both cases even though the results are not: http://www.scala-lang.org/api/2.11.8/#scala.collection.immutable.WrappedString. Internally, Java's `parseInt/Long/Float/Double` are used, but perhaps it's a good idea to add a call to {{trim}} in the case of integer types. See source: https://github.com/scala/scala/blob/99a82be91cbb85239f70508f6695c6b21fd3558c/src/library/scala/collection/immutable/StringLike.scala

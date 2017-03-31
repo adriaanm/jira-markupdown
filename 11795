@@ -1,0 +1,20 @@
+I've run a build on Jenkins with `-Xprint:patmat` enabled to confirm that the missing ValDef tree is really missing from that juncture.
+
+My working theory is that the problem is in the code guarded by `if (!debugInfoEmitVars)`.
+
+This is defined as:
+
+{code}
+protected val debugInfoEmitVars = !settings.optimise.value
+{code}
+
+Oops. That's false when in 2.12.0 after we've heeded the deprecation warning of `-optimize` and switched over to `-opt:l:classpath`.
+
+Still not sure where the non-determinism stems from. The code in `PreserveSubPatBinders`  uses hash sets, mutable collections.
+
+Next steps:
+
+  - Can we repro this on 2.12.x and/or Java 8 by setting `debugInfoEmitVars=false` ?
+  - review/refactor PreserveSubPatBinders
+  - add some assertions to the code, try to find the problem sooner.
+

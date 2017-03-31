@@ -1,0 +1,15 @@
+I've been seeing this same symptom for a couple of days.
+I finally tracked it down to a bad entry in /etc/hosts (specifically, while running scala scripts on 'myhost' with an /etc/hosts entry 'myhost 1.2.3.4', where 1.2.3.4 was incorrect).
+The fix was to comment out the /etc/hosts entry (or correct it).  Strangely, the only problem was with scala, lots of other stuff (apache2, etc.) has been working fine for months.
+
+The following program is useful for diagnosing this problem.  If it reports an incorrect IP address for the host, scala.tools.nsc.CompileServer will try to connect to the bogus host address:
+
+    object InetLocalhost {
+      def main(args:Array[String]){
+        printf("%s\n",java.net.InetAddress.getLocalHost())
+      }
+    }
+
+Even if the bogus address is to a server running the scala compile server, the port address would almost certainly be incorrect, resulting in the failed connection problem.
+
+Hopefully, this comment will help other hapless souls with this type of misconfiguration.

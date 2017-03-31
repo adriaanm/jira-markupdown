@@ -1,0 +1,10 @@
+Some pretty innocent looking code caused the compiler to print out an error message that was so long, setting the console window 80x9999 wasn't enough, so I set it to 800x9999.
+
+There was a case class Literal[T](value:T), and a combinator parser combination (extending JavaTokensParser):
+val intLiteral = wholeNumber ^^ {s => Literal(s.toInt)}
+val doubleLiteral = floatingPoingNumber ^^ {s => Literal(s.toDouble)} | decimalNumber ^^ {s => Literal(s.toDouble)}
+...
+val allLiterals = intLiteral | doubleLiteral | booleanLiteral | stringLiteral
+
+(for exact code see attachment)
+Changing the case class to case class Literal[+T](value: T) caused the error to disappear. I don't know why I needed to do that but in any case a compiler error should not fill a file with a megabyte-long printout!!

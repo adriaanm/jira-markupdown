@@ -1,0 +1,27 @@
+Same example {foo => t4991}.  One source file.
+
+Under separate compilation of a client using 2.10, scalac emits the same class file error; but compiling together works.
+
+{code}
+# footnote, 2.9.1 is unhappy compiling pkg obj after 2.10 without cleaning
+$ scalac t4991.scala
+??? base trait ScalaObject not found in basetypes of object t4991
+
+# 2.10
+$ spala
+Welcome to Scala version 2.10.0-20120501-234146-b27abca41a (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_22).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> t4991.Foo.bar
+error: error while loading Foo, class file '.\t4991\Foo.class' contains wrong class Int
+
+scala> import t4991._
+import t4991._
+
+scala> import Foo._
+<console>:10: error: erroneous or inaccessible type
+       import Foo._
+              ^
+{code}
+

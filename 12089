@@ -1,0 +1,30 @@
+But, the following example works, as I would've expected:
+
+{code:java}
+$scala
+Welcome to Scala 2.12.0-M3 (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_51).
+Type in expressions for evaluation. Or try :help.
+
+scala> sealed trait Parent
+defined trait Parent
+
+scala> case object Boy extends Parent
+defined object Boy
+
+scala> case object Girl extends Parent
+defined object Girl
+
+scala> case object Zippity 
+defined object Zippity
+
+scala> trait HasGirl { val x: Girl.type }
+defined trait HasGirl
+
+scala> case class Thing(x: Zippity.type) extends HasGirl
+<console>:15: error: overriding value x in trait HasGirl of type Girl.type;
+ value x has incompatible type
+       case class Thing(x: Zippity.type) extends HasGirl
+                        ^
+{code}
+
+Perhaps this example will help with the issue's resolution?

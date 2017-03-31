@@ -1,0 +1,24 @@
+But, does it bring inconsistence?
+
+{code}
+object Ticket2521 {
+  def apply(a: Int*) = new Ticket2521(a)
+}
+
+
+class Ticket2521[T](a: T*) {
+  def test(op: (T, T) => Boolean) = {op}
+}
+
+object Main {
+  def main(args: String*) = {
+    val a = Ticket2521(1, 2)
+    // ok
+    a.test{case (x: Int, y: Int) => x > y}
+
+    val arr = Array(1, 2)
+    // error
+    arr.sortWith{case (x: Int, y: Int) => x > y}
+  }
+}
+{code}

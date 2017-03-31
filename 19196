@@ -1,0 +1,28 @@
+{code}
+$ cat gh-bug-111.scala 
+package miniboxing.tests.compile.bug111
+
+class Future[+T] {
+  def onSuccess[U](pf: PartialFunction[T, U]): Unit = ???
+}
+
+trait Sample[@specialized T] {
+  def process(elem: T): Future[Unit]
+
+  def apply(elem: T): Unit = {
+    process(elem).onSuccess {
+      case () => println("Done")
+    }
+  }
+}
+
+$ scalac gh-bug-111.scala 
+gh-bug-111.scala:11: error: type mismatch;
+ found   : x1.type (with underlying type Unit)
+ required: A1
+    process(elem).onSuccess {
+                            ^
+one error found
+{code}
+
+The bug was found by Alexandru Nedelcu in miniboxing, but also affects specialization: https://github.com/miniboxing/miniboxing-plugin/issues/111

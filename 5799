@@ -1,0 +1,27 @@
+I believe this is related, but does not require a sealed trait or a case class:
+
+{code}
+object Test {
+  def main(args: Array[String]) {
+    (new Clazz).matcher()
+  }
+}
+
+final class Clazz {
+  private final class SubClazz {
+    def foo() = 1
+  }
+  
+  private val array = new Array[AnyRef](2)
+  (0 until 2).foreach(i => array(i) = new SubClazz) 
+  
+  def matcher() {
+    var i = 0; while (i < array.size) { val c = array(i)
+      c match {
+        case s: SubClazz => println(s)
+        case _ => println("no match")
+      }
+    }
+  }
+}
+{code}

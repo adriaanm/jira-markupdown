@@ -1,0 +1,281 @@
+Aladdin: *[http://scala-webapps.epfl.ch/bugtracking/bugs/displayItem.do?id=1273 bug 1273], [http://scala-webapps.epfl.ch/bugtracking/contribs/display.do?id=741 contrib 741]*
+
+== Code ==
+
+{code}
+// scala code 
+package test;
+
+object Test {
+
+  def main(args: Array[String]): Unit = {
+    classOf[Foo]
+    return
+  }
+}
+
+
+// Java code
+package test;
+
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+public class Foo {
+
+  @OuterAnno(inner=@InnerAnno(name="inner"))
+  String field;
+  
+  @Target({FIELD}) 
+  @Retention(RUNTIME)
+  public static @interface InnerAnno {
+    String name();
+  }
+  
+  @Target({FIELD}) 
+  @Retention(RUNTIME)
+  public static @interface OuterAnno {
+    InnerAnno inner();
+  }
+}
+{code}
+
+== What happened ==
+
+{code}
+[Classpath = C:\Program Files\Java\jre1.6.0_02\lib\resources.jar;C:\Program Files\Java\jre1.6.0_02\lib\rt.jar;C:\
+\Program Files\Java\jre1.6.0_02\lib\jsse.jar;C:\Program Files\Java\jre1.6.0_02\lib\jce.jar;c:\PROGRA~1\scala\SCA\
+LA-~1.1-F\lib\scala-library.jar;c:\PROGRA~1\scala\SCALA-~1.1-F\lib\scala-library.jar;C:\Program Files\Java\jre1.\
+6.0_02\lib\ext\dnsns.jar;C:\Program Files\Java\jre1.6.0_02\lib\ext\sunjce_provider.jar;C:\Program Files\Java\jre\
+1.6.0_02\lib\ext\sunmscapi.jar;C:\Program Files\Java\jre1.6.0_02\lib\ext\sunpkcs11.jar;c:\PROGRA~1\scala\SCALA-~\
+1.1-F\lib\junit;c:\PROGRA~1\scala\SCALA-~1.1-F\lib\junit.jar;c:\PROGRA~1\scala\SCALA-~1.1-F\lib\sbaz-tests.jar;c\
+:\PROGRA~1\scala\SCALA-~1.1-F\lib\sbaz.jar;c:\PROGRA~1\scala\SCALA-~1.1-F\lib\sbazgui.jar;c:\PROGRA~1\scala\SCAL\
+A-~1.1-F\lib\scala-compiler.jar;c:\PROGRA~1\scala\SCALA-~1.1-F\lib\scala-dbc.jar;c:\PROGRA~1\scala\SCALA-~1.1-F\\
+lib\scala-decoder.jar;c:\PROGRA~1\scala\SCALA-~1.1-F\lib\scala-library.jar;c:\PROGRA~1\scala\SCALA-~1.1-F\lib\Sc\
+alaCheck-0.2.jar;.;.\bin]
+[loaded directory path C:\Program Files\Java\jre1.6.0_02\lib\resources.jar:::C:\Program Files\Java\jre1.6.0_02\l\
+ib\rt.jar:::C:\Program Files\Java\jre1.6.0_02\lib\jsse.jar:::C:\Program Files\Java\jre1.6.0_02\lib\jce.jar:::c:\\
+PROGRA~1\scala\SCALA-~1.1-F\lib\scala-library.jar:::c:\PROGRA~1\scala\SCALA-~1.1-F\lib\scala-library.jar:::C:\Pr\
+ogram Files\Java\jre1.6.0_02\lib\ext\dnsns.jar:::C:\Program Files\Java\jre1.6.0_02\lib\ext\sunjce_provider.jar::\
+:C:\Program Files\Java\jre1.6.0_02\lib\ext\sunmscapi.jar:::C:\Program Files\Java\jre1.6.0_02\lib\ext\sunpkcs11.j\
+ar:::c:\PROGRA~1\scala\SCALA-~1.1-F\lib\junit:::c:\PROGRA~1\scala\SCALA-~1.1-F\lib\junit.jar:::c:\PROGRA~1\scala\
+\SCALA-~1.1-F\lib\sbaz-tests.jar:::c:\PROGRA~1\scala\SCALA-~1.1-F\lib\sbaz.jar:::c:\PROGRA~1\scala\SCALA-~1.1-F\\
+lib\sbazgui.jar:::c:\PROGRA~1\scala\SCALA-~1.1-F\lib\scala-compiler.jar:::c:\PROGRA~1\scala\SCALA-~1.1-F\lib\sca\
+la-dbc.jar:::c:\PROGRA~1\scala\SCALA-~1.1-F\lib\scala-decoder.jar:::c:\PROGRA~1\scala\SCALA-~1.1-F\lib\scala-lib\
+rary.jar:::c:\PROGRA~1\scala\SCALA-~1.1-F\lib\ScalaCheck-0.2.jar:::.:::.\bin::: in 297ms]
+[loaded directory path C:\Program Files\Java\jre1.6.0_02\lib\rt.jar(java/)::: in 0ms]
+[loaded directory path c:\PROGRA~1\scala\SCALA-~1.1-F\lib\scala-library.jar(scala/):::c:\PROGRA~1\scala\SCALA-~1\
+.1-F\lib\scala-library.jar(scala/):::c:\PROGRA~1\scala\SCALA-~1.1-F\lib\scala-compiler.jar(scala/):::c:\PROGRA~1\
+\scala\SCALA-~1.1-F\lib\scala-dbc.jar(scala/):::c:\PROGRA~1\scala\SCALA-~1.1-F\lib\scala-decoder.jar(scala/):::c\
+:\PROGRA~1\scala\SCALA-~1.1-F\lib\scala-library.jar(scala/)::: in 31ms]
+[loaded directory path C:\Program Files\Java\jre1.6.0_02\lib\rt.jar(java/lang/)::: in 16ms]
+[loaded directory path c:\PROGRA~1\scala\SCALA-~1.1-F\lib\scala-library.jar(scala/runtime/):::c:\PROGRA~1\scala\\
+SCALA-~1.1-F\lib\scala-library.jar(scala/runtime/):::c:\PROGRA~1\scala\SCALA-~1.1-F\lib\scala-library.jar(scala/\
+runtime/)::: in 0ms]
+[loaded directory path c:\PROGRA~1\scala\SCALA-~1.1-F\lib\scala-library.jar(scala/reflect/):::c:\PROGRA~1\scala\\
+SCALA-~1.1-F\lib\scala-library.jar(scala/reflect/):::c:\PROGRA~1\scala\SCALA-~1.1-F\lib\scala-library.jar(scala/\
+reflect/)::: in 0ms]
+[loaded directory path C:\Program Files\Java\jre1.6.0_02\lib\rt.jar(java/io/)::: in 15ms]
+[loaded class file C:\Program Files\Java\jre1.6.0_02\lib\rt.jar(java/lang/Object.class) in 16ms]
+[loaded directory path C:\Program Files\Java\jre1.6.0_02\lib\rt.jar(java/util/)::: in 15ms]
+constructor String; attributes = List(lang.this.Deprecated)
+constructor String; attributes = List(lang.this.Deprecated)
+[loaded directory path C:\Program Files\Java\jre1.6.0_02\lib\rt.jar(java/nio/)::: in 0ms]
+[loaded directory path C:\Program Files\Java\jre1.6.0_02\lib\rt.jar(java/nio/charset/)::: in 0ms]
+method getBytes; attributes = List(lang.this.Deprecated)
+[loaded class file C:\Program Files\Java\jre1.6.0_02\lib\rt.jar(java/lang/String.class) in 31ms]
+[loaded class file c:\PROGRA~1\scala\SCALA-~1.1-F\lib\scala-library.jar(scala/runtime/Comparator.class) in 0ms]
+\
+
+[running phase parser on Test.scala]
+[parsing Test.scala]
+[parser in 63ms]
+[running phase namer on Test.scala]
+[loaded class file c:\PROGRA~1\scala\SCALA-~1.1-F\lib\scala-library.jar(scala/Predef.class) in 31ms]
+[loaded directory path .\bin\test::: in 0ms]
+[namer in 78ms]
+[running phase typer on Test.scala]
+[loaded class file c:\PROGRA~1\scala\SCALA-~1.1-F\lib\scala-library.jar(scala/ScalaObject.class) in 0ms]
+[loaded class file c:\PROGRA~1\scala\SCALA-~1.1-F\lib\scala-library.jar(scala/List.class) in 15ms]
+[loaded class file c:\PROGRA~1\scala\SCALA-~1.1-F\lib\scala-library.jar(scala/Array.class) in 0ms]
+[loaded class file c:\PROGRA~1\scala\SCALA-~1.1-F\lib\scala-library.jar(scala/RandomAccessSeq.class) in 0ms]
+[loaded class file c:\PROGRA~1\scala\SCALA-~1.1-F\lib\scala-library.jar(scala/Seq.class) in 0ms]
+[loaded class file c:\PROGRA~1\scala\SCALA-~1.1-F\lib\scala-library.jar(scala/PartialFunction.class) in 0ms]
+[loaded class file c:\PROGRA~1\scala\SCALA-~1.1-F\lib\scala-library.jar(scala/Function1.class) in 0ms]
+[loaded class file c:\PROGRA~1\scala\SCALA-~1.1-F\lib\scala-library.jar(scala/Collection.class) in 0ms]
+[loaded class file c:\PROGRA~1\scala\SCALA-~1.1-F\lib\scala-library.jar(scala/Iterable.class) in 0ms]
+scala.MatchError: 64
+	at scala.tools.nsc.symtab.classfile.ClassfileParser.parseTaggedConstant$$0(ClassfileParser.scala:681)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser$$$$anonfun$$10$$$$anonfun$$11.apply(ClassfileParser.scala:717)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser$$$$anonfun$$10$$$$anonfun$$11.apply(ClassfileParser.scala:715)
+	at scala.Iterator$$class.foreach(Iterator.scala:364)
+	at scala.Range.foreach(Range.scala:30)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser$$$$anonfun$$10.apply(ClassfileParser.scala:715)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser$$$$anonfun$$10.apply(ClassfileParser.scala:710)
+	at scala.Iterator$$class.foreach(Iterator.scala:364)
+	at scala.Range.foreach(Range.scala:30)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser.parseAnnotations$$0(ClassfileParser.scala:710)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser.parseAttribute$$0(ClassfileParser.scala:671)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser$$$$anonfun$$13.apply(ClassfileParser.scala:746)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser$$$$anonfun$$13.apply(ClassfileParser.scala:746)
+	at scala.Iterator$$class.foreach(Iterator.scala:364)
+	at scala.Range.foreach(Range.scala:30)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser.parseAttributes(ClassfileParser.scala:746)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser.parseField(ClassfileParser.scala:448)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser$$$$anonfun$$4.apply(ClassfileParser.scala:406)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser$$$$anonfun$$4.apply(ClassfileParser.scala:406)
+	at scala.Iterator$$class.foreach(Iterator.scala:364)
+	at scala.Range.foreach(Range.scala:30)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser.parseClass(ClassfileParser.scala:406)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser.parse(ClassfileParser.scala:94)
+	at scala.tools.nsc.symtab.SymbolLoaders$$ClassfileLoader.doComplete(SymbolLoaders.scala:260)
+	at scala.tools.nsc.symtab.SymbolLoaders$$SymbolLoader.complete(SymbolLoaders.scala:52)
+	at scala.tools.nsc.symtab.SymbolLoaders$$SymbolLoader.load(SymbolLoaders.scala:72)
+	at scala.tools.nsc.symtab.Symbols$$Symbol.exists(Symbols.scala:336)
+	at scala.tools.nsc.typechecker.Typers$$Typer.qualifies$$0(Typers.scala:2248)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedIdent$$0(Typers.scala:2265)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:2602)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:2657)
+	at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$125.apply(Typers.scala:2722)
+	at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$125.apply(Typers.scala:2722)
+	at scala.tools.nsc.symtab.Types$$class.withNoGlobalVariance(Types.scala:3117)
+	at scala.tools.nsc.symtab.SymbolTable.withNoGlobalVariance(SymbolTable.scala:10)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedType(Typers.scala:2722)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedHigherKindedType(Typers.scala:2726)
+	at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$122.apply(Typers.scala:2552)
+	at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$122.apply(Typers.scala:2552)
+	at scala.tools.nsc.symtab.Types$$class.map2Conserve(Types.scala:2658)
+	at scala.tools.nsc.symtab.SymbolTable.map2Conserve(SymbolTable.scala:10)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:2550)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:2657)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:2690)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedStat$$0(Typers.scala:1399)
+	at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$58.apply(Typers.scala:1429)
+	at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$58.apply(Typers.scala:1429)
+	at scala.List$$.loop$$0(List.scala:243)
+	at scala.List$$.mapConserve(List.scala:260)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedStats(Typers.scala:1429)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedBlock(Typers.scala:1257)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:2448)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:2657)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:2701)
+	at scala.tools.nsc.typechecker.Typers$$Typer.transformedOrTyped(Typers.scala:2748)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedDefDef(Typers.scala:1177)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:2427)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:2657)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:2690)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedStat$$0(Typers.scala:1399)
+	at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$58.apply(Typers.scala:1429)
+	at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$58.apply(Typers.scala:1429)
+	at scala.List$$.loop$$0(List.scala:243)
+	at scala.List$$.mapConserve(List.scala:260)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedStats(Typers.scala:1429)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedTemplate(Typers.scala:1063)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedModuleDef(Typers.scala:968)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:2421)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:2657)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:2690)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedStat$$0(Typers.scala:1399)
+	at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$58.apply(Typers.scala:1429)
+	at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$58.apply(Typers.scala:1429)
+	at scala.List$$.loop$$0(List.scala:243)
+	at scala.List$$.mapConserve(List.scala:260)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedStats(Typers.scala:1429)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:2414)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:2657)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:2690)
+	at scala.tools.nsc.typechecker.Analyzer$$typerFactory$$$$anon$$1.apply(Analyzer.scala:38)
+	at scala.tools.nsc.Global$$GlobalPhase.applyPhase(Global.scala:245)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$2.apply(Global.scala:234)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$2.apply(Global.scala:234)
+	at scala.Iterator$$class.foreach(Iterator.scala:364)
+	at scala.collection.mutable.ListBuffer$$$$anon$$0.foreach(ListBuffer.scala:245)
+	at scala.tools.nsc.Global$$GlobalPhase.run(Global.scala:234)
+	at scala.tools.nsc.Global$$Run.compileSources(Global.scala:502)
+	at scala.tools.nsc.Global$$Run.compile(Global.scala:580)
+	at scala.tools.nsc.Main$$.process(Main.scala:61)
+	at scala.tools.nsc.Main$$.main(Main.scala:81)
+	at scala.tools.nsc.Main.main(Main.scala)
+java.io.IOException: class file '.\bin\test\Foo.class' is broken
+(64)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser.handleError$$0(ClassfileParser.scala:65)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser.parse(ClassfileParser.scala:97)
+	at scala.tools.nsc.symtab.SymbolLoaders$$ClassfileLoader.doComplete(SymbolLoaders.scala:260)
+	at scala.tools.nsc.symtab.SymbolLoaders$$SymbolLoader.complete(SymbolLoaders.scala:52)
+	at scala.tools.nsc.symtab.SymbolLoaders$$SymbolLoader.load(SymbolLoaders.scala:72)
+	at scala.tools.nsc.symtab.Symbols$$Symbol.exists(Symbols.scala:336)
+	at scala.tools.nsc.typechecker.Typers$$Typer.qualifies$$0(Typers.scala:2248)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedIdent$$0(Typers.scala:2265)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:2602)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:2657)
+	at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$125.apply(Typers.scala:2722)
+	at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$125.apply(Typers.scala:2722)
+	at scala.tools.nsc.symtab.Types$$class.withNoGlobalVariance(Types.scala:3117)
+	at scala.tools.nsc.symtab.SymbolTable.withNoGlobalVariance(SymbolTable.scala:10)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedType(Typers.scala:2722)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedHigherKindedType(Typers.scala:2726)
+	at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$122.apply(Typers.scala:2552)
+	at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$122.apply(Typers.scala:2552)
+	at scala.tools.nsc.symtab.Types$$class.map2Conserve(Types.scala:2658)
+	at scala.tools.nsc.symtab.SymbolTable.map2Conserve(SymbolTable.scala:10)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:2550)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:2657)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:2690)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedStat$$0(Typers.scala:1399)
+	at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$58.apply(Typers.scala:1429)
+	at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$58.apply(Typers.scala:1429)
+	at scala.List$$.loop$$0(List.scala:243)
+	at scala.List$$.mapConserve(List.scala:260)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedStats(Typers.scala:1429)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedBlock(Typers.scala:1257)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:2448)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:2657)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:2701)
+	at scala.tools.nsc.typechecker.Typers$$Typer.transformedOrTyped(Typers.scala:2748)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedDefDef(Typers.scala:1177)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:2427)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:2657)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:2690)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedStat$$0(Typers.scala:1399)
+	at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$58.apply(Typers.scala:1429)
+	at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$58.apply(Typers.scala:1429)
+	at scala.List$$.loop$$0(List.scala:243)
+	at scala.List$$.mapConserve(List.scala:260)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedStats(Typers.scala:1429)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedTemplate(Typers.scala:1063)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedModuleDef(Typers.scala:968)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:2421)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:2657)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:2690)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedStat$$0(Typers.scala:1399)
+	at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$58.apply(Typers.scala:1429)
+	at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$58.apply(Typers.scala:1429)
+	at scala.List$$.loop$$0(List.scala:243)
+	at scala.List$$.mapConserve(List.scala:260)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedStats(Typers.scala:1429)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:2414)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:2657)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:2690)
+	at scala.tools.nsc.typechecker.Analyzer$$typerFactory$$$$anon$$1.apply(Analyzer.scala:38)
+	at scala.tools.nsc.Global$$GlobalPhase.applyPhase(Global.scala:245)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$2.apply(Global.scala:234)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$2.apply(Global.scala:234)
+	at scala.Iterator$$class.foreach(Iterator.scala:364)
+	at scala.collection.mutable.ListBuffer$$$$anon$$0.foreach(ListBuffer.scala:245)
+	at scala.tools.nsc.Global$$GlobalPhase.run(Global.scala:234)
+	at scala.tools.nsc.Global$$Run.compileSources(Global.scala:502)
+	at scala.tools.nsc.Global$$Run.compile(Global.scala:580)
+	at scala.tools.nsc.Main$$.process(Main.scala:61)
+	at scala.tools.nsc.Main$$.main(Main.scala:81)
+	at scala.tools.nsc.Main.main(Main.scala)
+error: error while loading Foo, class file '.\bin\test\Foo.class' is broken
+(64)
+[typer in 109ms]
+[total in 250ms]
+one error found
+{code}
+
+== What expected ==

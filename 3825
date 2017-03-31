@@ -1,0 +1,65 @@
+Martin, have you actually measured the performance of the two solutions? Perhaps we should do that rather than speculate. I just did some informal experiments (see below), my second version looks to be faster even for small lists.
+
+Also, can you explain - how does it "confuse the computation model"? Think about what foldRight (the recursive version) is doing - it builds a stack of call frames containing all the elements of the input list, then pops elements from the stack, combining with the current accumulated value. The second version I gave does almost exactly the same thing, except it uses an explicit stack.
+
+The suggestion that you should "just use foldLeft + reverse for large sequences" is not a good api decision, IMO. It's much more common for sequence processing code to be generally ignorant of the expected size of input sequences.
+
+Incidentally, the standard library could use a version of foldRight where the operator is non-strict (this WOULD actually be a different computation model). Maybe I'll file a separate enhancement for that. :)
+
+Note that this was just done in the interactive prompt - I'm not sure if the classes compiled there will get JIT'ed, so more controlled tests should probably be done.
+
+{code}
+scala> def foldRight[A,B](i: Iterable[A], z: B, op: (A,B) => B): B = {
+     |   import scala.collection.mutable.ArrayStack
+     |   val s = new ArrayStack[A]
+     |   i.foreach(a => s += a)
+     |   var r = z
+     |   while (!s.isEmpty) { r = op(s.pop, r) }
+     |   r
+     | }
+foldRight: [A,B](Iterable[A],B,(A, B) => B)B
+
+scala>   def time(block: => Any) = {
+     |     for (i <- 1 to 1600) block // trigger JIT on block
+     |     var goodSample = false
+     |     var start = 0L; var stop = 0L;
+     |     var N = 500
+     |     while (!goodSample) {
+     |       start = System.currentTimeMillis
+     |       for (i <- 1 to N) block
+     |       stop = System.currentTimeMillis
+     |       if (stop - start < 500) N = N*4 // require at least half a second for a decent sample
+     |       else goodSample = true
+     |     }
+     |     val perOp = (stop.toDouble - start.toDouble) / N
+     |     perOp * 10000
+     |   }
+time: (=> Any)Double
+
+scala> var N = 5000
+N: Int = 5000
+
+scala> time(foldRight[Int,Int](0 to N, 0, _ + _))
+res8: Double = 2890.0
+
+scala> time((0 to N).foldRight(0)(_ + _))
+res9: Double = 5625.0
+
+scala> N = 100
+N: Int = 100
+
+scala> time((0 to N).foldRight(0)(_ + _))
+res11: Double = 82.96875
+
+scala> time(foldRight[Int,Int](0 to N, 0, _ + _))
+res12: Double = 59.84375
+
+scala> N = 50
+N: Int = 50
+
+scala> time(foldRight[Int,Int](0 to N, 0, _ + _))
+res14: Double = 32.05078125
+
+scala> time((0 to N).foldRight(0)(_ + _))
+res15: Double = 41.5625
+{code}

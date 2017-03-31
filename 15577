@@ -1,0 +1,29 @@
+consider the following example:
+{code}
+import scala.actors._
+import Actor._
+object Test {
+  def main(args: Array[String]) {
+    receiveWithin(1000) {
+      case e => println(e)
+    }
+  }
+}
+{code}
+
+With scala 2.8.0 final, this prints:
+{code}
+TIMEOUT
+{code}
+and then hangs indefinitely (JVM does not shut down). turning debug output on, this becomes apparent why:
+{code}
+Info: initializing scala.actors.Scheduler$$@18f1d7e...
+Info: scala.actors.scheduler.ThreadPoolConfig$$@175078b: java.version = 1.6.0_20
+Info: scala.actors.scheduler.ThreadPoolConfig$$@175078b: java.vm.vendor = Sun Microsystems Inc.
+Info: scala.actors.scheduler.ForkJoinScheduler@edf3f6: parallelism 4
+Info: scala.actors.scheduler.ForkJoinScheduler@edf3f6: max pool size 256
+Info: scala.actors.Scheduler$$@18f1d7e: starting new scala.actors.scheduler.ForkJoinScheduler@edf3f6 [class scala.actors.scheduler.ForkJoinScheduler]
+TIMEOUT
+{code}
+The scheduler is not shutting down properly.
+

@@ -1,0 +1,43 @@
+The culprit is another branch of adapt that's shadowed by macro expansion, similarly to the type inference branch that has been fixed in https://github.com/scala/scala/pull/2494 and https://github.com/scala/scala/pull/2821.
+
+{code}
+if (tree.isType)
+  adaptType()
+else if (mode.typingExprNotFun && treeInfo.isMacroApplication(tree))
+  macroExpandApply(this, tree, mode, pt)
+else if (mode.typingConstructorPattern)
+  typedConstructorPattern(tree, pt)
+else if (shouldInsertApply(tree)) // <----- THIS THING DOESN'T GET CALLED
+  insertApply() 
+else if (hasUndetsInMonoMode) { // (9)
+  assert(!context.inTypeConstructorAllowed, context) //@M
+  instantiatePossiblyExpectingUnit(tree, mode, pt)
+}
+else if (tree.tpe <:< pt)
+  tree
+else
+  fallbackAfterVanillaAdapt()
+{code}
+
+Looks like to fix the bug we'll need to move the `insertApply` branch up the conditional and speculatively expand whitebox nullary macros in `applyPossible` in order to check whether the expansion potentially has an `apply` method. Blackbox nullary need not to be expanded, as their signature provides enough information:
+
+{code}
+def applyPossible = {
+  def applyMeth = member(adaptToName(tree, nme.apply), nme.apply)
+  def hasPolymorphicApply = applyMeth.alternatives exists (_.tpe.typeParams.nonEmpty)
+  def hasMonomorphicApply = applyMeth.alternatives exists (_.tpe.paramSectionCount > 0)
+
+  dyna.acceptsApplyDynamic(tree.tpe) || (
+    if (mode.inTappMode)
+      tree.tpe.typeParams.isEmpty && hasPolymorphicApply
+    else
+      hasMonomorphicApply
+  )
+}
+def shouldInsertApply(tree: Tree) = mode.typingExprFun && {
+  tree.tpe match {
+    case _: MethodType | _: OverloadedType | _: PolyType => false
+    case _                                               => applyPossible
+  }
+}
+{code}

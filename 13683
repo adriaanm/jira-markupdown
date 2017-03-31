@@ -1,0 +1,19 @@
+Here is a minimal example that exposes the issue:
+
+{code}
+val iter = List(1, 2, 3, 4, 5, 6, 7, 8, 9).elements; val firstTwoElements = iter.zipWithIndex.takeWhile(_._2 < 2).toList; val x = iter.toList
+{code}
+
+Results from the interpreter: 
+
+{code}
+iter: Iterator[Int] = non-empty iterator
+firstTwoElements: List[(Int, Int)] = List((1,0), (2,1))
+x: List[Int] = List(4, 5, 6, 7, 8, 9)
+{code}
+
+Note that the 3 is dropped from the iterator ({{x}}) when it shouldn't be. zipWithIndex or takeWhile on their own do not exhibit this behaviour, it appears to be only the combination of the two.
+
+Here's the full example: http://gist.github.com/6329 & http://gist.github.com/6326
+
+This happens on 2.7.1 final & 2.7.1.r15535-b20080712185233, not sure if its broken in HEAD.

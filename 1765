@@ -1,0 +1,9 @@
+Fixed in r17659.  Incredibly enough, SI-1764 is not a duplicate of this and will require a separate fix.  Note the difference in the crashers:
+{code}
+<x></x> match { case <x>{y*}</x> => } // fixed this one
+{code}
+vs.
+{code}
+<x></x> match { case <x>{y*} </x> => } // still crashes
+{code}
+Yikes.

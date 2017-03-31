@@ -1,0 +1,65 @@
+The source compiled successfully, but when I run the testcase via scala-test I get the stack trace below. However, if I comment out one of the method with a long param list, the application runs fine.
+
+Here's the method signature
+
+    def update[A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T](ca: Schema#Table#Column[A], cb: Schema#Table#Column[B], cc: Schema#Table#Column[C], cd: Schema#Table#Column[D], ce: Schema#Table#Column[E], cf: Schema#Table#Column[F], cg: Schema#Table#Column[G], ch: Schema#Table#Column[H], ci: Schema#Table#Column[I], cj: Schema#Table#Column[J], ck: Schema#Table#Column[K], cl: Schema#Table#Column[L], cm: Schema#Table#Column[M], cn: Schema#Table#Column[N], co: Schema#Table#Column[O], cp: Schema#Table#Column[P], cq: Schema#Table#Column[Q], cr: Schema#Table#Column[R], cs: Schema#Table#Column[S], ct: Schema#Table#Column[T])(va: A, vb: B, vc: C, vd: D, ve: E, vf: F, vg: G, vh: H, vi: I, vj: J, vk: K, vl: L, vm: M, vn: N, vo: O, vp: P, vq: Q, vr: R, vs: S, vt: T)(where: String = null)(implicit session: DBSession) = { /*body removed*/ }
+
+Stack trace 
+
+java.lang.ArrayIndexOutOfBoundsException
+[info] DDLSuite:
+[info] - Generate Schema !!! IGNORED !!!
+[info] - Create a Schema file !!! IGNORED !!!
+[info] - Create Table statement !!! IGNORED !!!
+[info] - sort tables according to dependencies !!! IGNORED !!!
+[info] - delete, create schema *** FAILED ***
+[info]   java.lang.RuntimeException: error reading Scala signature of com.greenfossil.sqlview.TableSupport: null
+[info]   at scala.reflect.internal.pickling.UnPickler.unpickle(UnPickler.scala:45)
+[info]   at scala.reflect.runtime.JavaMirrors$JavaMirror.unpickleClass(JavaMirrors.scala:578)
+[info]   at scala.reflect.runtime.SymbolLoaders$TopClassCompleter.complete(SymbolLoaders.scala:31)
+[info]   at scala.reflect.internal.Symbols$Symbol.info(Symbols.scala:1229)
+[info]   at scala.reflect.internal.Types$TypeRef.baseTypeSeqImpl(Types.scala:2436)
+[info]   at scala.reflect.internal.Types$class.defineBaseTypeSeqOfTypeRef(Types.scala:2562)
+[info]   at scala.reflect.runtime.JavaUniverse.scala$reflect$runtime$SynchronizedTypes$$super$defineBaseTypeSeqOfTypeRef(JavaUniverse.scala:12)
+[info]   at scala.reflect.runtime.SynchronizedTypes$class.defineBaseTypeSeqOfTypeRef(SynchronizedTypes.scala:104)
+[info]   at scala.reflect.runtime.JavaUniverse.defineBaseTypeSeqOfTypeRef(JavaUniverse.scala:12)
+[info]   at scala.reflect.internal.Types$TypeRef.baseTypeSeq(Types.scala:2443)
+[info]   ...
+[error] Failed: : Total 5, Failed 1, Errors 0, Passed 0, Skipped 4
+[error] Failed tests:
+[error] 	com.greenfossil.sqlview.DDLSuite
+[trace] Stack trace suppressed: run last test:test-only for the full output.
+[error] (test:test-only) Tests unsuccessful
+[error] Total time: 96 s, completed Jul 5, 2013 9:02:41 PM
+> last test:test-only
+[debug] Running Test com.greenfossil.sqlview.DDLSuite : subclass(false, org.scalatest.Suite) with arguments
+[error] Failed: : Total 5, Failed 1, Errors 0, Passed 0, Skipped 4
+[error] Failed tests:
+[error] 	com.greenfossil.sqlview.DDLSuite
+java.lang.RuntimeException: Tests unsuccessful
+	at scala.sys.package$.error(package.scala:27)
+	at scala.Predef$.error(Predef.scala:123)
+	at sbt.Tests$.showResults(Tests.scala:192)
+	at sbt.Defaults$$anonfun$inputTests$2$$anonfun$apply$18$$anonfun$apply$19.apply(Defaults.scala:373)
+	at sbt.Defaults$$anonfun$inputTests$2$$anonfun$apply$18$$anonfun$apply$19.apply(Defaults.scala:373)
+	at scala.Function1$$anonfun$compose$1.apply(Function1.scala:49)
+	at scala.Function1$$anonfun$compose$1.apply(Function1.scala:49)
+	at sbt.$tilde$greater$$anonfun$$u2219$1.apply(TypeFunctions.scala:41)
+	at sbt.std.Transform$$anon$5.work(System.scala:71)
+	at sbt.Execute$$anonfun$submit$1$$anonfun$apply$1.apply(Execute.scala:232)
+	at sbt.Execute$$anonfun$submit$1$$anonfun$apply$1.apply(Execute.scala:232)
+	at sbt.ErrorHandling$.wideConvert(ErrorHandling.scala:18)
+	at sbt.Execute.work(Execute.scala:238)
+	at sbt.Execute$$anonfun$submit$1.apply(Execute.scala:232)
+	at sbt.Execute$$anonfun$submit$1.apply(Execute.scala:232)
+	at sbt.ConcurrentRestrictions$$anon$4$$anonfun$1.apply(ConcurrentRestrictions.scala:159)
+	at sbt.CompletionService$$anon$2.call(CompletionService.scala:30)
+	at java.util.concurrent.FutureTask$Sync.innerRun(FutureTask.java:334)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:166)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:471)
+	at java.util.concurrent.FutureTask$Sync.innerRun(FutureTask.java:334)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:166)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1110)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:603)
+	at java.lang.Thread.run(Thread.java:722)
+[error] (test:test-only) Tests unsuccessful

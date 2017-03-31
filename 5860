@@ -1,0 +1,28 @@
+The problem seems to be introduced in the "explicitouter" compiler stage:
+{code}
+    def matchParent(p: Any): Int = {
+      <synthetic> def gd2(x$$1: com.wtf.Main.Foo): Boolean = x$$1.i().==(1);
+      {
+        <synthetic> val temp5: Any = p;
+        if (temp5.isInstanceOf[com.wtf.Main.Foo]())
+          {
+            if (gd2(temp5.asInstanceOf[com.wtf.Main.Foo]()))
+              {
+                1
+              }
+            else
+              {
+                3
+              }
+          }
+        else
+          if (temp5.isInstanceOf[com.wtf.Main.Bar]())
+            {
+              2
+            }
+          else
+            throw new MatchError(temp5)
+      }
+    };
+{code}
+It appears the generated code branches on whether it's an instance of "Foo" first, only branching based on the guard after it's determined it will match one of the "Foo" cases.

@@ -1,0 +1,19 @@
+It looks like 2.8 takes a step backward, as the reported bug in approach3 still exists but in addition approach1 is now a crasher.
+{code}
+  def approach1 {
+    class Wrapper[A](a: A) {
+      def frob(a2: A) = a
+    }
+    implicit def convert[A](a: A) = new Wrapper(a)
+    "foo".frob("bar")
+  }
+{code}
+{code}
+Exception in thread "main" java.lang.AssertionError: assertion failed
+	at scala.Predef$$.assert(Predef.scala:92)
+	at scala.tools.nsc.transform.LambdaLift$$$$anon$$1.apply(LambdaLift.scala:27)
+	at scala.tools.nsc.transform.LambdaLift$$$$anon$$1.apply(LambdaLift.scala:23)
+	at scala.tools.nsc.symtab.Types$$TypeMap.mapOver(Types.scala:2465)
+	at scala.tools.nsc.transform.LambdaLift$$$$anon$$1.apply(LambdaLift.scala:35)
+...
+{code}

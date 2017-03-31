@@ -1,0 +1,31 @@
+java file
+{code}
+class C {
+  public enum Enum {
+    VAL
+  }
+}
+{code}
+
+scala file
+{code}
+class T {
+  def f: C.Enum = C.Enum.VAL
+}
+{code}
+
+after compiling (separately), compare the two InnerClass entries.
+
+in C.class
+{noformat}
+  // access flags 0x4019
+  public final static enum INNERCLASS C$Enum C Enum
+{noformat}
+
+in T.class
+{noformat}
+  // access flags 0x409
+  public static abstract INNERCLASS C$Enum C Enum
+{noformat}
+
+{{final}} and {{enum}} are missing, and there's an incorrect {{abstract}}.

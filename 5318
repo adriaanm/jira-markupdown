@@ -1,0 +1,9 @@
+You have explicitly chosen some argument type in your example where the overloaded method just does a "new String(null)". Sure it crashes.
+
+Problem is that it doesn't crash with null for anything _except_ an explicit char[] in Java.
+
+The problem in Scala is just the reverse: It always crashes with null _except_ a type different from Array[Char] is explicitly added to it.
+
+The question in my humble opinion is why the Scala compiler prefers valueOf(Array[Char]) to valueOf(Object) for null. Considering that Array is effectively final and invariant in its element type, the chances are quite slim that this is used intentionally. 
+
+Array[Char] should be the last choice and not the one chosen even before Object.

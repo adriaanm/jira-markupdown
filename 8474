@@ -1,0 +1,12 @@
+Considerably reduced.  The difference between g0 and g1 below is only whether the implicit conversion is called explicitly.
+{code}
+object Bar {
+  implicit def convert[T](xs: Seq[T]) = new Bippy(xs)
+  class Bippy[T](xs: Seq[T]) { def bippy = xs }
+
+  def g0 = identity(Seq().bippy)
+  def g1 = identity(convert(Seq()).bippy)
+  // def g0: Seq[T] = ...
+  // def g1: Seq[Nothing] = ...
+}
+{code}

@@ -1,0 +1,27 @@
+Here is a smaller example. The bug is not related to nulls nor implicits.
+{code}
+  trait Promise[A] extends (() => A)  
+  
+  object Promise {
+    def promise[A]:Promise[A] = error("omitted")
+  }
+  
+  trait Bind[Z[_]] {
+    def bind[B]: Z[B]
+  }
+  
+  object Bind {
+     val PromiseBind = new Bind[Promise] {
+       def bind[B] = error("omitted")
+     }
+   }
+ 
+  object crash {
+    def fmap[B]:Promise[B] = {
+      var b = Bind.PromiseBind
+      b.bind
+    }
+  }
+{code}
+
+Giving the type explicitly to PromiseBind or to bind solves the problem.

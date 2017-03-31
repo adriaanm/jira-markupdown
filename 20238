@@ -1,0 +1,14 @@
+The following produces a stack-overflow:
+
+{code}
+object InitBug {
+  def main(args: Array[String]): Unit = {
+    object Foo {
+      val bar = Foo()
+    }
+    case class Foo()
+    
+    Foo.bar
+  }
+}
+{code}

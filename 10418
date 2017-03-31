@@ -1,0 +1,28 @@
+Minimized a bit further:
+
+{code}
+object A {
+  class C {
+    def m(a: Nothing): Int = 0
+  }
+  implicit class RichAny(a: Any) {
+    def m(a: Any): Int = 0
+  }
+  (new C).m({ case (x, y) => x } : Any => Any)
+}
+
+{code}
+
+This smells rather similar to SI-8111, but it isn't the same bug.
+
+{noformat}
+qbin/scalac -Ycheck:typer ../scala/sandbox/test.scala
+[Now checking: typer]
+[check: typer] ../scala/sandbox/test.scala:8:
+ currentOwner chain: value $anonfun -> value <local A> -> object A
+       symbol chain: value x -> value $anonfun -> value <local A> -> object A -> package <empty> -> package <root>scala.reflect.internal.Trees$Bind / (x @ _)
+[check: typer] ../scala/sandbox/test.scala:8:
+ currentOwner chain: value $anonfun -> value <local A> -> object A
+       symbol chain: value y -> value $anonfun -> value <local A> -> object A -> package <empty> -> package <root>scala.reflect.internal.Trees$Bind / (y @ _)
+warning: TreeCheckers detected non-compliant trees in test.scala
+{noformat}

@@ -1,0 +1,18 @@
+The following code cannot compile (using 2.7.2-rc2).
+
+{code}
+case object Test extends java.io.Serializable {
+  private def readResolve: AnyRef = this
+}
+{code}
+
+{code}
+$$ fsc Test.scala
+/tmp/Test.scala:1: error: double definition:
+method readResolve:()java.lang.Object and
+method readResolve:=> AnyRef at line 2
+have same type after erasure: ()java.lang.Object
+case object Test extends java.io.Serializable {
+           ^
+one error found
+{code}

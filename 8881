@@ -1,0 +1,34 @@
+Problem is in isWithinBoundaries function:
+
+  // Tests whether a number is within the endpoints, without testing
+  // whether it is a member of the sequence (i.e. when step > 1.)
+  private def isWithinBoundaries(elem: Int) = !isEmpty && (
+    (step > 0 && start <= elem && elem <= last ) ||
+    (step < 0 &&  last <= elem && elem <= start)
+  )
+
+this function uses Range.last function which defined as follows:
+
+  override def last = if (isEmpty) Nil.last else lastElement
+
+and lastElement function have following definition:
+
+  final val lastElement     = start + (numRangeElements - 1) * step
+
+and numRangeElements have following definition:
+
+  final val numRangeElements: Int = {
+    if (step == 0) throw new IllegalArgumentException("step cannot be 0.")
+    else if (isEmpty) 0
+    else {
+      val len = longLength
+      if (len > scala.Int.MaxValue) -1
+      else len.toInt
+    }
+  }
+
+so if length of Range object > scala.Int.MaxValue it returns -1
+
+and lastElement will be calculated as start + (-1 - 1) * step and this equals (step = 1) to start - 2
+
+I propose to use Range.end instead of Range.last in the isWithinBoundaries function

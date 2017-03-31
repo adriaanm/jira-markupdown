@@ -1,0 +1,23 @@
+Scala currently does not permit inferring higher-ranked types and there are no plans to do so (due to complicated restrictions). This means that these type arguments must be passed explicitly, but since there is no partial application of type arguments, then *all* type arguments must be passed explicitly, even in cases where the inferencer would have done well with most of them. This becomes quite inconvenient since the true value of Scala's type inferencing cannot be utilised.
+
+I propose that Scala include the ability to partially apply type arguments. This way, higher-ranked type arguments can be explicitly provided, while others can be inferred.
+
+The code sample below may help demonstrate the issue:
+
+
+{code}
+object Foo {
+  def foo[X[_], A](as: X[A]) = 7
+
+  // Fails to compile, need to help the inferencer.
+  // def bar = foo[List, Int](List(1, 2, 3))
+
+  def bar = foo[List, Int](List(1, 2, 3))
+
+  def foo2[A](as: List[A]) = 7
+
+  // Of course, this compiles
+  def bar2 = foo2(List(1, 2, 3))
+}
+
+{code}

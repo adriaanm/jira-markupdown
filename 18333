@@ -1,0 +1,25 @@
+{code}
+val myList = List(1,2,3,4,5)
+myList: List[Int] = List(1, 2, 3, 4, 5)
+
+scala> val myMap = Map(1 -> myList)
+myMap: scala.collection.immutable.Map[Int,List[Int]] = Map(1 -> List(1, 2, 3, 4, 5))
+
+scala> val expectedBehavior = myMap.map { case (key, value) => (key, value.toIterator)}
+expectedBehavior: scala.collection.immutable.Map[Int,Iterator[Int]] = Map(1 -> non-empty iterator)
+
+scala> expectedBehavior(1).next
+res0: Int = 1
+
+scala> expectedBehavior(1).next
+res1: Int = 2
+
+scala> val unexpectedBehavior = myMap.mapValues(_.toIterator)
+unexpectedBehavior: scala.collection.immutable.Map[Int,Iterator[Int]] = Map(1 -> non-empty iterator)
+
+scala> unexpectedBehavior(1).next
+res2: Int = 1
+
+scala> unexpectedBehavior(1).next
+res3: Int = 1
+{code}

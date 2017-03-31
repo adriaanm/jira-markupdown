@@ -1,0 +1,67 @@
+Being a Scala beginner I had some problems understanding the code of `init` in !TraversableLike (package `scala.collection`, Scala 2.8.x, code as of rev. 20296):
+{code}
+  def init: Repr = {
+    if (isEmpty) throw new UnsupportedOperationException("empty.init")
+    var lst = head
+    var follow = false
+    val b = newBuilder
+    for (x <- this) {
+      if (follow) b += lst
+      else follow = true
+      lst = x
+    }
+    b.result
+  }
+{code}
+The main point that bothered me was: why on earth is `lst` initialized with `head`? After some analysis I finally understood how `init` works (and that the initialization with `head` is actually irrelevant, but an initialization is required), but was nevertheless irritated by what seemed to me to be an awkward and unperformant algorithm. Both `isEmpty`'s and `head`'s implementation use a `for` loop over the traversed collection object (even if they break the loop immediately), which seems unnecessary complex (Note: I'm aware that both `isEmpty` and `head` can be overriden with more efficient implementations when sensible).
+
+After some investigation I came with the following implementation that I find more elegant - but that's certainly a matter of taste - and which is more efficient (more on this below):
+{code}
+  def init: Repr = {
+    var previous: Option[A] = None
+    val b = newBuilder
+    for (x <- this) {
+      if (!previous.isEmpty) b += previous.get
+      previous = Some(x)
+    }
+    if (previous.isEmpty) throw new UnsupportedOperationException("empty.init")
+    b.result
+  }
+{code}
+I must admit that I don't know if this use of `Option` is acceptable to the Scala expert or if s/he would consider this a hack.
+
+As far as performance is concerned: I compared the speed of my implementation with the original one (under Windows Vista with the Sun JDK 6.0 compiler) and found that it is about twice as fast using the default (-client) optimization settings and about four times as fast using the -server flag.
+
+As an alternative, one could introduce a small helper class (I called it `ObjectHolder` which is a poor name, but I'm sadly not good at finding good class names):
+{code}
+class ObjectHolder[T] {
+  var initialized = false
+  private[this] var v: T = _
+  
+  def value: T = {
+      if (initialized) v
+      else throw new NoSuchElementException("ObjectHolder.get - not itialized")
+  }
+  
+  def value_=(v: T) {
+    this.v = v
+    initialized = true
+  }
+}
+{code}
+Using this class it is possible to write `init` as:
+{code}
+  def init: Repr = {
+    var previous = new ObjectHolder[A]
+    val b = newBuilder
+    for (x <- this) {
+      if (previous.initialized) b += previous.value
+      previous.value = x
+    }
+    if (!previous.initialized) throw new UnsupportedOperationException("empty.init")
+    b.result
+  }
+{code}
+This version of `init` is a bit (10% to 20%) faster than the previous one using default optimization settings and offers almost identical performance when -server is used.
+
+I don't know whether the Scala team has any interest in this kind of improvements (supposing this actually is an improvement). If it is the case I could provide unit tests showing that the new implementation works correctly - and would continue investigating the library code to learn more about Scala and post suggestions for improvement if I find more.

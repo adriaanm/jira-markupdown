@@ -1,0 +1,25 @@
+If we try to compile something like the following code:
+
+{code}
+import scala.language.experimental.macros
+import scala.reflect.macros.Context
+
+object Example {
+  def foo = macro foo_impl
+  def foo_impl(c: Context) = c.universe.reify {
+    trait Bar { trait Baz }
+    new Bar { type B = Baz }
+  }
+}
+{code}
+
+We get the following completely unhelpful error message:
+
+{code}
+example.scala:6: error: type mismatch;
+ found   : Bar{type B = this.Baz}
+ required: Bar{type B = this.Baz}
+  def foo_impl(c: Context) = c.universe.reify {
+                                              ^
+one error found
+{code}

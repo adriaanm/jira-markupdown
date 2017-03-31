@@ -1,0 +1,15 @@
+I guess you would need to generalize {{FunctionN}} to something like:
+
+{code}
+scala> trait DepFunction1[-A <: AnyRef, +Return[_]] { def apply(a: A) : Return[a.type] }
+warning: there were 1 feature warnings; re-run with -feature for details
+defined trait DepFunction1
+
+scala> trait NewFunction1[-A <: AnyRef, +R] extends DepFunction1[A, ({type l[_] = R})#l]
+defined trait NewFunction1
+
+scala> object stringId extends DepFunction1[String, ({type Id[x] = x})#Id] { def apply(s: String): s.type = s }
+defined object stringId
+{code}
+
+Where {{Return}} is a type level function that accepts the singleton types of the parameters and uses these to compute the result type. Sounds pretty hairy.

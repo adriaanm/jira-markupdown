@@ -1,0 +1,56 @@
+If I give the jvm more stack I can compile it with 200 ::s. Then I introduced a type error (200 ::s in the type, 199 ::s in the value) and it found it no problem. Error message wrapped for jira's displaying pleasure.
+{noformat}
+// 200 and 200 
+% time scalac3 -J-Xss8m a.scala
+50.707 real, 58.355 user, 0.363 sys
+// 200 and 199
+% scalac3 -J-Xss8m -b.scala
+b.scala:59: error: type mismatch; found :
+HCons[Column[Int],HCons[Column[Int],HCons[Column[Int],HCons[Column[Int],
+HCons[Column[Int],HCons[Column[Int],HCons[Column[Int],HCons[Column[Int],
+HCons[Column[Int],HCons[Column[Int],HCons[Column[Int],HCons[Column[Int],
+HCons[Column[Int],HCons[Column[Int],HCons[Column[Int],HCons[Column[Int],
+HCons[Column[Int],HCons[Column[Int],HCons[Column[Int],HCons[Column[Int],
+HCons[Column[Int],HCons[Column[Int],HCons[Column[Int],HCons[Column[Int],
+HCons[Column[Int],HCons[Column[Int],HCons[Column[Int],HCons[Column[Int],
+HCons[Column[Int],HCons[Column[Int],HCons[Column[Int],HCons[Column[Int],
+HCons[Column[Int],HCons[Column[Int],HCons[Column[Int],HCons[Column[Int],
+HCons[Column[Int],HCons[Column[Int],HCons[Column[Int],HCons[Column[Int],
+HCons[Column[Int],HCons[Column[Int],HCons[Column[Int],HCons[Column[Int],
+HCons[Column[Int],HCons[Column[Int],HCons[Column[Int],HCons[Column[Int],
+HCons[Column[...],HCons[...,...]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]
+]]]]]]]]] required:
+ProvenShape[syntax.::[Int,syntax.::[Int,syntax.::[Int,syntax.::[Int,synt
+ax.::[Int,syntax.::[Int,syntax.::[Int,syntax.::[Int,syntax.::[Int,syntax
+.::[Int,syntax.::[Int,syntax.::[Int,syntax.::[Int,syntax.::[Int,syntax.:
+:[Int,syntax.::[Int,syntax.::[Int,syntax.::[Int,syntax.::[Int,syntax.::[
+Int,syntax.::[Int,syntax.::[Int,syntax.::[Int,syntax.::[Int,syntax.::[In
+t,syntax.::[Int,syntax.::[Int,syntax.::[Int,syntax.::[Int,syntax.::[Int,
+syntax.::[Int,syntax.::[Int,syntax.::[Int,syntax.::[Int,syntax.::[Int,sy
+ntax.::[Int,syntax.::[Int,syntax.::[Int,syntax.::[Int,syntax.::[Int,synt
+ax.::[Int,syntax.::[Int,syntax.::[Int,syntax.::[Int,syntax.::[Int,syntax
+.::[Int,syntax.::[Int,syntax.::[Int,syntax.::[...,...]]]]]]]]]]]]]]]]]]]
+]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]] (which expands to)
+ProvenShape[HCons[Int,HCons[Int,HCons[Int,HCons[Int,HCons[Int,HCons[Int,
+HCons[Int,HCons[Int,HCons[Int,HCons[Int,HCons[Int,HCons[Int,HCons[Int,HC
+ons[Int,HCons[Int,HCons[Int,HCons[Int,HCons[Int,HCons[Int,HCons[Int,HCon
+s[Int,HCons[Int,HCons[Int,HCons[Int,HCons[Int,HCons[Int,HCons[Int,HCons[
+Int,HCons[Int,HCons[Int,HCons[Int,HCons[Int,HCons[Int,HCons[Int,HCons[In
+t,HCons[Int,HCons[Int,HCons[Int,HCons[Int,HCons[Int,HCons[Int,HCons[Int,
+HCons[Int,HCons[Int,HCons[Int,HCons[Int,HCons[Int,HCons[Int,HCons[...,..
+.]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]] def * = c :: c :: c
+:: c :: c :: c :: c :: c :: c :: c :: c :: c :: c :: c :: c :: c :: c ::
+c :: c :: c :: c :: c :: c :: c :: c :: c :: c :: c :: c :: c :: c :: c
+:: c :: c :: c :: c :: c :: c :: c :: c :: c :: c :: c :: c :: c :: c ::
+c :: c :: c :: c :: c :: c :: c :: c :: c :: c :: c :: c :: c :: c :: c
+:: c :: c :: c :: c :: c :: c :: c :: c :: c :: c :: c :: c :: c :: c ::
+c :: c :: c :: c :: c :: c :: c :: c :: c :: c :: c :: c :: c :: c :: c
+:: c :: c :: c :: c :: c :: c :: c :: c :: c :: c :: c :: c :: c :: c ::
+c :: c :: c :: c :: c :: c :: c :: c :: c :: c :: c :: c :: c :: c :: c
+:: c :: c :: c :: c :: c :: c :: c :: c :: c :: c :: c :: c :: c :: c ::
+c :: c :: c :: c :: c :: c :: c :: c :: c :: c :: c :: c :: c :: c :: c
+:: c :: c :: c :: c :: c :: c :: c :: c :: c :: c :: c :: c :: c :: c ::
+c :: c :: c :: c :: c :: c :: c :: c :: c :: c :: c :: c :: c :: c :: c
+:: c :: c :: c :: c :: c :: c :: c :: c :: c :: c :: c :: c :: c :: c ::
+c :: c :: c :: c :: c :: c :: c :: c :: HNil ^ one error found
+{noformat}

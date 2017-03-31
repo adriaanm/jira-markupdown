@@ -1,0 +1,31 @@
+For the following:
+{code}
+object Test extends Application {
+  class Foo {
+    val f = (x : Int) => x
+  }
+}
+{code}
+the class Foo is compiled to:
+{code}
+public class Test$$Foo extends java.lang.Object implements scala.ScalaObject{
+    public Test$$Foo();
+    public scala.Function1 f();
+    public int $$tag();
+}
+{code}
+and the anonymous function is compiled to:
+{code}
+public final class Test$$Foo$$$$anonfun$$1 extends java.lang.Object implements scala.Function1,scala.ScalaObject,java.io.Serializable{
+    public final Test$$Foo $$outer;
+    public Test$$Foo$$$$anonfun$$1(Test$$Foo);
+    public final java.lang.Object apply(java.lang.Object);
+    public Test$$Foo Test$$Foo$$$$anonfun$$$$$$outer();
+    public final int apply(int);
+    public int $$tag();
+    public scala.Function1 andThen(scala.Function1);
+    public scala.Function1 compose(scala.Function1);
+    public java.lang.String toString();
+}
+{code}
+It seems problematic that the Scala compiler should be defining this anonymous function as implementing Serializable when it knows that there is a reference to the enclosing class which does not implement Serializable.

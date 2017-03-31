@@ -1,0 +1,48 @@
+If you have an abstract java class like: A.java
+{code}
+public abstract class A {
+  abstract String foo();
+  public void run() {
+   System.out.println(foo());
+  }
+}
+{code}
+
+And try to extend it with a scala class like:
+{code}
+class B extends A { override def foo = "B" }
+{code}
+
+All is fine until you try to execute the run method:
+
+{code}
+scala> (new B).run                                 
+java.lang.AbstractMethodError: A.foo()Ljava/lang/String;
+	at A.run(A.java:5)
+	at .<init>(<console>:6)
+	at .<clinit>(<console>)
+	at RequestResult$$.<init>(<console>:4)
+	at RequestResult$$.<clinit>(<console>)
+	at RequestResult$$scala_repl_result(<console>)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at scala.tools.nsc.Interpreter$$Request$$$$anonfun$$loadAndRun$$1$$$$anonfun$$apply$$13.apply(Interpreter.scala:798)
+	at scala.tools.nsc.Interpreter$$Request$$$$anonfun$$loadAndRun$$1$$$$anonfun$$apply$$13.apply(Interpreter.scala:798)
+	at scala.util.control.Exception$$Catch.apply(Exception.scala:79)
+	at scala.tools.nsc.Interpreter$$Request$$$$anonfun$$loadAndRun$$1.apply(Interpreter.scala:797)
+	at scala.tools.nsc.Interpreter$$Request$$$$anonfun$$loadAndRun$$1.apply(Interpreter.scala:797)
+	at scala.util.control.Exception$$Catch.apply(Exception.scala:79)
+	at scala.tools.nsc.Interpreter$$Request.loadAndRun(Interpreter.scala:796)
+	at scala.tools.nsc.Interpreter.interpret(Interpreter.scala:445)
+	at scala.tools.nsc.Interpreter.interpret(Interpreter.scala:435)
+	at scala.tools.nsc.InterpreterLoop.interpretStartingWith(InterpreterLoop.scala:345)
+	at scala.tools.nsc.InterpreterLoop.command(InterpreterLoop.scala:322)
+	at scala.tools.nsc.InterpreterLoop.processLine$$1(InterpreterLoop.scala:205)
+	at scala.tools.nsc.InterpreterLoop.repl(InterpreterLoop.scala:223)
+	at scala.tools.nsc.InterpreterLoop.main(InterpreterLoop.scala:393)
+	at scala.tools.nsc.MainGenericRunner$$.createLoop$$1(MainGenericRunner.scala:118)
+	at scala.tools.nsc.MainGenericRunner$$.main(MainGenericRunner.scala:143)
+	at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
+{code}

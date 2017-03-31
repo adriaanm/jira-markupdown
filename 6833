@@ -1,0 +1,28 @@
+Under {{scalac -Xresident}}:
+
+{code}
+~/code/scratch/20120601 JAVA_OPTS="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5006" ~/code/scala/build/quick/bin/scalac -Xresident -classpath out -d out 
+Listening for transport dt_socket at address: 5006
+
+nsc> t5167_1.scala
+
+nsc> t5167_2.scala
+t5167_2.scala:5: error: not enough arguments for method buggyMethod: (argWithDefault$1: String)Unit
+    SadObject.buggyMethod()
+                         ^
+
+{code}
+
+The type of the invoked method shows up as:
+
+{code}
+(argWithDefault$1: String)Unit
+{code}
+
+The symbol of the parameter of {{SadTrait#buggyMethod}} is now owned by the corresponding method in the trait implementation class.
+{code}
+(qual, name, member(qual, name).owner, member(qual, name).info.params.head.owner.owner)
+   = (SadObject,buggyMethod,trait SadTrait,class SadTrait$class)
+{code}
+
+It then tries and fails to find the default getter {{argWithDefault$1$1}}.

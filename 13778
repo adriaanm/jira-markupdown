@@ -1,0 +1,25 @@
+Maybe I'm not reading the spec properly, but I see nothing wrong with the following code:
+
+{code}
+abstract class Env {
+  protected def size:Int
+}
+
+object EmptyEnv extends Env {
+  protected def size = 0
+}
+
+class NestedEnv(val parent:Env) extends Env {
+  protected def size = 1 + parent.size
+}
+{code}
+
+However, it spits out this:
+
+{code}
+error: method size cannot be accessed in Env
+         protected def size = 1 + parent.size
+                                         ^
+{code}
+
+(Adding *override* to *size* in the subclasses doesn't change anything.)

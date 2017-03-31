@@ -1,0 +1,18 @@
+{code}
+trait Internals {
+  val internal: Internal
+  type Internal <: InternalApi
+  trait InternalApi
+}
+
+trait Universe extends Internals {
+  type Internal = internal.type
+  object internal extends InternalApi
+}
+
+14:52 ~/Projects/Master/sandbox (master)$ s
+Test.scala:8: error: illegal cyclic reference involving type Internal
+  type Internal = internal.type
+                  ^
+one error found
+{code}

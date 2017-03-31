@@ -1,0 +1,12 @@
+Here's another thing which seems less than ideal.  I wish I could even find documentation as to what is expected here.  If it's intentional that "keySet" stays sorted while "keys" throws it out the window, that should not be difficult information to come by.
+
+{code}
+scala> scala.collection.immutable.SortedMap(1 to 100 zip (1 to 100) : _*).keys
+res0: Iterable[Int] = Set(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100)
+
+scala> res0.getClass
+res1: java.lang.Class[_ <: Iterable[Int]] = class scala.collection.immutable.SortedMap$DefaultKeySortedSet
+
+scala> scala.collection.immutable.SortedMap(1 to 100 zip (1 to 100) : _*).keys ++ Set()
+res2: Iterable[Int] = Set(69, 88, 5, 10, 56, 42, 24, 37, 25, 52, 14, 20, 46, 93, 57, 78, 29, 84, 61, 89, 1, 74, 6, 60, 85, 28, 38, 70, 21, 33, 92, 65, 97, 9, 53, 77, 96, 13, 41, 73, 2, 32, 34, 45, 64, 17, 22, 44, 59, 27, 71, 12, 54, 49, 86, 81, 76, 7, 39, 98, 91, 66, 3, 80, 35, 48, 63, 18, 95, 50, 67, 16, 31, 11, 72, 43, 99, 87, 40, 26, 55, 23, 8, 75, 58, 82, 36, 30, 51, 19, 4, 79, 94, 47, 15, 68, 62, 90, 83, 100)
+{code}

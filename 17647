@@ -1,0 +1,13 @@
+The order of named parameters passed affects behavior in an unexpected way. 
+
+class Family(val mom: String, val dad: String, val kids:String*)
+// this works
+val f1 = new Family(mom="Mom", dad="Dad")
+// this does not
+val f2 = new Family(dad="Dad", mom="Mom")
+
+In summary, parameters passed in same order as class definition work fine. Parameters passed in a different order fail with complaint:
+
+error: when using named arguments, the vararg parameter has to be specified exactly once
+
+Only causes problem when also declaring a variable argument list.

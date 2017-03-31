@@ -1,0 +1,20 @@
+In UnCurry's {{mainTransform()}}, there are two cases intended to invokes {{liftTree()}} on the RHS of {{Assign}}:
+
+{noformat}
+      case Assign(Select(_, _), _) =>
+        withNeedLift(true) { super.transform(tree) }
+
+      case Assign(lhs, _) if lhs.symbol.owner != currentMethod || lhs.symbol.hasFlag(LAZY | ACCESSOR) =>
+        withNeedLift(true) { super.transform(tree) }
+{noformat}
+
+
+None of them covers the tree for
+
+{noformat}
+bar = try { a } catch { case _ => a }
+{noformat}
+
+which thus falls off to the default case, where no {{liftTree()}} is invoked. The reason it doesn't match the first case above is that at UnCurry-time the LHS is still an Ident.
+
+

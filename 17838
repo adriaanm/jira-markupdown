@@ -1,0 +1,24 @@
+According to PaulP, this is "another variation on SI-473 (and later, SI-3913)" -- code compiles but causes a VerifyError when loaded.
+
+Welcome to Scala version 2.10.0 (Java HotSpot(TM) 64-Bit Server VM, Java 1.7.0).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> abstract class A( val someAs: A* )
+defined class A
+
+scala> object B extends A(B)
+defined module B
+
+scala> B.someAs
+java.lang.VerifyError: (class: B$, method: <init> signature: ()V) Expecting to find object/array on stack
+
+
+When I pass in a Set rather than a varargs list, I get a reasonable error:
+
+scala> abstract class A( val someAs: Set[A] )
+defined class A
+
+scala> object B extends A(Set(B))
+<console>:11: error: super constructor cannot be passed a self reference unless parameter is declared by-name
+       object B extends A(Set(B))

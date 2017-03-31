@@ -1,0 +1,27 @@
+The following code is an example in the page 23 of "Scala By Example - December 19, 2007"
+
+
+{code}
+def sum(f: Int => Int): (Int, Int) => Int = {
+	def sumF(a: Int, b: Int): Int =
+		if (a > b) 0 else f(a) + sumF(a + 1, b)
+	sumF
+}
+
+def sumInts = sum(x => x) _ // error
+def sumSquares = sum(x => x * x) _ // error
+def sumPowersOfTwo = sum(powerOfTwo) _ // error
+{code}
+
+The error message for the definition "def sumInts = sum(x => x) _" is
+
+{code}
+<console>:5: error: _ must follow method; cannot follow (Int, Int) => Int
+       def sumInts = sum(x => x) _
+{code}
+
+The definitions for "sumSquares" and "sumPowersOfTwo" produce similar error messages.
+
+The underscores at the end of the lines which produce errors should be omitted or the definition of the function "sum" should be changed into currying form as the definition in the page 24.
+
+

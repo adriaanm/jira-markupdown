@@ -1,0 +1,33 @@
+> In general, we can't statically decide whether a guard is true or false ...  you're right that there are simple cases where we could, 
+
+I agree that scalac can't determine the result of all "if" guards at compile time, but I don't think the right fix is to try to do that in simple cases.
+
+I think that scalac should treat all "if" guards as possibly-false at compile time, and adjust the exhaustiveness checks accordingly.
+
+So code like:
+{code}
+x match {
+  case Some(n) if n % 2 == 0 => "even"
+  case None => "nothing"
+}
+{code}
+would give an exhaustiveness warning, and users would know that they need to do either:
+{code}
+x match {
+  case Some(n) if n % 2 == 0 => "even"
+  case Some(n) => "odd"
+  case None => "nothing"
+}
+{code}
+or
+{code}
+x match {
+  case Some(n) if n % 2 == 0 => "even"
+  case _ => "not even"
+}
+{code}
+to fix the warning.
+
+> our key design goal is not to have spurious warnings
+
+Are you saying that treating "if" guards as possibly-false would lead to spurious warnings? I don't think that the warning in the example above would be suprious, I think it would be correct and very helpful.

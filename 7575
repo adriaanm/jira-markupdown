@@ -1,0 +1,23 @@
+Another manifestation:
+
+{code}
+import scala.reflect.macros.Context
+import language.experimental.macros
+
+trait ImplContainer {
+  object Impls {
+    def foo(c: Context)(x: c.Expr[Any]) = x
+  }
+}
+
+object Macros extends ImplContainer {
+  def foo(x: Any) = macro Impls.foo
+}
+{code}
+
+{code}
+object Test extends App {
+  import Macros._
+  println(foo(42))
+}
+{code}

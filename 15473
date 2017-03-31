@@ -1,0 +1,67 @@
+i have the following problem with scala 2.8.0.RC6 REPL:
+
+{code}
+case class X[ @specialized T ]( t: T )
+
+object X {
+   def apply[ @specialized T ]( initialValue: T, cleanUp: PartialFunction[ T, Unit ])( implicit m: ClassManifest[ T ]) : X[ T ] =
+       new X( initialValue )
+}
+{code}
+
+this produces
+
+{code}
+java.lang.Error: Unknown type: <notype>, <notype>[class scala.tools.nsc.symtab.Types$$NoType$$, class scala.tools.nsc.symtab.Types$$NoType$$] TypeRef? false, false
+	at scala.tools.nsc.symtab.SymbolTable.abort(SymbolTable.scala:33)
+	at scala.tools.nsc.backend.icode.TypeKinds$$class.toTypeKind(TypeKinds.scala:474)
+	at scala.tools.nsc.backend.icode.ICodes.toTypeKind(ICodes.scala:26)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:579)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:126)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:81)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:81)
+	at scala.collection.LinearSeqOptimized$$class.foreach(LinearSeqOptimized.scala:61)
+	at scala.collection.immutable.List.foreach(List.scala:45)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:81)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:148)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:100)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:81)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:81)
+	at scala.collection.LinearSeqOptimized$$class.foreach(LinearSeqOptimized.scala:61)
+	at scala.collection.immutable.List.foreach(List.scala:45)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:81)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:91)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:77)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.apply(GenICode.scala:73)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$applyPhase$$1.apply(Global.scala:276)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$applyPhase$$1.apply(Global.scala:276)
+	at scala.tools.nsc.reporters.Reporter.withSource(Reporter.scala:48)
+	at scala.tools.nsc.Global$$GlobalPhase.applyPhase(Global.scala:276)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:252)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:252)
+	at scala.collection.Iterator$$class.foreach(Iterator.scala:631)
+	at scala.collection.mutable.ListBuffer$$$$anon$$1.foreach(ListBuffer.scala:304)
+	at scala.tools.nsc.Global$$GlobalPhase.run(Global.scala:252)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.run(GenICode.scala:66)
+	at scala.tools.nsc.Global$$Run.compileSources(Global.scala:733)
+	at scala.tools.nsc.Interpreter.compileAndSaveRun(Interpreter.scala:516)
+	at scala.tools.nsc.Interpreter$$Request.objRun(Interpreter.scala:890)
+	at scala.tools.nsc.Interpreter$$Request.compile(Interpreter.scala:913)
+	at scala.tools.nsc.Interpreter.interpret(Interpreter.scala:596)
+	at scala.tools.nsc.Interpreter.interpret(Interpreter.scala:575)
+	at de.sciss.scalainterpreter.ScalaInterpreterPane$$$$anonfun$$interpret$$1.apply(ScalaInterpreterPane.scala:200)
+	[...]
+{code}
+
+if i remove specialization:
+
+{code}
+case class X[ T ]( t: T )
+
+object X {
+   def apply[ T ]( initialValue: T, cleanUp: PartialFunction[ T, Unit ])( implicit m: ClassManifest[ T ]) : X[ T ] =
+       new X( initialValue )
+}
+{code}
+
+no compiler error occurs. i am wrapping a class whose constructor requires the implicit class manifest, and my wrapper should be specialized. i am not very familiar with specialization / class manifests, so forgive me if the above doesn't make 100% sense. but i still believe it should not produce a typer error.

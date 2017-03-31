@@ -1,0 +1,1521 @@
+Considering {{test/files/specialized/spec-patmatch.scala}} / https://github.com/scala/scala/commit/b94c6e0
+
+{code}
+class Foo[@specialized A] {
+  def test(x: A) = println(x match {
+   case _: Boolean => "bool"
+   case _: Byte => "byte"
+   case _: Short => "short"
+   case _: Char => "char"
+   case i: Int => "int"
+   case l: Long => "long"
+   case d: Double => "double"
+   case e: Float => "float"
+   case _ => "default"
+ })
+}
+
+object Test {
+ def test[@specialized A] (x: A) = println(x match {
+   case _: Boolean => "bool"
+   case _: Byte => "byte"
+   case _: Short => "short"
+   case _: Char => "char"
+   case i: Int => "int"
+   case l: Long => "long"
+   case d: Double => "double"
+   case e: Float => "float"
+   case _ => "default"
+ })
+
+  def main(args: Array[String]) {
+    test(true)
+    test(42.toByte)
+    test(42.toShort)
+    test('b')
+    test(42)
+    test(42l)
+    test(42.0)
+    test(42.0f)
+    test(new Object)
+
+    println("object instantiations:")
+    (new Foo).test(true)
+    (new Foo).test(42.toByte)
+    (new Foo).test(42.toShort)
+    (new Foo).test('b')
+    (new Foo).test(42)
+    (new Foo).test(42l)
+    (new Foo).test(42.0)
+    (new Foo).test(42.0f)
+    (new Foo).test(new Object)
+    
+    //println(runtime.BoxesRunTime.integerBoxCount)
+  }
+
+}
+
+{code}
+
+{{-Xoldpatmat}}
+{code}
+[[syntax trees at end of                specialize]] // spec-patmatch.scala
+package <empty> {
+  class Foo[@specialized A >: Nothing <: Any] extends Object {
+    def <init>(): Foo[A] = {
+      Foo.super.<init>();
+      ()
+    };
+    def test(x: A): Unit = scala.this.Predef.println(x match {
+      case (_: Boolean) => "bool"
+      case (_: Byte) => "byte"
+      case (_: Short) => "short"
+      case (_: Char) => "char"
+      case (i @ (_: Int)) => "int"
+      case (l @ (_: Long)) => "long"
+      case (d @ (_: Double)) => "double"
+      case (e @ (_: Float)) => "float"
+      case _ => "default"
+    });
+    <specialized> def test$mcZ$sp(x: Boolean): Unit = Foo.this.test(x.asInstanceOf[A]());
+    <specialized> def test$mcB$sp(x: Byte): Unit = Foo.this.test(x.asInstanceOf[A]());
+    <specialized> def test$mcC$sp(x: Char): Unit = Foo.this.test(x.asInstanceOf[A]());
+    <specialized> def test$mcD$sp(x: Double): Unit = Foo.this.test(x.asInstanceOf[A]());
+    <specialized> def test$mcF$sp(x: Float): Unit = Foo.this.test(x.asInstanceOf[A]());
+    <specialized> def test$mcI$sp(x: Int): Unit = Foo.this.test(x.asInstanceOf[A]());
+    <specialized> def test$mcJ$sp(x: Long): Unit = Foo.this.test(x.asInstanceOf[A]());
+    <specialized> def test$mcS$sp(x: Short): Unit = Foo.this.test(x.asInstanceOf[A]());
+    <specialized> def test$mcV$sp(x: Unit): Unit = Foo.this.test(x.asInstanceOf[A]())
+  };
+  object Test extends Object {
+    def <init>(): Test.type = {
+      Test.super.<init>();
+      ()
+    };
+    def test[@specialized A >: Nothing <: Any](x: A): Unit = scala.this.Predef.println(x match {
+      case (_: Boolean) => "bool"
+      case (_: Byte) => "byte"
+      case (_: Short) => "short"
+      case (_: Char) => "char"
+      case (i @ (_: Int)) => "int"
+      case (l @ (_: Long)) => "long"
+      case (d @ (_: Double)) => "double"
+      case (e @ (_: Float)) => "float"
+      case _ => "default"
+    });
+    def main(args: Array[String]): Unit = {
+      Test.this.test$mZc$sp(true);
+      Test.this.test$mBc$sp(42.toByte());
+      Test.this.test$mSc$sp(42.toShort());
+      Test.this.test$mCc$sp('b');
+      Test.this.test$mIc$sp(42);
+      Test.this.test$mJc$sp(42L);
+      Test.this.test$mDc$sp(42.0);
+      Test.this.test$mFc$sp(42.0);
+      Test.this.test[Object](new Object());
+      scala.this.Predef.println("object instantiations:");
+      new Foo$mcZ$sp().test$mcZ$sp(true);
+      new Foo$mcB$sp().test$mcB$sp(42.toByte());
+      new Foo$mcS$sp().test$mcS$sp(42.toShort());
+      new Foo$mcC$sp().test$mcC$sp('b');
+      new Foo$mcI$sp().test$mcI$sp(42);
+      new Foo$mcJ$sp().test$mcJ$sp(42L);
+      new Foo$mcD$sp().test$mcD$sp(42.0);
+      new Foo$mcF$sp().test$mcF$sp(42.0);
+      new Foo[Object]().test(new Object())
+    };
+    <specialized> def test$mZc$sp(x: Boolean): Unit = scala.this.Predef.println(x match {
+      case (_: Boolean) => "bool"
+      case _ => "default"
+    });
+    <specialized> def test$mBc$sp(x: Byte): Unit = scala.this.Predef.println(x match {
+      case (_: Byte) => "byte"
+      case _ => "default"
+    });
+    <specialized> def test$mCc$sp(x: Char): Unit = scala.this.Predef.println(x match {
+      case (_: Char) => "char"
+      case _ => "default"
+    });
+    <specialized> def test$mDc$sp(x: Double): Unit = scala.this.Predef.println(x match {
+      case (d @ (_: Double)) => "double"
+      case _ => "default"
+    });
+    <specialized> def test$mFc$sp(x: Float): Unit = scala.this.Predef.println(x match {
+      case (e @ (_: Float)) => "float"
+      case _ => "default"
+    });
+    <specialized> def test$mIc$sp(x: Int): Unit = scala.this.Predef.println(x match {
+      case (i @ (_: Int)) => "int"
+      case _ => "default"
+    });
+    <specialized> def test$mJc$sp(x: Long): Unit = scala.this.Predef.println(x match {
+      case (l @ (_: Long)) => "long"
+      case _ => "default"
+    });
+    <specialized> def test$mSc$sp(x: Short): Unit = scala.this.Predef.println(x match {
+      case (_: Short) => "short"
+      case _ => "default"
+    });
+    <specialized> def test$mVc$sp(x: Unit): Unit = scala.this.Predef.println(x match {
+      case _ => "default"
+    })
+  };
+  <specialized> class Foo$mcZ$sp extends Foo[Boolean] {
+    <specialized> def <init>(): Foo$mcZ$sp = {
+      Foo$mcZ$sp.super.<init>();
+      ()
+    };
+    override <specialized> def test(x: Boolean): Unit = Foo$mcZ$sp.this.test$mcZ$sp(x);
+    override <specialized> def test$mcZ$sp(x: Boolean): Unit = scala.this.Predef.println(x match {
+      case (_: Boolean) => "bool"
+      case _ => "default"
+    })
+  };
+  <specialized> class Foo$mcB$sp extends Foo[Byte] {
+    <specialized> def <init>(): Foo$mcB$sp = {
+      Foo$mcB$sp.super.<init>();
+      ()
+    };
+    override <specialized> def test(x: Byte): Unit = Foo$mcB$sp.this.test$mcB$sp(x);
+    override <specialized> def test$mcB$sp(x: Byte): Unit = scala.this.Predef.println(x match {
+      case (_: Byte) => "byte"
+      case _ => "default"
+    })
+  };
+  <specialized> class Foo$mcC$sp extends Foo[Char] {
+    <specialized> def <init>(): Foo$mcC$sp = {
+      Foo$mcC$sp.super.<init>();
+      ()
+    };
+    override <specialized> def test(x: Char): Unit = Foo$mcC$sp.this.test$mcC$sp(x);
+    override <specialized> def test$mcC$sp(x: Char): Unit = scala.this.Predef.println(x match {
+      case (_: Char) => "char"
+      case _ => "default"
+    })
+  };
+  <specialized> class Foo$mcD$sp extends Foo[Double] {
+    <specialized> def <init>(): Foo$mcD$sp = {
+      Foo$mcD$sp.super.<init>();
+      ()
+    };
+    override <specialized> def test(x: Double): Unit = Foo$mcD$sp.this.test$mcD$sp(x);
+    override <specialized> def test$mcD$sp(x: Double): Unit = scala.this.Predef.println(x match {
+      case (d @ (_: Double)) => "double"
+      case _ => "default"
+    })
+  };
+  <specialized> class Foo$mcF$sp extends Foo[Float] {
+    <specialized> def <init>(): Foo$mcF$sp = {
+      Foo$mcF$sp.super.<init>();
+      ()
+    };
+    override <specialized> def test(x: Float): Unit = Foo$mcF$sp.this.test$mcF$sp(x);
+    override <specialized> def test$mcF$sp(x: Float): Unit = scala.this.Predef.println(x match {
+      case (e @ (_: Float)) => "float"
+      case _ => "default"
+    })
+  };
+  <specialized> class Foo$mcI$sp extends Foo[Int] {
+    <specialized> def <init>(): Foo$mcI$sp = {
+      Foo$mcI$sp.super.<init>();
+      ()
+    };
+    override <specialized> def test(x: Int): Unit = Foo$mcI$sp.this.test$mcI$sp(x);
+    override <specialized> def test$mcI$sp(x: Int): Unit = scala.this.Predef.println(x match {
+      case (i @ (_: Int)) => "int"
+      case _ => "default"
+    })
+  };
+  <specialized> class Foo$mcJ$sp extends Foo[Long] {
+    <specialized> def <init>(): Foo$mcJ$sp = {
+      Foo$mcJ$sp.super.<init>();
+      ()
+    };
+    override <specialized> def test(x: Long): Unit = Foo$mcJ$sp.this.test$mcJ$sp(x);
+    override <specialized> def test$mcJ$sp(x: Long): Unit = scala.this.Predef.println(x match {
+      case (l @ (_: Long)) => "long"
+      case _ => "default"
+    })
+  };
+  <specialized> class Foo$mcS$sp extends Foo[Short] {
+    <specialized> def <init>(): Foo$mcS$sp = {
+      Foo$mcS$sp.super.<init>();
+      ()
+    };
+    override <specialized> def test(x: Short): Unit = Foo$mcS$sp.this.test$mcS$sp(x);
+    override <specialized> def test$mcS$sp(x: Short): Unit = scala.this.Predef.println(x match {
+      case (_: Short) => "short"
+      case _ => "default"
+    })
+  };
+  <specialized> class Foo$mcV$sp extends Foo[Unit] {
+    <specialized> def <init>(): Foo$mcV$sp = {
+      Foo$mcV$sp.super.<init>();
+      ()
+    };
+    override <specialized> def test(x: Unit): Unit = Foo$mcV$sp.this.test$mcV$sp(x);
+    override <specialized> def test$mcV$sp(x: Unit): Unit = scala.this.Predef.println(x match {
+      case _ => "default"
+    })
+  }
+}
+
+{code}
+
+With virtpatmat (in which {{Match}} nodes are eliminated before the specialize phase)
+{code}
+[[syntax trees at end of                specialize]] // spec-patmatch.scala
+package <empty> {
+  class Foo[@specialized A >: Nothing <: Any] extends Object {
+    def <init>(): Foo[A] = {
+      Foo.super.<init>();
+      ()
+    };
+    def test(x: A): Unit = scala.this.Predef.println({
+      case <synthetic> val x1: A = x;
+      case12(){
+        if (x1.isInstanceOf[Boolean]())
+          matchEnd11("bool")
+        else
+          case13()
+      };
+      case13(){
+        if (x1.isInstanceOf[Byte]())
+          matchEnd11("byte")
+        else
+          case14()
+      };
+      case14(){
+        if (x1.isInstanceOf[Short]())
+          matchEnd11("short")
+        else
+          case15()
+      };
+      case15(){
+        if (x1.isInstanceOf[Char]())
+          matchEnd11("char")
+        else
+          case16()
+      };
+      case16(){
+        if (x1.isInstanceOf[Int]())
+          matchEnd11("int")
+        else
+          case17()
+      };
+      case17(){
+        if (x1.isInstanceOf[Long]())
+          matchEnd11("long")
+        else
+          case18()
+      };
+      case18(){
+        if (x1.isInstanceOf[Double]())
+          matchEnd11("double")
+        else
+          case19()
+      };
+      case19(){
+        if (x1.isInstanceOf[Float]())
+          matchEnd11("float")
+        else
+          case20()
+      };
+      case20(){
+        matchEnd11("default")
+      };
+      matchEnd11(x: Any){
+        x
+      }
+    });
+    <specialized> def test$mcZ$sp(x: Boolean): Unit = Foo.this.test(x.asInstanceOf[A]());
+    <specialized> def test$mcB$sp(x: Byte): Unit = Foo.this.test(x.asInstanceOf[A]());
+    <specialized> def test$mcC$sp(x: Char): Unit = Foo.this.test(x.asInstanceOf[A]());
+    <specialized> def test$mcD$sp(x: Double): Unit = Foo.this.test(x.asInstanceOf[A]());
+    <specialized> def test$mcF$sp(x: Float): Unit = Foo.this.test(x.asInstanceOf[A]());
+    <specialized> def test$mcI$sp(x: Int): Unit = Foo.this.test(x.asInstanceOf[A]());
+    <specialized> def test$mcJ$sp(x: Long): Unit = Foo.this.test(x.asInstanceOf[A]());
+    <specialized> def test$mcS$sp(x: Short): Unit = Foo.this.test(x.asInstanceOf[A]());
+    <specialized> def test$mcV$sp(x: Unit): Unit = Foo.this.test(x.asInstanceOf[A]())
+  };
+  object Test extends Object {
+    def <init>(): Test.type = {
+      Test.super.<init>();
+      ()
+    };
+    def test[@specialized A >: Nothing <: Any](x: A): Unit = scala.this.Predef.println({
+      case <synthetic> val x1: A = x;
+      case12(){
+        if (x1.isInstanceOf[Boolean]())
+          matchEnd11("bool")
+        else
+          case13()
+      };
+      case13(){
+        if (x1.isInstanceOf[Byte]())
+          matchEnd11("byte")
+        else
+          case14()
+      };
+      case14(){
+        if (x1.isInstanceOf[Short]())
+          matchEnd11("short")
+        else
+          case15()
+      };
+      case15(){
+        if (x1.isInstanceOf[Char]())
+          matchEnd11("char")
+        else
+          case16()
+      };
+      case16(){
+        if (x1.isInstanceOf[Int]())
+          matchEnd11("int")
+        else
+          case17()
+      };
+      case17(){
+        if (x1.isInstanceOf[Long]())
+          matchEnd11("long")
+        else
+          case18()
+      };
+      case18(){
+        if (x1.isInstanceOf[Double]())
+          matchEnd11("double")
+        else
+          case19()
+      };
+      case19(){
+        if (x1.isInstanceOf[Float]())
+          matchEnd11("float")
+        else
+          case20()
+      };
+      case20(){
+        matchEnd11("default")
+      };
+      matchEnd11(x: Any){
+        x
+      }
+    });
+    def main(args: Array[String]): Unit = {
+      Test.this.test$mZc$sp(true);
+      Test.this.test$mBc$sp(42.toByte());
+      Test.this.test$mSc$sp(42.toShort());
+      Test.this.test$mCc$sp('b');
+      Test.this.test$mIc$sp(42);
+      Test.this.test$mJc$sp(42L);
+      Test.this.test$mDc$sp(42.0);
+      Test.this.test$mFc$sp(42.0);
+      Test.this.test[Object](new Object());
+      scala.this.Predef.println("object instantiations:");
+      new Foo$mcZ$sp().test$mcZ$sp(true);
+      new Foo$mcB$sp().test$mcB$sp(42.toByte());
+      new Foo$mcS$sp().test$mcS$sp(42.toShort());
+      new Foo$mcC$sp().test$mcC$sp('b');
+      new Foo$mcI$sp().test$mcI$sp(42);
+      new Foo$mcJ$sp().test$mcJ$sp(42L);
+      new Foo$mcD$sp().test$mcD$sp(42.0);
+      new Foo$mcF$sp().test$mcF$sp(42.0);
+      new Foo[Object]().test(new Object())
+    };
+    <specialized> def test$mZc$sp(x: Boolean): Unit = scala.this.Predef.println({
+      case <synthetic> val x1: Boolean = x;
+      case12(){
+        if (x1.isInstanceOf[Boolean]())
+          matchEnd11("bool")
+        else
+          case13()
+      };
+      case13(){
+        if (x1.isInstanceOf[Byte]())
+          matchEnd11("byte")
+        else
+          case14()
+      };
+      case14(){
+        if (x1.isInstanceOf[Short]())
+          matchEnd11("short")
+        else
+          case15()
+      };
+      case15(){
+        if (x1.isInstanceOf[Char]())
+          matchEnd11("char")
+        else
+          case16()
+      };
+      case16(){
+        if (x1.isInstanceOf[Int]())
+          matchEnd11("int")
+        else
+          case17()
+      };
+      case17(){
+        if (x1.isInstanceOf[Long]())
+          matchEnd11("long")
+        else
+          case18()
+      };
+      case18(){
+        if (x1.isInstanceOf[Double]())
+          matchEnd11("double")
+        else
+          case19()
+      };
+      case19(){
+        if (x1.isInstanceOf[Float]())
+          matchEnd11("float")
+        else
+          case20()
+      };
+      case20(){
+        matchEnd11("default")
+      };
+      matchEnd11(x: Any){
+        x
+      }
+    });
+    <specialized> def test$mBc$sp(x: Byte): Unit = scala.this.Predef.println({
+      case <synthetic> val x1: Byte = x;
+      case12(){
+        if (x1.isInstanceOf[Boolean]())
+          matchEnd11("bool")
+        else
+          case13()
+      };
+      case13(){
+        if (x1.isInstanceOf[Byte]())
+          matchEnd11("byte")
+        else
+          case14()
+      };
+      case14(){
+        if (x1.isInstanceOf[Short]())
+          matchEnd11("short")
+        else
+          case15()
+      };
+      case15(){
+        if (x1.isInstanceOf[Char]())
+          matchEnd11("char")
+        else
+          case16()
+      };
+      case16(){
+        if (x1.isInstanceOf[Int]())
+          matchEnd11("int")
+        else
+          case17()
+      };
+      case17(){
+        if (x1.isInstanceOf[Long]())
+          matchEnd11("long")
+        else
+          case18()
+      };
+      case18(){
+        if (x1.isInstanceOf[Double]())
+          matchEnd11("double")
+        else
+          case19()
+      };
+      case19(){
+        if (x1.isInstanceOf[Float]())
+          matchEnd11("float")
+        else
+          case20()
+      };
+      case20(){
+        matchEnd11("default")
+      };
+      matchEnd11(x: Any){
+        x
+      }
+    });
+    <specialized> def test$mCc$sp(x: Char): Unit = scala.this.Predef.println({
+      case <synthetic> val x1: Char = x;
+      case12(){
+        if (x1.isInstanceOf[Boolean]())
+          matchEnd11("bool")
+        else
+          case13()
+      };
+      case13(){
+        if (x1.isInstanceOf[Byte]())
+          matchEnd11("byte")
+        else
+          case14()
+      };
+      case14(){
+        if (x1.isInstanceOf[Short]())
+          matchEnd11("short")
+        else
+          case15()
+      };
+      case15(){
+        if (x1.isInstanceOf[Char]())
+          matchEnd11("char")
+        else
+          case16()
+      };
+      case16(){
+        if (x1.isInstanceOf[Int]())
+          matchEnd11("int")
+        else
+          case17()
+      };
+      case17(){
+        if (x1.isInstanceOf[Long]())
+          matchEnd11("long")
+        else
+          case18()
+      };
+      case18(){
+        if (x1.isInstanceOf[Double]())
+          matchEnd11("double")
+        else
+          case19()
+      };
+      case19(){
+        if (x1.isInstanceOf[Float]())
+          matchEnd11("float")
+        else
+          case20()
+      };
+      case20(){
+        matchEnd11("default")
+      };
+      matchEnd11(x: Any){
+        x
+      }
+    });
+    <specialized> def test$mDc$sp(x: Double): Unit = scala.this.Predef.println({
+      case <synthetic> val x1: Double = x;
+      case12(){
+        if (x1.isInstanceOf[Boolean]())
+          matchEnd11("bool")
+        else
+          case13()
+      };
+      case13(){
+        if (x1.isInstanceOf[Byte]())
+          matchEnd11("byte")
+        else
+          case14()
+      };
+      case14(){
+        if (x1.isInstanceOf[Short]())
+          matchEnd11("short")
+        else
+          case15()
+      };
+      case15(){
+        if (x1.isInstanceOf[Char]())
+          matchEnd11("char")
+        else
+          case16()
+      };
+      case16(){
+        if (x1.isInstanceOf[Int]())
+          matchEnd11("int")
+        else
+          case17()
+      };
+      case17(){
+        if (x1.isInstanceOf[Long]())
+          matchEnd11("long")
+        else
+          case18()
+      };
+      case18(){
+        if (x1.isInstanceOf[Double]())
+          matchEnd11("double")
+        else
+          case19()
+      };
+      case19(){
+        if (x1.isInstanceOf[Float]())
+          matchEnd11("float")
+        else
+          case20()
+      };
+      case20(){
+        matchEnd11("default")
+      };
+      matchEnd11(x: Any){
+        x
+      }
+    });
+    <specialized> def test$mFc$sp(x: Float): Unit = scala.this.Predef.println({
+      case <synthetic> val x1: Float = x;
+      case12(){
+        if (x1.isInstanceOf[Boolean]())
+          matchEnd11("bool")
+        else
+          case13()
+      };
+      case13(){
+        if (x1.isInstanceOf[Byte]())
+          matchEnd11("byte")
+        else
+          case14()
+      };
+      case14(){
+        if (x1.isInstanceOf[Short]())
+          matchEnd11("short")
+        else
+          case15()
+      };
+      case15(){
+        if (x1.isInstanceOf[Char]())
+          matchEnd11("char")
+        else
+          case16()
+      };
+      case16(){
+        if (x1.isInstanceOf[Int]())
+          matchEnd11("int")
+        else
+          case17()
+      };
+      case17(){
+        if (x1.isInstanceOf[Long]())
+          matchEnd11("long")
+        else
+          case18()
+      };
+      case18(){
+        if (x1.isInstanceOf[Double]())
+          matchEnd11("double")
+        else
+          case19()
+      };
+      case19(){
+        if (x1.isInstanceOf[Float]())
+          matchEnd11("float")
+        else
+          case20()
+      };
+      case20(){
+        matchEnd11("default")
+      };
+      matchEnd11(x: Any){
+        x
+      }
+    });
+    <specialized> def test$mIc$sp(x: Int): Unit = scala.this.Predef.println({
+      case <synthetic> val x1: Int = x;
+      case12(){
+        if (x1.isInstanceOf[Boolean]())
+          matchEnd11("bool")
+        else
+          case13()
+      };
+      case13(){
+        if (x1.isInstanceOf[Byte]())
+          matchEnd11("byte")
+        else
+          case14()
+      };
+      case14(){
+        if (x1.isInstanceOf[Short]())
+          matchEnd11("short")
+        else
+          case15()
+      };
+      case15(){
+        if (x1.isInstanceOf[Char]())
+          matchEnd11("char")
+        else
+          case16()
+      };
+      case16(){
+        if (x1.isInstanceOf[Int]())
+          matchEnd11("int")
+        else
+          case17()
+      };
+      case17(){
+        if (x1.isInstanceOf[Long]())
+          matchEnd11("long")
+        else
+          case18()
+      };
+      case18(){
+        if (x1.isInstanceOf[Double]())
+          matchEnd11("double")
+        else
+          case19()
+      };
+      case19(){
+        if (x1.isInstanceOf[Float]())
+          matchEnd11("float")
+        else
+          case20()
+      };
+      case20(){
+        matchEnd11("default")
+      };
+      matchEnd11(x: Any){
+        x
+      }
+    });
+    <specialized> def test$mJc$sp(x: Long): Unit = scala.this.Predef.println({
+      case <synthetic> val x1: Long = x;
+      case12(){
+        if (x1.isInstanceOf[Boolean]())
+          matchEnd11("bool")
+        else
+          case13()
+      };
+      case13(){
+        if (x1.isInstanceOf[Byte]())
+          matchEnd11("byte")
+        else
+          case14()
+      };
+      case14(){
+        if (x1.isInstanceOf[Short]())
+          matchEnd11("short")
+        else
+          case15()
+      };
+      case15(){
+        if (x1.isInstanceOf[Char]())
+          matchEnd11("char")
+        else
+          case16()
+      };
+      case16(){
+        if (x1.isInstanceOf[Int]())
+          matchEnd11("int")
+        else
+          case17()
+      };
+      case17(){
+        if (x1.isInstanceOf[Long]())
+          matchEnd11("long")
+        else
+          case18()
+      };
+      case18(){
+        if (x1.isInstanceOf[Double]())
+          matchEnd11("double")
+        else
+          case19()
+      };
+      case19(){
+        if (x1.isInstanceOf[Float]())
+          matchEnd11("float")
+        else
+          case20()
+      };
+      case20(){
+        matchEnd11("default")
+      };
+      matchEnd11(x: Any){
+        x
+      }
+    });
+    <specialized> def test$mSc$sp(x: Short): Unit = scala.this.Predef.println({
+      case <synthetic> val x1: Short = x;
+      case12(){
+        if (x1.isInstanceOf[Boolean]())
+          matchEnd11("bool")
+        else
+          case13()
+      };
+      case13(){
+        if (x1.isInstanceOf[Byte]())
+          matchEnd11("byte")
+        else
+          case14()
+      };
+      case14(){
+        if (x1.isInstanceOf[Short]())
+          matchEnd11("short")
+        else
+          case15()
+      };
+      case15(){
+        if (x1.isInstanceOf[Char]())
+          matchEnd11("char")
+        else
+          case16()
+      };
+      case16(){
+        if (x1.isInstanceOf[Int]())
+          matchEnd11("int")
+        else
+          case17()
+      };
+      case17(){
+        if (x1.isInstanceOf[Long]())
+          matchEnd11("long")
+        else
+          case18()
+      };
+      case18(){
+        if (x1.isInstanceOf[Double]())
+          matchEnd11("double")
+        else
+          case19()
+      };
+      case19(){
+        if (x1.isInstanceOf[Float]())
+          matchEnd11("float")
+        else
+          case20()
+      };
+      case20(){
+        matchEnd11("default")
+      };
+      matchEnd11(x: Any){
+        x
+      }
+    });
+    <specialized> def test$mVc$sp(x: Unit): Unit = scala.this.Predef.println({
+      case <synthetic> val x1: Unit = x;
+      case12(){
+        if (x1.isInstanceOf[Boolean]())
+          matchEnd11("bool")
+        else
+          case13()
+      };
+      case13(){
+        if (x1.isInstanceOf[Byte]())
+          matchEnd11("byte")
+        else
+          case14()
+      };
+      case14(){
+        if (x1.isInstanceOf[Short]())
+          matchEnd11("short")
+        else
+          case15()
+      };
+      case15(){
+        if (x1.isInstanceOf[Char]())
+          matchEnd11("char")
+        else
+          case16()
+      };
+      case16(){
+        if (x1.isInstanceOf[Int]())
+          matchEnd11("int")
+        else
+          case17()
+      };
+      case17(){
+        if (x1.isInstanceOf[Long]())
+          matchEnd11("long")
+        else
+          case18()
+      };
+      case18(){
+        if (x1.isInstanceOf[Double]())
+          matchEnd11("double")
+        else
+          case19()
+      };
+      case19(){
+        if (x1.isInstanceOf[Float]())
+          matchEnd11("float")
+        else
+          case20()
+      };
+      case20(){
+        matchEnd11("default")
+      };
+      matchEnd11(x: Any){
+        x
+      }
+    })
+  };
+  <specialized> class Foo$mcZ$sp extends Foo[Boolean] {
+    <specialized> def <init>(): Foo$mcZ$sp = {
+      Foo$mcZ$sp.super.<init>();
+      ()
+    };
+    override <specialized> def test(x: Boolean): Unit = Foo$mcZ$sp.this.test$mcZ$sp(x);
+    override <specialized> def test$mcZ$sp(x: Boolean): Unit = scala.this.Predef.println({
+      case <synthetic> val x1: Boolean = x;
+      case12(){
+        if (x1.isInstanceOf[Boolean]())
+          matchEnd11("bool")
+        else
+          case13()
+      };
+      case13(){
+        if (x1.isInstanceOf[Byte]())
+          matchEnd11("byte")
+        else
+          case14()
+      };
+      case14(){
+        if (x1.isInstanceOf[Short]())
+          matchEnd11("short")
+        else
+          case15()
+      };
+      case15(){
+        if (x1.isInstanceOf[Char]())
+          matchEnd11("char")
+        else
+          case16()
+      };
+      case16(){
+        if (x1.isInstanceOf[Int]())
+          matchEnd11("int")
+        else
+          case17()
+      };
+      case17(){
+        if (x1.isInstanceOf[Long]())
+          matchEnd11("long")
+        else
+          case18()
+      };
+      case18(){
+        if (x1.isInstanceOf[Double]())
+          matchEnd11("double")
+        else
+          case19()
+      };
+      case19(){
+        if (x1.isInstanceOf[Float]())
+          matchEnd11("float")
+        else
+          case20()
+      };
+      case20(){
+        matchEnd11("default")
+      };
+      matchEnd11(x: Any){
+        x
+      }
+    })
+  };
+  <specialized> class Foo$mcB$sp extends Foo[Byte] {
+    <specialized> def <init>(): Foo$mcB$sp = {
+      Foo$mcB$sp.super.<init>();
+      ()
+    };
+    override <specialized> def test(x: Byte): Unit = Foo$mcB$sp.this.test$mcB$sp(x);
+    override <specialized> def test$mcB$sp(x: Byte): Unit = scala.this.Predef.println({
+      case <synthetic> val x1: Byte = x;
+      case12(){
+        if (x1.isInstanceOf[Boolean]())
+          matchEnd11("bool")
+        else
+          case13()
+      };
+      case13(){
+        if (x1.isInstanceOf[Byte]())
+          matchEnd11("byte")
+        else
+          case14()
+      };
+      case14(){
+        if (x1.isInstanceOf[Short]())
+          matchEnd11("short")
+        else
+          case15()
+      };
+      case15(){
+        if (x1.isInstanceOf[Char]())
+          matchEnd11("char")
+        else
+          case16()
+      };
+      case16(){
+        if (x1.isInstanceOf[Int]())
+          matchEnd11("int")
+        else
+          case17()
+      };
+      case17(){
+        if (x1.isInstanceOf[Long]())
+          matchEnd11("long")
+        else
+          case18()
+      };
+      case18(){
+        if (x1.isInstanceOf[Double]())
+          matchEnd11("double")
+        else
+          case19()
+      };
+      case19(){
+        if (x1.isInstanceOf[Float]())
+          matchEnd11("float")
+        else
+          case20()
+      };
+      case20(){
+        matchEnd11("default")
+      };
+      matchEnd11(x: Any){
+        x
+      }
+    })
+  };
+  <specialized> class Foo$mcC$sp extends Foo[Char] {
+    <specialized> def <init>(): Foo$mcC$sp = {
+      Foo$mcC$sp.super.<init>();
+      ()
+    };
+    override <specialized> def test(x: Char): Unit = Foo$mcC$sp.this.test$mcC$sp(x);
+    override <specialized> def test$mcC$sp(x: Char): Unit = scala.this.Predef.println({
+      case <synthetic> val x1: Char = x;
+      case12(){
+        if (x1.isInstanceOf[Boolean]())
+          matchEnd11("bool")
+        else
+          case13()
+      };
+      case13(){
+        if (x1.isInstanceOf[Byte]())
+          matchEnd11("byte")
+        else
+          case14()
+      };
+      case14(){
+        if (x1.isInstanceOf[Short]())
+          matchEnd11("short")
+        else
+          case15()
+      };
+      case15(){
+        if (x1.isInstanceOf[Char]())
+          matchEnd11("char")
+        else
+          case16()
+      };
+      case16(){
+        if (x1.isInstanceOf[Int]())
+          matchEnd11("int")
+        else
+          case17()
+      };
+      case17(){
+        if (x1.isInstanceOf[Long]())
+          matchEnd11("long")
+        else
+          case18()
+      };
+      case18(){
+        if (x1.isInstanceOf[Double]())
+          matchEnd11("double")
+        else
+          case19()
+      };
+      case19(){
+        if (x1.isInstanceOf[Float]())
+          matchEnd11("float")
+        else
+          case20()
+      };
+      case20(){
+        matchEnd11("default")
+      };
+      matchEnd11(x: Any){
+        x
+      }
+    })
+  };
+  <specialized> class Foo$mcD$sp extends Foo[Double] {
+    <specialized> def <init>(): Foo$mcD$sp = {
+      Foo$mcD$sp.super.<init>();
+      ()
+    };
+    override <specialized> def test(x: Double): Unit = Foo$mcD$sp.this.test$mcD$sp(x);
+    override <specialized> def test$mcD$sp(x: Double): Unit = scala.this.Predef.println({
+      case <synthetic> val x1: Double = x;
+      case12(){
+        if (x1.isInstanceOf[Boolean]())
+          matchEnd11("bool")
+        else
+          case13()
+      };
+      case13(){
+        if (x1.isInstanceOf[Byte]())
+          matchEnd11("byte")
+        else
+          case14()
+      };
+      case14(){
+        if (x1.isInstanceOf[Short]())
+          matchEnd11("short")
+        else
+          case15()
+      };
+      case15(){
+        if (x1.isInstanceOf[Char]())
+          matchEnd11("char")
+        else
+          case16()
+      };
+      case16(){
+        if (x1.isInstanceOf[Int]())
+          matchEnd11("int")
+        else
+          case17()
+      };
+      case17(){
+        if (x1.isInstanceOf[Long]())
+          matchEnd11("long")
+        else
+          case18()
+      };
+      case18(){
+        if (x1.isInstanceOf[Double]())
+          matchEnd11("double")
+        else
+          case19()
+      };
+      case19(){
+        if (x1.isInstanceOf[Float]())
+          matchEnd11("float")
+        else
+          case20()
+      };
+      case20(){
+        matchEnd11("default")
+      };
+      matchEnd11(x: Any){
+        x
+      }
+    })
+  };
+  <specialized> class Foo$mcF$sp extends Foo[Float] {
+    <specialized> def <init>(): Foo$mcF$sp = {
+      Foo$mcF$sp.super.<init>();
+      ()
+    };
+    override <specialized> def test(x: Float): Unit = Foo$mcF$sp.this.test$mcF$sp(x);
+    override <specialized> def test$mcF$sp(x: Float): Unit = scala.this.Predef.println({
+      case <synthetic> val x1: Float = x;
+      case12(){
+        if (x1.isInstanceOf[Boolean]())
+          matchEnd11("bool")
+        else
+          case13()
+      };
+      case13(){
+        if (x1.isInstanceOf[Byte]())
+          matchEnd11("byte")
+        else
+          case14()
+      };
+      case14(){
+        if (x1.isInstanceOf[Short]())
+          matchEnd11("short")
+        else
+          case15()
+      };
+      case15(){
+        if (x1.isInstanceOf[Char]())
+          matchEnd11("char")
+        else
+          case16()
+      };
+      case16(){
+        if (x1.isInstanceOf[Int]())
+          matchEnd11("int")
+        else
+          case17()
+      };
+      case17(){
+        if (x1.isInstanceOf[Long]())
+          matchEnd11("long")
+        else
+          case18()
+      };
+      case18(){
+        if (x1.isInstanceOf[Double]())
+          matchEnd11("double")
+        else
+          case19()
+      };
+      case19(){
+        if (x1.isInstanceOf[Float]())
+          matchEnd11("float")
+        else
+          case20()
+      };
+      case20(){
+        matchEnd11("default")
+      };
+      matchEnd11(x: Any){
+        x
+      }
+    })
+  };
+  <specialized> class Foo$mcI$sp extends Foo[Int] {
+    <specialized> def <init>(): Foo$mcI$sp = {
+      Foo$mcI$sp.super.<init>();
+      ()
+    };
+    override <specialized> def test(x: Int): Unit = Foo$mcI$sp.this.test$mcI$sp(x);
+    override <specialized> def test$mcI$sp(x: Int): Unit = scala.this.Predef.println({
+      case <synthetic> val x1: Int = x;
+      case12(){
+        if (x1.isInstanceOf[Boolean]())
+          matchEnd11("bool")
+        else
+          case13()
+      };
+      case13(){
+        if (x1.isInstanceOf[Byte]())
+          matchEnd11("byte")
+        else
+          case14()
+      };
+      case14(){
+        if (x1.isInstanceOf[Short]())
+          matchEnd11("short")
+        else
+          case15()
+      };
+      case15(){
+        if (x1.isInstanceOf[Char]())
+          matchEnd11("char")
+        else
+          case16()
+      };
+      case16(){
+        if (x1.isInstanceOf[Int]())
+          matchEnd11("int")
+        else
+          case17()
+      };
+      case17(){
+        if (x1.isInstanceOf[Long]())
+          matchEnd11("long")
+        else
+          case18()
+      };
+      case18(){
+        if (x1.isInstanceOf[Double]())
+          matchEnd11("double")
+        else
+          case19()
+      };
+      case19(){
+        if (x1.isInstanceOf[Float]())
+          matchEnd11("float")
+        else
+          case20()
+      };
+      case20(){
+        matchEnd11("default")
+      };
+      matchEnd11(x: Any){
+        x
+      }
+    })
+  };
+  <specialized> class Foo$mcJ$sp extends Foo[Long] {
+    <specialized> def <init>(): Foo$mcJ$sp = {
+      Foo$mcJ$sp.super.<init>();
+      ()
+    };
+    override <specialized> def test(x: Long): Unit = Foo$mcJ$sp.this.test$mcJ$sp(x);
+    override <specialized> def test$mcJ$sp(x: Long): Unit = scala.this.Predef.println({
+      case <synthetic> val x1: Long = x;
+      case12(){
+        if (x1.isInstanceOf[Boolean]())
+          matchEnd11("bool")
+        else
+          case13()
+      };
+      case13(){
+        if (x1.isInstanceOf[Byte]())
+          matchEnd11("byte")
+        else
+          case14()
+      };
+      case14(){
+        if (x1.isInstanceOf[Short]())
+          matchEnd11("short")
+        else
+          case15()
+      };
+      case15(){
+        if (x1.isInstanceOf[Char]())
+          matchEnd11("char")
+        else
+          case16()
+      };
+      case16(){
+        if (x1.isInstanceOf[Int]())
+          matchEnd11("int")
+        else
+          case17()
+      };
+      case17(){
+        if (x1.isInstanceOf[Long]())
+          matchEnd11("long")
+        else
+          case18()
+      };
+      case18(){
+        if (x1.isInstanceOf[Double]())
+          matchEnd11("double")
+        else
+          case19()
+      };
+      case19(){
+        if (x1.isInstanceOf[Float]())
+          matchEnd11("float")
+        else
+          case20()
+      };
+      case20(){
+        matchEnd11("default")
+      };
+      matchEnd11(x: Any){
+        x
+      }
+    })
+  };
+  <specialized> class Foo$mcS$sp extends Foo[Short] {
+    <specialized> def <init>(): Foo$mcS$sp = {
+      Foo$mcS$sp.super.<init>();
+      ()
+    };
+    override <specialized> def test(x: Short): Unit = Foo$mcS$sp.this.test$mcS$sp(x);
+    override <specialized> def test$mcS$sp(x: Short): Unit = scala.this.Predef.println({
+      case <synthetic> val x1: Short = x;
+      case12(){
+        if (x1.isInstanceOf[Boolean]())
+          matchEnd11("bool")
+        else
+          case13()
+      };
+      case13(){
+        if (x1.isInstanceOf[Byte]())
+          matchEnd11("byte")
+        else
+          case14()
+      };
+      case14(){
+        if (x1.isInstanceOf[Short]())
+          matchEnd11("short")
+        else
+          case15()
+      };
+      case15(){
+        if (x1.isInstanceOf[Char]())
+          matchEnd11("char")
+        else
+          case16()
+      };
+      case16(){
+        if (x1.isInstanceOf[Int]())
+          matchEnd11("int")
+        else
+          case17()
+      };
+      case17(){
+        if (x1.isInstanceOf[Long]())
+          matchEnd11("long")
+        else
+          case18()
+      };
+      case18(){
+        if (x1.isInstanceOf[Double]())
+          matchEnd11("double")
+        else
+          case19()
+      };
+      case19(){
+        if (x1.isInstanceOf[Float]())
+          matchEnd11("float")
+        else
+          case20()
+      };
+      case20(){
+        matchEnd11("default")
+      };
+      matchEnd11(x: Any){
+        x
+      }
+    })
+  };
+  <specialized> class Foo$mcV$sp extends Foo[Unit] {
+    <specialized> def <init>(): Foo$mcV$sp = {
+      Foo$mcV$sp.super.<init>();
+      ()
+    };
+    override <specialized> def test(x: Unit): Unit = Foo$mcV$sp.this.test$mcV$sp(x);
+    override <specialized> def test$mcV$sp(x: Unit): Unit = scala.this.Predef.println({
+      case <synthetic> val x1: Unit = x;
+      case12(){
+        if (x1.isInstanceOf[Boolean]())
+          matchEnd11("bool")
+        else
+          case13()
+      };
+      case13(){
+        if (x1.isInstanceOf[Byte]())
+          matchEnd11("byte")
+        else
+          case14()
+      };
+      case14(){
+        if (x1.isInstanceOf[Short]())
+          matchEnd11("short")
+        else
+          case15()
+      };
+      case15(){
+        if (x1.isInstanceOf[Char]())
+          matchEnd11("char")
+        else
+          case16()
+      };
+      case16(){
+        if (x1.isInstanceOf[Int]())
+          matchEnd11("int")
+        else
+          case17()
+      };
+      case17(){
+        if (x1.isInstanceOf[Long]())
+          matchEnd11("long")
+        else
+          case18()
+      };
+      case18(){
+        if (x1.isInstanceOf[Double]())
+          matchEnd11("double")
+        else
+          case19()
+      };
+      case19(){
+        if (x1.isInstanceOf[Float]())
+          matchEnd11("float")
+        else
+          case20()
+      };
+      case20(){
+        matchEnd11("default")
+      };
+      matchEnd11(x: Any){
+        x
+      }
+    })
+  }
+}
+
+
+{code}
+
+I'm going to ask Iulian what the motivation was for getting {{Duplicators}} to strip out the impossible cases; was it performance, avoidance of errors from the subsequent match translation, or both?
+
+The simplest resolution here will be to remove the now-redundant code from {{Duplicators}} and live with the extra bytecode.

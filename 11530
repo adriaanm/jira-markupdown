@@ -1,0 +1,44 @@
+{noformat}
+$ scala
+Welcome to Scala 2.12.1 (OpenJDK 64-Bit Server VM, Java 1.8.0_112).
+Type in expressions for evaluation. Or try :help.
+
+scala> :pa
+// Entering paste mode (ctrl-D to finish)
+
+val right1: Right[Double, Int] = Right(1)
+val right2                     = Right(2)
+val right3                     = Right(3)
+val left23: Left[Double, Int]  = Left(23.0)
+val left42                     = Left(42.0)
+
+for {
+  a <- right1
+  b <- right2
+  c <- right3
+} yield a + b + c // Right(6)
+
+// Exiting paste mode, now interpreting.
+
+<console>:8: error: illegal start of simple pattern
+;
+^
+<console>:9: warning: val keyword in for comprehension is deprecated
+val res0 =
+         ^
+<console>:10: error: '}' expected but '<-' found.
+  a <- right1
+    ^
+<console>:11: error: ';' expected but '<-' found.
+  b <- right2
+    ^
+<console>:12: error: ';' expected but '<-' found.
+  c <- right3
+    ^
+<console>:13: error: eof expected but '}' found.
+} yield a + b + c // Right(6)
+^
+
+scala> 
+
+{noformat}

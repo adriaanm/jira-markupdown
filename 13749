@@ -1,0 +1,59 @@
+Steps to reproduce:
+
+1) Download the Smack XMPP library for Java: http://www.igniterealtime.org/downloads/download-landing.jsp?file=smack/smack_3_0_4.tar.gz
+
+2) Place the following code in Test.scala
+{code}
+object Test {
+  val s = org.jivesoftware.smack.packet.Message.Type.chat
+}
+{code}
+
+3) Compile Test.scala with 2.7.2.RC1
+{code}
+/usr/local/scala-2.7.2.RC1/bin/scalac Test.scala -cp /Users/jeortiz/Downloads/smack_3_0_4/smack.jar
+{code}
+
+4) Observe:
+{code}
+Exception in thread "main" java.lang.AssertionError: assertion failed: type error: can't convert from REFERENCE(org.jivesoftware.smack.packet.Message$$Type) to REFERENCE(org.jivesoftware.smack.packet.Message$$Type) in unit Test.scala
+	at scala.Predef$$.assert(Predef.scala:92)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.adapt(GenICode.scala:1035)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:1019)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genStat(GenICode.scala:171)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$genStat$$1.apply(GenICode.scala:146)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$genStat$$1.apply(GenICode.scala:145)
+	at scala.List.foreach(List.scala:834)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.genStat(GenICode.scala:145)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:938)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:114)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:71)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:71)
+	at scala.List.foreach(List.scala:834)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:71)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:136)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:90)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:71)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:71)
+	at scala.List.foreach(List.scala:834)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:71)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:81)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:67)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.apply(GenICode.scala:63)
+	at scala.tools.nsc.Global$$GlobalPhase.applyPhase(Global.scala:268)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:247)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:247)
+	at scala.Iterator$$class.foreach(Iterator.scala:410)
+	at scala.collection.mutable.ListBuffer$$$$anon$$1.foreach(ListBuffer.scala:266)
+	at scala.tools.nsc.Global$$GlobalPhase.run(Global.scala:247)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.run(GenICode.scala:56)
+	at scala.tools.nsc.Global$$Run.compileSources(Global.scala:579)
+	at scala.tools.nsc.Global$$Run.compile(Global.scala:663)
+	at scala.tools.nsc.Main$$.process(Main.scala:84)
+	at scala.tools.nsc.Main$$.main(Main.scala:98)
+	at scala.tools.nsc.Main.main(Main.scala)
+{code}
+
+This crashes when compiled with 2.7.2.RC1, but works fine when compiled under 2.7.1 or 2.7.0.
+
+This is blocking one of Lift's libraries from compiling with 2.7.2.RC1. A fix or a workaround would be greatly appreciated.

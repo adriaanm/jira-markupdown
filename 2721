@@ -1,0 +1,22 @@
+OK, then replace "var" with "val" and you'll get nearly the same error:
+{code}
+scala> val (x,y): (String, M) = (null, null)
+<console>:11: error: type arguments [?,Any] do not conform to class MyRelation's type parameter bounds [R <: Row,+Relation <: MyRelation[R,Relation]]
+       val (x,y): (String, M) = (null, null)
+           ^
+<console>:11: error: type arguments [?,Any] do not conform to class MyRelation's type parameter bounds [R <: Row,+Relation <: MyRelation[R,Relation]]
+       val (x,y): (String, M) = (null, null)
+{code}
+
+Therefore I reopened the bug again. I'm sorry that I could not update the bug description. Would it be better to create a new bug report instead of reopening this one?
+
+BTW, I'm glad that your restriction of disallowing multiply var assignments is currently not implemented in Scala 2.8. When the compiler reads a multiply assignment it can easily split it into different assignments. And that's exactly what the current Scala compiler does. It allows both
+{code}
+  val (a,b) = (1,2)
+{code}
+and
+{code}
+  var (a,b) = (1,2)
+{code}
+
+Maybe we had only a misunderstanding.

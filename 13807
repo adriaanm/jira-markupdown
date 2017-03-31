@@ -1,0 +1,135 @@
+Using the Eclipse Plugin and Scala 2.7.2.RC3, the following code looks allright:
+
+{code}
+    val x = 1 match {
+      case 1L => 0
+    } 
+{code}
+
+But it does not compile, instead Eclipse reports "Build compiler (scalac) crashed".
+The Problem seems to be the matching of an Int (1) with a Long (1L).
+
+Error and Stack trace below.
+
+{code}
+eclipse.buildId=M20080911-1700
+java.version=1.5.0_14
+java.vendor=Sun Microsystems Inc.
+BootLoader constants: OS=win32, ARCH=x86, WS=win32, NL=da_DK
+Command-line arguments:  -os win32 -ws win32 -arch x86
+
+
+Error
+Thu Oct 16 12:43:08 CEST 2008
+Build compiler (scalac) crashed
+
+scala.MatchError: (Set(),1L)
+	at scala.tools.nsc.matching.ParallelMatching$$MixLiterals.<init>(ParallelMatching.scala:342)
+	at scala.tools.nsc.matching.ParallelMatching$$class.MixtureRule(ParallelMatching.scala:92)
+	at scala.tools.nsc.transform.ExplicitOuter.MixtureRule(ExplicitOuter.scala:19)
+	at scala.tools.nsc.matching.ParallelMatching$$Rep.applyRule(ParallelMatching.scala:1290)
+	at scala.tools.nsc.matching.ParallelMatching$$class.repToTree(ParallelMatching.scala:850)
+	at scala.tools.nsc.transform.ExplicitOuter.repToTree(ExplicitOuter.scala:19)
+	at scala.tools.nsc.matching.TransMatcher$$class.handlePattern(TransMatcher.scala:227)
+	at scala.tools.nsc.transform.ExplicitOuter.handlePattern(ExplicitOuter.scala:19)
+	at scala.tools.nsc.transform.ExplicitOuter$$ExplicitOuterTransformer.transform(ExplicitOuter.scala:490)
+	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transform$$4.apply(Trees.scala:1318)
+	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transform$$4.apply(Trees.scala:1318)
+	at scala.tools.nsc.ast.Trees$$Transformer.atOwner(Trees.scala:1438)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:33)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:27)
+	at scala.tools.nsc.ast.Trees$$Transformer.transform(Trees.scala:1317)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.transform(TypingTransformers.scala:46)
+	at scala.tools.nsc.transform.ExplicitOuter$$OuterPathTransformer.transform(ExplicitOuter.scala:224)
+	at scala.tools.nsc.transform.ExplicitOuter$$ExplicitOuterTransformer.transform(ExplicitOuter.scala:514)
+	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transformStats$$1.apply(Trees.scala:1432)
+	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transformStats$$1.apply(Trees.scala:1430)
+	at scala.List$$.loop$$1(List.scala:293)
+	at scala.List$$.mapConserve(List.scala:310)
+	at scala.tools.nsc.ast.Trees$$Transformer.transformStats(Trees.scala:1430)
+	at scala.tools.nsc.ast.Trees$$Transformer.transform(Trees.scala:1340)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.transform(TypingTransformers.scala:46)
+	at scala.tools.nsc.transform.ExplicitOuter$$OuterPathTransformer.transform(ExplicitOuter.scala:224)
+	at scala.tools.nsc.transform.ExplicitOuter$$ExplicitOuterTransformer.transform(ExplicitOuter.scala:514)
+	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transform$$5.apply(Trees.scala:1323)
+	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transform$$5.apply(Trees.scala:1322)
+	at scala.tools.nsc.ast.Trees$$Transformer.atOwner(Trees.scala:1438)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:33)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:27)
+	at scala.tools.nsc.ast.Trees$$Transformer.transform(Trees.scala:1321)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.transform(TypingTransformers.scala:46)
+	at scala.tools.nsc.transform.ExplicitOuter$$OuterPathTransformer.transform(ExplicitOuter.scala:224)
+	at scala.tools.nsc.transform.ExplicitOuter$$ExplicitOuterTransformer.transform(ExplicitOuter.scala:382)
+	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transformStats$$1.apply(Trees.scala:1432)
+	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transformStats$$1.apply(Trees.scala:1430)
+	at scala.List$$.loop$$1(List.scala:293)
+	at scala.List$$.mapConserve(List.scala:310)
+	at scala.tools.nsc.ast.Trees$$Transformer.transformStats(Trees.scala:1430)
+	at scala.tools.nsc.ast.Trees$$Transformer.transform(Trees.scala:1338)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.scala$$tools$$nsc$$transform$$TypingTransformers$$TypingTransformer$$$$super$$transform(TypingTransformers.scala:44)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer$$$$anonfun$$transform$$1.apply(TypingTransformers.scala:44)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer$$$$anonfun$$transform$$1.apply(TypingTransformers.scala:44)
+	at scala.tools.nsc.ast.Trees$$Transformer.atOwner(Trees.scala:1438)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:33)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:27)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.transform(TypingTransformers.scala:44)
+	at scala.tools.nsc.transform.ExplicitOuter$$OuterPathTransformer.transform(ExplicitOuter.scala:224)
+	at scala.tools.nsc.transform.ExplicitOuter$$ExplicitOuterTransformer.transform(ExplicitOuter.scala:362)
+	at scala.tools.nsc.ast.Trees$$Transformer.transformTemplate(Trees.scala:1416)
+	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transform$$2.apply(Trees.scala:1310)
+	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transform$$2.apply(Trees.scala:1310)
+	at scala.tools.nsc.ast.Trees$$Transformer.atOwner(Trees.scala:1438)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:33)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:27)
+	at scala.tools.nsc.ast.Trees$$Transformer.transform(Trees.scala:1309)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.transform(TypingTransformers.scala:46)
+	at scala.tools.nsc.transform.ExplicitOuter$$OuterPathTransformer.transform(ExplicitOuter.scala:224)
+	at scala.tools.nsc.transform.ExplicitOuter$$ExplicitOuterTransformer.transform(ExplicitOuter.scala:514)
+	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transformStats$$1.apply(Trees.scala:1432)
+	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transformStats$$1.apply(Trees.scala:1430)
+	at scala.List$$.loop$$1(List.scala:293)
+	at scala.List$$.mapConserve(List.scala:310)
+	at scala.tools.nsc.ast.Trees$$Transformer.transformStats(Trees.scala:1430)
+	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transform$$1.apply(Trees.scala:1306)
+	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transform$$1.apply(Trees.scala:1306)
+	at scala.tools.nsc.ast.Trees$$Transformer.atOwner(Trees.scala:1438)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:33)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:27)
+	at scala.tools.nsc.ast.Trees$$Transformer.transform(Trees.scala:1305)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.transform(TypingTransformers.scala:46)
+	at scala.tools.nsc.transform.ExplicitOuter$$OuterPathTransformer.transform(ExplicitOuter.scala:224)
+	at scala.tools.nsc.transform.ExplicitOuter$$ExplicitOuterTransformer.transform(ExplicitOuter.scala:514)
+	at scala.tools.nsc.ast.Trees$$Transformer.transformUnit(Trees.scala:1433)
+	at scala.tools.nsc.transform.ExplicitOuter$$ExplicitOuterTransformer.scala$$tools$$nsc$$transform$$ExplicitOuter$$ExplicitOuterTransformer$$$$super$$transformUnit(ExplicitOuter.scala:524)
+	at scala.tools.nsc.transform.ExplicitOuter$$ExplicitOuterTransformer$$$$anonfun$$transformUnit$$1.apply(ExplicitOuter.scala:524)
+	at scala.tools.nsc.transform.ExplicitOuter$$ExplicitOuterTransformer$$$$anonfun$$transformUnit$$1.apply(ExplicitOuter.scala:524)
+	at scala.tools.nsc.symtab.SymbolTable.atPhase(SymbolTable.scala:106)
+	at scala.tools.nsc.transform.ExplicitOuter$$ExplicitOuterTransformer.transformUnit(ExplicitOuter.scala:524)
+	at scala.tools.nsc.transform.ExplicitOuter$$ExplicitOuterTransformer.transformUnit(ExplicitOuter.scala:293)
+	at scala.tools.nsc.transform.Transform$$Phase.apply(Transform.scala:30)
+	at scala.tools.nsc.Global$$GlobalPhase.applyPhase(Global.scala:268)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:247)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:247)
+	at scala.Iterator$$class.foreach(Iterator.scala:410)
+	at scala.collection.mutable.ListBuffer$$$$anon$$1.foreach(ListBuffer.scala:266)
+	at scala.tools.nsc.Global$$GlobalPhase.run(Global.scala:247)
+	at scala.tools.nsc.Global$$Run.compileSources(Global.scala:579)
+	at scala.tools.nsc.Global$$Run.compile(Global.scala:663)
+	at scala.tools.eclipse.BuildCompiler.build(BuildCompiler.scala:114)
+	at scala.tools.eclipse.ScalaPlugin$$ProjectImpl$$class.build(ScalaPlugin.scala:398)
+	at scala.tools.eclipse.Driver$$Project.build(Driver.scala:16)
+	at lampion.eclipse.Builder.build(Builder.scala:87)
+	at scala.tools.eclipse.Builder.build(Builder.scala:30)
+	at org.eclipse.core.internal.events.BuildManager$$2.run(BuildManager.java:633)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:37)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:170)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:201)
+	at org.eclipse.core.internal.events.BuildManager$$1.run(BuildManager.java:253)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:37)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:256)
+	at org.eclipse.core.internal.events.BuildManager.basicBuildLoop(BuildManager.java:309)
+	at org.eclipse.core.internal.events.BuildManager.build(BuildManager.java:341)
+	at org.eclipse.core.internal.events.AutoBuildJob.doBuild(AutoBuildJob.java:140)
+	at org.eclipse.core.internal.events.AutoBuildJob.run(AutoBuildJob.java:238)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:55)
+{code}

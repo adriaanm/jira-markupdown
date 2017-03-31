@@ -1,0 +1,18 @@
+I've seen [SI-8702|https://issues.scala-lang.org/browse/SI-8702] and friends, but feel like I'm hitting the same issue with an even simpler use-case.
+
+Is it possible (in Scala 2.10) to have abstract members whose type is a value-class?
+
+{code}
+class Foo(val n: Int) extends AnyVal
+
+trait Bar { def foo: Foo }
+
+case class Baz(foo: Foo) extends Bar
+
+<console>:9: error: bridge generated for member value foo: ()Foo in class Baz
+which overrides value foo: ()Foo in trait Bar
+clashes with definition of the member itself;
+both have erased type ()Int
+       case class Baz(foo: Foo) extends Bar
+                      ^
+{code}

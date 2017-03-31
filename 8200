@@ -1,0 +1,12 @@
+On the ML (https://groups.google.com/d/msg/scala-internals/8TrS3ar5LcY/Qg7JEqN7onwJ), this alternative desugaring was mentioned, but I can't find any discussion of its disadvantages ("I remember some kind of issue with the tech. details" is not enough). Note that it works with the current implicit resolution rules (https://gist.github.com/Blaisorblade/6089067).
+
+{code}
+object bip {
+  class Foo(val xxx: Int)
+  implicit object Foo extends (Int => Foo) { def apply(x: Int) = new Foo(x) }
+}
+{code}
+
+My colleague Tillmann Rendel came up again with this encoding.
+
+EDIT: So, why don't we use this desugaring?

@@ -1,0 +1,33 @@
+For this standalone object:
+
+object Foo
+{
+  @throws(classOf[java.lang.RuntimeException])
+  def foo = 10
+}
+
+the generated class file, Foo$$.foo method has the throws:
+
+$$ javap Foo$$
+Compiled from "t.scala"
+public final class Foo$$ extends java.lang.Object implements scala.ScalaObject{
+    public static final Foo$$ MODULE$$;
+    public static {};
+    public Foo$$();
+    public int foo()       throws java.lang.RuntimeException;
+    public int $$tag();
+}
+
+while the forwarding method in Foo does not:
+
+Compiled from "t.scala"
+public final class Foo extends java.lang.Object{
+    public static final int $$tag();
+    public static final int foo();
+}
+
+The Java Foo.foo() method should also show a 'throws java.lang.RuntimeException'.
+
+Confirmed by Iulian Dragos:
+
+http://article.gmane.org/gmane.comp.lang.scala/9971

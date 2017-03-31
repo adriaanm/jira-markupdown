@@ -1,0 +1,11 @@
+(extempore in [r25613|https://codereview.scala-lang.org/fisheye/changelog/scala-svn?cs=25613]) Intersection types made specializable.
+
+Formerly a specializable type parameter would be missed if in
+an intersection.
+
+  trait Trait[@specialized T] {
+    def f[T](x: Foo[T] with Bar) = x
+  }
+
+Now that is specialized, as it already was in the "Foo[T]" case.
+Closes SI-4794, no review.

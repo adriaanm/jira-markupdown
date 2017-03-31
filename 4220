@@ -1,0 +1,30 @@
+This commit reimplements filter for Streams, but does not reimplement map in StreamWithFilter.
+The problem is that GC can't collect instances of Streams residing on the stack if there are multiple references to the Stream (more than a single one on the stack on which a Stream method is invoked). In the case of a StreamWithFilter, being an inner class, there is always an `$$outer` reference to the outer object, so there is little GC can do. Possible solution - change the return type of WithFilter to something else (in TraversableLike) to allow it to return objects that don't have to subclass TraversableLike.WithFilter, and reimplement the withFilter method in Stream to simply call `filter` method - in the case of Streams, `withFilter` has little sense in either case...
+
+Solution for you:
+1) use:
+
+{code}
+// ticket SI-3502
+object Test {
+  
+  object GeneratePrimeFactorsLazy extends (Int => List[Int]) {
+    override def apply(n:Int) = {
+      val s = Stream.range(2, n / 2).filter(n % _ == 0)
+      // val s = for (i <- Stream.range(2, n / 2); if n % i == 0) yield i // avoid this - it invokes `withFilter` instead of `filter`
+      s.headOption.map(x => x :: apply(n / x)).getOrElse(List(n))
+    }
+  }
+  
+  def main(args:Array[String]) {
+    // a prime number
+    //val num = 623456789
+    val num = 2796203
+    assert(GeneratePrimeFactorsLazy(num) == List(num))
+  }
+  
+}
+{code}
+
+2) if you need high performance for this, avoid using Streams altogether. They make sense when a per element amount of work for filters and maps is small, but here probably not.
+

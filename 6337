@@ -1,0 +1,38 @@
+The ticket remains invalid until it's reproducible, but as luck would have it, I just hit a similar segfault. It seems unrelated to Scala, but here's how to diagnose it:
+
+{code}
+> test-only *TypeConformanceBasicTest -- -v                                                           
+[info] No tests to run for {file:/Users/jason/code/scala-plugin/}Runners/test:test-only
+[info] Compiling 1 Scala source to /Users/jason/code/scala-plugin/classes/test/Scala...
+[warn] there were 1 deprecation warnings; re-run with -deprecation for details
+[warn] one warning found
+[info] Compiling 9 Scala sources to /Users/jason/code/scala-plugin/classes/test/Scala...
+[warn] there were 1 deprecation warnings; re-run with -deprecation for details
+[warn] one warning found
+Invalid memory access of location 0x20 rip=0x7fff88e9d8f0
+
+/Users/jason/bin/sbt10: line 4: 98791 Segmentation fault      java $SBT_OPTS -Dfile.encoding=UTF-8 -Xss4M -Xmx1024M -XX:MaxPermSize=256M -XX:NewSize=128M -XX:NewRatio=3 -jar ~/bin/sbt-launch-0.10.1.jar "$@"
+
+ ~/code/scala-plugin[master*]: java -version
+java version "1.6.0_22"
+Java(TM) SE Runtime Environment (build 1.6.0_22-b04-307-10M3261)
+Java HotSpot(TM) 64-Bit Server VM (build 17.1-b03-307, mixed mode)
+ ~/code/scala-plugin[master*]: uname -a
+Darwin Jason-Zauggs-MacBook-Pro.local 10.6.0 Darwin Kernel Version 10.6.0: Wed Nov 10 18:13:17 PST 2010; root:xnu-1504.9.26~3/RELEASE_I386 i386
+
+ ~/code/scala-plugin[master*]: sbt10
+[info] Set current project to default-570999 (in build file:/Users/jason/code/sbt-idea/project/plugins/)
+[info] Set current project to root (in build file:/Users/jason/.sbt/plugins/)
+[info] Set current project to Scala (in build file:/Users/jason/code/scala-plugin/)
+> show scala-version
+[info] {file:/Users/jason/code/scala-plugin/}Runners/*:scala-version
+[info] 	2.9.0-1
+[info] {file:/Users/jason/code/scala-plugin/}Scala/*:scala-version
+[info] 	2.9.0-1
+
+ ~/code/scala-plugin[master*]: ls /Users/jason/Library/Logs/DiagnosticReports/java*
+/Users/jason/Library/Logs/DiagnosticReports/java_2011-07-16-105232_Jason-Zauggs-MacBook-Pro.crash
+
+{code}
+
+The JVM crash report is pasted here: https://gist.github.com/1086182

@@ -1,0 +1,43 @@
+If I change 
+
+{code}
+object MyBeanImpl...
+{code}
+
+to 
+{code}
+class MyBeanImpl...
+{code}
+
+I progress to a new error:
+
+{code}
+Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'sessionFactory' 
+defined in class path resource [application-hibernate.xml]: Invocation of init method failed; 
+nested exception is org.hibernate.AnnotationException: No identifier specified for entity: com.mypackage.TestEntity
+{code}
+
+where TestEntity is something like:
+
+{code}
+....
+trait ParentEntity extends Serializable {
+  
+  
+  def getId: Long
+...
+
+
+....
+import javax.persistence.{Column, Entity, GeneratedValue, GenerationType, Id, Table}
+...
+@Entity
+@Table(name = "TEST_ENTITY_TABLE")
+case class TestEntity(
+        @Id @GeneratedValue(strategy = GenerationType.AUTO)
+        @Column(name = "TEST_ENTITY_ID", nullable = false)
+        @BeanProperty var id: Long) extends ParentEntity
+{code}
+
+
+

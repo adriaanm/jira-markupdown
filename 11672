@@ -1,0 +1,23 @@
+Here is another example that could benefit from more efficient handling of intermediate results.
+
+Because the unused extraction result `i` is not bundled in the tupling step, the extractor is invoked three times.
+
+{code}
+scala> for (s <- List("ab","abc") ; X(i) = s if i > 2) yield i // show
+[snip]
+      val res0 = List("ab", "abc").map(((s) => {
+        <synthetic> <artifact> private[this] val x$2 = s: @scala.unchecked match {
+          case (x$1 @ X((i @ _))) => scala.Tuple2(x$1, i)
+        };
+        val x$1 = x$2._1;
+        val i = x$2._2;
+        scala.Tuple2(s, x$1)
+      })).withFilter(((x$3) => x$3: @scala.unchecked match {
+        case scala.Tuple2((s @ _), X((i @ _))) => i > 2
+      })).map(((x$4) => x$4: @scala.unchecked match {
+        case scala.Tuple2((s @ _), X((i @ _))) => i
+      }))
+    }
+  }
+}
+{code}

@@ -1,0 +1,26 @@
+=== What steps will reproduce the problem (please be specific and 
+{code}
+scala> <foo>{PCData("hello\nworld")}</foo>
+res51: scala.xml.Elem =
+<foo><![CDATA[hello
+world]]></foo>
+
+scala> (new PrettyPrinter(Int.MaxValue, 2)).format(res51)
+res52: String = <foo><![CDATA[hello world]]></foo>
+{code} 
+
+
+
+=== What is the expected behavior? ===
+Should print "hello\nworld"
+{code}
+scala> (new PrettyPrinter(Int.MaxValue, 2)).format(res51)
+res52: String = <foo><![CDATA[hello\nworld]]></foo>
+{code}
+
+=== What do you see instead? ===
+prints "hello world"
+
+
+=== What versions of the following are you using? ===
+  - Scala: 2.8.1

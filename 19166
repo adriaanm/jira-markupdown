@@ -1,0 +1,21 @@
+This is a regression from 2.10.4, in which the following code compiles.
+
+{code}
+Welcome to Scala version 2.11.1 (OpenJDK 64-Bit Server VM, Java 1.7.0_55).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> trait Cm[F[_], A]
+defined trait Cm
+
+scala> case class C[A]() extends Cm[C, A]
+defined class C
+
+scala> case class D[S,A]() extends Cm[({type l[a] = D[S,a]})#l, A]
+<console>:8: error: illegal cyclic reference involving class D
+       case class D[S,A]() extends Cm[({type l[a] = D[S,a]})#l, A]
+                  ^
+<console>:8: error: D does not take type parameters
+       case class D[S,A]() extends Cm[({type l[a] = D[S,a]})#l, A]
+                                                    ^
+{code}

@@ -1,0 +1,29 @@
+Details came from https://youtrack.jetbrains.com/issue/SCL-4504#comment=27-1913754
+
+It compiles and runs with 'override implicit' or 'implicit override', but 'override implicit' should not be allowed based on the spec. https://www.scala-lang.org/files/archive/spec/2.11/05-classes-and-objects.html#class-definitions
+
+{code}
+object HelloWorld {
+
+  case class SomeInt(x: Int)
+  abstract class Base(val someInt: SomeInt)
+  case class Sample(path: String)( override implicit val someInt: SomeInt) extends Base(someInt) // line of interest
+
+  def main(args: Array[String]): Unit = {
+    val someString = "123"
+    implicit val aNumber = SomeInt(5)
+
+    val sample = Sample(someString)
+
+    print(sample.path)
+  }
+}
+{code}
+
+{quote}
+
+It looks like scalac doesn't follow language specification in this particular case:
+https://www.scala-lang.org/files/archive/spec/2.11/05-classes-and-objects.html#class-definitions
+
+implicit modifier relates to the whole class parameter clause, and override is part of a single class parameter. I would rather add an error highlighting to such usage.
+{quote}

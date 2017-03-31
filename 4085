@@ -1,0 +1,33 @@
+Ok, but are they supposed to be equivalent all of the time?
+
+Using TFn1 from above:
+{code}
+trait TFn1[I, O] {
+  type app[i <: I] <: O
+}
+{code}
+
+B and B2 below should be equivalent, right?
+{code}
+trait Test {
+  type a
+  type b
+  type f = TFn1[a, b]
+
+   // compiles,
+   //  browsing the tree shows TypeRefs only
+  type B = f#app[a]
+
+   // should be equivalent to B?
+   //  does not compile though,
+   //  tree shows Existential as expected
+  type B2 = x.app[a] forSome { val x: f }
+}
+{code}
+
+The compile error related to B2 is the same as in the original report:
+{code}
+type arguments [Test.this.a] do not conform to type app's type parameter bounds [i <: I]
+        type B = x.app[a] forSome { val x: f }
+                          ^
+{code}

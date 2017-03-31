@@ -1,0 +1,12 @@
+implicit def block2Runnable(block: =>Unit): Runnable = new Runnable {
+  override def run = { println("here"); block }
+}
+
+val runnable: Runnable = { println("there"); () }
+
+A valid expectation is that here gets printed before there, whereas the reverse is what actually happens, because the implicit conversion gets applied to the (), not to the whole block.
+
+I'd suggest making it a conversion from () => Unit to Runnable instead, and attach a patch that does so.
+
+I also altered onEDT and onEDTWait to use Runnable directly, as there isn't much advantage in going via the implicit conversion in those cases.
+

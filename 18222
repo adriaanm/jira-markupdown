@@ -1,0 +1,96 @@
+The version of ForkJoin that we bundle [1] appears to prone to underutilize available cores when using `fork` (as opposed to `execute`). Our {{ExecutionContextImpl}} does exactly this as an optimization in nested parallelism.
+
+A test case that demonstrates the problem with ForkJoin:
+
+https://gist.github.com/retronym/5420028
+
+{code}
+import annotation.tailrec
+import java.util.concurrent.CountDownLatch
+ 
+object ConcurrentTest {
+ 
+  import scala.concurrent.forkjoin._
+ 
+  def banner(str: String) = {
+    val line = "=" * 80
+    println(s"\n$line\n$str\n$line")
+  }
+ 
+  def expensiveCalc() {
+    @tailrec
+    def loop(i: Int, accum: Double): Double =
+      if (i == 0) accum else loop(i - 1, math.pow(math.sqrt(accum), 2.00001))
+    loop(500000000, 42)
+  }
+ 
+  val N = Runtime.getRuntime.availableProcessors()
+  val numTasks = N
+ 
+  def nestedParallelismBench(pool: Pool, useFork: Boolean) {
+    import pool.forkJoin
+    val countDown = new CountDownLatch(numTasks)
+    forkJoin.execute(new RecursiveAction {
+      def compute() {
+        (1 to numTasks) foreach { i =>
+          val action = new RecursiveAction {
+            def compute() {
+              println(s"i = $i: ${Thread.currentThread.getName} ${forkJoin.toString.dropWhile(_ != '[')}")
+              expensiveCalc()
+              countDown.countDown()
+            }
+          }
+          // See https://github.com/scala/scala/blob/2.10.1/src/library/scala/concurrent/impl/ExecutionContextImpl.scala#L118-#L120
+          // The default ExecutionContext in Scala uses `fork` for nested parallelism.
+          // This seems to leave a lot of cores idle. Why is this?
+          if (useFork)
+            action.fork()
+          else
+            forkJoin.execute(action)
+        }
+      }
+    })
+    countDown.await()
+  }
+  def nestedParallelismBenchRepeat(pool: Pool, useFork: Boolean) {
+    (1 to 3).foreach { i =>
+      banner(s"${pool.id}, useFork = $useFork, iteration $i")
+      nestedParallelismBench(pool, useFork = useFork)
+    }
+  }
+ 
+  case class Pool(forkJoin: ForkJoinPool, id: String)
+ 
+  val pool = Pool(new ForkJoinPool(N), s"new ForkJoinPool($N)")
+ 
+  def main(args: Array[String]) {
+    nestedParallelismBenchRepeat(pool, useFork = false)
+    nestedParallelismBenchRepeat(pool, useFork = true)
+    nestedParallelismBenchRepeat(pool, useFork = false)
+  }
+ 
+}
+{code}
+
+The most recent packages of jsr166e and jsr166y do not suffer from this bug.
+
+Suggestion:
+
+ - On Scala 2.10.x, change our code to avoid using `fork`. We could restore the this with a system property in case someone really needs that behaviour back.
+ - On master, we should update to the latest jsr166 code. We should also consider just using the official version bundled with the JRE 7.
+
+
+[1] 
+
+{noformat}
+https://github.com/scala/scala/pull/407
+
+This was this commit, from http://gee.cs.oswego.edu/cgi-bin/viewcvs.cgi/jsr166/src/jsr166y/ForkJoinTask.java?view=log
+
+Revision 1.89 - (view) (download) (annotate) - [select for diffs] 
+Mon Apr 9 13:11:44 2012 UTC (12 months, 2 weeks ago) by dl 
+Branch: MAIN 
+Changes since 1.88: +66 -46 lines 
+Diff to previous 1.88
+Add CountedCompleter; improve tryHelpStealer
+{noformat}

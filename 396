@@ -1,0 +1,24 @@
+Replying to [comment:5 ArtemGr]:
+> This code in Scala 2.7.5-final (via in Eclipse plugin)
+> {code}
+>   val foo: java.io.Serializable = Array ("foo")
+> }}
+> says
+> {code}
+> type mismatch; found : Array[java.lang.String] required: java.io.Serializable
+> }}
+> 
+> Any you tell me arrays are serializable in Scala?
+
+Yes. Serialization is a bit different in Java and Scala. For more information check the discussion here:
+
+http://www.nabble.com/Re:-@serializable-vs.-extends-java.io.Serializable-p20442058.html
+
+Arrays are serializable, just that the type java.io.Serializable is not seen a super type of arrays by the Scala compiler. But the following holds:
+{code}
+scala> val xs = Array(1, 2, 3)
+xs: Array[Int] = Array(1, 2, 3)
+
+scala> xs.isInstanceOf[java.io.Serializable]   
+res1: Boolean = true
+{code}

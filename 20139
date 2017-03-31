@@ -1,0 +1,20 @@
+The attached Java-classes contain a valid Annotation in TestAnnotation which is used in AnnotationTest.
+
+Compiling with javac works using the following commandline:
+*javac -d classes *.java*
+
+Compiling with scalac breaks using the following commandline:
+*scalac -d classes *.java*
+
+{code}
+AnnotationTest.java:4: error: illegal start of type
+    public void testMethod(List<@TestAnnotation String> annotatedList);
+                                ^
+AnnotationTest.java:5: error: `>' expected but `}' found.
+}
+^
+two errors found
+{code}
+
+This might be related to [SI-8056|https://issues.scala-lang.org/browse/SI-8056], I am posting it anyway as I think this shouldn't break compiling Java-classes.
+

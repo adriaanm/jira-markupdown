@@ -1,0 +1,15 @@
+Followup from SI-3452, which we resolved in a slightly simplistic way: by weaking the generic signatures when we detected that the desirable, precise signature would not meet the invariant that "generic signature erases to erased signature"
+
+If mixin would create a bridge method to match the interface method, it would be free to use a more precise signature (erased + generic) for the forwarder method.
+
+This would also let us revisit the way that `List[Char]` currently is projected to the Java generic signatuer `List[Object]`, rather than `List[Character]`.
+
+Static forwarders also suffer from the same problem. They don't have an interface method to conform to, but if we use a more precise signature we must adapt arguments/return value with primititve- and derived-value class box/unbox operations. Arguably responsibility for this should be removed from the backend and instead moved back somewhere near erasure/mixin.
+
+I tried much of this once before:
+
+  https://github.com/retronym/scala/compare/ticket/3452-rebased
+
+But I fell short when I hit problems with overlapping bridges. The root complexity was trying to share the job of bridging between erasure and mixin. Arguably, this was a sign that we ought to run mixin before erasure.
+
+That branch includes the difficult test cases.

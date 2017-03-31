@@ -1,0 +1,25 @@
+I try to parse simple string that contains a few hundreds of commented lines.
+
+val str = (1 to 300).mkString("/* ", "\n", " */\n")
+
+During parsing of this string by scala.util.parsing.combinator.syntactical.StandardTokenParsers there is an exception:
+
+java.lang.StackOverflowError
+	at scala.util.parsing.input.CharSequenceReader.first(CharSequenceReader.scala:28)
+	at scala.util.parsing.combinator.Parsers$$anonfun$acceptIf$1.apply(Parsers.scala:488)
+	at scala.util.parsing.combinator.Parsers$$anonfun$acceptIf$1.apply(Parsers.scala:487)
+	at scala.util.parsing.combinator.Parsers$$anon$3.apply(Parsers.scala:182)
+	at scala.util.parsing.combinator.Parsers$Parser$$anonfun$flatMap$1.apply(Parsers.scala:200)
+	at scala.util.parsing.combinator.Parsers$Parser$$anonfun$flatMap$1.apply(Parsers.scala:200)
+	at scala.util.parsing.combinator.Parsers$$anon$3.apply(Parsers.scala:182)
+	at scala.util.parsing.combinator.Parsers$Parser$$anonfun$map$1.apply(Parsers.scala:203)
+	at scala.util.parsing.combinator.Parsers$Parser$$anonfun$map$1.apply(Parsers.scala:203)
+	at scala.util.parsing.combinator.Parsers$$anon$3.apply(Parsers.scala:182)
+	at scala.util.parsing.combinator.Parsers$Parser$$anonfun$append$1.apply(Parsers.scala:208)
+	at scala.util.parsing.combinator.Parsers$Parser$$anonfun$append$1.apply(Parsers.scala:208)
+	at scala.util.parsing.combinator.Parsers$$anon$3.apply(Parsers.scala:182)
+
+
+
+
+

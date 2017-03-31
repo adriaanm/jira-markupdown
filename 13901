@@ -1,0 +1,25 @@
+Compiling (2.7.2.final) and running the following code results in an unexpected MatchError. My impression is that something goes wrong with overriding the abstract `val syntax: Syntax` with `object syntax extends Syntax`.
+
+{code}
+trait Syntax {
+  sealed trait Term 
+  case object Foo extends Term
+}
+
+trait Evaluation {
+  val syntax: Syntax
+  import syntax._
+  
+  def eval(tm: Term): Term = tm match {
+    case Foo => tm
+  }
+}
+
+object EvalTest2 extends Evaluation with Application {
+//  val syntax = new Syntax{}  // works
+  object syntax extends Syntax // bug! --> eval(Foo) yields MatchError
+  import syntax._
+  
+  eval(Foo)
+}
+{code}

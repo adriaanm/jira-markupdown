@@ -1,0 +1,28 @@
+Hi, I just happened to google this issue, and from the comments I'm not sure if a better repro is still needed.
+
+Just in case, though, you can start sbt without a project and type the following commands to trigger the issue
+
+{noformat}
+set scalaVersion := "2.12.1"
+set initialCommands in console := "import scala.concurrent._, duration._"
+console
+{noformat}
+
+Results in
+
+{noformat}
+scala> import scala.concurrent._
+import duration._
+Interpreter encountered errors during initialization!
+
+[error] (Thread-3) java.lang.InterruptedException
+
+java.lang.InterruptedException
+        at java.util.concurrent.SynchronousQueue.put(SynchronousQueue.java:879)
+        at scala.tools.nsc.interpreter.SplashLoop.run(InteractiveReader.scala:77)
+        at java.lang.Thread.run(Thread.java:745)
+[success] Total time: 5 s, completed 18 janv. 2017 15:47:22
+>
+{noformat}
+
+HTH

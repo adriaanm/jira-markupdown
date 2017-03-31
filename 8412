@@ -1,0 +1,30 @@
+{code}
+
+object C {
+  def copy(x: Any) {}
+}
+import C.copy
+
+object Broken {
+  val x = (i: Int) => copy(x = i)
+}
+
+object Ok1 {
+  locally {
+    val x = (i: Int) => copy(x = i)
+  }
+}
+
+object Ok2 {
+  val x = (i: Int) => copy(x = i)
+  val i = ""
+}
+
+object Ok3 {
+  val x: Any = (i: Int) => copy(x = i)
+}
+
+object Ok4 {
+  val y = (i: Int) => copy(x = i)
+}
+{code}

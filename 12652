@@ -1,0 +1,45 @@
+Reducedly,
+
+{code}
+package badindices
+
+import scala.collection.mutable
+import scala.collection.mutable.{ArrayBuffer, ListBuffer}
+
+case class DirectedGraph[A](a: A)
+
+class Reader {
+  class CoNLLToken(
+    val word:String,
+    val pos:String,
+    val lemma:String,
+    val dep:(Int, String), // head, label
+    val pred:Int,
+    val frameBits:Array[String]) {
+    override def toString:String = word + "/" + pos + "/" + dep._1 + "/" + dep._2 + "/" + pred
+  }
+
+  def toDirectedGraph(tokens:Array[CoNLLToken]):DirectedGraph[String] = {
+    val edges = new mutable.ListBuffer[(Int, Int, String)] // head, modifier, label
+    val roots = new mutable.HashSet[Int]()
+    for(modifier <- tokens.indices) {
+      val head = tokens(modifier).dep._1
+      if(head >= 0)
+        edges += new Tuple3(head, modifier, tokens(modifier).dep._2)
+      else
+        roots += modifier
+    }
+    DirectedGraph[String]("hi")
+  }
+}
+{code}
+with the challenging inference
+{noformat}
+      scala.Predef.refArrayOps[Reader.this.CoNLLToken](tokens).indices.foreach[scala.collection.mutable.Iterable[_ >: (Int, Int, String) with Int] with scala.collection.AbstractIterable[Any] with scala.collection.mutable.Cloneable[scala.collection.mutable.Iterable[_ >: (Int, Int, String) with Int] with scala.collection.mutable.Cloneable[scala.collection.mutable.Iterable[_ >: (Int, Int, String) with Int] with scala.collection.mutable.Cloneable[Cloneable with Mutable with Equals] with Int => Any{def seq: Cloneable with Mutable with Equals}] with Int => Any] with scala.collection.mutable.Builder[(Int, Int, String) with Int,Iterable[Any] with Int => Any{def seq: Iterable[Any] with Int => Any}] with Int => Any with Serializable with scala.collection.generic.Shrinkable[(Int, Int, String) with Int] with scala.collection.generic.Subtractable[_ >: (Int, Int, String) with Int, Iterable[Any] with Int => Any with scala.collection.generic.Subtractable[_ >: (Int, Int, String) with Int, Iterable[Any] with Int => Any with scala.collection.generic.Subtractable[_ >: (Int, Int, String) with Int, Equals]]{def seq: Iterable[Any] with Int => Any}] with scala.collection.script.Scriptable[_ >: (Int, Int, String) with Int]](((modifier: Int) => {
+        val head: Int = tokens.apply(modifier).dep._1;
+        if (head.>=(0))
+          edges.+=(new (Int, Int, String)(head, modifier, tokens.apply(modifier).dep._2))
+        else
+          roots.+=(modifier)
+      }));
+{noformat}

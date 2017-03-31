@@ -1,0 +1,9 @@
+Update: I found out that java.util.regex.Matcher.appendReplacement() has the same behavior, and is most likely the source of this problem. appendReplacement() is documented like this:
+
+...
+Note that backslashes (\) and dollar signs ($) in the replacement string may cause the results to be different than if it were being treated as a literal replacement string. Dollar signs may be treated as references to captured subsequences as described above, and backslashes are used to escape literal characters in the replacement string. 
+...
+
+In the case of regex.replaceAllIn(String, (Match) => String) the API user probably wouldn't be aware of this behavior and it would probably not be the common case to want to have replaceAllIn() to do processing of the returned string (for $1 references etc.). So I think replaceAllIn() should call Matcher.quoteReplacement() on the String result before passing it to Matcher.appendReplacement().
+
+Alternatively, the behavior can be left the same, and the user required to call Matcher.quoteReplacement() himself, but then the documentation for replaceAllIn(String, (Match) => String) should be augmented to mention the string processing that is done by appendReplacement().

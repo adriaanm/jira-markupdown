@@ -1,0 +1,65 @@
+Seems to be a good helping of compiler/repl non-determinism revealed by this example.  At the time of martin's comment above, we had consistent behavior between three things: scalac a.scala, scala a.scala, and pasting the contents of a.scala into a repl. (Here's a.scala.)
+{code}
+object T1053 {
+  trait T[A] { 
+    trait U { 
+      type W = A
+      val x = 3
+    }
+  }
+  val x : ({ type V = T[this.type] })#V = null
+  val y = new (x.type)#U { }
+}
+{code}
+But as time marches onward, things change, and not consistently.  As of r20444, "scala a.scala" still fails as above, but scalac and pasting it into the interpreter both work.
+{code}
+scala> object T1053 {
+     |   trait T[A] { 
+     |     trait U { 
+     |       type W = A
+     |       val x = 3
+     |     }
+     |   }
+     |   val x : ({ type V = T[this.type] })#V = null
+     |   val y = new (x.type)#U { }
+     | }
+defined module T1053
+
+scala> T1053.x
+res0: T1053.T[_2.type] forSome { val _2: AnyRef{type V = T1053.T[this.type]} } = null
+{code}
+As of r20445 and up to and including beta1, compiling still succeeds, "scala a.scala" still fails, and pasting it into the repl crashes it.  Three distinct behaviors.
+{code}
+[paulp@jon bisector (master)]$$ /scala/bisector/builds/trunk/r20445/bin/scala /scala/trac/1053/a.scala
+(fragment of a.scala):8: error: type mismatch;
+ found   : Null(null)
+ required: Main.$$anon.T1053.T[_3.type] forSome { val _3: AnyRef{type V = Main.$$anon.T1053.T[this.type]} }
+  val x : ({ type V = T[this.type] })#V = null
+                                           ^
+one error found
+!!!
+discarding <script preamble>
+[paulp@jon bisector (master)]$$ /scala/bisector/builds/trunk/r20445/bin/scalac /scala/trac/1053/a.scala
+[paulp@jon bisector (master)]$$ /scala/bisector/builds/trunk/r20445/bin/scala
+Welcome to Scala version 2.8.0.r0-b20100114065218 (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_17).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> object T1053 {
+     |   trait T[A] { 
+     |     trait U { 
+     |       type W = A
+     |       val x = 3
+     |     }
+     |   }
+     |   val x : ({ type V = T[this.type] })#V = null
+     |   val y = new (x.type)#U { }
+     | }
+Exception in thread "main" scala.tools.nsc.symtab.Types$$TypeError: type mismatch;
+ found   : $$iw.$$iw.T1053.x.type (with underlying type $$iw.$$iw.T1053.T[_2.type] forSome { val _2: java.lang.Object{type V = $$iw.$$iw.T1053.T[this.type]} })
+ required: $$iw.$$iw.T1053.T[_2.type] forSome { val _2: java.lang.Object{type V = $$iw.$$iw.T1053.T[this.type]} }
+	at scala.tools.nsc.typechecker.Contexts$$Context.error(Contexts.scala:318)
+	at scala.tools.nsc.typechecker.Infer$$Inferencer.error(Infer.scala:270)
+	at scala.tools.nsc.typechecker.Infer$$Inferencer.typeError(Infer.scala:280)
+	at scala.tools.nsc.typechecker.Infer$$Inferencer.typeErrorTree(Infer.scala:289)
+{code}

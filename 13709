@@ -1,0 +1,87 @@
+The following code is causing a Build compiler (scalac) crashed:
+
+package app.swing.view 
+class PromptPanel  extends javax.swing.JPanel
+
+Generates the following exception:
+
+java.lang.Error
+	at scala.tools.nsc.transform.Erasure$$Eraser.liftedTree1$$1(Erasure.scala:654)
+	at scala.tools.nsc.transform.Erasure$$Eraser.typed1(Erasure.scala:643)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3323)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3360)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedStat$$1(Typers.scala:1570)
+	at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$19.apply(Typers.scala:1615)
+	at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$19.apply(Typers.scala:1615)
+	at scala.List$$.loop$$1(List.scala:293)
+	at scala.List$$.mapConserve(List.scala:310)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedStats(Typers.scala:1615)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:3046)
+	at scala.tools.nsc.transform.Erasure$$Eraser.liftedTree1$$1(Erasure.scala:644)
+	at scala.tools.nsc.transform.Erasure$$Eraser.typed1(Erasure.scala:643)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3323)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3360)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedStat$$1(Typers.scala:1570)
+	at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$19.apply(Typers.scala:1615)
+	at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$19.apply(Typers.scala:1615)
+	at scala.List$$.loop$$1(List.scala:293)
+	at scala.List$$.mapConserve(List.scala:310)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedStats(Typers.scala:1615)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:3046)
+	at scala.tools.nsc.transform.Erasure$$Eraser.liftedTree1$$1(Erasure.scala:644)
+	at scala.tools.nsc.transform.Erasure$$Eraser.typed1(Erasure.scala:643)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3323)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3360)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedStat$$1(Typers.scala:1570)
+	at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$19.apply(Typers.scala:1615)
+	at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$19.apply(Typers.scala:1615)
+	at scala.List$$.loop$$1(List.scala:293)
+	at scala.List$$.mapConserve(List.scala:310)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedStats(Typers.scala:1615)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:3046)
+	at scala.tools.nsc.transform.Erasure$$Eraser.liftedTree1$$1(Erasure.scala:644)
+	at scala.tools.nsc.transform.Erasure$$Eraser.typed1(Erasure.scala:643)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3323)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3360)
+	at scala.tools.nsc.transform.Erasure$$ErasureTransformer$$$$anonfun$$transform$$1.apply(Erasure.scala:1056)
+	at scala.tools.nsc.transform.Erasure$$ErasureTransformer$$$$anonfun$$transform$$1.apply(Erasure.scala:1053)
+	at scala.tools.nsc.symtab.SymbolTable.atPhase(SymbolTable.scala:106)
+	at scala.tools.nsc.transform.Erasure$$ErasureTransformer.transform(Erasure.scala:1053)
+	at scala.tools.nsc.ast.Trees$$Transformer.transformUnit(Trees.scala:1433)
+	at scala.tools.nsc.transform.Transform$$Phase.apply(Transform.scala:30)
+	at scala.tools.nsc.Global$$GlobalPhase.applyPhase(Global.scala:268)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:247)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:247)
+	at scala.Iterator$$class.foreach(Iterator.scala:410)
+	at scala.collection.mutable.ListBuffer$$$$anon$$1.foreach(ListBuffer.scala:266)
+	at scala.tools.nsc.Global$$GlobalPhase.run(Global.scala:247)
+	at scala.tools.nsc.Global$$Run.compileSources(Global.scala:579)
+	at scala.tools.nsc.Global$$Run.compile(Global.scala:663)
+	at scala.tools.eclipse.BuildCompiler.build(BuildCompiler.scala:114)
+	at scala.tools.eclipse.ScalaPlugin$$ProjectImpl$$class.build(ScalaPlugin.scala:398)
+	at scala.tools.eclipse.Driver$$Project.build(Driver.scala:16)
+	at lampion.eclipse.Builder.build(Builder.scala:87)
+	at scala.tools.eclipse.Builder.build(Builder.scala:30)
+	at org.eclipse.core.internal.events.BuildManager$$2.run(BuildManager.java:633)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:37)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:170)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:201)
+	at org.eclipse.core.internal.events.BuildManager$$1.run(BuildManager.java:253)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:37)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:256)
+	at org.eclipse.core.internal.events.BuildManager.basicBuildLoop(BuildManager.java:309)
+	at org.eclipse.core.internal.events.BuildManager.build(BuildManager.java:341)
+	at org.eclipse.core.internal.events.AutoBuildJob.doBuild(AutoBuildJob.java:140)
+	at org.eclipse.core.internal.events.AutoBuildJob.run(AutoBuildJob.java:238)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:55)
+
+The Session Data:
+
+eclipse.buildId=I20080617-2000
+java.version=1.6.0_07
+java.vendor=Sun Microsystems Inc.
+BootLoader constants: OS=win32, ARCH=x86, WS=win32, NL=pt_BR
+Command-line arguments:  -os win32 -ws win32 -arch x86
+
+This is a brand new Eclips 3.4 instalation
+

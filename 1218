@@ -1,0 +1,43 @@
+Separate compilation is one of the challenges, since you can't look at the class definition in order to decide whether we'll ever need to determine its outer instance. For example, the semantics of a type test pattern that includes a path, such as `x: prefix.Nested` compiles to `x.outer eq prefix && x.isInstanceOf[Nested]`. 
+
+Is it an option to simply not nest this class?
+
+PS: there's an undocumented "feature" that final nested classes don't receive outer pointers (unless required):
+{code}
+➜  ~  scalac -Xprint:cleanup /tmp/outer.scala
+[[syntax trees at end of                   cleanup]] // outer.scala
+package <empty> {
+  class C extends Object {
+    def <init>(): C = {
+      C.super.<init>();
+      ()
+    }
+  };
+  final class C$FinalNested extends Object {
+    def <init>($outer: C): C$FinalNested = {
+      C$FinalNested.super.<init>();
+      ()
+    }
+  };
+  class C$Nested extends Object {
+    <synthetic> <paramaccessor> <artifact> protected val $outer: C = _;
+    <synthetic> <stable> <artifact> def $outer(): C = C$Nested.this.$outer;
+    def <init>($outer: C): C$Nested = {
+      if ($outer.eq(null))
+        throw null
+      else
+        C$Nested.this.$outer = $outer;
+      C$Nested.super.<init>();
+      ()
+    }
+  }
+}
+{code}
+
+for
+{code}
+class C {
+  final class FinalNested 
+  class Nested 
+}
+{code}

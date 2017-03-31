@@ -1,0 +1,41 @@
+prettyprinter throwing exception on otherwise toString able XML
+
+version is recent:
+> scala -version
+Scala code runner version 2.6.1.13807.20080124-160723 -- (c) 2002-2008 LAMP/EPFL
+
+
+this code giving issue:
+
+val xml55 = Elem(null, "project", new UnprefixedAttribute("name", "val", Null), TopScope, new Group(Nil))
+val pxml55 = new PrettyPrinter(80, 4).formatNodes(xml55)
+
+
+issue:
+
+ 7  java.lang.UnsupportedOperationException: class Group does not support met
+hod 'attributes'
+     8    at scala.xml.Group.attributes(Group.scala:43)
+     9    at scala.xml.Group.attributes(Group.scala:20)
+    10    at scala.xml.Node.attribute(Node.scala:93)
+    11    at scala.xml.PrettyPrinter.traverse(PrettyPrinter.scala:167)
+    12    at scala.xml.PrettyPrinter$$$$anonfun$$traverse$$1.apply(PrettyPrinter.scal
+a:209)
+    13    at scala.xml.PrettyPrinter$$$$anonfun$$traverse$$1.apply(PrettyPrinter.scal
+a:208)
+    14    at scala.Iterator$$class.foreach(Iterator.scala:374)
+    15    at scala.runtime.BoxedArray$$$$anon$$2.foreach(BoxedArray.scala:46)
+    16    at scala.xml.PrettyPrinter.traverse(PrettyPrinter.scala:208)
+    17    at scala.xml.PrettyPrinter.traverse(PrettyPrinter.scala:180)
+    18    at scala.xml.PrettyPrinter.format(PrettyPrinter.scala:226)
+    19    at scala.xml.PrettyPrinter.format(PrettyPrinter.scala:270)
+    20    at scala.xml.PrettyPrinter$$$$anonfun$$formatNodes$$1.apply(PrettyPrinter.s
+cala:303)
+    21    at scala.xml.PrettyPrinter$$$$anonfun$$formatNodes$$1.apply(PrettyPrinter.s
+cala:302)
+    22    at scala.Iterator$$class.foreach(Iterator.scala:374)
+    23    at scala.List$$$$anon$$2.foreach(List.scala:510)
+    24    at scala.xml.PrettyPrinter.formatNodes(PrettyPrinter.scala:302)
+    25    at scala.xml.PrettyPrinter.formatNodes(PrettyPrinter.scala:290)
+    26    at scala.xml.PrettyPrinter.formatNodes(PrettyPrinter.scala:281)
+    27    at Main$$.main((virtual file):126)

@@ -1,0 +1,50 @@
+We recently found a performance problem with `groupBy` which turned out to be caused by an extra level of indirection introduced by the 2.12.x trait encoding.
+
+I notice some "inlining too deep" notices in the `-XX:+PrintInlining` output under 2.12 for this test:
+
+{noformat}
+                              @ 148   akka.actor.ActorCell::checkReceiveTimeout (5 bytes)   inline (hot)
+                                @ 1   akka.actor.dungeon.ReceiveTimeout::checkReceiveTimeout$ (5 bytes)   inline (hot)
+                                  @ 1   akka.actor.dungeon.ReceiveTimeout::checkReceiveTimeout (183 bytes)   inline (hot)
+                                    @ 1   akka.actor.ActorCell::akka$actor$dungeon$ReceiveTimeout$$receiveTimeoutData (5 bytes)   accessor
+                                    @ 11   akka.actor.ActorCell::mailbox (5 bytes)   inline (hot)
+                                      @ 1   akka.actor.dungeon.Dispatch::mailbox$ (5 bytes)   inline (hot)
+                                        @ 1   akka.actor.dungeon.Dispatch::mailbox (14 bytes)   inline (hot)
+                                          @ 7   sun.misc.Unsafe::getObjectVolatile (0 bytes)   (intrinsic)
+                                    @ 16   akka.dispatch.Mailbox::hasMessages (10 bytes)   inline (hot)
+                                      @ 1   akka.dispatch.Mailbox::messageQueue (5 bytes)   accessor
+                                      @ 4   akka.dispatch.UnboundedMailbox$MessageQueue::hasMessages (5 bytes)   inline (hot)
+                                      @ 4   akka.dispatch.UnboundedMailbox$MessageQueue::hasMessages (5 bytes)   inline (hot)
+                                       \-> TypeProfile (8/13031 counts) = akka/event/LoggerMailbox
+                                       \-> TypeProfile (13023/13031 counts) = akka/dispatch/UnboundedMailbox$MessageQueue
+                                        @ 1   akka.dispatch.QueueBasedMessageQueue::hasMessages$ (5 bytes)   inline (hot)
+                                          @ 1   akka.dispatch.QueueBasedMessageQueue::hasMessages (20 bytes)   inline (hot)
+                                            @ 1   akka.dispatch.UnboundedMailbox$MessageQueue::queue (2 bytes)   inline (hot)
+                                            @ 6   java.util.concurrent.ConcurrentLinkedQueue::isEmpty (13 bytes)   inline (hot)
+                                            @ 6   java.util.concurrent.ConcurrentLinkedQueue::isEmpty (13 bytes)   inline (hot)
+                                             \-> TypeProfile (8/6698 counts) = akka/event/LoggerMailbox
+                                             \-> TypeProfile (6690/6698 counts) = akka/dispatch/UnboundedMailbox$MessageQueue
+                                              @ 1   java.util.concurrent.ConcurrentLinkedQueue::first (65 bytes)   inline (hot)
+                                                @ 38   java.util.concurrent.ConcurrentLinkedQueue::updateHead (20 bytes)   inline (hot)
+                                                  @ 8   java.util.concurrent.ConcurrentLinkedQueue::casHead (13 bytes)   inlining too deep
+                                                  @ 16   java.util.concurrent.ConcurrentLinkedQueue$Node::lazySetNext (12 bytes)   inlining too deep
+                                              @ 1   java.util.concurrent.ConcurrentLinkedQueue::first (65 bytes)   inline (hot)
+                                                @ 38   java.util.concurrent.ConcurrentLinkedQueue::updateHead (20 bytes)   inline (hot)
+                                                  @ 8   java.util.concurrent.ConcurrentLinkedQueue::casHead (13 bytes)   inlining too deep
+                                                  @ 16   java.util.concurrent.ConcurrentLinkedQueue$Node::lazySetNext (12 bytes)   inlining too deep
+                                        @ 1   akka.dispatch.QueueBasedMessageQueue::hasMessages$ (5 bytes)   inline (hot)
+                                          @ 1   akka.dispatch.QueueBasedMessageQueue::hasMessages (20 bytes)   inline (hot)
+                                            @ 1   akka.dispatch.UnboundedMailbox$MessageQueue::queue (2 bytes)   inline (hot)
+                                            @ 6   java.util.concurrent.ConcurrentLinkedQueue::isEmpty (13 bytes)   inline (hot)
+                                            @ 6   java.util.concurrent.ConcurrentLinkedQueue::isEmpty (13 bytes)   inline (hot)
+                                             \-> TypeProfile (8/6698 counts) = akka/event/LoggerMailbox
+                                             \-> TypeProfile (6690/6698 counts) = akka/dispatch/UnboundedMailbox$MessageQueue
+                                              @ 1   java.util.concurrent.ConcurrentLinkedQueue::first (65 bytes)   inline (hot)
+                                                @ 38   java.util.concurrent.ConcurrentLinkedQueue::updateHead (20 bytes)   inline (hot)
+                                                  @ 8   java.util.concurrent.ConcurrentLinkedQueue::casHead (13 bytes)   inlining too deep
+                                                  @ 16   java.util.concurrent.ConcurrentLinkedQueue$Node::lazySetNext (12 bytes)   inlining too deep
+                                              @ 1   java.util.concurrent.ConcurrentLinkedQueue::first (65 bytes)   inline (hot)
+                                                @ 38   java.util.concurrent.ConcurrentLinkedQueue::updateHead (20 bytes)   inline (hot)
+                                                  @ 8   java.util.concurrent.ConcurrentLinkedQueue::casHead (13 bytes)   inlining too deep
+                                                  @ 16   java.util.concurrent.ConcurrentLinkedQueue$Node::lazySetNext (12 bytes)   inlining too deep
+{noformat}

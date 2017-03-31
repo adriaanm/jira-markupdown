@@ -1,0 +1,45 @@
+{code}
+$$ scala -Xexperimental
+Welcome to Scala version 2.8.0.final (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_21).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> object Test {
+     |    trait Thing {
+     |      type X
+     |      def member : X
+     |    }
+     | 
+     |    object SomeThing extends Thing {
+     |      type X = String
+     |      def member = "hello"
+     |    }
+     | 
+     |    def crap(x : Thing) : x.X = x.member
+     | 
+     |    def main(args : Array[String]) {
+     |      println(crap(SomeThing))
+     |    }
+     | }
+defined module Test
+
+scala> Test main null
+hello
+{code}
+
+{code}
+scala> Test crap Test.SomeThing
+Exception in thread "main" java.lang.Error: Unknown type: <notype>, <notype>[class scala.tools.nsc.symtab.Types$$NoType$$, class scala.tools.nsc.symtab.Types$$NoType$$] TypeRef? false, false
+	at scala.tools.nsc.symtab.SymbolTable.abort(SymbolTable.scala:33)
+	at scala.tools.nsc.backend.icode.TypeKinds$$class.toTypeKind(TypeKinds.scala:474)
+	at scala.tools.nsc.backend.icode.ICodes.toTypeKind(ICodes.scala:26)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:118)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:81)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:81)
+	at scala.collection.LinearSeqOptimized$$class.foreach(LinearSeqOptimized.scala:61)
+	at scala.collection.immutable.List.foreach(List.scala:45)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:81)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:148)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:100)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:81)
+{code}

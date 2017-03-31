@@ -1,0 +1,16 @@
+I fixed the case where you first compile the java file using javac, and then the scala file using scalac. The assert was simply too strict.
+
+However, I have been scratching my head for the past hour trying to figure out why the test case i was about to commit failed...
+
+And now the funny bit: partest uses scalac to compile both the java and the scala file, and then you get the error:
+
+{code}
+/Users/adriaan/git/scala/test/files/pos/ticket2266/TestArrayList.java:1: error: missing type arguments
+class TestArrayList extends java.util.ArrayList {
+                                      ^
+one error found
+{code}
+
+NOTE: this is scalac complaining about an error in a JAVA file :-)
+
+Martin, I re-assigned to you because I don't know how to fix this (or even what the desired behaviour should be), if you can give me a hint to get me on my way, I'll take a second look...

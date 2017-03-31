@@ -1,0 +1,17 @@
+The following example:
+{code}
+class U {
+  def f[T](x:T):T=x
+}
+object H extends Application {
+  val u=new U
+  val z:Int=(u.f _)(4)
+  println("done")
+}
+{code}
+results in:
+{code}
+java.lang.NoSuchMethodError: H$$$$anonfun$$1.apply(I)I
+{code}
+
+Replacing {{u.f}} with {{u.f[Int]}} works ok; possibly related are SI-1317 and SI-1570.

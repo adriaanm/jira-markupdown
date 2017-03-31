@@ -1,0 +1,15 @@
+Please add support for nested Java annotations. Here is my guess at what the syntax might be, using the JPA annotations for example:
+{code}
+import javax.persistence._
+
+@Entity
+class Test {
+    @ManyToMany
+    @JoinTable { val joinColumns = Array(@JoinColumn{val name = "a name"}) }
+    var test: String = _
+}
+{code}
+In this example, the nested annotation is in an array value, but they should also be supported as single values:
+{{@MyAnnotation { val test = @MyOtherAnnotation }}}
+
+Here is a related [http://article.gmane.org/gmane.comp.lang.scala/8768 mailing list thread]. This feature is very important for interoperating with Java libraries, and I don't know of any current workaround.

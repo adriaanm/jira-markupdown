@@ -1,0 +1,33 @@
+{noformat}
+% scalac-hash 35209fc sandbox/test.scala
+sandbox/test.scala:2: error: type mismatch;
+ found   : Any
+ required: Double
+   f"${if (true) 2.5 else 2.5}%.2f"
+       ^
+one error found
+% scalac-hash 35209fc~1 sandbox/test.scala
+
+% cat sandbox/test.scala
+object Test {
+   f"${if (true) 2.5 else 2.5}%.2f"
+}
+{noformat}
+
+Regressed in: https://github.com/scala/scala/commit/35209fc
+
+Might also be linked to the "boxity" of fast track macros.
+
+I reckon changing:
+
+{code}
+def f(args: Any*): String = macro ???
+{code}
+
+to:
+
+{code}
+def f[A](args: A*): String = macro ???
+{code}
+
+Might alter behaviour. We experienced similar subtleties with quasiquotes.

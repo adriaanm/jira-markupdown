@@ -1,0 +1,30 @@
+{code}
+Welcome to Scala version 2.10.3 (Java HotSpot(TM) Client VM, Java 1.7.0_25).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> trait A { protected val foo: Int }
+defined trait A
+
+scala> trait B { protected val foo: Int }
+defined trait B
+
+scala> new A with B { val foo = 1; val bar = 2 }
+res0: A with B{val bar: Int} = $anon$1@1e3c5fd
+
+scala> res0.bar
+warning: there were 1 feature warning(s); re-run with -feature for details
+res1: Int = 2
+
+scala> res0.foo
+<console>:11: error: value foo in trait B cannot be accessed in A with B{val bar: Int}
+ Access to protected value foo not permitted because
+ enclosing object $iw is not a subclass of
+ trait B where target is defined
+              res0.foo
+                   ^
+
+scala> (new A with B { val foo = 1; val bar = 2 }).foo // It works, why?
+res3: Int = 1
+{code}
+

@@ -1,0 +1,15 @@
+I think the semantics that were intended for trim are "collapse the whitespace". That means you can't traverse the tree node by node making decisions about one at a time. You have to examine sequences of text nodes. 
+
+{code}
+  @Test def testTrim() {
+    val a = new Text("a")
+    val sp = new Text(" ")
+    val b = new Text("b")
+    val data = <data>{ Seq(a, sp, b) }</data>
+    println(data) // prints <data>a b</data>
+    val trimmed = Utility.trim(data)
+    println(trimmed) // prints <data>ab</data> - wrong. 
+  }
+{code}
+
+You can't trim anything off anything here. 

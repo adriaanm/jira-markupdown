@@ -1,0 +1,11 @@
+Line 121 of SuperAccessors has a condition
+
+{code}      if (name.isTermName && mix == tpnme.EMPTY && (clazz.isTrait || clazz != currentClass || !validCurrentOwner)) {code}
+
+which this call fails because mix is not empty, and thus the tree isn't transformed with an accessor.
+
+Changing the condition to
+
+{code}      if (name.isTermName && ((mix == tpnme.EMPTY && clazz.isTrait) || clazz != currentClass || !validCurrentOwner)) {code}
+
+seems to solve this bug and doesn't break the case where A is a trait. However, this is some subtle stuff so I'm digging in to understand exactly what the condition is detecting/preventing. For instance, the name "mix" suggests that it actually SHOULD be empty in this case so maybe the real problem lies upstream.

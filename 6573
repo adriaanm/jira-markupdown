@@ -1,0 +1,21 @@
+Hmm. That would cover most of the examples I know of.
+
+Relative to the warning without the lub check, out of the 15 or so examples I know of, it eliminates some false positives and also one real error.
+
+It eliminates false positives where, e.g., the two sides are subclasses of GenSeqLike, which overrides equals() so that many of its otherwise unrelated subclasses can compare equal. This covers the only false positive in Quora's codebase, and if I recall correctly the lub check would also cut out the two false positives in scalac itself.
+
+A false positive is still possible; there's no reason in principle why I might not declare class A overriding equals() to accept instances of B, with ScalaObject the lub. In practice I probably want B's equals() to also accept A, and then perhaps I want to define that equals() only once, which would lead me to give A and B a common base class. If people follow that logic, then this is a pretty sharp heuristic.
+
+But then the lub check does also eliminate one of the two real errors which the warning found in scalac itself:
+
+src/compiler/scala/tools/nsc/interpreter/JLineReader.scala:57:
+warning: scala.tools.nsc.interpreter.session.JLineHistory and object
+scala.tools.nsc.interpreter.session.NoHistory are unrelated: probably
+always compare unequal
+     if (history ne NoHistory)
+
+Here the lub is scala.tools.nsc.interpreter.session.History. I don't see such a tight software-engineering argument as I gave above to say why this shouldn't happen; I suspect the lub check will suppress a decent number of real bugs in practice.
+
+That could argue for an option to make this warning skip the lub check.
+
+Thanks! Glad you found a simple version that's precise enough to turn on by default.

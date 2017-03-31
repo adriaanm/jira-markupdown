@@ -1,0 +1,29 @@
+OK, let me know what you think of r18021.  I did not bring MathContext into the type system and am not very convinced it's wise.  I did make MathContext a part of BigDecimal, and it uses the mc on every operation.
+
+You can change contexts with an apply method on BigDecimal, so:
+{code}
+scala> val x = BigDecimal(1.0)
+x: BigDecimal = 1.0
+
+scala> x / 3
+java.lang.ArithmeticException: Non-terminating decimal expansion [...]
+
+scala> x(DECIMAL32) / 3
+res5: BigDecimal = 0.3333333
+
+scala> x(DECIMAL64) / 3
+res6: BigDecimal = 0.3333333333333333
+{code}
+Also I added some new methods, like:
+{code}
+scala> BigDecimal(100) /% 17
+res7: (BigDecimal, BigDecimal) = (5,15)
+
+scala> BigDecimal(100) quot 17
+res8: BigDecimal = 5
+
+scala> BigDecimal(100.0001).byteValueExact
+java.lang.ArithmeticException: Rounding necessary
+{code}
+
+And etc.

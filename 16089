@@ -1,0 +1,39 @@
+=== What steps will reproduce the problem (please be specific and use wikiformatting)? ===
+{code}
+  type Gettable[T] = { def get: T }
+  type GettableParens[T] = { def get(): T }
+
+  def doGet[T](g: NoParens[T]) = g.get
+  def doGetParens[T](g: WithParens[T]) = g.get()
+
+  trait NoParens[T] { def get: T }
+  trait WithParens[T] { def get(): T }
+
+  def test[T](np: NoParens[T], wp: WithParens[T]) {
+    doGet(np)
+    doGetParens(np) // compile error (type mismatch)
+
+    doGet(wp) // compile error (type mismatch) [*]
+    doGetParens(wp)
+  }
+{code} 
+
+=== What is the expected behavior? ===
+
+The line marked with [*] should compile and work. This matches a trait/class containing {def get(): T} with a structural type declared as {def get: T}.
+
+The reason I think this is the appropriate solution has to do with source code calling conventions. Since methods declared without parens can _only_ be called without them, but _both_ forms are callable without parens, then the structural type forcing no-paren usage should match both trait/class forms.
+
+=== What do you see instead? ===
+
+Compile errors as noted above, requiring two separate structural types to deal with this issue.
+
+=== Additional information ===
+
+See issue SI-2810 for a symptom of this problem, which was "fixed" by changing the method signature in only one library class.
+
+=== What versions of the following are you using? ===
+
+  - Scala: 2.8.1 and 2.9.0rc1
+  - Java: Sun/Oracle 1.6.0_24
+  - Operating system: Linux (Ubuntu 10.04.2)

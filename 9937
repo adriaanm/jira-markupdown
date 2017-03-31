@@ -1,0 +1,35 @@
+If the first vector is very short and the second vector is very long, both old code and proposed new code will run in O\(n\) time, but yes, the new code will have worse constant factors:
+
+{noformat}
+import System.{currentTimeMillis => millis}
+def time[T](f: => T): Long = { val start = millis; f; millis - start }
+def repeat[T](n: Int)(body: => T): Unit = for(_ <- 0 until n) body
+def fix[T](v1: Vector[T], v2: Vector[T]): Vector[T] = v2.foldLeft(v1)(_ :+ _)
+val big = Vector.range(1,100000)
+val small = Vector(1)
+def test() {
+  println("before fix")
+  println(time(repeat(100)(big ++ big)))
+  println(time(repeat(100)(big ++ small)))
+  println(time(repeat(100)(small ++ big)))
+  println("after fix")
+  println(time(repeat(100)(fix(big, big))))
+  println(time(repeat(100)(fix(big, small))))
+  println(time(repeat(100)(fix(small, big))))
+}
+
+Welcome to Scala version 2.10.2 (Java HotSpot(TM) 64-Bit Server VM, Java 1.7.0_25)
+
+...
+scala> test()
+before fix
+529
+213
+217
+after fix
+586
+0
+560
+{noformat}
+
+But I don't think this should bother us more than slightly. I think getting asymptotic speedup on {{big ++ small}} is clearly worth a constant slowdown in {{small ++ big}}.

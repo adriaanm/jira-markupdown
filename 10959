@@ -1,0 +1,11 @@
+There was a very similar issue with quasiquotes. 
+
+The quick solution for this is to change f interpolator signature from current:
+{code}
+def f(args: Any*): String = macro ???
+{code}
+to:
+{code}
+def f[T](args: T*): String = macro ???
+{code}
+It will force typer not to be lazy and properly infer specific types to arguments of the interpolator. At least this is how quasiquotes implementation works around this issue.

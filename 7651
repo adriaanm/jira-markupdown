@@ -1,0 +1,58 @@
+{{-Xprint:cleanup}} shows more clearly the pattern matching at play:
+
+{noformat}
+      final private[this] def liftedTree1$1(i$1: Int, x2$1: scala.reflect.internal.Types$RefinedType): scala.reflect.internal.Types$Type = try {
+        case <synthetic> val x1: Option = BaseTypeSeqs$BaseTypeSeq.this.scala$reflect$internal$BaseTypeSeqs$BaseTypeSeq$$$outer().mergePrefixAndArgs(x2$1.parents(), -1, BaseTypeSeqs$BaseTypeSeq.this.scala$reflect$internal$BaseTypeSeqs$BaseTypeSeq$$$outer().lubDepth(x2$1.parents()));
+        case5(){
+          if (x1.$isInstanceOf[Some]())
+            {
+              val x2: Some = (x1.$asInstanceOf[Some](): Some);
+              if (x2.ne(null))
+                matchEnd4({
+                  BaseTypeSeqs$BaseTypeSeq.this.pending().update(scala.Int.box(i$1), false);
+                  BaseTypeSeqs$BaseTypeSeq.this.scala$reflect$internal$BaseTypeSeqs$$elems().update(i$1, x2.x().$asInstanceOf[scala.reflect.internal.Types$Type]());
+                  x2.x().$asInstanceOf[scala.reflect.internal.Types$Type]()
+                })
+              else
+                case6()
+            }
+          else
+            case6()
+        };
+        case6(){
+          if (scala.None.==(x1))
+            {
+              val x3: Option = x1;
+              matchEnd4(BaseTypeSeqs$BaseTypeSeq.this.typeError("no common type instance of base types ".+(x2$1.parents().mkString(", and ")).+(" exists.")))
+            }
+          else
+            case7()
+        };
+        case7(){
+          matchEnd4(throw new MatchError(x1))
+        };
+        matchEnd4(x: scala.reflect.internal.Types$Type){
+          x
+        }
+      } catch {
+        case (ex5 @ _) => {
+          val x3: Throwable = ex5;
+          case7(){
+            if (BaseTypeSeqs$BaseTypeSeq.this.scala$reflect$internal$BaseTypeSeqs$BaseTypeSeq$$$outer().CyclicInheritance().==(x3))
+              {
+                val x4: Throwable = x3;
+                matchEnd6(BaseTypeSeqs$BaseTypeSeq.this.typeError("computing the common type instance of base types ".+(x2$1.parents().mkString(", and ")).+(" leads to a cycle.")))
+              }
+            else
+              case8()
+          };
+          case8(){
+            matchEnd6(throw ex5)
+          };
+          matchEnd6(x: scala.reflect.internal.Types$Type){
+            x
+          }
+        }
+      };
+{noformat}
+

@@ -1,0 +1,47 @@
+Actually, measurements on 2.11-SNAPSHOT suggest that neither tagged primitive arrays (Array[Int] with Tag), nor arrays of tagged primitives (eg Array[Int with Tag]), are boxed :)
+
+(The -optimise flag is required to Scalac).
+
+object TaggedArray {
+  val tagary: Array[Int] with Tag = Array(1).asInstanceOf[Array[Int] with Tag]
+  tagary.update(0, 7)
+  println(tagary(0))
+}
+
+{{
+scala> :javap -cp test.TaggedArray$
+Compiled from "Primitive.scala"
+public final class test.TaggedArray$ {
+  public static final test.TaggedArray$ MODULE$;
+
+  private final int[] tagary;
+ [..snip..]
+  private test.TaggedArray$();
+    Code:
+       0: aload_0
+       1: invokespecial #19                 // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: putstatic     #21                 // Field MODULE$:Ltest/TaggedArray$;
+       8: aload_0
+       9: iconst_1
+      10: newarray       int
+      12: dup
+      13: iconst_0
+      14: iconst_1
+      15: iastore
+      16: putfield      #17                 // Field tagary:[I
+      19: aload_0
+      20: invokevirtual #23                 // Method tagary:()[I
+      23: iconst_0
+      24: bipush        7
+      26: iastore
+      27: getstatic     #28                 // Field scala/Predef$.MODULE$:Lscala/Predef$;
+      30: aload_0
+      31: invokevirtual #23                 // Method tagary:()[I
+      34: iconst_0
+      35: iaload
+      36: invokestatic  #34                 // Method scala/runtime/BoxesRunTime.boxToInteger:(I)Ljava/lang/Integer;
+      39: invokevirtual #38                 // Method scala/Predef$.println:(Ljava/lang/Object;)V
+      42: return
+}}}
+

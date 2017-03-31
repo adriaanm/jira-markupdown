@@ -1,0 +1,24 @@
+A simple test case,
+
+{code}
+// Foo.java
+public class Foo<A> {
+  public class Bar<B> {
+    public void bar() {}
+  }
+
+  public Bar<A> create() {
+    return new Bar<A>();
+  }
+}
+{code}
+{code}
+// Test.scala
+object Test {
+  def m(x: Foo[Int]) = x.create.bar
+}
+{code}
+
+The problem is ClassfileParser's handling of signature attributes mentioning the parameterized inner class. It's looking for a name terminated by a ';' or a '.' which is fine in the unparameterized case, but when the inner class is parameterized the name can be terminated by a '<' at the start of it's type arguments.
+
+Attached patch fixes that, but I'd like this reviewed carefully before I commit because this is clearly a very sensitive area.

@@ -1,0 +1,63 @@
+{code}
+class A {
+  def crash(as: Listt): Unit = {
+    map(as, (_: Any) => return)
+  }
+
+  final def map(x: Listt, f: Any => Any): Any = {
+    if (x eq Nill) "" else f("")
+  }
+}
+
+object Nill extends Listt
+class Listt
+{code}
+
+{noformat}
+scalac-hash v2.10.3 -Ylog:inliner,dce -Yinline -Ydead-code -Dlow=0 -Dhigh=1000000000 test/files/pos/nonlocal-unchecked.scala 2>&1 | tee sandbox/bad.log
+[log inliner]    class  Nill                                     // analyzing 1 methods in Nill
+[log inliner]    class  A$$anonfun$crash$1               // analyzing 3 methods in A$$anonfun$crash$1
+[log inliner]    class  Listt                            // analyzing 1 methods in Listt
+[log inliner]    class  A                                // analyzing 3 methods in A
+[log inliner]       +2  A.map                            // ok to inline into A.crash
+[log inliner]       +3  A.$anonfun$crash$1.apply         // ok to inline into A.crash
+[log inliner]       +3  A.$anonfun$crash$1.apply         // ok to inline into A.crash
+[log inliner]   access  nonLocalReturnKey1$1             // making public
+[log inliner]  inlined  A.crash                          // 3 inlined: A.map, anonfun$crash$1.apply, anonfun$crash$1.apply
+[log inliner] <<tldr>>  A.crash                          // crash: instructions 28 -> 56, blocks 6 -> 15
+[log dce] Analyzing 3 methods in A.
+in: 9 -> IState(, )
+2 -> IState(, )
+16 -> IState(, )
+10 -> IState(, )
+3 -> IState(, )
+7 -> IState((value nonLocalReturnKey1,1,3), )
+14 -> IState(, )
+11 -> IState(, )
+4 -> IState(, )
+1 -> IState(, )
+8 -> IState(, )
+12 -> IState(, )
+5 -> IState(, )
+out: 9 -> IState(, )
+2 -> IState(, )
+16 -> IState(, )
+10 -> IState(, )
+3 -> IState(, )
+7 -> IState(, )
+14 -> IState(, )
+11 -> IState(, )
+4 -> IState(, )
+1 -> IState((value nonLocalReturnKey1,1,3), )
+8 -> IState(, )
+12 -> IState(, )
+5 -> IState(, )
+java.util.NoSuchElementException: key not found: 13
+...
+Exception in thread "main" java.lang.RuntimeException: Could not find element key not found: 13
+	at scala.sys.package$.error(package.scala:27)
+	at scala.tools.nsc.backend.icode.analysis.DataFlowAnalysis$class.forwardAnalysis(DataFlowAnalysis.scala:82)
+	at scala.tools.nsc.backend.icode.analysis.ReachingDefinitions$ReachingDefinitionsAnalysis.forwardAnalysis(ReachingDefinitions.scala:62)
+	at scala.tools.nsc.backend.icode.analysis.ReachingDefinitions$ReachingDefinitionsAnalysis.run(ReachingDefinitions.scala:143)
+	at scala.tools.nsc.backend.opt.DeadCodeElimination$DeadCode.collectRDef(DeadCodeElimination.scala:110)
+{noformat}

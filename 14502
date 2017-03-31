@@ -1,0 +1,15 @@
+If you try parsing the following file, parsing fails with an OutOfMemoryError:
+
+<?xml version="1.0" encoding="UTF-8"?>
+<result>
+   <title><![CDATA[Truthdig - Cartoons - <b>Iran</b> <b>Election</b> [Revised]]]></title>
+</result>
+
+
+The problem is the "]" at the end of the CDATA. Removing the final "]" makes the file parse fine.
+
+A CDATA segment should end with the first occurrence of "]]>". As such, it should be legal to include a "]" at the end of the CDATA.
+
+
+
+

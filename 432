@@ -1,0 +1,39 @@
+You're looking at 'x' but it has already been checked against null before the
+equals call.
+
+Here's the byte code:
+
+Get the argument to the method and call getSuperclass() on it:
+
+{code}
+   0:   aload_1
+   1:   invokevirtual   SI-18; //Method java/lang/Class.getSuperclass:()Ljava/lang/Class;
+{code}
+
+Store the supercalss in local variables 2 & 3 and leave it on the stack:
+
+{code}
+   4:   astore_2
+   5:   aload_2
+   6:   dup
+   7:   astore_3
+{code}
+
+Now compare the result of getSuperclass() with null and leave the method if it is null:
+
+{code}
+   8:   ifnull  24
+{code}
+
+Now we know 'x' the superclass is not null.
+
+Here's the odd part.  Load the superclass from local variable 3, put a null on the stack with
+aconst_null and call x.equals(null), which always returns false.
+
+{code}
+   11:  aload_3
+   12:  aconst_null
+   13:  invokevirtual   SI-22; //Method java/lang/Object.equals:(Ljava/lang/Object;)Z
+{code}
+
+

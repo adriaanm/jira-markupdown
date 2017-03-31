@@ -1,0 +1,21 @@
+After a little whittling:
+
+{code}
+object O {
+  trait X
+  trait B extends A {
+    override type T[F <: X] = F
+  }
+  trait A {
+    type T[F <: X]
+  }
+}
+
+object Test {
+  import O._
+  val a: B = ???
+  val b: a.T[X] = ???
+  b.ensuring(x => true) // trigger an implicit search
+}
+
+{code}

@@ -1,0 +1,10 @@
+{quote}
+Behaviour of Scala collections when mutating during iteration is undefined
+{quote}
+
+Ah, my mistake then. Is this documented anywhere? I assumed that mutating collections during iteration was allowed in Scala because before filing the bug,
+1. I looked at the documentation for [ParHashMap.+=|http://www.scala-lang.org/api/2.11.7/index.html#scala.collection.parallel.mutable.ParHashSet@+=(elem:T):ParHashSet.this.type], the documentation for [ParHashMap.foreach|http://www.scala-lang.org/api/2.11.7/index.html#scala.collection.parallel.mutable.ParHashSet@foreach%5bU%5d(f:T=>U):Unit], the top-level documentation for the [ParHashMap|http://www.scala-lang.org/api/2.11.7/index.html#scala.collection.parallel.mutable.ParHashSet] class, and I did not see any counter-indication.
+2. I googled whether Scala allowed it and I could not find any counter-indication.
+3. I tried a couple of simple snippets and was pleasantly surprised to see that the behaviour seemed deterministic: elements added during the iteration were never iterated over, but they did appear in the collection after the iteration was over. I assumed Scala was creating a temporary immutable version for the purpose of iterating safely or something like that.
+
+Note that even if I had found the sentence "dealing with mutable collection means you need to understand which code changes which collection when" in the [Collections overview|http://docs.scala-lang.org/overviews/collections/overview.html], I would have interpreted this as meaning that I need to understand which part of _my_ code changes a collection, that is, that I'll experience the usual pain of imperative programming based on shared state.

@@ -1,0 +1,36 @@
+Below is a simple reproducer, where I define a "commutative" pair type that comes with an implicit reordering conversion. 
+
+The implicit conversion is applied by the compiler as expected if the argument to function f is in a pre-existing named value (t in the example). However, if I try to call f directly on literal CommutativePair, it fails with a type error. The compiler is not applying the implicit reordering conversion in that case.  It appears to be related to type inference.  Explicitly annotating the type will also work properly.
+
+See also:
+http://stackoverflow.com/questions/32211381/scala-implicit-conversion-is-applying-under-some-conditions-but-not-others
+
+{code: scala}
+object repro {
+  import scala.language.implicitConversions
+
+  case class CommutativePair[A, B](a: A, b: B)
+
+  object CommutativePair {
+    // Support a kind of commutative behavior via an implicit reordering
+    implicit def reorderPair[B, A](pair: CommutativePair[B, A]) =
+      CommutativePair(pair.b, pair.a)
+  }
+
+  // The idea is to allow a call to 'f' with Pair[Int, String] as well,
+  // via implicit reorder.
+  def f(p: CommutativePair[String, Int]) = p.toString
+
+  val t = CommutativePair(3, "c")
+
+  // This works: the implicit reordering is applied
+  val r1 = f(t)
+
+  // This fails to compile: the implicit reordering is ignored by the compiler
+  val r2 = f(CommutativePair(3, "c"))
+
+  // Explicitly annotating type compiles and works correctly
+  val r3 = f(CommutativePair[Int, String](3, "c"))
+}
+{code}
+

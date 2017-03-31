@@ -1,0 +1,60 @@
+Content assist is absolutely not working for me.
+
+Environment:
+
+Scala Eclipse Plugin 2.8.0.r18428-b20090802023619
+
+Eclipse 3.5.0
+
+Java 1.6.0_14
+
+Windows XP SP3
+
+I have two simple classes:
+
+file C1.scala:
+
+{code}
+package pack
+
+class C1 {
+	/**
+	 * @param x 
+	 *        the first Operand
+	 * @param y
+	 *        the second Operand
+	 * @return the sum
+	 */
+	def f1(x:Int,y:Int) :Int = x+y
+
+}
+{code}
+
+file C2.scala:
+
+{code}
+package pack
+
+class C2 {
+	def f2() : Int =
+	{
+	    val c1inst : C1 = new C1()
+		
+	    c1inst.f1()
+	}
+
+}
+{code}
+
+There are the following problems when editing C2.scala:
+
+- when beginning to type c1inst (after its declaration), there are no completions offered with Ctrl-Space after having typed, say, "c1".[[BR]]
+- after typing ".", there are no proposals.[[BR]]
+- even after hitting Ctrl-Space, there are no proposals.[[BR]]
+- when hitting Ctrl-Space after "c1inst.f", the only proposal is "fall-through".[[BR]]
+- inside the parentheses of c1inst.f1(), no parameter hints with Ctrl-Shift-Space.[[BR]]
+- I see no way to display the documentation comment for function C1.f1 at the call in C2.f2, which would at least help a little in the absence of parameter hints.
+
+Am I doing something wrong? Maybe some stupid errors in my the test code - I am absolutely new to Scala?
+
+BTW it does not help if C1.scala is open in another editor window.

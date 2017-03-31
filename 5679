@@ -1,0 +1,65 @@
+The example in the description works in the meantime. However I can still reproduce it with the following sources
+
+1.scala
+{code}
+package scala.collection
+
+trait SeqViewLike[+A,
+                  +Coll,
+                  +This <: SeqView[A, Coll] with SeqViewLike[A, Coll, This]]
+  extends Seq[A]   with GenSeqViewLike[A, Coll, This]
+{
+
+  trait Transformed[+B] extends super[GenSeqViewLike].Transformed[B]
+
+  private[collection] abstract class AbstractTransformed[+B] extends Seq[B] with Transformed[B] {
+    def underlying: Coll = error("")
+  }
+
+  trait Reversed extends Transformed[A] with super[GenSeqViewLike].Reversed
+
+  protected def newReversed: Transformed[A] = new AbstractTransformed[A] with Reversed
+}
+{code}
+
+
+2.scala
+{code}
+package scala.collection
+
+trait GenSeqViewLike[+A,
+                     +Coll,
+                     +This <: GenSeqView[A, Coll] with GenSeqViewLike[A, Coll, This]]
+extends GenSeq[A] {
+self =>
+
+  trait Transformed[+B] {
+    def length: Int = 0
+    def apply(idx: Int): B = error("")
+  }
+
+  trait Reversed extends Transformed[A] {
+    def iterator: Iterator[A] = createReversedIterator
+
+    private def createReversedIterator: Iterator[A] = {
+      self.foreach(_ => ())
+      null
+    }
+  }
+}
+{code}
+
+
+i get
+
+{code}
+build/pack/bin/scalac -sourcepath src/library -d out -cp build/libs/classes/forkjoin:build/locker/classes/library sandbox/1.scala sandbox/2.scala 
+error: A in trait GenSeqViewLike cannot be instantiated from [+A, +Coll, +This <: scala.collection.GenSeqView[A,Coll] with scala.collection.GenSeqViewLike[A,Coll,This]]scala.collection.GenSeqViewLike[A,Coll,This]
+[...]
+
+
+lucmac:scala luc$ build/pack/bin/scalac -sourcepath src/library -d out -cp build/libs/classes/forkjoin:build/locker/classes/library sandbox/2.scala sandbox/1.scala 
+warning: there were 2 deprecation warnings; re-run with -deprecation for details
+one warning found
+lucmac:scala luc$ 
+{code}

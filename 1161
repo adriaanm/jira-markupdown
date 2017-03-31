@@ -1,0 +1,10 @@
+The assertion fails because the jar has the META-INF directory inside twice for some reason:
+{code}
+jon:1380 paulp$$ jar tf gnujaxp.jar |head -5
+META-INF/
+META-INF/MANIFEST.MF
+META-INF/               <--- howdy do!
+META-INF/services/
+META-INF/services/org.xml.sax.driver
+{code}
+There's no reason I can see that this should be a fatal error.  I'm attaching a patch that silently ignores the situation, like I think javac does.

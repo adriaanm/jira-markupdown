@@ -1,0 +1,43 @@
+When using doubles in tuples and lists, somewhere the values become incorrect.
+
+The example below, with output shows this:
+{code}
+package test
+
+object Main {
+  def main(args: Array[String]): Unit = {
+    val pnlList = List((0.2D,0.2D),(0.1D,0.3D))
+    val doubleTest = new DoubleTest(pnlList)
+    val result = doubleTest.sum()
+    println("Result " + "(" + result._1 + "," + result._2 + ")")
+  }
+}
+
+package test
+
+class DoubleTest(numbers : List[(Double, Double)]) {
+
+  def sum() : (Double, Double) = {
+    var total = 0.0
+    var total2 = 0.0
+    numbers.foreach {
+      theNumber => 
+      total += theNumber._1
+      total2 += theNumber._2
+    }
+    (total, total2)
+  }
+}
+
+{code}
+Gives the output:
+Result (0.30000000000000004,0.5)
+
+Clearly there is an issue with how the compiler interprets double precision numbers in tuples and lists.
+
+Environment details:
+{code}
+Scala 2.8.0.r20121-b20091214020309 
+Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_17
+Mac OSX 10.6.2
+{code}

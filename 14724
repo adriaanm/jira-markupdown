@@ -1,0 +1,23 @@
+Given following example:
+{code}
+object T {
+  trait Show[-A] {
+    def show(a: A): List[Char]
+  }
+
+  sealed trait MA[M[_], A] {
+    val v: A
+  }
+
+  implicit def ShowMA[A](a: Show[A]): MA[Show, A] = error("TODO")
+
+  var a: Show[Int] = null
+
+  def main(args: Array[String]) {
+    val x = ShowMA(a).v
+    val y: Nothing = x
+  }
+}
+{code}
+Why it won't compile?
+According to local type inference we see that Nothing for A is optimal, because Show[Int] <: Show[Nothing].

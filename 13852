@@ -1,0 +1,48 @@
+Given 
+{code}
+object Test extends Application {
+ trait A
+ trait B extends A
+
+  trait C {
+    type U
+    trait D { type T >: B <: A }
+    val x: D
+    val y: x.type#T = new B { }
+  }
+ 
+  trait Middle extends C {
+    val x: (D with U)
+  }
+
+  class D extends Middle {
+    trait E
+    trait F { type T = E }
+    type U = F
+    def frob(arg : E) : E = arg
+    frob(y)
+    val x: (D with U) = x
+  }
+
+  new D
+}
+{code}
+with trunk you get the rather confusing error message
+{code}
+error: error overriding value x in trait C of type Middle.this.D;
+ value x needs to be an immutable value
+    val x: (D with U)
+        ^
+one error found
+{code}
+This error message was written, I think, when the only way that this could occur was if you were trying to refine a val to a def.  However, what is really going on is that x in C is stable while x in Middle is not stable, because its type is volatile, so the refinement is disallowed.  
+
+The error message should be updated to say something like
+{code}
+{code}
+error: error overriding value x in trait C of type Middle.this.D;
+ value x needs to be stable.  Note that x is not stable because its type, (D with U), is volatile.
+    val x: (D with U)
+        ^
+one error found
+{code}

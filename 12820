@@ -1,0 +1,94 @@
+Going through the following steps often, but not always, causes the error:
+
+1 - Create a new scala project
+
+2 - Create a package (I named it pkg) and then a new Scala class file (I named it URIs.scala)
+
+3 - Post the following code into it:
+
+{code}
+package pkg
+
+import java.net.URI
+
+class Parameter(val name:String, val value:String)
+
+object URIBuilder {
+   class AbsoluteHierarchicalURIBuilder {
+      var scheme = "http"
+      var queryParams: List[Parameter] = Nil
+      /* null defaults are expected by java.net.URI constructor */
+      var authority:String = null
+      var path:String = null
+      
+      private def queryString: String = 
+         queryParams.map(p => p.name + "=" + p.value).mkString("","&","")
+      /** Control abstraction for methods returning this **/
+      private def s(f: => Unit): AbsoluteHierarchicalURIBuilder = {f; this}
+         
+      def withScheme(it:String) = s{scheme = it}
+      def withAuthority(it:String) = s{authority = it}
+      def withPath(it:String) = s{path = it}
+      def withQuery(params: List[Parameter]) = s{this.queryParams = queryParams ::: params}
+      def build: URI = new URI(scheme, authority, path, queryString, null)
+   }
+   
+   def make = new AbsoluteHierarchicalURIBuilder();
+   
+}
+{code}
+
+4 - Create a new Scala object file (I named it CausingProblems) and paste the following code: 
+
+{code}
+package pkg
+
+object CausingProblems {
+   val uri = URIBuilder.make withAuthority "some" withPath "PATH" withQuery Nil build;
+}
+
+{code}
+
+5 - Create a new line below "_object CausingProblems {_" and type in
+{code}
+case class Foo
+{code}
+
+Usually Eclipse hangs in step 5 and the error log shows this message:
+{code}
+eclipse.buildId=I20061102-1715
+java.version=1.6.0_02
+java.vendor=Sun Microsystems Inc.
+BootLoader constants: OS=win32, ARCH=x86, WS=win32, NL=pt_BR
+Command-line arguments:  -os win32 -ws win32 -arch x86 -data D:\dev\eclipseScala\workspace
+This is a continuation of log file D:\dev\eclipseScala\workspace\.metadata\.bak_6.log
+Created Time: 2007-09-26 03:41:21.562
+
+Error
+Wed Sep 26 03:41:29 BRT 2007
+probable infinite typer cycle on c4939r::CausingProblems
+
+java.lang.Error
+at lampion.eclipse.Plugin$$class.logError(Plugin.scala:230)
+at scala.tools.eclipse.Driver.logError(Driver.scala:7)
+at lampion.core.Plugin$$ProjectImpl$$class.logError(Plugin.scala:15)
+at scala.tools.eclipse.Driver$$Project.logError(Driver.scala:10)
+at lampion.compiler.Typers0$$$$anonfun$$9.apply(Typers0.scala:246)
+at lampion.compiler.Typers0$$$$anonfun$$9.apply(Typers0.scala:244)
+at scala.collection.jcl.MutableIterator$$class.retain(MutableIterator.scala:60)
+at scala.collection.jcl.MutableIterator$$Wrapper.retain(MutableIterator.scala:14)
+at scala.collection.jcl.MutableIterable$$class.retain(MutableIterable.scala:45)
+at scala.collection.jcl.Set$$class.retain(Set.scala:27)
+at scala.collection.jcl.LinkedHashSet.retain(LinkedHashSet.scala:18)
+at lampion.compiler.Typers0$$class.flushTyper(Typers0.scala:244)
+at lampion.compiler.Typers0$$class.afterParsing(Typers0.scala:333)
+at scala.tools.eclipse.Driver$$Project.afterParsing(Driver.scala:10)
+at lampion.presentation.Presentations$$ProjectImpl$$class.protected$$afterParsing(Presentations.scala:335)
+at scala.tools.eclipse.Driver$$Project.protected$$afterParsing(Driver.scala:10)
+at lampion.presentation.Presentations$$ProjectImpl$$Job.run(Presentations.scala:335)
+
+
+{code}
+
+
+I'm using Eclipse 3.3.0 with the "Lampion Scala Plugin 2.6.1.B3".

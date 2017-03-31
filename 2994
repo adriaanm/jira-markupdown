@@ -1,0 +1,36 @@
+I can reproduce the problem with the following minimized example,
+
+Enum.java
+{code}
+public enum Enum {
+  VALUE;
+}
+{code}
+
+Ann.java
+{code}
+public @interface Ann {
+  Enum value();
+}
+{code}
+
+Use.scala
+{code}
+class Use {
+  @Ann(Enum.VALUE)
+  def foo {}
+}
+{code}
+
+And in this case an error is reported by command line scalac,
+
+{code}
+src/bug2764/Use.scala:4: error: annotation argument needs to be a constant; found: Enum.VALUE
+  @Ann(Enum.VALUE)
+            ^
+one error found
+{code}
+
+So it looks like the Eclipse vs. command-line build issue might be a red-herring.
+
+In both cases scalac is seeing a UniqueConstantType in a context where it's expecting to see a Literal (in Typer.typedAnnotation).

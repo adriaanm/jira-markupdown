@@ -1,0 +1,72 @@
+Another report (or the same one) from the mailing list:
+
+
+{code}
+import scala.collection.generic.{GenericCompanion, GenericTraversableTemplate, SeqFactory}
+import scala.collection.mutable.{ArrayBuffer, Builder}
+ 
+class MyCollectionBuilder[A] extends Builder[A, MyCollection[A]] {
+  val data = ArrayBuffer[A]()
+ 
+  def +=(elem: A) = {
+    data += elem
+    this
+  }
+  def clear() {
+    data.clear()
+  }
+ 
+  def result() = ::(data.head, ::(data.tail.head, ::(data.tail.tail.head, MyCollectionNil))) //TODO recurse! only does 3 at the moment
+}
+ 
+abstract class MyCollection[+A] extends Seq[A]
+  with GenericTraversableTemplate[A, MyCollection] {
+ 
+  override def companion: GenericCompanion[MyCollection] = MyCollection
+ 
+  def apply(idx: Int) = if(idx == 1) head else tail(idx - 1)
+ 
+  def length = if(isEmpty) 0 else tail.length + 1
+ 
+  def iterator = new Iterator[A] {
+    var first = true
+    var current = this
+ 
+    def hasNext = {
+      current.isEmpty
+    }
+ 
+    def next() = {
+        val next = current.tail
+        current.head
+        current = next
+    }
+  }
+}
+ 
+object MyCollection extends SeqFactory[MyCollection] {
+  def newBuilder[A] = new MyCollectionBuilder[A]()
+}
+ 
+ 
+final case class ::[B](val hd: B, val tl: MyCollection[B]) extends MyCollection[B] {
+  override def head : B = hd
+  override def tail : MyCollection[B] = tl
+  override def isEmpty: Boolean = false
+}
+ 
+case object MyCollectionNil extends MyCollection[Nothing] {
+ 
+}
+ 
+ 
+ 
+object Main extends App {
+  val c = ::("hello", ::("world", ::("again", MyCollectionNil)))
+ 
+  c match {
+    case head :: tail =>
+      println(s"head[$head] tail[$tail]")
+  }
+}
+{code}

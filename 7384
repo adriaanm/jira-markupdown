@@ -1,0 +1,13 @@
+In my experience using wildcards a lot more than appropriate, the error message seems normal. It just says that you cannot pass a BoundedWildcardType as a type parameter, as it often happens (in my experience).
+
+Reading the source, this does not make sense since recursion should end here:
+https://github.com/scala/scala/blob/d8ba5d091e5641553b438ef9930a6023a2709dcd/src/compiler/scala/reflect/internal/Types.scala#L5347
+However, it needs to pass a couple of layers before. For the error to happen, in fact, it is required a double mismatch: {{Success}} vs {{Result}} and type variable vs bounded wildcard. Either making {{Success}} covariant or exchanging {{Success}} with {{Result}} either at the {{Apply.apply}} signature or at its caller hides the bug.
+{code}
+<console>:13: error: no type parameters for method apply: (f: Int => Result[A])Apply[A] in object Apply exist so that it can be applied to arguments (Int => Success[_ >: Some[Int] with None.type <: Option[Int]])
+ --- because ---
+argument expression's type is not compatible with formal parameter type;
+ found   : Int => Success[_ >: Some[Int] with None.type <: Option[Int]]
+ required: Int => Result[?A]
+         def goo : Apply[Option[Int]] = Apply { i =>
+{code}

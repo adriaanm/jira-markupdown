@@ -1,0 +1,13 @@
+I hadn't realized how easy it is to hit this:
+{code}
+scala> case class Foo(clazz: Class[_])
+<console>:7: warning: inferred existential type Option[Class[_$1]] forSome { type _$1 }, which cannot be expressed by wildcards,  should be enabled
+by making the implicit value scala.language.existentials visible.
+This can be achieved by adding the import clause 'import scala.language.existentials'
+or by setting the compiler option -language:existentials.
+See the Scala docs for value scala.language.existentials for a discussion
+why the feature should be explicitly enabled.
+       case class Foo(clazz: Class[_])
+                  ^
+defined class Foo
+{code}

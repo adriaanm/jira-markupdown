@@ -1,0 +1,22 @@
+{code}
+scala> class X[T](val i: T) extends AnyVal
+defined class X
+
+scala> object a { def y[T](x: X[T]) = x.i }
+defined module a
+
+scala> val cm = reflect.runtime.currentMirror
+cm: reflect.runtime.universe.Mirror = JavaMirror with scala.tools.nsc.interpreter.IMain$TranslatingClassLoader@4bcc946b of type class scala.tools.nsc.interpreter.IMain$TranslatingClassLoader with classpath [(memory)] and parent being scala.tools.nsc.util.ScalaClassLoader$URLClassLoader@642423ad of type class scala.tools.nsc.util.ScalaClassLoader$URLClassLoader with classpath [file:/Library/Java/JavaVirtualMachines/1.6.0_27-b07-395.jdk/Contents/Classes/classes.jar,file:/Library/Java/JavaVirtualMachines/1.6.0_27-b07-395.jdk/Contents/Classes/ui.jar,file:/Library/Java/JavaVirtualMachines/1.6.0_27-b07-395.jdk/Contents/Classes/jsse.jar,file:/Library/Java/JavaVirtualMachines/1.6.0_27-b07-395.jdk/Contents/Classes/jce.jar,file:/Library/Java/JavaVirtualMachines/1.6.0_27-b07-395.jdk/Contents/Class...
+scala> val moduleA = cm.reflect(a)
+moduleA: reflect.runtime.universe.InstanceMirror = instance mirror for a$@6ff64801
+
+scala> val methodY = moduleA.symbol.typeSignature.declarations.last.asMethod
+methodY: reflect.runtime.universe.MethodSymbol = method y
+
+scala> moduleA.reflectMethod(methodY)
+res10: reflect.runtime.universe.MethodMirror = method mirror for a.y[T](x: X[T]): T (bound to a$@6ff64801)
+
+scala> res10(new X(0))
+java.lang.NoClassDefFoundError: no Java class corresponding to ErasedValueType(X[T]) found
+	at scala.reflect.runtime.JavaMirrors$JavaMirror.typeToJavaClass(JavaMirrors.scala:1160)
+{code}

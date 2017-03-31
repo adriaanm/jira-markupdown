@@ -1,0 +1,13 @@
+When passing null into the unapply method of a case class, a null pointer exception occurs:
+{code}
+case class C(x: Int)
+C.unapply(null) // NullPointerException
+{code}
+
+The resulting problem with pattern matching:
+{code}
+val v: Some[Int] = null
+v match { case Some(1) => } // NullPointerException
+{code}
+
+Related: SI-2241

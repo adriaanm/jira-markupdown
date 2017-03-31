@@ -1,0 +1,11 @@
+Replying to [comment:9 moors]:
+> Iulian, could you refine [http://github.com/adriaanm/scala/commit/5b330ca8b01cdb6e33f272a299cceeb892d2517d my patch]  so that test/files/run/lazy-locals.scala passes (intra-lazy val forward references are allowed), while the case in this ticket is ruled out (forward reference outside of rhs of "co-defined lazy val" is not ok)
+> 
+> I'm assuming that's the semantics we want, but am not sure...
+
+I think this should be allowed. If I understand correctly, the problem was that the symbol in the println was referring to the local value instead of the lazy getter. Since the lazy val is initialized on first access, this code would work fine.
+
+> 
+> feel free to re-assign with a suggestion on how to proceed concretely
+
+Unless I'm missing something, just update the symbol to the lazy accessor, as you do now, and don't issue an error.

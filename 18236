@@ -1,0 +1,21 @@
+How is Bippy, an A, ever going to be a List[A] ?
+{code}
+class A
+final case class B(xs: List[A]) extends A
+object Test {
+  val Bippy = new A
+  def f(x: A) = x match { case B(Bippy)        => true ; case _ => false }
+  def g(x: A) = x match { case B(Bippy :: Nil) => true ; case _ => false }
+
+  def main(args: Array[String]): Unit = {
+    println(f(B(Bippy :: Nil)))
+    println(g(B(Bippy :: Nil)))
+  }
+}
+{code}
+{noformat}
+% scalac a.scala
+% scala Test
+false
+true
+{noformat}

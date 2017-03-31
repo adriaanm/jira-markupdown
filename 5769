@@ -1,0 +1,12 @@
+Of unknown relevance, but note this comment I placed at some distantly remembered time in computePluginPhases.
+{code}
+  lazy val plugins: List[Plugin] = loadPlugins
+  // ...
+  protected def computePluginPhases(): Unit = {
+    // For reasons not yet apparent to me, plugins started appearing
+    // as null when I added phaseTimings to global.
+    if (plugins != null)
+      phasesSet ++= (plugins flatMap (_.components))
+  }
+{code}
+Since plugins is a lazy val it probably shouldn't be appearing as null.  Also note that if I override a different randomly chosen method in similar fashion, it doesn't crash.  So this manifestation of the issue may depend on what exactly this method is doing.

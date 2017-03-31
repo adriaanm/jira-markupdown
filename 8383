@@ -1,0 +1,15 @@
+We discussed it at the last Scala meeting and came to the conclusion that we will leave it as is. True, merging the name into the first parameter list supports some valid use cases. But its generalization to multiple parameter lists is ugly.
+If you have a call like this:
+{code}
+    x.foo(y)(z)
+{code}
+it seems more regular to map to
+{code}
+    x.applyDynamic("foo")(y)(z)
+{code}
+than to
+{code}
+    x.applyDynamic("foo", y)(z)
+{code}
+About overloading conflicts being detected early, it's not so simple, and we generally don't do that for any overloaded method. E.g. {{applyDynamic}} might have 
+variants with different return types and you could do a return type disambiguation at the call site, so the overloading might be valid after all. It's very hard to find and spec the right rules what a declaration site overloading detector would be. So we don't do it, and I believe Java does not do it either.

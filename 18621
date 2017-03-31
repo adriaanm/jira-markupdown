@@ -1,0 +1,33 @@
+Inside Emacs's ansi-term, I can't run scalac, and the error I get is not so helpful:
+{code}
+$ scalac Hi.scala
+Error: Could not find or load main class (term:0.96)
+{code}
+WTF? Inside the scalac script:
+{code}
+[[ -n "$EMACS" ]] && EMACS_OPT="-Denv.emacs=$EMACS"
+{code}
+Note that $EMACS is not quoted. Let's look at the value inside ansi-term:
+
+{code}
+$ echo $EMACS
+24.3.1 (term:0.96)
+{code}
+Hence, {{EMACS_OPT}} will expand to {{-Denv.emacs=24.3.1 (term:0.96)}}, that is, two words.
+
+Let's confirm expansion is indeed going wrong because of that.
+{code}
+$ bash -x $(which scalac) Hi.scala
+[...]
++ java -Xmx256M -Xms32M -Xbootclasspath/a:/Users/pgiarrusso/opt/scala-2.10.2/lib/akka-actors.jar:/Users/pgiarrusso/opt/scala-2.10.2/lib/diffutils.jar:/Users/pgiarrusso/opt/scala-2.10.2/lib/jline.jar:/
+Users/pgiarrusso/opt/scala-2.10.2/lib/scala-actors-migration.jar:/Users/pgiarrusso/opt/scala-2.10.2/lib/scala-actors.jar:/Users/pgiarrusso/opt/scala-2.10.2/lib/scala-compiler.jar:/Users/pgiarrusso/opt
+/scala-2.10.2/lib/scala-library.jar:/Users/pgiarrusso/opt/scala-2.10.2/lib/scala-partest.jar:/Users/pgiarrusso/opt/scala-2.10.2/lib/scala-reflect.jar:/Users/pgiarrusso/opt/scala-2.10.2/lib/scala-swing
+.jar:/Users/pgiarrusso/opt/scala-2.10.2/lib/scalap.jar:/Users/pgiarrusso/opt/scala-2.10.2/lib/typesafe-config.jar -classpath '""' -Dscala.home=/Users/pgiarrusso/opt/scala-2.10.2 -Dscala.usejavacp=true
+ -Denv.emacs=24.3.1 '(term:0.96)' scala.tools.nsc.Main Hi.scala                                                                                                                                        
+Error: Could not find or load main class (term:0.96)
++ scala_exit_status=1
+{code}
+Notice {{-Denv.emacs=24.3.1 '(term:0.96)' scala.tools.nsc.Main}}. That's the bad guy.
+
+I could probably fix this problem, but I couldn't navigate to the exact location in the generator to fix it (or to the template, more likely) in the 5 minutes I have right now - I suspended on the call to `mk-bin` within `build.xml`. Otherwise, this might even be fixable within Github's web interface (of course one still needs to test it locally).
+Also, it's probably a better time investment to review those scripts for space-safety more in general, since the impact of this particular bug is extremely limited.

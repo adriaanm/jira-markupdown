@@ -1,0 +1,28 @@
+Sorry I missed this the first time around... exposing clone() was the hard part, this would have been the easy part.
+{code}
+// The JLS says an Array implements java.io.Serializable and java.lang.Cloneable.
+// As seen here.
+class J {
+  public static void f(Cloneable x) { }
+  public static void main(String[] args) {
+    f(args);
+  }
+}
+// % javac J.java
+// %
+{code}
+{code}
+// We are Serializable but not Cloneable (although clone() is there.)
+object s {
+  def f(x: Cloneable) = ()
+  def main(args: Array[String]): Unit = {
+    f(args)
+  }
+}
+// % scalac s.scala 
+// s.scala:4: error: type mismatch;
+//  found   : Array[String]
+//  required: java.lang.Cloneable
+//     f(args)
+//       ^
+{code}

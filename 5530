@@ -1,0 +1,31 @@
+(In r24432) A patch for views.  Most relevant change:
+
+  Almost all view classes now list parents like
+    trait Appended[B >: A] extends super.Appended[B] with Transformed[B]
+  instead of the former
+    trait Appended[B >: A] extends Transformed[B] with super.Appended[B]
+
+because as it was, the implementation of foreach in TraversableViewLike#Transformed
+was repeatedly trumping overrides found in e.g. IterableLike.  This change
+was not without its own consequences, and much of the rest of the patch
+is dealing with that.  A more general issue is clearly revealed here: there
+is no straightforward way to deal with trait composition and overrides when
+some methods should prefer B over A and some the reverse.  (It's more like
+A through Z in this case.)
+
+That closes SI-4279, with some views being five orders of magnitude slower
+than necessary.  There is a test that confirms they'll stay performance
+neighbors.
+
+In the view classes (Zipped, Mapped, etc.) I attended to them with comb and
+brush until they were reasonably consistent.  I only use "override" where
+necessary and throw in some "final" in the interests of trying to anchor the
+composition outcome.  I also switched the newSliced, newZipped, etc. methods
+to use early init syntax since a number have abstract vals and I found at least
+one bug originating with uninitialized access.
+
+There was a piece of a parallel collections scalacheck test failing, which
+I disabled out of expedience - am emailing prokopec.
+
+There is plenty of work left to do but paulp must get back to other 2.9 issues.
+This is the Zurich->SF airplane patch.  No review.

@@ -1,0 +1,17 @@
+Looks like the compiler daemon used by fsc and script runner, binds to all interfaces in the system. This is a potential security hole. It should only bind to *localhost*.
+
+Similarly, when the client connects to daemon, it should connect via *localhost*. This is not for security but for convenience. Sometimes, when the ethernet interface gets an IP via DHCP, it is not possible to assign a hostname mapping to this IP address. In these cases, compilation fails with the following message:
+
+{code}
+Exception in thread "main" java.net.UnknownHostException: blah.blah.com: blah.blah.com                                 
+        at java.net.InetAddress.getLocalHost(InetAddress.java:1425)                                                                        
+        at scala.tools.nsc.CompileSocket.getsock$$1(CompileSocket.scala:208)                                                                
+        at scala.tools.nsc.CompileSocket.getOrCreateSocket(CompileSocket.scala:227)                                                        
+        at scala.tools.nsc.CompileSocket.getOrCreateSocket(CompileSocket.scala:232)                                                        
+        at scala.tools.nsc.ScriptRunner$$.compileWithDaemon(ScriptRunner.scala:237)                                                         
+        at scala.tools.nsc.ScriptRunner$$.compile$$1(ScriptRunner.scala:311)                                                                 
+        at scala.tools.nsc.ScriptRunner$$.withCompiledScript(ScriptRunner.scala:343)                                                        
+        at scala.tools.nsc.ScriptRunner$$.runScript(ScriptRunner.scala:398)                                                                 
+        at scala.tools.nsc.MainGenericRunner$$.main(MainGenericRunner.scala:176)                                                            
+        at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
+{code}

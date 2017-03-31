@@ -1,0 +1,21 @@
+Currently we still get the "macro has not been expanded" error, which is too cryptic and should be fixed. A correct error message should be "type parameter not specified". Given Eugene's comment, the plan was to change this error, but we're nearing release and that did not happen yet. So I'm reopening this bug.
+
+Below an updated REPL session (with a number of small changes due to updates to the macro API).
+ 
+{code}
+scala> import language.experimental.macros
+import language.experimental.macros
+
+cala> def impl[A](c: reflect.macros.Context) = c.universe.reify(())
+impl: [A](c: scala.reflect.macros.Context)c.universe.Expr[Unit]
+
+scala> def decl[A] = macro impl[A]
+decl: [A]=> Unit
+
+scala> decl[Any]
+
+scala> decl
+<console>:11: error: macro has not been expanded
+              decl
+              ^
+{code}

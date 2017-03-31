@@ -1,0 +1,14 @@
+This seems incredibly wasteful and slow to me. Here's the top part of a stack trace from hprof:
+
+{code}
+java.lang.reflect.Array.set(Array.java:Unknown line)
+	scala.collection.IndexedSeqLike$$class.copyToArray(IndexedSeqLike.scala:169)
+	scala.collection.mutable.ArrayBuffer.copyToArray(ArrayBuffer.scala:28)
+	scala.collection.mutable.ArrayBuffer.$$plus$$plus$$eq(ArrayBuffer.scala:75)
+	scala.collection.mutable.ArrayBuffer.$$plus$$plus$$eq(ArrayBuffer.scala:28)
+	scala.collection.TraversableLike$$class.$$plus$$plus(TraversableLike.scala:132)
+	scala.collection.mutable.ArrayBuffer.$$plus$$plus(ArrayBuffer.scala:28)
+
+{code}
+
+My suggestion would be to override copyToArray in ArrayBuffer . I can try to do the patch if people want. I'd like a thumbs up or thumbs down on whether people agree this is worthwhile.

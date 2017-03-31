@@ -1,0 +1,13 @@
+(extempore in [r25410|https://codereview.scala-lang.org/fisheye/changelog/scala-svn?cs=25410]) Added two new compiler options:
+
+  -Ywarn-adapted-args   // also included in -Xlint
+  -Yno-adapted-args
+
+The former warns when a () is inserted or an argument list is implicitly
+tupled. The latter errors under the same conditions. Using these options
+I found several bugs in the distribution which would otherwise be nearly
+impossible to spot. These bugs were innocuous (I think) but similar bugs
+could easily be (and have been) otherwise.
+
+Certain particularly threatening scenarios are at minimum warned about
+regardless of options given.  Closes SI-4851, no review.

@@ -1,0 +1,36 @@
+=== What steps will reproduce the problem (please be specific and use wikiformatting)? ===
+A3.scala:
+{code}
+abstract class One {
+  def spec(a: String) = new TestAnom(a) {
+    def foo = 12
+    class E extends D
+    def bar = a
+  }
+}
+
+abstract class TestAnom(v: String) {
+  def foo: Int
+  def bar: String
+}
+
+class D
+{code}
+
+Build manager:
+
+{code}
+> scala scala.tools.nsc.interactive.BuildManagerTest -d /tmp/ src/A3.scala
+compiling Set(src/A3.scala)
+Changes: Map()
+builder > src/A3.scala
+compiling Set(src/A3.scala)
+scala.tools.nsc.symtab.Types$$MissingTypeControl
+
+{code} 
+
+This is the bug that has been hunting us for some time now and that makes bm in eclipse unusable. I have a temporary fix for that ready to commit (in a second), but the real solution and diagnosis will have to come later.
+
+Note: this is a reduced example of what is happening in for example SpecializeTypes.scala (`def specializeCalls`).
+
+Scala: r23787

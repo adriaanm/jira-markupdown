@@ -1,0 +1,34 @@
+{code}
+object HK {
+  class B2[A, B[_]]
+  class A2[X] extends B2[X, Some]
+  def t1(x: A2[Int]) = x match { case _: B2[_, _] => true }
+  def t2(x: A2[Int]) = x match { case _: B2[Int, typeVar] => true }
+}
+
+object Ground {
+  class B2[A, B]
+  class A2[X] extends B2[X, Some[Int]]
+  def t3(x: A2[Int]) = x match { case _: B2[_, _] => true }
+  def t4(x: A2[Int]) = x match { case _: B2[Int, typeVar] => true }
+}
+{code}
+
+{noformat}
+ scalac-hash v2.11.0 sandbox/test.scala
+sandbox/test.scala:4: error: pattern type is incompatible with expected type;
+ found   : HK.B2[_(in method t1),scala._]
+ required: HK.A2[Int]
+  def t1(x: A2[Int]) = x match { case _: B2[_, _] => true }
+                                         ^
+sandbox/test.scala:5: warning: non-variable type argument Int in type pattern HK.B2[Int,typeVar] is unchecked since it is eliminated by erasure
+  def t2(x: A2[Int]) = x match { case _: B2[Int, typeVar] => true }
+                                         ^
+sandbox/test.scala:5: error: pattern type is incompatible with expected type;
+ found   : HK.B2[Int,typeVar]
+ required: HK.A2[Int]
+  def t2(x: A2[Int]) = x match { case _: B2[Int, typeVar] => true }
+                                         ^
+one warning found
+two errors found
+{noformat}

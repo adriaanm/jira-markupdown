@@ -1,0 +1,19 @@
+Here's a variation where everything arrives on a silver platter.
+{code}
+class Bippy { trait Foo[A] }
+
+object p {
+  final class Implicits[C <: Bippy](val c: C) {
+    def f: Int = 1
+    def f[A: c.Foo](x: A): Int = 2
+  }
+  implicit def mkImplicits(c: Bippy): Implicits[c.type] = new Implicits[c.type](c)
+
+  val c = new Bippy
+  c.f[Int](5)(null: c.Foo[Int])
+  // a.scala:19: error: method f of type ([A](x: A)(implicit evidence$1: _2.c.Foo[A])Int) forSome { val _2: p.Implicits[p.c.type] } does not take type parameters.
+  //   c.f[Int](5)(null: c.Foo[Int])
+  //      ^
+  // one error found
+}
+{code}

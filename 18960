@@ -1,0 +1,15 @@
+Due to change in the shape of classOf tree after typechecking one can't match it: 
+{code}
+scala> showRaw(q"classOf[Int]")
+TypeApply(Ident(TermName("classOf")), List(Ident(TypeName("Int"))))
+
+scala> showRaw(typecheck(q"classOf[Int]").sr)
+Literal(Constant(Int))
+{code}
+We also can't really implement syntactic abstraction over this without referential transparency as untyped classOf tree might or might not become a type literal depending on definitions in scope:
+{code}
+scala> showRaw(typecheck(q"def classOf[T] = (); classOf[Int]"))
+Block(List(
+  DefDef(Modifiers(), TermName("classOf"), List(TypeDef(Modifiers(PARAM), TypeName("T"), List(), TypeTree().setOriginal(TypeBoundsTree(TypeTree(), TypeTree())))), List(), TypeTree(), Literal(Constant(())))), 
+  TypeApply(Ident(TermName("classOf")), List(TypeTree().setOriginal(Select(Ident(scala), scala.Int)))))
+{code}

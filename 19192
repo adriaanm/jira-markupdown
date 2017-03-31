@@ -1,0 +1,14 @@
+patch doesn't work properly on views when it turns into an append and there isn't actually anything to append:
+
+{code}
+scala> Seq(0,1).view.patch(1,Seq(),1).foreach(println)
+0
+java.util.NoSuchElementException: next on empty iterator
+...
+
+scala> Stream(0,1).view.patch(1,Stream(),1).foreach(println)
+0
+java.util.NoSuchElementException: next on empty iterator
+ ...
+{code}
+

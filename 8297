@@ -1,0 +1,19 @@
+(That last comment would probably be obvious to compiler hackers.)
+
+My current idea about what's going on here is that there's a problem with owners. These debug messages seem to point the way:
+
+{code}
+[log lambdalift(->constructors)] proxy value x (flags: <triedcooking>) from method arg$mIcI$sp
+in class Bar (flags: <method> <specialized> <triedcooking>) has logical enclosure method arg$mc
+I$sp in class Bar (flags: <method> <specialized> <triedcooking>)
+[log lambdalift(->constructors)] searching for value x(method arg$mcI$sp) in method arg$mIcI$sp
+ method arg$mIcI$sp
+[log lambdalift(->constructors)] searching for value x(method arg$mcI$sp) in class Bar class Ba
+r
+[log lambdalift(->constructors)] searching for value x(method arg$mcI$sp) in package <empty> pa
+ckage <empty>
+[log lambdalift(->constructors)] searching for value x(method arg$mcI$sp) in package <root> pac
+kage <root>
+{code}
+
+It looks like the compiler is searching for arg$mcI$sp's "x" inside the wrong method (arg$mIcI$sp).

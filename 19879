@@ -1,0 +1,6 @@
+{code}
+class C[E <: Exception] {
+  @throws[E] def f = 1 // incorrect bytecode in GenASM, crash in GenBCode
+  @throws(classOf[E]) def g = 1 // crash in Typers after reporting a (valid) type error
+}
+{code}

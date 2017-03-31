@@ -1,0 +1,105 @@
+The following program crashes the compiler:
+{code}
+object Bug{
+  abstract class A
+  case class B(x: Int) extends A
+  
+  new B(5) match {
+    case B() => 
+  }
+}
+{code}
+
+The output is:
+{code}
+scala.MatchError: (Set(),())
+        at scala.tools.nsc.matching.ParallelMatching$$MixLiterals.<init>(ParallelMatching.scala:373)
+        at scala.tools.nsc.matching.ParallelMatching$$class.MixtureRule(ParallelMatching.scala:89)
+        at scala.tools.nsc.transform.ExplicitOuter.MixtureRule(ExplicitOuter.scala:19)
+        at scala.tools.nsc.matching.ParallelMatching$$Rep.applyRule(ParallelMatching.scala:1432)
+        at scala.tools.nsc.matching.ParallelMatching$$class.repToTree(ParallelMatching.scala:926)
+        at scala.tools.nsc.transform.ExplicitOuter.repToTree(ExplicitOuter.scala:19)
+        at scala.tools.nsc.matching.ParallelMatching$$MixTypes.tree(ParallelMatching.scala:889)
+        at scala.tools.nsc.matching.ParallelMatching$$class.repToTree(ParallelMatching.scala:926)
+        at scala.tools.nsc.transform.ExplicitOuter.repToTree(ExplicitOuter.scala:19)
+        at scala.tools.nsc.matching.TransMatcher$$class.handlePattern(TransMatcher.scala:279)
+        at scala.tools.nsc.transform.ExplicitOuter.handlePattern(ExplicitOuter.scala:19)
+        at scala.tools.nsc.transform.ExplicitOuter$$ExplicitOuterTransformer.transform(ExplicitOuter.scala:473)
+        at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$34$$$$anonfun$$35.apply(Trees.scala:1375)
+        at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$34$$$$anonfun$$35.apply(Trees.scala:1375)
+        at scala.tools.nsc.ast.Trees$$Transformer.atOwner(Trees.scala:1382)
+        at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:33)
+        at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:27)
+        at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$34.apply(Trees.scala:1375)
+        at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$34.apply(Trees.scala:1374)
+        at scala.List$$.loop$$0(List.scala:244)
+        at scala.List$$.mapConserve(List.scala:261)
+        at scala.List$$.loop$$0(List.scala:248)
+        at scala.List$$.mapConserve(List.scala:261)
+        at scala.tools.nsc.ast.Trees$$Transformer.transformStats(Trees.scala:1374)
+        at scala.tools.nsc.ast.Trees$$Transformer.transform(Trees.scala:1285)
+        at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.scala$$tools$$nsc$$transform$$TypingTransformers$$TypingTransformer$$$$super$$transform(TypingTransformers.scala:44)
+        at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer$$$$anonfun$$0.apply(TypingTransformers.scala:44)
+        at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer$$$$anonfun$$0.apply(TypingTransformers.scala:44)
+        at scala.tools.nsc.ast.Trees$$Transformer.atOwner(Trees.scala:1382)
+        at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:33)
+        at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:27)
+        at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.transform(TypingTransformers.scala:44)
+        at scala.tools.nsc.transform.ExplicitOuter$$OuterPathTransformer.transform(ExplicitOuter.scala:207)
+        at scala.tools.nsc.transform.ExplicitOuter$$ExplicitOuterTransformer.transform(ExplicitOuter.scala:345)
+        at scala.tools.nsc.ast.Trees$$Transformer.transformTemplate(Trees.scala:1360)
+        at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$22.apply(Trees.scala:1257)
+        at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$22.apply(Trees.scala:1257)
+        at scala.tools.nsc.ast.Trees$$Transformer.atOwner(Trees.scala:1382)
+        at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:33)
+        at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:27)
+        at scala.tools.nsc.ast.Trees$$Transformer.transform(Trees.scala:1256)
+        at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.transform(TypingTransformers.scala:46)
+        at scala.tools.nsc.transform.ExplicitOuter$$OuterPathTransformer.transform(ExplicitOuter.scala:207)
+        at scala.tools.nsc.transform.ExplicitOuter$$ExplicitOuterTransformer.transform(ExplicitOuter.scala:497)
+        at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$34.apply(Trees.scala:1376)
+        at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$34.apply(Trees.scala:1374)
+        at scala.List$$.loop$$0(List.scala:244)
+        at scala.List$$.mapConserve(List.scala:261)
+        at scala.tools.nsc.ast.Trees$$Transformer.transformStats(Trees.scala:1374)
+        at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$21.apply(Trees.scala:1253)
+        at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$21.apply(Trees.scala:1253)
+        at scala.tools.nsc.ast.Trees$$Transformer.atOwner(Trees.scala:1382)
+        at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:33)
+        at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:27)
+        at scala.tools.nsc.ast.Trees$$Transformer.transform(Trees.scala:1252)
+        at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.transform(TypingTransformers.scala:46)
+        at scala.tools.nsc.transform.ExplicitOuter$$OuterPathTransformer.transform(ExplicitOuter.scala:207)
+        at scala.tools.nsc.transform.ExplicitOuter$$ExplicitOuterTransformer.transform(ExplicitOuter.scala:497)
+        at scala.tools.nsc.ast.Trees$$Transformer.transformUnit(Trees.scala:1377)
+        at scala.tools.nsc.transform.ExplicitOuter$$ExplicitOuterTransformer.scala$$tools$$nsc$$transform$$ExplicitOuter$$ExplicitOuterTransformer$$$$super$$transformUnit(ExplicitOuter.scala:507)
+        at scala.tools.nsc.transform.ExplicitOuter$$ExplicitOuterTransformer$$$$anonfun$$9.apply(ExplicitOuter.scala:507)
+        at scala.tools.nsc.transform.ExplicitOuter$$ExplicitOuterTransformer$$$$anonfun$$9.apply(ExplicitOuter.scala:507)
+        at scala.tools.nsc.symtab.SymbolTable.atPhase(SymbolTable.scala:87)
+        at scala.tools.nsc.transform.ExplicitOuter$$ExplicitOuterTransformer.transformUnit(ExplicitOuter.scala:507)
+        at scala.tools.nsc.transform.ExplicitOuter$$ExplicitOuterTransformer.transformUnit(ExplicitOuter.scala:276)
+        at scala.tools.nsc.transform.Transform$$Phase.apply(Transform.scala:30)
+        at scala.tools.nsc.Global$$GlobalPhase.applyPhase(Global.scala:243)
+        at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$2.apply(Global.scala:231)
+        at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$2.apply(Global.scala:231)
+        at scala.Iterator$$class.foreach(Iterator.scala:375)
+        at scala.collection.mutable.ListBuffer$$$$anon$$0.foreach(ListBuffer.scala:255)
+        at scala.tools.nsc.Global$$GlobalPhase.run(Global.scala:231)
+        at scala.tools.nsc.Global$$Run.compileSources(Global.scala:533)
+        at scala.tools.nsc.Global$$Run.compile(Global.scala:617)
+        at scala.tools.nsc.Main$$.process(Main.scala:86)
+        at scala.tools.nsc.Main$$.main(Main.scala:107)
+        at scala.tools.nsc.Main.main(Main.scala)
+exception when transforming java.lang.Object with ScalaObject {
+  def this(): object Bug = {
+    Bug.super.this();
+    ()
+  };
+  abstract class A extends java.lang.Object with ScalaObject {
+    def this(): Bug.this.A = {
+      A.super.this();
+      ()
+    }
+  };
+....
+{code}

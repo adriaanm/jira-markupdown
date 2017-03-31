@@ -1,0 +1,11 @@
+My first attempt at detecting {{LOAD_MODULE}} that DCE can eliminate:
+
+{noformat}
+    case LOAD_MODULE(mdl) =>
+      // TODO a Dataflow Analysis could track on which paths the class initializer has been run.
+      val necessary = mdl.info.member(nme.CONSTRUCTOR).filter(isSideEffecting) != NoSymbol
+      if(necessary) { worklist += ((bb, idx)) }
+{noformat}
+
+But it also considers {{Predef}} as "necessary". Ideas?
+

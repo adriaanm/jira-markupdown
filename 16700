@@ -1,0 +1,27 @@
+I have my own {{MyPage}} extending {{scala.swing.TabbedPane.Page}}. When I add new page to {{TabbedPane}}:
+{code}
+pages += new MyPage
+{code}
+
+Later, I can not use my pages by this way:
+{code}
+for (page <- tabbedPane.pages) {
+  if (page.isInstanceOf[MyPage])
+    //
+}
+{code}
+
+Look at {{TabbedPane.scala}}, I see that:
+{code}
+object pages extends BufferWrapper[Page] {
+
+  ...
+  def apply(n: Int) = new Page(TabbedPane.this, peer.getTitleAt(n),
+    UIElement.cachedWrapper[Component](peer.getComponentAt(n).asInstanceOf[javax.swing.JComponent]), 
+    peer.getToolTipTextAt(n))
+}
+{code}
+
+As my knowledge/ opinion, this is a bug. So please fix this. If you don't consider this is bug, please explain me why.
+
+Thank you so much.

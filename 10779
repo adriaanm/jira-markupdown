@@ -1,0 +1,40 @@
+[~moors] Regrarding the oddly positioned error message, looks like its a bug in the parser:
+
+{noformat}
+% cat sandbox/Throwable.scala
+package java.lang
+
+// SI-8367 shows something is wrong with primaryConstructor and it was made worse with the fix for SI-8192
+// perhaps primaryConstructor should not return NoSymbol when isJavaDefined
+// or, perhaps isJavaDefined should be refined (the package definition above is pretty sneaky)
+// also, why does this only happen for a (scala-defined!) class with this special name?
+// (there are a couple of others: CloneNotSupportedException,InterruptedException)
+class Throwable
+
+// class CloneNotSupportedException
+// class InterruptedException
+
+% scalac-hash master -Xprint-pos -Xprint:parser  sandbox/Throwable.scala
+[[syntax trees at end of                    parser]] // Throwable.scala
+[13]package [13]java.lang {
+  [476]class Throwable extends [485][554]scala.AnyRef {
+    [554]def <init>() = [554]{
+      [NoPosition][NoPosition][NoPosition]super.<init>();
+      [554]()
+    }
+  }
+}
+{noformat}
+
+Regarding "why does this only happen for a (scala-defined!) class with this special name?", I believe this is because the compiler forces loading of those symbols from the Java class-files during typechecking, e.g. with:
+
+{code}
+// TreeInfo.scala
+private def isSimpleThrowable(tp: Type): Boolean = tp match {
+    case TypeRef(pre, sym, args) =>
+      (pre == NoPrefix || pre.widen.typeSymbol.isStatic) &&
+      (sym isNonBottomSubClass ThrowableClass) &&  /* bq */ !sym.isTrait
+    case _ =>
+      false
+  }
+{code}

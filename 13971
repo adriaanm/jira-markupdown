@@ -1,0 +1,14 @@
+The compiler crashes, when using lazy values inside assignment expressions of class, object or trait member variables. The following code crashes the compilers: 2.7.2.-final and 2.8.9.-r16886.
+
+{code}
+object Red {
+  var foo = {
+    lazy val bar = None
+    bar
+  }
+}
+{code}
+
+{code}
+Exception in thread "main" java.lang.Error: symbol variable bitmap$$0 does not exist in Red.bar$$1
+{code}

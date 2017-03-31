@@ -1,0 +1,12 @@
+When the parsers that are constructed by parser combinators would have a filter method then they would work with for comprehensions even more effectively.
+
+The following definition should work:
+
+{code}
+Parser[T] {
+...
+  def filter(p: T => Boolean) =
+    this >> (x => if (p(x)) success(x) else failure("predicate not satisfied")) }
+...
+}
+{code}

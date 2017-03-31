@@ -1,0 +1,29 @@
+{code}
+class A {
+  class C
+  class Inf[X<:C](x: X) 
+  def f[X<:C](x: X) {}
+}
+
+object Test extends A {
+  val c: C = new C
+  f(c)
+  new Inf(c)
+}
+{code}
+
+gives
+
+{code}
+ inferred type arguments [Test.C] do not conform to class Inf's type parameter bounds [X <: A.this.C]
+  new Inf(c)
+  ^
+{code}
+
+When given the inferred type explicitly
+
+{code}
+new Inf[C](c)
+{code} 
+
+it compiles. Note that the function call compiles either way.

@@ -1,0 +1,24 @@
+The following code fails with java.lang.ClassNotFoundException: TestScalaBug$$foo
+
+workaround is to add a class foo 
+
+may be related to bug 1572
+
+
+
+{code}
+object TestScalaBug {
+
+  def main(args: Array[String]) {
+    val fooz = new foo.foo2
+    println(fooz)
+  }
+
+  object foo {
+    class foo2 {
+      override def toString = getClass.getSimpleName
+    }
+  }
+    
+}
+{code}

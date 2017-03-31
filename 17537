@@ -1,0 +1,59 @@
+The following code produces 
+{code}
+type mismatch;  found   : candidateUpperObject.result.Lower
+                required: candidateUpperObject.result.Lower
+where val candidateUpperObject: CanonicalGeneration.this.Upper
+{code}
+
+I tried adding -uniqid and -explaintypes, and then get 
+{code}
+type mismatch;  found   : candidateUpperObject#44447.result#44239.Lower#44231
+                required: candidateUpperObject.result#44239.Lower#44231
+where val candidateUpperObject: CanonicalGeneration#9908.this.Upper#44230
+{code}
+which doesn't add much to my understanding.
+
+Here's the code; I'm sure it can be reduced slightly.
+{code}
+trait EquivalenceClass[X] {
+  def representative: X
+  def contains(x: X): Boolean
+}
+
+trait Group[G] {
+  trait Action[X] {
+    def orbits: Set[EquivalenceClass[X]]
+    def leastOrbit[B: Ordering](invariant: X => B): EquivalenceClass[X]
+  }
+}
+
+trait CanonicalGeneration[A <: CanonicalGeneration[A, G, B], G, B] {
+  val automorphisms: Group[G]
+
+  implicit val ordering: Ordering[B]
+  def invariant: B
+
+  trait Upper {
+    val result: A
+    def inverse: result.Lower
+  }
+  trait Lower {
+    val result: A
+  }
+
+  def upperObjects: automorphisms.Action[Upper]
+  def lowerObjects: automorphisms.Action[Lower]
+
+    def children = {
+    for (
+      orbit <- upperObjects.orbits;
+      candidateUpperObject = orbit.representative;
+      canonicalReductionOrbit = candidateUpperObject.result.lowerObjects.leastOrbit({ l: candidateUpperObject.result.Lower => l.result.invariant });
+      // This next line causes a (spurious?) type mismatch:
+      if canonicalReductionOrbit.contains(candidateUpperObject.inverse)
+    ) yield candidateUpperObject.result
+  }
+}
+{code}
+
+I'm reporting this as a bug on the presumption that when the types shown in after 'found' and 'required' print the same, it's at least a problem with error reporting, if not an actual type checker bug.

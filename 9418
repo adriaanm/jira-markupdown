@@ -1,0 +1,27 @@
+Yes, the error reporting is pointing to the wrong file.
+
+The line of code that triggers the problem:
+
+{code}
+case '!' | '%' | '&' | '\'' | '*' | '+' | ',' | '.' | '/' | '|' | ';' |
+           '=' | '?' | '@' | '\\' | '^' | '`' | '|' | '~' | ':' => pushToken[TSymbol]
+{code}
+
+Note that '|' is duplicated.
+
+Here's a minimal test case:
+
+{code}
+def foo(a: Char) = a match { case 'b' => 0 case 'a' | 'a' => 0 }
+duplicate keys in SWITCH, can't pick arbitrarily one of them to evict, see SI-6011: 97, 97, 98
+	at scala.reflect.internal.SymbolTable.abort(SymbolTable.scala:49)
+{code}
+
+By contrast, the redundant cases are collapsed here:
+
+{code}
+scala> def foo(a: Char) = a match { case 'b' => 0 case 'b' => 0 }
+<console>:7: warning: unreachable code
+       def foo(a: Char) = a match { case 'b' => 0 case 'b' => 0 }
+                                                              ^
+{code}

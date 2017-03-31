@@ -1,0 +1,58 @@
+I suffer from a !StackOverflowError in !RedBlack when using an immutable !SortedSet (scala.collection.immutable.!TreeSet) in certain circumstances.
+
+For example with this little test program:
+
+{code}
+import collection.immutable.{TreeSet,SortedSet}
+
+object RedBlackTest {
+  def main(args: Array[String]) {
+
+    var big = 100000
+
+    var aSortedSet: SortedSet[Int] = TreeSet(big)
+
+    for (i <- 1 until 10000) {
+      aSortedSet = (aSortedSet - big) ++ (TreeSet(i, big - 1))
+      big = big - 1
+      if (i % 1000 == 0) {
+        println("size = " + aSortedSet.size)
+        val head = aSortedSet.until(i)
+        println("head size = " + head.size)
+      }
+    }
+  }
+} 
+{code}
+
+This is the result in version 2.8.0.r20327-b20091231020112 on java "1.6.0_15"
+
+{code}
+size = 1001
+head size = 999
+size = 2001
+head size = 1999
+size = 3001
+head size = 2999
+size = 4001
+head size = 3999
+size = 5001
+head size = 4999
+size = 6001
+head size = 5999
+size = 7001
+java.lang.StackOverflowError
+	at scala.collection.immutable.RedBlack$$NonEmpty.count(RedBlack.scala:129)
+	at scala.collection.immutable.RedBlack$$NonEmpty.count(RedBlack.scala:129)
+	at scala.collection.immutable.RedBlack$$NonEmpty.count(RedBlack.scala:129)
+{code}
+
+The problem doesn't occur with simple additions to the set. The order of the operations in {{aSortedSet = (aSortedSet - big) ++ (TreeSet(i, big - 1))}} makes a difference.
+
+If you run this test through a debugger, and have a look at the structure of the actual tree, you'll see something like this (after 5 iterations):
+
+{code}
+BlackTree(5,(),BlackTree(4,(),BlackTree(3,(),BlackTree(2,(),BlackTree(1,(),Empty,Empty),Empty),Empty),Empty),BlackTree(99995,(),Empty,Empty))
+{code}
+
+In other words: an unbalanced tree, hence the !StackOverflowError.

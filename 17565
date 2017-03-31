@@ -1,0 +1,33 @@
+(This is against 2.10.0-RC1, but JIRA doesn't offer that choice)
+
+It looks like SI-4214 is resurrected.
+
+While trying to weave in an AspectJ aspect, I got a VerifyError. Upon closer examination, it looks like the bytecode generated for StringOps.minBy (and StringOps.maxBy) is incorrect. Here is a simple Java program that shows the issue (a small variation of one reported in SI-4214).
+
+{code}
+package bug;
+
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
+
+import scala.collection.immutable.StringOps;
+
+public class Main {
+	public static void main(String[] args) {
+		Method[] ms = StringOps.class.getDeclaredMethods();
+		for (Method m : ms) {
+			if (m.getName().equals("minBy")) {
+				Class<?> c = m.getReturnType();
+				System.out.println("Bytecode return type: " + c);
+				Type t = m.getGenericReturnType();
+				System.out.println("Generic return type : " + t);
+				if (t instanceof Class) {
+					if (((Class) t).isPrimitive() && !c.isPrimitive()) {
+						System.out.println("Incompatible");
+					}
+				}
+			}
+		}
+	}
+}
+{code}

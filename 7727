@@ -1,0 +1,46 @@
+I tried to reify a non-nullary free method, and it fails differently:
+
+{code}
+scala> { def z(x: Int) = x; reify(z _) }
+<console>:27: error: Cannot materialize {
+  ((x: Int) => z(x))
+} as {
+  val $u: reflect.runtime.universe.type = scala.reflect.runtime.`package`.universe;
+  val $m: $u.Mirror = scala.reflect.runtime.`package`.universe.runtimeMirror(this.getClass.getClassLoader);
+  $u.Expr.apply[Int => Int]($m, {
+    final class $treecreator1 extends TreeCreator {
+      def <init>(): $treecreator1 = {
+        $treecreator1.super.<init>();
+        ()
+      };
+      def apply[U >: Nothing <: scala.reflect.api.Universe with Singleton]($m$untyped: Mirror[U]): U#Tree = {
+        val $u: U = $m$untyped.universe;
+        val $m: $u.Mirror = $m$untyped.asInstanceOf[$u.Mirror];
+        val free$z1: <error> = $u.build.newFreeTerm("z", <z: error>, $u.build.flagsFromBits(17592186044480L), "defined by res0  in <console>:27:21");
+        val symdef$x1: $u.Symbol = $u.build.newNestedSymbol(free$z1, $u.newTermName("x"), $u.NoPosition, $u.build.flagsFromBits(17592186052608L), false);
+        $u.build.setTypeSignature(free$z1, $u.MethodType(scala.collection.immutable.List.apply(symdef$x1), $m.staticClass("scala.Int").asType.toTypeConstructor));
+        $u.build.setTypeSignature(symdef$x1, $m.staticClass("scala.Int").asType.toTypeConstructor);
+        $u.Block(scala.collection.immutable.List.apply(), $u.Function(scala.collection.immutable.List.apply($u.ValDef($u.Modifiers($u.build.flagsFromBits(2105344L), $u.newTypeName(""), scala.collection.immutable.List.apply()), $u.newTermName("x"), $u.TypeTree(), $u.EmptyTree)), $u.Apply($u.build.Ident(free$z1), scala.collection.immutable.List.apply($u.Ident($u.newTermName("x"))))))
+      }
+    };
+    new $treecreator1()
+  })($u.TypeTag.apply[Int => Int]($m, {
+    final class $typecreator2 extends TypeCreator {
+      def <init>() = {
+        super.<init>();
+        ()
+      };
+      def apply[U >: Nothing <: Universe with Singleton]($m$untyped: Mirror[U]): U#Type = {
+        val $u: U = $m$untyped.universe;
+        val $m: $u.Mirror = $m$untyped.asInstanceOf[$u.Mirror];
+        $u.TypeRef($u.ThisType($m.staticPackage("scala").asModule.moduleClass), $m.staticClass("scala.Function1"), scala.collection.immutable.List.apply($m.staticClass("scala.Int").asType.toTypeConstructor, $m.staticClass("scala.Int").asType.toTypeConstructor))
+      }
+    };
+    new $typecreator2()
+  }))
+} because:
+scala.reflect.macros.TypecheckException: missing arguments for method z;
+follow this method with `_' if you want to treat it as a partially applied function
+              { def z(x: Int) = x; reify(z _) }
+                                        ^
+{code}

@@ -1,0 +1,18 @@
+Ran into this same issue in the ScalaFiddle codebase which is using js.Dynamic. The error triggers even when the vararg call is quite far away from the dynamic usage (in my case {{updateDynamic}})
+
+{code}      
+        editor.xyz = "" // this fails, because of the :_* later
+        editor.completers = js.Array(JsVal.obj(
+        "getCompletions" -> { (editor: Dyn, session: Dyn, pos: Dyn, prefix: Dyn, callback: Dyn) => {
+          Future.successful(Seq(("hauki", "kala"))).map {
+            _.map { case (name, value) =>
+              JsVal.obj(
+                "value" -> value,
+                "caption" -> (value + name)
+              ).value
+            }
+          }.foreach { things => callback(null, js.Array(things: _*)) }
+        }
+        }
+      ).value)
+{code}

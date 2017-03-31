@@ -1,0 +1,75 @@
+I have a [REPL transcript|https://gist.github.com/4061123] that shows you can access RefinedType through reflection. Also, it shows that you can detect the difference in the owner chain for symbol corresponding to RefinedType.
+
+At the moment if you obtain owner for RefinedType coming from tree type-checked by toolbox you'll get {{NoSymbol}}. I believe this is a bug in toolboxes (because with regular type-checker you get real owner assigned). However, the point is that even if toolbox get fixed to return the correct symbol that the type-checker assigns it'll be still different from the one unpickler creates. The reason for that is owner rewriting done in pickler.
+
+I think pickling/unpickling must be an identity function.
+
+{code}
+$ cat Foo.scala 
+object test3 {
+  trait A; trait C
+  trait B { self: A with C => 
+    class Inner {
+      def b = B.this
+    }
+  }
+}
+
+
+$ ./bin/scalac Foo.scala -d sandbox/
+
+$ ./bin/scala -cp sandbox/
+Welcome to Scala version 2.10.0-RC2 (Java HotSpot(TM) 64-Bit Server VM, Java 1.7.0_10-ea).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> :silent
+Switched off result printing.
+
+scala> :paste
+// Entering paste mode (ctrl-D to finish)
+
+import scala.reflect.runtime.universe._
+import scala.reflect.runtime.{currentMirror => cm}
+import scala.tools.reflect.ToolBox
+val toolbox = cm.mkToolBox()
+val src = """object test3 {
+  trait A; trait C
+  trait B { self: A with C => 
+    class Inner {
+      def b = B.this
+    }
+  }
+}
+"""
+val tree = toolbox.parse(src)
+val typedTree = toolbox.typeCheck(tree)
+val Btpe = typedTree.symbol.asModule.moduleClass.asType.toType.member(newTypeName("B")).asType.toType
+val bMethod = Btpe.member(newTypeName("Inner")).asType.toType.member(newTermName("b")).asMethod
+val returnTpe = bMethod.returnType
+val returnTpeUnpickled = typeOf[test3.B].member(newTypeName("Inner")).asType.toType.member(newTermName("b")).asMethod.returnType
+
+// Exiting paste mode, now interpreting.
+
+
+scala> :silent
+Switched on result printing.
+
+scala> returnTpe
+res0: toolbox.u.Type = <expression-owner>.test3.B with <expression-owner>.test3.A with <expression-owner>.test3.C
+
+scala> returnTpe.typeSymbol.owner
+res1: toolbox.u.Symbol = <none>
+
+scala> returnTpe.typeSymbol.owner == NoSymbol
+res2: Boolean = true
+
+scala> returnTpeUnpickled
+res3: reflect.runtime.universe.Type = test3.B with test3.A with test3.C
+
+scala> returnTpeUnpickled.typeSymbol.owner
+res4: reflect.runtime.universe.Symbol = object test3
+
+scala> returnTpeUnpickled.typeSymbol.owner == NoSymbol
+res5: Boolean = false
+{code}

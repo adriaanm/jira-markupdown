@@ -1,0 +1,13 @@
+Short version:
+{code}
+scala> class X(val x: String)
+defined class X
+
+scala> class Y(y: => String) extends X(y) { def f = y }
+defined class Y
+
+scala> new Y("hi").f
+java.lang.ClassCastException: java.lang.String cannot be cast to scala.Function0
+  at Y.f(<console>:8)
+  ... 33 elided
+{code}

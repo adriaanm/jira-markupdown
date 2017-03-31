@@ -1,0 +1,73 @@
+When I create a case class that has more than 22 arguments I get the following trace. Looks like a compiler bug to me. Normal class works. E.g. 
+
+case class TestArguments (
+		
+	arg1 : String,
+	arg2 : String,
+	arg3 : String,
+	arg4 : String,
+	arg5 : String,
+	arg6 : String,
+	arg7 : String,
+	arg8 : String,
+	arg9 : String,
+	arg10 : String,
+	arg11 : String,
+	arg12 : String,
+	arg13 : String,
+	arg14 : String,
+	arg15 : String,
+	arg16 : String,
+	arg17 : String,
+	arg18 : String,
+	arg19 : String,
+	arg20 : String,
+	arg21 : String,
+	arg22 : String,
+	arg23 : String
+)
+
+causes:
+
+java.lang.ArrayIndexOutOfBoundsException: 23
+	at scala.tools.nsc.ast.TreeGen.scalaFunctionConstr(TreeGen.scala:35)
+	at scala.tools.nsc.typechecker.Unapplies$$class.createFun$$1(Unapplies.scala:137)
+	at scala.tools.nsc.typechecker.Unapplies$$class.parents$$1(Unapplies.scala:138)
+	at scala.tools.nsc.typechecker.Unapplies$$class.caseModuleDef(Unapplies.scala:140)
+	at scala.tools.nsc.Global$$analyzer$$.caseModuleDef(Global.scala:295)
+	at scala.tools.nsc.typechecker.Namers$$Namer$$$$anonfun$$5.apply(Namers.scala:353)
+	at scala.tools.nsc.typechecker.Namers$$Namer$$$$anonfun$$5.apply(Namers.scala:353)
+	at scala.tools.nsc.typechecker.Namers$$Namer.ensureCompanionObject(Namers.scala:295)
+	at scala.tools.nsc.typechecker.Namers$$Namer.enterSym(Namers.scala:353)
+	at scala.tools.nsc.typechecker.Namers$$Namer$$$$anonfun$$enterSyms$$1.apply(Namers.scala:257)
+	at scala.tools.nsc.typechecker.Namers$$Namer$$$$anonfun$$enterSyms$$1.apply(Namers.scala:256)
+	at scala.collection.LinearSeqOptimized$$class.foreach(LinearSeqOptimized.scala:61)
+	at scala.collection.immutable.List.foreach(List.scala:45)
+	at scala.tools.nsc.typechecker.Namers$$Namer.enterSyms(Namers.scala:256)
+	at scala.tools.nsc.typechecker.Namers$$Namer.enterSym(Namers.scala:347)
+	at scala.tools.nsc.typechecker.Analyzer$$namerFactory$$$$anon$$1.apply(Analyzer.scala:39)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$applyPhase$$1.apply(Global.scala:276)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$applyPhase$$1.apply(Global.scala:276)
+	at scala.tools.nsc.reporters.Reporter.withSource(Reporter.scala:48)
+	at scala.tools.nsc.Global$$GlobalPhase.applyPhase(Global.scala:276)
+	at scala.tools.nsc.Global$$Run$$$$anonfun$$compileLate$$1$$$$anonfun$$apply$$mcV$$sp$$1.apply(Global.scala:840)
+	at scala.tools.nsc.Global$$Run$$$$anonfun$$compileLate$$1$$$$anonfun$$apply$$mcV$$sp$$1.apply(Global.scala:840)
+	at scala.tools.nsc.symtab.SymbolTable.atPhase(SymbolTable.scala:103)
+	at scala.tools.nsc.Global$$Run$$$$anonfun$$compileLate$$1.apply(Global.scala:840)
+	at scala.tools.nsc.Global$$Run$$$$anonfun$$compileLate$$1.apply(Global.scala:840)
+	at scala.tools.nsc.reporters.Reporter.withSource(Reporter.scala:48)
+	at scala.tools.nsc.Global$$Run.compileLate(Global.scala:839)
+	at scala.tools.nsc.interactive.Global.parse(Global.scala:245)
+	at scala.tools.nsc.interactive.Global$$$$anonfun$$reloadSources$$1.apply(Global.scala:293)
+	at scala.tools.nsc.interactive.Global$$$$anonfun$$reloadSources$$1.apply(Global.scala:290)
+	at scala.collection.LinearSeqOptimized$$class.foreach(LinearSeqOptimized.scala:61)
+	at scala.collection.immutable.List.foreach(List.scala:45)
+	at scala.tools.nsc.interactive.Global.reloadSources(Global.scala:290)
+	at scala.tools.nsc.interactive.Global.typedTree(Global.scala:319)
+	at scala.tools.nsc.interactive.Global$$$$anonfun$$getTypedTree$$1.apply(Global.scala:331)
+	at scala.tools.nsc.interactive.Global$$$$anonfun$$getTypedTree$$1.apply(Global.scala:331)
+	at scala.tools.nsc.interactive.Global.respond(Global.scala:276)
+	at scala.tools.nsc.interactive.Global.getTypedTree(Global.scala:331)
+	at scala.tools.nsc.interactive.CompilerControl$$$$anon$$3.apply$$mcV$$sp(CompilerControl.scala:95)
+	at scala.tools.nsc.interactive.Global.pollForWork(Global.scala:132)
+	at scala.tools.nsc.interactive.Global$$$$anon$$2.run(Global.scala:192)

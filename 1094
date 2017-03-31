@@ -1,0 +1,17 @@
+This is fixed in r19928. The below code compiles without any problem:
+
+{code}
+class Wrapper {
+  case class Select(tree : Tree, name : Name)
+  def Select(tree : Tree, sym : Symbol) { }
+  
+  implicit def s2n(s: String) = new Name
+  
+  val name = ""
+  Select(new Tree, name)
+}
+
+class Tree
+class Name
+class Symbol
+{code}

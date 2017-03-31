@@ -1,0 +1,35 @@
+Please verify if it is a bug:
+
+Scaladoc defines Enumeration.maxId as:
+"The highest integer amongst those used to identify values in this enumeration."
+
+In the case below, should not maxId be 3 instead of 4?
+
+Thank you.
+
+{code}
+scala> object EnumTest extends Enumeration {  val aa, bb, cc, dd = Value  }
+
+scala> EnumTest(0)
+res3: EnumTest.Value = aa
+
+scala> val mm = EnumTest.maxId
+mm: Int = 4
+
+scala> EnumTest(mm)
+java.util.NoSuchElementException: key not found: 4
+        at scala.collection.MapLike$$class.default(MapLike.scala:223)
+        at scala.collection.mutable.HashMap.default(HashMap.scala:39)
+        at scala.collection.MapLike$$class.apply(MapLike.scala:134)
+        at scala.collection.mutable.HashMap.apply(HashMap.scala:39)
+        at scala.Enumeration.apply(Enumeration.scala:144)
+        at .<init>(<console>:8)
+        at .<clinit>(<console>)
+        at RequestResult$$.<init>(<console>:9)
+        at RequestResult$$.<clinit>(<console>)
+        at RequestResult$$scala_repl_result(<console>)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+        at java.lang.reflect.Method.invoke(Me...
+{code}

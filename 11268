@@ -1,0 +1,178 @@
+This is really weird. *A. P. Marki*, are you saying this bug is only showing up with {{@tailrec}} applied? I just downloaded the Test.scala file from this issue, deleted all annotations, compiled, and inspected with {{javap}} and I do not get the same bytecode as Jason. I am definitely using Scala 11.2! I am running Windows 7 on this machine, not Linux, but I can't imagine that changes anything. 
+
+Here is my the output from my Command Prompt running the example again (without any annotations in the source):
+{noformat}
+$ type Test.scala
+object Test {
+
+  def example(index: Int): Unit = index match {
+    case 0 => println("I'm even!")
+    case 1 => println("I'm odd!")
+    case _ => example(index - 2)
+  }
+
+}
+
+$ scalac -print Test.scala
+Java HotSpot(TM) 64-Bit Server VM warning: ignoring option MaxPermSize=256m; support was removed in 8.0
+[[syntax trees at end of                   cleanup]] // Test.scala
+package <empty> {
+  object Test extends Object {
+    def example(index: Int): Unit = {
+      <synthetic> val _$this: Test.type = Test.this;
+      _example(_$this: Test.type, index: Int){
+        ({
+          case <synthetic> val x1: Int = index;
+          (x1: Int) match {
+            case 0 => {
+              scala.this.Predef.println("I\'m even!");
+              scala.runtime.BoxedUnit.UNIT
+            }
+            case 1 => {
+              scala.this.Predef.println("I\'m odd!");
+              scala.runtime.BoxedUnit.UNIT
+            }
+            case _ => {
+              _example(Test.this, (index.-(2): Int));
+              scala.runtime.BoxedUnit.UNIT
+            }
+          }
+        }: scala.runtime.BoxedUnit);
+        ()
+      }
+    };
+    def <init>(): Test.type = {
+      Test.super.<init>();
+      ()
+    }
+  }
+}
+
+$ scalac Test.scala
+
+$ javap -v Test$.class
+Classfile /C:/Users/Andrew Bate/Desktop/Test$.class
+  Last modified 14-Aug-2014; size 730 bytes
+  MD5 checksum 40922ada8b4600998ee3253657eb109c
+  Compiled from "Test.scala"
+public final class Test$
+  SourceFile: "Test.scala"
+Error: unknown attribute
+    Scala: length = 0x0
+
+  minor version: 0
+  major version: 50
+  flags: ACC_PUBLIC, ACC_FINAL, ACC_SUPER
+Constant pool:
+   #1 = Utf8               Test$
+   #2 = Class              #1             //  Test$
+   #3 = Utf8               java/lang/Object
+   #4 = Class              #3             //  java/lang/Object
+   #5 = Utf8               Test.scala
+   #6 = Utf8               MODULE$
+   #7 = Utf8               LTest$;
+   #8 = Utf8               <clinit>
+   #9 = Utf8               ()V
+  #10 = Utf8               <init>
+  #11 = NameAndType        #10:#9         //  "<init>":()V
+  #12 = Methodref          #2.#11         //  Test$."<init>":()V
+  #13 = Utf8               example
+  #14 = Utf8               (I)V
+  #15 = Utf8               scala/Predef$
+  #16 = Class              #15            //  scala/Predef$
+  #17 = Utf8               Lscala/Predef$;
+  #18 = NameAndType        #6:#17         //  MODULE$:Lscala/Predef$;
+  #19 = Fieldref           #16.#18        //  scala/Predef$.MODULE$:Lscala/Predef$;
+  #20 = Utf8               I'm odd!
+  #21 = String             #20            //  I'm odd!
+  #22 = Utf8               println
+  #23 = Utf8               (Ljava/lang/Object;)V
+  #24 = NameAndType        #22:#23        //  println:(Ljava/lang/Object;)V
+  #25 = Methodref          #16.#24        //  scala/Predef$.println:(Ljava/lang/Object;)V
+  #26 = Utf8               scala/runtime/BoxedUnit
+  #27 = Class              #26            //  scala/runtime/BoxedUnit
+  #28 = Utf8               UNIT
+  #29 = Utf8               Lscala/runtime/BoxedUnit;
+  #30 = NameAndType        #28:#29        //  UNIT:Lscala/runtime/BoxedUnit;
+  #31 = Fieldref           #27.#30        //  scala/runtime/BoxedUnit.UNIT:Lscala/runtime/BoxedUnit;
+  #32 = Utf8               I'm even!
+  #33 = String             #32            //  I'm even!
+  #34 = Utf8               this
+  #35 = Utf8               index
+  #36 = Utf8               I
+  #37 = Methodref          #4.#11         //  java/lang/Object."<init>":()V
+  #38 = NameAndType        #6:#7          //  MODULE$:LTest$;
+  #39 = Fieldref           #2.#38         //  Test$.MODULE$:LTest$;
+  #40 = Utf8               Code
+  #41 = Utf8               LocalVariableTable
+  #42 = Utf8               LineNumberTable
+  #43 = Utf8               StackMapTable
+  #44 = Utf8               SourceFile
+  #45 = Utf8               Scala
+{
+  public static final Test$ MODULE$;
+    descriptor: LTest$;
+    flags: ACC_PUBLIC, ACC_STATIC, ACC_FINAL
+
+  public static {};
+    descriptor: ()V
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: new           #2                  // class Test$
+         3: invokespecial #12                 // Method "<init>":()V
+         6: return
+
+  public void example(int);
+    descriptor: (I)V
+    flags: ACC_PUBLIC
+    Code:
+      stack=2, locals=4, args_size=2
+         0: iload_1
+         1: istore_3
+         2: iload_3
+         3: tableswitch   { // 0 to 1
+                       0: 45
+                       1: 31
+                 default: 24
+            }
+        24: iload_1
+        25: iconst_2
+        26: isub
+        27: istore_1
+        28: goto          0
+        31: getstatic     #19                 // Field scala/Predef$.MODULE$:Lscala/Predef$;
+        34: ldc           #21                 // String I'm odd!
+        36: invokevirtual #25                 // Method scala/Predef$.println:(Ljava/lang/Object;)V
+        39: getstatic     #31                 // Field scala/runtime/BoxedUnit.UNIT:Lscala/runtime/BoxedUnit;
+        42: goto          56
+        45: getstatic     #19                 // Field scala/Predef$.MODULE$:Lscala/Predef$;
+        48: ldc           #33                 // String I'm even!
+        50: invokevirtual #25                 // Method scala/Predef$.println:(Ljava/lang/Object;)V
+        53: getstatic     #31                 // Field scala/runtime/BoxedUnit.UNIT:Lscala/runtime/BoxedUnit;
+        56: pop
+        57: return
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      58     0  this   LTest$;
+            0      58     1 index   I
+      LineNumberTable:
+        line 3: 0
+        line 6: 24
+        line 5: 31
+        line 4: 45
+      StackMapTable: number_of_entries = 5
+           frame_type = 0 /* same */
+           frame_type = 253 /* append */
+          offset_delta = 23
+          locals = [ top, int ]
+             frame_type = 6 /* same */
+             frame_type = 13 /* same */
+             frame_type = 74 /* same_locals_1_stack_item */
+            stack = [ class scala/runtime/BoxedUnit ]
+  }
+{noformat}
+
+*Jason*, are you sure you are using 11.2 as downloaded from the Scala website?
+
+Can we reopen this issue if it can be confirmed by someone?

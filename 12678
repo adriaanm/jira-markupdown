@@ -1,0 +1,16 @@
+Minimized:
+
+{code}
+class C {
+  def fin(): Unit = ()
+  def m(x: Int) = ()
+  def inspect: Unit = {
+    try {
+      m(if (this == null) return else 1) // jump to finally block, `this` on stack
+      return                             // jump to finally block, empty stack
+    } finally {
+      fin()
+    }
+  }
+}
+{code}

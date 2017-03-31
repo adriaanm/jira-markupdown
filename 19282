@@ -1,0 +1,31 @@
+{code:scala}
+trait TraitOne {
+  def m(s: String, i: Int): Int
+}
+
+class ClassOne extends TraitOne {
+  override def m(s: String, i: Int): Int = i
+}
+
+class ClassTwo extends ClassOne {
+  val f: (Int) => Int = super[ClassOne].m("two", _)
+
+  def m2(i: Int): Int = f(i)
+}
+
+object Demo extends App {
+  val v = (new ClassTwo).m2(2)
+}
+{code}
+
+This code compiles without errors, but fails at runtime with this message:
+{noformat}
+Exception in thread "main" java.lang.VerifyError: Bad invokespecial instruction: current class isn't assignable to reference class.
+Exception Details:
+  Location:
+    ClassTwo$$anonfun$1.apply$mcII$sp(I)I @4: invokespecial
+  Reason:
+    Error exists in the bytecode
+  Bytecode:
+    0000000: 2a12 1d1b b700 23ac   
+{noformat}

@@ -1,0 +1,32 @@
+There is a bug in the warning about a possible string interpolation when the string contains whitespace and the dollar sign is followed by braces:
+{code}
+% s -Xlint
+Welcome to Scala version 2.11.5 (OpenJDK 64-Bit Server VM, Java 1.8.0_31).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> val s = "${}"
+s: String = ${}
+
+scala> val s = " ${} "
+<console>:7: warning: possible missing interpolator: detected an interpolated expression
+       val s = " ${} "
+               ^
+s: String = " ${} "
+
+scala> val s = "a${hello}b"
+s: String = a${hello}b
+
+scala> val s = "a${hello} b"
+<console>:7: warning: possible missing interpolator: detected an interpolated expression
+       val s = "a${hello} b"
+               ^
+s: String = a${hello} b
+
+scala> val s = "a${hello}b "
+<console>:7: warning: possible missing interpolator: detected an interpolated expression
+       val s = "a${hello}b "
+               ^
+s: String = "a${hello}b "
+{code}
+No warnings should be shown in the above cases.

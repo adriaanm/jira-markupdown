@@ -1,0 +1,39 @@
+=== What steps will reproduce the problem (please be specific and use wikiformatting)? ===
+{code}
+def foo[T](a:T, b:T):T = a
+def test = foo(ListBuffer(), List()) 
+{code} 
+
+=== What is the expected behavior? ===
+
+Type of test is {{Seq[Nothing]}}
+
+=== What do you see instead? ===
+
+{{type mismatch;  found   : scala.collection.mutable.ListBuffer[Nothing]  required: Seq[Nothing]{def companion: scala.collection.generic.GenericCompanion[Seq[Any]]}}
+
+=== Additional information ===
+{code}
+def test = foo(ListBuffer():Seq[Nothing], List()) 
+{code}
+Works as expected
+
+{code}
+def test = foo[Seq[Nothing]](List(), ListBuffer()) 
+{code}
+
+Works as expected
+
+{code}
+trait R[T]
+class A[T] extends R[T]
+class B[T] extends R[T]
+
+def test = foo(new A(), new B()) 
+{code}
+
+Works as expected: type of test is R[Nothing]
+=== What versions of the following are you using? ===
+  - Scala: 2.8.1
+
+Vitalii Fedorenko

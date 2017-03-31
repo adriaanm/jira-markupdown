@@ -1,0 +1,17 @@
+As [http://www.nabble.com/-scala--Hitting-on-a-bug-in-json-parser-td15115462.html#a15115462 reported] on the list, something is off handling 0 in the parser:
+
+{code}
+scala> import scala.util.parsing.json._
+import scala.util.parsing.json._
+scala> JSON parse """ {"something":0} """
+java.lang.NumberFormatException: For input string: "scala.util.parsing.json.Lexer@70c116"
+	at sun.misc.FloatingDecimal.readJavaFormatString(FloatingDecimal.java:1224)
+	at java.lang.Double.parseDouble(Double.java:482)
+	at scala.runtime.RichString.toDouble(RichString.scala:186)
+	at scala.util.parsing.json.Parser$$$$anonfun$$number$$1.apply(Parser.scala:37)
+	at scala.util.parsing.json.Parser...
+scala> JSON parse """ {"something":1} """
+res11: Option[List[Any]] = Some(List((something,1.0)))
+{code}
+
+

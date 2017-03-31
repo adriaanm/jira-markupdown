@@ -1,0 +1,10 @@
+In Scala Reference, 7.3 Views:
+{quote}
+1. If an expression e is of type T , and T does not conform to the expression’s expected type pt. In this case an implicit v is searched which is applicable to e and whose result type conforms to pt. The search proceeds as in the case of implicit parameters, where the implicit scope is the one of T => pt. If such a view is found, the expression e is converted to v(e).
+{quote}
+
+I think {{implicit def view[A: Manifest]: A => Array[A]}} corresponds {{T => pt}}. And it even works as implicit parameter:
+{code}
+implicit def view[A: Manifest]: A => Array[A] = ???
+implicitly[Int => Array[Int]] // No compiler error!
+{code}

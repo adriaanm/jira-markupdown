@@ -1,0 +1,47 @@
+What steps will reproduce the problem?
+{code}
+package object test {
+	trait PackageError {
+	}
+	 
+	object PackageError {
+	}
+}
+{code} 
+
+What is the expected behavior?
+No compiler error, or error messages explaining restrictions on package object.
+
+What do you see instead?
+{code}
+Exception in thread "main" java.lang.AssertionError: assertion failed: List(object package$$PackageError, object package$$
+PackageError)
+        at scala.tools.nsc.symtab.Symbols$$Symbol.suchThat(Symbols.scala:1056)
+        at scala.tools.nsc.symtab.Symbols$$Symbol.companionModule0(Symbols.scala:1271)
+        at scala.tools.nsc.symtab.Symbols$$Symbol.companionModule(Symbols.scala:1281)
+        at scala.tools.nsc.backend.jvm.GenJVM$$BytecodeGenerator.javaName(GenJVM.scala:1753)
+        at scala.tools.nsc.backend.jvm.GenJVM$$BytecodeGenerator.genClass(GenJVM.scala:189)
+        at scala.tools.nsc.backend.jvm.GenJVM$$JvmPhase.apply(GenJVM.scala:56)
+        at scala.tools.nsc.backend.jvm.GenJVM$$JvmPhase$$$$anonfun$$run$$3.apply(GenJVM.scala:52)
+        at scala.tools.nsc.backend.jvm.GenJVM$$JvmPhase$$$$anonfun$$run$$3.apply(GenJVM.scala:52)
+        at scala.collection.mutable.HashMap$$$$anon$$2$$$$anonfun$$foreach$$3.apply(HashMap.scala:89)
+        at scala.collection.mutable.HashMap$$$$anon$$2$$$$anonfun$$foreach$$3.apply(HashMap.scala:89)
+        at scala.collection.Iterator$$class.foreach(Iterator.scala:631)
+        at scala.collection.mutable.HashTable$$$$anon$$1.foreach(HashTable.scala:161)
+        at scala.collection.mutable.HashTable$$class.foreachEntry(HashTable.scala:194)
+        at scala.collection.mutable.HashMap.foreachEntry(HashMap.scala:39)
+        at scala.collection.mutable.HashMap$$$$anon$$2.foreach(HashMap.scala:89)
+        at scala.tools.nsc.backend.jvm.GenJVM$$JvmPhase.run(GenJVM.scala:52)
+        at scala.tools.nsc.Global$$Run.compileSources(Global.scala:741)
+        at scala.tools.nsc.Global$$Run.compile(Global.scala:822)
+        at scala.tools.nsc.Main$$.process(Main.scala:106)
+        at scala.tools.nsc.Main$$.main(Main.scala:120)
+        at scala.tools.nsc.Main.main(Main.scala)
+}
+{code}
+
+
+What versions of the following are you using?
+Scala: 2.8.1
+Java: 1.6.u22
+Operating system: Windows 7

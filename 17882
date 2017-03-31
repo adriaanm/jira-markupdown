@@ -1,0 +1,39 @@
+The documentation for privateWithin says:
+
+{code}
+     *  The java access levels translate as follows:
+     *
+     *  java private:     isPrivate                  && (privateWithin == NoSymbol)
+     *  java package:     !isPrivate && !isProtected && (privateWithin == enclosingPackage)
+     *  java protected:   isProtected                && (privateWithin == enclosingPackage)
+     *  java public:      !isPrivate && !isProtected && (privateWithin == NoSymbol)
+{code}
+
+However, here's what I get for getPrefixLength in java.io.File (which is package private):
+
+{code}
+Welcome to Scala version 2.10.0 (Java HotSpot(TM) 64-Bit Server VM, Java 1.7.0_09).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> import reflect.runtime.universe._
+import reflect.runtime.universe._
+
+scala> val t = weakTypeOf[java.io.File]
+t: reflect.runtime.universe.Type = java.io.File
+
+scala> val m = t.member(newTermName("getPrefixLength"))
+m: reflect.runtime.universe.Symbol = method getPrefixLength
+
+scala> m.isPrivate
+res0: Boolean = false
+
+scala> m.isProtected
+res1: Boolean = false
+
+scala> m.privateWithin
+res2: reflect.runtime.universe.Symbol = <none>
+
+scala> m.isPublic
+res3: Boolean = true
+{code}

@@ -1,0 +1,25 @@
+Hi,
+in case of overloaded methods, I'd expect scalac first looking for a valid application without considering implicits. But if there are two implicits in scope, my valid applications go "out of scope". To prove this, just comment out the second implicit in Predef:
+
+{code}
+case class P
+abstract class ImplicitRepeated[CC[N, R <: List[N]]] {
+  def f[N, R <: List[N]](elems: Either[N,R]*) // alternative a)
+  def f[N, R <: List[N]](props: P,
+                         elems: Either[N,R]*) // alternative b) 
+}
+object Predef {
+  implicit def anyToN[N] (x: N) = Left (x)
+  // the following implicit causes "cannot be applied" errors
+  implicit def anyToR[R <: List[_]] (x: R) = Right(x)
+}
+class Test[CC[N, R <: List[N]]] (c : ImplicitRepeated[CC]) {
+  import Predef._
+
+  c.f( new P, Right(List(1))) // should be directly   resolved to alternative b)
+  c.f( new P, 1, 2)           // should be implicitly resolved to alternative b)
+  c.f( 1, 2 )                 // should be implicitly resolved to alternative a)
+}
+{code}
+
+This behaivor did not change from 2.8.0.final to 2.8.1.RC1.

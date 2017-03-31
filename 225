@@ -1,0 +1,17 @@
+Here's a shorter example
+{code}
+
+trait Sequences{	
+  type I[+_] <: Sequence[_]	
+	
+  trait Sequence[+T] extends Iterable[T] {
+    def ++[S >: T] (ss : I[S]) : I[S] = error("...")
+  }	
+}	
+
+class SequenceTest(val seq : Sequences){	
+  def f[T](x: seq.I[T], y: seq.I[T]) = {
+    x . ++ [T] y
+  }
+}
+{code}

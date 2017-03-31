@@ -1,0 +1,20 @@
+A quick workaround is to wrap it into a block:
+{code}
+scala> val q1 = q"{ val x = 0 }"
+q1: reflect.runtime.universe.Tree =
+{
+  val x = 0;
+  ()
+}
+
+scala> val q2 = q"""
+     |   ..$q1
+     |   val y = 0
+     | """
+q2: reflect.runtime.universe.Tree =
+{
+  val x = 0;
+  val y = 0;
+  ()
+}
+{code}

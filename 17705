@@ -1,0 +1,38 @@
+The following program compiles, 
+
+{noformat}
+import scala.concurrent._
+import scala.concurrent.duration.Duration.Inf
+
+object Test {
+  import ExecutionContext.Implicits._
+
+  def main(args: Array[String]) {
+    println("main()")
+  }
+
+  def delegate(): String = "abc"
+
+  val r = Await.result(future {
+
+    {
+      "abc"
+      // delegate()
+    }
+
+  }, Inf)
+  println("awaited: " + r)
+}
+{noformat}
+
+
+and when run prints:
+
+{noformat}
+awaited: abc
+main()
+{noformat}
+
+However, uncommenting the invocation to {{delegate()}} results in the program not terminating.
+
+I was expecting both versions to be semantically equivalent.

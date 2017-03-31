@@ -1,0 +1,24 @@
+I found and fixed this a few days ago as SI-7285.
+
+The workaround is to qualify the references to FALSE/TRUE. Also note that the bug doesn't occur for matches defined outside of {{Bool}}
+
+{code}
+sealed trait Bool
+object Bool {
+  case object FALSE extends Bool
+  case object TRUE extends Bool
+
+  def show(b: Bool) = b match {
+    case Bool.FALSE => "1"
+    case Bool.TRUE  => "2"
+  }
+}
+
+object Test {
+  import Bool._
+  def show(b: Bool) = b match {
+    case FALSE => "1"
+    case TRUE  => "2"
+  }
+}
+{code}

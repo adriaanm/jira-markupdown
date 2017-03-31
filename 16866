@@ -1,0 +1,53 @@
+Reported by Richard Emberson on scala-user, minimized:
+{code}
+object L extends Enumeration {
+  val One, Two, Three = Value
+}
+
+class Foo {
+  def foo(xs: List[L.Value]) {
+    import scala.util.control.Breaks.{break, breakable}
+    println("START for " + xs)
+    breakable {
+      for (x <- xs) {
+        x match {
+          case L.One => println("ONE"); return
+          case L.Two => println("TWO")
+          case L.Three => println("THREE"); break
+        }
+      }
+    }
+    println("FINISH")
+  }
+}
+
+object Test {
+  def main(args: Array[String]) {
+    val f = new Foo()
+    val l = List(L.Two, L.Two, L.One, L.Three)
+    f.foo(l)
+  }
+}
+{code}
+
+in 2.10.0-M2:
+{code}
+START for List(Two, Two, One, Three)
+TWO
+TWO
+ONE
+{code}
+
+in latest nightly (a532ba):
+compiles with warning:
+{code}
+warning: non variable type-argument Unit in type pattern scala.runtime.NonLocalReturnControl[Unit] is unchecked since it is eliminated by erasure
+{code}
+output:
+{code}
+START for List(Two, Two, One, Three)
+TWO
+TWO
+ONE
+FINISH
+{code}

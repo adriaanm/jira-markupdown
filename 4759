@@ -1,0 +1,3 @@
+This has been discussed, but it wasn't as obvious a step as lift because the semantics do not translate cleanly in this direction.  The A => Option[B] function ends up being called at least twice on every invocation.  That's fine if you know what you're getting into, but putting it on F1 maybe makes it too accessible to the unwary.
+
+On the other hand, putting it on F1 would let us at least make (A =>? B) => (A => Option[B]) => (A =>? B) into a non-lossy operation, by keeping a copy of the other version around.  In the end, I'm with you.  Although I think I'd call it "unlift" or "delift" or some other conjugation which makes it clear it's the dual of lift.

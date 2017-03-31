@@ -1,0 +1,33 @@
+Classloader issue. This testcase shows the problem clearly:
+
+{code}
+class Foo
+
+object TestClass {
+  def main(args: Array[String]) {
+
+    try {
+      val cls = java.lang.Class.forName("Foo")
+      println(cls.getName)
+    } catch {
+      case e => println(e)
+    }
+
+    try {
+      val cls = scala.compat.Platform.getClassForName("Foo")
+      println(cls.getName)
+    } catch {
+      case e => println(e)
+    }
+  }
+}
+{code}
+
+{code}
+$ rm -f *.class; scalac TestCls.scala
+$ scala TestClass
+Foo
+java.lang.ClassNotFoundException: Foo
+{code}
+
+Yes, you're not dreaming, it says "ClassNotFoundException" after if it found and loaded Foo!

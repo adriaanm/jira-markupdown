@@ -1,0 +1,11 @@
+Here's another idea.
+
+{code}
+-addBound(tp.typeConstructor)
+-isSubArgs(lhs, rhs, params, AnyDepth)
++isSubArgs(lhs, rhs, params, AnyDepth) && {addBound(tp.typeConstructor); true}
+{code}
+
+With this patch, both this test and t6846.scala compile. A quick run of {{pt --pos --neg}} is also green.
+
+What I'm trying to avoid, is registering both type constructors {{K}} and {{Split}} as bounds, which leads to them later being glb-ed in a seemingly nonsensical way. (What does {{RefinementType(parents = K, Split)}} mean, anyway?)

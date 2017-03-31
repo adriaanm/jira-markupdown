@@ -1,0 +1,53 @@
+Patches to fix this issue. Tested under my machine. The method def getRelativePath(base: File, file: File): String may be moved to a more generic place, for example, AbstractFile.scala
+
+{code}
+Index: src/compiler/scala/tools/nsc/Global.scala
+===================================================================
+--- src/compiler/scala/tools/nsc/Global.scala	(revision 19650)
++++ src/compiler/scala/tools/nsc/Global.scala	(working copy)
+@@ -841,9 +841,41 @@
+       informTime("total", startTime)
+ 
+       if (!dependencyAnalysis.off) {
+-        
++
++        def getRelativePath(base: File, file: File): String = {
++
++          def toPaths(file: File): List[String] = {
++            var paths: List[String] = Nil
++            try {
++              var f = file.getCanonicalFile
++              while (f ne null) {paths ::= f.getName; f = f.getParentFile}
++            } catch {case e: IOException =>}
++            paths
++          }
++
++          val s = new StringBuilder
++          def createRelativePath(bases: List[String], files: List[String]) {
++            (bases, files) match {
++              case (Nil, Nil) =>
++              case (h1 :: xs1, h2 :: xs2) if h1 == h2 =>
++                createRelativePath(xs1, xs2)
++              case (h1 :: xs1, filesx) => s.append("..").append(File.separatorChar)
++                createRelativePath(xs1, filesx)
++              case (Nil, h :: Nil) => s.append(files.head)
++              case (Nil, h :: xs)  => s.append(files.head).append(File.separatorChar)
++                createRelativePath(Nil, xs)
++            }
++          }
++
++          createRelativePath(toPaths(base), toPaths(file))
++          s.toString
++        }
++
++        /** The directory where file lookup should start at. */
++        val rootDirectory: File = AbstractFile.getDirectory(".").file
++
+         def fromFile(file: AbstractFile): String = {
+-          val path = file.path
++          val path = getRelativePath(rootDirectory, file.file)
+           if (path.startsWith("./"))
+             path.substring(2, path.length)
+           else path
+
+{code}

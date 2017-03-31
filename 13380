@@ -1,0 +1,23 @@
+See the following.  TreeMap works, HashMap doesn't:
+
+{code}
+cala> var m = Map.empty[Int, Int]                                 
+m: scala.collection.immutable.Map[Int,Int] = Map()
+
+scala> for(i <- 1 until 40000; j <- 1 until 500) m = m.update(j, i)
+Exception in thread "main" java.lang.OutOfMemoryError: Java heap space
+	at java.lang.AbstractStringBuilder.expandCapacity(AbstractStringBuilder.java:99)
+	at java.lang.AbstractStringBuilder.append(AbstractStringBuilder.java:393)
+	at java.lang.StringBuilder.append(StringBuilder.java:120)
+	at java.io.UnixFileSystem.resolve(UnixFileSystem.java:93)
+	at java.io.File.<init>(File.java:179)
+	at java.io.File.listFiles(File.java:1020)
+	at scala.tools.nsc.Interpreter$$.deleteRecursively(Interpreter.scala:914)
+	at scala.tools.nsc.Interpreter.close(Interpreter.scala:563)
+	at scala.tools.nsc.InterpreterLoop.closeInterpreter(InterpreterLoop.scala:62)
+	at scala.tools.nsc.InterpreterLoop.main(InterpreterLoop.scala:308)
+	at scala.tools.nsc.MainGenericRunner$$.main(MainGenericRunner.scala:147)
+	at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
+{code}
+
+

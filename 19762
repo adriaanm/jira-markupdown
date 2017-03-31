@@ -1,0 +1,16 @@
+In this unit test, {{methodLift}} fails, while {{asFunction}} passes.
+{code:scala}
+@Test
+def methodLift {
+    def isPrime(c: Int) = BigInt(c).isProbablePrime(1)
+  assertNoOuter(isPrime)
+}
+@Test
+def asFunction {
+  val isPrime = (c: Int) => BigInt(c).isProbablePrime(1)
+  assertNoOuter(isPrime)
+}
+private def assertNoOuter(f: Int => Boolean) {
+  assertFalse(f.getClass.getDeclaredFields.exists(_.getType == this.getClass))
+}
+{code}

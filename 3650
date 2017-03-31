@@ -1,0 +1,13 @@
+IMHO, this is not a bug, but the first argument of "update" and "apply" methods
+should be checked if it is Int type or not.  Without such a check,
+the dead code(, which never be invoked) will be generated.
+
+{code}
+          def isArrayMethodSignature =
+            (methSym.name == nme.length && params.isEmpty) ||
+            (methSym.name == nme.update &&
+             (structResType.typeSymbol eq UnitClass) &&
+             params.size == 2) ||
+            (methSym.name == nme.apply  && params.size == 1) ||
+            (methSym.name == nme.clone_ && params.isEmpty)
+{code}

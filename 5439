@@ -1,0 +1,16 @@
+This is due to a cycle forming in getParts.  It's easy to eliminate by keeping track of which types have already been seen and not recursing when a type comes through again, but as this is a sensitive method in terms of both performance and precise behavior I'll leave it unless someone says "sure go fix."
+
+Haven't looked to see how slow this is, but something like this.
+{code}
+     private def companionImplicits(tp: Type): Infoss = {
+       val partMap = new LinkedHashMap[Symbol, Type]
++      val seen = mutable.HashSet[Type]()
+
+       /** Enter all parts of `tp` into `parts` set.
+        *  This method is performance critical: about 2-4% of all type checking is spent here
+        */
+       def getParts(tp: Type) {
++        if (seen(tp))
++          return
++        seen += tp  
+{code}

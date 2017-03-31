@@ -1,0 +1,25 @@
+As I said previously, if the type system can be broken without the current restrictions on {{Null}}, it can be broken even with them, thanks to the parameterization workaround. This turns out to be true, since the following breaks even unmodified RC1. So, once again, _Scala is unsound_.
+
+{code}
+  class C[L, A >: L, B >: L](l : L) { 
+    val x : A with B = l
+  }
+
+  class D[B >: Null] extends C[Null, { type X >: String}, B](null) { 
+    var y : x.X = "foo" 
+  }
+
+  val v : Int = new D[{type X <: Int}].y
+{code}
+
+This yields:
+
+{code}
+java.lang.ClassCastException: java.lang.String cannot be cast to java.lang.Integer
+	at scala.runtime.BoxesRunTime.unboxToInt(Unknown Source)
+	at .<init>(<console>:6)
+{code}
+
+Abstract type members can also be used instead of type parameters.
+
+I guess it's possible to add some more ad-hoc checks that prevent more of these kinds of problems, but they still can't guarantee that more of the same kind won't turn up. Forbidding {{null}} from having a singleton type seems like the only real solution.

@@ -1,0 +1,6 @@
+Replying to [comment:5 moors]: 
+> (wild stab since I'm busy with other stuff: it might still be a bug in the sense that the failure should result in Manifest[Any] being inferred instead of Manifest[Nothing], since the type parameter is contravariant)
+
+This seems like a mistake.  I don't think it should ever infer Manifest[Any].  Doesn't inferring Any in contravariant position in the absence of constraints lead us into the same issues as inferring Nothing in covariant? Worse, even? I can't find the ticket with the comments you had about this, but there are a bunch of tickets like SI-1570 which seem to be a result of losing the distinction between "unknown" and "Nothing".
+
+Irrespective of that: having worked with manifests a lot now, I wish Manifest[Any] didn't even exist, because it presents an escape hatch from the whole point of the manifest.  I know it's an "Any"! It's right there in the definition of "ANYthing", manifest supplying guy!

@@ -1,0 +1,8 @@
+Currently in order to create an anonymous function with inferred type and given name you need to also unquote an empty type:
+{code}
+scala> val name = TermName("x")
+scala> val expr = q"x + 1"
+scala> q"($name: ${tq""}) => $expr"
+res10: reflect.runtime.universe.Function = ((x) => x.$plus(1))
+{code}
+It might be a good idea to allow unquoting of bare names that would automatically imply setting of empty inferred return type.

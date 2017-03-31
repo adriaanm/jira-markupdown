@@ -1,0 +1,32 @@
+{code}
+trait AbsA {
+  type A
+}
+
+trait SomeImplA extends AbsA { self: SomeImplA{type A = ImplA} =>
+  // self type reveals self.A = ImplA inside SomeImplA, while leaving A abstract outside
+  // the "equivalent" of sealing is to leave the abstract type abstract
+  // it does not actively hide anything
+  class ImplA
+}
+
+// the Deploy* traits are artifacts of encoding sealing
+// -- you should only use them when assembling the application from its components (i.e., during deployment)
+// components should never refer to the deployment traits directly
+trait DeployImplA extends SomeImplA { self: DeployImplA{type A = ImplA} =>
+  type A = ImplA
+}
+{code}
+
+{code}
+/Users/adriaan/Desktop/bugs/encoding_sealing_mixml.scala:15: error: illegal inheritance;
+ self-type DeployImplASI-8591{type ASI-10104 = this.ImplASI-8600} does not conform to SomeImplASI-8590's selftype SomeImplASI-8590{type ASI-8603 = this.ImplASI-8600}
+trait DeployImplA extends SomeImplA { self: DeployImplA{type A = ImplA} =>
+                          ^
+one error found
+{code}
+
+expected the following to hold -- could there be an `asSeenFrom` missing that should align the different ThisTypes?
+{code}
+DeployImplA{type A= this.ImplA}  <: SomeImplA{type A= this.ImplA}
+{code}

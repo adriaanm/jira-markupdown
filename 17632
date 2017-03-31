@@ -1,0 +1,100 @@
+Here's a compiler crasher reported on the Specs2 mailing list. I did not rule out the possibility of a dependency problem on specs2 RC2 artifact.
+
+{code:title=build.sbt}
+scalaVersion := "2.10.0-RC2"
+
+libraryDependencies += "org.specs2" % "specs2_2.10.0-RC2" % "1.12.2"
+
+resolvers += "specs2-resolver-0" at "https://oss.sonatype.org/content/repositories/releases"
+{code}
+
+{code:title=src/test/scala/ResourceSpec.scala}
+
+import java.io.Closeable
+import org.specs2.mock.Mockito
+import org.specs2.mutable.Specification
+
+class ResourceSpec extends Specification with Mockito {
+
+  "a" should {
+    "b" in {        
+      val mockResource = mock[Closeable]
+    }
+  }
+}
+{code}
+
+When one executes sbt test, it results in:
+
+{code}
+
+[error] 
+[error]      while compiling: /home/dcs/tmp/crasher/src/test/scala/ResourceSpec.scala
+[error]         during phase: typer
+[error]      library version: version 2.10.0-RC2
+[error]     compiler version: version 2.10.0-RC2
+[error]   reconstructed args: -bootclasspath /usr/lib/jvm/jdk1.7.0_07/jre/lib/resources.jar:/usr/lib/jvm/jdk1.7.0_07/jre/lib/rt.jar:/usr/lib/jvm/jdk1.7.0_07/jre/lib/sunrsasign.jar:/usr/lib/jvm/jdk1.7.0_07/jre/lib/jsse.jar:/usr/lib/jvm/jdk1.7.0_07/jre/lib/jce.jar:/usr/lib/jvm/jdk1.7.0_07/jre/lib/charsets.jar:/usr/lib/jvm/jdk1.7.0_07/jre/lib/jfr.jar:/usr/lib/jvm/jdk1.7.0_07/jre/classes:/home/dcs/.sbt/boot/scala-2.10.0-RC2/lib/scala-library.jar -d /home/dcs/tmp/crasher/target/scala-2.10/test-classes -classpath /home/dcs/tmp/crasher/target/scala-2.10/test-classes:/home/dcs/tmp/crasher/target/scala-2.10/classes:/home/dcs/.ivy2/cache/org.specs2/specs2_2.10.0-RC2/jars/specs2_2.10.0-RC2-1.12.2.jar:/home/dcs/.ivy2/cache/org.specs2/specs2-scalaz-core_2.10.0-RC2/jars/specs2-scalaz-core_2.10.0-RC2-6.0.1.jar
+[error] 
+[error]   last tree to typer: Literal(Constant(a))
+[error]               symbol: null
+[error]    symbol definition: null
+[error]                  tpe: String("a")
+[error]        symbol owners: 
+[error]       context owners: value <local ResourceSpec> -> class ResourceSpec -> package <empty>
+[error] 
+[error] == Enclosing template or block ==
+[error] 
+[error] Template( // val <local ResourceSpec>: <notype> in class ResourceSpec
+[error]   "Specification", "Mockito" // parents
+[error]   ValDef(
+[error]     private
+[error]     "_"
+[error]     <tpt>
+[error]     <empty>
+[error]   )
+[error]   // 2 statements
+[error]   DefDef( // def <init>(): ResourceSpec in class ResourceSpec
+[error]     <method>
+[error]     "<init>"
+[error]     []
+[error]     List(Nil)
+[error]     <tpt> // tree.tpe=ResourceSpec
+[error]     Block( // tree.tpe=Unit
+[error]       Apply( // def <init>(): Object in class Object, tree.tpe=Object
+[error]         ResourceSpec.super."<init>" // def <init>(): Object in class Object, tree.tpe=()Object
+[error]         Nil
+[error]       )
+[error]       ()
+[error]     )
+[error]   )
+[error]   Apply(
+[error]     "a"."should"
+[error]     Apply(
+[error]       "b"."in"
+[error]       Block(
+[error]         ValDef(
+[error]           0
+[error]           "mockResource"
+[error]           <tpt>
+[error]           TypeApply(
+[error]             "mock"
+[error]             "Closeable"
+[error]           )
+[error]         )
+[error]         ()
+[error]       )
+[error]     )
+[error]   )
+[error] )
+[error] 
+[error] == Expanded type of tree ==
+[error] 
+[error] ConstantType(value = Constant(a))
+[error] 
+[error] uncaught exception during compilation: java.lang.AssertionError
+java.lang.AssertionError: assertion failed: value stubbing
+	at scala.reflect.internal.Types$ThisType.<init>(Types.scala:1388)
+	at scala.reflect.internal.Types$UniqueThisType.<init>(Types.scala:1409)
+	at scala.reflect.internal.Types$ThisType$.apply(Types.scala:1413)
+	at scala.reflect.internal.pickling.UnPickler$Scan.readType(UnPickler.scala:330)
+{code}

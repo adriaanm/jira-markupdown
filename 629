@@ -1,0 +1,125 @@
+All right, this is a bigger mess than I first thought. A number of issues arise.
+
+1)
+
+The specification states (8.1.4) that v matches a stable identifier
+pattern r if r == v. In actuality, the test is v == r.
+
+{code}
+class C(name : String) { 
+    override def equals(o : Any) = { 
+        Console.println(name + " == ...")
+        super.equals(o)
+    }
+}
+
+object O extends C("O")
+
+val V = new C("V")
+
+scala> val ov = O match { case V => true; case _ => false }
+O == ...
+ov: Boolean = false
+{code}
+
+Either the specification or implementation is in error.
+
+
+2)
+
+When matching against an object, even though it is a stable identifier
+pattern, no == -based comparison is made.
+
+{code}
+scala> val ov = V match { case O => true; case _ => false }
+ov: Boolean = false
+{code}
+
+Presumably direct reference equality is used, and this is indeed
+necessary for an object pattern's type refinement properties to be safe.
+
+Thus, an object pattern as currently implemented is _not_ a stable
+identifier pattern, despite the spec.
+
+
+3)
+
+An object pattern provides stronger type refinement than a singleton type pattern.
+
+{code}
+object O
+
+scala> def f[X] : X => X = { case O => O }
+f: [X](X) => X
+
+scala> def g[X] : X => X = { case _:O.type => O }
+<console>:5: error: type mismatch;
+ found   : O.type (with underlying type object O)
+ required: X
+       def g[X] : X => X = { case _:O.type => O }
+{code}
+
+Presumably matching to O gives us constraints X <: O.type <: X on the
+right-hand side of the case clause, since the only possible subtypes of
+a singleton type are Null and Nothing, and from the match we know that X
+must be inhabited by a non-null value.
+
+However, for an explicit type pattern, we only get the constraint X <:
+O.type, since we're using the generic rule for types which cannot assume
+that there couldn't be strict non-null subtypes.
+
+Singleton type patterns should be given special treatment to make them
+equivalent with the object patterns, and/or there should be a way to
+match non-object stable identifier patterns with as strong type
+refinements as object patterns get.
+
+
+Summary:
+
+Object patterns currently behave differently both from other stable
+identifier patterns and from singleton type patterns. It is impossible
+to get similar matching for other stable names. The specification is
+greatly out of sync with the implementation.
+
+Here's a sketch of the situation and my view of how it should be:
+
+{code}
+pattern               matched with            type refinement
+                   spec  impl     ideal     spec    impl    ideal
+object             ==    eq       eq        none?   strong  strong
+other stable id    ==    ==(rev)  eq        none?   none    strong
+singleton type     eq    eq       eq        weak    weak    weak or strong
+{code}
+
+The _point_ of stable identifiers is that they have these wonderful
+singleton types. It seems silly to have a pattern that is constrained to
+stable identifiers, yet compares them with a user-definable equals() and
+provides no type refinements. An equals()-tested value could just as
+well be provided by an arbitrary expression, so you could just as well
+add a pattern { expr } which would be evaluated during the match, and
+the result compared with == against the matched value.
+
+Yet, on the other hand, it would _also_ be at times useful to have
+
+{code}
+def f[X] : Class[X] => X = { case { classOf[int] } => 42 }
+{code}
+
+provide the proper type refinements, which of course requires that the
+match is done with eq. It's silly that currently one has to write:
+
+{code}
+def f[X] : Class[X] => X = { 
+    val IC = classOf[int]
+    { case _ : IC.type => 42 } 
+}
+{code}
+
+As a general rule in programming language design, I think that if a
+variable is used only once, it should be inlinable away. Currently this
+is not possible in Scala.
+
+So, both eq-compared type-refinable matches and ==-compared
+non-refinable matches have their place, and I think both need better
+support from the language than they currently have.
+

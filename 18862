@@ -1,0 +1,28 @@
+{code}
+import scala.reflect.macros.whitebox._
+import scala.language.experimental.macros
+
+class Macros(val c: Context) {
+  def impl(x: c.Tree) = ???
+}
+
+object Macros {
+  def impl(c: Context) = ???
+}
+
+object Test extends App {
+  def foo: Unit = macro Macros.impl
+}
+{code}
+
+{code}
+22:24 ~/Projects/Master/sandbox (master)$ s
+Test.scala:13: error: macro implementation has incompatible shape:
+ required: : Macros.this.c.Expr[Unit]
+ or      : : Macros.this.c.Tree
+ found   : (x: Macros.this.c.Tree): Nothing
+number of parameter sections differ
+  def foo: Unit = macro Macros.impl
+                               ^
+one error found
+{code}

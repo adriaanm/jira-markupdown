@@ -1,0 +1,19 @@
+it's about the unclosed xml literal {{<br>}}. smaller example with the same error:
+
+{code}
+object t {
+  if(true) {
+    <br>
+  }else{
+    <span>{"louenesee"}</span>
+  }
+}
+{code}
+
+changing to {{<br/>}} fixes it. fail in {{reduceStack}},
+
+{code}
+val opPos = rangePos(opinfo.operand.pos.source, opinfo.offset, opinfo.offset, opinfo.offset+opinfo.operator.length)
+{code}
+
+where {{opinfo}} is {{OpInfo(<empty>,lse,37)}}

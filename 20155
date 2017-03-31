@@ -1,0 +1,15 @@
+{{NumericRange\[Double\].foreach()}} method in exposes different values than its {{apply(idx)}} due to floating point error accumulation. That results in weird behavior if one mixes Traversable-based and IndexedSeq-based apis.
+
+{code:scala}
+  val r1 = new NumericRange.Inclusive[Double](1.0, 3.0, 0.2)(scala.math.Numeric.DoubleAsIfIntegral)
+
+  val r2 = new NumericRange.Inclusive[Double](1.0, 3.0, 0.2)(scala.math.Numeric.DoubleAsIfIntegral) {
+    override def foreach[U](f: Double => U): Unit = {(0 until length).foreach(i => f(apply(i)))}
+  }
+
+  println(s"r1(3)==${r1(3)}, r1.toList.drop(3).head=${r1.toList.drop(3).head}")
+  //1.6, 1.59999
+
+  println(s"r2(3)==${r2(3)}, r2.toList.drop(3).head=${r2.toList.drop(3).head}")
+  //1.6, 1.6
+{code}

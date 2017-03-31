@@ -1,0 +1,12 @@
+[~dwijnand], my take on this is that most programmers would not have read the spec and you should be able to be productive after taking a course or reading a book that teaches the language. For deciding whether something is a bug in the compiler / standard library, knowledge of the specification is required, of course. In this particular case, it works as specified and the specified behavior is the most natural one I can think of. The resulting interaction of language features may still qualify as a Scala puzzler.
+
+In order to turn this from a bug report into an improvement request you'd have to specify what to change. The most obvious changes would be to either make both cases work by adding an implicit conversion for functions:
+
+{code}
+// Does not work with current type inference / implicit search rules:
+implicit def adaptFunction1[P, R, A](f: P => R)(implicit conv: R => A): (P => A) = (x => conv(f(x)))
+{code}
+
+Or to forbid both by changing eta expansion to typecheck without a return type. You have the same issue for parameters though, so you can either make the rules inconsistent or forbid that as well, which would in turn prevent you from ever eta-expanding an overloaded method.
+
+I doubt either of those changes would get very far.

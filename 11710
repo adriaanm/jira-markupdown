@@ -1,0 +1,116 @@
+That error looks instead like you are using 2.11.5 scala-reflect.jar against 2.11.6 scala-compiler.jar. This is not a supported configuration, but I wonder how you ended up with this?
+
+In a minimal SBT project, things are working. (We have a smoke test that checks this before the release: https://github.com/scala/scala-dist-smoketest)
+
+{noformat}
+% cat project/build.properties
+sbt.version=0.13.7
+
+% cat build.sbt
+scalaVersion := "2.11.6"
+
+% sbt clean compile
+[info] Loading global plugins from /Users/jason/.sbt/0.13/plugins
+[info] Loading project definition from /Users/jason/code/scratch1/project
+[info] Set current project to scratch1 (in build file:/Users/jason/code/scratch1/)
+[success] Total time: 0 s, completed 05/03/2015 11:52:19 AM
+[info] Updating {file:/Users/jason/code/scratch1/}scratch1...
+[info] Resolving jline#jline;2.12.1 ...
+[info] Done updating.
+[info] Compiling 1 Scala source to /Users/jason/code/scratch1/target/scala-2.11/classes...
+[success] Total time: 4 s, completed 05/03/2015 11:52:23 AM
+{noformat}
+
+{noformat}
+% sbt 'show update'
+[info] 	scala-tool:
+[info] 	org.scala-lang:scala-compiler
+[info] 		- 2.11.6
+[info] 			status: release
+[info] 			publicationDate: Thu Feb 26 11:01:27 EST 2015
+[info] 			resolver: sbt-chain
+[info] 			artifactResolver: sbt-chain
+[info] 			evicted: false
+[info] 			homepage: http://www.scala-lang.org/
+[info] 			isDefault: false
+[info] 			configurations: default, optional, compile, runtime, optional(default), master
+[info] 			licenses: (BSD 3-Clause,Some(http://www.scala-lang.org/license.html))
+[info] 			callers: default:scratch1_2.11:0.1-SNAPSHOT
+[info]
+[info] 	jline:jline
+[info] 		- 2.12.1
+[info] 			status: release
+[info] 			publicationDate: Tue Feb 10 10:55:11 EST 2015
+[info] 			resolver: sbt-chain
+[info] 			artifactResolver: sbt-chain
+[info] 			evicted: false
+[info] 			isDefault: false
+[info] 			configurations: compile, compile(*), master(compile), master
+[info] 			licenses: (The BSD License,Some(http://www.opensource.org/licenses/bsd-license.php))
+[info] 			callers: org.scala-lang:scala-compiler:2.11.6
+[info]
+[info] 	org.scala-lang.modules:scala-parser-combinators_2.11
+[info] 		- 1.0.3
+[info] 			status: release
+[info] 			publicationDate: Mon Dec 15 10:21:04 EST 2014
+[info] 			resolver: sbt-chain
+[info] 			artifactResolver: sbt-chain
+[info] 			evicted: false
+[info] 			homepage: http://www.scala-lang.org/
+[info] 			isDefault: false
+[info] 			configurations: compile, runtime, compile(*), runtime(*), master(compile), master
+[info] 			licenses: (BSD 3-clause,Some(http://opensource.org/licenses/BSD-3-Clause))
+[info] 			callers: org.scala-lang:scala-compiler:2.11.6
+[info]
+[info] 	org.scala-lang.modules:scala-xml_2.11
+[info] 		- 1.0.3
+[info] 			status: release
+[info] 			publicationDate: Fri Dec 05 06:18:14 EST 2014
+[info] 			resolver: sbt-chain
+[info] 			artifactResolver: sbt-chain
+[info] 			evicted: false
+[info] 			homepage: http://www.scala-lang.org/
+[info] 			isDefault: false
+[info] 			configurations: compile, runtime, compile(*), runtime(*), master(compile), master
+[info] 			licenses: (BSD 3-clause,Some(http://opensource.org/licenses/BSD-3-Clause))
+[info] 			callers: org.scala-lang:scala-compiler:2.11.6
+[info]
+[info] 	org.scala-lang:scala-reflect
+[info] 		- 2.11.6
+[info] 			status: release
+[info] 			publicationDate: Thu Feb 26 11:01:15 EST 2015
+[info] 			resolver: sbt-chain
+[info] 			artifactResolver: sbt-chain
+[info] 			evicted: false
+[info] 			homepage: http://www.scala-lang.org/
+[info] 			textraAttributes: Map(info.apiURL -> http://www.scala-lang.org/api/2.11.6/)
+[info] 			isDefault: false
+[info] 			configurations: compile, runtime, compile(*), runtime(*), master(compile), master
+[info] 			licenses: (BSD 3-Clause,Some(http://www.scala-lang.org/license.html))
+[info] 			callers: org.scala-lang:scala-compiler:2.11.6
+[info]
+[info] 	org.scala-lang:scala-library
+[info] 		- 2.11.6
+[info] 			status: release
+[info] 			publicationDate: Thu Feb 26 11:01:05 EST 2015
+[info] 			resolver: sbt-chain
+[info] 			artifactResolver: sbt-chain
+[info] 			evicted: false
+[info] 			homepage: http://www.scala-lang.org/
+[info] 			textraAttributes: Map(info.apiURL -> http://www.scala-lang.org/api/2.11.6/)
+[info] 			isDefault: false
+[info] 			configurations: default, optional, compile, compile(*), runtime, runtime(*), master(compile), optional(default), master
+[info] 			licenses: (BSD 3-Clause,Some(http://www.scala-lang.org/license.html))
+[info] 			callers: org.scala-lang:scala-reflect:2.11.6 (), org.scala-lang.modules:scala-xml_2.11:1.0.3, default:scratch1_2.11:0.1-SNAPSHOT, org.scala-lang.modules:scala-parser-combinators_2.11:1.0.3, org.scala-lang:scala-compiler:2.11.6
+[info] 		- 2.11.2
+[info] 			evicted: true
+[info] 			evictedData: latest-revision
+[info] 			configurations: compile, runtime, compile(*), runtime(*), master(compile), master
+[info] 			callers: org.scala-lang.modules:scala-parser-combinators_2.11:1.0.3
+[info] 		- 2.11.4
+[info] 			evicted: true
+[info] 			evictedData: latest-revision
+[info] 			configurations: compile, runtime, compile(*), runtime(*), master(compile), master
+[info] 			callers: org.scala-lang.modules:scala-xml_2.11:1.0.3
+[success] Total time: 0 s, completed 05/03/2015 11:54:47 AM
+{noformat}

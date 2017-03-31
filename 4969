@@ -1,0 +1,16 @@
+(In r23383) A double goodness whammy involving type inference at the borders.
+
+1) Implicit search preserves singleton type fidelity.
+2) Unification of parent bounds is (closer to) correct.
+
+Result of 1: "implicit def f(x: Foo.type)" will convert object Foo.
+Result of 2: "new Trait[Int] { }" may enjoy its type constructor being
+inferred, no longer foiled by the anonymous class.
+
+Also included are some clarity-enhnancing renamings and refactorings.
+Performance note: I heavily benchmarked the change to isSubArgs and it
+is reproducibly faster than the previous implementation.  Numbers
+and methodology available upon request.
+
+Closes SI-2693, SI-3964.  Review by moors, who wrote most of this patch
+but might like to review the comments.

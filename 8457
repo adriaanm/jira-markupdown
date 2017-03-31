@@ -1,0 +1,40 @@
+Reduced a little: 
+
+{code}
+trait A {
+  type D >: Null <: C
+  def foo(d: D)(d2: d.type): Unit
+  trait C {
+    def bar: Unit = foo(null)(null)
+  }
+}
+object B extends A {
+  class D extends C
+
+  def foo(d: D)(d2: d.type): Unit = ()
+}
+
+object Test extends App {
+  new B.D().bar
+}
+{code}
+
+{noformat}
+scala> :javap -private A
+Compiled from "t6443.scala"
+public interface A{
+    public abstract void foo(A$C, A$C);
+}
+
+
+scala> :javap -private B$
+Compiled from "t6443.scala"
+public final class B$ extends java.lang.Object implements A{
+    public static final B$ MODULE$;
+    public static {};
+    public void foo(B$D, B$D);
+    private B$();
+}
+{noformat}
+
+We're missing a bridge method in {{B$}} with the signature {{public void foo(A$C, A$C)}}.

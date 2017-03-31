@@ -1,0 +1,7 @@
+I've just been playing with an approach to issuing a warning for discarded implicits. After we finish typechecking the file, we can see if any discarded candidates turned out to be viable for the search. We can safely check this after the entire file has been typechecked.
+
+Here's a prototype: https://github.com/retronym/scala/compare/topic/warn-discarded-implicit?expand=1
+
+However, this does not take into account the way that implicit search participates in type inference. If the expected type of the implicit search contains an undetermined type variable, the discarded implicit might not appear viable *after* inference has occurred.
+
+See also SI-7486, in which a previous attempt at highlighting this sort of issue introduced a regression.

@@ -1,0 +1,79 @@
+In the following example, @uncheckedVariance causes the working example to fail with runtime ClassCastException. Decompiling shows that compiler adds "checkcast" to the bytecode, causing it to fail at runtime.
+
+{code}
+package broken {
+  object Main {
+    def main(args: Array[String]) {
+      val test: Interface[MetaByte] = new Concrete(new Array[Byte](10))
+      val array = test.array
+      println(array(0))
+    }
+  }
+
+  sealed trait Meta { type A }
+  sealed trait MetaByte extends Meta { type A = Byte }
+
+  trait Interface[D <: Meta] {
+    def backing :Interface[D]
+    import scala.annotation.unchecked._
+    def array: Array[D#A @uncheckedVariance] = backing.array
+  }
+
+  class Concrete(
+    override val array: Array[Byte]
+  ) extends Interface[MetaByte] {
+    def backing = this
+  }
+}
+
+package works {
+  object Main {
+    def main(args: Array[String]) {
+      val test: Interface[MetaByte] = new Concrete(new Array[Byte](10))
+      val array = test.array
+      println(array(0))
+    }
+  }
+
+  sealed trait Meta { type A }
+  sealed trait MetaByte extends Meta { type A = Byte }
+
+  trait Interface[D <: Meta] {
+    def backing :Interface[D]
+    import scala.annotation.unchecked._
+    def array: Array[D#A] = backing.array
+  }
+
+  class Concrete(
+    override val array: Array[Byte]
+  ) extends Interface[MetaByte] {
+    def backing = this
+  }
+}
+
+/* Decompiling Concrete.class with javap shows:
+works:
+  Code:
+   Stack=1, Locals=1, Args_size=1
+   0:   aload_0
+   1:   invokevirtual   SI-19; //Method array:()[B
+   4:   areturn
+  LineNumberTable:
+   line 44: 0
+   
+broken:
+  Code:
+   Stack=1, Locals=1, Args_size=1
+   0:	aload_0
+   1:	invokevirtual	SI-19; //Method array:()[B
+   4:	checkcast	SI-21; //class "[Ljava/lang/Object;"
+   7:	areturn
+  LineNumberTable: 
+   line 19: 0
+ */
+{code}
+
+
+This behavior completely negates the usefulness of this annotation when working with arrays. Without @uncheckedVariance the code will not compile, with it, the code will crash at runtime. Consider the previous example, but variance (i.e. trait Interface[+D <: Meta]).
+
+Test on scala.2.8.0.RC and scala-2.8.0.r21821

@@ -1,0 +1,32 @@
+{code}
+scala> def f(implicit x: Int): Int = x + 1
+f: (implicit x: Int)Int
+
+scala> List(1, 2, 3) map f
+<console>:7: error: could not find implicit value for parameter x: Int
+       List(1, 2, 3) map f
+                         ^
+
+scala> List(1, 2, 3) map (f _)      
+<console>:7: error: could not find implicit value for parameter x: Int
+       List(1, 2, 3) map (f _)
+                          ^
+
+scala> List(1, 2, 3) map (x => f(x))
+res1: List[Int] = List(2, 3, 4)
+{code}
+And the monkey wrenches really go flying if you throw in another one:
+{code}
+scala> implicit def g(implicit x: Int): Int = x + 1
+g: (implicit x: Int)Int
+
+scala> List(1, 2, 3) map g                         
+<console>:7: error: diverging implicit expansion for type Int
+starting with method g in object $$iw
+       List(1, 2, 3) map g
+                         ^
+
+scala> List(1, 2, 3) map (x => g(x))
+res4: List[Int] = List(2, 3, 4)
+{code}
+I suppose we're in unspecified land here, but I think it'd be nice if we could say implicit methods don't move one in multiple directions away from non-implicit ones (by which I mean, make it implicit and now THIS works but THIS doesn't...) because it's rather tedious trying to push all that toothpaste back into the tube.

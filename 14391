@@ -1,0 +1,27 @@
+The following code demonstrates the problem. This is on scala-2.8.0.r18383-b20090724020219.
+
+Note that import scala.collection.mutable.Map is used to import the mutable version of the map
+
+
+{code}
+
+import java.{util=>ju}
+import scala.collection.JavaConversions._
+import scala.collection.mutable.Map
+
+// this works
+val a = asMap(Map("A" -> "A"))
+
+// this also works
+val b = (Map("A"->"A") : Map[String, String]) : ju.Map[String, String]
+
+// this does not work, with the following error:
+// error: type mismatch;
+// found   : scala.collection.mutable.Map[java.lang.String,java.lang.Object]
+// required: java.util.Map[String,String]
+//       Map("A"->"A") : ju.Map[String, String]
+//          ^       
+
+val c = Map("A"->"A") : ju.Map[String, String]
+
+{code}

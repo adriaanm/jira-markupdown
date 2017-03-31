@@ -1,0 +1,26 @@
+{noformat}
+~/code/scala tail sandbox/{a,b}.scala
+==> sandbox/a.scala <==
+  def isEmpty = value == null
+  // can't seem to coerce the inliner into inlining calls to getOrElse
+  // would be great if you know a way of achieving that!
+  @inline final def getOrElse[B >: A](alt: => B): B = if (isEmpty) alt else value
+  override def toString = if (isEmpty) "<empty>" else s"$value"
+}
+
+object Joint {
+  def foo = new Optional("").getOrElse("!!!")
+}
+
+==> sandbox/b.scala <==
+object Separate {
+  def foo = new Optional("").getOrElse("!!!")
+}
+2.11.x ~/code/scala (set -x; qbin/scalac -optimize -Yinline-warnings sandbox/a.scala && qbin/scalac -optimize -Yinline-warnings sandbox/b.scala)
++ qbin/scalac -optimize -Yinline-warnings sandbox/a.scala
++ qbin/scalac -optimize -Yinline-warnings sandbox/b.scala
+warning: Could not inline required method getOrElse$extension because bytecode unavailable.
+warning: Could not inline required method getOrElse$extension because bytecode unavailable.
+warning: At the end of the day, could not inline @inline-marked method getOrElse$extension
+three warnings found
+{noformat}

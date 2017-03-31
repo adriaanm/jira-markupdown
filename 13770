@@ -1,0 +1,57 @@
+Hello Scala Team!
+
+Thanks for adding generic signatures in the 2.7.2 release.
+I'm using Guice bind Scala implementations to java interfaces,
+and the 2.7.2 release makes things much smoother, but
+it appears that scala neglects to setup superclass type
+parameters for anonymous types.  
+
+I don't know much about JVM byte-code, 
+but here's an example using the pattern 
+described here
+    http://code.google.com/p/google-guice/wiki/Guice10Recipes
+that illustrates the problem.
+The code runs ok if I use the explicit type:
+     new ExplicitType()
+rather than the anonymous:
+     new TypeLiteral[ATrait[String]]{}
+I scanned through the bugs - don't think
+this has been reported yet.
+
+Cheers,
+Reuben
+
+---------------
+scala> val injector = Guice.createInjector( GuiceModule )
+java.lang.RuntimeException: Missing type parameter.
+        at com.google.inject.TypeLiteral.getSuperclassTypeParameter(TypeLiteral.java:80)
+        at com.google.inject.TypeLiteral.<init>(TypeLiteral.java:59)
+        at GuiceModule$$$$anon$$1.<init>(<console>:10)
+        at GuiceModule$$.configure(<console>:10)
+        at com.google.inject.BinderImpl.install(BinderImpl.java:199)
+        at com.google.inject.Guice.createInjector(...
+
+----------------------
+import com.google.inject._
+
+trait ATrait[T] { def bla(x:T):String; }                 
+
+class A extends ATrait[String] { def bla(x:String) = x; }
+
+class B ( thing:ATrait[String] ) {
+    def bla( x:String ) = thing.bla(x)
+}
+
+object GuiceModule extends Module {
+  class ExplicitType extends TypeLiteral[ATrait[String]] {}
+
+  override def configure( binder:Binder ) = {
+     //binder.bind( new ExplicitType ).to( classOf[A] )
+     binder.bind( new TypeLiteral[ATrait[String]]{} ).to( classOf[A] )
+  }
+}
+
+
+val injector = Guice.createInjector( GuiceModule )
+//val b = injector.getInstance( classOf[B] )
+

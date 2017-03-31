@@ -1,0 +1,101 @@
+Using scala 2.8.0.RC2 with Java 1.6.0_20 (on Ubuntu Linux), doing the following provokes a crash of the scala console.
+
+Put the following code into a file called Pacakge.scala
+
+{code}
+package object expr {
+
+  import scala.collection.immutable.Map
+
+  object LExpr {
+    val zero: LExpr = new LExpr(Map())
+    def apply(m: (Var,Int)*): LExpr = {
+      val n = m filter {case (_,c) => c != 0}
+      if (n isEmpty)
+        zero
+      else 
+        new LExpr(Map(n:_*))
+    }
+  }
+
+  class LExpr private (val m: Map[Var,Int])  {
+    def + (other: LExpr): LExpr = {
+      val keySeq = (m.keySet ++ other.m.keySet) toSeq;
+      new LExpr(Map(keySeq map (v => (v, m.getOrElse(v,0) + other.m.getOrElse(v,0))):_*))
+    }
+    def * (factor: Int): LExpr = new LExpr((m mapValues (_ * factor)))
+  }
+
+  class Var (private val idx: Int) {
+    
+  }
+
+  class Scalar (val i: Int) {
+    
+  }
+
+  implicit def var2LExpr (v: Var): LExpr = LExpr(v -> 1)
+  implicit def int2Scalar (i: Int): Scalar = new Scalar(i)
+
+}
+{code}
+
+Compile it and start a console session
+{code}
+peter@notebook:~/tmp/bug$$ scalac Package.scala 
+peter@notebook:~/tmp/bug$$ scala -cp .
+Welcome to Scala version 2.8.0.RC2 (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_20).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> import expr._
+import expr._
+
+scala> val v = new Var(1)
+v: expr.package.Var = expr.package$$Var@1a659078
+
+scala> val w = new Var(2)
+w: expr.package.Var = expr.package$$Var@1d74f478
+
+scala> v+w
+Exception in thread "main" java.lang.AssertionError: assertion failed: List(object package$$LExpr, object package$$LExpr)
+	at scala.tools.nsc.symtab.Symbols$$Symbol.suchThat(Symbols.scala:1051)
+	at scala.tools.nsc.symtab.Symbols$$Symbol.companionModule0(Symbols.scala:1257)
+	at scala.tools.nsc.symtab.Symbols$$Symbol.companionModule(Symbols.scala:1265)
+	at scala.tools.nsc.backend.jvm.GenJVM$$BytecodeGenerator.javaName(GenJVM.scala:1751)
+	at scala.tools.nsc.backend.jvm.GenJVM$$BytecodeGenerator.javaType(GenJVM.scala:1841)
+	at scala.tools.nsc.backend.jvm.GenJVM$$BytecodeGenerator.javaType(GenJVM.scala:1845)
+	at scala.tools.nsc.backend.jvm.GenJVM$$BytecodeGenerator.genField(GenJVM.scala:600)
+	at scala.tools.nsc.backend.jvm.GenJVM$$BytecodeGenerator$$$$anonfun$$genClass$$3.apply(GenJVM.scala:257)
+	at scala.tools.nsc.backend.jvm.GenJVM$$BytecodeGenerator$$$$anonfun$$genClass$$3.apply(GenJVM.scala:257)
+	at scala.collection.LinearSeqOptimized$$class.foreach(LinearSeqOptimized.scala:62)
+	at scala.collection.immutable.List.foreach(List.scala:46)
+	at scala.tools.nsc.backend.jvm.GenJVM$$BytecodeGenerator.genClass(GenJVM.scala:257)
+	at scala.tools.nsc.backend.jvm.GenJVM$$JvmPhase.apply(GenJVM.scala:57)
+	at scala.tools.nsc.backend.jvm.GenJVM$$JvmPhase$$$$anonfun$$run$$3.apply(GenJVM.scala:53)
+	at scala.tools.nsc.backend.jvm.GenJVM$$JvmPhase$$$$anonfun$$run$$3.apply(GenJVM.scala:53)
+	at scala.collection.mutable.HashMap$$$$anon$$2$$$$anonfun$$foreach$$3.apply(HashMap.scala:90)
+	at scala.collection.mutable.HashMap$$$$anon$$2$$$$anonfun$$foreach$$3.apply(HashMap.scala:90)
+	at scala.collection.Iterator$$class.foreach(Iterator.scala:632)
+	at scala.collection.mutable.HashTable$$$$anon$$1.foreach(HashTable.scala:162)
+	at scala.collection.mutable.HashTable$$class.foreachEntry(HashTable.scala:195)
+	at scala.collection.mutable.HashMap.foreachEntry(HashMap.scala:40)
+	at scala.collection.mutable.HashMap$$$$anon$$2.foreach(HashMap.scala:90)
+	at scala.tools.nsc.backend.jvm.GenJVM$$JvmPhase.run(GenJVM.scala:53)
+	at scala.tools.nsc.Global$$Run.compileSources(Global.scala:729)
+	at scala.tools.nsc.Interpreter.compileAndSaveRun(Interpreter.scala:521)
+	at scala.tools.nsc.Interpreter$$Request.objRun(Interpreter.scala:893)
+	at scala.tools.nsc.Interpreter$$Request.compile(Interpreter.scala:916)
+	at scala.tools.nsc.Interpreter.interpret(Interpreter.scala:588)
+	at scala.tools.nsc.Interpreter.interpret(Interpreter.scala:580)
+	at scala.tools.nsc.InterpreterLoop.reallyInterpret$$1(InterpreterLoop.scala:481)
+	at scala.tools.nsc.InterpreterLoop.interpretStartingWith(InterpreterLoop.scala:518)
+	at scala.tools.nsc.InterpreterLoop.command(InterpreterLoop.scala:371)
+	at scala.tools.nsc.InterpreterLoop.processLine$$1(InterpreterLoop.scala:243)
+	at scala.tools.nsc.InterpreterLoop.repl(InterpreterLoop.scala:256)
+	at scala.tools.nsc.InterpreterLoop.main(InterpreterLoop.scala:555)
+	at scala.tools.nsc.MainGenericRunner$$.main(MainGenericRunner.scala:67)
+	at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
+{code}
+
+The same code. however, runs fine when compiled.

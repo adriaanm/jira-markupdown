@@ -1,0 +1,7 @@
+h3. On the original example here
+
+All examples in SI-7714 are unrelated, other than by "GADT type refinement in patterns is broken".
+
+The first example here has exactly the same unsoundness I found (described not only in the paper, but also mentioned in [my comment to SI-6944|https://issues.scala-lang.org/browse/SI-6944?focusedCommentId=63731&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-63731]) — the type refinement inside test is not valid, because {{new L\[Int, Int\](identity) with Node\[Nothing\]}} is legal (you can allow either this instantiation or {{test}}, not both together).
+
+The original author of the pattern matcher (Burak Emir) wrote papers on the topic, but the languages he describes always forbid {{new L\[Int, Int\](identity) with Node\[Nothing\]}}: since {{L\[Int, Int\]}} already inherits from {{Node}}, you cannot inherit from {{Node}} again with a more specific type argument. I refer not mainly to "Matching Objects with Patterns" (ECOOP 2007), which ignores covariance, but especially to "Variance and Generalized Constraints for C# Generics" (ECOOP 2006), where he requires "that generic instantiations are uniquely determined". Even though that paper is for C#, that's the closest thing to a formal study of soundness for this kind of constructs.

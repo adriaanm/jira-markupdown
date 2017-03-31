@@ -1,0 +1,14 @@
+Note also if you are concerned that the above run method holds to the stream head:
+
+{code}
+scala> @scala.annotation.tailrec def len[A](s: Stream[A], acc: Int = 0): Int = if (s.isEmpty) acc else len(s.tail, acc + 1)
+len: [A](s: Stream[A], acc: Int)Int
+
+scala> len(bigElemts)
+res3: Int = 999999
+
+scala> len(bigElemts.flatMap(_ => Stream.empty[Int]))
+   ... OOM
+{code}
+
+So it is flatMap holding to the head.

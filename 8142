@@ -1,0 +1,3 @@
+I don't know why isWhole is so expensive, but it has to know if it may be equal to a BigInt, and the size is irrelevant.  If BigDecimal(1) == (1: Int) && (1: Int) == BigInt(1), then BigDecimal(1) == BigInt(1) and BigDecimal(1).hashCode == BigInt(1).hashCode.
+
+So unless you like the idea that somewhere BigInt(X) == BigDecimal(X) but BigInt(X + 1) != BigDecimal(X + 1), the hashCodes of BigDecimals must be coordinated with those of BigInts.  Regardless of size.  To do this, the BigDecimal must check whether it can conceivably be equal to a BigInt, or the hashcode scheme has to be such that BigDecimals/BigInts provide the same one when they are equal.  If there is a better test than "isWhole", which does not have the ring of a heap-exhausting method, then please suggest it.

@@ -1,0 +1,31 @@
+I think this is still occurring when the java class in question is being referenced from any scala class.
+
+This is the scenario:
+
+{{A.java}}
+
+{noformat}
+public class A<T extends Comparable<? super T>> implements Comparable<T> {
+  public int compareTo(T other) {
+    return 0;
+  }
+}
+{noformat}
+
+{{B.scala}}
+
+{noformat}
+class B {
+  println (new A)
+}
+{noformat}
+
+* Command *
+{{scalac  ./*.java ./\*.scala}}
+
+If I compile just the java files, it works. If the scala code doesn't refer to that java class, it works.
+
+{noformat}
+$ scalac -version
+Scala compiler version 2.11.1 -- Copyright 2002-2013, LAMP/EPFL
+{noformat}

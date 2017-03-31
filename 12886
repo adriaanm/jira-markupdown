@@ -1,0 +1,69 @@
+Try to compile this code:
+
+{code}
+trait A {
+  trait B extends A with this.type
+}
+{code}
+
+Exception will occur:
+
+
+{code}
+Exception in thread "main" scala.MatchError: List(A.this.type, A)
+        at scala.tools.nsc.symtab.Types$$class.scala$$tools$$nsc$$symtab$$Types$$$$mergePrefixAndArgs(Types.scala:3636)
+        at scala.tools.nsc.symtab.Types$$CompoundType.computeClosure$$0(Types.scala:983)
+        at scala.tools.nsc.symtab.Types$$CompoundType$$$$anonfun$$8.apply(Types.scala:1005)
+        at scala.tools.nsc.symtab.Types$$CompoundType$$$$anonfun$$8.apply(Types.scala:1005)
+        at scala.tools.nsc.symtab.Types$$CompoundType.memo(Types.scala:1063)
+        at scala.tools.nsc.symtab.Types$$CompoundType.closure(Types.scala:1005)
+        at scala.tools.nsc.symtab.Types$$Type.closurePos(Types.scala:535)
+        at scala.tools.nsc.symtab.Types$$CompoundType.baseType(Types.scala:1068)
+        at scala.tools.nsc.symtab.Types$$TypeRef.baseType(Types.scala:1412)
+        at scala.tools.nsc.symtab.Types$$class.isSubType0(Types.scala:3041)
+        at scala.tools.nsc.symtab.Types$$class.isSubType(Types.scala:2965)
+        at scala.tools.nsc.symtab.SymbolTable.isSubType(SymbolTable.scala:11)
+        at scala.tools.nsc.symtab.Types$$Type.$$less$$colon$$less(Types.scala:469)
+        at scala.tools.nsc.typechecker.Typers$$Typer.validateParentClass$$0(Typers.scala:951)
+        at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$21.apply(Typers.scala:966)
+        at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$21.apply(Typers.scala:966)
+        at scala.List.foreach(List.scala:730)
+        at scala.tools.nsc.typechecker.Typers$$Typer.validateParentClasses(Typers.scala:966)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typedTemplate(Typers.scala:1106)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typedClassDef(Typers.scala:999)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:2669)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:2949)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:2982)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typedStat$$0(Typers.scala:1465)
+        at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$57.apply(Typers.scala:1495)
+        at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$57.apply(Typers.scala:1495)
+        at scala.List$$.loop$$0(List.scala:244)
+        at scala.List$$.mapConserve(List.scala:261)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typedStats(Typers.scala:1495)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typedTemplate(Typers.scala:1113)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typedClassDef(Typers.scala:999)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:2669)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:2949)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:2982)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typedStat$$0(Typers.scala:1465)
+        at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$57.apply(Typers.scala:1495)
+        at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$57.apply(Typers.scala:1495)
+        at scala.List$$.loop$$0(List.scala:244)
+        at scala.List$$.mapConserve(List.scala:261)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typedStats(Typers.scala:1495)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:2665)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:2949)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:2982)
+        at scala.tools.nsc.typechecker.Analyzer$$typerFactory$$$$anon$$1.apply(Analyzer.scala:39)
+        at scala.tools.nsc.Global$$GlobalPhase.applyPhase(Global.scala:249)
+        at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$2.apply(Global.scala:238)
+        at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$2.apply(Global.scala:238)
+        at scala.Iterator$$class.foreach(Iterator.scala:375)
+        at scala.collection.mutable.ListBuffer$$$$anon$$0.foreach(ListBuffer.scala:255)
+        at scala.tools.nsc.Global$$GlobalPhase.run(Global.scala:238)
+        at scala.tools.nsc.Global$$Run.compileSources(Global.scala:534)
+        at scala.tools.nsc.Global$$Run.compile(Global.scala:615)
+        at scala.tools.nsc.Main$$.process(Main.scala:86)
+        at scala.tools.nsc.Main$$.main(Main.scala:107)
+        at scala.tools.nsc.Main.main(Main.scala)
+{code}

@@ -1,0 +1,48 @@
+Reflecting my way to the same conclusions as you reached:
+{code}
+scala> :power
+Already in power mode.
+
+scala> val u = rootMirror.universe; import u._, language._, intp.deconstruct.showu: u.type = scala.tools.nsc.interpreter.IMain$$anon$1@4a2e2b5c
+import u._
+import language._
+import intp.deconstruct.show
+
+scala> object Foo { trait A { type X }; def id(a: A): a.X = ???; def foo = id(??? : A) } 
+defined module Foo
+
+scala> val fooTpe = typeOf[Foo.type].decl(newTermName("foo")).tpe.resultType
+fooTpe: u.Type = a.X
+
+scala> val aSym = fooTpe.prefix.asInstanceOf[SingleType].sym
+aSym: u.Symbol = value a
+
+scala> aSym.isValueParameter
+res62: Boolean = true
+
+scala> aSym.owner
+res63: u.Symbol = method id
+{code}
+
+I was also unable to poke a soundness hole:
+
+{code}
+object Foo {
+  trait A { trait X { type A; def f(a: A); val a: A }; def X: X };
+  object i extends A { object X extends super.X { type A = Int; def f(a: Int) = (); val a = 0 } };
+  object s extends A { object X extends super.X { type A = String; def f(a: String) = (); val a = "" } };
+
+  def id(a: A): a.X = a.X
+  val x = id(i : A) // x: a.X
+
+  id(i : A).f(id(s : A).a)
+  // <console>:47: error: type mismatch;
+  // found   : a.X#A
+  // required: _31.A where val _31: a.X
+  //            id(i : A).f(id(s : A).a)
+}
+{code}
+
+This commit to {{InstantiateDependentMap}} is work a look:
+
+  https://github.com/scala/scala/commit/b40f4ba322

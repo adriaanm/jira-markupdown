@@ -1,0 +1,14 @@
+I discovered this compiles:
+{code}
+trait One {
+  type Op[A]
+  type Alias[A] = Op[A]
+}
+
+trait Two extends One {
+  trait Op[A] extends (A => A)
+  override type Alias[A] = Op[A]
+  class View2 extends Alias[Int] { def apply(xs: Int) = xs }
+}
+{code}
+I guess there's a use for "override type" after all.

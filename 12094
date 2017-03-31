@@ -1,0 +1,57 @@
+The imports in history are not injected into the same scope, expressly to avoid any possibility of conflict.
+{code}
+scala> val r = timed("") // show
+object $read extends scala.AnyRef {
+  def <init>() = {
+    super.<init>;
+    ()
+  };
+  object $iw extends scala.AnyRef {
+    def <init>() = {
+      super.<init>;
+      ()
+    };
+    import $line3.$read.$iw.$iw.Performance;
+    import $line4.$read.$iw.$iw.AdvancedUtils;
+    object $iw extends scala.AnyRef {
+      def <init>() = {
+        super.<init>;
+        ()
+      };
+      import AdvancedUtils._;
+      object $iw extends scala.AnyRef {
+        def <init>() = {
+          super.<init>;
+          ()
+        };
+        object $iw extends scala.AnyRef {
+          def <init>() = {
+            super.<init>;
+            ()
+          };
+          import Performance._;
+          object $iw extends scala.AnyRef {
+            def <init>() = {
+              super.<init>;
+              ()
+            };
+            object $iw extends scala.AnyRef {
+              def <init>() = {
+                super.<init>;
+                ()
+              };
+              val r = timed("")
+            }
+          }
+        }
+      }
+    }
+  }
+}
+<console>:19: error: type mismatch;
+ found   : String("")
+ required: Long => Any
+       val r = timed("") // show
+                     ^
+{code}
+Maybe a way to control this behavior would be a useful feature, but nuanced automated importing is known to be tricky to get right.

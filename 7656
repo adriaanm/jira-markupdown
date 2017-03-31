@@ -1,0 +1,54 @@
+Still trying to find out why {{InlineExceptionHandlers}} believes there's a value on the operand stack when there isn't. 
+
+One of the problematic snippets is:
+
+{noformat}
+  typeError(
+    "no common type instance of base types "+(variants mkString ", and ")+" exists.")
+{noformat}
+
+The ICode below corresponds to the above, and is received as input by {{InlineExceptionHandlers}} (please notice {{Inliner}} didn't inline anything):
+{noformat}
+  21: 
+    71	LOAD_LOCAL(value x1)
+    71	STORE_LOCAL(value x3)
+    71	SCOPE_ENTER value x3
+    72	THIS(BaseTypeSeqs$BaseTypeSeq)
+    73	CALL_PRIMITIVE(StartConcat)
+    73	CONSTANT("no common type instance of base types ")
+    73	CALL_PRIMITIVE(StringConcat(REF(class String)))
+    59	LOAD_LOCAL(value x2$1)
+    59	CALL_METHOD scala.reflect.internal.Types$RefinedType.parents (dynamic)
+    73	CONSTANT(", and ")
+    73	CALL_METHOD scala.collection.TraversableOnce.mkString (dynamic)
+    73	CALL_PRIMITIVE(StringConcat(REF(class String)))
+    73	CONSTANT(" exists.")
+    73	CALL_PRIMITIVE(StringConcat(REF(class String)))
+    73	CALL_PRIMITIVE(EndConcat)
+    72	CALL_METHOD scala.reflect.internal.BaseTypeSeqs$BaseTypeSeq.typeError (static-instance)
+    72	THROW(Throwable)
+{noformat}
+
+i.e. the {{THROW}} instruction expects an exception that isn't there, because {{typeError()}} only returns by throwing an exception:
+{noformat}
+    private def typeError(msg: String): Nothing =
+      throw new TypeError(
+        "the type intersection "+(parents mkString " with ")+" is malformed"+
+        "\n --- because ---\n"+msg)
+{noformat}
+
+Looking at the expression with {{-Xprint:clean -Yshow-trees}} we find a {{typeError()}} callsite providing a {{Nothing}} argument to a {{"matchEnd4"}} {{Apply}} (what is that supposed to be? A forward jump? A callsite?), whose {{tpe}} is {{scala.reflect.internal.Types$Type}}. What that is must play a role in how GenICode emits that {{THROW}} out of place (ceteris paribus).
+
+{noformat}
+    Apply( // case def matchEnd4(x: scala.reflect.internal.Types$Type): scala.reflect.internal.Types$Type, tree.tpe=scala.reflect.internal.Types$Type
+      "matchEnd4" // case def matchEnd4(x: scala.reflect.internal.Types$Type): scala.reflect.internal.Types$Type, tree.tpe=(x: scala.reflect.internal.Types$Type)scala.reflect.internal.Types$Type
+      Apply( // private def typeError(msg: String): Nothing in class BaseTypeSeqs$BaseTypeSeq, tree.tpe=Nothing
+        BaseTypeSeqs$BaseTypeSeq.this."typeError" // private def typeError(msg: String): Nothing in class BaseTypeSeqs$BaseTypeSeq, tree.tpe=(msg: String)Nothing
+        Apply( // final def +(x$1: Object): String in class String, tree.tpe=String
+          "no common type instance of base types ".+(x2$1.parents().mkString(", and "))."$plus" // final def +(x$1: Object): String in class String, tree.tpe=(x$1: Object)String
+          " exists."
+        )
+      )
+    )
+{noformat}
+

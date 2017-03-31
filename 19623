@@ -1,0 +1,29 @@
+I expect the following code to compile without errors:
+
+{code}
+trait Elem {
+    type Peer
+}
+
+trait Impl[E[~] <: Elem {type Peer = ~}] {
+    def foo[R](peer: E[R]#Peer)
+
+    foo[Int](??? : E[Int]#Peer)
+}
+{code}
+
+Instead, an error is given that:
+
+{code:text}
+Error:(12, 18) type mismatch;
+ found   : this.scala.Peer
+    (which expands to)  Int
+ required: this.Peer(in method foo)
+    (which expands to)  R
+    foo[Int](??? : E[Int]#Peer)
+             ^^
+{code}
+
+It looks as if the variable `R` is not getting substituted in the structural refinement part of the type.
+
+This comes from http://stackoverflow.com/questions/28945416/type-mismatch-with-type-projection

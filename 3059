@@ -1,0 +1,19 @@
+Replying to [comment:7 rjm]:
+
+Just to share a poor man's workaround. It compiles if you kind cast !CanBuild to an invariant type.
+
+{code}
+object Test {
+  import scala.{collection => sc}
+
+  trait Foo[T]
+
+  type CB[A, B] = sc.generic.CanBuild[A, B]
+  
+  implicit def MapFoo[A, B, M[A, B] <: sc.Map[A,B]](implicit aFoo: Foo[A], bFoo: Foo[B], cb: CB[(A, B), M[A, B]]) = new Foo[M[A,B]] {}
+
+  implicit object Tuple2IntIntFoo extends Foo[(Int, Int)] 
+
+  implicitly[Foo[(Int, Int)]]
+}
+{code}

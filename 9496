@@ -1,0 +1,24 @@
+I think this is the same issue:
+{code}
+scala> class GBP {
+     | class C(val i: Int)
+     | def add(c: C) = println(c.i)
+     | }
+defined class GBP
+
+scala>  object util { def c(p: GBP)(i: Int = 1): p.C = new p.C(i) }
+defined module util
+
+scala> class Sub extends GBP {add(util.c(this)())}
+<console>:17: error: type mismatch;
+ found   : x$1.C
+ required: Sub.this.C
+       class Sub extends GBP {add(util.c(this)())}
+                                              ^
+{code}
+If this might seem esoteric, it's annoying because it means I cannot create a useful GridBagPanel.Constraints "constructor" which takes default arguments. Providing the argument works just fine:
+
+{code}
+scala> class Sub extends GBP {add(util.c(this)(1))}
+defined class Sub
+{code}

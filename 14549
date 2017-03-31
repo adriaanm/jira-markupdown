@@ -1,0 +1,42 @@
+The current implementation of mapConserve in  scala.collection.immutable.List is not tail recursive.  Here's an alternate implementation.
+
+
+{code}
+  /** Like xs map f, but returns <code>xs</code> unchanged if function
+   *  <code>f</code> maps all elements to themselves (wrt ==).
+   */
+  def mapConserve2[B >: A] (f: A => B): List[B] = {
+    @tailrec
+    def loop(mapped: ListBuffer[B], unchanged: List[A], pending: List[A]): List[B] =
+      if (pending.isEmpty) {
+        if (mapped eq null) unchanged else mapped.prependToList(unchanged)
+      } else {
+        val head0 = pending.head
+        val head1 = f(head0)
+        if (head1 == head0) {
+          loop(mapped, unchanged, pending.tail)
+        } else {
+          val b = if (mapped eq null) new ListBuffer[B] else mapped
+          var xc = unchanged
+          while (xc ne pending) {
+            b += xc.head
+            xc = xc.tail
+          }
+          b += head1
+          val tail0 = pending.tail
+          loop(b, tail0, tail0)
+        }
+      }
+    loop(null, this, this)
+  }
+{code}
+
+
+
+Here's simple test showing that the stack no longer overflows:-
+{code}
+  var xs: List[String] = Nil
+  for (i <- 0 until 200000)
+      xs = "X" :: xs
+  xs.mapConserve2(_.toLowerCase)
+{code}

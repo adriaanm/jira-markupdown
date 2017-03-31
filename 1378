@@ -1,0 +1,24 @@
+After some poking around I realize that _some_ unwrapping is needed, because the user code is being invoked via reflection. If the user code throws an exception, `Method#invoke` will instead report it as an `InvocationTargetException` with the user-caused exception as its cause.
+
+Therefore I propose that the correct implementation is for the interpreter to remove exactly one level of indirection via `getCause`, provided the exception caught is in fact an `InvocationTargetException`.
+
+So the current code is
+{code}
+  case e =>
+    def caus(e: Throwable): Throwable =
+      if (e.getCause eq null) e else caus(e.getCause)
+    val orig = caus(e)
+    (stringFrom(str => orig.printStackTrace(str)), false)
+{code}
+
+but I propose that it should instead be
+{code}
+  case e =>
+    def caus(e: Throwable): Throwable =
+      if (e.isInstanceOf[java.lang.reflect.InvocationTargetException] &&
+          e.getCause ne null) e.getCause else e
+    val orig = caus(e)
+    (stringFrom(str => orig.printStackTrace(str)), false)
+{code}
+
+i.e. unwrap only once, and only if the exception represents an exception thrown by user code.

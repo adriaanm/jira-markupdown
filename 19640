@@ -1,0 +1,35 @@
+Shouldn't it be possible to make types declared inside a class also available in the constructor? Consider the following snippets:
+
+{code}
+class X[T](var value: T) {
+  def out(): T = value
+  def in(t: T) = value = t
+}
+
+val x: X[_] = new X(???)
+x.in(x.out()) //ERROR
+{code}
+
+this can be solved by using the pattern described at https://stackoverflow.com/questions/27959606, like this:
+
+{code}
+class X[T](var value: T) {
+  type TT = T
+
+  def out(): TT = value
+  def in(t: TT) = value = t
+}
+
+val x: X[_] = new X(???)
+x.in(x.out())
+x.in(x.value) //ERROR
+{code}
+
+but it leaves the problem that `value` is still of type `T`. This is relevant especially for case classes, where main constructor parameters are always public.
+
+I see two solutions to this problem: 1) allow syntax such as
+{code}class X[type T](var value: T){code}
+that makes the type parameter `x.T` directly available outside of `X` similar to adding `val` to a constructor parameter,
+or 2) make type declararations of a class visible in the main constructor.
+
+I'd expect the first variant to have way fewer implications and fit most needs. Is this viable?

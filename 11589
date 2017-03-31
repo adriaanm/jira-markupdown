@@ -1,0 +1,42 @@
+Enabling `-Xprint:all` in the REPL, shows the difference between your manually expanded version and the SAM-lambda version:
+
+{code}
+  object iw extends Object {
+    private[this] val res0: scala.runtime.BoxedUnit = _;
+    <stable> <accessor> def res0(): Unit = ();
+    final def apply$body$1(s: String): String = s.+(s);
+    def <init>(): type = {
+      iw.super.<init>();
+      iw.this.res0 = {
+        Test.test({
+          new <$anon: java.util.function.Function>()
+        });
+        scala.runtime.BoxedUnit.UNIT
+      };
+      ()
+    }
+  };
+  @SerialVersionUID(value = 0) final class anonfun$1 extends Object with java.util.function.Function with Serializable {
+    final override <synthetic> def apply(s: String): String = $line3.iw.apply$body$1(s);
+    final override <synthetic> <bridge> <artifact> def apply(x$1: Object): Object = anonfun$1.this.apply(x$1.$asInstanceOf[String]());
+    def <init>(): <$anon: java.util.function.Function> = {
+      anonfun$1.super.<init>();
+      ()
+    }
+  }
+{code}
+
+The `apply` method delegates to `iw.apply$body$1`. This blocks when called form the threadpool because the static initializer of `iw$` has not completed, it is blocking on the entire operation to complete.
+
+See http://stackoverflow.com/questions/23108731/why-is-scala-await-result-timing-out-in-repl-when-passed-the-same-future-twice#comment35339401_23111645
+
+Indeed this terminates again under `scala -Yrepl-class-based`. But we can't switch to that as a default until we sort out problems like:
+
+{noformat}
+% qscala -Yrepl-class-based
+
+scala> class C(val a: Any) extends AnyVal
+<console>:7: error: value class may not be a member of another class
+       class C(val a: Any) extends AnyVal
+             ^
+{noformat}

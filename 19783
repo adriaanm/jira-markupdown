@@ -1,0 +1,21 @@
+The following trivial example produces a compiler error:
+
+{code:scala}
+class A {
+  val b = ""
+  def f(b: Option[String] = Some(b))
+}
+
+{code}
+
+The error is 
+
+{noformat}
+Error:(3, 34) type mismatch;
+ found   : Option[String]
+ required: String
+  def f(b: Option[String] = Some(b))
+                                 ^
+{noformat}
+
+The error seems to suggest the compiler is trying to initialize `b` argument with itself, not with the `b` field, when the `b` field should be the only possible valid interpretation in this context, as `b` argument is not visible in the parameter list itself.

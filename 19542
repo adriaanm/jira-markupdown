@@ -1,0 +1,51 @@
+Method {{getEnclosingMethod}} of anonymous class works fine in 2.11.2, but throws an {{java.lang.InternalError: Enclosing method not found}} exception in 2.11.4 and 2.11.5.
+
+{code:title=Test.scala}
+trait A
+
+trait B {
+  def foo = new A {}
+  private def bar = new A {}
+}
+
+object Test extends App {
+  test("B$$anon$1")
+  test("B$$anon$2")
+  // 2.11.2:
+  //   OK: public abstract A B.foo()
+  //   OK: private static A B$class.bar(B)
+  //
+  // 2.11.4:
+  //   OK: public abstract A B.foo()
+  //   FAILED: java.lang.InternalError: Enclosing method not found
+
+  private def test(className: String) = {
+    val `class` = Class.forName(className)
+    try {
+      val method = `class`.getEnclosingMethod
+      println(s"OK: $method")
+    } catch {
+      case e: InternalError => println(s"FAILED: $e")
+    }
+  }
+}
+{code}
+
+Diff between Scala *2.11.2* and Scala *2.11.4* {{B$$anon$2.class}} decompiled with {{-Ygen-asmp}}:
+{code:diff}
+--- "asmp-2.11.2\\B$$anon$2.asmp"       2015-01-29 19:18:49.729241400 +0300
++++ "asmp-2.11.4\\B$$anon$2.asmp"       2015-01-29 19:17:50.505899100 +0300
+@@ -3,7 +3,7 @@
+ public final class B$$anon$2 implements A  {
+
+   // compiled from: Test.scala
+-  OUTERCLASS B$class bar (LB;)LA;
++  OUTERCLASS B bar (LB;)LA;
+
+   ATTRIBUTE Scala : unknown
+   // access flags 0x11
+{code}
+
+
+
+Minimal sbt project is in an attachment.

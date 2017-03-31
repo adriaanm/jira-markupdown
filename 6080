@@ -1,0 +1,7 @@
+I also like the thumbs down.
+
+Situation: ++ was modified to call .seq on the target set.  I defer to alex and assume this is required.  And then it's not clear to me how to fix this.  Because of the signature of ++, one would normally do it like this:
+
+  new SetBuilder[A, This](repr) ++= elems.seq result
+
+There is no "reprSeq" which creates a "sequential representation", so if we must call .seq, we lose the Repr/This and end up building a collection.Set[A].  But ++ returns This.

@@ -1,0 +1,18 @@
+The method {{scala.collection.mutable.GrowingBuilder.clear}} does not actually clear the builder:
+
+{code}
+Welcome to Scala version 2.11.1 (Java HotSpot(TM) 64-Bit Server VM, Java 1.7.0_60).
+
+scala> val b = collection.mutable.HashSet.newBuilder[Int]
+b: scala.collection.mutable.Builder[Int,scala.collection.mutable.HashSet[Int]] = scala.collection.mutable.GrowingBuilder@6094eb89
+
+scala> b += 3
+res0: b.type = scala.collection.mutable.GrowingBuilder@6094eb89
+
+scala> b.clear()
+
+scala> b.result()
+res2: scala.collection.mutable.HashSet[Int] = Set(3)
+{code}
+
+It would work if the constructor parameter {{empty}} was passed by name instead of by value.

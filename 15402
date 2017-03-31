@@ -1,0 +1,14 @@
+when preserveWS = false. example:
+
+{code}
+Welcome to Scala version 2.8.0.RC3 (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_20).
+
+scala> xml.parsing.ConstructingParser.fromSource(io.Source.fromString("<x>a &amp; b</x>"), preserveWS = false).document.text
+res0: String = a&b
+{code}
+
+note that spaces on either side of the escaped ampersand have been lost.
+
+I can't see why you would ever want this behavior. and I'm not an XML laywer, but section 4.4 of the XML 1.0 spec suggests that the character encoded by a character reference should be "retrieved and processed, in place of the reference itself, as though it were part of the document at the location the reference was recognized"
+
+perhaps vaguely related: SI-3062

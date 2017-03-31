@@ -1,0 +1,125 @@
+Here's what I believe is the same hang more or less expressed based directly on ForkJoin. Hopefully this lets us more directly see the problem and evaluate the solutions.
+
+{code}
+import scala.annotation.unchecked.uncheckedVariance
+import scala.concurrent.forkjoin._
+
+object Test {
+
+  val size = 10000
+
+  val parallelismLevel = 8
+
+  class Foreach[S](val sz: Int) extends Task {
+    def leaf() = ()
+
+    def shouldSplitFurther = sz > 1
+
+    def split = if (sz < 2) Seq(this) else Seq(new Foreach[S](sz / 2), new Foreach[S](sz / 2))
+  }
+
+  val pool = {
+//    val defaultPool = new ForkJoinPool() // okay
+    val maxThreads = parallelismLevel // parallelismLevel * 2 appears to be okay
+    val limitedThreadPool = new ForkJoinPool(parallelismLevel, new DefaultThreadFactory(maxThreads), Thread.getDefaultUncaughtExceptionHandler, true)
+    limitedThreadPool
+  }
+
+  def test() {
+    val fjtask = new WrappedTask(new Foreach(size))
+
+    pool.execute(fjtask)
+    fjtask.sync()
+
+    print(".")
+  }
+
+  def main(args: Array[String]): Unit = {
+    val repeats = 100000
+    for (i <- 1 to repeats) test()
+    println("Done.")
+    sys.exit()
+  }
+}
+
+trait Task {
+  def leaf()
+
+  def shouldSplitFurther: Boolean
+
+  def split: Seq[Task]
+
+  def tryLeaf() {
+    leaf()
+  }
+}
+
+class WrappedTask(val body: Task) extends RecursiveTask[Unit] {
+  @volatile var next: WrappedTask = null
+  @volatile var shouldWaitFor = true
+
+  def start() = fork
+  def sync() = join
+  def tryCancel() = tryUnfork
+  def release() {}
+
+  def split: Seq[WrappedTask] = body.split.map(b => new WrappedTask(b))
+
+  def compute() = if (body.shouldSplitFurther) {
+    internal()
+    release()
+  } else {
+    body.tryLeaf()
+    release()
+  }
+
+  def internal() = {
+    var last = spawnSubtasks()
+
+    last.body.tryLeaf()
+    last.release()
+
+    while (last.next != null) {
+      last = last.next
+      if (last.tryCancel()) {
+        last.body.tryLeaf()
+        last.release()
+      } else {
+        last.sync()
+      }
+
+    }
+  }
+
+  def spawnSubtasks() = {
+    var last: WrappedTask = null
+    var head: WrappedTask = this
+    do {
+      val subtasks = head.split
+      head = subtasks.head
+      for (t <- subtasks.tail.reverse) {
+        t.next = last
+        last = t
+        t.start()
+      }
+    } while (head.body.shouldSplitFurther)
+    head.next = last
+    head
+  }
+}
+
+class DefaultThreadFactory(maxThreads: Int) extends ForkJoinPool.ForkJoinWorkerThreadFactory {
+  val numThreads = new java.util.concurrent.atomic.AtomicInteger(0)
+
+  def reserveThread(): Boolean = {
+    val n = numThreads.incrementAndGet()
+    n <= maxThreads
+  }
+
+  def newThread(runnable: Runnable): Thread =
+    if (reserveThread()) new Thread(runnable) else null
+
+  override def newThread(fjp: ForkJoinPool): ForkJoinWorkerThread =
+    if (reserveThread()) new ForkJoinWorkerThread(fjp) {} else null
+}
+{code}

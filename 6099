@@ -1,0 +1,40 @@
+Tests:
+
+run/t4658.scala
+
+{code}
+import scala.collection.immutable.NumericRange
+//#4658
+object Test {
+
+  case class R(start: Int, end: Int, step: Int = 1, inclusive: Boolean = true)
+
+  val rangeData = Array(
+    R(1, Int.MaxValue), R(0, Int.MaxValue), R(0, 0), R(0,0, inclusive = false), R(1,10), R(1,10,2), R(1,10,11),
+    R(-Int.MaxValue, -1), R(-10, -5), R(-10, 0), R(-10, 10), R(-10, -5, 2), R(-10, 0, 2), R(-10, 10, 2),
+    R(-10, -5, inclusive = false), R(-10, 0, inclusive = false), R(-10, 10, inclusive = false),
+    R(-10, -5, 2, inclusive = false), R(-10, 0, 2, inclusive = false), R(-10, 10, 2, inclusive = false)
+  )
+
+  def ranges = rangeData.map(r =>  if (r.inclusive) r.start to r.end by r.step else r.start until r.end by r.step)
+
+  def numericIntRanges = rangeData.map(r => if (r.inclusive) NumericRange(r.start, r.end, r.step) else NumericRange.inclusive(r.start, r.end, r.step))
+
+  def numericLongRanges = rangeData.map(r => if (r.inclusive) NumericRange(r.start.toLong, r.end, r.step) else NumericRange.inclusive(r.start.toLong, r.end, r.step))
+
+  def numericBigIntRanges = rangeData.map(r => if (r.inclusive) NumericRange(BigInt(r.start), BigInt(r.end), BigInt(r.step)) else NumericRange.inclusive(BigInt(r.start), BigInt(r.end), BigInt(r.step)))
+
+  def main(args: Array[String]) {
+    ranges.foreach{range => println(range.sum)}
+    println()
+    numericIntRanges.foreach{range => println(range.sum)}
+    println()
+    numericLongRanges.foreach{range => println(range.sum)}
+    println()
+    numericBigIntRanges.foreach{range => println(range.sum)}
+  }
+
+}
+{code}
+
+Took too much time to run it to generate the check file, though...

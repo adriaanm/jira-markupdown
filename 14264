@@ -1,0 +1,28 @@
+In the 2.8 nightly build (), scala.collection.mutable.Stack.elements returns a List in the reverse order it did in 2.7.4. This may be a feature, but it may be a bug. In 2.7.4, this ScalaCheck property check passed. In 2.8, it fails:
+
+     (list: List[Int]) => {
+        val stack = new Stack[Int]
+        for (element <- list) stack.push(element)
+        stack.elements.toList == list
+      }
+
+Here's why:
+
+scala> import scala.collection.mutable.Stack
+import scala.collection.mutable.Stack
+
+scala> val stack = new Stack[Int]
+stack: scala.collection.mutable.Stack[Int] = Stack()
+
+scala> for (element <- List(1, 0)) stack.push(element)
+
+scala> stack.elements.toList
+warning: there were deprecation warnings; re-run with -deprecation for details
+res1: List[Int] = List(0, 1)
+
+The iterator method has the same behavior:
+
+scala> stack.iterator.toList
+res2: List[Int] = List(0, 1)
+
+

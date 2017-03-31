@@ -1,0 +1,11 @@
+Compiler should check if == is overloaded before showing the warning:
+{code}
+scala> class Zero { def ==(i: Int) = i == 0 }
+defined class Zero
+
+scala> new Zero() == 0
+<console>:6: warning: comparing a fresh object using `==' will always yield false
+       new Zero() == 0
+                  ^
+res7: Boolean = true
+{code}

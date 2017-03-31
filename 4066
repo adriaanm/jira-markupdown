@@ -1,0 +1,24 @@
+Relatedly, in early initializers (https://groups.google.com/d/msg/scala-user/mR8nOx3ve-0/gSMnXWyY3l8J)
+
+{quote}
+{code}
+class Summation[T : Summable](baseValue : Signal[T]) extends {
+  private val _baseSignal = new Mutable[T, T](Val(implicitly[Summable[T]].zero), implicitly[Summable[T]].sum(_, _))
+} with WrappedSignal[T](_baseSignal) {
+  def +=(value : Signal[T]) = _baseSignal.applyMutator(value)
+}
+{code}
+
+I get an error on line two that it "could not find the implicit value for argument e/not enough arguments for method implicitly".
+
+On the second way:
+
+{code}
+class Summation[T](baseValue : Signal[T]) (implicit summable : Summable[T]) extends {
+  private val _baseSignal = new Mutable[T, T](Val(summable.zero), summable.sum(_, _))
+} with WrappedSignal[T](_baseSignal) {
+  def +=(value : Signal[T]) = _baseSignal.applyMutator(value)
+}
+{code}
+I get the compile error "implicit modifier cannot be used for top-level objects" on the first line.  If I remove the reference to summable in the early initializer, then the compile error goes away, although this makes it impossible to pass the signal into the base class constructor.
+{quote}

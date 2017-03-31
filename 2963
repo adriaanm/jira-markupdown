@@ -1,0 +1,12 @@
+This is a bug in either the pattern matcher or erasure, leaning towards erasure. The tree that gets to code generation is type-incorrect:
+
+{code}
+val x: java.lang.Object = temp2;
+body%0(x){
+  x.apply(0)
+}
+{code}
+
+The type of 'x' should be `Array[Int]`. Before erasure, it is `Array[T] with Array[Int]`, I have no idea why it is erased to a plain Object.
+
+Paul, I reassign this to you since you were involved in (relatively) recent changes to the way intersection types are erased.

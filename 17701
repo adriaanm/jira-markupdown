@@ -1,0 +1,25 @@
+Background: https://groups.google.com/d/topic/scala-internals/cjJLFtXDnkM/discussion
+{code}
+Welcome to Scala version 2.10.0-RC2 (Java HotSpot(TM) 64-Bit Server VM, Java 1.7.0_09).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> class Foo {
+     | final val bar = 500 * 1000L
+     | }
+defined class Foo
+
+scala> val foo = new Foo
+foo: Foo = Foo@77e8e168
+
+scala> foo.bar
+res0: Long = 500000
+
+scala> val field = foo.getClass.getDeclaredField("bar")
+field: java.lang.reflect.Field = private final long Foo.bar
+
+scala> field.setAccessible(true)
+
+scala> field.get(foo)
+res2: Object = 0
+{code}

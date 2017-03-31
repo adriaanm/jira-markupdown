@@ -1,0 +1,34 @@
+While performing the implicit search for Bind[Stream], the symbol `Tuple` has its field `normalized` set, based on the incorrect result of `isHigherKinded == false`, determined based on incomplete information about the class Tuple1 gathered by `unsafeTypeParams`.
+
+{code}
+    def normalize0: Type = 
+      if (sym.isAliasType) { // beta-reduce 
+        if (sym.info.typeParams.length == args.length || !isHigherKinded) { 
+          /* !isHigherKinded && sym.info.typeParams.length != args.length only happens when compiling e.g., 
+           `val x: Class' with -Xgenerics, while `type Class = java.lang.Class' had already been compiled without -Xgenerics */
+          val xform = transform(sym.info.resultType)
+          assert(xform ne this, this)
+          xform.normalize // cycles have been checked in typeRef
+        } else {
+          PolyType(typeParams, transform(sym.info.resultType).normalize)  // eta-expand
+          // @M TODO: should not use PolyType, as that's the type of a polymorphic value -- we really want a type *function*
+        }
+      } else if (isHigherKinded) { 
+        // @M TODO: should not use PolyType, as that's the type of a polymorphic value -- we really want a type *function*
+        // @M: initialize needed (see test/files/pos/ticket0137.scala)
+        PolyType(typeParams, typeRef(pre, sym.initialize, dummyArgs))
+      } else if (sym.isRefinementClass) {
+        sym.info.normalize // @MO to AM: OK?
+        //@M I think this is okay, but changeset 12414 (which fixed SI-1241) re-introduced another bug (SI-2208)
+        // see typedTypeConstructor in Typers
+      } else {
+        super.normalize
+      }
+
+    override def normalize: Type =
+      if (phase.erasedTypes) normalize0
+      else {
+        if (normalized == null) normalized = normalize0
+        normalized
+      }
+{code}

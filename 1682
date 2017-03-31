@@ -1,0 +1,16 @@
+This case reduces to
+
+{code}
+trait A {
+  val m = 0
+}
+
+object B extends A
+class B extends A
+
+object App extends Application {
+  new B
+}
+{code}
+
+The compiler generates two conflicting setters for m in B, a static one for the object and a non-static one for the class.

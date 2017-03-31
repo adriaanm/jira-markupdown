@@ -1,0 +1,23 @@
+Thanks Jason for elaborating on this!
+
+I am wondering why the c++ libraries define Epsilon as 2.2e-016 and Apache Commons Math uses 1.1e-16. Apparently the difference is in the definition, e.g.:
+
+{code}
+scala> import org.apache.commons.math.util.MathUtils
+import org.apache.commons.math.util.MathUtils
+
+scala> (1d - MathUtils.EPSILON) == 1d
+res4: Boolean = false
+
+scala> (1d - MathUtils.EPSILON/2) == 1d
+res5: Boolean = true
+
+scala> (1d + MathUtils.EPSILON) == 1d
+res6: Boolean = true
+
+scala> (1d + 2*MathUtils.EPSILON) == 1d
+res7: Boolean = false
+{code}
+
+Apache Commons Math: 1 - EPSILON != 1
+C++ headers: 1 + EPSILON != 1

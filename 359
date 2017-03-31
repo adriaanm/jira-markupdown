@@ -1,0 +1,22 @@
+I would be happier if it returned something of type
+{code}
+T forSome { type T }
+{code}
+I have not figured out a way to introduce an unsoundness or compiler crash yet, but it is possible to write a reasonable program that won't typecheck:
+{code}
+scala> { val x : ({ val y : T } forSome { type T }) = new { val y = 3 }
+     |   new { val z = x.y }
+     | }
+<console>:5: error: type mismatch;
+ found   : $$anon(in object $$iw) where type $$anon(in object $$iw) <: java.lang.Object{def z: T}
+ required: $$anon(in value res1) forSome { type $$anon(in value res1) <: java.lang.Object{def z: T}; type T }
+  val res1 =
+      ^
+{code}
+versus
+{code}
+scala> { val x : ({ val y : T } forSome { type T }) = new { val y = 3 }
+     | new { val z : T forSome { type T } = x.y }
+     | }
+res5: java.lang.Object{def z: T forSome { type T }} = $$anon$$2@5f396f
+{code}

@@ -1,0 +1,64 @@
+Error mentioned in the comment above is now fixed. However, the error from OP is still there. Plus, I've discovered another flavor of the bug:
+
+{code}
+import scala.tools.nsc.reporters._
+import scala.tools.nsc.Settings
+import reflect.runtime.Mirror.ToolBox
+
+object Test extends App {
+  val code = scala.reflect.Code.lift{
+    val foo :: bar :: _ = List(1, 2, 3)
+    println(foo * bar)
+  };
+
+  val reporter = new ConsoleReporter(new Settings)
+  val toolbox = new ToolBox(reporter)
+  val ttree = toolbox.typeCheck(code.tree)
+  toolbox.runExpr(ttree)
+}
+{code}
+
+{code}
+error: object List does not take parameters
+error: type mismatch;
+ found   : Any
+ required: Int
+error: type mismatch;
+ found   : Any
+ required: Int
+java.lang.Error: reflective compilation has failed
+        at scala.reflect.runtime.ToolBoxes$ToolBox$ToolBoxGlobal.runExpr(ToolBoxes.scala:115)
+        at scala.reflect.runtime.ToolBoxes$ToolBox.runExpr(ToolBoxes.scala:204)
+        at scala.reflect.runtime.ToolBoxes$ToolBox.runExpr(ToolBoxes.scala:207)
+        at Test$delayedInit$body.apply(t5273_2a.scala:14)
+        at scala.Function0$class.apply$mcV$sp(Function0.scala:34)
+        at scala.runtime.AbstractFunction0.apply$mcV$sp(AbstractFunction0.scala:12)
+        at scala.App$$anonfun$main$1.apply(App.scala:61)
+        at scala.App$$anonfun$main$1.apply(App.scala:61)
+        at scala.collection.LinearSeqOptimized$class.foreach(LinearSeqOptimized.scala:59)
+        at scala.collection.immutable.List.foreach(List.scala:77)
+        at scala.collection.generic.TraversableForwarder$class.foreach(TraversableForwarder.scala:31)
+        at scala.collection.mutable.ListBuffer.foreach(ListBuffer.scala:45)
+        at scala.App$class.main(App.scala:61)
+        at Test$.main(t5273_2a.scala:5)
+        at Test.main(t5273_2a.scala)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+        at java.lang.reflect.Method.invoke(Method.java:597)
+        at scala.tools.nsc.util.ScalaClassLoader$$anonfun$run$1.apply(ScalaClassLoader.scala:90)
+        at scala.tools.nsc.util.ScalaClassLoader$class.asContext(ScalaClassLoader.scala:38)
+        at scala.tools.nsc.util.ScalaClassLoader$URLClassLoader.asContext(ScalaClassLoader.scala:159)
+        at scala.tools.nsc.util.ScalaClassLoader$class.run(ScalaClassLoader.scala:90)
+        at scala.tools.nsc.util.ScalaClassLoader$URLClassLoader.run(ScalaClassLoader.scala:159)
+        at scala.tools.nsc.CommonRunner$class.run(ObjectRunner.scala:28)
+        at scala.tools.nsc.ObjectRunner$.run(ObjectRunner.scala:45)
+        at scala.tools.nsc.CommonRunner$class.runAndCatch(ObjectRunner.scala:35)
+        at scala.tools.nsc.ObjectRunner$.runAndCatch(ObjectRunner.scala:45)
+        at scala.tools.nsc.MainGenericRunner.runTarget$1(MainGenericRunner.scala:70)
+        at scala.tools.nsc.MainGenericRunner.process(MainGenericRunner.scala:92)
+        at scala.tools.nsc.MainGenericRunner$.main(MainGenericRunner.scala:101)
+        at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
+{code}
+
+Here's why it happens. Scalac wraps the scrutinee in @unchecked, and this generates AnnotatedType, which remembers its original. Original gets reified, but then (gasp!!) it gets typechecked. Of course, typechecking fails to find List, because in the original it's just an unqualified Ident("List"), and during reflective compilation we no longer have the lexical context and the imports.

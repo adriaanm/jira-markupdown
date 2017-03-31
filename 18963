@@ -1,0 +1,11 @@
+Quasiquotes already use originals to match some type trees:
+{code}
+scala> val tq"(..$args) => $res" = typecheckTyp(tq"(Int, Int) => Int")
+args: List[reflect.runtime.universe.Tree] = List(Int, Int)
+res: reflect.runtime.universe.Tree = Int
+
+scala> val tq"Int" = typecheckTyp(tq"Int")
+scala.MatchError: Int (of class scala.reflect.internal.Trees$TypeTree)
+  ... 32 elided
+{code}
+But it's not done consistently.

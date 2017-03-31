@@ -1,0 +1,25 @@
+in 2.8rc2 
+
+
+{code}
+val settings = new scala.tools.nsc.Settings
+settings.make.value = "transitive"
+//other compiler settings
+{code}
+
+
+
+results in the following compilation error:
+
+{code}
+error: value value_= is not a member of AbsSettings.this.Setting
+   [scalac]     settings.make.value = "transitive"
+
+{code}
+
+
+
+in 2.8 beta it worked as expected
+
+
+i noticed that the whole setting solution was completely refactored between the two releases (before everything was in Settings now it's broken into multiple classes in the settings package), wonder if that change is related

@@ -1,0 +1,30 @@
+FYI: -Yvirtpatmat fixes this issue.
+
+I cloned the repo and checked with 2.10.0-M1:
+{code}
+
+git diff
+diff --git a/build.sbt b/build.sbt
+index a2f72de..6596ab7 100644
+--- a/build.sbt
++++ b/build.sbt
+@@ -2,10 +2,10 @@ name := "pattern-match-bug"
+ 
+ version := "1.0"
+ 
+-scalaVersion := "2.9.1"
++scalaVersion := "2.10.0-M1"
+ 
+-libraryDependencies += "net.liftweb" %% "lift-common" % "2.4"
++libraryDependencies += "net.liftweb" % "lift-common_2.9.1" % "2.4"
+ 
+-libraryDependencies += "net.liftweb" %% "lift-json" % "2.4"
++libraryDependencies += "net.liftweb" % "lift-json_2.9.1" % "2.4"
+ 
+-//scalacOptions ++= Seq("-verbose")//, "–Xshow-phases", "-Xshow-object", "-Xshow-class")
++scalacOptions ++= Seq("-verbose")
+{code}
+
+NOTE: I changed dependencies so those compiled against 2.9.1 were used even if we compile with 2.10.0-M1. This doesn't matter that much because we are interested in compiler crash and not binary compatibility issues.
+
+I was able to reproduce the problem with such setup. However, after adding "-Yvirtpatmat" to scalacOptions it compiled successfully and very quickly.

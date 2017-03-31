@@ -1,0 +1,20 @@
+Merging with SI-5022.
+
+Under my proposed patch for that bug:
+
+{code}
+scala> import scala.language.existentials
+import scala.language.existentials
+
+scala> class Row
+defined class Row
+
+scala> abstract class MyRelation [R <: Row, +Relation <: MyRelation[R, Relation]]
+defined class MyRelation
+
+scala> type M = MyRelation[R, Relation] forSome {type R <: Row; type Relation <: MyRelation[R, Relation]}
+defined type alias M
+
+scala> val (x,y): (String, M) = null
+scala.MatchError: null
+{code}

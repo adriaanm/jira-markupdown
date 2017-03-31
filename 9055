@@ -1,0 +1,60 @@
+Compare the non-working 
+
+{code}class Child extends Parent({val x=new Foo{}; x}){code}
+
+{noformat}
+javap -c -l -s -private Child
+Compiled from "Test.scala"
+public class Child extends Parent{
+public Child();
+  Signature: ()V
+  Code:
+   0:	aload_0
+   1:	new	#12; //class Child$$anon$1
+   4:	dup
+   5:	aload_0
+   6:	invokespecial	#15; //Method Child$$anon$1."<init>":(LChild;)V
+   9:	astore_1
+   10:	aload_1
+   11:	invokespecial	#18; //Method Parent."<init>":(LFoo;)V
+   14:	return
+
+  LineNumberTable: 
+   line 3: 0
+
+  LocalVariableTable: 
+   Start  Length  Slot  Name   Signature
+   0      15      0    this       LChild;
+   10      1      1    x       LFoo;
+
+
+}
+{noformat}
+
+to the working 
+{code}class Child extends Parent({new Foo{}}){code}
+
+{noformat}
+javap -c -l -s -private Child
+Compiled from "Test2.scala"
+public class Child extends Parent{
+public Child();
+  Signature: ()V
+  Code:
+   0:	aload_0
+   1:	new	#12; //class Child$$anon$1
+   4:	dup
+   5:	invokespecial	#14; //Method Child$$anon$1."<init>":()V
+   8:	invokespecial	#17; //Method Parent."<init>":(LFoo;)V
+   11:	return
+
+  LineNumberTable: 
+   line 3: 0
+
+  LocalVariableTable: 
+   Start  Length  Slot  Name   Signature
+   0      12      0    this       LChild;
+
+
+}
+{noformat}

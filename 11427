@@ -1,0 +1,7 @@
+> What's the problem wrapping the code which does the reflection in a try-catch and repackage the fatal exception for those cases where this is needed?
+
+I don't want anything special to happen for {{NoClassDefFoundError}}. I'd like to have it handled just like {{ArithmeticException}}. The reflection happens deep in the call stack, no way to meaningfully handle it there. And reflection can cause so many different exceptions when things go wrong. The higher layers don't care about the reflection. To them this is the same as a division by zero. "What we wanted to do failed." So why is the {{Future}} not completed with a failure? The JVM has certainly not been destroyed.
+
+Like I said, I could indeed try to track down all the calls where a non-{{NonFatal}} exception can happen and wrap these. But I will not find them all, and I don't want to do this in the first place. If you say Scala's {{Future}} handles a subclass of exceptions nicely, but for a few types, like {{InterruptedException}} and {{NoClassDefFoundError}} I'll have to do it myself, it's like a multiplication operator that works for all numbers except 5 and 7. "You can implement multiplication for those exceptions yourself." Yeah, I guess, but why are you excluding them?
+
+At least that's what it feels like at the moment. But I haven't read through the whole discussion thread yet. I just wanted to ping the bug to see if there is any decision to move in some direction with this. Thanks for any insight!

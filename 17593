@@ -1,0 +1,28 @@
+I've 2 files that have only one difference - "\r\n" sequence in the test.txt
+[vladimir@vladimir tmp]$ cat test.txt
+line1
+line2
+line3
+[vladimir@vladimir tmp]$ cat test2.txt
+line1
+line2
+line3[vladimir@vladimir tmp]$
+
+I try to execute in the REPL:
+
+scala> scala.io.Source.fromFile("/tmp/test.txt").mkString(",")
+res17: String = 
+,l,i,n,e,1,
+,l,i,n,e,2,
+,l,i,n,e,3,
+"
+
+scala> scala.io.Source.fromFile("/tmp/test2.txt").mkString(",")
+res18: String = 
+,,i,n,e,1,
+,l,i,n,e,2,
+,l,i,n,e,3
+
+scala> 
+
+As you can see, for test2.txt file the first "l" character ommited. I think, that it isn't expected behaviour.

@@ -1,0 +1,21 @@
+> Apparently, this is not the case with the current compiler. 
+
+You are not referencing the '+' member of the Null when you write (null: String) + "a".  You are referencing the '+' member of String.  null is a String, you know.  See:
+{code}
+scala> var x: String = null
+x: String = null
+{code}
+Try to reference the '+' member of Null:
+{code}
+scala> null + "abc"        
+<console>:6: error: value + is not a member of Null
+       null + "abc"
+            ^  
+{code}
+Look, it's too smart to let you hurt yourself like that.  (This does represent a spec deviation, not to mention more fundamental issues with substitutability, but Null is always a whirlwind of contradiction.)
+
+> Changing the wording in SLS 12.3.1 only camouflages the problem. 
+
+I'm sorry but I question your understanding of the problem.  You seem to be very invested in this issue, and I encourage you to take a while paging through the open bugs in trac to maybe gain some perspective about what's important.
+
+There ARE a bunch of issues with null, but by focusing on String.+ you're only finding them by periodically bumping into them in the periphery.

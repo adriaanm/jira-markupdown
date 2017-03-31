@@ -1,0 +1,23 @@
+{code}
+object Foo {
+	def bar {}
+}
+{code}
+
+{code}
+scalac Foo.scala
+javap -c Foo
+{code}
+
+{code}
+Compiled from "A.scala"
+public final class Foo {
+  public static final void bar();
+    Code:
+       0: getstatic     #11                 // Field Foo$.MODULE$:LFoo$;
+       3: invokevirtual #13                 // Method Foo$.bar:()V
+       6: return
+}
+{code}
+
+It hurt performance. It should be replaced to {{invokespecial}}

@@ -1,0 +1,29 @@
+Compilation of the following example fails with 2.7.2.RC6
+Compilation succeeds with 2.7.1.final and 2.6.0-final
+
+{code}
+abstract class Module {
+    def moduleDemands(): List[Module]
+}
+
+
+object Test {
+    new Module { owner =>
+        def moduleDemands() = Nil
+
+        abstract class TestModule extends Module {}
+
+        val a = new TestModule {
+            def moduleDemands(): List[Module] = Nil
+        }
+
+        val b = new TestModule {
+            def moduleDemands(): List[Module] = owner :: c :: Nil // error: recursive value x$$1 needs type
+        }
+
+        val c = new TestModule {
+            def moduleDemands(): List[Module] = owner :: a :: Nil // error: recursive value c needs type
+        }
+    }
+}
+{code}

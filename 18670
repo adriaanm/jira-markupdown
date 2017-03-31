@@ -1,0 +1,39 @@
+This code does not compile:
+
+{code}
+object Test {
+
+  sealed trait Parser[I]
+
+  implicit class ParserOps[I](val parser: Parser[I]) extends AnyVal {
+
+    def trans(pf: PartialFunction[Parser[I], Parser[I]]): Parser[I] = {
+      parser
+    }
+
+    def withErrorValue(errorValue: => Parser[I]): Parser[I] = parser trans {
+      case p => p
+    }
+
+  }
+
+}
+{code}
+
+The error is:
+
+{code}
+overriding method applyOrElse in trait PartialFunction of type [A1 <: eu.swdev.parser.push.Test.Parser[I], B1 >: eu.swdev.parser.push.Test.Parser[I]](x: A1, default: A1 => B1)B1;
+ method applyOrElse has incompatible type
+    def withErrorValue(errorValue: => Parser[I]): Parser[I] = parser trans {
+object creation impossible, since method isDefinedAt in trait PartialFunction of type (x: eu.swdev.parser.push.Test.Parser[I])Boolean is not defined
+(Note that A does not match eu.swdev.parser.push.Test.Parser[I])
+    def withErrorValue(errorValue: => Parser[I]): Parser[I] = parser trans {
+                                                                           ^                                                                           ^
+{code}
+
+The compilation error disappears if
+
+* the {{ParserOps}} class is changed such that it does not extend
+{{AnyVal}} or
+* the type parameter {{I}} is removed from the {{Parser}} class

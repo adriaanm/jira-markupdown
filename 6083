@@ -1,0 +1,16 @@
+There is something truly unholy taking place here with implicit conversions and auto-tupling.
+
+If you give an extra pair of parens it fails in typer as it should:
+{noformat}
+scala> new collection.immutable.Set.Set2((1, 2))
+<console>:8: error: constructor Set2 in class Set2 cannot be accessed in object $iw
+              new collection.immutable.Set.Set2((1, 2))
+              ^
+{noformat}
+Take them away, and behold! A little something for everyone in that expression.  It's not even calling '+' on the StringAdd instance.
+{noformat}
+scala> new collection.immutable.Set.Set2(1, 2)
+[...]
+private[this] val res0: scala.runtime.StringAdd = 
+  scala.this.Predef.any2stringadd(new collection.immutable.Set.Set2[Nothing]).this(scala.this.Tuple2.apply[Int, Int](1, 2));
+{noformat}

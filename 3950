@@ -1,0 +1,24 @@
+Some things going one way, some another.
+
+The good news: compile M from my previous comment and start the repl, and lo and behold:
+{code}
+scala> val m = new M[Int]()
+m: M[Int] = M$$mcI$$sp@3cba4539
+
+scala> val m = new M[Int]()
+m: M[Int] = M$$mcI$$sp@5d23fab3
+{code}
+The bad: define the same M from within the repl, and:
+{code}
+scala> class M[@specialized T] { }
+defined class M
+
+scala> val m = new M[Int]()
+Exception in thread "main" java.lang.Error: Unknown type: <notype>, <notype> [class scala.tools.nsc.symtab.Types$$NoType$$, class scala.tools.nsc.symtab.Types$$NoType$$] TypeRef? false
+	at scala.tools.nsc.symtab.SymbolTable.abort(SymbolTable.scala:35)
+	at scala.tools.nsc.backend.icode.TypeKinds$$class.toTypeKind(TypeKinds.scala:390)
+	at scala.tools.nsc.backend.icode.ICodes.toTypeKind(ICodes.scala:25)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:735)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genStat(GenICode.scala:165)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$genStat$$1.apply(GenICode.scala:145)
+{code}

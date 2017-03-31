@@ -1,0 +1,8 @@
+When doing a {{map}} over a parallel sequence, my program deadlocks waiting on the result if the map function threw an exception. Test case (exhibits problem in Scala 2.9.1 REPL on Oracle JDK 1.7.0u2, Linux x86_64):
+
+{code}
+val foos = (1 to 1000) toSeq
+foos.par.map(i => if (i % 37 == 0) sys.error("i div 37") else i).seq
+{code}
+
+Entering this code in the toplevel will result in an indefinite hang. {{jstack}} reveals that all interesting threads are waiting, either on object monitors or parked.

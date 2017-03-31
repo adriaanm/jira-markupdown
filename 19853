@@ -1,0 +1,15 @@
+The following code throws a stack overflow on the last line:
+
+{code:scala}
+var m: Map[Int, Double] = Map.empty
+(1 until 10000).foreach{i => 
+   m = m.mapValues{x => x}
+}
+m.isEmpty
+m.toList
+{code}
+
+Even if the map is empty, the repeated wrapping of MappedValues causes a stack overflow when the map is finally traversed (and leaks memory up until then). This can happen far away from the map's creation and is very hard to track down. This just caught us in production, essentially bringing down one of our live deployments. 
+
+This is related to https://issues.scala-lang.org/browse/SI-4776
+but is an example of a runtime error, not just a design issue. 

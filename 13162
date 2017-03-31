@@ -1,0 +1,22 @@
+RichString.capitalize doesn't check to see if the string is empty, so it throws an array out of bounds exception:
+
+{code}
+scala> "".capitalize
+java.lang.ArrayIndexOutOfBoundsException: 0
+        at scala.runtime.RichString.capitalize(RichString.scala:133)
+{code}
+
+I would expect it to just return the empty string if it's empty. Something like this would work:
+
+{code}
+def capitalize: String = self match {
+  case "" => ""
+  case _ @ chars => {
+    val chars = self.toCharArray
+    chars(0) = chars(0).toUpperCase
+    new String(chars)
+  }
+}
+{code}
+
+Or they may be a better way...

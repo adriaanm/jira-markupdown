@@ -1,0 +1,27 @@
+I bisected the regression (or maybe, the dominant regression) to our removal of scala.concurrent.forkjoin in favour of direct use of the JDK implementation.
+
+https://github.com/scala/scala/commit/fa8012d28687986902ce1255a19f9f49affb3bca
+
+In https://github.com/johanandren/akka-ping-pong/compare/master...retronym:embed-akka, I changed Akka dispatcher and mailbox code to j.u.c.ForkJoin directly. This also shows the regression with 2.11.8.
+
+Prior to removing it, our fork of ForkJoin was at:
+
+https://github.com/scala/scala/commit/77437ffa521a6d1b073283624a722848a8c0b33c
+
+{noformat}
+Updates ForkJoinPool and dependent classes to the latest jsr166y revisions:
+
+    ForkJoinPool.java:
+    Revision 1.185
+    Sat Feb 16 20:50:29 2013 UTC (2 months, 2 weeks ago) by jsr166
+
+    ForkJoinTask.java:
+    Revision 1.100
+    Tue Feb 5 17:09:54 2013 UTC (3 months ago) by jsr166
+
+    ForkJoinWorkerThread.java:
+    Revision 1.73
+    Wed Nov 21 19:54:39 2012 UTC (5 months, 2 weeks ago) by dl
+{noformat}
+
+

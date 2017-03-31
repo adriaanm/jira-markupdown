@@ -1,0 +1,44 @@
+Okay, this is a weird one. I suspect it's a bug against FSC, but honestly it could be the IntelliJ Scala plugin's fault; I just don't know.
+
+In one file, in src:
+
+{noformat}
+package compilerbug
+
+trait SadTrait {
+  def buggyMethod(argWithDefault: String = "default") {
+    for (i <- 0 to 1) {
+      val _ = argWithDefault
+    }
+  }
+}
+
+object SadObject extends SadTrait
+{noformat}
+
+In another file, in test:
+{noformat}
+package compilerbug
+
+class TestClass {
+  def repro() {
+    SadObject.buggyMethod()
+  }
+}
+{noformat}
+
+With FSC disabled, this compiles fine. With FSC on, this complains:
+
+{noformat}
+error: not enough arguments for method buggyMethod: (argWithDefault$1: String)Unit
+SadObject.buggyMethod()
+{noformat}
+
+This appears to be a minimal repro to me; the problem goes away if:
+* TestClass lives in src as well
+* argWithDefault is not used in the for loop
+* the outside of the for loop is commented out leaving a bare val _ = argWithDefault
+* Inside buggyMethod, I let val argAlias = argWithDefault, and then use argAlias in the for loop
+* buggyMethod is defined directly on SadObject rather than in SadTrait
+
+Fortunately, the fourth bullet point is a pretty general workaround for this problem, so I'm not blocked on it... but weird, right?

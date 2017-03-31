@@ -1,0 +1,48 @@
+Given the following Scala source code:
+{code}
+case class stup(private val x: Int)
+{code}
+
+A stup.class file is emitted with the following elements (according to javap):
+{code}
+public class stup extends java.lang.Object implements scala.ScalaObject,scala.Product,java.io.Serializable{
+    private final int x;
+    public stup(int);
+    private final boolean gd1$$1(int);
+    public final java.lang.Object productElement(int);
+    public final int productArity();
+    public final java.lang.String productPrefix();
+    public boolean equals(java.lang.Object);
+    public java.lang.String toString();
+    public int hashCode();
+    public final int $$tag();
+    public int x$$1();
+    private int x();
+}
+{code}
+
+However, I cannot see how to access x$$1 from Java.  Here is a simple attempt:
+{code}
+class B {
+  int bar(stup st) {
+    return st.x$$1();
+  }
+}
+{code}
+
+However, it fails to compile:
+{code}
+B.java:3: cannot find symbol
+symbol  : method x$$1()
+location: class stup
+    return st.x$$1();
+             ^
+1 error
+{code}
+
+First, can anyone else verify this behavior?  Second, can anyone figure out what is going on?
+
+I tried, with a related example, modifying scalac to use a double underline instead of a dollar sign in this kind of case, thus yielding an accessor named "x underscore underscore 1" instead of x$$1.  However, that didn't solve the problem.  Thus, it's not a naming conflict between x and x$$1.  Also, I can verify that the problem does not occur with method x().  Thus it's something to do with the *second* accessor created for the x field.  (I presume it creates this because the first one is private.)
+
+It looks like a straightforward method call to me.  Is there a weird flag on the x$$1 method?  Is there a weird character hidden in the name, such that x$$1 is not the exact name to use?  I can't see what the problem is, and am not far from the point of tracing through a Java compiler.
+

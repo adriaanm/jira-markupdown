@@ -1,0 +1,28 @@
+{code}
+# cat VarArgs.scala
+class Foo {
+  def info0(m: String) { }
+  def info0(m: String, args: Any*) { }
+
+  def info1(m: =>String) { }
+  def info1(m: =>String, args: Any*) { }
+}
+object VarArgs {
+  def main(args: Array[String]) {
+    val foo = new Foo
+    foo.info0("hello")
+    foo.info1("world")
+  }
+}
+# scalac -version
+Scala compiler version 2.8.0.final -- Copyright 2002-2010, LAMP/EPFL
+# scalac VarArgs.scala
+VarArgs.scala:16: error: ambiguous reference to overloaded definition,
+both method info1 in class Foo of type (m: => String,args: Any*)Unit
+and  method info1 in class Foo of type (m: => String)Unit
+match argument types (java.lang.String)
+    foo.info1("world")
+        ^
+one error found
+{code}
+The by-value methods can be handled by not the by-name methods.

@@ -1,0 +1,18 @@
+Whittled further:
+{code}
+//  a.scala
+package object pkg {
+  def foo(x: Int): String = "a"
+  def foo(x: String): String = "b"
+}
+//  b.scala
+package pkg {
+  package object other
+  package other { class Crash { foo("") } }
+}
+
+object Test {
+  def main(args: Array[String]): Unit = new pkg.other.Crash
+}
+{code}
+The overloaded symbol in the package object leads somehow to the call site tree not being fully qualified, it remains as `package`.foo(""). Later, erasure notices and inserts an ill-conceived cast between package objects (which seems like it will always be the wrong thing.) It works if the call site is pkg.foo("").

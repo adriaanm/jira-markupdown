@@ -1,0 +1,11 @@
+(In r24174) Enclosing method attributes.  There are at least two bugs. 1) traits
+have no constructor by the time genjvm rolls around, so NoSymbol
+emerges.  Maybe the author of these two lines was under the impression
+that isClass == true implies isTrait == false, which it does not.
+
+  assert(enclClass.isClass)
+  val sym = enclClass.primaryConstructor
+
+2) for reasons unknown the 0-arg constructor was hardcoded as the
+enclosing constructor, which is the wrong signature in all cases
+but that one.  Closes SI-4211, review by dragos.

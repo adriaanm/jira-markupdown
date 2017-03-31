@@ -1,0 +1,23 @@
+I have beaten up on this long enough to minimize the cause.
+{code}
+package bar;
+
+// both f and g must be present
+class A {
+  void f(C.D arg) { }
+}
+class B extends A { 
+  void g(C.D arg) { }
+}
+class C extends B {
+  public class D { }
+}
+{code}
+{code}
+// the above wouldn't work anyway, but the cyclic reference hits
+// before the package access check so it'll do.
+scala> import bar.B._
+<console>:5: error: illegal cyclic reference involving class C
+       import bar.B._
+                  ^
+{code}

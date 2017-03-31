@@ -1,0 +1,17 @@
+If a specialized class includes code to be run during construction time that refers to another specialized class, that code is skipped.  In the following example, "hello?" is not printed.  It is printed if specialization is disabled, or if the following Function1 construction is omitted.
+
+{code}
+object C {
+  class E[@specialized A](var f: A => Boolean) {
+    def this() = this(null)
+
+    println("hello?")
+    if (f == null) f = { _ => false }
+  }
+
+  def main(args: Array[String]) {
+    new E[Int]
+    println("goodbye")
+  }
+}
+{code}

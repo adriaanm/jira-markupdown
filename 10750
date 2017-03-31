@@ -1,0 +1,19 @@
+Here's an example from Slick that Stefan originally showed me:
+
+{code}
+import scala.slick.driver.H2Driver.simple._
+
+object Test extends App {
+  case class MyId(val value: Int) extends MappedTo[Int]
+  //val iso1: Isomorphism[MyId, Int] = scala.slick.lifted.MappedToBase.mappedToIsomorphism[MyId]
+  //val iso2 = implicitly[Isomorphism[MyId, _]]
+
+  class MyTable(tag: Tag) extends Table[MyId](tag, "table") {
+    def * = column[MyId]("id")
+  }
+
+  TableQuery(new MyTable(_)).map(identity)
+}
+{code}
+
+The error was happening because Stefan's materializer was called with a type argument that didn't conform to a bound that was declared on the materializer.

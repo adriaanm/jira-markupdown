@@ -1,0 +1,44 @@
+Partest grep does not seem to be scanning recursively for patterns in files.
+If there is a file in a test category which is in a separate subdirectory, grep will not catch it.
+
+Below:
+
+{code}
+‡ test/partest --show-log --grep static
+Argument 'static' matched 25 test(s)
+
+Testing individual files
+testing: [...]/files/pos/t6294.scala                                  [  OK  ]
+testing: [...]/files/pos/inliner2.scala                               [  OK  ]
+
+Testing individual files
+testing: [...]/files/neg/main1.scala                                  [  OK  ]
+testing: [...]/files/neg/static-annot.scala                           [  OK  ]
+testing: [...]/files/neg/t4749.scala                                  [  OK  ]
+testing: [...]/files/neg/reify_nested_inner_refers_to_local.scala     [  OK  ]
+testing: [...]/files/neg/reify_metalevel_breach_+0_refers_to_1.scala  [  OK  ]
+testing: [...]/files/neg/reify_metalevel_breach_-1_refers_to_0_a.scala[  OK  ]
+testing: [...]/files/neg/reify_metalevel_breach_-1_refers_to_1.scala  [  OK  ]
+testing: [...]/files/neg/reify_metalevel_breach_-1_refers_to_0_b.scala[  OK  ]
+
+Testing individual files
+testing: [...]/files/run/t3619.scala                                  [  OK  ]
+testing: [...]/files/run/reflection-modulemirror-nested-badpath.scala [  OK  ]
+testing: [...]/run/reflection-modulemirror-toplevel-badpath.scala     [  OK  ]
+testing: [...]/files/run/reflection-enclosed-basic.scala              [  OK  ]
+testing: [...]/files/run/toolbox_typecheck_macrosdisabled.scala       [  OK  ]
+testing: [...]/files/run/structural.scala                             [  OK  ]
+testing: [...]/files/run/toolbox_typecheck_macrosdisabled2.scala      [  OK  ]
+testing: [...]/run/reflection-constructormirror-toplevel-badpath.scala[  OK  ]
+testing: [...]/files/run/reflection-allmirrors-tostring.scala         [  OK  ]
+testing: [...]/run/reflection-constructormirror-nested-badpath.scala  [  OK  ]
+testing: [...]/files/run/static-annot-repl.scala                      [  OK  ]
+testing: [...]/files/run/json.scala                                   [  OK  ]
+
+Testing individual files
+testing: [...]/files/jvm/nest.scala                                   [  OK  ]
+testing: [...]/files/jvm/annotations.scala                            [  OK  ]
+testing: [...]/files/jvm/inner.scala                                  [  OK  ]
+{code}
+
+it did not catch {{test/files/run/static-annot/}}.

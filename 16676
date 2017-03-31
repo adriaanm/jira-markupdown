@@ -1,0 +1,37 @@
+This is a suite of confusing compilation errors related to overriding of implicit vals. These all appear to be related to some combination of type inference and implicit conversions. Specific error messages accompany the attached source files.
+
+These examples are derived from an example where an implicit conversion required to transform the constructor argument to a case class was not being found, similar to that shown in Broken1.scala; however, in the original failure case (which I have been unsuccessful in attempting to reduce) the implicit conversion A => B appeared to not be found in scope; here is the original failure message:
+{noformat}
+[error] /Users/nuttycom/reportgrid/blueeyes/src/test/scala/blueeyes/core/service/engines/HttpServerNettySpec.scala:40: type mismatch;
+[error]  found   : org.specs2.time.Duration
+[error]  required: akka.util.Duration
+[error]   implicit val defaultFutureTimeouts = FutureTimeouts(50, duration)
+{noformat}
+Here are the relevant lines from that example:
+{noformat}
+trait AkkaConversions {
+  implicit def specsDuration2Akka(duration: org.specs2.time.Duration): akka.util.Duration = new DurationLong(duration.inMillis).millis
+}
+
+trait FutureMatchers extends AkkaConversions { 
+  import akka.util.duration._
+  case class FutureTimeouts(retries: Int, duration: akka.util.Duration)
+
+  implicit val defaultFutureTimeouts: FutureTimeouts = FutureTimeouts(10, 100L millis)
+  // ...snipped
+}
+
+class HttpServerNettySpec extends Specification with BijectionsByteArray with BijectionsChunkString with blueeyes.bkka.AkkaDefaults with FutureMatchers {
+  val duration: org.specs2.time.Duration = 350.milliseconds
+  override implicit val defaultFutureTimeouts = FutureTimeouts(50, duration)
+  // ...snipped
+}
+{noformat}
+In this case, changing HttpServerNettySpec to the following allows compilation to succeed; the implicit conversion is found correctly:
+{noformat}
+class HttpServerNettySpec extends Specification with BijectionsByteArray with BijectionsChunkString with blueeyes.bkka.AkkaDefaults with FutureMatchers {
+  val duration: org.specs2.time.Duration = 350.milliseconds
+  implicit val testTimeouts = FutureTimeouts(50, duration)
+  // ...snipped
+}
+{noformat}

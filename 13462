@@ -1,0 +1,13 @@
+object Foo { def foo: Int = for (x <- 1 to 10) { "hello" } }
+
+Gives the following compile error:
+
+{code}
+scala> object Foo { def foo: Int = for (x <- 1 to 10) { "hello" } }
+<console>:4: error: type mismatch;
+ found   : Unit
+ required: Int
+       object Foo { def foo: Int = for (x <- 1 to 10) { "hello" } }
+                                        ^
+{code}
+I appreciate that the single value "hello" is useless there.  The caret seems completely misplaced; I'd expect it to go at the start of the for or before the final brace.

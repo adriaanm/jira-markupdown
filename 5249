@@ -1,0 +1,18 @@
+Replying to [comment:1 extempore]:
+> An implicit from B => C is not an implicit from (A => B) to (A => C).  You can derive the latter form the former if you want, but the standard library doesn't do so.
+
+But why is the expression x => si(dd(x))  accepted?
+
+An implicit conversion must be inserted in the middle
+to derive the function sidd:(Int)=>(Double)
+
+It seems that the compiler handels  si(dd(x)) in another way
+than (si compose dd)(x)
+
+BTW the following implicit hint makes the compiler happy
+{code}
+implicit def ft2d[T,A]( f:T=>A )(implicit g:A=>Double) = g compose f
+val sidy = si compose dd // ok 
+{code}
+
+Frank

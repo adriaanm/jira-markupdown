@@ -1,0 +1,65 @@
+{{class Responder}} lacks a method {{withFilter}}, which causes deprecation
+warnings with Scala-2.8:
+
+{code}
+$$ scala -deprecation
+
+Welcome to Scala version 2.8.0.RC2 (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_20).
+
+scala> import scala.Responder._
+
+scala> val r = for {
+     |   c <- constant(5)
+     |   if exec(println("foo"))
+     | } println(c)
+<console>:9: warning: `withFilter' method does not yet exist on Responder[Int], using `filter' method instead
+         c <- constant(5)
+                      ^
+foo
+5
+r: Unit = ()
+{code}
+
+A method {{withFilter}} should be added to {{Responder}}:
+
+{code}
+  def withFilter(p: (A) => Boolean): Responder[A] = filter(p)
+{code}
+
+
+Demo:
+
+{code}
+$$ scala -deprecation
+Welcome to Scala version 2.8.0.RC2 (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_20).
+
+scala> import scala.Responder._
+
+scala> def responder[A](x: => A) = new Responder[A] {
+     |   def respond(k: A => Unit) = k(x)
+     |   def withFilter(p: (A) => Boolean): Responder[A] = filter(p)
+     | }
+responder: [A](x: => A)Responder[A]{def withFilter(p: (A) => Boolean): Responder[A]}
+
+scala> val r = for {
+     |   c <- responder(5)
+     |   if exec(println("foo"))
+     | } println(c)
+foo
+5
+r: Unit = ()
+{code}
+
+Oh - and could we add a such a method {{responder[A](x: => A)}}
+to {{object Responder}}:
+
+{code}
+  def responder[A](x: => A) = new Responder[A] {
+    def respond(k: A => Unit) = k(x)
+  }
+{code}
+
+So very similar to {{constant[A](x: A)}}, but with deferred evaluation,
+which would be very handy in a lot of cases.
+
+It would also be analogous to {{Actor.actor}} and {{Futures.future}}.

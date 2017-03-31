@@ -1,0 +1,19 @@
+`java -verify` on the interfaces `C` and `MyCalendarTrait` results in `VerifyError` for the former but not the latter.  
+
+Both contain members that would override a final method: 
+
+{code}
+// interface C 
+{
+public abstract void wait();
+}
+
+
+// interface MyCalendarTrait
+{
+public abstract java.util.Date getGregorianChange();
+}
+{code}
+
+but only `C` causes a `VerifyError` (thus the example is even shorter, no need to  `new C {}`, it's enough `java -verify C`)
+

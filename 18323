@@ -1,0 +1,29 @@
+In the following example, I am trying to get the instance of {{Bar}} (copy from Stackoverflow - http://stackoverflow.com/questions/17012294/recovering-a-singleton-instance-via-reflection-from-sealed-super-trait-when-typ/17016268#17016268 ):
+
+{code}
+import reflect.runtime.universe._
+import reflect.runtime.{currentMirror => cm}
+
+object Foo {
+  case object Bar extends Foo
+}
+sealed trait Foo
+
+def getModule(tpe: Type): Any = {
+  val classSymbol  = tpe.typeSymbol.asClass
+  val compSymbol   = classSymbol.companionSymbol  // gives <none> !
+  val moduleSymbol = compSymbol.asModule
+  val moduleMirror = cm.reflectModule(moduleSymbol)
+  moduleMirror.instance
+}
+
+val fooC     = typeOf[Foo].typeSymbol.asClass
+val subs     = fooC.knownDirectSubclasses
+// fooC.companionSymbol.typeSignature
+val tpeOther = subs.last.asType.toType
+
+val res = getModule(tpeOther)
+println(res)
+{code}
+
+The companion symbol resolution in the {{getModule}} method fails here. If I uncomment the line {{fooC.companionSymbol.typeSignature}}, it works as expected.

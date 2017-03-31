@@ -1,0 +1,15 @@
+Replying to [comment:3 dragos]:
+> fixed in r20468
+
+For the record it looks like this fixes a problem building the continuations plugin with 2.8.0.Beta1-RC7 (soon to be an official beta). With that version I get:
+
+{code}
+   [scalac] doc/examples/continuations/JoinPatterns.scala:103: warning: Could not inline required method -> because it is not final.
+   [scalac]                 items += (c.asInstanceOf[Channel[_,_]] -> MatchData(c.values(0)))
+   [scalac]                                                            ^
+   [scalac] doc/examples/continuations/Test9Monads.scala:42: warning: Could not inline required method -> because it is not final.
+   [scalac]       List(left.reflect[Any] -> right.reflect[Any])
+   [scalac]                              ^
+{code}
+
+With 2.8.0.r20558-b20100118020155 these warnings are gone.

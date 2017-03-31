@@ -1,0 +1,25 @@
+Compile failed with message:
+{code}
+error: consistency problem in target generation ! I have args ListBuffer(temp18, temp19) and need to jump to a label with fmls List()
+    case Btest(data, b) => Console.println("B")
+                                   ^
+scala.tools.nsc.FatalError: consistency problem
+{code}
+
+on this source:
+
+{code}
+abstract class Atest(val data: String)
+
+case class Btest(override val data: String, val b: boolean) extends Atest(data)
+
+case class Ctest(override val data: String) extends Btest(data, true)
+
+class testCaseClass {
+  def test(x: Atest) = x match {
+    case Ctest(data) => Console.println("C")  
+    case Btest(data, b) => Console.println("B")
+  }
+}
+{code}
+Tested on 2.7.1-RC2, 2.7.0

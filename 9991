@@ -1,0 +1,56 @@
+I believe this provides a better look at Miles' reported problem:
+
+{code}
+import scala.language.{ higherKinds, implicitConversions }
+ 
+trait Foo { type Out }
+ 
+trait SI {
+  val instance: Foo
+  type Out
+}
+
+object Test {
+  def test {
+    def indirect(si: SI)(v: si.instance.Out) = v
+   
+    val foo: Foo { type Out = Int } = ???
+    def conv(i: Foo): SI { type Out = i.Out; val instance: i.type } = ???
+    
+    val converted = conv(foo)
+
+    val v1: Int = indirect(converted)(23)  // Okay (after refining the return type `instance` in the return type of `conv`)
+    /*
+    indirect(converted){(v: converted.instance.Out)converted.instance.Out}(
+      23{Int(23)}
+    ){converted.instance.Out};
+    */
+
+    val v2: Int = indirect(conv(foo))(23)  // Fails.
+    /*
+    indirect(
+        conv(foo){si.SI{type Out = foo.Out; val instance: si.Test.<refinement>.type}}
+    ){(v: si.instance.Out)si.instance.Out}(
+      23{<error>}
+    ){<error>};
+    */
+
+  }
+}
+{code}
+
+First of all, I needed to refine `instance` in the return type of `conv`. Without that, I don't believe that one could expect this example to work.
+
+However, after doing that, we can still see a difference between the case when the first argument to `indirect` is a stable value vs when it is a method call to `conv`. I've annotated the computed types in those expressions above.
+
+{noformat}
+actuals = SI{type Out = foo.Out; val instance: Test.<refinement>.type}
+params =  value si
+actuals.head.isStable = false
+{noformat}
+
+The unstable type of the argument is intentionally *not* substituted for `si`. This behaviour is a fix for a soundness hole, SI-3873.
+
+My conclusion is that this isn't a bug. I'm going to mark it as such, but feel free to reopen if you think I've got it wrong.
+
+I'll move Paul's test case over to SI-8177. It is a bug in as-seen-from.

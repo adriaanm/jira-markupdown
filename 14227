@@ -1,0 +1,26 @@
+This fails to compile:
+{code}
+import java.util.concurrent._
+
+class Bug(callable:Callable[Any]) {
+
+  private val exec = Executors.newCachedThreadPool()
+
+  if (true) {
+	  exec.submit(callable)
+  }
+}
+{code}
+
+but if you remove the if around the exec.submit(callable) it compiles.
+
+{code}
+class Bug(callable:Callable[Any]) {
+
+  private val exec = Executors.newCachedThreadPool()
+
+  exec.submit(callable)
+}
+{code}
+
+The error is: found   : java.util.concurrent.Callable[Any] required: java.lang.Runnable exec.submit(callable)

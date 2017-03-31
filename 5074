@@ -1,0 +1,28 @@
+Replying to [comment:5 soc]:
+> Hi extempore,
+> {code}
+> var a: Int = 0
+> a = 1L + a
+> }}
+> 
+> But I might be wrong.
+
+No, the addition is done and gone when that message is emitted.  It is saying you can't assign a Long to an Int.  Like this.
+{code}
+scala> 1L: Int
+<console>:6: error: type mismatch;
+ found   : Long(1L)
+ required: Int
+       1L: Int
+       ^
+{code}
+An Int really is required when you have a variable and it's an Int.
+{code}
+scala> var x: Int = 1L
+<console>:5: error: type mismatch;
+ found   : Long(1L)
+ required: Int
+       var x: Int = 1L
+                    ^
+{code}
+But an Int is not required when you are just looking for something to which you can add a Long, so we can't say "required: Int."

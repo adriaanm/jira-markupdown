@@ -1,0 +1,32 @@
+
+The program below is inspired by {{files/pos/z1730.scala}}
+
+{noformat}
+class X[R] {
+
+  def xx(value: () => R) = 0
+
+  def goo2  = (new X[Int]).xx(
+
+    {
+       def poorMansMH1(): Int = 34
+
+       @SerialVersionUID(0)
+       final class AF
+       extends scala.runtime.AbstractFunction0[Int]
+       with Serializable {
+         def apply(): Int = poorMansMH1()
+       }
+
+       new AF()
+     }
+
+  )
+
+}
+{noformat}
+
+The program typechecks but crashes the compiler with {{-Ycheck:all}}
+
+Leaving everthing as above but changing {{def apply() = 34}} (ie the local method "poorMansMH1" isn't invoked anywhere) compiles fine, also under {{-Ycheck:all}}
+

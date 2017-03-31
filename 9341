@@ -1,0 +1,16 @@
+Note that if the `c` method is a top-level method rather than a method of the trait `C`, it compiles fine:
+{code}
+trait Main {
+
+  trait A {
+    type B
+  }
+
+  def c(a: A, x: Int = 0)(b: a.B)
+
+  def ok(a: A)(b: a.B) = c(a, 42)(b)
+
+  def ok2(a: A)(b: a.B) = c(a)(b)
+
+}
+{code}

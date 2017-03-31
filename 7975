@@ -1,0 +1,24 @@
+using that branch, I found the poison pill:
+{noformat}
+
+~ % cat O.scala
+object O {
+  var i = 0
+  while(true) {
+    var j = 0
+    if (j != 0)
+      try j
+      catch { case t: Throwable => }
+    i
+  }
+}
+~ % ~/scala.miguel/dists/latest/bin/scalac -version
+Scala compiler version 2.10.0-20120710-143117-178752a5f5 -- Copyright 2002-2011, LAMP/EPFL
+~ % ~/scala.miguel/dists/latest/bin/scalac O.scala 
+O.scala:8: warning: Visited SCOPE_EXIT before visiting corresponding SCOPE_ENTER. SI-6049.
+    i
+    ^
+one warning found
+{noformat}
+
+I'm not absolutely certain this is minimal, but it must be close.

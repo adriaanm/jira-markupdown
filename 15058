@@ -1,0 +1,60 @@
+I run compiler on my code: call scalac -d bin src/math/cat/*.scala
+
+get an error. stacktrace is below.
+
+Scala code runner version 2.8.0.Beta1-prerelease -- Copyright 2002-2010, LAMP/EPFL
+
+{code}
+C:\vladp\cat\scala>call scalac -d bin src/math/cat/*.scala
+{code}
+
+{code}
+Exception in thread "main" java.lang.Error: T2 in class Tuple2 cannot be instantiated from ?p.type
+        at scala.tools.nsc.symtab.Types$$AsSeenFromMap.throwError$$1(Types.scala:3097)
+        at scala.tools.nsc.symtab.Types$$AsSeenFromMap.toInstance$$1(Types.scala:3125)
+        at scala.tools.nsc.symtab.Types$$AsSeenFromMap.apply(Types.scala:3129)
+        at scala.tools.nsc.symtab.Types$$AsSeenFromMap.apply(Types.scala:3001)
+        at scala.tools.nsc.symtab.Types$$TypeMap.mapOver(Types.scala:2765)
+        at scala.tools.nsc.symtab.Types$$AsSeenFromMap.apply(Types.scala:3131)
+        at scala.tools.nsc.symtab.Types$$Type.asSeenFrom(Types.scala:498)
+        at scala.tools.nsc.symtab.Types$$Type.memberType(Types.scala:517)
+...
+{code}
+
+EDIT:
+
+This:
+
+{code}
+class Sample[A] (val d0: ((A,A)) => A) {}
+
+object Sample {
+  implicit def apply[A] (x:A): Sample[A] = {
+    new Sample(p => p._1)
+  }       
+}
+{code}
+
+Causes this when compiler is invoked:
+
+{code}
+Exception in thread "main" java.lang.Error: T1 in class Tuple2 cannot be instantiated from ?p.type                                                             
+        at scala.tools.nsc.symtab.Types$$AsSeenFromMap.throwError$$1(Types.scala:3086)                                                                                  
+        at scala.tools.nsc.symtab.Types$$AsSeenFromMap.toInstance$$1(Types.scala:3114)                                                                                  
+        at scala.tools.nsc.symtab.Types$$AsSeenFromMap.apply(Types.scala:3118)                                                                                         
+        at scala.tools.nsc.symtab.Types$$AsSeenFromMap.apply(Types.scala:2990)                                                                                         
+        at scala.tools.nsc.symtab.Types$$TypeMap.mapOver(Types.scala:2754)                                                                                             
+        at scala.tools.nsc.symtab.Types$$AsSeenFromMap.apply(Types.scala:3120)                                                                                         
+        at scala.tools.nsc.symtab.Types$$Type.asSeenFrom(Types.scala:501)                                                                                              
+        at scala.tools.nsc.symtab.Types$$Type.computeMemberType(Types.scala:525)                                                                                       
+        at scala.tools.nsc.symtab.Symbols$$MethodSymbol.typeAsMemberOf(Symbols.scala:1712)                                                                             
+        at scala.tools.nsc.symtab.Types$$Type.memberType(Types.scala:516)                                                                                              
+        at scala.tools.nsc.symtab.Types$$SingleType.underlying(Types.scala:1056)                                                                                       
+        at scala.tools.nsc.symtab.Types$$SimpleTypeProxy$$class.isHigherKinded(Types.scala:171)                                                                         
+        at scala.tools.nsc.symtab.Types$$SingletonType.isHigherKinded(Types.scala:933)                                                                                 
+        at scala.tools.nsc.symtab.Types$$class.scala$$tools$$nsc$$symtab$$Types$$$$isSubType2(Types.scala:4173)                                                              
+        at scala.tools.nsc.symtab.Types$$$$anonfun$$isSubType$$1.apply(Types.scala:4068)                                                                                  
+        at scala.tools.nsc.symtab.Types$$$$anonfun$$isSubType$$1.apply(Types.scala:4056)                                                                                  
+        at scala.tools.nsc.symtab.Types$$undoLog$$.undoUnless(Types.scala:125)                                                                                          
+        at scala.tools.nsc.symtab.Types$$class.isSubType(Types.scala:4055)
+{code}

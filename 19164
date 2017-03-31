@@ -1,0 +1,19 @@
+Hey all,
+I've been looking at the [PartialFunction documentation|http://www.scala-lang.org/api/2.11.0/index.html#scala.PartialFunction] and I've found a few things that I think could be improved. Looking at the documentation, what is the contract for how to call a partial function? That is, should one always guard it with a call to isDefinedAt? Or is it the responsibility of the interface implementer to check for domain membership? The documentation should reflect this.
+
+When constructing a partial function with the case /match constructor (what's the right name for this, anyway?), the implementation throws a MatchError if the element is not in the domain. But a "naive" (that is, bare-bones) implementation of the trait includes no checking of "isDefinedAt".
+
+This example really drives it home, in my opinion:
+{code}
+val isEvenCase: PartialFunction[Int, String] = {
+  case x if x % 2 == 0 => x+" is even"
+}
+
+val isEvenInterfaceImpl: PartialFunction[Int, String] = new PartialFunction[Int, String] {
+  override def isDefinedAt(x: Int): Boolean = x % 2 == 0
+  override def apply(x: Int): String = x+" is even"
+}
+{code}
+The second gives {{isEvenInterfaceImpl(3) = "3 is even"}}.
+
+I'd love for further thoughts and to continue discussion on this topic. 

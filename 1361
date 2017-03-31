@@ -1,0 +1,23 @@
+Ok, strangely enough, it actually has nothing to do with the nested classes (the following code causes the same crash):
+
+{code}
+class MyClass {
+  
+  var foo = false;
+  var bar = false;
+  
+  def getBlah: String = {
+    try {
+      if (foo) {
+	return null; // must be null
+      }
+      "blah";
+    } finally {
+      if (bar) {
+	println("hello"); // do anything here
+      }
+    }
+  }
+  
+}
+{code}

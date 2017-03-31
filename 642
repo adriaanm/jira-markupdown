@@ -1,0 +1,12 @@
+It's because you're using a null value in a generator (isDirectory == true does not guarantee listFiles != null.) Try it this way:
+{code}
+      def files() = top.listFiles match {
+        case null => Nil
+        case xs   => xs.toList
+      }
+      if (top.isDirectory) {
+          for (fn <- files) walk(fn)
+      } else {
+          println(top)
+      }
+{code}

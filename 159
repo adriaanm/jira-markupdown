@@ -1,0 +1,37 @@
+Why is that hard to get right? Just as
+
+{code}
+def foo(a: Int)(b: Int = a) { ... }
+
+foo(effectfulCode)()
+{code}
+
+rewrites to (I forget the exact mangling, but roughly)
+
+{code}
+def foo(a: Int)(b: Int) { ... }
+def foo$default2(a: Int): Int = a
+
+val x$1: Int = effectfulCode
+foo(x$1)(foo$default2(x$1))
+{code}
+
+, I would expect
+
+{code}
+def foo(lazy a: Int)(b: Int = a) { ... }
+
+foo(effectfulCode)()
+{code}
+
+to rewrite to
+
+{code}
+def foo(a: => Int)(b: Int) { ... }
+def foo$default2(a: => Int): Int = a
+
+lazy val x$1: Int = effectfulCode
+foo(x$1)(foo$default2(x$1))
+{code}
+
+Wouldn't that have the desired semantics?

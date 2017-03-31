@@ -1,0 +1,46 @@
+The below REPL examples shows the observed behavior under Scala 2.9.0.1 and 2.9.1.RC1. Under 2.9.0.1 there seem to be two bugs, one regarding type inference and the other regarding abstracting over sequential and parallel Seqs (that might also apply to other collections). Under 2.9.1.RC1 only the later occurs, yet the type inferencer seems to use a structural type instead of GenSeq.
+
+The real issue from a user's perspective is, that even if a parallel Seq is returned by the numbers-method, map won't be executed in parallel, i.e. abstracting over sequential and parallel collections is broken.
+
+===============================================================================
+  Scala 2.9.0.1
+===============================================================================
+
+Welcome to Scala version 2.9.0.1 (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_26).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> def numbers(isPar: Boolean) =
+     |   if (isPar) (1 to 8).par else 1 to 8
+<console>:7: error: kinds of the type arguments (scala.collection.GenSeq[Any]{def seq: scala.collection.immutable.Seq[Any]}) do not conform to the expected kinds of the type parameters (type CC) in class GenericCompanion.
+scala.collection.GenSeq[Any]{def seq: scala.collection.immutable.Seq[Any]}'s type parameters do not match type CC's expected parameters: <none> has no type parameters, but type CC has one
+       def numbers(isPar: Boolean) =
+           ^
+
+scala> def numbers(isPar: Boolean): scala.collection.GenSeq[Int] =
+     |   if (isPar) (1 to 8).par else 1 to 8
+numbers: (isPar: Boolean)scala.collection.GenSeq[Int]
+
+scala> numbers(true) map { _ => Thread.currentThread.getName }
+res0: scala.collection.GenSeq[java.lang.String] = ParVector(Thread-5, Thread-5, Thread-5, Thread-5, Thread-5, Thread-5, Thread-5, Thread-5)
+
+===============================================================================
+  Scala 2.9.1.RC1
+===============================================================================
+
+Welcome to Scala version 2.9.1.RC1 (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_26).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> def numbers(isPar: Boolean) =
+     |   if (isPar) (1 to 8).par else 1 to 8
+numbers: (isPar: Boolean)scala.collection.GenSeq[Int] with Serializable{def companion: scala.collection.generic.GenericCompanion[scala.collection.GenSeq{def seq: scala.collection.immutable.Seq[Any]}]; def par: scala.collection.parallel.immutable.ParSeq[Int]; def seq: scala.collection.immutable.Seq[Int]; def distinct: scala.collection.GenSeq[Int]{def seq: scala.collection.immutable.Seq[Int]; def distinct: scala.collection.GenSeq[Int]{def seq: scala.collection.immutable.Seq[Int]; protected def parCombiner: scala.collection.parallel.Combiner[Int,scala.collection.parallel.immutable.ParSeq[Int]]}; def intersect[U >: Int](that: scala.collection.GenSeq[U]): scala.collection.GenSeq[Int]{def seq: scala.collection.immutable.Seq[Int]; protected def parCombiner: scala.collection.parallel.Combiner[I...
+scala> numbers(true) map { _ => Thread.currentThread.getName }
+res0: scala.collection.GenSeq[java.lang.String] = ParVector(Thread-5, Thread-5, Thread-5, Thread-5, Thread-5, Thread-5, Thread-5, Thread-5)
+
+scala> def numbers(isPar: Boolean): scala.collection.GenSeq[Int] =
+     |   if (isPar) (1 to 8).par else 1 to 8
+numbers: (isPar: Boolean)scala.collection.GenSeq[Int]
+
+scala> numbers(true) map { _ => Thread.currentThread.getName }
+res1: scala.collection.GenSeq[java.lang.String] = ParVector(Thread-7, Thread-7, Thread-7, Thread-7, Thread-7, Thread-7, Thread-7, Thread-7)

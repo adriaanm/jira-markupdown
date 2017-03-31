@@ -1,0 +1,36 @@
+Annotations on trait methods (probably everything else as well) are lost when using an already compiled trait.
+
+Consider two files:
+
+{code}
+trait Foo {
+  @throws(classOf[Exception])
+  def moo {
+    println("moo")
+  }
+}
+{code}
+
+and
+
+{code}
+class Foo2 extends Foo
+{code}
+
+When compiled together, Foo2 looks correct after mixin:
+
+{code}
+  class Foo2 extends java.lang.Object with Foo with ScalaObject {
+    @throws(classOf[java.lang.Exception]) def moo(): Unit = Foo$$class.moo(Foo2.this);
+...
+{code}
+
+When compiling only `Foo2`:
+
+{code}
+ class Foo2 extends java.lang.Object with Foo with ScalaObject {
+    def moo(): Unit = Foo$$class.moo(Foo2.this);
+...
+{code}
+
+This might be related to the latest changes to annotations. It is the same reason why `ScalaObject.$$tag` is not marked as `@remote` when compiling user code.

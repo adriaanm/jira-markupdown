@@ -1,0 +1,27 @@
+See this [http://old.nabble.com/Scala-and-YourKit-profiler-bytecode-issues-tp26970054p27111435.html thread]. 
+
+Take the disassembly of `scala.collection.mutable.StringBuilder.getLength` as an example:
+
+{code}
+public void setLength(int);
+ Code:
+  0:   iload_1
+  1:   iconst_0
+  2:   if_icmplt       9
+  5:   iconst_1
+  6:   goto    10
+  9:   iconst_0
+  10:  new     SI-478; //class
+scala/collection/mutable/StringBuilder$$$$anonfun$$setLength$$1
+  13:  dup
+  14:  pop
+  15:  aload_0
+  16:  iload_1
+  17:  invokespecial   SI-481; //Method
+scala/collection/mutable/StringBuilder$$$$anonfun$$setLength$$1."<init>":(Lscala/collection/mutable/StringBuilder;I)V
+...
+{code}
+
+The `new` ~ `dup` ~ `pop` ~ ... ~ `invokespecial` sequence is a hint that something's going wrong, because after `invokespecial` the newly created instance can't be accessed at all.
+
+The closure class (and its instantiation) isn't needed any more because it was completely inlined into the method in question.

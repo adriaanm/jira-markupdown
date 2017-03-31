@@ -1,0 +1,8 @@
+After looking at it I'm not sure it's a bug, or at least not sure it's not intentional.  I would agree it's undesirable, and one ought to be able to retrieve type arguments without having to special case arrays.  The reasoning for the current approach would be that with Arrays the type argument is "built in" to the top level manifest, so you don't actually have type arguments: i.e. Array[Int] has a first-class runtime representation, unlike List[Int].  Code like this is what shows us the author was well aware there were no type args on arrays:
+{code}
+protected def argString = 
+  if (typeArguments.nonEmpty) typeArguments.mkString("[", ", ", "]")
+  else if (erasure.isArray) "["+ClassManifest.fromClass(erasure.getComponentType)+"]"
+  else ""  
+{code}
+So I won't touch this pending feedback.  (The suggested patch does have the intended effect.)

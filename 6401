@@ -1,0 +1,7 @@
+From your comment it seems you're expecting the file to be loaded to memory. It uses java.io.InputStream so you're holding a handle to the file while you're manipulating it.
+
+{noformat}scala> val source = scala.io.Source.fromFile("test.txt")
+source: scala.io.BufferedSource = non-empty iterator
+{noformat} 
+
+You can release the lock with {{source.close()}}.

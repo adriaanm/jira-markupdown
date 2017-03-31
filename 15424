@@ -1,0 +1,11 @@
+I had a really confusing time today when a build suddenly stopped finding a bunch of classes. It had me zapping my maven repo, cleaning builds, zapping ivy and all kinds of crazy stuff. I couldn't see why all of a sudden Scala seemed to not find a bunch of classes which were really inside some jars and were found previously.
+
+It turned out that by changing a version dependency I'd moved to using a different scala compiler version to the one used to build one of the dependent jars (2.8.0.Beta1 v 2.8.0.RC3).
+
+Given how scala is so brittle to different scala compiler versions; it would be good if scala would generate a warning if it found a mismatch between the currently active scala compiler version versus the scalac version used to build dependent jars. Not sure if the bytecode includes a scalac compiler version though, does it?
+
+I can see many folks hitting this -getting random class not found errors and scratching their heads & randomly zapping maven repos and stuff, when really its just a mismatch of 1 jar being built with the wrong version of scala
+
+
+
+

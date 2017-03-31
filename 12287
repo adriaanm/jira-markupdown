@@ -1,0 +1,22 @@
+Removing the f-bound lets us see this difference in action:
+
+{code}
+object Test {
+  trait A[-T]
+  trait B[-T]
+  class C extends B[C]
+  def AfromB[T <: B[_]]: A[T] = null
+  AfromB : A[C]
+}
+
+{code}
+
+scalac:
+{code}
+(Test.this.AfromB[Test.B[_]]: Test.A[Test.C])
+{code}
+
+dotc:
+{code}
+Test.AfromB[Test.C']: Test.A[Test.C]
+{code}

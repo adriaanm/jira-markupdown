@@ -1,0 +1,28 @@
+slightly less bombastic test case:
+
+{code}
+// Tuppel.java
+public class Tuppel<T> {
+  private Tuppel( T... values ) {}
+
+  public static <A> Tuppel<A> get() {
+    return new Tuppel<A>() {};
+  }
+
+  public static Tuppel<Object> meh() {
+    return null;
+  }
+}
+{code}
+
+{code}
+// t3642.scala
+object T {
+  Tuppel.meh()
+}
+{code}
+
+{code}
+$$ javac -d . Tuppel.java
+$$ scalac t3642.scala
+{code}

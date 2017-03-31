@@ -1,0 +1,16 @@
+> You've misunderstood it:
+
+I don't think so. I got that you have to write that. I am only saying, people would expect to have to write
+
+{code}
+val xs = (1 to 3).map { i => q"val ${TermName("foo" + i)}: Int" }
+q"f(implicit ..$xs)"
+{code}
+
+But have to write
+{code}
+val xs = (1 to 3).map { i => q"implicit val ${TermName("foo" + i)}: Int" }
+q"f(..$xs)"
+{code}
+
+which is not intuitive because it differs from the way you write it in Scala. But I am sure you have good reasons for this syntactic departure.

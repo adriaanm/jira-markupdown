@@ -1,0 +1,33 @@
+As a single file, this doesn't compile:
+{code:scala}
+package object p {
+  type Foo = Int
+}
+package p {
+  object Dingo { type Foo = String }
+  trait Bippy  {
+    import Dingo._
+    def z: Foo
+    z: String
+  }
+}
+// s1/a.scala:8: error: reference to Foo is ambiguous;
+// it is both defined in package object p and imported subsequently by
+// import Dingo._
+//     def z: Foo
+//            ^
+// one error found
+{code}
+However if that code is placed in two separate files, one for the package object and one for the rest, it compiles. I emphasize this is not a separate compilation bug - in both cases all the source code is being given to the compiler. The ONLY difference is the number of source files.
+
+There is an additional problem. If we move import Dingo._ up one line so it is outside of Bippy, then the two-file variation no longer compiles, but not due to identifier ambiguity!
+{code:scala}
+s2/b.scala:6: error: type mismatch;
+ found   : p.Foo
+    (which expands to)  Int
+ required: String
+    z: String
+    ^
+one error found
+{code}
+Notice it goes from resolving Foo one way to resolving Foo the other way after the minimum possible change. Sanity suggests the minimum change must be rendered ambiguous at one point or the other, as of course it is in the single-file case.

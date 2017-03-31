@@ -1,0 +1,13 @@
+{code}
+import scalaz._, Scalaz._
+ 
+  class A {
+    def F = new A === new A
+  }
+  object A {
+    implicit object AEqual extends Equal[A] {
+      def equal(a1: A, a2: A): Boolean = a1 == a2
+    }
+  }
+{code}
+this kind of code compiles for me with full recompilation with 2.10.2 and 2.10.3 and sbt 0.13, but stops compiling (implicit not found) with incremental compilation unless i move object A to the top of the file or replace  object AEqual with val AEqual: Equal[A] = new Equal[A] (note the explicit type), i also spuriously get the message from  SI-5197

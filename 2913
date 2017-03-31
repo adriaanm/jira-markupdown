@@ -1,0 +1,38 @@
+Martin, I think this is related to SI-1756, where type information is propagated too far. Maybe `typedArgToPoly` needs a fallback like the one in `adaptToArguments`? (see r18958)
+
+Will commit test to pending.
+
+some tracing info from -Xtyper-debug and println's in `typedArgToPoly`:
+{code}
+typing private[this] val o: Any = (x.getOrElse(""): Q), pt = ?, undetparams = List(), implicits-enabled = true, silent = true
+...
+typing (x.getOrElse(""): Q), pt = Any, undetparams = List(), implicits-enabled = true, silent = true
+...
+typing x.getOrElse(""), pt = Test.Q, undetparams = List(), implicits-enabled = true, silent = true
+  typing x.getOrElse, pt = ?, undetparams = List(), implicits-enabled = true, silent = false
+    typing x, pt = ?, undetparams = List(), implicits-enabled = true, silent = false
+    typed Test.this.x:Test.x.type with underlying Option[String], undetparams = List(), pt = ?
+    adapted Test.this.x:Option[String] to ?, List()
+  typed Test.this.x.getOrElse:[B >: String](default: => B)B, undetparams = List(), pt = ?
+  adapted Test.this.x.getOrElse:[B >: String](default: => B)B to ?, List(type B)
+doTypedApply/poly(tparams, targsLenient, strict): (List(type B),List(Test.Q),List(Test.Q))
+  typedArgToPoly(arg, formal, pt): ("",B,Test.Q)
+    typing "", pt = Test.Q, undetparams = List(), implicits-enabled = true, silent = true
+    typed "":java.lang.String(""), undetparams = List(), pt = Test.Q
+    typed impl?? string2q:(s: String)Test.Q ==> Test.this.string2q with pt = (java.lang.String("")) => Test.Q, wildpt = (java.lang.String("")) => Test.Q
+      ...
+    RESULT = SearchResult(Test.this.string2q, TreeTypeSubstituter(List(),List()))
+      ...
+    adapted Test.this.string2q(""):Test.Q to Test.Q, List()
+    adapted "":java.lang.String to Test.Q, List()
+  typedArgToPoly(arg1, argtparams): (Test.this.string2q(""),List())
+typing Test.this.string2q(""), pt = java.lang.Object, undetparams = List(), implicits-enabled = true, silent = true
+typed Test.this.string2q(""):Test.Q, undetparams = List(), pt = java.lang.Object
+adapted Test.this.string2q(""):Test.Q to java.lang.Object, List()
+typed Test.this.x.getOrElse[java.lang.Object](Test.this.string2q("")):java.lang.Object, undetparams = List(), pt = Test.Q
+/Users/adriaan/Desktop/t2720.scala:7: error: type mismatch;
+ found   : java.lang.Object
+ required: Test.Q
+  val o: Any =  ((x.getOrElse("")): Q) 
+                             ^
+{code}

@@ -1,0 +1,32 @@
+{code}
+trait Base[B] {
+  def data: AnyRef;
+}
+
+class Sub1[@specialized B](override val data: Array[B]) extends Base[B] {  
+  assert(data != null)
+}
+
+class Sub2[@specialized B](override val data: Option[B]) extends Base[B] {  
+  assert(data != null)
+}
+
+class M[@specialized A]
+
+class Sub3[@specialized B](override val data: M[B]) extends Base[B] {  
+  assert(data != null)
+}
+
+object Test extends Application {
+  new Sub1[String](Array("")) // okay
+  new Sub1[Int](Array(0))     // assertion failed
+  
+  new Sub2[Int](Some(0))      // okay
+  
+  new Sub3[Int](new M[Int])   // assertion failed
+}
+{code} 
+
+What versions of the following are you using?
+Scala: 2.8.1
+Java: 1.6

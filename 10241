@@ -1,0 +1,63 @@
+I assure you that I do not care about the "purity" with regards to locks here, nor do I have an emotional attachment to lock-free algorithms, if that's what you're aiming at :)
+Quite the opposite - I feel that combining mutability, lock-freedom, locks and lazyness in an innovative and elegant way is exciting.
+
+I do, however, care about purity and simplicity of any implementation, and I have an emotional attachment to the maintainers. :)
+Keeping things simple makes the next maintainer happy, and less prone towards deprecating the whole thing in a wave of fury.
+A good anecdotal example from the Scala community for this is the latest pattern matcher in the Scala compiler - although the previous one was more efficient, and knew how to optimize overlapping match cases better, the new pattern matcher rewrite is simpler to understand, less buggy and easier to maintain.
+
+Why do I think extra, unwarranted complexity is the case here?
+
+First, the test case in this bug report always fails at least at the latest in the second iteration of the loop - that's because the test case is checking the wrong thing - one should replace {{object}} with {{class}}.
+
+Second, let's see what the angry mob has to say:
+1) Change the {{concurrent.Map}} and {{mutable.Map}} interfaces so that {{getOrElseUpdate}} always requires the execute-mapping-only-if-inserted semantics. By doing this, a large class of potential concurrent map implementations (pure with regards to lock-freedom) become unavailable (this includes {{j.u.c.ConcurrentMap}} implementations too - rest assured that {{j.u.c.ConcurrentMap}} designers had good reasons).
+2) So, obviously, {{concurrent.Map}} and {{mutable.Map}} cannot assume execute-mapping-only-if-inserted semantics. Sooner or later, there will be angry {{mutable.Map}}-reference-holding-mob running our way, and crying out that their side-effecting initializer got executed even though the key was not added into the map.
+Point is - this is something that no {{mutable.Map}}-reference-holder should expect otherwise.
+3) That leaves us specifically with clients that hold a reference to a {{TrieMap}}. These are the guys who know what the concrete type of their map is, so they better know its current semantics are no stronger than that of {{mutable.Map}}. Liskov substitution principle should not leave them hanging.
+Point is:
+a) the angry mob has no legitimate reason to complain
+b) this is a bug report in the sense that getOrElseUpdate should return that which has at some point in time appeared in the map (!which is not the case for mutable.MapLike, so that should legitimately be fixed) - the execute-mapping-only-if-inserted is a feature request, an added benefit
+
+Third, how would you even implement this correctly?
+This is uglier than you think.
+1. The {{TrieMap}} implementation is currently lock-free. We do want to keep it that way. This is not because of some superiority of lock-based algorithms over lock-free ones (both have advantages and disadvantages). This is simply because we don't want to rewrite everything. Otherwise, we might just write another data structure to begin with.
+2. So, we need to ensure that a {{getOrElseUpdate}} implementation has the execute-only-if-inserted semantics. As argued in this thread, this could be achieved by having a {{LazyNode}}, which takes a thunk and evaluates it the first time some thread reads the node.
+This requires introducing another recursive {{insertif}} method.
+3. Does this solve the problem? No, it does not. Side-effects were the main argument for execute-only-if-inserted semantics, so the callers will not observe them unless the {{LazyNode}} initializer gets executed. We could fix this with by having the thread A that calls {{getOrElseUpdate}} also initialize the value in the {{LazyNode}} *after* the node is added to the tree. That way we have our side-effects before {{getOrElseUpdate}} returns.
+4. This should work, right? Surprise, surprise - it doesn't. Thread B, which calls {{get}}, can still access the lazy node before thread A manages to evaluate it. That means that we cannot define {{LazyNode}} like this:
+
+{code}
+class LazyNode(key: K, thunk: () => V) {
+  lazy val value = thunk()
+}
+{code}
+
+Instead, we must write a custom lock around {{value}}, which is already locked by thread A before the {{LazyNode}} is added to the trie, and is subsequently unlocked after {{value}} gets initialized.
+
+So, you see, it's possible, it's just that it's somewhat complex.
+
+Fourth, after thinking about it in the background mode for some time today, the execute-mapping-only-if-inserted semantics is less useful than you think. Here's why - assume that thread A calls {{getOrElseUpdate}} defined like this:
+
+{code}
+def getOrElseUpdate(k: K, op: =>V): V = {
+  get(k) match {
+    case Some(v) => v
+    case None =>
+      val v = op
+      putIfAbsent(k, v) // mutable.MapLike implementation -> update(k, v)
+      v
+}
+{code}
+(note: this is different from the current {{mutable.MapLike}} implementation)
+
+How could a thread B that calls {{update(k, v)}} interfere?
+1. before the {{get(k)}} - this is fine
+2. between the {{get(k)}} and before the {{putIfAbsent(k, v)}} - this sounds scary, but it's actually fine. The {{putIfAbsent}} call will observe the concurrent update, and will not update the map. Unfortunately, the thunk {{op}} will get executed by now. I claim that this is not a problem - this is equivalent to putIfAbsent inserting the {{op}} value an infinitesimaly small amount of time *before* the thread B did the {{update(k, v)}}.
+In other words - user programs cannot observe this.
+3. after {{putIfAbsent(k, v)}} - this is fine
+
+There is one other situation where a program could observe this - I challenge you to find it.
+
+So, I feel convinced that an execute-mapping-only-if-inserted semantics are not worth it here. In any case, I would not run blindly into adding the possibly unnecessary complexity.
+However, my recent PR does not preclude the possibility of making this change - I'll do it if more people come in anger, or if I hear enough people yelling :)
+Also, you are free to go ahead and try to convince that it can be done in a simple and understandable manner.

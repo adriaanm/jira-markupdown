@@ -1,0 +1,18 @@
+classOf[java.lang.Integer] gets compiled to something like:
+
+{code}
+   0:   getstatic       SI-38; //Field class$$Cache0:Ljava/lang/Class;
+   3:   ifnonnull       14
+   6:   ldc     SI-40; //String java.lang.Integer
+   8:   invokestatic    SI-46; //Method java/lang/Class.forName:(Ljava/lang/String;)Ljava/lang/Class;
+   11:  putstatic       SI-38; //Field class$$Cache0:Ljava/lang/Class;
+   14:  getstatic       SI-38; //Field class$$Cache0:Ljava/lang/Class;
+{code}
+
+while Java's java.lang.Integer.class is compiled to the much simpler code:
+
+{code}
+   3:   ldc_w   SI-3; //class java/lang/Integer
+{code}
+
+Seems like Java's way of compilation of getting class object works faster.

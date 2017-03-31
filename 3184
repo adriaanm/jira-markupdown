@@ -1,0 +1,21 @@
+Lukas -- if you compile SchedulerProvider.scala you will see an inconsistent pickler entry at 36:
+{code}
+34,219: TERMname 21: QUARTZ_FACTORY_KEY_ID
+35,242: POLYtpe 1: 36
+36,245: CONSTANTtpe 1: 37 33
+BAD ENTRY END: computed = 248, actual = 249, bytes = 15, 1, 37, 33
+{code}
+It says only one byte to follow but finds two.  I am confused because the pickler format documentation says there should be two, a typeRef and a constantRef:
+{code}
+ *                  | 15 CONSTANTtpe len_Nat type_Ref constant_Ref
+{code}
+However in reality there is only one, and from looking at how constant types are done, it seems like there should be only one.
+{code}
+// Pickler
+        case ConstantType(value) =>
+          writeRef(value); CONSTANTtpe
+// Unpickler
+        case CONSTANTtpe =>
+          mkConstantType(readConstantRef())
+{code}
+...and as that's all the time I have, this concludes today's visit to Picklerdom.  Join us next week and every week here at Trac Mystery Theatre.

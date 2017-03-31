@@ -1,0 +1,33 @@
+
+To reproduce, compile the following sources in this order in separate compilations: P.scala, A.scala, and then B.scala.  When compiling B.scala, an error message is generated:
+
+{code}
+error: class file needed by A is missing.
+reference type _$2 of (t: <?>)(ss: <?>)Seq[S[_]] refers to nonexisting symbol.
+{code}
+
+P.scala:
+{code}
+trait S[T]
+
+object P {
+  def x(t: Int)(ss: Seq[S[_]]): Seq[S[_]] = ss
+}
+{code}
+
+A.scala
+{code}
+object A {
+  def ss = P.x(3)(Nil)
+}
+{code}
+
+
+B.scala:
+{code}
+object C {
+  def x: Seq[S[_]] = A.ss
+}
+{code}
+
+No error is generated if P.scala and A.scala are compiled together.

@@ -1,0 +1,23 @@
+This outperforms ++ in cases where there is a significant mismatch, but is about 20-30% slower for merging big vectors (on my machine), probably because the JIT compiler doesn't quite optimize as much since it has more work to do.  (Specialized on `String` only for testing, but results should hold for generic case.)
+
+I'll probably go with something like this barring radically superior ideas.
+
+(Note: I'm converting to Vector in the non-re-Traversable case in the hope that we'll get better-than-O(n) concat in Vector someday.  Maybe from me, but don't count on it.)
+
+{noformat}
+(a: Vector[String], b: GenTraversableOnce[String]) => {
+  if (b.isEmpty) a
+  else if (!b.isTraversableAgain) {
+    val c = b.toVector
+    if (c.size < (a.size >> 5)) { var v = a; for (x <- c) v = v :+ x; v }
+    else if (a.size < (c.size >> 5)) { var v = c; for (x <- a.reverseIterator) v = x +: v; v }
+    else a ++ c
+  }
+  else b.size match {
+    case n if n < 3 || n < (a.size >> 5) => var v = a; for (x <- b) v = v :+ x; v
+    case n if a.size < (n >> 5) && b.isInstanceOf[Vector[_]] =>
+      var v = b.asInstanceOf[Vector[String]]; for (x <- a.reverseIterator) v = x +: v; v
+    case _ => a ++ b
+  }
+}
+{noformat}

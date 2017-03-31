@@ -1,0 +1,19 @@
+[~chris-martin] The specific example you give adds value, but not very much value.  And you lose value at the same time.  Take for instance
+
+{code:scala}
+  var stack: List[A] = ???
+  stack = prefix ::: stack
+{code}
+
+You'd think that
+
+{code:scala}
+  var stack: mutable.Stack[A] = ???
+  stack = prefix ++: stack
+{code}
+
+might work, but you'd be wrong because ++: isn't overridden.  (Even +: isn't overridden.)  You have to use {{pushAll}} instead.  And {{dropWhile}}?  Nope, it defers back to {{TraversableLike}}, which makes a new builder and reallocates the tail all over again.
+
+So you are left with a convenience class that looks like it nicely encapsulates mutability, but in fact is full of unexpected performance gotchas because it turns out that to override everything relevant is actually really tedious and difficult to keep straight, especially as the library evolves.
+
+It's better to just be honest about the situation and deprecate it than to try to fix all the problems now and then maintain the fixes every time the library changes.

@@ -1,0 +1,17 @@
+The Unit value () does in fact support asInstanceOf, isInstanceOf, and ##. The specification section 12.2.3 states "[i]t implements only three methods equals, hashCode, and toString from class Any."
+
+{code}
+object Main {
+
+  def main(args: Array[String]) {
+    ().asInstanceOf[Unit]
+    ().isInstanceOf[Unit]
+    ().##
+    println("uh oh")
+  }
+}
+{code}
+
+That should either not compile or fail at run-time, the spec doesn't explicitly say which. Instead, it runs. This could be related to SI-1245, I dunno.
+
+Additionally, asInstanceOf allows casting to AnyRef (boxing I assume) which is especially important to document.

@@ -1,0 +1,14 @@
+ListSet doesn't seem to make any promises about preserving iteration order.
+
+Most operations reverse when building a new collection, but bulk add re-reverses the receiver.
+
+{code}
+scala> ListSet('a' to 'z': _*)
+res7: scala.collection.immutable.ListSet[Char] = ListSet(z, y, x, w, v, u, t, s, r, q, p, o, n, m, l, k, j, i, h, g, f, e, d, c, b, a)
+
+scala> ListSet('a' to 'z': _*).filter(_ != 'm')
+res9: scala.collection.immutable.ListSet[Char] = ListSet(a, b, c, d, e, f, g, h, i, j, k, l, n, o, p, q, r, s, t, u, v, w, x, y, z)
+
+scala> res9 ++ ('1' to '9')
+res10: scala.collection.immutable.ListSet[Char] = ListSet(9, 8, 7, 6, 5, 4, 3, 2, 1, a, b, c, d, e, f, g, h, i, j, k, l, n, o, p, q, r, s, t, u, v, w, x, y, z)
+{code}

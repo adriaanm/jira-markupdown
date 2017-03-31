@@ -1,0 +1,45 @@
+Happens on revision r20862.
+Given the classes A and B in separate files:
+
+{code}
+class A extends B {
+    private def getBar = List(1,2,3)
+    lazy val bar: List[Int] = getBar
+}
+{code}
+
+{code}
+abstract class B {
+    private def getFoo = 12
+    lazy val foo: Int = getFoo
+}
+{code}
+
+if you compile them together in resident mode you will get:
+{code}
+javap -classpath . A
+Compiled from "A.scala"
+public class A extends B implements scala.ScalaObject{
+    public volatile int bitmap$$0;
+    public scala.collection.immutable.List bar();
+    public A();
+}
+{code}
+but then if you compile just A.scala: 
+{code}
+javap -classpath . A
+Compiled from "A.scala"
+public class A extends B implements scala.ScalaObject{
+    public scala.collection.immutable.List bar();
+    public A();
+}
+{code}
+because A uses now the bitmap of B class. This causes excessive change notification in build manager (for example with Global.scala): 
+{code}
+scala scala.tools.nsc.interactive.BuildManagerTest src/A.scala src/B.scala
+compiling Set(src/A.scala, src/B.scala)
+Changes: Map()
+builder > src/A.scala
+compiling Set(src/A.scala)
+Changes: Map(class A -> List(Removed(Definition(A.bitmap$$0))))
+{code}

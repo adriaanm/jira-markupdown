@@ -1,0 +1,60 @@
+http://groups.google.com/group/scala-internals/browse_thread/thread/f083d728e56b5051:
+
+Chris Hodapp writes: "I seem to be having a repeatable problem. The first tree I run works fine. The second tree I try to run will always fail with the same error (see below). All subsequent trees will fail until I run <ToolBoxInstance>.frontEnd.reset(). After that, I seem to be able to run as many trees as I want".
+
+{code}
+import reflect.mirror._
+var i = 0
+val action = reify { i += 1; println(i) }.tree
+
+val tb1 = newToolBox()
+tb1.runExpr(action) // works
+tb1.runExpr(action) // error
+tb1.runExpr(action) // error
+tb1.frontEnd.reset()
+tb1.runExpr(action) // works
+tb1.runExpr(action) // works
+
+val tb2 = new ToolBox()
+tb2.runExpr(action) // works
+tb2.frontEnd.reset()
+tb2.runExpr(action) // error
+tb2.frontEnd(action) // error
+tb2.frontEnd.reset()
+tb2.runExpr(action)  // works
+tb2.runExpr(action) // works
+{code}
+
+The error is always:
+
+{code}
+scala.reflect.runtime.ToolBoxes$ToolBox$ToolBoxError: reflective compilation has failed: 
+
+name clash between inherited members:
+method ==:(x$1: AnyRef)Boolean in class Object and
+method ==:(x$1: Any)Boolean in class Any
+have same type after erasure: (x$1: Object)Boolean
+name clash between inherited members:
+method !=:(x$1: AnyRef)Boolean in class Object and
+method !=:(x$1: Any)Boolean in class Any
+have same type after erasure: (x$1: Object)Boolean
+        at scala.reflect.runtime.ToolBoxes$ToolBox$ToolBoxGlobal.throwIfErrors(ToolBoxes.scala:252)
+        at scala.reflect.runtime.ToolBoxes$ToolBox$ToolBoxGlobal.compileExpr(ToolBoxes.scala:200)
+        at scala.reflect.runtime.ToolBoxes$ToolBox$ToolBoxGlobal.runExpr(ToolBoxes.scala:227)
+        at scala.reflect.runtime.ToolBoxes$ToolBox.runExpr(ToolBoxes.scala:344)
+        at .<init>(<console>:17)
+        at .<clinit>(<console>)
+        at .<init>(<console>:7)
+        at .<clinit>(<console>)
+        at $print(<console>)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+        at java.lang.reflect.Method.invoke(Method.java:616)
+        at scala.tools.nsc.interpreter.IMain$ReadEvalPrint.call(IMain.scala:775)
+        at scala.tools.nsc.interpreter.IMain$Request$$anonfun$18.apply(IMain.scala:1037)
+        at scala.tools.nsc.interpreter.Line.scala$tools$nsc$interpreter$Line$$runAndSetState(Line.scala:41)
+        at scala.tools.nsc.interpreter.Line$$anonfun$2.apply$mcV$sp(Line.scala:47)
+        at scala.tools.nsc.io.package$$anon$2.run(package.scala:22)
+        at java.lang.Thread.run(Thread.java:679)
+{code}

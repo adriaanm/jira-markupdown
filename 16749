@@ -1,0 +1,15 @@
+Commit 1b14f49ff297a29c489dd184ee8f1f3c885a1b33 added the following to AbsSettings:
+
++  // an argument list which (should) be usable to recreate the Settings
++  def recreateArgs = userSetSettings.toList flatMap (_.unparse)
+
+But MutableSettings.copy was overlooked and to this day contains the code:
+
+    val xs = userSetSettings flatMap (_.unparse)
+    s.processArguments(xs.toList, true)
+
+Note the misplaced toList. Could someone please fix MutableSettings, perhaps like:
+
+    s.processArguments(recreateArgs, true)
+
+Thanks!

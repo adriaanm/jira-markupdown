@@ -1,0 +1,33 @@
+Parsing the attached java file with scalac causes the following stack trace:
+{code}
+Exception in thread "main" java.lang.ArrayIndexOutOfBoundsException: 120
+	at scala.tools.nsc.util.CharArrayReader.next(CharArrayReader.scala:78)
+	at scala.tools.nsc.javac.JavaScanners$$JavaScanner.fetchToken(JavaScanners.scala:617)
+	at scala.tools.nsc.javac.JavaScanners$$JavaScanner.nextToken(JavaScanners.scala:313)
+	at scala.tools.nsc.javac.JavaParsers$$JavaParser.accept(JavaParsers.scala:199)
+	at scala.tools.nsc.javac.JavaParsers$$JavaParser.methodBody(JavaParsers.scala:488)
+	at scala.tools.nsc.javac.JavaParsers$$JavaParser.termDecl(JavaParsers.scala:529)
+	at scala.tools.nsc.javac.JavaParsers$$JavaParser.memberDecl(JavaParsers.scala:614)
+	at scala.tools.nsc.javac.JavaParsers$$JavaParser.typeBodyDecls(JavaParsers.scala:735)
+	at scala.tools.nsc.javac.JavaParsers$$JavaParser.typeBody(JavaParsers.scala:717)
+	at scala.tools.nsc.javac.JavaParsers$$JavaParser.classDecl(JavaParsers.scala:689)
+	at scala.tools.nsc.javac.JavaParsers$$JavaParser.typeDecl(JavaParsers.scala:834)
+	at scala.tools.nsc.javac.JavaParsers$$JavaParser.compilationUnit(JavaParsers.scala:862)
+	at scala.tools.nsc.javac.JavaParsers$$JavaParser.parse(JavaParsers.scala:46)
+	at scala.tools.nsc.ast.parser.SyntaxAnalyzer$$ParserPhase.apply(SyntaxAnalyzer.scala:24)
+	at scala.tools.nsc.Global$$GlobalPhase.applyPhase(Global.scala:267)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:246)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:246)
+	at scala.Iterator$$class.foreach(Iterator.scala:414)
+	at scala.collection.mutable.ListBuffer$$$$anon$$1.foreach(ListBuffer.scala:266)
+	at scala.tools.nsc.Global$$GlobalPhase.run(Global.scala:246)
+	at scala.tools.nsc.Global$$Run.compileSources(Global.scala:574)
+	at scala.tools.nsc.Global$$Run.compile(Global.scala:667)
+	at scala.tools.nsc.Main$$.process(Main.scala:73)
+	at scala.tools.nsc.Main$$.main(Main.scala:87)
+	at scala.tools.nsc.Main.main(Main.scala)
+{code}
+
+I suspect the problem is due to a dangling CR (0D) character at the end of the file. The rest of the file has lines terminated by CRLF (0D0A).
+
+I'm using 2.7.4 final.

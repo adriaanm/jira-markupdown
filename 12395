@@ -1,0 +1,23 @@
+The type {{T}} in your example is a concrete type, while the type {{Self}} and {{F}} in my original example are abstract types.
+
+Scalac does change the type in expression {{def f: T}} so long as {{T}} is an abstract type. For example:
+
+{code}
+Welcome to Scala 2.11.8 (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_77).
+Type in expressions for evaluation. Or try :help.
+
+scala> trait A { type T; def f: T }
+defined trait A
+
+scala> type U = A { type T = String }
+defined type alias U
+
+scala> new A { type T = String; def f = "f" }
+res0: A{type T = String} = $anon$1@68f7aae2
+
+scala> res0: U
+res1: U = $anon$1@68f7aae2
+
+scala> res1.f.substring(0, 1) // res1.f is a String 
+res2: String = f
+{code}

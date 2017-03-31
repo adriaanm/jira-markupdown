@@ -1,0 +1,31 @@
+=== What steps will reproduce the problem (please be specific and use wikiformatting)? ===
+
+Compile the following code with Scaladoc:
+{code}
+class A(val a: Int = 4) {
+   def k1(x:Int = (new B).t ):Int= x
+}
+class B {
+   val t: Int = 0
+}
+{code} 
+
+The generated Scaladoc, which uses range positions to extract default arguments from source, has the following signatures for A:
+
+{code}
+class A(val a: Int) {
+   def k1(x:Int = new B).t ):Int
+}
+{code} 
+
+Notice:
+  - The default argument for the constructor parameter disappeared because a non-ranged position is generated for it (so that its `startOrPoint` and `endOrPoint` indices are equal).
+  - The default argument for method parameter x has lost its first `(` because its `startOrPoint` index is one too much.
+
+=== Additional information ===
+
+Ranged positions are not generated in a normal compiler run. Scaladoc is a way to demonstrate this issue because it forces the compiler to generate ranged positions, and outputs an artefact based upon them. Running the compiler in interactive mode for an IDE should have the same issue, but I do not know how to visualise the issue in the IDE.
+
+To debug directly on position rather than indirectly through the resulting documentation, a possible entry point is at the beginning of method `makeTree` in class `scala.tools.nsc.doc.model.TreeFactory`.
+
+Tested in 2.9 trunk r24334.

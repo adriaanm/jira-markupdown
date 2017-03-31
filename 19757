@@ -1,0 +1,49 @@
+{code:scala}
+    trait Service {
+      type Config
+      def default: Config
+      def init(data: Config):Unit
+    }
+    trait DBConfig { def getDB = "DB"}
+    trait AuthConfig { def getAuth = "AUTH" }
+    val dbs = new Service { 
+      type Config = DBConfig
+      def default = new DBConfig {}
+      def init(d:Config) = d.getDB 
+    }
+    val auths = new Service { 
+      type Config = AuthConfig
+      def default = new AuthConfig {}
+      def init(d:Config) = d.getAuth 
+    }
+    val services = auths::dbs::Nil
+
+    def initAll[T](xs:List[Service{ type Config >: T }])(c: T):Any = xs.foreach(_ init c)
+    initAll(services)(new DBConfig with AuthConfig {})
+
+    def initSome(a: Service, b: Service)(c: a.Config with b.Config) = {
+      val a1: Service{ type Config >: a.Config with b.Config} = a
+      val b1: Service{ type Config >: a.Config with b.Config} = b
+      initAll(a1::b1::Nil)(c)
+    }
+
+    /*
+    NOTE: the Scala compiler wrongly infers this type:
+
+      services: List[Service{type Config >: DBConfig with AuthConfig <: Object}]
+
+    Therefore, the following is also accepted:
+
+      def initAll[T](xs:List[Service{ type Config = T }])(c: T):Any = xs.tail.head.init(xs.head.default)
+      initAll(services)(new DBConfig with AuthConfig {})
+
+    But leads to an exception at runtime:
+
+      java.lang.ClassCastException: $anon$1$$anon$2 cannot be cast to DBConfig
+        at $anon$1.init(<console>:9)
+        at .initAll(<console>:8)
+        ... 33 elided
+
+    */
+
+{code}

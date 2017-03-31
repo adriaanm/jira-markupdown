@@ -1,0 +1,7 @@
+The variance validator does not check constructors or default methods. The test case here shows that both of these decisions are unsound (and I suspect the decision not to check case class apply/unapply methods also falls into this category). 
+
+The VarianceChecker class in dotty PR #147 detects both variance violations.
+
+As far as default getters are concerned we need to be careful with default getters for case class copy methods. These are allowed to violate variance because of the particular way copy works. The Dotty PR achieves this by
+annotating the default getters of copy methods with @uncheckedVariance.
+

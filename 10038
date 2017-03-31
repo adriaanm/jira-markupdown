@@ -1,0 +1,85 @@
+Selectively running different parts of the optimizer shows two failure modes. Both seem to involve DeadCodeElimination.
+
+{noformat}
+2.10.x ~/code/scala2 qbin/scalac -Yinline -Ydead-code -Yclosure-elim test/t7792.scala
+2.10.x ~/code/scala2 qbin/scalac -Yinline -Ydead-code -Yinline-handlers test/t7792.scala
+error: could not find init in: Return.test
+error: uncaught exception during compilation: scala.reflect.internal.FatalError
+error: scala.reflect.internal.FatalError:
+     while compiling: test/t7792.scala
+        during phase: dce
+     library version: version 2.10.3-20130823-144852-b7e31d807e
+    compiler version: version 2.10.3-20130826-123459-525ee49fe6
+  reconstructed args: -Ydead-code -Yinline -Yinline-handlers
+
+
+could not find init in: Return.test
+	at scala.reflect.internal.SymbolTable.abort(SymbolTable.scala:49)
+	at scala.tools.nsc.Global.abort(Global.scala:254)
+	at scala.tools.nsc.backend.opt.DeadCodeElimination$DeadCode.scala$tools$nsc$backend$opt$DeadCodeElimination$DeadCode$$findInstruction(DeadCodeElimination.scala:428)
+	at scala.tools.nsc.backend.opt.DeadCodeElimination$DeadCode.mark(DeadCodeElimination.scala:250)
+	at scala.tools.nsc.backend.opt.DeadCodeElimination$DeadCode.dieCodeDie(DeadCodeElimination.scala:94)
+	at scala.tools.nsc.backend.opt.DeadCodeElimination$DeadCode$$anonfun$analyzeClass$2.apply(DeadCodeElimination.scala:53)
+	at scala.tools.nsc.backend.opt.DeadCodeElimination$DeadCode$$anonfun$analyzeClass$2.apply(DeadCodeElimination.scala:51)
+	at scala.collection.immutable.List.foreach(List.scala:318)
+	at scala.tools.nsc.backend.opt.DeadCodeElimination$DeadCode.analyzeClass(DeadCodeElimination.scala:51)
+	at scala.tools.nsc.backend.opt.DeadCodeElimination$DeadCodeEliminationPhase.apply(DeadCodeElimination.scala:38)
+	
+
+2.10.x ~/code/scala2 qbin/scalac -Yinline -Yinline-handlers test/t7792.scala
+2.10.x ~/code/scala2 qbin/scalac -Ydead-code -Yinline-handlers test/t7792.scala
+2.10.x ~/code/scala2 qbin/scalac -Yinline -Ydead-code test/t7792.scala
+in: 10 -> IState(, )
+3 -> IState(, )
+7 -> IState((value nonLocalReturnKey1,1,3), )
+14 -> IState(, )
+4 -> IState(, )
+11 -> IState(, )
+1 -> IState(, )
+8 -> IState(, )
+5 -> IState(, )
+12 -> IState(, )
+2 -> IState(, )
+9 -> IState(, )
+16 -> IState(, )
+out: 10 -> IState(, )
+3 -> IState(, )
+7 -> IState(, )
+14 -> IState(, )
+4 -> IState(, )
+11 -> IState(, )
+1 -> IState((value nonLocalReturnKey1,1,3), )
+8 -> IState(, )
+5 -> IState(, )
+12 -> IState(, )
+2 -> IState(, )
+9 -> IState(, )
+16 -> IState(, )
+java.util.NoSuchElementException: key not found: 13
+	at scala.collection.MapLike$class.default(MapLike.scala:228)
+	at scala.collection.AbstractMap.default(Map.scala:58)
+	at scala.collection.mutable.HashMap.apply(HashMap.scala:64)
+	at scala.tools.nsc.backend.icode.analysis.DataFlowAnalysis$$anonfun$forwardAnalysis$1$$anonfun$1.apply(DataFlowAnalysis.scala:69)
+	at scala.tools.nsc.backend.icode.analysis.DataFlowAnalysis$$anonfun$forwardAnalysis$1$$anonfun$1.apply(DataFlowAnalysis.scala:69)
+	at scala.collection.TraversableLike$$anonfun$map$1.apply(TraversableLike.scala:244)
+	at scala.collection.TraversableLike$$anonfun$map$1.apply(TraversableLike.scala:244)
+	at scala.collection.immutable.List.foreach(List.scala:318)
+	at scala.collection.TraversableLike$class.map(TraversableLike.scala:244)
+	at scala.collection.AbstractTraversable.map(Traversable.scala:105)
+	at scala.tools.nsc.backend.icode.analysis.DataFlowAnalysis$$anonfun$forwardAnalysis$1.apply(DataFlowAnalysis.scala:69)
+	at scala.tools.nsc.backend.icode.analysis.DataFlowAnalysis$$anonfun$forwardAnalysis$1.apply(DataFlowAnalysis.scala:68)
+	at scala.collection.immutable.List.foreach(List.scala:318)
+	at scala.tools.nsc.backend.icode.analysis.DataFlowAnalysis$class.forwardAnalysis(DataFlowAnalysis.scala:68)
+...
+
+uncaught exception during compilation: java.lang.RuntimeException
+error: java.lang.RuntimeException: Could not find element key not found: 13
+	at scala.sys.package$.error(package.scala:27)
+	at scala.tools.nsc.backend.icode.analysis.DataFlowAnalysis$class.forwardAnalysis(DataFlowAnalysis.scala:82)
+	at scala.tools.nsc.backend.icode.analysis.ReachingDefinitions$ReachingDefinitionsAnalysis.forwardAnalysis(ReachingDefinitions.scala:62)
+	at scala.tools.nsc.backend.icode.analysis.ReachingDefinitions$ReachingDefinitionsAnalysis.run(ReachingDefinitions.scala:143)
+	at scala.tools.nsc.backend.opt.DeadCodeElimination$DeadCode.collectRDef(DeadCodeElimination.scala:110)
+	
+2.10.x ~/code/scala2 qbin/scalac -Ydead-code -Yinline-handlers test/t7792.scala
+2.10.x ~/code/scala2
+{noformat}

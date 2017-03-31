@@ -1,0 +1,16 @@
+(In r24068) The AnyVal types become source files instead of polite
+compiler fictions.
+
+!! You'll need a serious "ant all.clean" now. !!
+
+As of this commit the system is fully bootstrapped and the
+synthetic code eliminated: only the source files remain.
+The sort-of-AnyVal-companions in scala.runtime.* have all
+been eliminated because the actual companions can do everything;
+deprecated vals in the scala.runtime package object point to
+the companions.  This left AnyValCompanion as the only AnyVal
+related thing in the runtime package: that made little sense,
+so I deprecated and moved it as well.
+
+Starr is based on r24066 plus this commit.  Closes SI-4121.
+Review by rytz, odersky.

@@ -1,0 +1,17 @@
+Same error when trying following case
+
+{code}
+
+class A {
+  def otherMethod(arg: VarArgs) {
+    //A piece of code
+  }
+}
+
+// Not Ok -- error when assigning anonymous class as a method parameter
+// Compiler error:  object creation impossible, since method method in trait VarArgs of type (s: <repeated...>[java.lang.String])Unit is not defined
+new A().otherMethod(new VarArgs {
+  def method(s: String*) { println(s) }
+}
+
+{code}

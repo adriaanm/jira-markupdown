@@ -1,0 +1,14 @@
+In your failing test, the parser emits `package <empty> { import s.c.Future; package nodescala {} }`.
+
+This logic in Namers:
+
+{code}
+    /** All PackageClassInfoTypes come from here. */
+    private def createPackageSymbol(pos: Position, pid: RefTree): Symbol = {
+      val pkgOwner = pid match {
+        case Ident(_)                 => if (owner.isEmptyPackageClass) rootMirror.RootClass else owner
+        case Select(qual: RefTree, _) => createPackageSymbol(pos, qual).moduleClass
+      }
+{code}
+
+.. needs to be reflected in BrowserTraverser.

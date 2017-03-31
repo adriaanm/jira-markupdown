@@ -1,0 +1,22 @@
+As a clarification, Scala does allow
+anonymous function class automatic serialVersionUID insertion.
+see: tools/nsc/transform/CleanUp.scala
+{code}
+/* Adds @serializable annotation to anonymous function classes */
+case cdef @ ClassDef(mods, name, tparams, impl) =>
+  if (settings.target.value == "jvm-1.5") {
+    val sym = cdef.symbol
+    // is this an anonymous function class?
+    if (sym.isAnonymousFunction && !sym.hasAnnotation(SerializableAttr)) {
+      sym addAnnotation serializableAnnotation
+      sym addAnnotation serialVersionUIDAnnotation
+    }
+  }
+  super.transform(tree)
+{code}
+But does not allow
+anonymous class automatic serialVersionUID insertion.
+
+And the reasoning in the provided links
+apply to an anonymous class but not an anonymous function class.
+I understand, thanks.

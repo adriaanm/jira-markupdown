@@ -1,0 +1,16 @@
+For better or worse, now we get two type errors:
+{code}
+scala> def test = foo(ListBuffer(), List()) 
+<console>:9: error: type mismatch;
+ found   : scala.collection.mutable.ListBuffer[Nothing]
+ required: Seq[Nothing]{def seq: Seq[Nothing]{def companion: scala.collection.generic.GenericCompanion[Seq[Any]]}; def companion: scala.collection.generic.GenericCompanion[Seq[Any]]}
+       def test = foo(ListBuffer(), List()) 
+                                ^
+<console>:9: error: type mismatch;
+ found   : List[Nothing]
+ required: Seq[Nothing]{def seq: Seq[Nothing]{def companion: scala.collection.generic.GenericCompanion[Seq[Any]]}; def companion: scala.collection.generic.GenericCompanion[Seq[Any]]}
+       def test = foo(ListBuffer(), List()) 
+                                        ^
+{code}
+
+I don't know enough about what type inference should be able to do, Adriaan, can you please have a look?

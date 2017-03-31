@@ -1,0 +1,28 @@
+A slightly harder test case:
+
+{code}
+object Test {
+  def f1[@specialized A] (a: A, b: Any) = new Exception().getStackTrace()(0)
+  def f2[@specialized A, B] (a: A, b: String) = new Exception().getStackTrace()(0)
+  def f3[B, @specialized A] (a: A, b: List[B]) = new Exception().getStackTrace()(0)
+  def f4[B <: List[A], @specialized A] (a: A, b: B) = new Exception().getStackTrace()(0)
+  def f5[B, @specialized A] (a: A, b: List[(A, B)]) = new Exception().getStackTrace()(0)
+
+  def main(args: Array[String]) {
+    println("f1: "+f1(1,"some ref"))
+    println("f2: "+f2(1,"some ref"))
+    println("f3: "+f3(1,List("some ref")))
+    println("f4: "+f4(1,List(0)))
+    println("f5: "+f5(1,Nil))
+  }
+}
+{code}
+
+This shows up fairly fundamental problems of phase-awareness in the specialization transform: as MethodTypes flow through InfoTransfomers they pick up new symbols for type parameters. This does not seem to be accounted.
+
+{code}
+  def specializedTypeVars(sym: Symbol): immutable.Set[Symbol] = (
+    if (neverHasTypeParameters(sym)) immutable.Set.empty
+    else enteringTyper(specializedTypeVars(sym.info))
+  )
+{code}

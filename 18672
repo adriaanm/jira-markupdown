@@ -1,0 +1,25 @@
+Compare Publisher.publish
+{code}
+  def publish(e: Event) { for (l <- listeners) l(e) }
+{code}
+
+and Reactions.Impl.apply
+{code}
+  def apply(e: Event) {
+    for (p <- parts) if (p isDefinedAt e) p(e)
+  }
+{code}
+
+This means that if we have the following code
+{code}
+    val l: Reaction = {
+      case ButtonClicked(b) => println("Button pushed")
+    }
+    // This should work, or not be available in the API ;)
+    button.subscribe(l)
+    // This works
+    button.reactions += l
+{code}
+it will give lots of MatchErrors (e.g. when FocusGained/FocusLost events are fired) if we add the listener with the first construct, whereas it works fine in the second construct.
+
+(Actually, why are there two different ways of adding listeners in the first place?)

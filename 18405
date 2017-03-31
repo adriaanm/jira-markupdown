@@ -1,0 +1,18 @@
+{code}
+$ cat spec-self.scala 
+package specialization.bugs
+
+trait BufferLike[@specialized A, +This <: BufferLike[A, This]] extends SeqLike[A, This] {
+  self: This =>
+}
+
+trait SeqLike[@specialized +A, +Repr] extends Any { self =>
+}
+
+scalac210x spec-self.scala
+spec-self.scala:3: error: illegal inheritance;
+ self-type This does not conform to specialization.bugs.SeqLike$mcB$sp[This]'s selftype specialization.bugs.SeqLike$mcB$sp[This]
+trait BufferLike[@specialized A, +This <: BufferLike[A, This]] extends SeqLike[A, This] {
+                                                               ^
+one error found
+{code}

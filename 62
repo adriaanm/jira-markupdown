@@ -1,0 +1,20 @@
+This bug is triggered by broken type inference for higher-kinded types
+I flagged as postponed instead of wontfix as we (I) should really emit better error messages when the programmer does not supply higher-kinded type arguments, but I don't know how to fix the deeper issue, i.e., inference for these types.
+
+This works:
+{code}
+abstract class Pattern[A,B] {
+  def unapply(x:A):Option[B] /* optional */
+}
+abstract class QSeq[A, P[B] <: Pattern[A,B]] {
+  def head:A
+  def tail:QSeq[A,P]
+  def ::(x:A): QSeq[A,P]
+  def query[B,C, D[Z]<:Pattern[C,Z]](pat: P[B], body:B => C ): QSeq[C,D] = { 
+     head match {
+       case pat(x) => body(x) :: tail.query[B, C, D](pat, body) // must supply higher-kinded type arguments explicitly!
+       case _      =>            tail.query[B, C, D](pat, body)
+     }
+  } 
+}
+{code}

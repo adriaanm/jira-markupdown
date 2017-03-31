@@ -1,0 +1,14 @@
+Yes, `flatten` is along the lines of what I was thinking of. I don't understand your argument, though.  The implicit is a function `T => Traversable[S]` and a typical error looks like:
+{code}
+scala> Traversable(1,2).flatten    
+<console>:6: error: could not find implicit value for parameter asTraversable: (Int) => Traversable[B]
+       Traversable(1,2).flatten
+                        ^
+{code}
+
+It seems to me that your suggested error message
+{code}
+Cannot flatten a traversable of Int: the elements must be traversable.
+{code}
+
+would be a worthwhile improvement for newer users.  You don't have to understand implicits to understand your mistake.

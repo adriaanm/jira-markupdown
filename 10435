@@ -1,0 +1,27 @@
+Another one:
+
+{noformat}
+ qbin/scalac test/files/run/reflection-sync-potpourri.scala && (for i in {1..100}; do parallel -j 50 qbin/scala -J-Xmx1G Test ::: {1..10} || break; printf . ;done)
+......Exception in thread "Reflector-1" java.lang.AssertionError: assertion failed: class Codec
+	at scala.Predef$.assert(Predef.scala:167)
+	at scala.reflect.internal.Symbols$TypeSymbol.setTyconCache(Symbols.scala:2921)
+	at scala.reflect.internal.Symbols$TypeSymbol.typeConstructor(Symbols.scala:2912)
+	at scala.reflect.internal.Symbols$SymbolContextApiImpl.toTypeConstructor(Symbols.scala:126)
+	at scala.reflect.internal.Symbols$TypeSymbol.toTypeConstructor(Symbols.scala:2838)
+	at Test$$anonfun$5$$typecreator4$1.apply(reflection-sync-potpourri.scala:16)
+	at scala.reflect.api.TypeTags$WeakTypeTagImpl.tpe$lzycompute(TypeTags.scala:231)
+	at scala.reflect.api.TypeTags$WeakTypeTagImpl.tpe(TypeTags.scala:231)
+	at scala.reflect.api.TypeTags$class.typeOf(TypeTags.scala:335)
+	at scala.reflect.api.Universe.typeOf(Universe.scala:61)
+	at Test$$anonfun$5.apply(reflection-sync-potpourri.scala:16)
+	at Test$$anonfun$5.apply(reflection-sync-potpourri.scala:16)
+	at Test$.force(reflection-sync-potpourri.scala:19)
+	at Test$$anonfun$6$$anon$1$$anonfun$7.apply(reflection-sync-potpourri.scala:26)
+	at Test$$anonfun$6$$anon$1$$anonfun$7.apply(reflection-sync-potpourri.scala:26)
+	at scala.collection.TraversableLike$$anonfun$map$1.apply(TraversableLike.scala:245)
+	at scala.collection.TraversableLike$$anonfun$map$1.apply(TraversableLike.scala:245)
+	at scala.collection.immutable.List.foreach(List.scala:302)
+	at scala.collection.TraversableLike$class.map(TraversableLike.scala:245)
+	at scala.collection.AbstractTraversable.map(Traversable.scala:104)
+	at Test$$anonfun$6$$anon$1.run(reflection-sync-potpourri.scala:26)
+{noformat}

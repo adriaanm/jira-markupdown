@@ -1,0 +1,17 @@
+The code for ++= in ArrayBuffer.scala is currently this:
+
+{{
+  override def ++=(xs: TraversableOnce[A]): this.type = xs match {
+    case v: IndexedSeq[_] =>
+      val n = v.length
+      ensureSize(size0 + n)
+      v.copyToArray(array.asInstanceOf[scala.Array[Any]], size0, n)
+      size0 += n
+      this
+    case _ =>
+      super.++=(xs)
+  }
+
+}}
+
+However, the "case v: IndexedSeq[_]" only matches mutable IndexedSeq, whereas this optimization would also be valid for structures like the immutable Vector.

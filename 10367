@@ -1,0 +1,19 @@
+Needs a bit of minimization.
+
+{code}
+//package.scala
+package object nodescala {
+  def Foo: Int = 0
+}
+{code}
+
+{code}
+// NodeScalaSuite.scala
+package nodescala
+
+class NodeScalaSuite {
+  Foo
+}
+{code}
+
+This sort of problem means the `openPackageModule` hasn't been triggered, which adds the members of package objects to the package. I'm not sure if the presentation compiler test you created is even meant to to work, though: it doesn't look at `src/*`, does it? Poking around for source files that contain package objects is the domain of `BrowsingLoaders`.

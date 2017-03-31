@@ -1,0 +1,27 @@
+Thanks for the code, Seth. I believe the bug is now in the classfile parser. It can be further reduced to the following:
+
+{code}
+
+lampmac3:sandbox luc$$ ls
+total 24
+-rw-r--r--  1 luc  staff  36 Apr 12 16:00 A.java
+-rw-r--r--  1 luc  staff  25 Apr 12 16:13 B.java
+-rw-r--r--  1 luc  staff  48 Apr 12 16:12 Test.scala
+lampmac3:sandbox luc$$ cat A.java 
+interface A {
+    interface I { }
+}
+lampmac3:sandbox luc$$ cat B.java 
+class B implements A { }
+lampmac3:sandbox luc$$ cat Test.scala 
+class Test extends B {
+  def foo(): I = null
+}
+
+lampmac3:sandbox luc$$ javac *.java
+lampmac3:sandbox luc$$ ../target/pack/bin/scalac Test.scala
+Test.scala:2: error: not found: type I
+  def foo(): I = null
+             ^
+one error found
+{code}

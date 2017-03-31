@@ -1,0 +1,105 @@
+OuterInterface.java:
+{code:java}
+public interface OuterInterface {
+    public interface NestedInterface {
+    }
+}
+{code}
+OuterClass.java:
+{code:java}
+public class OuterClass implements OuterInterface {
+    public class InnerClass implements NestedInterface {
+    }
+}
+{code}
+Test.scala:
+{code:scala}
+class Test {
+  val x: OuterClass = null
+}
+{code}
+
+Result:
+{noformat}
+$ javac OuterInterface.java
+$ scalac -cp . OuterClass.java Test.scala
+java.lang.AssertionError: assertion failed: Invalid interfaces in LOuterClass$InnerClass;: List(Ljava/lang/Object;)
+        at scala.tools.nsc.backend.jvm.BTypes$ClassBType.checkInfoConsistency(BTypes.scala:893)
+        at scala.tools.nsc.backend.jvm.BTypes$ClassBType.info_$eq(BTypes.scala:868)
+        at scala.tools.nsc.backend.jvm.BTypesFromSymbols.setClassInfo(BTypesFromSymbols.scala:446)
+        at scala.tools.nsc.backend.jvm.BTypesFromSymbols.$anonfun$classBTypeFromSymbol$5(BTypesFromSymbols.scala:126)
+        at scala.collection.MapLike.getOrElse(MapLike.scala:128)
+        at scala.collection.MapLike.getOrElse$(MapLike.scala:126)
+        at scala.collection.concurrent.TrieMap.getOrElse(TrieMap.scala:631)
+        at scala.tools.nsc.backend.jvm.BTypesFromSymbols.classBTypeFromSymbol(BTypesFromSymbols.scala:118)
+        at scala.tools.nsc.backend.jvm.BTypesFromSymbols.$anonfun$setClassInfo$17(BTypesFromSymbols.scala:440)
+        at scala.tools.nsc.backend.jvm.BTypesFromSymbols.setClassInfo(BTypesFromSymbols.scala:440)
+        at scala.tools.nsc.backend.jvm.BTypesFromSymbols.$anonfun$classBTypeFromSymbol$5(BTypesFromSymbols.scala:126)
+        at scala.collection.MapLike.getOrElse(MapLike.scala:128)
+        at scala.collection.MapLike.getOrElse$(MapLike.scala:126)
+        at scala.collection.concurrent.TrieMap.getOrElse(TrieMap.scala:631)
+        at scala.tools.nsc.backend.jvm.BTypesFromSymbols.classBTypeFromSymbol(BTypesFromSymbols.scala:118)
+        at scala.tools.nsc.backend.jvm.BTypesFromSymbols.$anonfun$typeToBType$1(BTypesFromSymbols.scala:177)
+        at scala.collection.MapLike.getOrElse(MapLike.scala:128)
+        at scala.collection.MapLike.getOrElse$(MapLike.scala:126)
+        at scala.collection.AbstractMap.getOrElse(Map.scala:59)
+        at scala.tools.nsc.backend.jvm.BTypesFromSymbols.primitiveOrClassToBType$1(BTypesFromSymbols.scala:177)
+        at scala.tools.nsc.backend.jvm.BTypesFromSymbols.typeToBType(BTypesFromSymbols.scala:192)
+        at scala.tools.nsc.backend.jvm.BTypesFromSymbols.methodBTypeFromMethodType(BTypesFromSymbols.scala:146)
+        at scala.tools.nsc.backend.jvm.BTypesFromSymbols.methodBTypeFromSymbol(BTypesFromSymbols.scala:137)
+        at scala.tools.nsc.backend.jvm.BTypesFromSymbols.$anonfun$buildInlineInfoFromClassSymbol$5(BTypesFromSymbols.scala:583)
+        at scala.collection.Iterator$$anon$11.nextCur(Iterator.scala:473)
+        at scala.collection.Iterator$$anon$11.hasNext(Iterator.scala:479)
+        at scala.collection.Iterator.foreach(Iterator.scala:929)
+        at scala.collection.Iterator.foreach$(Iterator.scala:929)
+        at scala.collection.AbstractIterator.foreach(Iterator.scala:1406)
+        at scala.collection.TraversableOnce.toMap(TraversableOnce.scala:316)
+        at scala.collection.TraversableOnce.toMap$(TraversableOnce.scala:314)
+        at scala.collection.AbstractIterator.toMap(Iterator.scala:1406)
+        at scala.tools.nsc.backend.jvm.BTypesFromSymbols.buildInlineInfoFromClassSymbol(BTypesFromSymbols.scala:616)
+        at scala.tools.nsc.backend.jvm.BTypesFromSymbols.buildFromSymbol$1(BTypesFromSymbols.scala:522)
+        at scala.tools.nsc.backend.jvm.BTypesFromSymbols.buildInlineInfo(BTypesFromSymbols.scala:527)
+        at scala.tools.nsc.backend.jvm.BTypesFromSymbols.setClassInfo(BTypesFromSymbols.scala:444)
+        at scala.tools.nsc.backend.jvm.BTypesFromSymbols.$anonfun$classBTypeFromSymbol$5(BTypesFromSymbols.scala:126)
+        at scala.collection.MapLike.getOrElse(MapLike.scala:128)
+        at scala.collection.MapLike.getOrElse$(MapLike.scala:126)
+        at scala.collection.concurrent.TrieMap.getOrElse(TrieMap.scala:631)
+        at scala.tools.nsc.backend.jvm.BTypesFromSymbols.classBTypeFromSymbol(BTypesFromSymbols.scala:118)
+        at scala.tools.nsc.backend.jvm.BCodeSkelBuilder$PlainSkelBuilder.genPlainClass(BCodeSkelBuilder.scala:94)
+        at scala.tools.nsc.backend.jvm.GenBCode$BCodePhase$Worker1.visit(GenBCode.scala:190)
+        at scala.tools.nsc.backend.jvm.GenBCode$BCodePhase$Worker1.$anonfun$run$1(GenBCode.scala:139)
+        at scala.tools.nsc.backend.jvm.GenBCode$BCodePhase$Worker1.run(GenBCode.scala:139)
+        at scala.tools.nsc.backend.jvm.GenBCode$BCodePhase.buildAndSendToDisk(GenBCode.scala:381)
+        at scala.tools.nsc.backend.jvm.GenBCode$BCodePhase.run(GenBCode.scala:350)
+        at scala.tools.nsc.Global$Run.compileUnitsInternal(Global.scala:1418)
+        at scala.tools.nsc.Global$Run.compileUnits(Global.scala:1403)
+        at scala.tools.nsc.Global$Run.compileSources(Global.scala:1398)
+        at scala.tools.nsc.Global$Run.compile(Global.scala:1492)
+        at scala.tools.nsc.MainClass.doCompile(Main.scala:24)
+        at scala.tools.nsc.Driver.process(Driver.scala:55)
+        at scala.tools.nsc.Driver.main(Driver.scala:68)
+        at scala.tools.nsc.Main.main(Main.scala)
+error: Error while emitting Test.scala
+assertion failed: Invalid interfaces in LOuterClass$InnerClass;: List(Ljava/lang/Object;)
+one error found
+{noformat}
+
+The problem goes away when:
+* {{OuterClass.java}} refers to {{NestedInterface}} as {{OuterInterface.NestedInterface}}:
+  {code:java}
+public class OuterClass implements OuterInterface {
+    public class InnerClass implements OuterInterface.NestedInterface {
+    }
+}
+{code}
+* all the files are compiled in one run:
+  {noformat}
+$ scalac OuterInterface.java OuterClass.java Test.scala
+{noformat}
+* {{Test.scala}} is compiled separately from {{OuterClass.java}}, e.g.
+  {noformat}
+$ javac OuterInterface.java OuterClass.java
+$ scalac -cp . Test.scala
+{noformat}
+
+So I suppose this must be a problem with the Java parser built into {{scalac}} that is used during mixed Java-Scala compilation.

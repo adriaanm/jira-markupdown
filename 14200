@@ -1,0 +1,40 @@
+using 2.7.4-final, i cannot implement an abstract java method with optional arguments. the compiler says it's all fine and compiles without errors, but the program doesn't run.
+
+ABaseJavaClass.java---------------------
+
+package com.razie.learnscala;
+
+public abstract class ABaseJavaClass {
+
+   public abstract void takesOptionalArgs (String...args); 
+   public abstract void takesMoreOptionalArgs (String...args); 
+}
+
+AScalaExtension.scala--------------------
+
+class AScalaExtension extends ABaseJavaClass {
+  override def takesOptionalArgs (x:String*) = {
+    java.lang.System.out.printf ("Java printf: %s %s %s", x:_*)
+  }
+}
+
+object LearnScala extends Application {
+  val cc : ABaseJavaClass = (new AScalaExtension)
+  cc.takesOptionalArgs ("itsi", "bitsi", "spider")
+}
+
+----------- runtime output:
+
+
+Exception in thread "main" java.lang.AbstractMethodError: com.razie.learnscala.ABaseJavaClass.takesOptionalArgs([Ljava/lang/String;)V
+	at com.razie.learnscala.LearnScala$$.<init>(LearnScala.scala:7)
+	at com.razie.learnscala.LearnScala$$.<clinit>(LearnScala.scala)
+	at com.razie.learnscala.LearnScala.main(LearnScala.scala)
+
+expected output:------------
+Java printf: itsi bitsi spider
+
+---------------------additional info
+
+the method signatures in the .class files are different. the scala version takes a (Lscala/Seq;) while the java version takes ([Ljava/lang/String;)
+

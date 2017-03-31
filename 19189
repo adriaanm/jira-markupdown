@@ -1,0 +1,9 @@
+We'd like to eventually make something that was a case class a trait.  So we'd like to be able to deprecate at least some of the methods that case classes generate.
+
+In our case, the only important method to deprecate is the constructor - there's no reason to use the extractor or copy methods on this particular class, but the constructor is definitely used.  So our specific problem would be solved if doing this:
+
+{code}
+case class Foo @deprecated(...) (bar: String)
+{code}
+
+resulted in the {{Foo.apply}} method being deprecated.  More generally it would also be nice to be able to deprecate the {{unapply}} and {{copy}} methods.  Currently it seems the only way to deprecate any of these methods is to manually implement the entire case class, and then apply the {{@deprecated}} annotation to the methods.

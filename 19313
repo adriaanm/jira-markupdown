@@ -1,0 +1,17 @@
+scala.sys.process.ProcessBuilder#lineStream uses LinkedBlockingQueue with a capacity of Integer.MAX_VALUE.
+
+https://github.com/scala/scala/blob/v2.11.2/src/library/scala/sys/process/BasicIO.scala#L46
+http://docs.oracle.com/javase/8/docs/api/java/util/concurrent/LinkedBlockingQueue.html#LinkedBlockingQueue--
+
+When producer (stdin) generates large input and consumer consumes slowly, OOM occurs. lineStream should use moderate capacity queue.
+
+Here is console sample:
+{code:title=sample.scala}
+scala> import sys.process._
+import sys.process._
+
+scala> val unlimitedStream = "yes".lineStream
+unlimitedStream: Stream[String] = Stream(y, ?)
+
+scala> Exception in thread "Thread-2" java.lang.OutOfMemoryError: Java heap space
+{code}

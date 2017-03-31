@@ -1,0 +1,131 @@
+Doh, used the wrong formatting tag for the code. Here's a better version:
+{code}
+object Integers {
+    trait Bool {
+        type Not <: Bool
+        type And[B <: Bool] <: Bool
+        type Or[B <: Bool] <: Bool
+        type If[T, T1 <: T, T2 <: T] <: T
+    }
+
+    trait True extends Bool {
+        type Not = False
+        type And[B <: Bool] = B
+        type Or[B <: Bool] = True
+        type If[T, T1 <: T, T2 <: T] = T1
+    }
+
+    trait False extends Bool {
+        type Not = True
+        type And[B <: Bool] = False
+        type Or[B <: Bool] = B
+        type If[T, T1 <: T, T2 <: T] = T2
+    }
+
+    trait Integer {
+        type Pre <: Integer
+        type Add[N <: Integer] <: Integer
+        type Sub[N <: Integer] <: Integer
+        type Abs <: PositiveOrZero
+        type Neg <: Integer
+        type IsNeg <: Bool
+        type IsZero <: Bool
+
+        type CallAdd[N <: Positive] <: Integer
+        type CallSub[N <: Positive] <: Integer
+    }
+
+    trait PositiveOrZero extends Integer {
+        type IsNeg = False
+        type DoSubPos[N <: Positive] <: Integer
+    }
+
+    trait Positive extends PositiveOrZero {
+        type Pre <: PositiveOrZero
+        type AddPos[N <: Positive] <: Integer
+        type SubPos[N <: Positive] <: Integer
+    }
+
+    trait Succ[T <: PositiveOrZero] extends Positive {
+        type This = Succ[T]
+
+        type AddPos[N <: Positive] = Pre#Add[Succ[N]]
+        type SubPos[N <: Positive] = Pre#Sub[N#Pre]
+
+        type CallAdd[N <: Positive] = N#AddPos[This]
+        type CallSub[N <: Positive] = N#SubPos[This]
+
+        type Pre = T
+        type Add[N <: Integer] = N#CallAdd[This]
+        type Sub[N <: Integer] = N#CallSub[This]
+        type Abs = This
+        type Neg = -[This]
+        type IsZero = False
+    }
+
+    trait _0 extends PositiveOrZero {
+        type Pre = -[Succ[_0]]
+        type Add[N <: Integer] = N
+        type Sub[N <: Integer] = N#Neg
+        type CallAdd[N <: Positive] = N
+        type CallSub[N <: Positive] = N
+        type Neg = _0
+        type Abs = _0
+        type IsZero = True
+        type DoSubPos[N <: Positive] = N
+    }
+
+    trait -[T <: Positive] extends Integer {
+        type This = -[T]
+        type Pre = -[Succ[T]]
+        type Add[N <: Integer] = N#Sub[This#Neg]
+        type Sub[N <: Integer] = N#Add[This#Neg]
+        type CallAdd[N <: Positive] = N#SubPos[Neg]
+        type CallSub[N <: Positive] = N#AddPos[Neg]
+        type Abs = T
+        type Neg = T
+        type IsNeg = True
+        type IsZero = False
+    }
+
+    type _1 = Succ[_0]
+    type _2 = Succ[_1]
+    type _3 = Succ[_2]
+    type _4 = Succ[_3]
+    type _5 = Succ[_4]
+    type _6 = Succ[_5]
+    type _7 = Succ[_6]
+    type _8 = Succ[_7]
+    type _9 = Succ[_8]
+    type _10 = Succ[_9]
+
+    type Minus1 = -[_1]
+    type Minus2 = -[_2]
+    type Minus3 = -[_3]
+    type Minus4 = -[_4]
+    type Minus5 = -[_5]
+    type Minus6 = -[_6]
+    type Minus7 = -[_7]
+    type Minus8 = -[_8]
+    type Minus9 = -[_9]
+    type Minus10 = -[_10]
+
+}
+
+object Main {
+    import Integers._
+
+    case class TestInteger[T <: Integer]
+
+    def main(args: Array[String]) = {
+        val b1 : TestInteger[_1] = TestInteger[True#If[Integer, _1, _2]]
+        val b2 : TestInteger[_2] = TestInteger[True#Not#If[Integer, _1, _2]]
+        val t1 = TestInteger[_1]
+        val t2 = TestInteger[_1#Neg]
+        val t3 = TestInteger[_1#Add[_1]]
+//        val t4 = TestInteger[_2#Add[_1#Neg]]
+        ()
+    }
+
+} 
+{code}

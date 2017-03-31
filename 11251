@@ -1,0 +1,27 @@
+At the end of the day,
+{noformat}
+$ scala -Dscala.repl.info -opt:inline-global -opt-warnings:_ 
+Welcome to Scala 2.12.0 (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_111).
+Type in expressions for evaluation. Or try :help.
+[info] started at Sat Nov 12 01:44:37 PST 2016
+
+scala 2.12.0> <console>:11: warning: failed to determine if value should be inlined:
+The method value()Lscala/tools/nsc/interpreter/IMain; could not be found in the class  or any of its parents.
+Note that class  could not be found on the classpath.
+              val $intp = value
+                                       ^
+
+
+scala 2.12.0> @inline def f(body: => Unit) = body
+f: (body: => Unit)Unit
+
+scala 2.12.0> def g() = f(println("hi"))
+<console>:12: warning: failed to determine if f should be inlined:
+The method f(Lscala/Function0;)V could not be found in the class  or any of its parents.
+Note that class  could not be found on the classpath.
+              def g() = f(println("hi"))
+                         ^
+g: ()Unit
+
+
+{noformat}

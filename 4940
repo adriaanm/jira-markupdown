@@ -1,0 +1,43 @@
+By Paul: I find experimentally that javac lets access tighten such that whether
+you can call a method depends on the static type of the argument, which
+would seem like an unfortunate thing to emulate, but possibly not the
+worst thing being considered.
+
+{code}
+// J1.java
+package bip;
+
+public class J {
+ // package[bip] + protected f()
+ protected void f() { }
+}
+{code}
+
+{code}
+// J2.java
+package notbip;
+
+public class J2 extends bip.J {
+ // this override "should" not be allowed, it excludes package bip
+ // now package[notbip] + protected f()
+ @Override
+ protected void f() { }
+}
+{code}
+
+{code}
+// J3.java
+package bip;
+
+public class J3 {
+ public void g(bip.J x) {
+   x.f();  // ok
+   notbip.J2 y = (notbip.J2)x;
+   y.f();  // fails
+   // J3.java:7: f() has protected access in notbip.J2
+   //     y.f();
+   //      ^
+   // 1 error
+ }
+}
+{code}

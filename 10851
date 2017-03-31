@@ -1,0 +1,39 @@
+Just to show it's not just {{setWriter}} that's borked; {{setAttribute}} doesn't work either. SI-7916 asserts {{get/setBndings}} is toast too :
+
+in {{sbt console}}
+{noformat}
+import javax.script._
+val engine = new ScriptEngineManager().getEngineByName("scala")
+val iMain = engine.asInstanceOf[scala.tools.nsc.interpreter.IMain]
+// now we play settings/classpath games so this works in sbt console
+class MyClass
+iMain.settings.embeddedDefaults[MyClass]
+iMain.settings.usemanifestcp.value = true
+def getPath(className: String) = java.lang.Class.forName(className).getProtectionDomain().getCodeSource().getLocation().getPath()
+def compilerClass = "scala.tools.nsc.Interpreter"
+def langClass = "scala.Some"
+val compilerPath = s"${getPath(compilerClass)};${getPath(langClass)}"
+iMain.settings.bootclasspath.append(compilerPath)
+iMain.settings.classpath.append(compilerPath)
+// OK, game on:
+val c = new SimpleScriptContext()
+c.setAttribute("foo", new Integer(5), ScriptContext.ENGINE_SCOPE)
+c.setAttribute("foo", new Integer(6), ScriptContext.GLOBAL_SCOPE)
+import java.io.StringWriter
+val w = new StringWriter()
+c.setWriter(w)
+engine.setContext(c)
+engine.eval("println(foo)")
+w
+{noformat}
+gets
+{noformat}
+<console>:8: error: not found: value foo
+              println(foo)
+                      ^
+javax.script.ScriptException: compile-time error
+  at scala.tools.nsc.interpreter.IMain.compiled(IMain.scala:591)
+  at scala.tools.nsc.interpreter.IMain.eval(IMain.scala:1047)
+  at javax.script.AbstractScriptEngine.eval(AbstractScriptEngine.java:264)
+  ... 43 elided
+{noformat}

@@ -1,0 +1,31 @@
+This old email sums it up.
+{code}
+// Only ONE CLASSFILE no matter how many Bippies!
+// Contrast with "object B1 extends Bippy", where we
+// end up with two classes (B1 and B1$) per node.
+object enum {
+  // Oh, we can't make Bippy abstract else every instance has to be a subclass
+  // A private constructor will have to suffice to "seal" it.
+  sealed class Bippy private[enum] ()
+
+  final val B1 = new Bippy   // infers B1.type
+  final val B2 = new Bippy   // infers B2.type
+  final val B3 = new Bippy   // infers B3.type
+
+  // Now what we need is for scala to notice that Bippy is sealed
+  // with a constructor which can only be invoked from this file, and
+  // thus deduce that its *instances* are sealed - and we do not
+  // need to cover "Bippy", only B1.type, B2.type, B3.type.
+
+  def f(x: Bippy) = x match {
+    case B1 => 1  // B1.type is covered
+    case B2 => 2  // B2.type is covered
+  }
+
+  // hypothetically speaking
+  warning: match may not be exhaustive.
+  It would fail on the following input: B3
+    def f(x: Bippy) = x match {
+                      ^ }
+}
+{code}

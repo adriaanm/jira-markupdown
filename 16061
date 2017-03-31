@@ -1,0 +1,52 @@
+=== What steps will reproduce the problem (please be specific and use wikiformatting)? ===
+{code}
+ ~: scala29
+Welcome to Scala version 2.9.0.RC1 (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_22).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> class M[X]
+defined class M
+
+scala> case class A[X : M](a: X)
+defined class A
+
+scala> new A(1)(new M[Int] {})
+res9: A[Int] = A(1)
+
+scala> res9.copyjava.lang.IllegalArgumentException: requirement failed: size=0 and step=0, but both must be positive
+	at scala.Predef$$.require(Predef.scala:154)
+	at scala.collection.Iterator$$GroupedIterator.<init>(Iterator.scala:779)
+	at scala.collection.Iterator$$class.grouped(Iterator.scala:892)
+	at scala.collection.LinearSeqLike$$$$anon$$1.grouped(LinearSeqLike.scala:50)
+	at scala.collection.IterableLike$$class.grouped(IterableLike.scala:123)
+	at scala.collection.immutable.List.grouped(List.scala:45)
+	at scala.tools.nsc.interpreter.ConsoleReaderHelper$$class.printColumns(ConsoleReaderHelper.scala:59)
+	at scala.tools.nsc.interpreter.JLineReader$$JLineConsoleReader.printColumns(JLineReader.scala:38)
+	at scala.tools.nsc.interpreter.ConsoleReaderHelper$$class.printColumns(ConsoleReaderHelper.scala:48)
+	at scala.tools.nsc.interpreter.JLineReader$$JLineConsoleReader.printColumns(JLineReader.scala:38)
+	at scala.tools.jline.console.completer.CandidateListCompletionHandler.printCandidates(CandidateListCompletionHandler.java:131)
+	at scala.tools.jline.console.completer.CandidateListCompletionHandler.complete(CandidateListCompletionHandler.java:60)
+	at scala.tools.jline.console.ConsoleReader.complete(ConsoleReader.java:1523)
+{code} 
+
+=== What is the expected behavior? ===
+
+{code}
+scala> case class A[X](a: X)
+defined class A
+
+scala> new A(0)
+res1: A[Int] = A(0)
+
+scala> res1.copy
+                                        def copy[X](a: X): $$read.$$iw.$$iw.A[X]   
+
+{code}
+
+=== Additional information ===
+
+Probably unrelated, but provided anyway as evidence of a requisite cursory Trac search: SI-3001
+
+=== What versions of the following are you using? ===
+  - Scala: 2.9.0.RC1

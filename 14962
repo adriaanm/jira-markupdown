@@ -1,0 +1,39 @@
+Recently the definition of Iterator.takeWhile was changed from 
+
+{code}
+ def takeWhile(p: A => Boolean): Iterator[A] = {
+    val self = buffered
+    new Iterator[A] {
+      def hasNext = { self.hasNext && p(self.head) }
+      def next() = (if (hasNext) self else empty).next()
+    }
+  }
+{code}
+
+to
+
+{code}
+ def takeWhile(p: A => Boolean): Iterator[A] = new Iterator[A] {
+    private var hd: A = _
+    private var hdDefined: Boolean = false
+    private var tail: Iterator[A] = self
+ 
+    def hasNext = hdDefined || tail.hasNext && {
+      hd = tail.next()
+      if (p(hd)) hdDefined = true 
+      else tail = Iterator.empty
+      hdDefined
+    }
+    def next() = if (hasNext) { hdDefined = false; hd } else empty.next()
+  }
+{code}
+
+The problem is that by not using the function buffered, odd things happen when you use takeWhile in a BufferedIterator:
+
+{code}
+scala> val x = List(1,2,3,4,5,6,7).iterator.buffered
+scala> x.takeWhile(_ < 5).toList                    
+res7: List[Int] = List(1, 2, 3, 4)
+scala> x.toList                                     
+res8: List[Int] = List(6, 7)
+{code}

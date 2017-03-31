@@ -1,0 +1,21 @@
+The following behavior is not really expected:
+
+scala> val v = 9.2d
+v: Double = 9.2
+
+scala> val d = BigDecimal(v)
+d: scala.math.BigDecimal = 9.2
+
+... But
+
+scala> val v = 9.2f
+v: Float = 9.2
+
+scala> val d = BigDecimal(v)
+d: scala.math.BigDecimal = 9.199999809265137
+
+There should be an apply method for BigDecimal that takes a Float ...
+
+The work-around is to pass in a MathContext that is MathContext.DECIMAL32.
+
+I did notice, though for Double, MathContext.DECIMAL64 *should* be used but 128 is used instead.

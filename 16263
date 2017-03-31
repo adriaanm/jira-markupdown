@@ -1,0 +1,38 @@
+Copy&pasting what I reported to scala-internals list:
+
+https://groups.google.com/d/topic/scala-internals/pMTwrmZbPy0/discussion
+
+I just made a discovery that in trunk's Scala library there's one use of structural type. It's being used in implementation of Iterator.span (Iterator.scala:508).
+
+I'm pretty sure that structural type in that place is not intended and is there only because type inference inferred structural type. Given the fact that structural types are not very efficient on JVM I consider this as a bug that might affect the performance. Patch below fixes that problem.
+
+{code}
+diff --git a/src/library/scala/collection/Iterator.scala b/src/library/scala/collection/Iterator.scala
+index c9f7500..afcd28f 100644
+--- a/src/library/scala/collection/Iterator.scala
++++ b/src/library/scala/collection/Iterator.scala
+@@ -507,7 +507,14 @@ trait Iterator[+A] extends TraversableOnce[A] {
+    */
+   def span(p: A => Boolean): (Iterator[A], Iterator[A]) = {
+     val self = buffered
+-    val leading = new Iterator[A] {
++
++    /**
++     * Giving a name to this iterator (as opposed to trailing) because
++     * anonymous class is represented as a structural type that trailing
++     * iterator is referring (the finish() method) and thus triggering
++     * handling of structural calls. It's not what's intended here.
++     */
++    class Leading extends Iterator[A] {
+       private var isDone = false
+       val lookahead = new mutable.Queue[A]
+       def advance() = {
+@@ -528,6 +535,7 @@ trait Iterator[+A] extends TraversableOnce[A] {
+         lookahead.dequeue()
+       }
+     }
++    val leading = new Leading
+     val trailing = new Iterator[A] {
+       private lazy val it = {
+         leading.finish()
+{code}

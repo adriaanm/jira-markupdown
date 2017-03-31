@@ -1,0 +1,35 @@
+Here's a standalone test case:
+
+{noformat}
+% tail test/files/run/t8442/*
+==> test/files/run/t8442/A_1.java <==
+@java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
+public @interface A_1 {
+
+}
+==> test/files/run/t8442/B_1.java <==
+public class B_1 {
+	@A_1 public String get() { return ""; }
+}
+
+==> test/files/run/t8442/C_2.scala <==
+class C_2 {
+  def foo(b: B_1) {
+    b.get()
+  }
+}
+
+% javac -d /tmp test/files/run/t8442/{A,B}_1.java &&  qbin/scalac -classpath /tmp -d /tmp test/files/run/t8442/C_2.scala && (rm /tmp/A_1.class; true) && qbin/scalac -classpath /tmp -d /tmp test/files/run/t8442/C_2.scala
+warning: Class A_1 not found - continuing with a stub.
+...
+uncaught exception during compilation: java.lang.AssertionError
+error: java.lang.AssertionError: assertion failed: A_1
+	at scala.Predef$.assert(Predef.scala:179)
+	at scala.reflect.internal.Symbols$Symbol.info(Symbols.scala:1212)
+	at scala.reflect.internal.Symbols$TypeSymbol.isNonBottomSubClass(Symbols.scala:2821)
+	at scala.reflect.internal.AnnotationInfos$AnnotationInfo.matches(AnnotationInfos.scala:295)
+	at scala.reflect.internal.AnnotationInfos$Annotatable$class.dropOtherAnnotations(AnnotationInfos.scala:65)
+	at scala.reflect.internal.AnnotationInfos$Annotatable$class.hasAnnotation(AnnotationInfos.scala:50)
+	at scala.reflect.internal.Symbols$Symbol.hasAnnotation(Symbols.scala:112)
+	at scala.reflect.internal.Symbols$Symbol.isDeprecated(Symbols.scala:723)
+{noformat}

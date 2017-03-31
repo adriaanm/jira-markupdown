@@ -1,0 +1,45 @@
+Using Scala version 2.8.0.r19995-b20091203110322 (Java HotSpot(TM) Server VM, Java 1.6.0_17).
+
+When a source file is updated to no longer depend on another source file, -make:transitive does not remove the dependency in .scala_dependencies.
+
+Given A.scala, B.scala:
+
+{code}
+object A {
+  val x = 3
+}
+object B  {
+  val y = A.x
+}
+{code}
+
+Compile with:
+{code}
+scalac -make:transitive *.scala
+{code}
+
+`.scala_dependencies` contains:
+{code}
+A.scala -> A.scala
+B.scala -> B.scala
+B.scala -> A.scala
+{code}
+
+Modify B.scala to be:
+{code}
+object B {
+  val y = 5
+}
+{code}
+
+Recompile with
+{code}
+scalac -make:transitive *.scala
+{code}
+
+`.scala_dependencies` is unchanged.  This can be confirmed by modifying A.scala (add a space) and recompiling, which prints:
+{code}
+Recompiling 2 files
+{code}
+
+even though B.scala does not depend on A.scala anymore.

@@ -1,0 +1,7 @@
+Having said that (which was actually a while ago, but it wasn't accepted because there was an answer already), I think it _can_ be fixed. I'm presently compiling a patch that ought to do the trick.
+
+My idea is moving nextch's logic into ch and creating a flag that ch checks to see if it executes nextch's logic or return the last read character. It also adds a var to keep that last read character.
+
+Then, nextch is modified to call ch (in case it is called twice in a row), and then setting the flag to true. Finally, it is modified to return Unit instead of Char, and all (of two) places where its return value is used are changed to call ch afterwards.
+
+Unfortunately, nextch and "var ch" are both public, so this means a change in their API, however unlikely it is for anyone to be using them directly.

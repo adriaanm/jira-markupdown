@@ -1,0 +1,28 @@
+Anyone who threads this, beware!
+
+The solution suggested has a big problem (or consequence) -- non-transformed XMLs still generate new data. Or, speaking through code,
+
+{code}
+val a = <a><b/></a>
+val b = new RuleTransformer(new RewriteRule {})(a)
+a eq b
+{code}
+
+This is true presently, would be false with either of the suggested modifications. It would also break this code:
+
+{code}
+       if (ch eq nch) n
+       else           Elem(n.prefix, n.label, n.attributes, n.scope, nch: _*)
+{code}
+
+I think a better solution would be something like this:
+
+{code}
+def transform(ns: Seq[Node]): Seq[Node] = {
+    val changed = ns flatMap transform
+    if (changed.length != ns.length || (changed, ns).zipped.exists(_ != _)) changed
+    else ns
+}
+{code}
+
+That said, I never realized that fixing the double call to {{transform}} would change RuleTransformer from {{O(2^depth)}} to {{O(depth)}} (ignoring the length component of complexity). It's hard to understate that possible gains in performance.

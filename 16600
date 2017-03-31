@@ -1,0 +1,20 @@
+The following produces a bad classfile, both with 2.9.1 and latest nightly.
+
+{code}
+object test {
+  def main(args: Array[String]) {
+    var out = 1
+    trait Trait {
+      def foo(): Unit = {
+        out += 1
+      }
+    }
+    case class C(parent: Trait) extends Trait {}
+    C(null)
+  }
+} 
+
+test.main(Array())
+{code}
+
+Error is: {{java.lang.ClassFormatError: Duplicate field name&signature in class file test$C$2}}

@@ -1,0 +1,14 @@
+I'll take a look at it.  BTW I ran into a similar annoyance in the repl-debugger because I'd habitually type exit and instead of dropping back to the running program I'd kill the jvm, because Predef defines exit to System.exit (something I really hate btw.) So here's what I did after that happened one too many times:
+{code}
+    // rebind exit so people don't accidentally call System.exit by way of predef
+    intLoop.interpreter.beQuietDuring {
+      intLoop.interpreter.interpret("""def exit = println("Type :quit to resume program execution.")""")
+      for (p <- args) {
+        intLoop.interpreter.bind(p.name, p.typeStr, p.param)
+        println("%s: %s".format(p.name, p.typeStr))
+      }
+    }
+{code}
+Not the same thing though.
+
+Without having looked it seems more likely you're running into the fact that in 2.7 the exception unwrapping wasn't done right and left it overly wrapped.  You might be looping on the unwrapping.  The lastException binding should be innocuous.

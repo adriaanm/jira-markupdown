@@ -1,0 +1,26 @@
+The inability to refer to the enclosures of superclasses also figures in the access debacle. Here are both fails at once. You are forced to make the method completely public if you wish to override it, plus this bug.
+{code}
+class A1 {
+  trait C
+  protected[A1] def make(): C = new C { }
+}
+class A2 extends A1 {
+  class C extends super.C
+}
+class A3 extends A2 {
+  class C extends super.C
+}
+class A4 extends A3 {
+  override protected[A4] def make(): C = super.make()
+  // ./a.scala:12: error: type mismatch;
+  //  found   : A4.this.C(in class A1)
+  //  required: A4.this.C(in class A3)
+  //   override protected[A4] def make(): C = super.make()
+  //                                                    ^
+  // ./a.scala:12: error: overriding method make in class A1 of type ()A4.this.C;
+  //  method make has weaker access privileges; it should be at least protected[A1]
+  //   override protected[A4] def make()  = super.make()
+  //                              ^
+  // one error found
+}
+{code}

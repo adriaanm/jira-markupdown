@@ -1,0 +1,30 @@
+"if T is a type alias, the parts of its expansion" seems to exclude "if T is a parameterized type..." since Bar is not used in the erroneous line:
+
+{code}
+scala> case class Wrapper(value: String)
+defined class Wrapper
+
+scala> type Foo[A] = Wrapper ; object Foo { def apply[A](s: String): Foo[A] = Wrapper(s) }
+defined type alias Foo
+defined object Foo
+
+scala> trait Bar ; object Bar { implicit def unlift(x: Foo[Bar]): String = x.value }
+defined trait Bar
+defined object Bar
+
+scala> val s: String = Foo[Bar]("abc")
+<console>:14: error: type mismatch;
+ found   : Foo[Bar]
+    (which expands to)  Wrapper
+ required: String
+       val s: String = Foo[Bar]("abc")
+                               ^
+
+scala> class Baz[A] extends Foo[A]("abc")
+defined class Baz
+
+scala> val s: String = new Baz[Bar]
+s: String = abc
+
+{code}
+If this case worked, would it apply to intermediate expansions, such as chain of aliases that introduced and then eliminated type args?

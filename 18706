@@ -1,0 +1,41 @@
+{noformat}
+% tail src/main/scala/warmup/Warmup.scala src/test/scala/hang.scala
+==> src/main/scala/warmup/Warmup.scala <==
+package warmup
+
+object Warmup {
+  def filter[A](p: Any => Boolean): Any = filter[Any](p)
+}
+
+==> src/test/scala/hang.scala <==
+object Test {
+  warmup.Warmup.filter[Any](_ => true)
+}
+
+% scalac-hash v2.10.3 -optimize src/main/scala/warmup/Warmup.scala && scalac-hash v2.10.3 -optimize src/test/scala/hang.scala
+// hang
+^C
+
+java.lang.Thread.State: RUNNABLE
+	at scala.collection.mutable.FlatHashTable$HashUtils$class.elemHashCode(FlatHashTable.scala:391)
+	at scala.collection.mutable.HashSet.elemHashCode(HashSet.scala:41)
+	at scala.collection.mutable.FlatHashTable$class.findEntryImpl(FlatHashTable.scala:123)
+	at scala.collection.mutable.FlatHashTable$class.containsEntry(FlatHashTable.scala:119)
+	at scala.collection.mutable.HashSet.containsEntry(HashSet.scala:41)
+	at scala.collection.mutable.HashSet.contains(HashSet.scala:58)
+	at scala.collection.GenSetLike$class.apply(GenSetLike.scala:43)
+	at scala.collection.mutable.AbstractSet.apply(Set.scala:45)
+	at scala.collection.mutable.HashSet.apply(HashSet.scala:41)
+	at scala.collection.LinearSeqOptimized$class.exists(LinearSeqOptimized.scala:80)
+	at scala.collection.immutable.List.exists(List.scala:84)
+	at scala.tools.nsc.backend.icode.analysis.TypeFlowAnalysis$MTFAGrowable.hasNoRelevantSuccs(TypeFlowAnalysis.scala:603)
+	at scala.tools.nsc.backend.icode.analysis.TypeFlowAnalysis$MTFAGrowable$$anonfun$4.apply(TypeFlowAnalysis.scala:585)
+	at scala.tools.nsc.backend.icode.analysis.TypeFlowAnalysis$MTFAGrowable$$anonfun$4.apply(TypeFlowAnalysis.scala:585)
+	at scala.collection.TraversableLike$$anonfun$filter$1.apply(TraversableLike.scala:264)
+	at scala.collection.mutable.HashSet.foreach(HashSet.scala:79)
+	at scala.collection.TraversableLike$class.filter(TraversableLike.scala:263)
+	at scala.collection.AbstractTraversable.filter(Traversable.scala:105)
+	at scala.tools.nsc.backend.icode.analysis.TypeFlowAnalysis$MTFAGrowable.populatePerimeter(TypeFlowAnalysis.scala:583)
+	at scala.tools.nsc.backend.icode.analysis.TypeFlowAnalysis$MTFAGrowable.reinit(TypeFlowAnalysis.scala:677)
+	at scala.tools.nsc.backend.opt.Inliners$Inliner.analyzeMethod(Inliners.scala:500)
+{noformat}

@@ -1,0 +1,20 @@
+With the change in https://github.com/scala/scala/pull/1315, this no longer crashes.  There is another problem involving type parameters:
+
+{code:lang=java}
+class Y[T](val i: Option[T]) extends AnyVal {
+   def q: List[T] = {
+      lazy val e: List[T] = i.toList
+      e
+   }
+}
+{code}
+
+{code}
+Y.scala:2: error: type mismatch;
+ found   : List[T(in method extension$q)]
+ required: List[T(in class Y)]
+   def q: List[T] = {
+                    ^
+{code}
+
+It works for a normal `val` or `def`.

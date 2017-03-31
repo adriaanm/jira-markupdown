@@ -1,0 +1,28 @@
+Community build has caught a regression that results in a crash when compiling scalaz:
+
+{code}
+[scalaz] java.lang.NullPointerException
+[scalaz] 	at scala.reflect.internal.Trees$TreeSymSubstituter$$anonfun$invalidateSingleTypeCaches$1.apply(Trees.scala:1626)
+[scalaz] 	at scala.reflect.internal.Trees$TreeSymSubstituter$$anonfun$invalidateSingleTypeCaches$1.apply(Trees.scala:1625)
+[scalaz] 	at scala.reflect.internal.Trees$ForeachTreeTraverser.traverse(Trees.scala:1641)
+[scalaz] 	at scala.reflect.internal.Trees$TreeContextApiImpl.foreach(Trees.scala:106)
+[scalaz] 	at scala.reflect.internal.Trees$TreeSymSubstituter.invalidateSingleTypeCaches(Trees.scala:1625)
+[scalaz] 	at scala.reflect.internal.Trees$TreeSymSubstituter.apply(Trees.scala:1620)
+[scalaz] 	at scala.reflect.internal.Trees$TreeContextApiImpl.substituteSymbols(Trees.scala:179)
+[scalaz] 	at scala.tools.nsc.transform.patmat.Interface$TypedSubstitution$Substitution.apply(PatternMatching.scala:247)
+[scalaz] 	at scala.tools.nsc.transform.patmat.MatchTreeMaking$TreeMakers$ProductExtractorTreeMaker.chainBefore(MatchTreeMaking.scala:287)
+[scalaz] 	at scala.tools.nsc.transform.patmat.MatchTreeMaking$TreeMakers$$anonfun$combineExtractors$1.apply(MatchTreeMaking.scala:524)
+[scalaz] 	at scala.tools.nsc.transform.patmat.MatchTreeMaking$TreeMakers$$anonfun$combineExtractors$1.apply(MatchTreeMaking.scala:524)
+[scalaz] 	at scala.collection.immutable.List$$anonfun$foldRight$1.apply(List.scala:397)
+[scalaz] 	at scala.collection.LinearSeqOptimized$class.foldLeft(LinearSeqOptimized.scala:124)
+[scalaz] 	at scala.collection.immutable.List.foldLeft(List.scala:84)
+[scalaz] 	at scala.collection.immutable.List.foldRight(List.scala:397)
+[scalaz] 	at scala.tools.nsc.transform.patmat.MatchTreeMaking$TreeMakers$class.combineExtractors(MatchTreeMaking.scala:524)
+[scalaz] 	at scala.tools.nsc.transform.patmat.PatternMatching$OptimizingMatchTranslator.combineExtractors(PatternMatching.scala:89)
+{code}
+
+The full log is available here: https://jenkins-dbuild.typesafe.com:8499/job/Community-2.11.x/444/consoleFull
+
+The suspected PR that introduces regression is: https://github.com/scala/scala/pull/4252
+
+Assigning to Jason for further analysis.

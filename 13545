@@ -1,0 +1,15 @@
+The problem is that for methods like the _Set_ constructor a _Iterable_ should be fine but one needs a _Seq_. this can result in a unneeded copy with _toSeq_ created, e.g. a new _List_:
+
+{code}
+object Main extends Application
+{
+  import collection.Set
+  import collection.immutable.Set
+  
+  
+  val a = Set(1,2,3,4) // or any val a : Iterable[Int]
+  val b = Set(a toSeq : _*) //  a toSeq ) == List(1,2,3,4)
+}
+{code}
+
+Of course the alternative would be to create create new additional constructors for classes like _Set_, but I vote for the other solution because _Iterable_ has _toSeq_..

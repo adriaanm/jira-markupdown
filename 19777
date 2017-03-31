@@ -1,0 +1,75 @@
+{code}
+user@debian:~/projects/test$ scala
+Welcome to Scala version 2.11.7 (OpenJDK 64-Bit Server VM, Java 1.7.0_79).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> :require application.jar
+Added '/home/user/projects/test/application.jar' to classpath.
+
+scala> :quit
+user@debian:~/projects/test$ mkdir tmp
+user@debian:~/projects/test$ cd tmp
+user@debian:~/projects/test/tmp$ jar xf ../application.jar
+user@debian:~/projects/test/tmp$ cd ..
+user@debian:~/projects/test$ scala
+Welcome to Scala version 2.11.7 (OpenJDK 64-Bit Server VM, Java 1.7.0_79).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> :require tmp
+java.lang.AssertionError: assertion failed: 
+  
+     while compiling: <console>
+        during phase: globalPhase=terminal, enteringPhase=parser
+     library version: version 2.11.7
+    compiler version: version 2.11.7
+  reconstructed args: 
+
+  last tree to typer: TypeTree(class Byte)
+       tree position: line 6 of <console>
+            tree tpe: Byte
+              symbol: (final abstract) class Byte in package scala
+   symbol definition: final abstract class Byte extends AnyVal (a ClassSymbol)
+      symbol package: scala
+       symbol owners: class Byte
+           call site: object $eval in package $line2 in package $line2
+
+<Cannot read source file>
+	at scala.tools.nsc.Global$$anonfun$scala$tools$nsc$Global$$mergeNewEntries$2$$anonfun$14.apply(Global.scala:997)
+	at scala.tools.nsc.Global$$anonfun$scala$tools$nsc$Global$$mergeNewEntries$2.apply(Global.scala:995)
+	at scala.tools.nsc.Global$$anonfun$scala$tools$nsc$Global$$mergeNewEntries$2.apply(Global.scala:993)
+	at scala.collection.Iterator$class.foreach(Iterator.scala:742)
+	at scala.collection.AbstractIterator.foreach(Iterator.scala:1194)
+	at scala.collection.IterableLike$class.foreach(IterableLike.scala:72)
+	at scala.collection.AbstractIterable.foreach(Iterable.scala:54)
+	at scala.tools.nsc.Global.scala$tools$nsc$Global$$mergeNewEntries(Global.scala:993)
+	at scala.tools.nsc.Global.invalidateClassPathEntries(Global.scala:934)
+	at scala.tools.nsc.Global.extendCompilerClassPath(Global.scala:867)
+	at scala.tools.nsc.interpreter.IMain.addUrlsToClassPath(IMain.scala:258)
+	at scala.tools.nsc.interpreter.ILoop.require(ILoop.scala:654)
+	at scala.tools.nsc.interpreter.ILoop$$anonfun$standardCommands$13.apply(ILoop.scala:221)
+	at scala.tools.nsc.interpreter.ILoop$$anonfun$standardCommands$13.apply(ILoop.scala:221)
+	at scala.tools.nsc.interpreter.LoopCommands$LineCmd.apply(LoopCommands.scala:62)
+	at scala.tools.nsc.interpreter.ILoop.colonCommand(ILoop.scala:701)
+	at scala.tools.nsc.interpreter.ILoop.command(ILoop.scala:692)
+	at scala.tools.nsc.interpreter.ILoop.processLine(ILoop.scala:404)
+	at scala.tools.nsc.interpreter.ILoop.loop(ILoop.scala:424)
+	at scala.tools.nsc.interpreter.ILoop$$anonfun$process$1.apply$mcZ$sp(ILoop.scala:925)
+	at scala.tools.nsc.interpreter.ILoop$$anonfun$process$1.apply(ILoop.scala:911)
+	at scala.tools.nsc.interpreter.ILoop$$anonfun$process$1.apply(ILoop.scala:911)
+	at scala.reflect.internal.util.ScalaClassLoader$.savingContextLoader(ScalaClassLoader.scala:97)
+	at scala.tools.nsc.interpreter.ILoop.process(ILoop.scala:911)
+	at scala.tools.nsc.MainGenericRunner.runTarget$1(MainGenericRunner.scala:74)
+	at scala.tools.nsc.MainGenericRunner.run$1(MainGenericRunner.scala:87)
+	at scala.tools.nsc.MainGenericRunner.process(MainGenericRunner.scala:98)
+	at scala.tools.nsc.MainGenericRunner$.main(MainGenericRunner.scala:103)
+	at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
+
+That entry seems to have slain the compiler.  Shall I replay
+your session? I can re-run each line except the last one.
+[y/n]
+Abandoning crashed session.
+
+scala> :quit
+{code}

@@ -1,0 +1,18 @@
+It is especially bizarre and difficult to work around, because the mere presence of a weaker signature in any superclass appears enough to break it. This also fails! And of course it compiles if we comment out the signature of foo in trait Q. Obviously that should have no effect whatsoever.
+
+{code:scala}
+package s
+
+trait Q            { def foo(): Traversable[Int]       }
+trait Q2 extends Q { def foo(): Vector[Int] = Vector() }
+
+        object p1 extends Q2
+package object p2 extends Q2
+
+object Test {
+  def main(args: Array[String]): Unit = {
+    p1.foo(): Vector[Int] // works
+    p2.foo(): Vector[Int] // fails
+  }
+}
+{code}

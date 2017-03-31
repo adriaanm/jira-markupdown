@@ -1,0 +1,28 @@
+There is still a problem with aliases.
+
+Given A.scala, B.scala:
+{code}
+trait A {
+	type S = Int
+}
+trait B extends A {
+	def x: S
+	def y: Int = x
+}
+{code}
+
+ 1. Compile
+ 1. Change A.scala to:
+{code}
+trait A {
+	type S = Long
+}
+{code}
+ 1. Mark A.scala modified.  B.scala is not recompiled, missing compile error:
+{code}
+B.scala:3: error: type mismatch;
+ found   : B.this.S
+ required: Int
+        def y: Int = x
+                     ^
+{code}

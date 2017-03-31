@@ -1,0 +1,43 @@
+I'm not able to reproduce:
+
+{noformat}
+% java -Xmx1G -cp lib/scala-library.jar:lib/scala-reflect.jar:lib/scala-compiler.jar:lib/forkjoin.jar -Dscala.usejavacp=true scala.tools.nsc.Main @args.txt
+src/library/scala/SerialVersionUID.scala:15: warning: Implementation restriction: subclassing Classfile does not
+make your annotation visible at runtime.  If that is what
+you want, you must write the annotation class in Java.
+class SerialVersionUID(value: Long) extends scala.annotation.ClassfileAnnotation
+      ^
+warning: there were 128 deprecation warnings; re-run with -deprecation for details
+warning: there were 5 feature warnings; re-run with -feature for details
+three warnings found
+
+% java -Xmx1G -cp lib/scala-library.jar:lib/scala-reflect.jar:lib/scala-compiler.jar:lib/forkjoin.jar -Dscala.usejavacp=true scala.tools.nsc.Main -version
+Scala compiler version 2.11.0-20121228-195556-b7840d6b41 -- Copyright 2002-2012, LAMP/EPFL
+
+% head -n25 args.txt
+-classpath
+target/locker/library/classes:target/forkjoin.jar:/home/lefou/.m2/repository/org/apache/ant/ant/1.8.4/ant-1.8.4.jar:target/locker/library/classes
+-d
+target/locker/library/classes
+-encoding
+UTF-8
+-target:jvm-1.6
+src/library/scala/Function3.scala
+src/library/scala/Console.scala
+src/library/scala/Product9.scala
+src/library/scala/PartialFunction.scala
+src/library/scala/Symbol.scala
+src/library/scala/Product1.scala
+src/library/scala/StringContext.scala
+src/library/scala/Product17.scala
+src/library/scala/Short.scala
+src/library/scala/Function14.scala
+src/library/scala/Product18.scala
+src/library/scala/Mutable.scala
+src/library/scala/Product10.scala
+src/library/scala/Product19.scala
+src/library/scala/Product8.scala
+src/library/scala/noinline.scala
+src/library/scala/Boolean.scala
+src/library/scala/Tuple3.scala
+{noformat}

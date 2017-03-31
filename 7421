@@ -1,0 +1,22 @@
+It seems to be caused by this catch block generated during uncurry for NonLocalReturnControl.
+The old code:
+{code}
+
+} catch {
+  case (ex @ (_: scala.runtime.NonLocalReturnControl[Foo.this._])) => if (ex.key().eq(nonLocalReturnKey1))
+    ex.value().asInstanceOf[Unit]()
+  else
+    throw ex
+}
+{code}
+
+vs the new one:
+
+{code}
+} catch {
+  case (ex @ (_: scala.runtime.NonLocalReturnControl[Unit])) => if (ex.key().eq(nonLocalReturnKey1))
+    ex.value()
+  else
+    throw ex
+}
+{code}

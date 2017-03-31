@@ -1,0 +1,32 @@
+I agree with Arseniy, and "we can't warn about everything so we will warn about nothing" is a completely bogus line of argumentation which nobody believes with any consistency, or we'd have no warnings.
+
+There is no reason f2 and f3 in the following can't give the same warning which f1 does.  We have exactly the same information about what is covered and what is not in each of them.  It would be very useful if this worked.
+{code}
+sealed trait Foo
+class Bar1 extends Foo
+class Bar2 extends Foo
+class Bar3 extends Foo
+
+object Baz1 {
+  def unapply(x: Bar1): Some[Int] = Some(1)
+}
+object Baz2 {
+  def unapply(x: Bar2): Some[Int] = Some(2)
+}
+
+
+object Test {
+  def f1(x: Foo) = x match {
+    case _: Bar1 => 1
+    case _: Bar2 => 2
+  }
+  def f2(x: Foo) = x match {
+    case _: Bar1 => 1
+    case Baz2(x) => x
+  }
+  def f3(x: Foo) = x match {
+    case Baz1(x) => x
+    case Baz2(x) => x
+  }
+}
+{code}

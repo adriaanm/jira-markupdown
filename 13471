@@ -1,0 +1,35 @@
+{code}
+scala> import scala.util.Random
+import scala.util.Random
+
+scala> val r = new Random()
+r: Random = scala.Random@1b3d448
+
+scala> val y : { val x : java.lang.Integer  } = new { def x = new java.lang.Integer(r.nextInt) }
+y: AnyRef{def x: java.lang.Integer} = $$anon$$1@e8709d
+
+scala> val w1 : y.x.type = y.x
+w1: y.x.type = 16667032
+
+scala> val w2 : y.x.type = y.x
+w2: y.x.type = -1279252109
+
+scala> w1 == w2
+res6: Boolean = false
+{code}
+
+Compare with
+
+{code}
+scala> class Foo {
+     |   def x = new java.lang.Integer(r.nextInt)
+     | }
+defined class Foo
+
+scala> val f = new Foo
+f: Foo = Foo@db71e4
+
+scala> val u1 : f.x.type = f.x
+<console>:7: error: stable identifier required, but f.x found.
+       val u1 : f.x.type = f.x
+{code}

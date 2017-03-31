@@ -1,0 +1,27 @@
+Compile this under -optimise:
+{code}
+class A { def f1 = 3 max 4 }
+{code}
+You are treated to not one but two no-ops in the bytecode. First we have to load Predef, because maybe Predef hasn't been loaded yet. Then we have to load the RichInt companion object, because maybe that hasn't been loaded either. And if we mark max @inline, it won't make any difference.
+
+{noformat}
+  //  0: getstatic     #16                 // Field scala/runtime/RichInt$.MODULE$:Lscala/runtime/RichInt$;
+  //  3: getstatic     #21                 // Field scala/Predef$.MODULE$:Lscala/Predef$;
+  //  6: astore_1
+  //  7: iconst_3
+  //  8: iconst_4
+  //  9: invokevirtual #25                 // Method scala/runtime/RichInt$.max$extension:(II)I
+  // 12: ireturn
+{noformat}
+Pull request to follow.
+
+{noformat}
+  //  after pull request
+  //  0: iconst_3
+  //  1: iconst_4
+  //  2: if_icmpgt     9
+  //  5: iconst_4
+  //  6: goto          10
+  //  9: iconst_3
+  // 10: ireturn
+{noformat}

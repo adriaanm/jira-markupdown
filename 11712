@@ -1,0 +1,28 @@
+I've just tried to reproduce the issue with your build definition.
+
+I removed the previously compiled Scala interfaces with:
+
+{noformat}
+% (find /Users/jason/.sbt; find ~/.ivy2) | grep compiler-interface | grep 2.11.6 | xargs rm -rf
+{noformat}
+
+And then successfully compiled sources in a project that uses your build definition:
+
+{noformat}
+% (find /Users/jason/.sbt; find ~/.ivy2) | grep compiler-interface | grep 2.11.6 | xargs rm -rf
+
+% sbt clean compile
+[info] Loading global plugins from /Users/jason/.sbt/0.13/plugins
+[info] Loading project definition from /Users/jason/code/scratch1/project
+[info] Set current project to jetstream (in build file:/Users/jason/code/scratch1/)
+[success] Total time: 0 s, completed 05/03/2015 10:34:36 PM
+[info] Updating {file:/Users/jason/code/scratch1/}scratch1...
+[info] Resolving jline#jline;2.12.1 ...
+[info] Done updating.
+[info] Compiling 1 Scala source to /Users/jason/code/scratch1/target/scala-2.11/classes...
+[info] 'compiler-interface' not yet compiled for Scala 2.11.6. Compiling...
+[info]   Compilation completed in 12.276 s
+[success] Total time: 28 s, completed 05/03/2015 10:35:04 PM
+{noformat}
+
+Can you try moving aside your ~/.ivy2 and ~/.sbt and seeing if the problem persists? If so, can you please post the output of `sbt "show update"`?

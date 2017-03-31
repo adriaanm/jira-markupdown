@@ -1,0 +1,18 @@
+This is a known limitation of the way that named arguments are typechecked (SI-5044). The compiler outputs a diagnostic that suggests a solution: annotate the type of `t` or of `a`.
+
+{noformat}
+scalac-hash v2.11.4 sandbox/test.scala
+sandbox/test.scala:5: error: recursive value test needs type
+  def b = test.b
+          ^
+sandbox/test.scala:3: warning: type-checking the invocation of method apply checks if the named argument expression 'b = ...' is a valid assignment
+in the current scope. The resulting type inference error (see above) can be fixed by providing an explicit type in the local definition for b.
+  val test = Test(a = 10, b = "123")
+                            ^
+sandbox/test.scala:3: warning: type-checking the invocation of method apply checks if the named argument expression 'a = ...' is a valid assignment
+in the current scope. The resulting type inference error (see above) can be fixed by providing an explicit type in the local definition for a.
+  val test = Test(a = 10, b = "123")
+                    ^
+two warnings found
+one error found
+{noformat}

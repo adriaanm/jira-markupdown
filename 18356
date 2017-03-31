@@ -1,0 +1,42 @@
+When compiled with {{-optimize}} the following program goes wrong:
+
+{noformat}
+object Test {
+
+  def main(args: Array[String]) {
+    (1 / 0)
+  }
+
+}
+{noformat}
+
+It swallows the {{ArithmeticException}} that the JVMS specifies should be thrown. The bytecode emitted is:
+
+{noformat}
+  // access flags 0x1
+  public main([Ljava/lang/String;)V
+   L0
+    LINENUMBER 5 L0
+    RETURN
+   L1
+    LOCALVARIABLE this LTest$; L0 L1 0
+    LOCALVARIABLE args [Ljava/lang/String; L0 L1 1
+    MAXSTACK = 0
+    MAXLOCALS = 2
+{noformat}
+
+
+The problem goes away when the body of {{main}} is changed to use the result of {{(1 / 0)}} (as opposed to discarding the result as above). For example {{-optimize}} emits correct bytecode for:
+
+{noformat}
+object Test {
+
+  def main(args: Array[String]) {
+    println(1 / 0)
+  }
+
+}
+{noformat}
+
+Originally reported in https://groups.google.com/forum/#!searchin/akka-user/optimize/akka-user/r0Teq08f-YU/2Dfl1yQKbL0J
+

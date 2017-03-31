@@ -1,0 +1,14 @@
+Cut down to size:
+
+{code}
+trait Universe {
+  trait Type
+}
+object Bug {
+  // Change type of `1` or `f` to `List[Any]`  => no crash
+  def f(u: Universe)(l: List[u.Type]): List[u.Type] = {
+    import u.Type // comment out => no crash in 2.10.0, still crashes in 2.10.1.RC1
+    f(???)(???)
+  }
+}
+{code}

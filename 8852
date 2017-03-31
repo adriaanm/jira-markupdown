@@ -1,0 +1,111 @@
+I've encountered a similar issue, and this is the only ticket I found related to the problem.
+
+Partial output (truncated and anonymized) output from {{last compile:doc}}:
+
+{code}
+[info] Main Scala API documentation to /Users/michaelahlers/Projects/my-project/target/scala-2.11/api...
+[debug] Getting org.scala-sbt:compiler-interface:0.13.11:component from component compiler for Scala 2.11.8
+[debug] Calling Scaladoc with arguments:
+[debug]         -feature
+[debug]         -unchecked
+[debug]         -deprecation
+[debug]         -target:jvm-1.8
+[debug]         -Xfatal-warnings
+[debug]         -Xmax-classfile-name
+[debug]         150
+[debug]         -doc-external-doc:/Users/michaelahlers/.ivy2/cache/org.scala-lang/scala-library/jars/scala-library-2.11.8.jar#http://www.scala-lang.org/api/2.11.8/,/Users/michaelahlers/.ivy2/cache/com.typesafe.play/play-json_2.11/jars/play-json_2.11-2.5.4.jar#http://playframework.com/documentation/2.5.x/api/scala/index.html,/Users/michaelahlers/.ivy2/cache/joda-time/joda-time/jars/joda-time-2.9.4.jar#http://www.joda.org/joda-time/apidocs/,/Users/michaelahlers/.ivy2/cache/org.scala-lang/scala-reflect/jars/scala-reflect-2.11.8.jar#http://www.scala-lang.org/api/2.11.8/,/Users/michaelahlers/.ivy2/cache/com.typesafe.play/play-iteratees_2.11/jars/play-iteratees_2.11-2.5.4.jar#http://playframework.com/documentation/2.5.x/api/scala/index.html
+[debug]         -d
+[debug]         /Users/michaelahlers/Projects/my-project/target/scala-2.11/api
+[debug]         -bootclasspath
+[debug]         /Library/Java/JavaVirtualMachines/jdk1.8.0_60.jdk/Contents/Home/jre/lib/resources.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_60.jdk/Contents/Home/jre/lib/rt.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_60.jdk/Contents/Home/jre/lib/sunrsasign.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_60.jdk/Contents/Home/jre/lib/jsse.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_60.jdk/Contents/Home/jre/lib/jce.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_60.jdk/Contents/Home/jre/lib/charsets.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_60.jdk/Contents/Home/jre/lib/jfr.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_60.jdk/Contents/Home/jre/classes:/Users/michaelahlers/.ivy2/cache/org.scala-lang/scala-library/jars/scala-library-2.11.8.jar
+{code}
+
+{code}
+java.util.NoSuchElementException: next on empty iterator
+        at scala.collection.Iterator$$anon$2.next(Iterator.scala:39)
+        at scala.collection.Iterator$$anon$2.next(Iterator.scala:37)
+        at scala.collection.IndexedSeqLike$Elements.next(IndexedSeqLike.scala:63)
+        at scala.collection.IterableLike$class.head(IterableLike.scala:107)
+        at scala.collection.immutable.StringOps.scala$collection$IndexedSeqOptimized$$super$head(StringOps.scala:29)
+        at scala.collection.IndexedSeqOptimized$class.head(IndexedSeqOptimized.scala:126)
+        at scala.collection.immutable.StringOps.head(StringOps.scala:29)
+        at scala.tools.nsc.doc.model.IndexModelFactory$$anon$1$result$2$.addMember(IndexModelFactory.scala:28)
+        at scala.tools.nsc.doc.model.IndexModelFactory$$anon$1$$anonfun$scala$tools$nsc$doc$model$IndexModelFactory$$anon$$gather$1$2.apply(IndexModelFactory.scala:48)
+        at scala.tools.nsc.doc.model.IndexModelFactory$$anon$1$$anonfun$scala$tools$nsc$doc$model$IndexModelFactory$$anon$$gather$1$2.apply(IndexModelFactory.scala:45)
+        at scala.collection.TraversableLike$WithFilter$$anonfun$foreach$1.apply(TraversableLike.scala:733)
+        at scala.collection.immutable.List.foreach(List.scala:381)
+        at scala.collection.TraversableLike$WithFilter.foreach(TraversableLike.scala:732)
+        at scala.tools.nsc.doc.model.IndexModelFactory$$anon$1.scala$tools$nsc$doc$model$IndexModelFactory$$anon$$gather$1(IndexModelFactory.scala:45)
+        at scala.tools.nsc.doc.model.IndexModelFactory$$anon$1$$anonfun$scala$tools$nsc$doc$model$IndexModelFactory$$anon$$gather$1$2.apply(IndexModelFactory.scala:49)
+        at scala.tools.nsc.doc.model.IndexModelFactory$$anon$1$$anonfun$scala$tools$nsc$doc$model$IndexModelFactory$$anon$$gather$1$2.apply(IndexModelFactory.scala:45)
+        at scala.collection.TraversableLike$WithFilter$$anonfun$foreach$1.apply(TraversableLike.scala:733)
+        at scala.collection.immutable.List.foreach(List.scala:381)
+        at scala.collection.TraversableLike$WithFilter.foreach(TraversableLike.scala:732)
+        at scala.tools.nsc.doc.model.IndexModelFactory$$anon$1.scala$tools$nsc$doc$model$IndexModelFactory$$anon$$gather$1(IndexModelFactory.scala:45)
+        at scala.tools.nsc.doc.model.IndexModelFactory$$anon$1$$anonfun$scala$tools$nsc$doc$model$IndexModelFactory$$anon$$gather$1$2.apply(IndexModelFactory.scala:49)
+        at scala.tools.nsc.doc.model.IndexModelFactory$$anon$1$$anonfun$scala$tools$nsc$doc$model$IndexModelFactory$$anon$$gather$1$2.apply(IndexModelFactory.scala:45)
+        at scala.collection.TraversableLike$WithFilter$$anonfun$foreach$1.apply(TraversableLike.scala:733)
+        at scala.collection.immutable.List.foreach(List.scala:381)
+        at scala.collection.TraversableLike$WithFilter.foreach(TraversableLike.scala:732)
+        at scala.tools.nsc.doc.model.IndexModelFactory$$anon$1.scala$tools$nsc$doc$model$IndexModelFactory$$anon$$gather$1(IndexModelFactory.scala:45)
+        at scala.tools.nsc.doc.model.IndexModelFactory$$anon$1.x$3$lzycompute(IndexModelFactory.scala:55)
+        at scala.tools.nsc.doc.model.IndexModelFactory$$anon$1.x$3(IndexModelFactory.scala:17)
+        at scala.tools.nsc.doc.model.IndexModelFactory$$anon$1.firstLetterIndex$lzycompute(IndexModelFactory.scala:17)
+        at scala.tools.nsc.doc.model.IndexModelFactory$$anon$1.firstLetterIndex(IndexModelFactory.scala:17)
+        at scala.tools.nsc.doc.html.page.Index$$anonfun$letters$1.apply(Index.scala:54)
+        at scala.tools.nsc.doc.html.page.Index$$anonfun$letters$1.apply(Index.scala:51)
+        at scala.collection.TraversableLike$$anonfun$map$1.apply(TraversableLike.scala:234)
+        at scala.collection.TraversableLike$$anonfun$map$1.apply(TraversableLike.scala:234)
+        at scala.collection.Iterator$class.foreach(Iterator.scala:893)
+        at scala.collection.AbstractIterator.foreach(Iterator.scala:1336)
+        at scala.collection.IterableLike$class.foreach(IterableLike.scala:72)
+        at scala.collection.AbstractIterable.foreach(Iterable.scala:54)
+        at scala.collection.TraversableLike$class.map(TraversableLike.scala:234)
+        at scala.collection.AbstractTraversable.map(Traversable.scala:104)
+        at scala.tools.nsc.doc.html.page.Index.letters(Index.scala:50)
+        at scala.tools.nsc.doc.html.page.Index.browser(Index.scala:74)
+        at scala.tools.nsc.doc.html.page.Index.<init>(Index.scala:43)
+        at scala.tools.nsc.doc.html.HtmlFactory.generate(HtmlFactory.scala:124)
+        at scala.tools.nsc.doc.html.Doclet.generateImpl(Doclet.scala:16)
+        at scala.tools.nsc.doc.doclet.Generator.generate(Generator.scala:24)
+        at scala.tools.nsc.doc.DocFactory.generate$1(DocFactory.scala:121)
+        at scala.tools.nsc.doc.DocFactory.document(DocFactory.scala:124)
+        at xsbt.Runner.run(ScaladocInterface.scala:26)
+        at xsbt.ScaladocInterface.run(ScaladocInterface.scala:10)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+        at java.lang.reflect.Method.invoke(Method.java:497)
+        at sbt.compiler.AnalyzingCompiler.call(AnalyzingCompiler.scala:101)
+        at sbt.compiler.AnalyzingCompiler.doc(AnalyzingCompiler.scala:67)
+        at sbt.compiler.AnalyzingCompiler.doc(AnalyzingCompiler.scala:62)
+        at sbt.Doc$$anonfun$scaladoc$1.apply(Doc.scala:23)
+        at sbt.Doc$$anonfun$scaladoc$1.apply(Doc.scala:23)
+        at sbt.RawCompileLike$$anonfun$prepare$1.apply(RawCompileLike.scala:64)
+        at sbt.RawCompileLike$$anonfun$prepare$1.apply(RawCompileLike.scala:56)
+        at sbt.RawCompileLike$$anonfun$cached$1$$anonfun$2$$anonfun$apply$1.apply(RawCompileLike.scala:49)
+        at sbt.RawCompileLike$$anonfun$cached$1$$anonfun$2$$anonfun$apply$1.apply(RawCompileLike.scala:47)
+        at sbt.Tracked$$anonfun$outputChanged$1.apply(Tracked.scala:84)
+        at sbt.Tracked$$anonfun$outputChanged$1.apply(Tracked.scala:79)
+        at sbt.RawCompileLike$$anonfun$cached$1.apply(RawCompileLike.scala:54)
+        at sbt.RawCompileLike$$anonfun$cached$1.apply(RawCompileLike.scala:39)
+        at sbt.Defaults$$anonfun$docTaskSettings$3.apply(Defaults.scala:803)
+        at sbt.Defaults$$anonfun$docTaskSettings$3.apply(Defaults.scala:781)
+        at scala.Function1$$anonfun$compose$1.apply(Function1.scala:47)
+        at sbt.$tilde$greater$$anonfun$$u2219$1.apply(TypeFunctions.scala:40)
+        at sbt.std.Transform$$anon$4.work(System.scala:63)
+        at sbt.Execute$$anonfun$submit$1$$anonfun$apply$1.apply(Execute.scala:228)
+        at sbt.Execute$$anonfun$submit$1$$anonfun$apply$1.apply(Execute.scala:228)
+        at sbt.ErrorHandling$.wideConvert(ErrorHandling.scala:17)
+        at sbt.Execute.work(Execute.scala:237)
+        at sbt.Execute$$anonfun$submit$1.apply(Execute.scala:228)
+        at sbt.Execute$$anonfun$submit$1.apply(Execute.scala:228)
+        at sbt.ConcurrentRestrictions$$anon$4$$anonfun$1.apply(ConcurrentRestrictions.scala:159)
+        at sbt.CompletionService$$anon$2.call(CompletionService.scala:28)
+        at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+        at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
+        at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+        at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+        at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+        at java.lang.Thread.run(Thread.java:745)
+{code}

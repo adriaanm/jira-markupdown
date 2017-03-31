@@ -1,0 +1,20 @@
+Hi. To me it seems that a special case of nested Annotations is still not working. It happens when a Scala annotation (i.e. a StaticAnnotation) contains a Java annotation, which contains named arguments (any annotation with more than one "value" argument)
+{code}
+class NestedAnnotationTest {
+        // all of these work
+	@ComplexJavaAnnotation(nested= new NestedJavaAnnotation2(arg="test"))
+	@ComplexScalaAnnotation1(arg1=42, arg2="test")
+	@ComplexScalaAnnotation2(nested = new NestedJavaAnnotation1(23))
+	// this one throws "too many arguments for constructor NestedJavaAnnotation2"
+        @ComplexScalaAnnotation2(nested = new NestedJavaAnnotation2(arg="test"))
+	val field:int = 3;
+}
+{code}
+Of course, NestedJavaAnnotation2 just looks like this
+{code}
+public @interface NestedJavaAnnotation2 {
+	public String arg();
+}
+{code}
+
+I tried to implement the TargetedAnnotation from SI-1846, but for this I need to put complex java annotations inside a scala annotation.

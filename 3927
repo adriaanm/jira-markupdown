@@ -1,0 +1,9 @@
+The code itself is incorrect:
+
+{code}
+error: contravariant type T occurs in covariant position in type (t: => T)T of method apply
+    def apply(t: =>T) = t
+        ^
+{code}
+
+But obviously, this shouldn't make the type checker crash when type checking `new Exp(calcBar).must(be(classOf[Baz]))` (if you remove this expression, there is no crash, and the variance error is correctly reported).

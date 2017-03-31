@@ -1,0 +1,21 @@
+Entering the following in the REPL,
+
+{code}
+if (true) {
+  null.asInstanceOf[collection.mutable.Seq[Int]]
+} else {
+  null.asInstanceOf[collection.mutable.Set[Int]]
+}
+{code}
+
+will fail to compile with the error
+
+{code}
+<console>:10: error: type arguments [Any] do not conform to trait Cloneable's type parameter bounds [+A <: AnyRef]
+       val res0 =
+           ^
+{code}
+
+I would expect that some valid upper bound should be found. There is no problem with the immutable collection types, nor a combination of immutable and mutable collections.
+
+The issue was reported on Stack Overflow: http://stackoverflow.com/questions/7155066/adding-to-scala-map-within-for-loop-and-conditional-statement

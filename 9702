@@ -1,0 +1,12 @@
+Similarly:
+
+{code}
+% scala-hash v2.11.0-M3 -Xlint
+
+scala> {var x, y = 0 ; (); y; x = 2 }
+<console>:8: warning: local var y in value res1 is never set - it could be a val
+              {var x, y = 0 ; (); y; x = 2 }
+                      ^
+{code}
+
+It's actually near impossible to give discriminating error messages under the current compiler architecture as the parser eliminates all traces of the original shape of the assignment long before these warnings kick in. Maybe the parser could attach a tree annotation so they remember something more.

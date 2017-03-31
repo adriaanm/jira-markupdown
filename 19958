@@ -1,0 +1,13 @@
+The implementation of the ZipArchive abstract file backend
+
+https://github.com/scala/scala/blob/2.12.x/src/reflect/scala/reflect/io/ZipArchive.scala
+
+never releases the streams to jar files that it is opening as part of providing the classpath to the compiler and (more importantly) interactive compiler.
+
+This is not so bad on Linux, it's just wasteful, but on Windows it can be really bad as the OS locks the file and does not allow it to be deleted.
+
+The effect is that if the user's IDE (or in my case ENSIME) is using the user's jars as the classpath definition, then the build tool (in my case, sbt in exportJars mode) cannot delete / replace the jars. The result to the end user is that the build tool is a no-op.
+
+The problem can be fixed by releasing references to the jar file.
+
+I am currently looking for a workaround that we can implement within ENSIME to alleviate the problem *now* for our users.

@@ -1,0 +1,23 @@
+I will have to close this ticket as "invalid". The Java 7 Early Access code is not production quality, and these problems may very well be transient. In order to check the situation, I installed a fresh copy same version of Java 7 on a 64-bit Windows 7, and the first run of "scalac" quite simply caused an internal failure in the JVM (see below). We cannot even start any debugging under these circumstances: the Java 7 code is just not stable enough at this time.
+{code}
+C:\Users\cunei>scalac
+"java" -Xmx256M -Xms32M -Dscala.home="C:\PROGRA~1\scala\bin\.." -Denv.emacs="" -cp "C:\PROGRA~1\scala\bin\..\lib\jline.jar;C:\PROGRA~1\scala\bin\..\lib\scala-compiler.jar;C:\PROGRA~1\scala\bin\..\lib\scala-dbc.jar;C:\PROGRA~1\scala\bin\..\lib\scala-library.jar;C:\PROGRA~1\scala\bin\..\lib\scala-swing.jar;C:\PROGRA~1\scala\bin\..\lib\scalap.jar" scala.tools.nsc.Main
+#
+# A fatal error has been detected by the Java Runtime Environment:
+#
+#  EXCEPTION_ACCESS_VIOLATION (0xc0000005) at pc=0x000000000262c450, pid=2836, tid=1444
+#
+# JRE version: 7.0-b136
+# Java VM: Java HotSpot(TM) 64-Bit Server VM (21.0-b06 mixed mode windows-amd64 compressed oops)
+# Problematic frame:
+# j  scala.collection.immutable.HashSet$$HashTrieSet.updated0(Ljava/lang/Object;II)Lscala/collection/immutable/HashSet;+84
+#
+# Failed to write core dump. Minidumps are not enabled by default on client versions of Windows
+#
+# An error report file with more information is saved as:
+# C:\Users\cunei\hs_err_pid2836.log
+#
+# If you would like to submit a bug report, please visit:
+#   http://java.sun.com/webapps/bugreport/crash.jsp
+#
+{code}

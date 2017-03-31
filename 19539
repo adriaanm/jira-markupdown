@@ -1,0 +1,31 @@
+Proposing a light-weight implementation of 'break' and 'continue' that operate inside of sequence comprehensions, as specialized breakable generators.
+
+The concept is written up here:
+http://erikerlandson.github.io/blog/2015/01/24/monadic-break-and-continue-for-scala-sequence-comprehensions/
+
+A simple example of what they look like in use:
+
+{code: scala}
+object Main {
+  import scala.util.control.BreakableGenerators._
+
+  def main(args: Array[String]) {
+
+    val r = for (
+      // generate a breakable sequence from some sequential input
+      loop <- breakable(1 to 1000);
+      // iterate over the breakable sequence
+      j <- loop;
+      // print out at each iteration
+      _ = { println(s"iteration j= $j") };
+      // continue to next iteration when 'j' is even
+      if { j % 2 == 0 } continue;
+      // break out of the loop when 'j' exceeds 5
+      if { j > 5 } break(loop) 
+    ) yield {
+      j
+    }
+    println(s"result= ${r.toList}")
+  }
+}
+{code}

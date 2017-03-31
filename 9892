@@ -1,0 +1,34 @@
+According to Scala Language Specification, {code} { val _ = "foo"; val _ = "bar" } {code} should be treated as valid , because {{_}} is not a simple identifier but a pattern. 
+
+In Scala Language Specification 4.1 Value Declarations and Definitions
+{quote}
+If p is some pattern other than a simple name or a name followed by a colon and a type,
+then the value definition {{val p = e}} is expanded as follows:
+{quote}
+
+{quote}
+3. If p has no bound variables:
+{code}
+e match { case p => ()}
+{code}
+{quote}
+
+
+In Scala Language Specification 1.1 Identifiers
+{quote}
+The following names are reserved words instead of being members of the syntactic class id of lexical identifiers.
+{code}
+abstract case catch class def
+do else extends false final
+finally for forSome if implicit
+import lazy match new null
+object override package private protected
+return sealed super this throw
+trait try true type val
+var while with yield
+_ : = => <<:
+<% >: # @
+{code}
+{quote}
+
+However, salac should never accept {code} { def _ = "foo"; def _ = "bar" } {code}.

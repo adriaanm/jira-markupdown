@@ -1,0 +1,26 @@
+Given a classfile {{A.scala}} in the current directory, the compiler finds the classfile for compiling, but the interpreter crashes when running the generated code.
+
+This only happens when the interpreter is launched manually, not through the "scala" shell script.
+
+{code}
+$$> java -cp build/pack/lib/scala-library.jar:build/pack/lib/scala-compiler.jar:lib/fjbg.jar scala.tools.nsc.MainGenericRunner
+
+scala> new A()
+java.lang.NoClassDefFoundError: A
+        at .<init>(<console>:5)
+        at .<clinit>(<console>)
+        at RequestResult$$.<init>(<console>:4)
+        at RequestResult$$.<clinit>(<console>)
+        at RequestResult$$result(<console>)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+        at sun.reflect.DelegatingMethodAccessorImp...
+{code}
+
+This is a bit annoying because it happens when running the interpreter in eclipse.
+
+Adding the following two parameters (as it's done when using the "scala" script) helps:
+
+{code}
+-Dscala.home=build/pack -Denv.classpath=
+{code}

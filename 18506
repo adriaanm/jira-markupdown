@@ -1,0 +1,62 @@
+This code can't be optimized:
+{code}
+@annotation.tailrec
+  private def foo(x: Int): Unit = try {
+    bar()
+  } catch {
+    case _: Throwable if x < 0 => foo(x + 1)
+    case _: Throwable => ()
+  }
+{code}
+but if you s/Throwable/Exception, it will work:
+
+{code}
+@annotation.tailrec
+  private def foo(x: Int): Unit = try {
+    bar()
+  } catch {
+    case _: Exception if x < 0 => foo(x + 1)
+    case _: Exception => ()
+  }
+{code}
+
+It turns out that the pattern match is translated differently in the two cases. The first one looks like:
+
+{code}
+case (ex9 @ _) => {
+        <synthetic> val x6: Throwable = ex9;
+        case12(){
+          if (x6.ne(null))
+            if (x.<(0))
+              matchEnd11(PreSuper.this.foo(x.+(1)))
+            else
+              case13()
+          else
+            case13()
+        };
+        case13(){
+          if (x6.ne(null))
+            matchEnd11(())
+          else
+            case14()
+        };
+        case14(){
+          matchEnd11(throw ex9)
+        };
+        matchEnd11(x: Unit){
+          x
+        }
+      }
+{code}
+
+The second one is:
+
+{code}
+ catch {
+      case (x27 @ (_: Exception)) => if (x.<(0))
+        PreSuper.this.foo(x.+(1))
+      else
+        ()
+      case (x6 @ (_: Throwable)) => throw x6
+    }
+{code}

@@ -1,0 +1,53 @@
+I'm going through the book "Scala by example" downloaded from :
+http://www.scala-lang.org/docu/files/ScalaByExample.pdf
+
+and discovered on the page 45 a small inconsistency.
+Since the method *print* is declared in the _Expr_ abstract class, it could be made use of it in the Sum#print method.
+
+{code:language=scala}
+abstract class Expr {
+  def eval: Int
+  def print
+}
+
+class Number(n: Int) extends Expr {
+  def eval: Int = n
+  def print { Console.print(n) }
+  }
+
+class Sum(e1: Expr, e2: Expr) extends Expr {
+  def eval: Int = e1.eval + e2.eval
+  def print {
+    Console.print("(")
+    print(e1)
+    Console.print("+")
+    print(e2)
+    Console.print(")")
+  }
+}
+{code}
+
+should be changed to this form :
+
+{code: language=scala}
+abstract class Expr {
+  def eval: Int
+  def print
+}
+
+class Number(n: Int) extends Expr {
+  def eval: Int = n
+  def print { Console.print(n) }
+  }
+
+class Sum(e1: Expr, e2: Expr) extends Expr {
+  def eval: Int = e1.eval + e2.eval
+  override def print: Unit = {
+    Console.print("(")
+    e1.print
+    Console.print("+")
+    e2.print
+    Console.print(")")
+  }
+}
+{code}

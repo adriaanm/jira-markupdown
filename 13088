@@ -1,0 +1,70 @@
+With Scala 2.7.0-RC1 using Java 1.6.0, the following code
+{code}
+object VerifyErrorTest {
+  def f: Boolean = {
+    try {
+      if (true) return false
+      true
+    } finally {
+      try { 1 } catch {case e: Exception => {}}
+    }
+  }
+
+  def main(args :Array[String]) {
+    println(f)
+  }
+}
+{code}
+
+generates the following stack trace:
+
+{code}
+> scala VerifyErrorTest
+java.lang.VerifyError: (class: VerifyErrorTest$$, method: f signature: ()Z) Inconsistent stack height 0 != 1
+        at VerifyErrorTest.main(VerifyErrorTest.scala)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.
+java:39)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAcces
+sorImpl.java:25)
+        at java.lang.reflect.Method.invoke(Method.java:597)
+        at scala.tools.nsc.ObjectRunner$$$$anonfun$$run$$1.apply(ObjectRunner.scala:
+75)
+        at scala.tools.nsc.ObjectRunner$$.withContextClassLoader(ObjectRunner.sca
+la:49)
+        at scala.tools.nsc.ObjectRunner$$.run(ObjectRunner.scala:74)
+        at scala.tools.nsc.MainGenericRunner$$.main(MainGenericRunner.scala:161)
+        at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
+{code}
+
+{{javap -c VerifyErrorTest$$}} generates the following mnemonics:
+
+{code}
+public boolean f();
+  Code:
+   0:   iconst_0
+   1:   istore_1
+   2:   iconst_0
+   3:   iconst_1
+   4:   pop
+   5:   goto    9
+   8:   astore_3
+   9:   ireturn
+   10:  astore_3
+   11:  iload_1
+   12:  ireturn
+   13:  astore_2
+   14:  iconst_1
+   15:  pop
+   16:  goto    20
+   19:  astore_3
+   20:  aload_2
+   21:  athrow
+  Exception table:
+   from   to  target type
+     3     8     8   Class java/lang/Exception
+
+    14    19    19   Class java/lang/Exception
+
+     2    11    13   any
+{code}

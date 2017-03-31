@@ -1,0 +1,12 @@
+Sorry, I found now that this bug is duplicate of SI-4540 and it has been fixed already by overriding isValidChar/isValidByte/isValidShort in BigInt/BigDecimal .
+
+Nevertheless, there is still an issue with comparison of BigInt/BigDecimal with Float/Double .
+
+  def testBigIntEquals {
+    val bi = BigInt(1) << 64;
+    assert(bi == bi.toFloat);
+    assert(bi == bi.toDouble)
+  }
+
+This test fails, though 2^64 is represented exactly in both Float and Double.
+If you agree that this is a bug, then I can try to prepare a pull request that fixes comparison of BigInt/BigDecimal with Float/Double .

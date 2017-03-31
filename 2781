@@ -1,0 +1,20 @@
+So, the equality behavior of Path is something like:
+
+{code}
+scala> val p1 = Path("build.xml")    
+p1: scala.tools.nsc.io.Path = File(build.xml)
+
+scala> p1.normalize.parent.map(_ resolve p1).get
+res4: scala.tools.nsc.io.Path = Path(/Users/dcaoyuan/NetBeansProjects/ScalaAntTest/build.xml)
+
+scala> p1.normalize.parent.map(_ resolve p1).get == p1
+res5: Boolean = false
+
+scala> p1.normalize.parent.map(_ resolve p1).get == p1.normalize
+res13: Boolean = true
+
+scala> p1.normalize.parent.get relativize p1.normalize 
+res16: scala.tools.nsc.io.Path = File(build.xml)
+{code}
+
+Since the equality of Path is comparing path string, and "relativize" works properly between "p1.normalize.parent.get" and "p1.normalize". I think that's OK, 

@@ -1,0 +1,26 @@
+Adriaan notes that the extended diagnostics fired into action in https://scala-ci.typesafe.com/job/scala-2.11.x-validate-test/596/console
+
+{code}
+error: scala.reflect.internal.FatalError: symbol value x2#820443 does not exist in scala.tools.nsc.typechecker.Implicits$ImplicitSearch.ypechecker$Implicits$ImplicitSearch$$implicitsOfExpectedType, which contains locals value x#820447,value x1#820442.
+Method code: private def implicitsOfExpectedType(): Implicits.this.Infoss = {
+  if (scala.reflect.internal.util.Statistics.canEnable())
+    scala.reflect.internal.util.Statistics.incCounter(ImplicitsStats.implicitCacheAccs())
+  else
+    ();
+  {
+    case val x1: Option#860 = ImplicitSearch.this.scala$tools$nsc$typechecker$Implicits$ImplicitSearch$$$outer().implicitsCache().get(is.pt);
+    case7(){
+      if (x1.$isInstanceOf[Some#2435]())
+        matchEnd6({
+          if (scala.reflect.internal.util.Statistics.canEnable())
+            scala.reflect.internal.util.Statistics.incCounter(ImplicitsStats.implicitCacheHits())
+          else
+            ();
+          x2.x().$asInstanceOf[List#39836]()
+        })
+      else
+        case8()
+    };
+{code}
+
+Note that the tree `case val x2 = x1.asInstanceOf[Some]` is missing.

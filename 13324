@@ -1,0 +1,46 @@
+Using actors with asynchronous operations can currently result in messy code when compared to using synchronous operations. This is because it is often necessary to nest the continuations for each reaction, even when the logic is basically linear.
+
+eg
+{code}
+val x = adder !? Add(1, 2)
+val y = adder !? Add(3, 4)
+val z = adder !? Add(x.asInstanceOf[Int], y.asInstanceOf[Int])
+println("Sum is: " + z)
+{code}
+vs
+{code}
+adder ! Add(1, 2)
+react {
+  case x => {
+    adder ! Add(3, 4)
+    react {
+      case y => {
+	adder ! Add(x.asInstanceOf[Int], y.asInstanceOf[Int])
+	react {
+	  case z => {
+	    println("Sum is: " + z)
+	  }
+	}
+      }
+    }
+  }
+}
+{code}
+
+However, using Responders and for comprehensions can make a continuation-passing style much clearer. The following patch adds support for Responders to the Actor class.
+
+ * Adds `%` as an asynchronous alternative to `?`.
+ * Adds `!%` as an asynchronous alternative to `!?`.
+ * Makes Futures into Responders, making it possible to asychronously wait for their value.
+
+eg
+{code}
+Responder.run {
+  for (
+    x <- adder !% Add(1, 2);
+    y <- adder !% Add(3, 4);
+    z <- adder !% Add(x.asInstanceOf[Int], y.asInstanceOf[Int]);
+    _ <- exec(println("Sum is: " + z))
+  ) yield ()
+}
+{code}

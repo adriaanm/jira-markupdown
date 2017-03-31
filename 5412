@@ -1,0 +1,18 @@
+I don't have many builds around to bisect (I wish all the old nightlies were available form scala-lang.org).
+
+So at a very coarse resolution, all I can say is that it broke between r23032-b20100919020152 and r23930-b20110109020122.
+
+This is enough to reproduce:
+
+{code}
+object test {
+  trait A[OUT[_]] {
+    null.asInstanceOf[B[OUT]].b1("")
+  }
+
+  trait B[OUT[_]] {
+    def b1[A](a: A) = b2[OUT]
+    def b2[OUT1[_]] = ()
+  }
+}
+{code}

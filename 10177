@@ -1,0 +1,36 @@
+Taking Predef out out the picture:
+
+{code}
+// -Yno-predef
+
+object MockPredef {
+  implicit class ArrowAssoc[A](val self: A) extends AnyVal
+  implicit class Ensuring[A](val self: A) extends AnyVal
+}
+
+import MockPredef.{ArrowAssoc, Ensuring} // ambiguity in search for `C => ?F[_]`
+
+object Test {
+  def ??? = throw new Error
+
+  trait T
+  implicit val t: T = ???
+
+  implicit def f2(a: Any): Some[Any] = ??? // makes C coercible to ?F[_]
+
+  def fail2[F[+X]](f: F[Any])(implicit T: T) = ???
+
+  class C[A, B]
+  val c = new C
+  
+  fail2(c)
+}
+{code}
+
+We end up with a post-typer tree:
+
+{noformat}
+    Test.this{Test.type}.fail2{[F[+X]](f: F[Any])(implicit T: Test.T)Nothing}[Any]{(f: Any)(implicit T: Test.T)Nothing}(Test.this{Test.type}.c{Test.C[Nothing,Nothing]}){<error>}
+{noformat}
+
+But that error is not issued.

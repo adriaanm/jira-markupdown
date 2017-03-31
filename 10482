@@ -1,0 +1,40 @@
+OK, I don't want to be a pain :)  And to be fair, I don't think this is major either.
+
+I just found out by profiling with yourkit that using the exact pattern (that one developer in our team absolutely loves) was having some impact on our app (about 50ms of pure cpu on autocompletion requests) at a place where I was not expecting it.
+
+Rewriting them with a find was improving things significantly. As using a view honestly felt like "the right thing to do" from a FP pov, I am just concerned that there might be some unnecessary entropy generated with the best of intentions here.
+
+Anyway, let's retry without the map lookup, to get it out of the way, even if the test case feel ridiculous now.
+
+{code}
+def time[T](f: => T):(T,Long) = {
+    val before = System.currentTimeMillis
+    val res:T = f
+    val after = System.currentTimeMillis
+    (res, after-before)
+}
+
+val seq = Array.range(1, 50).map (_.toString).toList
+
+(1 to 10).foreach { j =>
+    val (a,t1) = time { (1 to 100000).foreach { i => seq.view.flatMap( i => if(i == "42") Some("yay") else None ).headOption } }
+    val (b,t2) = time { (1 to 100000).foreach { i => seq.find( _ == "42" ).map( a => Some("yay") ) } }
+    println(s"view:$t1 find:$t2")
+}
+{code}
+
+I get this: 
+{code}
+view:388 find:71
+view:136 find:36
+view:148 find:28
+view:134 find:28
+view:124 find:28
+view:119 find:29
+view:124 find:34
+view:120 find:32
+view:123 find:29
+view:119 find:31
+{code}
+
+By playing on the constants (bigger list, element looked for further down) i get similar results: the view version is three to four times slower.

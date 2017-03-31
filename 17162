@@ -1,0 +1,35 @@
+(Using Manifests to avoid interacting with SI-5990.)
+
+{code}
+def isItInferableAsATypeArg[A : Manifest](f: A => Unit) = manifest[A]
+
+object Repeated extends ((Int*) => Unit) {
+  def apply(x: Int*) {}
+}
+
+object ByName extends ((=> Int) => Unit) {
+  def apply(x: => Int) {}
+}
+
+isItInferableAsATypeArg(Repeated)
+{code}
+
+{noformat}
+error: type mismatch;
+ found   : Repeated.type
+ required: Seq[Int] => Unit
+{noformat}
+
+Okay, so no then!
+
+{code}
+isItInferableAsATypeArg(ByName)
+{code}
+
+{noformat}
+error: No Manifest available for => Int.
+{noformat}
+
+Okay, so yes then?
+
+Somewhere in here is a bug, right?

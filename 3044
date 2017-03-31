@@ -1,0 +1,158 @@
+I tried again with a fresh checkout, and get a different behaviour again!? :(
+
+{code}
+E:\temp\scalaz>sbt clean update compile
+
+E:\temp\scalaz>set SCRIPT_DIR=E:\tools\simple-build-tool\
+
+E:\temp\scalaz>java  -Dhttp.proxyHost=172.22.100.15 -Dhttp.proxyPort=8080 -Xmx25
+6M -jar "E:\tools\simple-build-tool\xsbt-launch-0.6.0.jar" clean update compile
+
+[warn] Credentials file C:\Documents and Settings\zgg\.ivy2\.credentials does no
+t exist
+[info] Building project scalaz 5.0-SNAPSHOT against Scala 2.8.0-20091129.024453-
++
+[info]    using ScalazProject with sbt 0.6.4 and Scala 2.7.5
+[info]
+[info] == Scalaz Core / clean ==
+[info] Deleting directory E:\temp\scalaz\core\target\scala_2.8.0-20091129.024453
+-+
+[info] == Scalaz Core / clean ==
+[info]
+[info] == Scalaz HTTP / clean ==
+[info] Deleting directory E:\temp\scalaz\http\target\scala_2.8.0-20091129.024453
+-+
+[info] == Scalaz HTTP / clean ==
+[info]
+[info] == Scalaz Example / clean ==
+[info] == Scalaz Example / clean ==
+[info]
+[info] == scalaz / clean ==
+[info] == scalaz / clean ==
+[success] Successful.
+[info]
+[info] Total time: 1 s, completed 08/12/2009 5:45:48 PM
+[info]
+[info] == Scalaz Core / update ==
+[info] :: retrieving :: com.googlecode.scalaz#scalaz-core_2.8.0-20091129.024453-
++ [sync]
+[info]  confs: [compile, runtime, test, provided, system, optional, sources, jav
+adoc]
+[info]  0 artifacts copied, 0 already retrieved (0kB/15ms)
+[info] == Scalaz Core / update ==
+[info]
+[info] == Scalaz HTTP / update ==
+[info] :: retrieving :: com.googlecode.scalaz#scalaz-http_2.8.0-20091129.024453-
++ [sync]
+[info]  confs: [compile, runtime, test, provided, system, optional, sources, jav
+adoc]
+[info]  0 artifacts copied, 2 already retrieved (0kB/31ms)
+[info] == Scalaz HTTP / update ==
+[info]
+[info] == Scalaz Example / update ==
+[info] :: retrieving :: com.googlecode.scalaz#scalaz-example_2.8.0-20091129.0244
+53-+ [sync]
+[info]  confs: [compile, runtime, test, provided, system, optional, sources, jav
+adoc]
+[info]  0 artifacts copied, 0 already retrieved (0kB/15ms)
+[info] == Scalaz Example / update ==
+[info]
+[info] == scalaz / update ==
+[warn] No readable dependency configuration found, using defaults.
+[info] :: retrieving :: com.googlecode.scalaz#scalaz_2.8.0-20091129.024453-+ [sy
+nc]
+[info]  confs: [default]
+[info]  0 artifacts copied, 0 already retrieved (0kB/0ms)
+[info] == scalaz / update ==
+[success] Successful.
+[info]
+[info] Total time: 0 s, completed 08/12/2009 5:45:49 PM
+[info]
+[info] == Scalaz Core / compile ==
+[info]   Source analysis: 102 new/modified, 0 indirectly invalidated, 0 removed.
+
+[info] Compiling main sources...
+[info] Compilation successful.
+[info]   Post-analysis: 1386 classes.
+[info] == Scalaz Core / compile ==
+[info]
+[info] == Scalaz HTTP / compile ==
+[info]   Source analysis: 29 new/modified, 0 indirectly invalidated, 0 removed.
+[info] Compiling main sources...
+[error] E:\temp\scalaz\http\src\main\scala\scalaz\http\request\Uri.scala:65: cou
+ld not find implicit value for parameter md: scalaz.Monad[scalaz.NonEmptyList]
+[error]   lazy val parametersMap = parameters ? (asHashMap[List, NonEmptyList](_
+))
+[error]                                                                       ^
+[error] E:\temp\scalaz\http\src\main\scala\scalaz\http\request\Uri.scala:71: typ
+e mismatch;
+[error]  found   : A
+[error]  required: scala.collection.immutable.Map[?,scalaz.NonEmptyList[?]]
+[error]   lazy val parametersMapHeads = parametersMap ? (mapHeads(_))
+[error]                                                           ^
+[error] E:\temp\scalaz\http\src\main\scala\scalaz\http\request\Line.scala:53: va
+lue get is not a member of Nothing
+[error]   def !(p: String) = uri.parametersMapHeads flatMap (_.get(p.toList))
+[error]                                                        ^
+[error] E:\temp\scalaz\http\src\main\scala\scalaz\http\request\Line.scala:58: ty
+pe mismatch;
+[error]  found   : scalaz.Validation[E,A]
+[error]  required: scalaz.Validation[E,List[Char]]
+[error]   def ![E](p: String, e: => E): Validation[E, List[Char]] = this ! p toS
+uccess e
+[error]                                                                      ^
+[error] E:\temp\scalaz\http\src\main\scala\scalaz\http\request\Line.scala:63: va
+lue get is not a member of Nothing
+[error]   def !!(p: String) = OptionNonEmptyListList(uri.parametersMap flatMap (
+_.get(p.toList)))
+[error]
+  ^
+[error] E:\temp\scalaz\http\src\main\scala\scalaz\http\response\Response.scala:8
+8: could not find implicit value for parameter md: scalaz.Monad[scalaz.NonEmptyL
+ist]
+[error]   lazy val headersMap = asHashMap[List, NonEmptyList](headers)
+[error]                                                      ^
+[error] E:\temp\scalaz\http\src\main\scala\scalaz\http\request\Request.scala:89:
+ could not find implicit value for parameter md: scalaz.Monad[scalaz.NonEmptyLis
+t]
+[error]   lazy val headersMap = asHashMap[List, NonEmptyList](headers)
+[error]                                                      ^
+[error] E:\temp\scalaz\http\src\main\scala\scalaz\http\request\Request.scala:105
+: could not find implicit value for parameter md: scalaz.Monad[scalaz.NonEmptyLi
+st]
+[error]     lazy val parametersMap = asHashMap[List, NonEmptyList](parameters)
+[error]                                                           ^
+[error] E:\temp\scalaz\http\src\main\scala\scalaz\http\request\Request.scala:124
+: value get is not a member of A
+[error]   def !(p: String) = line.uri.parametersMapHeads ? (_.get(p.toList))
+[error]                                                       ^
+[error] E:\temp\scalaz\http\src\main\scala\scalaz\http\request\Request.scala:134
+: type mismatch;
+[error]  found   : scalaz.Validation[E,A]
+[error]  required: scalaz.Validation[E,List[Char]]
+[error]   def ![E](p: String, e: => E): Validation[E, List[Char]] = this ! p toS
+uccess e
+[error]                                                                      ^
+[error] E:\temp\scalaz\http\src\main\scala\scalaz\http\request\Request.scala:139
+: value get is not a member of A
+[error]   def !!(p: String) : List[List[Char]] = OptionNonEmptyListList(line.uri
+.parametersMap ? (_.get(p.toList)))
+[error]
+                    ^
+[error] E:\temp\scalaz\http\src\main\scala\scalaz\http\request\Request.scala:203
+: type mismatch;
+[error]  found   : Option[A]
+[error]  required: Option[List[Char]]
+[error]     kleisli((this !| (_: String)))
+[error]                   ^
+[error] 12 errors found
+[info] == Scalaz HTTP / compile ==
+[error] Error running compile: Compilation failed
+[info]
+[info] Total time: 30 s, completed 08/12/2009 5:46:18 PM
+[info]
+[info] Total session time: 31 s, completed 08/12/2009 5:46:18 PM
+[error] Error during build.
+{code}
+
+I'll continue try to reproduce it outside of SBT.

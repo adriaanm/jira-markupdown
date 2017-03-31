@@ -1,0 +1,43 @@
+Note that already the following program throws an `OutOfMemoryError` if the assignment `mapped = null` is commented out as shown:
+{code}
+object Test extends Application {
+
+  def nextNumber(number: Long): Long =
+    if (number % 2 == 0)
+      number / 2
+    else
+      (number * 3) + 1
+
+  def numberStream(number: Long): Stream[Long] =
+    if (number == 1)
+      Stream.cons(1, Stream.empty)
+    else
+      Stream.cons(number, numberStream(nextNumber(number)))
+
+  def numberRangeStream(high: Long, number: Long): Stream[Long] =
+    if (number == high)
+      Stream.cons(high, Stream.empty)
+    else
+      Stream.cons(number, numberRangeStream(high, number + 2))
+
+  val low = 500001
+  val high = 999999L
+  var mapped = numberRangeStream(high, low).map(numberStream(_))
+  val s = mapped.size
+  println("size of mapped stream: "+s)
+
+  var i = 0
+  var curr = mapped
+  //mapped = null
+  var el = curr.head
+  while (i < s) {
+    i += 1
+    el = curr.head
+    print(el.size+" ")
+    curr = curr.tail
+  }
+}
+{code}
+Therefore, no matter how `reduceLeft` is implemented (and currently it is implemented iteratively), an `OutOfMemoryError` is thrown, since the reference to the head of the stream is enough to retain all the contained streams. This means the reduction has to be implemented in a custom way without retaining references to sub-streams that have already been processed.
+
+Therefore, I am closing this ticket, since it has apparently nothing to do with `reduceLeft`, or any other method of `Stream` used in the example.

@@ -1,0 +1,27 @@
+In this section, I show how to express the type of f.
+
+{code}
+//Variant: Note that Return must only accept subtypes of A
+trait DepFunction1[-A <: AnyRef, +Return[_ <: A]] { def apply(a: A) : Return[a.type] }
+//Your examples still work - the kind needn't match:
+object stringId extends DepFunction1[String, ({type Id[x] = x})#Id] { def apply(s: String): s.type = s }
+trait Function1[-A <: AnyRef, +R] extends DepFunction1[A, ({type l[_] = R})#l]
+//Now we can write:
+def g[T1 <: {type MemberT2 <: {type MemberT3}}]: DepFunction1[T1, ({type Ret[x <: T1] = DepFunction1[x#MemberT2, ({type Ret[y <: x#MemberT2] = y#MemberT3})#Ret]})#Ret] = ???
+{code}
+
+That worked well! But we didn't yet eta-expand f, only represented the interface for that. There, I get an error I don't get (no pun intended):
+
+{code}
+scala> def g[T1 <: {type MemberT2 <: {type MemberT3}}]: DepFunction1[T1, ({type Ret[x <: T1] = DepFunction1[x#MemberT2, ({type Ret[y <: x#MemberT2] = y#MemberT3})#Ret]})#Ret] =
+     |   new DepFunction1[T1, ({type Ret[x <: T1] = DepFunction1[x#MemberT2, ({type Ret[y <: x#MemberT2] = y#MemberT3})#Ret]})#Ret] {
+     |     def apply(a: T1) = new DepFunction1[a.MemberT2, ({type Ret[y <: a.MemberT2] = y#MemberT3})#Ret] {
+     |       def apply(b: a.MemberT2): b.MemberT3 = f(a)(b) //": b.MemberT3" is required, else we get more errors.
+     |     }
+     |   }
+<console>:10: error: type mismatch;
+ found   : DepFunction1(in object $iw)[a.MemberT2,[y <: a.MemberT2]y#MemberT3]
+ required: DepFunction1(in object $iw)[a.MemberT2,[y <: a.MemberT2]y#MemberT3]
+           def apply(a: T1) = new DepFunction1[a.MemberT2, ({type Ret[y <: a.MemberT2] = y#MemberT3})#Ret] {
+                              ^
+{code}

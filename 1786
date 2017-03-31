@@ -1,0 +1,16 @@
+The bug is caused by the 2.8.0 release of the compiler, though I honestly cannot say if it is a compiler regression or a newly enforced rule.  When I did get the 2.8.0 compiler running from the command line, it reproduced exactly the bugs I found in Eclipse.  So, it is correct to close the bug for the reasons that you state -- except I am unwilling to commit that this is a bug in the compiler, until I can get someone who knows Scala well to look at the offending code.
+
+The anomalous difficulty in running 2.8.0 within ant is caused by two things:
+
+ * 2.7.2 and 2.7.4 are somewhat compatible;
+ * we have TWO different build.xml files in our project, one more than should be there, both setting scala properties (this is insane).
+
+So, sloppily switching between 2.7.2 and 2.7.4 worked ok, and masked the two-files screwup, but half-switching to 2.8.0 did not.  (that resolves that question.)
+
+The behavior you observed with 2.7.4RC1 is apparently regarded as a feature, and is somehow triggered by us compiling things within the com.sun package, or so I am told by our Scala aficionados.  However, this is not causing the problems that I observed within Eclipse. (that resolves THAT question.)
+
+I am slightly sorry for my snarky tone; however the fact remains that just as bug reports should contain as much useful information as possible, responses to bug reports should be as unambiguous as possible, and I spent the earlier part of this week reporting bugs against Eclipse, and Eclipse does not make it especially easy to collect information for bug reports (did you know that it crashes every time I update the Scala plugin?  Did you know that the dialog window presented with the crash contains a non-selectable picture of the text telling the non-standard location of the log file?  You got pictures in your bug report, because that is the only way to get some of this information out of Eclipse.).  In particular, if there's settings I need to look at, you need to tell me (and the next guy to report a bug) how to navigate to those settings, and if that is all the settings (you may notice, that after I complained about the lack of this information, I included a description of how I got to the data that I presented, on the off chance that I went to the wrong place). This is life with Eclipse.  Ideally Eclipse would have a button I could push that would snapshot all the information into a complete and compact form for bug reporting, but they do not.
+
+If you will note, I began with links, pictures, and all the information that seemed relevant to me, and pointers to specific files with specific revisions.  If you think that my problem is pilot error, the last thing you want to give me is vague instructions as to how to proceed next.  You know Scala and the plugin, I do not.  If you speak in shorthand, I am likely to get it wrong, and that wastes everyone's time.
+
+Thanks for your time.

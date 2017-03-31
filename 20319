@@ -1,0 +1,31 @@
+Given: trait with implemented protected method
+When: instantiate that trait overriding protected method with public access modifier
+Expect: overridden method is public
+Actual: overridden method is still protected
+
+Code:
+
+{code:scala}
+class Test {
+
+  trait I {
+    protected def func(): Unit = println("hello")
+  }
+
+  trait PI extends I {
+    override def func(): Unit = super.func()
+  }
+
+  val i = new I {
+    override def func(): Unit = super.func()
+  }
+
+  val pi = new PI {
+  }
+
+  i.func() //still protected: method func in trait I cannot be accessed in Test.this.I
+  pi.func() //works
+
+}
+
+{code}

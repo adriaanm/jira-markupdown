@@ -1,0 +1,18 @@
+Oh interesting.  Even this works.
+{code}
+object o {
+  abstract class ParametricMessage[M: Manifest](msg: M) { def message = msg }
+  case class ParametricMessage1[M: Manifest](msg: M, p1: Class[_]) extends ParametricMessage(msg) { }
+}
+{code}
+And trying to pass msg explicitly upward heads toward illustrating why.  Is the reported version even supposed to compile? The message implies the equivalent implicit is disallowed, which would mean it's sneaking past in the context bound.
+{code}
+// a.scala
+abstract class ParametricMessage[M](msg: M)(implicit m: Manifest[M]) { def message = msg }
+case class ParametricMessage1[M](msg: M, p1: Class[_])(implicit m: Manifest[M]) extends ParametricMessage(msg)(m) { }
+
+% scalac a.scala
+a.scala:3: error: `implicit' modifier cannot be used for top-level objects
+  case class ParametricMessage1[M](msg: M, p1: Class[_])(implicit m: Manifest[M]) extends ParametricMessage(msg)(m) { }
+{code}
+(BTW it's the same if it's not a case class - at first I thought it was something arising from the companion object, but no.)

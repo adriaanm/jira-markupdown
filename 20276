@@ -1,0 +1,5 @@
+There is currently no way to check if a Java symbol is transient or not.
+
+This is the case because {{scala.reflect.internal.ClassfileConstants}} does not translate the {{JAVA_ACC_TRANSIENT}} flag to a Scala flag. Therefore, checks with `{{hasFlag(Flags.TRANS_FLAG)}}` in symbols are negative for transitive variables in Java classes.
+
+There is a [hack through reflection|http://stackoverflow.com/questions/24125409/scala-macros-checking-if-a-java-field-is-marked-as-transient] that can be used to check this, but the fact that this case is not handled is bad for java interop and Serialization-intensive code.

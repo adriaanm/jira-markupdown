@@ -1,0 +1,11 @@
+Performance-wise, it's better to keep as straight-line code what can be formulated that way. You know, if two basic blocks:
+* are back to back, and
+* the former jumps to the second, and
+* no other block jumps to the second, and
+* no exception handler covers one but not the other, 
+
+then it's better to keep them as a single basic block. 
+
+I don't know what to make of "avoiding emitting tiny switches". In the example, a "tiny switch" isn't being emitted anymore, yet there are two intervening jumps. Reverting [c2cd6acf99|https://github.com/scala/scala/commit/c2cd6acf993d66eac6f6917ee3b7300eeaceb8a3] would mean we get even more jumps, right? Doesn't seem like a good idea.
+
+Any more comments? 

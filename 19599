@@ -1,0 +1,27 @@
+I'm using scala version 2.10.4 and it appears that a collection.mutable.Queue inside a Map isn't mutable. However a tuple of key to collection.mutable.Queue does appear to be mutable.
+
+{code}
+scala> scala.util.Properties.scalaPropOrEmpty("version.number")
+res0: String = 2.10.4
+
+scala> import scala.collection.mutable.{ Queue => MutableQueue }
+import scala.collection.mutable.{Queue=>MutableQueue}
+
+scala> (1 to 50).groupBy(_ % 5).mapValues(nums => MutableQueue(nums:_*))
+res1: scala.collection.immutable.Map[Int,scala.collection.mutable.Queue[Int]] = Map(0 -> Queue(5, 10, 15, 20, 25, 30, 35, 40, 45, 50), 1 -> Queue(1, 6, 11, 16, 21, 26, 31, 36, 41, 46), 2 -> Queue(2, 7, 12, 17, 22, 27, 32, 37, 42, 47), 3 -> Queue(3, 8, 13, 18, 23, 28, 33, 38, 43, 48), 4 -> Queue(4, 9, 14, 19, 24, 29, 34, 39, 44, 49))
+
+scala> res1(0).dequeue
+res2: Int = 5
+
+scala> res1(0)
+res3: scala.collection.mutable.Queue[Int] = Queue(5, 10, 15, 20, 25, 30, 35, 40, 45, 50)
+
+scala> (1 to 50).groupBy(_ % 5).mapValues(nums => MutableQueue(nums:_*)).toSeq
+res4: Seq[(Int, scala.collection.mutable.Queue[Int])] = ArrayBuffer((0,Queue(5, 10, 15, 20, 25, 30, 35, 40, 45, 50)), (1,Queue(1, 6, 11, 16, 21, 26, 31, 36, 41, 46)), (2,Queue(2, 7, 12, 17, 22, 27, 32, 37, 42, 47)), (3,Queue(3, 8, 13, 18, 23, 28, 33, 38, 43, 48)), (4,Queue(4, 9, 14, 19, 24, 29, 34, 39, 44, 49)))
+
+scala> res4.find(_._1 == 0).get._2.dequeue
+res5: Int = 5
+
+scala> res4.find(_._1 == 0).get._2
+res6: scala.collection.mutable.Queue[Int] = Queue(10, 15, 20, 25, 30, 35, 40, 45, 50)
+{code}

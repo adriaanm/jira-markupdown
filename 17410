@@ -1,0 +1,48 @@
+{code:none}
+git clone http://github.com/akshaal/akmacros.git
+cd akmacros
+sbt console
+import info.akshaal.clazz._
+class Ann(f : Int => Int) extends annotation.StaticAnnotation
+{code}
+
+and then the following will trigger exception in scala compiler (should be posted as one line):
+{code:none}
+case class Test(@Ann(_ + 3) d : String); val z = fields[Ann, Test, Any, Tuple1[(Int => Int)]]('valueIdentity)
+{code}
+
+{code:none}
+        during phase: global=lambdalift, atPhase=constructors
+[...]
+  last tree to typer: term z
+              symbol: value z (flags: <triedcooking> private[this])
+   symbol definition: private[this] val z: List
+                 tpe: <notype>
+       symbol owners: value z -> object $iw -> object $iw -> object $iw -> object $iw -> object $read -> package $line8
+      context owners: value x$1 -> method apply -> anonymous class $anonfun$2 -> value <local $iw> -> object $iw -> object $iw -> object $iw -> object $iw -> object $read -> package $line8
+[...]
+== Enclosing template or block ==
+
+DefDef( // final def apply(x$1: Int): Int
+  <method> final <triedcooking>
+  "apply"
+  []
+  // 1 parameter list
+  ValDef( // x$1: Int
+    <param> <synthetic> <triedcooking>
+    "x$1"
+    <tpt> // tree.tpe=Int
+    <empty>
+  )
+  <tpt> // tree.tpe=Int
+  Apply( // def apply$mcII$sp(v1: Int): Int, tree.tpe=Int
+    $anonfun$1.this."apply$mcII$sp" // def apply$mcII$sp(v1: Int): Int, tree.tpe=(v1: Int)Int
+    "x$1" // x$1: Int, tree.tpe=Int
+  )
+)
+
+== Expanded type of tree ==
+
+<notype>
+{code}
+You will find the rest of it in the attached file.

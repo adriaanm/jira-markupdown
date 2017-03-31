@@ -1,0 +1,103 @@
+From the mailing list message, posted by Erik Engbrecht:
+
+getClasses gives you the anonymous class for the lambda being passed into map.  All the methods on the class except one of them  (the apply method that returns Object) has a generic return type.
+
+{code}
+scala> class A { def m[T](values: Array[T]) { values map (v => v) } }
+defined class A
+
+scala> classOf[A]
+res4: java.lang.Class[A] = class A
+
+scala> res4.getClasses
+res5: Array[java.lang.Class[_]] = Array(class A$$$$anonfun$$m$$1)
+
+scala> res4.getClasses.head
+res6: java.lang.Class[_] = class A$$$$anonfun$$m$$1
+
+scala> res6.getMethods.foreach(m => println(m.toString + " => " + m.getGenericReturnType))
+public final java.lang.Object line6$$object$$$$iw$$$$iw$$A$$$$anonfun$$m$$1.apply(java.lang.Object) => null
+public java.lang.String scala.runtime.AbstractFunction1.toString() => class java.lang.String
+public scala.Function1 scala.runtime.AbstractFunction1.compose(scala.Function1) => scala.Function1<A, R>
+public scala.Function1 scala.runtime.AbstractFunction1.andThen(scala.Function1) => scala.Function1<T1, A>
+public void scala.runtime.AbstractFunction1.apply$$mcVI$$sp(int) => void
+public boolean scala.runtime.AbstractFunction1.apply$$mcZI$$sp(int) => boolean
+public int scala.runtime.AbstractFunction1.apply$$mcII$$sp(int) => int
+public float scala.runtime.AbstractFunction1.apply$$mcFI$$sp(int) => float
+public long scala.runtime.AbstractFunction1.apply$$mcLI$$sp(int) => long
+public double scala.runtime.AbstractFunction1.apply$$mcDI$$sp(int) => double
+public void scala.runtime.AbstractFunction1.apply$$mcVL$$sp(long) => void
+public boolean scala.runtime.AbstractFunction1.apply$$mcZL$$sp(long) => boolean
+public int scala.runtime.AbstractFunction1.apply$$mcIL$$sp(long) => int
+public float scala.runtime.AbstractFunction1.apply$$mcFL$$sp(long) => float
+public long scala.runtime.AbstractFunction1.apply$$mcLL$$sp(long) => long
+public double scala.runtime.AbstractFunction1.apply$$mcDL$$sp(long) => double
+public void scala.runtime.AbstractFunction1.apply$$mcVF$$sp(float) => void
+public boolean scala.runtime.AbstractFunction1.apply$$mcZF$$sp(float) => boolean
+public int scala.runtime.AbstractFunction1.apply$$mcIF$$sp(float) => int
+public float scala.runtime.AbstractFunction1.apply$$mcFF$$sp(float) => float
+public long scala.runtime.AbstractFunction1.apply$$mcLF$$sp(float) => long
+public double scala.runtime.AbstractFunction1.apply$$mcDF$$sp(float) => double
+public void scala.runtime.AbstractFunction1.apply$$mcVD$$sp(double) => void
+public boolean scala.runtime.AbstractFunction1.apply$$mcZD$$sp(double) => boolean
+public int scala.runtime.AbstractFunction1.apply$$mcID$$sp(double) => int
+public float scala.runtime.AbstractFunction1.apply$$mcFD$$sp(double) => float
+public long scala.runtime.AbstractFunction1.apply$$mcLD$$sp(double) => long
+public double scala.runtime.AbstractFunction1.apply$$mcDD$$sp(double) => double
+public scala.Function1 scala.runtime.AbstractFunction1.compose$$mcVI$$sp(scala.Function1) => scala.Function1<A, java.lang.Object>
+public scala.Function1 scala.runtime.AbstractFunction1.compose$$mcZI$$sp(scala.Function1) => scala.Function1<A, java.lang.Boolean>
+public scala.Function1 scala.runtime.AbstractFunction1.compose$$mcII$$sp(scala.Function1) => scala.Function1<A, java.lang.Integer>
+public scala.Function1 scala.runtime.AbstractFunction1.compose$$mcFI$$sp(scala.Function1) => scala.Function1<A, java.lang.Float>
+public scala.Function1 scala.runtime.AbstractFunction1.compose$$mcLI$$sp(scala.Function1) => scala.Function1<A, java.lang.Long>
+public scala.Function1 scala.runtime.AbstractFunction1.compose$$mcDI$$sp(scala.Function1) => scala.Function1<A, java.lang.Double>
+public scala.Function1 scala.runtime.AbstractFunction1.compose$$mcVL$$sp(scala.Function1) => scala.Function1<A, java.lang.Object>
+public scala.Function1 scala.runtime.AbstractFunction1.compose$$mcZL$$sp(scala.Function1) => scala.Function1<A, java.lang.Boolean>
+public scala.Function1 scala.runtime.AbstractFunction1.compose$$mcIL$$sp(scala.Function1) => scala.Function1<A, java.lang.Integer>
+public scala.Function1 scala.runtime.AbstractFunction1.compose$$mcFL$$sp(scala.Function1) => scala.Function1<A, java.lang.Float>
+public scala.Function1 scala.runtime.AbstractFunction1.compose$$mcLL$$sp(scala.Function1) => scala.Function1<A, java.lang.Long>
+public scala.Function1 scala.runtime.AbstractFunction1.compose$$mcDL$$sp(scala.Function1) => scala.Function1<A, java.lang.Double>
+public scala.Function1 scala.runtime.AbstractFunction1.compose$$mcVF$$sp(scala.Function1) => scala.Function1<A, java.lang.Object>
+public scala.Function1 scala.runtime.AbstractFunction1.compose$$mcZF$$sp(scala.Function1) => scala.Function1<A, java.lang.Boolean>
+public scala.Function1 scala.runtime.AbstractFunction1.compose$$mcIF$$sp(scala.Function1) => scala.Function1<A, java.lang.Integer>
+public scala.Function1 scala.runtime.AbstractFunction1.compose$$mcFF$$sp(scala.Function1) => scala.Function1<A, java.lang.Float>
+public scala.Function1 scala.runtime.AbstractFunction1.compose$$mcLF$$sp(scala.Function1) => scala.Function1<A, java.lang.Long>
+public scala.Function1 scala.runtime.AbstractFunction1.compose$$mcDF$$sp(scala.Function1) => scala.Function1<A, java.lang.Double>
+public scala.Function1 scala.runtime.AbstractFunction1.compose$$mcVD$$sp(scala.Function1) => scala.Function1<A, java.lang.Object>
+public scala.Function1 scala.runtime.AbstractFunction1.compose$$mcZD$$sp(scala.Function1) => scala.Function1<A, java.lang.Boolean>
+public scala.Function1 scala.runtime.AbstractFunction1.compose$$mcID$$sp(scala.Function1) => scala.Function1<A, java.lang.Integer>
+public scala.Function1 scala.runtime.AbstractFunction1.compose$$mcFD$$sp(scala.Function1) => scala.Function1<A, java.lang.Float>
+public scala.Function1 scala.runtime.AbstractFunction1.compose$$mcLD$$sp(scala.Function1) => scala.Function1<A, java.lang.Long>
+public scala.Function1 scala.runtime.AbstractFunction1.compose$$mcDD$$sp(scala.Function1) => scala.Function1<A, java.lang.Double>
+public scala.Function1 scala.runtime.AbstractFunction1.andThen$$mcVI$$sp(scala.Function1) => scala.Function1<java.lang.Integer, A>
+public scala.Function1 scala.runtime.AbstractFunction1.andThen$$mcZI$$sp(scala.Function1) => scala.Function1<java.lang.Integer, A>
+public scala.Function1 scala.runtime.AbstractFunction1.andThen$$mcII$$sp(scala.Function1) => scala.Function1<java.lang.Integer, A>
+public scala.Function1 scala.runtime.AbstractFunction1.andThen$$mcFI$$sp(scala.Function1) => scala.Function1<java.lang.Integer, A>
+public scala.Function1 scala.runtime.AbstractFunction1.andThen$$mcLI$$sp(scala.Function1) => scala.Function1<java.lang.Integer, A>
+public scala.Function1 scala.runtime.AbstractFunction1.andThen$$mcDI$$sp(scala.Function1) => scala.Function1<java.lang.Integer, A>
+public scala.Function1 scala.runtime.AbstractFunction1.andThen$$mcVL$$sp(scala.Function1) => scala.Function1<java.lang.Long, A>
+public scala.Function1 scala.runtime.AbstractFunction1.andThen$$mcZL$$sp(scala.Function1) => scala.Function1<java.lang.Long, A>
+public scala.Function1 scala.runtime.AbstractFunction1.andThen$$mcIL$$sp(scala.Function1) => scala.Function1<java.lang.Long, A>
+public scala.Function1 scala.runtime.AbstractFunction1.andThen$$mcFL$$sp(scala.Function1) => scala.Function1<java.lang.Long, A>
+public scala.Function1 scala.runtime.AbstractFunction1.andThen$$mcLL$$sp(scala.Function1) => scala.Function1<java.lang.Long, A>
+public scala.Function1 scala.runtime.AbstractFunction1.andThen$$mcDL$$sp(scala.Function1) => scala.Function1<java.lang.Long, A>
+public scala.Function1 scala.runtime.AbstractFunction1.andThen$$mcVF$$sp(scala.Function1) => scala.Function1<java.lang.Float, A>
+public scala.Function1 scala.runtime.AbstractFunction1.andThen$$mcZF$$sp(scala.Function1) => scala.Function1<java.lang.Float, A>
+public scala.Function1 scala.runtime.AbstractFunction1.andThen$$mcIF$$sp(scala.Function1) => scala.Function1<java.lang.Float, A>
+public scala.Function1 scala.runtime.AbstractFunction1.andThen$$mcFF$$sp(scala.Function1) => scala.Function1<java.lang.Float, A>
+public scala.Function1 scala.runtime.AbstractFunction1.andThen$$mcLF$$sp(scala.Function1) => scala.Function1<java.lang.Float, A>
+public scala.Function1 scala.runtime.AbstractFunction1.andThen$$mcDF$$sp(scala.Function1) => scala.Function1<java.lang.Float, A>
+public scala.Function1 scala.runtime.AbstractFunction1.andThen$$mcVD$$sp(scala.Function1) => scala.Function1<java.lang.Double, A>
+public scala.Function1 scala.runtime.AbstractFunction1.andThen$$mcZD$$sp(scala.Function1) => scala.Function1<java.lang.Double, A>
+public scala.Function1 scala.runtime.AbstractFunction1.andThen$$mcID$$sp(scala.Function1) => scala.Function1<java.lang.Double, A>
+public scala.Function1 scala.runtime.AbstractFunction1.andThen$$mcFD$$sp(scala.Function1) => scala.Function1<java.lang.Double, A>
+public scala.Function1 scala.runtime.AbstractFunction1.andThen$$mcLD$$sp(scala.Function1) => scala.Function1<java.lang.Double, A>
+public scala.Function1 scala.runtime.AbstractFunction1.andThen$$mcDD$$sp(scala.Function1) => scala.Function1<java.lang.Double, A>
+public final void java.lang.Object.wait() throws java.lang.InterruptedException => void
+public final native void java.lang.Object.wait(long) throws java.lang.InterruptedException => void
+public final void java.lang.Object.wait(long,int) throws java.lang.InterruptedException => void
+public boolean java.lang.Object.equals(java.lang.Object) => boolean
+public native int java.lang.Object.hashCode() => int
+public final native java.lang.Class java.lang.Object.getClass() => java.lang.Class<?>
+public final native void java.lang.Object.notify() => void
+public final native void java.lang.Object.notifyAll() => void
+{code}

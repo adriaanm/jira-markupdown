@@ -1,0 +1,34 @@
+The following code is problematic:
+
+{code}
+abstract sealed class FinalResult[X]
+case class Error(msg:String) extends FinalResult[Nothing]
+case class Success[U](value:U) extends FinalResult[U]
+
+class A {
+    protected sealed abstract class BaseResult[X]    
+    protected case class Result[X](result:X) extends BaseResult[X]
+    protected case class NoResult(msg:String) extends BaseResult[Nothing]
+        
+    protected abstract class B[U] {              
+        protected def get:BaseResult[U]
+        def apply:FinalResult[U] = {
+            get match {
+              case r:NoResult => Error(r.msg)
+              case r:Result[U] => Success(r.result)
+            }
+        }
+    }
+}
+{code}
+
+It compiles, but with a warning about type erasure at line
+
+case r:Result[U] => Success(r.result)
+
+However, there doesn't seem to be any way to get rid properly of that warning except by writting
+
+case r:Result[_] => Success(r.result.asInstanceOf[U])
+
+which is long to write and involves an unrequired cast even though we are ensured that r.result cannot be anything but type U.
+

@@ -1,0 +1,52 @@
+spurious warning comes with following code
+
+{code}
+import akka.actor.Actor
+
+/**
+ * Created by tim on 23/09/14.
+ */
+class TestPF extends Actor {
+
+  val x: Receive = {
+    case "hi" => sender ! "hello"
+  }
+
+  val y: Receive = {
+    case "bye" => sender ! "farewell"
+  }
+
+  def receive =   { x orElse y }
+
+  def anotherReceive =   { x orElse y }
+
+  def variant2 : Receive =   { x orElse y }
+
+  def variant3: PartialFunction[Any, Unit] = x orElse y
+
+}
+{code}
+
+It gives rise to the following warning message
+
+{code}
+Warning:(22, 41) a type was inferred to be `Any`; this may indicate a programming error.
+  def variant2 : Receive =   { x orElse y }
+                                        ^
+{code}
+
+for all versions except variant3
+
+Since Receive is defined to be 
+
+{code}
+PartialFunction[Any, Unit]
+{code}
+
+this seems spurious.
+
+sbt compiler options:
+
+{code}
+scalacOptions := Seq("-feature" , "-deprecation" , "-encoding", "utf8" , "-Xlint")
+{code}

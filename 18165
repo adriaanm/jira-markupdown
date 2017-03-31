@@ -1,0 +1,34 @@
+There is no countBy function counting elements by grouping. 
+Here is an implicit definition using the groupBy function
+
+{code:title=simple example}
+implicit class CB[T] ( list: Seq[T] ) {
+    def countBy[S]( f:T=>S ) = 
+       list.groupBy(f).map{ case (t,liste) => (t,liste.size)} 
+}
+
+List(1,2,3).countBy( x => x%2 ) //> Map(1 -> 2, 0 -> 1)
+{code}
+
+It could be implemented next to groupBy-function
+
+{code:title=GenTraversableLike}
+trait GenTraversableLike[+A, +Repr] ...
+
+ def countBy[K](f: A => K): Map[K, Int]
+
+{code}
+
+{code:title=TraversableLike}
+trait TraversableLike[+A, +Repr] ...
+
+def countBy[K](f: A => K): immutable.Map[K, Int] = {
+   val m = mutable.Map.empty[K, Int]
+   for (elem <- this) {
+      val key = f(elem)
+      val count = m.getOrElse(key, 0)
+      m.put(key,count+1)
+   }
+   m.toMap
+}
+{code}

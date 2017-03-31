@@ -1,0 +1,20 @@
+It isn't ambiguous, because defined beats imported in the same scope. It is ambiguous if the definition is in an outer scope.
+{code}
+object Main extends App {
+  class A(val i: Int)
+  object A {
+    def A(i: Int): A = new A(i)
+  }
+
+  {
+    import A._
+    A(1).i
+    // ./a.scala:12: error: reference to A is ambiguous;
+    // it is both defined in object Main and imported subsequently by
+    // import A._
+    //     A(1).i
+    //     ^
+    // one error found
+  }
+}
+{code}

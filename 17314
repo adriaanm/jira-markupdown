@@ -1,0 +1,17 @@
+while refining my fix for SI-5739, I discovered case field accessors are not considered pure -- or so it seems...
+
+shouldn't the body of `emptyMethod` be completely empty when compiled with -optimize?
+
+{code}
+case class Foo(bla: Int, blaa: String)
+
+class Test {
+  val f = Foo(1, "1")
+  // when compiled with -optimize, this method's body should be empty
+  // however, both calls to the accessors survive (though they are not stored in local variables)
+  def emptyMethod = {
+    val x = f.bla // should be considered pure and be eliminated
+    val y = f.blaa
+  }
+}
+{code}

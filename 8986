@@ -1,0 +1,19 @@
+Here's a cut down reproduction.
+
+{code}
+trait Foo[F1[_]]
+trait Bar[F2[_]]
+ 
+class Test {
+  def barFoo[F3[_]]: Foo[F3] = ???
+
+  // Now we can define a couple of type aliases:
+  type M[X1] = String
+  type N[X2] = Bar[M]
+
+  // val ok1: Foo[N] = barFoo
+  // val ok2: Foo[({type L[X] = Bar[M]})#L] = barFoo[N]
+  val nok: Foo[({type L[X3] = Bar[M]})#L] = barFoo /* Type inference can't unify F with L */
+}
+
+{code}

@@ -1,0 +1,25 @@
+hi,
+
+the error message produced by this attempt:
+{code}
+object Test {
+   var syncID = 0
+   def test( x: Any ) = x match {
+      case Some( `syncID` ) => "Ja"
+      case _ => "Nein"
+   }
+}
+{code}
+is misleading: "not found: value syncID". instead it should say that syncID is not a stable identifier, so that one can use this fix:
+{code}
+object Test {
+   var syncID = 0
+   def test( x: Any ) = {
+      val stable = syncID
+      x match {
+         case Some( `stable` ) => "Ja"
+         case _ => "Nein"
+      }
+   }
+}
+{code}

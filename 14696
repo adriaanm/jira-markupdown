@@ -1,0 +1,26 @@
+Per r18429, Miles have commented:
+
+          // This logic moved here from scala.tools.nsc.dependencies.File.
+          // Note that it will trip an assertion in lookupPathUnchecked
+          // if the path being looked at is absolute.
+
+I encountered this now. When I add -make:changed or not "all" param for scalac ant task and build from ant, there will be a ".scala_dependencies" created with absolute paths:
+
+{code}
+$$ cat .scala_dependencies
+/Users/dcaoyuan/myapps/scala/lib/scala-library.jar:/Users/dcaoyuan/myapps/scala/lib/scala-compiler.jar:/Users/dcaoyuan/NetBeansProjects/ScalaAntTest/build
+-------
+/Users/dcaoyuan/NetBeansProjects/ScalaAntTest/src/scalaanttest/Main.scala -> /Users/dcaoyuan/NetBeansProjects/ScalaAntTest/src/scalaanttest/Main.scala
+/Users/dcaoyuan/NetBeansProjects/ScalaAntTest/src/scalaanttest/A.scala -> /Users/dcaoyuan/NetBeansProjects/ScalaAntTest/src/scalaanttest/B.scala
+/Users/dcaoyuan/NetBeansProjects/ScalaAntTest/src/scalaanttest/A.scala -> /Users/dcaoyuan/NetBeansProjects/ScalaAntTest/src/scalaanttest/A.scala
+-------
+/Users/dcaoyuan/NetBeansProjects/ScalaAntTest/src/scalaanttest/Main.scala -> /Users/dcaoyuan/NetBeansProjects/ScalaAntTest/build/scalaanttest/Main$$.class
+/Users/dcaoyuan/NetBeansProjects/ScalaAntTest/src/scalaanttest/Main.scala -> /Users/dcaoyuan/NetBeansProjects/ScalaAntTest/build/scalaanttest/Main$$$$anonfun$$lookupPathUnchecked$$1.class
+/Users/dcaoyuan/NetBeansProjects/ScalaAntTest/src/scalaanttest/Main.scala -> /Users/dcaoyuan/NetBeansProjects/ScalaAntTest/build/scalaanttest/Main$$$$anonfun$$toFile$$1$$1.class
+/Users/dcaoyuan/NetBeansProjects/ScalaAntTest/src/scalaanttest/Main.scala -> /Users/dcaoyuan/NetBeansProjects/ScalaAntTest/build/scalaanttest/Main.class
+/Users/dcaoyuan/NetBeansProjects/ScalaAntTest/src/scalaanttest/Main.scala -> /Users/dcaoyuan/NetBeansProjects/ScalaAntTest/build/scalaanttest/Main$$$$anonfun$$lookup$$1.class
+/Users/dcaoyuan/NetBeansProjects/ScalaAntTest/src/scalaanttest/A.scala -> /Users/dcaoyuan/NetBeansProjects/ScalaAntTest/build/scalaanttest/A.class
+/Users/dcaoyuan/NetBeansProjects/ScalaAntTest/src/scalaanttest/B.scala -> /Users/dcaoyuan/NetBeansProjects/ScalaAntTest/build/scalaanttest/B.class
+{code} 
+
+So, how to handle this when use ant scalac task?

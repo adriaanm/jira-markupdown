@@ -1,0 +1,17 @@
+Enter the following sequence in the REPL:
+
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
+val f = Future { 4 / 0 }
+for (exc <- f.failed) println(exc)
+val f = Future { 4 / 2 }
+val f = Future { 4 / 0 }
+for (exc <- f.failed) println(exc)
+val f = Future { 4 / 0 }
+
+The last line will evaluate as:
+
+scala> val f = Future { 4 / 0 }
+f: scala.concurrent.Future[Int] = List()
+
+which is not possible as an empty list is not a Future.

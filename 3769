@@ -1,0 +1,20 @@
+So... this one is a bit subtle.   It looks like the rule of 3 applies here.  If I have a generic class with a generic method, then I need a third method that also has generics to get the invalid signature.   Here's my simplifying from Option what will cause the problematic classfile to be generated:
+
+{code}
+class A[U] { 
+   def bar[B >: U](x : => B) = x
+   def foo[C >: U](c : C) : C = bar(c)
+}
+{code}
+
+Leads to the ever-so-helpful message:
+{{jsuereth@jsuereth-laptop:~/projects/blog/type-fun$$ scalac dummy.scala 
+jsuereth@jsuereth-laptop:~/projects/blog/type-fun$$ javac -cp .:/home/jsuereth/projects/scala/scala/build/quick/classes/library/ -Xprint A
+error: cannot access A.$$anonfun$$foo$$1
+bad class file: ./A$$$$anonfun$$foo$$1.class
+undeclared type variable: C
+Please remove or make sure it appears in the correct subdirectory of the classpath.
+1 error
+{code}
+
+I tried reproducing without having the extra method and was unable to.  Something about the generic method that is auto-lifting the closure for another generic method is bypassing the logic Adrian added.   If you'd like me to some more investigated here, please let me know.

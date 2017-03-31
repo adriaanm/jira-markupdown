@@ -1,0 +1,25 @@
+Interesting consequence of stream's nonlazyinheadiness.  Doubt we can do anything about it, but it's unfortunate because toStream fails in two ways, relative to what you'd want, or I'd want anyway.
+
+1) I want calling toStream to reserve the iterator for that stream.  Off limits to anyone else.  But of course, without forcing its evaluation.
+
+2) I want calling toStream to communicate my desire to memoize the iterator, but without evaluating any elements.
+
+{code}
+iterator 
+it: Iterator[Int] = non-empty iterator
+
+scala> val s1 = it.toStream
+s1: Stream[Int] = Stream(1, ?)
+
+scala> val s2 = it.toStream
+s2: Stream[Int] = Stream(2, ?)
+
+scala> s1 foreach println
+1
+3
+4
+
+scala> s2 foreach println
+2
+
+{code}

@@ -1,0 +1,21 @@
+This issue is related to changes made under ticket SI-1303 where several default implementations for implicit parameters were created for common objects; however, there is no default support for the Ordered trait or java.lang.Comparable. Below is example code (modeled after a 2.7.5 to 2.8.0 "regression" found in the sbaz code base):
+
+File name: src/bug.scala
+{code}
+package top
+
+class Text(val value: String) extends Ordered[Text] {
+  def compare(that: Text) = value.compare(that.value)
+}
+
+object Index {
+  import scala.collection.immutable.TreeMap
+  val tree = TreeMap.empty[Text, String]
+}
+{code}
+
+Compiling this yields the following error with 2.8.0:
+{code}
+src/bug.scala:9: error: could not find implicit value for parameter ord:Ordering[top.Text].
+  val tree = TreeMap.empty[Text, String]
+{code}

@@ -1,0 +1,24 @@
+The sort never terminates on this particular array. If make minor tweaks, like adding a 1.0 to the front, it terminates. (You may argue that NaN leaves sorting undefined, but other sorting I've seen on various platforms do not share this problem.)
+
+{code}
+import scala.util._
+
+// bug: the sort doesn't terminate with such types of arrays.
+
+object SortingDoubles extends Application {
+  val xs = Array(
+    3.4054752250314283E9,
+    4.9663151227666664E10,
+    0.0/0.0,
+    4.9663171987125E10,
+    5.785996973446602E9,
+    0.0/0.0,
+    3.973064849653333E10,
+    3.724737288678125E10,
+    0.0/0.0,
+    0.0/0.0
+  )
+
+  Sorting quickSort xs.toArray
+}
+{code}

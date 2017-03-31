@@ -1,0 +1,30 @@
+Yet another related issue: the classfile parser adds {{scala.annotation.Annotation}} as superclass for Java annotations, so the following compiles, but generates invalid bytecode:
+
+{code}
+object Test extends App {
+  def foo(a: JavaAnnot): scala.annotation.Annotation = a
+}
+{code}
+
+{noformat}
+➜  sandbox git:(t9393) ✗ scalac Test.scala
+➜  sandbox git:(t9393) ✗ scala Test
+java.lang.VerifyError: Bad return type
+Exception Details:
+  Location:
+    Test$.foo(LJavaAnnot;)Lscala/annotation/Annotation; @1: areturn
+  Reason:
+    Type 'JavaAnnot' (current frame, stack[0]) is not assignable to 'scala/annotation/Annotation' (from method signature)
+  Current Frame:
+    bci: @1
+    flags: { }
+    locals: { 'Test$', 'JavaAnnot' }
+    stack: { 'JavaAnnot' }
+  Bytecode:
+    0x0000000: 2bb0
+
+	at Test.main(Test.scala)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+{noformat}
+
+GenBCode catches the problem at bytecode generation time and crashes with an assertion error.

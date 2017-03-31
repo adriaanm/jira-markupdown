@@ -1,0 +1,46 @@
+This seems related to: SI-8219
+
+*Reproduce code:*
+{code}
+  case class Foo[+T[_]](activity:T[Long])
+  type Cell[T] = T
+  def insertCell(u:Foo[Cell]) = ???
+  insertCell(Foo(5))
+{code}
+
+*Expected result:*
+Type error with line numer.
+
+*Actual result:*
+{noformat}
+[error] type mismatch;
+[error]  found   : Long
+[error]  required: ?T
+[error] Note that implicit conversions are not applicable because they are ambiguous:
+[error]  both method longWrapper in class LowPriorityImplicits of type (x: Long)scala.runtime.RichLong
+[error]  and method any2Ensuring in object Predef of type [A](x: A)Ensuring[A]
+[error]  are possible conversion functions from Long to ?T
+{noformat}
+
+It seems to be related to using a type alias and a long. Those all produce type errors with line numbers:
+
+{code}
+  case class Foo2[+T[_]](color:T[String])
+  def insertCell2(u:Foo2[Cell]) = ???
+  insertCell2(Foo2("color"))
+
+  def insertOption(u:Foo[Option]) = ???
+  insertOption(Foo(5))
+
+  def insertOption2(u:Foo2[Option]) = ???
+  insertOption2(Foo2("color"))
+{code}
+
+Another code sample that produces the same error message without line number:
+{code}
+  class DefaultType[Name]
+  case class Foo[+T[_]](
+    activity:T[Long]
+  )(t:DefaultType[T[_]])
+  Foo(3)(new DefaultType[Option[_]])
+{code}

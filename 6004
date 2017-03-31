@@ -1,0 +1,7 @@
+(In r24962) Fix for Iterator flattening regression.  Not sure what happened,
+but my theory is that ++ takes a by name argument, but doing a foldLeft
+and using ++ to join creates a closure which loses the by-nameness.
+If this theory is correct that's an ugly trap.
+
+Not sure how I write a test against this sort of thing? Will take
+pointers.  For now, closes SI-4582, no review.

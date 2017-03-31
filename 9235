@@ -1,0 +1,27 @@
+{quote}
+ Notice the usage of Any, which is kind-polymorphic, a code phrase which means "there will be bugs" in the mother tongue
+{quote}
+
+{{Any}} is a bit of a red herring there, the for type checking higher kinded types, expected kind is sneakily encoded an expected type (ie {{pt}}). In that encoding, the return type is unused.
+
+What happens is that we have a higher kinded type ref encoded (again) as an {{AliasTypeRef}} without args. This can't be dealiased, the only way to reveal anything further is via {{etaExpand}} (which is behind {{normalize}} for these.
+
+For example:
+
+{code}
+type L[X] = Any
+// <L>.dealias eq <L>
+// <L>.etaExpand == <[X]Any>
+{code}
+
+I'm not sure what conclusions to draw from all of this. Maybe a split `AliasTypeRef` into a HK and regular version?
+
+I'm running a test now to see with:
+
+{code}
+    final def typeParamsMatchArgs  = if (typeParamsMatchArgs0) true
+                                     else if (isHigherKinded && args.isEmpty) false
+                                     else { debugwarn(s"$this.typeParamsMatchArgs = false for non-higher-kinded type"); false}
+{code}
+
+to see if there are any ground type refs that that get into this spot.

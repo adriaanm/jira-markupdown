@@ -1,0 +1,15 @@
+In the meanwhile you can use this workaround to get to the list of symbols defined in repl and to import them explicitly in your toolbox:
+
+{code}
+scala> val replClassloader = Thread.currentThread().getContextClassLoader
+replClassloader: ClassLoader = scala.tools.nsc.interpreter.IMain$TranslatingClassLoader@197b59e2
+
+scala> val outerField = replClassloader.getClass.getFields.head
+outerField: java.lang.reflect.Field = public final scala.tools.nsc.interpreter.IMain scala.tools.nsc.interpreter.IMain$TranslatingClassLoader.$outer
+
+scala> val interpreter = outerField.get(replClassloader).asInstanceOf[scala.tools.nsc.interpreter.IMain]
+interpreter: scala.tools.nsc.interpreter.IMain = scala.tools.nsc.interpreter.ILoop$ILoopInterpreter@7c4e758a
+
+scala> interpreter.definedSymbolList
+res1: List[interpreter.memberHandlers.intp.global.Symbol] = List(value $intp, value cm, value rm, value tb, method mirrorThatLoaded, class iw$SymbolFlags, class iw$TypeFlags, value replClassloader, value outerField, value interpreter)
+{code}

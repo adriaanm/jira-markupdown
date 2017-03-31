@@ -1,0 +1,46 @@
+Here's a fun technique to facilitate experimentation with `invokeExact` *without* resorting to writing Java code!
+
+{code}
+scala> :paste -raw
+// Entering paste mode (ctrl-D to finish)
+
+package pack { object O { private def foo = "foo"; val lookup = java.lang.invoke.MethodHandles.lookup } }
+
+// Exiting paste mode, now interpreting.
+
+scala> val mt = java.lang.invoke.MethodType.methodType(classOf[String], Array[Class[_]]())
+mt: java.lang.invoke.MethodType = ()String
+
+scala> val mh = pack.O.lookup.findVirtual(pack.O.getClass, "foo", mt)
+mh: java.lang.invoke.MethodHandle = MethodHandle(O$)String
+
+scala> mh.invokeExact(pack.O) // won't work as Scala doesn't respect the @PolymorphicSignature of invokeExact
+java.lang.invoke.WrongMethodTypeException: expected (O$)String but found (Object[])Object
+  at java.lang.invoke.Invokers.newWrongMethodTypeException(Invokers.java:340)
+  at java.lang.invoke.Invokers.checkExactType(Invokers.java:351)
+  ... 33 elided
+
+scala> :power
+** Power User mode enabled - BEEP WHIR GYVE **
+** :phase has been set to 'typer'.          **
+** scala.tools.nsc._ has been imported      **
+** global._, definitions._ also imported    **
+** Try  :help, :vals, power.<tab>           **
+
+scala> val invokeExact = typeOf[java.lang.invoke.MethodHandle].member(TermName("invokeExact"))
+invokeExact: $r.intp.global.Symbol = method invokeExact
+
+scala> val origInfo = invokeExact.info
+origInfo: $r.intp.global.Type = (x$1: Object*)Object
+
+scala> val newInfo = JavaMethodType(invokeExact.newValueParameter(TermName("x")).setInfo(typeOf[pack.O.type]) :: Nil, StringTpe)
+newInfo: $r.intp.global.JavaMethodType = (x: pack.O.type)String
+
+scala> invokeExact.setInfo(newInfo)
+res1: invokeExact.type = method invokeExact
+
+scala> mh.invokeExact(pack.O) // Let's try again!
+res2: String = foo
+{code}
+
+I was messing around with `MethodHandle`s looking for ways to use access private methods without our usual mangling and publicising. Each Scala class that needs to expose its privates could publish a single, static, SYNTHETIC field named '$LOOKUP'. We could use a static cache for the MethodHandle at each call site, much like we do for structural types.

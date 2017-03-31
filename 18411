@@ -1,0 +1,26 @@
+You can't try enteringPhase with phases that aren't in the current run.
+
+The current crash is at Global#Run#resetPackageClass, which has the comment, "Reset package class to state at typer (not sure what this is needed for?)."
+
+A similar bug was fixed at
+
+https://github.com/scala/scala/commit/541a6692c2b4124491fa43fe3a1455c9cf7d7042
+
+But I think even that fix assumes there are no phases between parser and namer, which ain't necessarily so.  stopPhase means the stop-before is exactly that phase, but you could -Ystop-before:my-post-parser so that there is no namer.
+
+So the useful idiom might be something like, enteringPhaseOrError or enteringPhaseMaybe, depending on whether it's OK to omit the work unit in this run.  Rather than assert and crash.
+
+{code}
+apm@mara:~/tmp$ scalac -Ydebug -Ystop-after:namer trivial.scala 
+[running phase parser on trivial.scala]
+[running phase namer on trivial.scala]
+error: 
+     while compiling: trivial.scala
+        during phase: global=terminal, atPhase=namer
+     library version: version 2.10.1
+    compiler version: version 2.10.1
+  reconstructed args: -Ydebug -deprecation -feature -Ystop-after:namer
+{code}
+
+
+

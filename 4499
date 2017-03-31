@@ -1,0 +1,11 @@
+This is a corner case for implicit search which was not specified before. The added specification is below. It does exclude the case of class B, though. So the behavior is as expected.
+
+Views are applied in three situations.
+...
+
+3. In a selection $$e.m(\args)$$ with $$e$$ of type $$T$$, if the selector
+$$m$$ denotes some member(s) of $$T$$, but none of these members is applicable to the arguments $$\args$$. In this case a view $$v$$ is searched which is applicable to $$e$$ 
+and whose result contains a method $$m$$ which is applicable to $$\args$$.
+The search proceeds as in the case of implicit parameters, where
+the implicit scope is the one of $$T$$.  If such a view is found, the
+selection $$e.m$$ is converted to \lstinline@$$v$$($$e$$).$$m(\args)$$@.

@@ -1,0 +1,27 @@
+I should mention that changing test2/Test.java to pass generic parameters to Map like:
+
+{code}
+package test2;
+
+import test.Map;
+
+public class Test implements Map<String, String> {
+  public Map.MapTo plus(String o) {
+  }
+}
+{code}
+
+results in a similar (but not the same) error:
+
+{code}
+javac -cp scala-library.jar:. test2/Test.java
+test2/Test.java
+test2/Test.java:5: cannot access test.Map$$Map$$MapTo
+class file for test.Map$$Map$$MapTo not found
+public class Test implements Map<String, String> {
+       ^
+test2/Test.java:6: plus(java.lang.String) in test2.Test cannot implement plus(A) in test.Map; attempting to use incompatible return type
+found   : test.Map.MapTo
+required: test.Map$$Map$$MapTo
+  public Map.MapTo plus(String o) {
+{code}

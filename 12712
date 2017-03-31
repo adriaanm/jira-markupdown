@@ -1,0 +1,72 @@
+Darn. We had to change the encoding somewhat late in the 2.12 cycle to avoid a security problem. Each class that defines serializable lambdas has to pass a array of its lambda implementation methods into its lambda deserializer, which in turn ensures that only these are used to back reconstituted lambdas. The boostrap method that initializes this accepts a trailing varargs parameter, but I wasn't aware that the number of elements in this was limited as though it was a regular varargs call.
+
+I notice that Java9's latest bootstrap method also has to workaround these limitations: http://download.java.net/java/jdk9/docs/api/java/lang/invoke/StringConcatFactory.html
+
+{quote}
+There is a JVM limit (classfile structural constraint): no method can call with more than 255 slots. This limits the number of static and dynamic arguments one can pass to bootstrap method. Since there are potential concatenation strategies that use MethodHandle combinators, we need to reserve a few empty slots on the parameter lists to capture the temporal results. This is why bootstrap methods in this factory do not accept more than 200 argument slots. Users requiring more than 200 argument slots in concatenation are expected to split the large concatenation in smaller expressions
+{quote}
+
+To fix this, we need to chunk the method handle array groups < (255 - 3) elements (or so), and emit additional calls to a new bootstrap method for groups 2 and above. The new bootstrap method can mutate the map of allowed target methods.
+
+Something like:
+
+{code}
+diff --git a/src/library/scala/runtime/LambdaDeserialize.java b/src/library/scala/runtime/LambdaDeserialize.java
+index 4c5198cc48..86def273ae 100644
+--- a/src/library/scala/runtime/LambdaDeserialize.java
++++ b/src/library/scala/runtime/LambdaDeserialize.java
+@@ -6,6 +6,7 @@ import java.util.HashMap;
+
+ public final class LambdaDeserialize {
+     public static final MethodType DESERIALIZE_LAMBDA_MT = MethodType.fromMethodDescriptorString("(Ljava/lang/invoke/SerializedLambda;)Ljava/lang/Object;", LambdaDeserialize.class.getClassLoader());
++    public static final MethodType ADD_TARGETS_MT = MethodType.fromMethodDescriptorString("(Ljava/lang/invoke/MethodHandle;)V", LambdaDeserialize.class.getClassLoader());
+
+     private MethodHandles.Lookup lookup;
+     private final HashMap<String, MethodHandle> cache = new HashMap<>();
+@@ -15,6 +16,10 @@ public final class LambdaDeserialize {
+     private LambdaDeserialize(MethodHandles.Lookup lookup, MethodHandle[] targetMethods) {
+         this.lookup = lookup;
+         targetMethodMap = new HashMap<>(targetMethods.length);
++        addTargets(lookup, targetMethods);
++    }
++
++    private void addTargets(MethodHandles.Lookup lookup, MethodHandle[] targetMethods) {
+         for (MethodHandle targetMethod : targetMethods) {
+             MethodHandleInfo info = lookup.revealDirect(targetMethod);
+             String key = nameAndDescriptorKey(info.getName(), info.getMethodType().toMethodDescriptorString());
+@@ -32,6 +37,12 @@ public final class LambdaDeserialize {
+         MethodHandle exact = deserializeLambda.bindTo(new LambdaDeserialize(lookup, targetMethods)).asType(invokedType);
+         return new ConstantCallSite(exact);
+     }
++    public static CallSite bootstrap2(MethodHandles.Lookup lookup, String invokedName,
++                                      MethodType invokedType, MethodHandle... targetMethods) throws Throwable {
++        MethodHandle addTargets = lookup.findVirtual(LambdaDeserialize.class, "addTargets", ADD_TARGETS_MT);
++        MethodHandle exact = MethodHandles.insertArguments(addTargets, 0, (Object) targetMethods).asType(invokedType);
++        return new ConstantCallSite(exact);
++    }
+     public static String nameAndDescriptorKey(String name, String descriptor) {
+         return name + descriptor;
+     }
+{code}
+
+{code}
+--- sandbox/test2.txt	2017-03-17 14:46:01.000000000 +1000
++++ sandbox/test.txt	2017-03-17 14:49:11.000000000 +1000
+@@ -1,6 +1,10 @@
+   private static java.lang.Object $deserializeLambda$(java.lang.invoke.SerializedLambda);
+     Code:
+        0: aload_0
+-       1: invokedynamic #1240,  0           // InvokeDynamic #219:lambdaDeserialize:(Ljava/lang/invoke/SerializedLambda;)Ljava/lang/Object;
+-       6: areturn
+-       
++       1: invokedynamic #1240,  0           // InvokeDynamic #219:initSerializer:(Ljava/lang/invoke/SerializedLambda;)Lscala/runtime/LambdaDeserializer;
++       2: invokedynamic #1241,  0           // InvokeDynamic #220:addTargets:(Lscala/runtime/LambdaDeserializer;)V; 
++       3: invokedynamic #1242,  0           // InvokeDynamic #220:addTargets:(Lscala/runtime/LambdaDeserializer;)V;
++       4. aload_0
++       5. aload_1
++       6: invokevirtual                     // Lscala/runtime/LambdaDeserializer.deserialize;
++       7: areturn
+
+{code}
+
+Unfortunately this does't look possible in totally binary compatible manner; deserialization of lambdas compiled with 2.12.3 (let's say that's when we ship the fix), won't work when run with an older scala-library.jar, even for classes that didn't hit this limit. 

@@ -1,0 +1,25 @@
+{code}
+trait Parent {
+ type Test[A, H[B <: A]]
+}
+trait Sub extends Parent {
+ type Test[A, H[B <: A]] = A
+}
+{code}
+
+should type check, but instead complains:
+
+{code}
+Top.scala:5: The kind of type Test does not conform to the expected kind of
+type Test[A,H[B <: A]] in trait Parent.
+Sub.this.Test's type parameters do not match type Test's expected parameters:
+type B (in trait Sub)'s bounds >: Nothing <: A are stricter than type B (in
+trait Parent)'s declared bounds >: Nothing <: A
+ type Test[A, H[B <: A]] = A
+      ^
+{code}
+
+the problem is likely in this line in Infer.scala:
+{code}
+if (!(transform(hkparam.info.instantiateTypeParams(tparams, targs).bounds.substSym(hkparams, hkargs), paramowner) <:< transform(hkarg.info.bounds, owner)))
+{code}

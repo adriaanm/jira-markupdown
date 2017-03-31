@@ -1,0 +1,33 @@
+This looks worse the longer I look at it.  I have to find out exactly in what ways people are successfully using scala from java to have some change of making sense of this.  Neither of these classes can be instantiated from java as-is.
+{code}
+abstract class BippyAbstract[+A] extends collection.Traversable[A] {
+  def foreach[U](f: A => U): Unit = ()
+}
+
+class BippyConcrete[+A] extends collection.Traversable[A] {
+  def foreach[U](f: A => U): Unit = ()
+}  
+{code}
+The interestingly different errors are:
+{code}
+% javac -cp /scala/inst/29/lib/scala-library.jar:. J.java 
+J.java:5: <anonymous J$$1> is not abstract and does not override abstract method <A1,A2,A3>unzip3(scala.Function1<java.lang.String,scala.Tuple3<A1,A2,A3>>) in scala.collection.generic.GenericTraversableTemplate
+  BippyAbstract<String> b1 = new BippyAbstract<String>() {
+                                                         ^
+J.java:11: scala.collection.generic.HasNewBuilder cannot be inherited with different arguments: <java.lang.String,scala.collection.Traversable<java.lang.String>> and <java.lang.String,scala.collection.Traversable>
+  BippyConcrete<String> b2 = new BippyConcrete<String>() {
+                                                         ^
+2 errors  
+{code}
+These issues go back as far as I look, for instance here is 2.7:
+{code}
+  J.java:5: <anonymous J$$1> is not abstract and does not override abstract method <B>toArray() in scala.collection.Set
+    BippyAbstract<String> b1 = new BippyAbstract<String>() {
+                                                           ^
+  J.java:11: toArray() in BippyConcrete cannot implement <B>toArray() in scala.collection.Set; attempting to use incompatible return type
+  found   : scala.runtime.BoxedArray
+  required: B[]
+    BippyConcrete<String> b2 = new BippyConcrete<String>() {
+                                                           ^ 
+{code}
+So what exactly is it that people do from java? Do they only call methods? What do we think ought to work, and what is beyond hope?

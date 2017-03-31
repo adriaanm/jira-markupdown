@@ -1,0 +1,59 @@
+The following code makes the compiler crash:
+
+  implicit def foo[T]: T = null
+
+If you fix the type bound, no crash occurs:
+
+  implicit def foo[T >: Null]: T = null
+
+scalac crash log:
+
+  Exception in thread "main" java.lang.StackOverflowError
+        at scala.tools.nsc.symtab.Types$$class.isSubType0(Types.scala:3421)
+        at scala.tools.nsc.symtab.Types$$class.isSubType(Types.scala:3387)
+        at scala.tools.nsc.symtab.SymbolTable.isSubType(SymbolTable.scala:12)
+        at scala.tools.nsc.symtab.Types$$Type.$$less$$colon$$less(Types.scala:482)
+        at scala.tools.nsc.typechecker.Typers$$Typer.adapt(Typers.scala:750)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3132)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typedQualifier(Typers.scala:3184)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:3047)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3130)
+        at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$typedApply$$1$$1.apply(Typers.scala:2427)
+        at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$typedApply$$1$$1.apply(Typers.scala:2427)
+        at scala.tools.nsc.typechecker.Typers$$Typer.silent(Typers.scala:574)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typedApply$$1(Typers.scala:2427)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:3027)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typedImplicit(Typers.scala:3282)
+        at scala.tools.nsc.typechecker.Typers$$Typer.isApplicable$$1(Typers.scala:3369)
+        at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$62.apply(Typers.scala:3371)
+        at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$62.apply(Typers.scala:3371)
+        at scala.List.filter(List.scala:771)
+        at scala.tools.nsc.typechecker.Typers$$Typer.applicableInfos$$1(Typers.scala:3371)
+        at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$63.apply(Typers.scala:3376)
+        at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$63.apply(Typers.scala:3376)
+        at scala.List.map(List.scala:724)
+        at scala.tools.nsc.typechecker.Typers$$Typer.searchImplicit$$1(Typers.scala:3376)
+        at scala.tools.nsc.typechecker.Typers$$Typer.inferImplicit(Typers.scala:3425)
+        at scala.tools.nsc.typechecker.Typers$$Typer.scala$$tools$$nsc$$typechecker$$Typers$$Typer$$$$inferView(Typers.scala:168)
+        at scala.tools.nsc.typechecker.Typers$$Typer.inferView(Typers.scala:191)
+        at scala.tools.nsc.typechecker.Typers$$Typer.adaptToMember(Typers.scala:826)
+        at scala.tools.nsc.typechecker.Typers$$Typer.adaptToName(Typers.scala:835)
+        at scala.tools.nsc.typechecker.Typers$$Typer.applyMeth$$1(Typers.scala:672)
+        at scala.tools.nsc.typechecker.Typers$$Typer.applyPossible$$1(Typers.scala:676)
+        at scala.tools.nsc.typechecker.Typers$$Typer.adapt(Typers.scala:732)
+        at scala.tools.nsc.typechecker.Typers$$Typer.adapt(Typers.scala:639)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3132)
+        at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$typedApply$$1$$1.apply(Typers.scala:2427)
+        at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$typedApply$$1$$1.apply(Typers.scala:2427)
+        at scala.tools.nsc.typechecker.Typers$$Typer.silent(Typers.scala:574)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typedApply$$1(Typers.scala:2427)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:3027)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typedImplicit(Typers.scala:3282)
+        at scala.tools.nsc.typechecker.Typers$$Typer.isApplicable$$1(Typers.scala:3369)
+        at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$62.apply(Typers.scala:3371)
+        at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$62.apply(Typers.scala:3371)
+        at scala.List.filter(List.scala:771)
+        at scala.tools.nsc.typechecker.Typers$$Typer.applicableInfos$$1(Typers.scala:3371)
+        at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$63.apply(Typers.scala:3376)
+        at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$63.apply(Typers.scala:3376)
+        at scala.List.map(List.scala:724)

@@ -1,0 +1,17 @@
+Type aliases have to live somewhere. If it has to capture a class type parameter, and you want to use it through a template, it has to be a member. When you make something a member, you have to make decisions about its visibility.
+
+If there are bugs with `private[this]` and type members, please lodge them. It would be timely as I've just given findMember an overhaul which flushed out a few problems.
+
+Now, while its true that you can sometimes work around a bug by adding some tactical dealias-es around the compiler (as in your patch for SI-8177), that doesn't mean that its the right approach. `tp.dealias.memberType(sym)` might work around a problem with `tp.memberType(sym).dealias`, but we have to get to the root of the problem.
+
+In SI-8177, that seemed to be two problems: 1) the assumption that if a type is a subtype of a refinement class it must also be a subclass of the corresponding refinement class symbols; and 2) refinement class symbols of synthetic getters had incoherent owners (and I'll wager at even money that separate compilation could exhibit the same symptom.) The first is easy enough to fix, but the second seemed riskier.
+
+For this bug, we have to answer: Why is the restriction on dependent method type instantiation in place? What are the range of unsound programs that it prevents? What are examples of sound programs that it prevents? Can we find a better rule?
+
+Oh btw, in:
+
+{code}
+def g2 = f2(Array(1))({ val x = arrayTypeClass[Int]; (x: x.type) }) has 2
+{code}
+
+I'm a touch surprised that the argument tree is considered stable. I would have expected it to be typed with `x.type forSome { val x: TC[Int] }` so as not to leak a references to the locally scoped `x`.

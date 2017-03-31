@@ -1,0 +1,33 @@
+Polymorphic
+
+{code}
+trait Base[@specialized B] {
+  def default: B;
+}
+
+trait D1 extends Base[Double] {
+  override def default = 0.0;
+}
+
+class D2 extends D1  {
+  override def default: Double = 1.0;
+}
+
+val d2 = new D2
+
+assert(d2.default == 1.0, "d2.default == 0.0")
+assert((d2: Base[_]).default == 1.0, "d2: Base[_]).default == 0.0")
+
+// this fails!
+assert((d2: D1).default == 1.0, "(d2: D1).default == 1.0")
+{code}
+
+Gives:
+
+{code}
+ ~/code/scratch: scala -version
+Scala code runner version 2.8.0.RC2 -- Copyright 2002-2010, LAMP/EPFL
+ ~/code/scratch: scala -no-specialization override-default.scala 
+ ~/code/scratch: scala override-default.scala 
+java.lang.AssertionError: assertion failed: (d2: D1).default == 1.0
+{code}

@@ -1,0 +1,31 @@
+I changed: 
+
+{code}
+@OneToMany{val mappedBy="parentObject", val targetEntity=classOf[ChildObject]} 
+var models: Set[ChildObject] = new HashSet[ChildObject] 
+{code}
+
+Here we are using java.util.Set and java.util.HashSet to keep a list of child objects against a parent object. 
+
+I updated the annotation to work with 2.8.0: 
+
+{code}
+@OneToMany(mappedBy="parentObject", targetEntity=classOf[ChildObject]) 
+var models: Set[ChildObject] = new HashSet[ChildObject] 
+{code}
+
+In addition I am using 2.8.0-SNAPSHOT in my pom.xml.
+
+Now I am getting the following Hibernate error: 
+
+{code}
+Caused by: org.hibernate.MappingException: Could not determine type for: java.util.Set, at table: PARENT_OBJECT, for columns: [org.hibernate.mapping.Column(models)] 
+        at org.hibernate.mapping.SimpleValue.getType(SimpleValue.java:269) 
+        at org.hibernate.mapping.SimpleValue.isValid(SimpleValue.java:253) 
+        at org.hibernate.mapping.Property.isValid(Property.java:185) 
+        at org.hibernate.mapping.PersistentClass.validate(PersistentClass.java:440) 
+        at org.hibernate.mapping.RootClass.validate(RootClass.java:192) 
+        at org.hibernate.cfg.Configuration.validate(Configuration.java:1108) 
+        at org.hibernate.cfg.Configuration.buildSessionFactory(Configuration.java:1293) 
+        at org.hibernate.cfg.AnnotationConfiguration.buildSessionFactory(AnnotationConfiguration.java:859) 
+{code}

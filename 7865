@@ -1,0 +1,43 @@
+Change (T ⇒ BoxedUnit) to AbstractFunction1[T, BoxedUnit] and you are good to go on both 2.9.2 and 2.10.x. The complete example:
+{code:title=t5976.scala}
+import scala.runtime.BoxedUnit
+import scala.runtime.AbstractFunction1
+
+object japi {
+@deprecated("Do not use this directly, use subclasses of this", "2.0")
+  class UnitFunctionBridge[-T] extends AbstractFunction1[T, BoxedUnit] {
+    override final def apply(t: T): BoxedUnit = {
+      internal(t)
+      BoxedUnit.UNIT
+    }
+    protected def internal(result: T): Unit = ()
+  }
+}
+
+abstract class Foreach[-T] extends japi.UnitFunctionBridge[T] {
+  override final def internal(t: T): Unit = each(t)
+
+  /**
+   * This method will be invoked once when/if a Future that this callback is registered on
+   * becomes successfully completed
+   */
+  @throws(classOf[Throwable])
+  def each(result: T): Unit
+}
+
+class Future[T] { def foreach[U](f: T => U): U = sys.error("foo") }
+{code}
+
+and:
+{code:title=Test.java}
+public class Test {
+  public void mustBeAbleToForeachAFuture(Future<String> f) throws Throwable {
+    f.foreach(new Foreach<String>() {
+      public void each(String future) {
+      }
+    });
+  }
+}
+{code}
+
+Closing this as Not a bug because I don't believe there's actual bug here and there's an easy work-around present. Maybe we should generate bridge methods in UnitFunctionBridge but I'm not sure.

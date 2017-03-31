@@ -1,0 +1,59 @@
+=== What steps will reproduce the problem? ===
+{code}
+scala> object test {
+     |   import A._
+     |   class A(b: B = new A.B())
+     |   object A {
+     |     class B
+     |     new A() //  found   : test.A#B, required: test.A.B
+     |   }
+     | }
+<console>:12: error: type mismatch;
+ found   : test.A#B
+ required: test.A.B
+Error occurred in an application involving default arguments.
+           new A() //  found   : test.A#B, required: test.A.B
+           ^
+{code} 
+
+=== What is the expected behavior? ===
+
+{code}
+scala> object test {
+     |   class A(b: A.B = new A.B())
+     |   object A {
+     |     class B
+     |     new A() // okay
+     |   }
+     | }
+defined module test
+
+scala>
+
+scala> object test {
+     |   import A._
+     |   class A(b: B)
+     |   object A {
+     |     class B
+     |     new A(new B()) // okay
+     |   }
+     | }
+defined module test
+
+scala>
+
+scala> object test {
+     |   import C._
+     |   class A(b: B = new C.B())
+     |   object C {
+     |     class B
+     |     new A() //  okay
+     |   }
+     | }
+defined module test
+{code}
+
+It seems to need the combination of the companion object and an import to trigger the problem.
+
+=== What versions of the following are you using? ===
+  - Scala: 2.8.1, 2.9.0.RC1

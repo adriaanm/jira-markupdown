@@ -1,0 +1,107 @@
+Backing out the part of Viktor's SIP-14++ that caps the number of created threads is sufficient to get this working again:
+
+{code}
+% git diff -U50
+diff --git a/src/library/scala/concurrent/impl/ExecutionContextImpl.scala b/src/library/scala/concurrent/impl/ExecutionContextImpl.scala
+index 32f30b9..627161a 100644
+--- a/src/library/scala/concurrent/impl/ExecutionContextImpl.scala
++++ b/src/library/scala/concurrent/impl/ExecutionContextImpl.scala
+@@ -1,94 +1,94 @@
+ /*                     __                                               *\
+ **     ________ ___   / /  ___     Scala API                            **
+ **    / __/ __// _ | / /  / _ |    (c) 2003-2013, LAMP/EPFL             **
+ **  __\ \/ /__/ __ |/ /__/ __ |    http://scala-lang.org/               **
+ ** /____/\___/_/ |_/____/_/ | |                                         **
+ **                          |/                                          **
+ \*                                                                      */
+ 
+ package scala.concurrent.impl
+ 
+ 
+ 
+ import java.util.concurrent.{ LinkedBlockingQueue, Callable, Executor, ExecutorService, Executors, ThreadFactory, TimeUnit, ThreadPoolExecutor }
+ import java.util.concurrent.atomic.AtomicInteger
+ import java.util.Collection
+ import scala.concurrent.forkjoin._
+ import scala.concurrent.{ BlockContext, ExecutionContext, Awaitable, CanAwait, ExecutionContextExecutor, ExecutionContextExecutorService }
+ import scala.util.control.NonFatal
+ import scala.annotation.tailrec
+ 
+ 
+ private[scala] class ExecutionContextImpl private[impl] (val executor: Executor, val reporter: Throwable => Unit) extends ExecutionContextExecutor {
+   require(executor ne null, "Executor must not be null")
+   override def execute(runnable: Runnable) = executor execute runnable
+   override def reportFailure(t: Throwable) = reporter(t)
+ }
+ 
+ 
+ private[concurrent] object ExecutionContextImpl {
+ 
+   // Implement BlockContext on FJP threads
+   final class DefaultThreadFactory(
+     daemonic: Boolean,
+     maxThreads: Int,
+     prefix: String,
+     uncaught: Thread.UncaughtExceptionHandler) extends ThreadFactory with ForkJoinPool.ForkJoinWorkerThreadFactory {
+ 
+     require(prefix ne null, "DefaultThreadFactory.prefix must be non null")
+     require(maxThreads > 0, "DefaultThreadFactory.maxThreads must be greater than 0")
+ 
+     private final val currentNumberOfThreads = new AtomicInteger(0)
+ 
+     @tailrec private final def reserveThread(): Boolean = currentNumberOfThreads.get() match {
+-      case `maxThreads` | Int.`MaxValue` => false
++      case `maxThreads` | Int.`MaxValue` => true
+       case other => currentNumberOfThreads.compareAndSet(other, other + 1) || reserveThread()
+     }
+ 
+     @tailrec private final def deregisterThread(): Boolean = currentNumberOfThreads.get() match {
+       case 0 => false
+       case other => currentNumberOfThreads.compareAndSet(other, other - 1) || deregisterThread()
+     }
+ 
+     def wire[T <: Thread](thread: T): T = {
+       thread.setDaemon(daemonic)
+       thread.setUncaughtExceptionHandler(uncaught)
+       thread.setName(prefix + "-" + thread.getId())
+       thread
+     }
+ 
+     // As per ThreadFactory contract newThread should return `null` if cannot create new thread.
+     def newThread(runnable: Runnable): Thread = 
+       if (reserveThread())
+         wire(new Thread(new Runnable {
+           // We have to decrement the current thread count when the thread exits
+           override def run() = try runnable.run() finally deregisterThread()
+         })) else null
+ 
+     def newThread(fjp: ForkJoinPool): ForkJoinWorkerThread =
+       if (reserveThread()) {
+         wire(new ForkJoinWorkerThread(fjp) with BlockContext {
+           // We have to decrement the current thread count when the thread exits
+           final override def onTermination(exception: Throwable): Unit = deregisterThread()
+           final override def blockOn[T](thunk: =>T)(implicit permission: CanAwait): T = {
+             var result: T = null.asInstanceOf[T]
+             ForkJoinPool.managedBlock(new ForkJoinPool.ManagedBlocker {
+               @volatile var isdone = false
+               override def block(): Boolean = {
+                 result = try {
+                     // When we block, switch out the BlockContext temporarily so that nested blocking does not created N new Threads
+                     BlockContext.withBlockContext(BlockContext.defaultBlockContext) { thunk }
+                   } finally {
+                     isdone = true
+                   }
+                 
+                 true
+               }
+               override def isReleasable = isdone
+             })
+             result
+           }
+         })
+       } else null
+   }
+
+{code}
+
+This *might* indicate an upstream bug in ForkJoin triggered by a thread factory that occasionally returns `null`. But usually I'd suspect our code before Doug's.

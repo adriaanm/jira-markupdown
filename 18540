@@ -1,0 +1,64 @@
+{noformat}
+ git show --shortstat
+commit 9dbc321504ad5550638d6d7c2b3cd2f98273cf74
+Merge: 8c68723 8a7b566
+Author: Jason Zaugg <jzaugg@gmail.com>
+Date:   Mon Sep 16 03:06:34 2013 -0700
+
+    Merge pull request #2935 from densh/topic/si-7304-6489-6701
+
+    SI-6701, SI-7304, SI-6489, variable arity definitions refactoring
+
+% find src/compiler/ | xargs touch
+
+% ant > /dev/null
+
+% qbin/scala -nc
+
+scala> :javap -v scala.tools.nsc.transform.patmat.PatternMatching$OptimizingMatchTranslator
+Compiled from "PatternMatching.scala"
+...
+public scala.tools.nsc.transform.patmat.MatchCodeGen scala$tools$nsc$transform$patmat$MatchCodeGen$OptimizedCodegen$$$outer();
+  Code:
+   Stack=1, Locals=1, Args_size=1
+   0:	aload_0
+   1:	invokevirtual	#1067; //Method scala$tools$nsc$transform$patmat$PatternMatching$OptimizingMatchTranslator$$$outer:()Lscala/tools/nsc/transform/patmat/PatternMatching;
+   4:	areturn
+  LocalVariableTable:
+   Start  Length  Slot  Name   Signature
+   0      5      0    this       Lscala/tools/nsc/transform/patmat/PatternMatching$OptimizingMatchTranslator;
+
+  LineNumberTable:
+   line 134: 0
+
+% less -N src/compiler/scala/tools/nsc/transform/patmat/PatternMatching.scala
+    133
+    134 /////////////////////////////////////////////////////////////////////////////////////////////////////
+    134 //////////////////////////////////////////////////////////
+    135 // talking to userland
+    136 /////////////////////////////////////////////////////////////////////////////////////////////////////
+    136 //////////////////////////////////////////////////////////
+    137
+    138   /** Interface with user-defined match monad?
+{noformat}
+
+Recompiling just that file results in no line number information being emitted for the outer accessor.
+
+{noformat}
+touch src/compiler/scala/tools/nsc/transform/patmat/PatternMatching.scala
+  ~/code/scala ant > /dev/null
+  ~/code/scala qbin/scala -nc
+
+scala> :javap -v 
+...
+scala.tools.nsc.transform.patmat.PatternMatching$OptimizingMatchTranslator
+public scala.tools.nsc.transform.patmat.MatchCodeGen scala$tools$nsc$transform$patmat$MatchCodeGen$OptimizedCodegen$$$outer();
+  Code:
+   Stack=1, Locals=1, Args_size=1
+   0:	aload_0
+   1:	invokevirtual	#1066; //Method scala$tools$nsc$transform$patmat$PatternMatching$OptimizingMatchTranslator$$$outer:()Lscala/tools/nsc/transform/patmat/PatternMatching;
+   4:	areturn
+  LocalVariableTable:
+   Start  Length  Slot  Name   Signature
+   0      5      0    this       Lscala/tools/nsc/transform/patmat/PatternMatching$OptimizingMatchTranslator;
+{noformat}

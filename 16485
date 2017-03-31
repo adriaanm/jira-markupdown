@@ -1,0 +1,17 @@
+The Scala Language Specification v. 2.9, in section 10.1, 3rd paragraph (towards the end of page 131) reads:
+
+"[...] Scala does not support [...], CDATA sections or processing instructions. [...]"
+
+But the syntax section following this paragraph contains a production XMLContent using non-terminals "CDSect" and "PI", which refer to CDATA sections and processing instructions respectively.
+
+Indeed, both CDATA and Processing Instructions are supported by the 2.9 versions of the language:
+
+{code}
+Welcome to Scala version 2.9.0.1 (Java HotSpot(TM) Server VM, Java 1.6.0_24).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> <?hi world?><t><![CDATA[text]]></t>
+res0: scala.xml.NodeBuffer = ArrayBuffer(<?hi world?>, <t>text</t>)
+{code}
+ 

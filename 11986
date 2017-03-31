@@ -1,0 +1,45 @@
+{{X*}} certainly matches empty input. I'm not sure if there are words to clarify the behavior in the doc. For instance, someone asked that it specify that matches are "non-overlapping", so that language was added.
+
+Here's an imperative look:
+
+{noformat}
+scala> 
+import java.util.regex._
+
+scala> val m = Pattern.compile(".*").matcher("foo")
+m: java.util.regex.Matcher = java.util.regex.Matcher[pattern=.* region=0,3 lastmatch=]
+
+scala> m find 0
+res0: Boolean = true
+
+scala> (m.start, m.end)
+res1: (Int, Int) = (0,3)
+
+scala> m find 3
+res2: Boolean = true
+
+scala> (m.start, m.end)
+res3: (Int, Int) = (3,3)
+{noformat}
+
+There are different ways to achieve a given result, and various forums for regex golf.
+
+{noformat}
+scala> "x*?".r findAllMatchIn "xxyx" map (_.matched) toList
+res4: List[String] = List("", "", "", "", "")
+
+scala> "x*?(?=.)".r findAllMatchIn "xxyx" map (_.start) toList
+res5: List[Int] = List(0, 1, 2, 3)
+
+scala> "x*(?=.)".r findAllMatchIn "xxyx" map (_.start) toList
+res6: List[Int] = List(0, 2, 3)
+
+scala> "x*|.".r findAllMatchIn "xxyx" map (_.start) toList
+res7: List[Int] = List(0, 2, 3, 4)
+
+scala> "x+|.".r findAllMatchIn "xxyx" map (_.start) toList
+res8: List[Int] = List(0, 2, 3)
+
+scala> "x*".r findAllMatchIn "xxyx" filter (_.start < 4) map (_.matched) toList
+res9: List[String] = List(xx, "", x)
+{noformat}

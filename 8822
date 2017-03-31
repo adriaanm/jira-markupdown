@@ -1,0 +1,18 @@
+I have had a torrid time to reproduce this minimally. Here are some oddities
+
+{code:title=a.b.c.d.Functions.scala}
+package a.b //if these 3 package declarations are replaced by a.b.c.d it compiles OK
+package c
+package d
+
+trait Functions {
+
+  import Conversions._ //omit this line and it compiles OK
+  val toStrLen = (_ : String).strlen
+}
+{code}
+The above will also fail to compile with the error
+{noformat}
+error: value strlen is not a member of String
+val toStrLen = (_ : String).strlen
+{noformat}

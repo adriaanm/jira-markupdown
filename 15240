@@ -1,0 +1,19 @@
+in trunk as of april 22 2010:
+
+{code}
+scala.swing.Window:
+
+37  override def contents_=(c: Component) {
+38	    super.contents_=(c)
+39	    peer.pack() // pack also validates, which is generally required after an add
+40	  }
+{code}
+
+As can be seen, 'pack()' is called when changing the content of a Window. This is generally NOT what you want. Pack() has the function to resize a window to fit its contents. It's an optional feature. It is normally NOT desired when the programmer sets the size explicitly (using size = ...). It is in general NOT desired when the window has a size set before. 
+
+This can cause the window of the app to be suddenly resized when it sets e.g. a new mainpanel in it. E.g. a bank-app; Window resizes when the initial overview screen is installed; resizes again (!) when this is replaced by some detail screen. 
+
+To make things worse, imagine the end-user to resize the window to it's liking, which will be undone when the content of the window changes! (caused by this 'pack()')! That would def. be regarded as a bug.
+
+It MIGHT be a nice initial, one-time, fallback auto-behaviour in the case when the window doesn't have a size set yet, but is requested to be displayed. (The pack() call should be moved to that function then and some condition state-checking should be added to the class).[[BR]]
+BUT EVEN THEN, I am not sure that there are no valid cases for wanting to display a window with a 'zero' size (if that's the default for a window). 

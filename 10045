@@ -1,0 +1,12 @@
+It seems of limited usefulness that the second one works, since it doesn't work if there are any recursive calls in the try block, e.g.
+{code}
+final class A {
+  @annotation.tailrec private def foo2(x: Int) {
+    try foo2(0) catch { case _: Exception => () }
+  }
+}
+// ./a.scala:2: error: could not optimize @tailrec annotated method foo2: it contains a recursive call not in tail position
+//   @annotation.tailrec private def foo2(x: Int) {
+//                                   ^
+// one error found
+{code}

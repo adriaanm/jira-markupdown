@@ -1,0 +1,42 @@
+Here's the source of the culprit:
+
+{code}
+    try runCommand(cmd, output) match {
+      case 0    => true
+      case code => fail("javac failed with exit code " + code + "\n" + cmd + "\n")
+    }
+    catch exHandler(output, "javac command '" + cmd + "' failed:\n")
+{code}
+
+The problem is in the expansion of the handler, which produces two overlapping trees:
+
+{code}
+case (x1 @ (_: Throwable)) => {
+  val catchExpr1 = exHandler(output, "javac command \'".$$plus(cmd).$$plus("\' failed:\012"));
+  if (catchExpr1.isDefinedAt(x1))
+    catchExpr1.apply(x1)
+  else
+    throw x1
+}
+{code}
+
+The overlapping trees are:
+
+{code}
+(x1 @ (_: Throwable))
+{code}
+
+and 
+
+{code}
+val catchExpr1 = exHandler(output, "javac command \'".$$plus(cmd).$$plus("\' failed:\012"));
+  if (catchExpr1.isDefinedAt(x1))
+    catchExpr1.apply(x1)
+  else
+    throw x1
+{code}
+
+They both have the same range position: [9106:9164]Worker.scala
+
+The solution consists in making one of the ranges transparent, using .makeTransparent.
+See TreeBuilder for some usage examples.

@@ -1,0 +1,22 @@
+This is extracted from the later comments of ticket SI-2144, which was otherwise addressed.
+{code}
+object Test {
+  class MyGraph[V <: Any] {
+    def addVertex(v: V): Boolean = true
+  }
+
+  type DuckGraph = {
+    def addVertex(vertex: Int): Boolean
+  }
+  
+  def fail(graph: DuckGraph) = graph addVertex 1
+
+  def main(args: Array[String]): Unit = {
+    fail(new MyGraph[Int])
+  }
+}
+{code}
+{code}
+$$ scala Test
+java.lang.NoSuchMethodException: Test$$MyGraph.addVertex(int)
+{code}

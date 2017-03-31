@@ -1,0 +1,19 @@
+Sorry for not including a test case. I thought that the test case I gave earlier still failed.
+
+Here is a simple test case that definitely fails on the latest nightly build:
+
+import scala.xml.parsing._
+import scala.io.Source
+
+val xml_good = "<title><![CDATA[Hello [tag]]]></title>"
+val xml_bad = "<title><![CDATA[Hello [tag]  ]]></title>"
+
+val parser_good = ConstructingParser.fromSource(Source.fromString(xml_good),false)
+parser_good.document  
+
+val parser_bad = ConstructingParser.fromSource(Source.fromString(xml_bad),false)
+parser_bad.document
+
+
+BOOOM!!!!
+

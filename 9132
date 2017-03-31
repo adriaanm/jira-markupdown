@@ -1,0 +1,10 @@
+{code}
+    val originalAccessors = clazz.caseFieldAccessors
+    // private ones will have been renamed -- make sure they are entered
+    // in the original order.
+    def accessors = clazz.caseFieldAccessors sortBy { acc =>
+      originalAccessors indexWhere { orig =>
+        (acc.name == orig.name) || (acc.name startsWith (orig.name append "$"))
+      }
+    }
+{code}

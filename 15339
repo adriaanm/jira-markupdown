@@ -1,0 +1,26 @@
+In the following, the implicit is selected despite requiring a prefix because of the local shadowing.
+
+{code}
+class A
+class B
+
+trait S {
+    implicit def aToB(a: A): B = new B
+}
+
+class T extends S {
+    def x: B = {
+        val aToB = 3
+        // doesn't compile, because aToB method requires 'T.this.' prefix
+        //aToB(new A)
+        
+        // compiles, using T.this.aToB,
+        //   despite it not being accessible without a prefix
+        new A
+    }
+}
+{code}
+
+As I understand it, Section 7.2 of the spec says that the first part of implicit resolution finds implicits accessible without a prefix.  Ch. 2 says that a local identifier shadows an inherited identifier because it has the same precedence but is in an inner scope, which is why `aToB(new A)` doesn't compile.  Therefore, `S.aToB` should not be considered for implicit resolution.
+
+The same behavior occurs when defining `aToB` directly in `T` or importing an implicit named `aToB` (say, from an `object P`).  Putting `implicit` in front of the local `val aToB` shows the expected behavior of not selecting the `S.aToB` implicit, giving a compile error.

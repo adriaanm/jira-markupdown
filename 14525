@@ -1,0 +1,14 @@
+{code}
+  case class U[+T](a: Int)(b: T => Int)
+{code}
+Note that no getter is generated for {{b}}, so there's no problem with b's type. The compiler will generate
+{code}
+  def copy[T1](a1: Int)(b1: T1 => Int) = {...}
+  def copy$$default$$2: T => Int = b  // T in contravariant position
+{code}
+
+{code}
+covariant type T occurs in contravariant position in type [T](a: Int)(T) => Int of method copy$$default$$2
+       case class U[+T](a: Int)(b: T => Int)
+                                ^
+{code}

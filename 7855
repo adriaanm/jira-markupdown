@@ -1,0 +1,40 @@
+That's slippery. Observing it from a safe distance:
+
+{code}
+
+class C1
+class C2
+class A {
+  def f(x: Any) = x
+  def g(x: C1): String = "A"
+  def g(x: C2): String = "B"
+
+  def hof(x: String => Any) {}
+
+  class X[A]() {
+    def this(a: A) = this()
+    def map[B](f: A => Any): Any = ??? // remove type parameter => avoid crash
+  }
+
+  def crash() = hof { x =>
+    if (false) new X(g("")) else new X[C1]().map(g)
+
+    // Other lubby situations crash:
+    //
+    // (true: Boolean) match {
+    //   case false => new X(g("")); case true => new X[C1]().map(g)
+    // }
+
+    // try new X(g("")) catch { case _ => new X[C1]().map(g) }
+
+    // List(new X(g("")), new X[C1]().map(g))
+  }
+
+  // No crash if the argument isn't a function
+  // def nocrash1() = identity {
+  //   if (false) new X(g("")) else new X[C1]().map(g)
+  // }
+}
+{code}
+
+The error is buffered into a Context deep down in type checking, but it doesn't get reported later on. It's pretty hard to see through the thicket of {{silent(...)}} / {{tryTwice(...)}} etc.

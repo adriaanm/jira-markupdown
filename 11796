@@ -1,0 +1,102 @@
+That log output leads by to believe that we've got a codegen problem for method local lazy vals, and that we're getting multiple evaluation of `lazy val typeTest` in
+
+{code}
+      // example check: List[Int] <:< ::[Int]
+      private def extractorStep(): TranslationStep = {
+        def paramType = extractor.aligner.wholeType
+        import extractor.treeMaker
+        // chain a type-testing extractor before the actual extractor call
+        // it tests the type, checks the outer pointer and casts to the expected type
+        // TODO: the outer check is mandated by the spec for case classes, but we do it for user-defined unapplies as well [SPEC]
+        // (the prefix of the argument passed to the unapply must equal the prefix of the type of the binder)
+        lazy val typeTest = new TypeTestTreeMaker(binder, binder, paramType, paramType)(pos, extractorArgTypeTest = true)
+        // check whether typetest implies binder is not null,
+        // even though the eventual null check will be on typeTest.nextBinder
+        // it'll be equal to binder casted to paramType anyway (and the type test is on binder)
+        def extraction: TreeMaker = treeMaker(typeTest.nextBinder, typeTest impliesBinderNonNull binder, pos)
+
+        // paramType = the type expected by the unapply
+        // TODO: paramType may contain unbound type params (run/t2800, run/t3530)
+        val makers = (
+          // Statically conforms to paramType
+          if (this ensureConformsTo paramType) treeMaker(binder, false, pos) :: Nil
+          else typeTest :: extraction :: Nil
+        )
+        val subBound = extractor.subBoundTrees
+        TranslationStep(makers, subBound)
+      }
+{code}
+
+Changing the lazy val to a def exhibits the same failure mode (crash in  `genLoadIdent`) 100% of the time.
+
+Decompiling the lazy compute method suggests unbalanced monitors. 
+
+{code}
+
+    private final MatchTreeMaking.TreeMakers.TypeTestTreeMaker typeTest$lzycompute$1(ObjectRef typeTest$lzy$1, VolatileByteRef bitmap$0$1) {
+        MatchTranslation.MatchTranslator.BoundTree boundTree = this;
+        synchronized (boundTree) {
+            if ((byte)(bitmap$0$1.elem & 1) == 0) {
+                typeTest$lzy$1.elem = new MatchTreeMaking.TreeMakers.TypeTestTreeMaker(this.$outer, this.binder(), this.binder(), this.paramType$1(), this.paramType$1(), this.pos(), true);
+                bitmap$0$1.elem = (byte)(bitmap$0$1.elem | 1);
+            }
+            // ** MonitorExit[this] (shouldn't be in output)
+            return (MatchTreeMaking.TreeMakers.TypeTestTreeMaker)typeTest$lzy$1.elem;
+        }
+    }
+{code}
+
+{code}
+  private final scala.tools.nsc.transform.patmat.MatchTreeMaking$TreeMakers$TypeTestTreeMaker typeTest$lzycompute$1(scala.runtime.ObjectRef, scala.runtime.VolatileByteRef);
+    Code:
+       0: aload_0
+       1: dup
+       2: astore_3
+       3: monitorenter
+       4: aload_2
+       5: getfield      #658                // Field scala/runtime/VolatileByteRef.elem:B
+       8: iconst_1
+       9: iand
+      10: i2b
+      11: iconst_0
+      12: if_icmpne     62
+      15: aload_1
+      16: new           #253                // class scala/tools/nsc/transform/patmat/MatchTreeMaking$TreeMakers$TypeTestTreeMaker
+      19: dup
+      20: aload_0
+      21: getfield      #29                 // Field $outer:Lscala/tools/nsc/transform/patmat/MatchTranslation$MatchTranslator;
+      24: aload_0
+      25: invokevirtual #92                 // Method binder:()Lscala/reflect/internal/Symbols$Symbol;
+      28: aload_0
+      29: invokevirtual #92                 // Method binder:()Lscala/reflect/internal/Symbols$Symbol;
+      32: aload_0
+      33: invokespecial #351                // Method paramType$1:()Lscala/reflect/internal/Types$Type;
+      36: aload_0
+      37: invokespecial #351                // Method paramType$1:()Lscala/reflect/internal/Types$Type;
+      40: aload_0
+      41: invokevirtual #236                // Method pos:()Lscala/reflect/internal/util/Position;
+      44: iconst_1
+      45: invokespecial #256                // Method scala/tools/nsc/transform/patmat/MatchTreeMaking$TreeMakers$TypeTestTreeMaker."<init>":(Lscala/tools/nsc/transform/patmat/MatchTreeMaking$TreeMakers;Lscala/reflect/internal/Symbols$Symbol;Lscala/reflect/internal/Symbols$Symbol;Lscala/reflect/internal/Types$Type;Lscala/reflect/internal/Types$Type;Lscala/reflect/internal/util/Position;Z)V
+      48: putfield      #660                // Field scala/runtime/ObjectRef.elem:Ljava/lang/Object;
+      51: aload_2
+      52: aload_2
+      53: getfield      #658                // Field scala/runtime/VolatileByteRef.elem:B
+      56: iconst_1
+      57: ior
+      58: i2b
+      59: putfield      #658                // Field scala/runtime/VolatileByteRef.elem:B
+      62: getstatic     #52                 // Field scala/runtime/BoxedUnit.UNIT:Lscala/runtime/BoxedUnit;
+      65: pop
+      66: aload_0
+      67: monitorexit
+      68: aload_1
+      69: getfield      #660                // Field scala/runtime/ObjectRef.elem:Ljava/lang/Object;
+      72: checkcast     #253                // class scala/tools/nsc/transform/patmat/MatchTreeMaking$TreeMakers$TypeTestTreeMaker
+      75: areturn
+      76: aload_3
+      77: monitorexit
+      78: athrow
+    Exception table:
+       from    to  target type
+           4    68    76   any
+{code}

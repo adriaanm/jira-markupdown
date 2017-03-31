@@ -1,0 +1,32 @@
+Here is the smallest case I could generate:
+
+{code}
+scala> def foo = { class Foo { class Bar { val b = 2 }}; val f = new Foo; new f.Bar }
+
+java.lang.AssertionError: assertion failed: f.type
+	at scala.tools.nsc.symtab.Types$adaptToNewRunMap$.adaptToNewRun(Types.scala:3945)
+	at scala.tools.nsc.symtab.Types$adaptToNewRunMap$.apply(Types.scala:3989)
+	at scala.tools.nsc.symtab.Types$adaptToNewRunMap$.apply(Types.scala:3921)
+	at scala.tools.nsc.symtab.Types$TypeMap.mapOver(Types.scala:3175)
+	at scala.tools.nsc.symtab.Types$adaptToNewRunMap$.apply(Types.scala:4037)
+	at scala.tools.nsc.symtab.Types$adaptToNewRunMap$.apply(Types.scala:4010)
+{code}
+
+I was originally playing around in the interpreter trying to understand the Currency examples in Ordersky Ch.20 and ran into this by doing the following.  Note how it accepts the definition once and then break when I attempt to redefine it in exactly the same way.  I'm still trying to wrap my head around path dependent types - so I don't have much more useful debugging info.
+
+{code}
+scala> abstract class Outer { abstract class Inner { val v = 1 } }
+defined class Outer
+
+scala> def doSomething(n: Int) = { object O extends Outer { class I extends Inner { val y = n } }; new O.I }
+doSomething: (n: Int)O.I forSome { val O: O; type O <: Outer with ScalaObject{type I <: this.Inner with ScalaObject{val y: Int}} }
+
+scala> def doSomething(n: Int) = { object O extends Outer { class I extends Inner { val y = n } }; new O.I }
+doSomething: (n: Int)O.I forSome { val O: O; type O <: Outer with ScalaObject{type I <: this.Inner with ScalaObject{val y: Int}} }
+java.lang.AssertionError: assertion failed: O.type
+	at scala.tools.nsc.symtab.Types$adaptToNewRunMap$.adaptToNewRun(Types.scala:3945)
+	at scala.tools.nsc.symtab.Types$adaptToNewRunMap$.apply(Types.scala:3989)
+	at scala.tools.nsc.symtab.Types$adaptToNewRunMap$.apply(Types.scala:3921)
+	at scala.tools.nsc.symtab.Types$TypeMap.mapOver(Types.scala:3175)
+	at scala.tools.nsc.symtab.Types$adaptToNewRunMap$.apply(Types.scala:4037)
+{code}

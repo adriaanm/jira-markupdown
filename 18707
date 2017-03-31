@@ -1,0 +1,38 @@
+Some macro tests fail under `SCALAC_OPTS=-Yrange-pos`
+
+Example:
+
+test/files/pos/annotated-original
+
+{noformat}
+[[syntax trees at end of                     typer]] // C_2.scala
+[0:111]package [0:0]<empty> {
+  [0:111]object Bug extends [11:111][111]scala.AnyRef {
+    [111]def <init>(): [11]Bug.type = [111]{
+      [111][111][111]Bug.super.<init>();
+      [11]()
+    };
+    [19]([19]{
+      [29]def s: [29]String = [33]"";
+      [49]([43]([44]s: [43]Any): [NoPosition]([43]([44]s: [43]Any): [NoPosition]<type: [NoPosition][43]([44]s: [43]Any): @[49]unchecked>));
+      [102][102]scala.this.Predef.???
+    }: [19]Any)
+  }
+}
+{noformat}
+
+Note: we do have a range positions build, but that doesn't actually run tests with -Yrange-pos, only the distribution itself is compiled with that option.
+
+In general, we don't expect all tests to work under both offset/range positions.
+
+But, a few of the failing cases, such as that above, do indicate bugs.
+
+What is the impact of such bugs?
+
+Currently, they will crash a) the presentation compiler, and b) the build compiler with -Yrangepos set.
+
+The first problem can be avoided altogether by our plan to return macro applications (attributed with the types of the macro expansion) in the presentation compiler.
+
+For the second, we could try to find and fix problems, like this one. But, we might also consider demoting range positition validation crashes to warnings outside of the pres compiler.
+
+Who uses range positions other than the IDE? I've seen some interest from macro authors themselves, who would like to get access to precise source code for macro argument trees.

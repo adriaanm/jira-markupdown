@@ -1,0 +1,14 @@
+The following snippet crashes the compiler:
+
+import scala.xml._
+
+def print(nodes: NodeSeq) =     nodes.toList match {
+      case List(<t>{x:_*} </t>) => println("x is :" + x)
+
+// This is ok if there is no space     
+// case List(<t>{x:_*}</t>) => println("x is :" + x)
+      case other => other
+    }
+
+print(List(<t>hello</t>))
+

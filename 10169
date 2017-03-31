@@ -1,0 +1,19 @@
+I have to close this as not-a-bug.
+
+Compiler plugins must abide by the (unwritten) contracts of the compiler. One of them is that any API you want to have visible to user-written Scala code in a later run of the compiler must be fully elaborated before the end of the pickler phase. That phase takes the Scala types of all of the members of each class and writes it into the bytecode, and later runs see *only* this, regardless of what is in the bytecode.
+
+Consequently, checks for double-definitions are only performed early on.
+
+The fragility of the current implementation is noted in a TODO comment:
+
+{code}
+    // TODO - don't allow names to be renamed in this unstructured a fashion.
+    // Rename as little as possible.  Enforce invariants on all renames.
+    override def name_=(name: Name) {
+      if (name != rawname) {
+        super.name_=(name)  // logging
+        changeNameInOwners(name)
+        _rawname = name.toTypeName
+      }
+    }
+{code}

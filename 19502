@@ -1,0 +1,24 @@
+Rejected runnables from ExecutionContext do not complete Promises with Failures. If the underlying pool is overloaded and tasks are rejected (actually, if the rejection policy throws an exception) you get a Future that is never completed. Looking at the code I found that in CallbackRunnable.executeWithValue a NonFatal exception is catched and reported trough the configured reporter but nothing is done with the promise. I was expecting a Future completed with a Failure.
+
+{code}
+private class CallbackRunnable[T](val executor: ExecutionContext, val onComplete: Try[T] => Any) extends Runnable with OnCompleteRunnable {
+  // must be filled in before running it
+  var value: Try[T] = null
+
+  override def run() = {
+    require(value ne null) // must set value to non-null before running!
+    try onComplete(value) catch { case NonFatal(e) => executor reportFailure e }
+  }
+
+  def executeWithValue(v: Try[T]): Unit = {
+    require(value eq null) // can't complete it twice
+    value = v
+    // Note that we cannot prepare the ExecutionContext at this point, since we might
+    // already be running on a different thread!
+    try executor.execute(this) catch { case NonFatal(t) => executor reportFailure t }
+  }
+}
+{code}
+
+What I suggest is to pass the Promise to CallbackRunnable and complete it with a Failure if an exception is thrown when submitting the runnable. Doing that way the Failure will be propagated as usual. In order to do that, the onComplete method should be able to receive an optional Promise. I'll provide a patch.
+Also, I'm not sure how useful would be to report a failure through reportFailure since the exception will be propagated as a Failure. I guess it can be removed too. What do you guys think about it?

@@ -1,0 +1,50 @@
+reduced the crashing example:
+
+{code}
+object MessageType {
+  val HELLO = ""
+}
+
+class Message(messageType: String, reason: Option[String])
+
+class ReproForSI6921 {
+
+  private[this] var reason = ""
+
+  def decideElection {
+    val explanation = None
+    new Message(MessageType.HELLO, reason = explanation)
+  }
+}
+{code}
+{code}
+no-symbol does not have an owner
+	at scala.reflect.internal.SymbolTable.abort(SymbolTable.scala:49)
+	at scala.tools.nsc.Global.abort(Global.scala:254)
+	at scala.reflect.internal.Symbols$NoSymbol.owner(Symbols.scala:3248)
+	at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer.hostForAccessorOf(SuperAccessors.scala:548)
+	at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer.needsProtectedAccessor(SuperAccessors.scala:524)
+	at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer.mayNeedProtectedAccessor$1(SuperAccessors.scala:162)
+{code}
+
+by reducing it further to the following, the compiler no longer crashes but gives a very strange error message that i haven't seen before:
+
+{code}
+class Message(messageType: String, reason: Option[String])
+
+class ReproForSI6921 {
+
+  private[this] var reason = ""
+
+  def decideElection = {
+    val explanation = None
+    new Message("", reason = explanation)
+  }
+}
+{code}
+{code}
+sandbox/t6921-2.scala:7: error: erroneous or inaccessible type
+  def decideElection = {
+      ^
+one error found
+{code}

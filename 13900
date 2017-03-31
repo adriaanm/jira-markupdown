@@ -1,0 +1,26 @@
+Here's a case that reproduces it (in scala-2.7.2.final and the current nightly):
+
+{code}
+class Foo {
+  
+  val myObject = new Object;
+  
+  class Bar {
+
+    var stuff = false;
+    
+    def getBlah: String = {
+      try {
+	if (stuff) {
+	  return null;
+	}
+	"blah";
+      } finally {
+	if (stuff) println(myObject);
+      }
+    }
+
+  }
+      
+}
+{code}

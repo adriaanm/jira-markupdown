@@ -1,0 +1,7 @@
+I discussed this with a colleague and he pointed out that it can be important to distinguish when a key/val has been explicitly set, versus when the default is in effect.  With that in mind, one relatively simple improvement would be to supply a method:
+
+{code}
+val defaultFunction: Option[A => B] = map.getDefault
+{code}
+
+Then the current semantics of {{apply}}, {{get}}, {{isDefinedAt}}, etc, could be kept as-is.  If I need to know whether a default will be active as a fail-safe for {{map.apply(v)}}, then I can just examine the value of {{map.getDefault}} to see if it is {{None}} or otherwise.  It also allows me to distinguish the case where a value is coming from a default or from an explicit setting.

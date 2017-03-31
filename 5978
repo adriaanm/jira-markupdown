@@ -1,0 +1,12 @@
+On further examination I notice that the 2.8.1 behaviour was entirely intentional as indicated by the comment in the 2.8.1 code
+[https://lampsvn.epfl.ch/trac/scala/browser/scala/trunk/src/library/scala/collection/immutable/Range.scala]:
+{code}
+  // Double works by using a BigDecimal under the hood for precise
+  // stepping, but mapping the sequence values back to doubles with
+  // .doubleValue.  This constructs the BigDecimals by way of the
+  // String constructor (valueOf) instead of the Double one, which
+  // is necessary to keep 0.3d at 0.3 as opposed to
+  // 0.299999999999999988897769753748434595763683319091796875 or so.
+{code}
+
+So I guess the 2.9.0 behaviour is a regression.

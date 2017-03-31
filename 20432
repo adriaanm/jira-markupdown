@@ -1,0 +1,8 @@
+I think each of the following 2 lines contain a bug; a Template cannot become the owner of other symbols, isn't it?
+* https://github.com/scala/scala/blob/v2.12.1/src/reflect/scala/reflect/internal/Trees.scala#L1236;
+* https://github.com/scala/scala/blob/v2.12.1/src/reflect/scala/reflect/internal/Trees.scala#L1408
+
+This issue may lead compiler crashes when compiler plugins using Traverser class are enabled since it breaks owner chains.
+
+I made a patch only for Traverser: https://github.com/hiroshi-cl/scala/commit/b219db7a689a33844606788bba12ed902464ef9c, but I failed to make for Transformer.
+This fixing breaks existing compiler phases and a lot of test cases in partest fail.

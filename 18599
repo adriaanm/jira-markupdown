@@ -1,0 +1,20 @@
+Given:
+{code}
+trait A { type B }
+{code}
+
+I don't see why this shouldn't compile:
+{code}
+case class DoesntWork(a: A)(b: a.type#B)
+{code}
+
+Instead I have to do the same thing manually a la:
+{code}
+class Blah(val a: A, rawb: Any) { def b = rawb.asInstanceOf[a.type#B] }
+object Blah { def apply(a: A)(b: a.type#B) = new Blah(a, b) }
+
+// Give it a try
+val x = new A { type B=Int }
+Blah(x)(123) // should work
+Blah(x)("should fail")
+{code}

@@ -1,0 +1,25 @@
+While trying to fix some code that the newer pattern matcher doesn't accept, because of invalid F-Bounded Polymorphism constraints, I stumbled upon some situations where the circular type constraint was lost by the pattern matcher.
+
+Here are some examples comparing situations where the information is lost with those where the information is not lost. This was run on the REPL with -Xfull-lubs, just in case.
+
+{code}
+
+scala> trait T[A <: T[A]]
+defined trait T
+
+scala> def proc1(l1: List[T[A] forSome { type A <: T[A]}]) = for(elem <- l1) yield elem
+proc1: (l1: List[T[A] forSome { type A <: T[A] }])List[T[A] forSome { type A <: T[A] }]
+
+scala> def proc2(l1: List[T[A] forSome { type A <: T[A]}], l2: List[T[A] forSome { type A <: T[A]}]) = for ((e1, e2) <- l1 zip l2) yield e2
+proc2: (l1: List[T[A] forSome { type A <: T[A] }], l2: List[T[A] forSome { type A <: T[A] }])List[T[_1] forSome { type _1 <: T[_0]; type _0 <: T[A]; type A <: T[A] }]
+
+scala> def proc3(l1: List[T[A] forSome { type A <: T[A]}], l2: List[T[A] forSome { type A <: T[A]}]) = (l1.head, l2.head) match { case (e1, e2) => e2 }
+proc3: (l1: List[T[A] forSome { type A <: T[A] }], l2: List[T[A] forSome { type A <: T[A] }])T[A] forSome { type A <: T[A] }
+
+scala> def proc4(l1: List[T[A] forSome { type A <: T[A]}], l2: List[T[A] forSome { type A <: T[A]}]) = l1 zip l2 match { case (e1, e2) :: _ => e2 }
+<console>:9: warning: match may not be exhaustive.
+It would fail on the following input: Nil
+       def proc4(l1: List[T[A] forSome { type A <: T[A]}], l2: List[T[A] forSome { type A <: T[A]}]) = l1 zip l2 match { case (e1, e2) :: _ => e2 }
+                                                                                                          ^
+proc4: (l1: List[T[A] forSome { type A <: T[A] }], l2: List[T[A] forSome { type A <: T[A] }])T[_1] forSome { type _1 <: T[_0]; type _0 <: T[A]; type A <: T[A] }
+{code}

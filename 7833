@@ -1,0 +1,30 @@
+I think Rex Kerr has a point when he says that we should be able to suppress warnings (especially new ones):
+
+{quote}
+Note that the change in behavior in 2.10.1 to throw warnings for stuff like
+
+maths/package.scala:1281: warning: class OutlierDist should be placed directly in
+package maths instead of package object maths. Under some circumstances companion
+objects and case classes in package objects can fail to recompile. See
+https://issues.scala-lang.org/browse/SI-5954.
+
+and also
+
+mwt/MultiSensed.scala:143: warning: The outer reference in this type test cannot be
+checked at run time. final case class NotValid(val i0: Int, val i1: Int) extends
+Chunk {}
+
+means that I can no longer run with -Xfatal-warnings, which was how I found all the
+places I needed to import language.whatever; now any new instances will be lost in
+the screensfull of warnings.
+
+Incidentally, is there a way to make the latter warning go away? I don't want to
+push the trait and case classes out of the enclosing class since they don't make
+any logical sense elsewhere and they _are_ class-relative information (despite not
+linking back to the superclass). But I would like to be able to declare that I
+don't intend to check that aspect of the type at runtime; compile time is
+sufficient. (I realize that I could just refer to the enclosing class, but I'd
+rather avoid the extra field since there will be millions of these things.) If the
+underlying bug for 5954 is fixed, I'd want to fix these also so I can
+-Xfatal-warnings again.
+{quote}

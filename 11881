@@ -1,0 +1,9 @@
+The regression wasn't caught, because there are currently no "real" tests for floating point ranges where 
+either start, end or step would be different from a whole integer. This is a problem especially since the current
+NumericRange.count method has fully separate code for "effectively integer" ranges and so actually most of the logic
+in count seems to have no tests.
+
+Suggestion: I will add a bunch more tests for possible NumericRange pitfalls.
+
+2.10.x seems to do num.toLong(num.quot(...)) which avoids the problem, but that was generalized away in 994de8ff.
+

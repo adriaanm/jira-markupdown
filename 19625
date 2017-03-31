@@ -1,0 +1,64 @@
+{code:title=Macro sample code:|borderStyle=solid}
+package macros
+import scala.reflect.macros.whitebox.Context
+import scala.language.experimental.macros
+import scala.annotation.StaticAnnotation
+class Ant extends StaticAnnotation {
+    def macroTransform(annottees: Any*): Unit = macro Ant.impl
+}
+object Ant {
+    def impl(c: Context)(annottees: c.Tree*): c.Tree = {
+        import c.universe._
+	c.internal.enclosingOwner.asType.toType // this line is Ok
+	// ! Any commented line below causes the same compilation error
+	// c.internal.enclosingOwner.asType.toType.decls
+	// c.mirror.staticModule(c.internal.enclosingOwner.fullName + ".A".toString)
+	// c.typecheck(annottees.head)
+	q"""implicit class A(val v: Int) extends AnyVal { def ask() = println("ok") }"""
+    }
+}
+{code}
+
+{code:title=Exec sample code:|borderStyle=solid}
+package test
+import macros.Ant
+object Test extends App {
+    val a = new A(42)
+    a.ask() // Output should be "ok"
+    // ! removing [implicit] lets code be compiled
+    @Ant implicit class A(v: Int) { def ask() = println(v)}
+}{code}
+
+So, removing line c.typecheck(annottees.head) and / or word implicit in line @Ant implicit class A(v: Int) lets code be compiled. Otherwise compilation crashes with error:
+{code:borderStyle=solid}
+Error:scalac:
+no progress in completing object Test: <?>
+while compiling: D:\Projects\_Schemee\TestMacro1\src\test\Test.scala
+during phase: globalPhase=typer, enteringPhase=namer
+library version: version 2.11.6
+compiler version: version 2.11.6
+reconstructed args: -nobootcp -classpath ...
+last tree to typer: Ident(v)
+tree position: <unknown>
+tree tpe: Int
+symbol: value v
+symbol definition: v: Int (a TermSymbol)
+symbol package: test
+symbol owners: value v -> method A -> object Test
+call site: method A in object Test in package test
+<Cannot read source file>
+{code}
+
+Compiled both under latest IntelliJ and as SBT project. Same result. 
+Seems it's not expected behavior. Or i'm missing something.
+
+
+EDITED:
+Besides that that error is caused when trying to access enclosingOwner declarations or mirror class A "manually".
+
+EDITED:
+Discovered that *implicit* modifier does not play lead role in crashing. Accessing typecheck can crash any class definition. [Sample here.|http://stackoverflow.com/questions/29188283/scala-macro-annotation-error-no-progress-in-completing-object]
+
+
+[Github link|https://github.com/just-4-fun/MacroAnt]
+[Stackoverflow link|http://stackoverflow.com/questions/29053346/scala-macro-annotation-typecheck-for-implicit-class-fails]

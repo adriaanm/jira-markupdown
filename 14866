@@ -1,0 +1,21 @@
+The parser does not allow a newline after the first argument list in a self constructor invocation, even though it is permitted after subsequent argument lists, and between the `this` keyword and the first argument list.
+
+For example, this compiles correctly:
+{code}
+class A(a: Int)(b: Int)(c: Int)(d: Int) {
+  def this() = this
+                 {1}{2}
+                 {3}
+                 {4}
+}
+{code}
+However, this reports an error, "missing arguments for constructor A in class A":
+{code}
+class A(a: Int)(b: Int)(c: Int)(d: Int) {
+  def this() = this
+                 {1}
+                 {2}
+                 {3}
+                 {4}
+}
+{code}

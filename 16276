@@ -1,0 +1,46 @@
+When an array of Bytes containing a Long is written to a file using java.io, and read back using scala.io.Source, a different value is obtained.
+
+Reproducing the issue using the console:
+
+scala> import java.io.FileOutputStream
+import java.io.FileOutputStream
+
+scala> import java.nio.ByteBuffer
+import java.nio.ByteBuffer
+
+scala> val f = new FileOutputStream("test1")
+f: java.io.FileOutputStream = java.io.FileOutputStream@10def14f
+
+scala> val msg = new Array[Byte](8)
+msg: Array[Byte] = Array(0, 0, 0, 0, 0, 0, 0, 0)
+
+scala> val bbuf = ByteBuffer.wrap(msg)
+bbuf: java.nio.ByteBuffer = java.nio.HeapByteBuffer[pos=0 lim=8 cap=8]
+
+scala> bbuf.putLong(233)
+res4: java.nio.ByteBuffer = java.nio.HeapByteBuffer[pos=8 lim=8 cap=8]
+
+scala> f.write(msg)
+
+scala> f.close
+
+scala> import scala.io.Source
+import scala.io.Source
+
+scala> val f = Source.fromFile("test1")
+f: scala.io.Source = non-empty iterator
+
+scala> f.toArray.map(_.toByte)
+res0: Array[Byte] = Array(0, 0, 0, 0, 0, 0, 0, -56)
+
+scala> res0
+res1: Array[Byte] = Array(0, 0, 0, 0, 0, 0, 0, -56)
+
+scala> import java.nio.ByteBuffer
+import java.nio.ByteBuffer
+
+scala> val bbuf = ByteBuffer.wrap(res0)
+bbuf: java.nio.ByteBuffer = java.nio.HeapByteBuffer[pos=0 lim=8 cap=8]
+
+scala> bbuf.getLong()
+res2: Long = 200

@@ -1,0 +1,153 @@
+OK, so it doesn't cause a reference to the outer map (as it just references a final local variable instead of a field or method of the outer map).
+
+However it introduces a new non-transient field. The nice thing about this field is that it's set before the call to super unlike any field that is defined inside the inner class body. A negative aspect is that the field is not transient, so it gets serialized.
+
+An alternative is to use early initialization syntax to get the best of both worlds (at the cost of ugly code). The patch is like:
+
+{code}
+--- a/src/library/scala/collection/immutable/HashMap.scala
++++ b/src/library/scala/collection/immutable/HashMap.scala
+@@ -125,12 +125,15 @@ class HashMap[A, +B] extends Map[A,B] with MapLike[A, B, HashMap[A, B]] with mut
+   private def logLimit: Int = math.sqrt(table.length).toInt
+ 
+   private[this] def markUpdated(key: A, ov: Option[B], delta: Int) { 
+-    val lf = loadFactor
+-    later = new HashMap[A, B] {
++    later = new {
++      @transient private var lf = HashMap.this.loadFactor
++    } with HashMap[A, B] {
++      /* 
++       * If this object is deserialized, lf will be 0, so we use _loadFactor. Otherwise we use lf
++       * to avoid initialization order issues.
++       */
++      override def loadFactor = if (lf == 0) _loadFactor else lf
+       override def initialSize = 0
+-      /* We need to do this to avoid a reference to the outer HashMap */
+-      def _newLoadFactor = lf
+-      override def loadFactor = _newLoadFactor
+       table     = HashMap.this.table
+       tableSize = HashMap.this.tableSize
+       threshold = HashMap.this.threshold
+diff --git a/src/library/scala/collection/immutable/HashSet.scala b/src/library/scala/collection/immutable/HashSet.scala
+index 3d66c90..9d2e298 100644
+--- a/src/library/scala/collection/immutable/HashSet.scala
++++ b/src/library/scala/collection/immutable/HashSet.scala
+@@ -99,12 +99,15 @@ class HashSet[A] extends Set[A]
+   private def logLimit: Int = math.sqrt(table.length).toInt
+ 
+   private def markUpdated(elem: A, del: Boolean) { 
+-    val lf = loadFactor
+-    later = new HashSet[A] {
++    later = new {
++      @transient private var lf = HashSet.this.loadFactor
++    } with HashSet[A] {
++      /* 
++       * If this object is deserialized, lf will be 0, so we use _loadFactor. Otherwise we use lf
++       * to avoid initialization order issues.
++       */
++      override def loadFactor = if (lf == 0) _loadFactor else lf
+       override def initialSize = 0
+-      /* We need to do this to avoid a reference to the outer HashMap */
+-      def _newLoadFactor = lf
+-      override def loadFactor = _newLoadFactor
+       table     = HashSet.this.table
+       tableSize = HashSet.this.tableSize
+       threshold = HashSet.this.threshold
+{code}
+
+This seems to do the job, see the relevant bytecode for the anonymous inner class in immutable.HashSet:
+
+{code}
+{
+private transient int lf;
+
+
+public scala.collection.immutable.HashSet$$$$anon$$1(scala.collection.immutable.HashSet);
+  Code:
+   Stack=2, Locals=3, Args_size=2
+   0:	aload_1
+   1:	invokeinterface	SI-14,  1; //InterfaceMethod scala/collection/mutable/FlatHashTable.loadFactor:()I
+   6:	istore_2
+   7:	aload_0
+   8:	iload_2
+   9:	putfield	SI-18; //Field lf:I
+   12:	aload_0
+   13:	invokespecial	SI-23; //Method scala/collection/immutable/HashSet."<init>":()V
+   16:	aload_0
+   17:	aload_1
+   18:	invokeinterface	SI-27,  1; //InterfaceMethod scala/collection/mutable/FlatHashTable.table:()[Ljava/lang/Object;
+   23:	invokeinterface	SI-31,  2; //InterfaceMethod scala/collection/mutable/FlatHashTable.table_$$eq:([Ljava/lang/Object;)V
+   28:	aload_0
+   29:	aload_1
+   30:	invokeinterface	SI-34,  1; //InterfaceMethod scala/collection/mutable/FlatHashTable.tableSize:()I
+   35:	invokeinterface	SI-38,  2; //InterfaceMethod scala/collection/mutable/FlatHashTable.tableSize_$$eq:(I)V
+   40:	aload_0
+   41:	aload_1
+   42:	invokeinterface	SI-41,  1; //InterfaceMethod scala/collection/mutable/FlatHashTable.threshold:()I
+   47:	invokeinterface	SI-44,  2; //InterfaceMethod scala/collection/mutable/FlatHashTable.threshold_$$eq:(I)V
+   52:	return
+  LineNumberTable: 
+   line 103: 0
+   line 102: 12
+   line 111: 16
+   line 112: 28
+   line 113: 40
+
+  LocalVariableTable: 
+   Start  Length  Slot  Name   Signature
+   0      53      0    this       Lscala/collection/immutable/HashSet$$$$anon$$1;
+   0      53      1    $$outer       Lscala/collection/immutable/HashSet;
+   7      45      2    lf       I
+
+  Signature: length = 0x2
+   00 32 
+
+public int initialSize();
+  Code:
+   Stack=1, Locals=1, Args_size=1
+   0:	iconst_0
+   1:	ireturn
+  LineNumberTable: 
+   line 110: 0
+
+
+public int loadFactor();
+  Code:
+   Stack=2, Locals=1, Args_size=1
+   0:	aload_0
+   1:	invokespecial	SI-54; //Method lf:()I
+   4:	iconst_0
+   5:	if_icmpne	17
+   8:	aload_0
+   9:	invokeinterface	SI-57,  1; //InterfaceMethod scala/collection/mutable/FlatHashTable._loadFactor:()I
+   14:	goto	21
+   17:	aload_0
+   18:	invokespecial	SI-54; //Method lf:()I
+   21:	ireturn
+  LineNumberTable: 
+   line 109: 0
+
+
+private void lf_$$eq(int);
+  Code:
+   Stack=2, Locals=2, Args_size=2
+   0:	aload_0
+   1:	iload_1
+   2:	putfield	SI-18; //Field lf:I
+   5:	return
+  LineNumberTable: 
+   line 103: 0
+
+
+private int lf();
+  Code:
+   Stack=1, Locals=1, Args_size=1
+   0:	aload_0
+   1:	getfield	SI-18; //Field lf:I
+   4:	ireturn
+  LineNumberTable: 
+   line 103: 0
+
+
+}
+{code}

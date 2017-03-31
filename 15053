@@ -1,0 +1,22 @@
+I have two files. In the first file a sealed type hierarchy is defined. The second file contains a match expression.
+
+If the match expression in the second file is not exhaustive then the compiler outputs a warning. The text of the warning depends on whether the file containing the hierarchy is also in the compile set or not.
+
+Steps to reproduce the behaviour:
+
+1. Download the two files. Item.scala contains the hierarchy and Main.scala the match expression.
+
+2. mkdir build
+
+3. scalac -d build Main.scala Item.scala
+=> the compiler outputs:
+warning: match is not exhaustive!
+missing combination UntypedAtomicValue
+
+4. scalac -cp build -d build Main.scala
+=> the compiler outputs:
+match is not exhaustive!
+missing combination IUntypedAtomicValue
+missing combination UntypedAtomicValue
+missing combination     IAttribute
+missing combination          IText

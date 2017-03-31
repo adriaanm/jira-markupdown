@@ -1,0 +1,29 @@
+Here's a standalone test case:
+
+{noformat}
+% tail sandbox/{macro,client}.scala
+==> sandbox/macro.scala <==
+  def impl(c: Context)(): c.Tree = {
+    import c.universe._
+    val tree = q"""class C; new C"""
+    val tree1 = c.typecheck(tree)
+    val tpe = tree1.tpe
+    val tree2 = c.typecheck(c.untypecheck(tree1))
+    q"""$tree2.asInstanceOf[$tpe]"""
+  }
+  def apply(): Any = macro impl
+}
+
+==> sandbox/client.scala <==
+class Client {
+  Macro()
+}
+
+% scalac-hash v2.11.3 sandbox/macro.scala && scalac-hash v2.11.3 -Ybackend:GenASM sandbox/client.scala
+
+% scalac-hash v2.11.3 sandbox/macro.scala && scalac-hash v2.11.3 -Ybackend:GenBCode sandbox/client.scala
+java.lang.AssertionError: assertion failed: Cannot create ClassBType from non-class symbol value <local Client>
+	at scala.tools.nsc.backend.jvm.BTypesFromSymbols.classBTypeFromSymbol(BTypesFromSymbols.scala:86)
+{noformat}
+
+And a potential workaround for shapeless: https://github.com/milessabin/shapeless/pull/429

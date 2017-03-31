@@ -1,0 +1,51 @@
+this is Skylla and Charybdis territory (github.com/scala/scala/commit/d300a5817fb4826516e0bc15b1e279903946a524)
+
+symptomatic explanation:
+it's private in the first case since the type does not escape
+in the second case, we have to come up with a type, and we include foo
+
+{code}
+[adriaan@lampmac13 scala (topic/virtpatmat)]$ qsc /Users/adriaan/Desktop/t5448.scala -Xprint:typer
+[[syntax trees at end of typer]]// Scala source: t5448.scala
+package <empty> {
+  final object Test extends Object with App with ScalaObject {
+    def <init>(): object Test = {
+      Test.super.<init>();
+      ()
+    };
+    def getFoo(a: Any): Unit = try {
+      a.getClass().getMethod("foo");
+      scala.this.Predef.println("Foo found!")
+    } catch {
+      case (e @ (_: NoSuchMethodException)) => scala.this.Predef.println("Foo missing!")
+    };
+    Test.this.getFoo({
+      final class $anon extends scala.AnyRef {
+        def <init>(): anonymous class $anon = {
+          $anon.super.<init>();
+          ()
+        };
+        private def foo: Int = 1
+      };
+      new $anon()
+    });
+    Test.this.getFoo({
+      val a: Object{def foo: Int} = {
+        final class $anon extends scala.AnyRef {
+          def <init>(): anonymous class $anon = {
+            $anon.super.<init>();
+            ()
+          };
+          def foo: Int = 1
+        };
+        new $anon()
+      };
+      a
+    })
+  }
+}
+
+[adriaan@lampmac13 scala (topic/virtpatmat)]$ qs Test
+Foo missing!
+Foo found!
+{code}

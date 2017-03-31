@@ -1,0 +1,69 @@
++ operator in SortedSet doesn't work as stated in Scaladoc:
+"Creates a new set with an additional element, unless the element is already present."
+
+It replaces existing element. 
+
+Same thing with ++.
+
+Reproduced in 2.10.0-M4 and 2.9.1.
+
+Example:
+
+{code} 
+Welcome to Scala version 2.10.0-M4 (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_31).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> import scala.collection.immutable.SortedSet
+import scala.collection.immutable.SortedSet
+
+scala> class Foo(val name: String, val n: Int) {
+     | override def equals(obj: Any): Boolean = obj match { case other: Foo => name == other.name; case _ => false }
+     | override def hashCode = name.##
+     | override def toString = "Foo(" + name + ", " + n + ")"
+     | }
+defined class Foo
+
+scala> implicit val ordering: Ordering[Foo] = Ordering.fromLessThan[Foo] { (a, b) => a.name.compareTo(b.name) < 0 }
+ordering: Ordering[Foo] = scala.math.Ordering$$anon$9@32370bf9
+
+scala> SortedSet(new Foo("bar", 1)) + new Foo("bar", 2)
+res0: scala.collection.immutable.SortedSet[Foo] = TreeSet(Foo(bar, 2))
+{code} 
+
+Another example:
+
+{code} 
+Welcome to Scala version 2.10.0-M4 (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_31).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> import scala.collection.immutable.TreeSet
+import scala.collection.immutable.TreeSet
+
+scala> import scala.collection.immutable.SortedSet
+import scala.collection.immutable.SortedSet
+
+scala> val s: SortedSet[String] = TreeSet()
+s: scala.collection.immutable.SortedSet[String] = TreeSet()
+
+scala> s + new String("foo")
+res0: scala.collection.immutable.SortedSet[String] = TreeSet(foo)
+
+scala> res0.head.hashCode
+res1: Int = 101574
+
+scala> System.identityHashCode(res0.head)
+res2: Int = 1965496749
+
+scala> System.identityHashCode(res0 + new String("foo"))
+res3: Int = 856318696
+
+scala> System.identityHashCode(res0 + new String("foo"))
+res4: Int = 143836998
+
+scala> System.identityHashCode((res0 + new String("foo")).head)
+res5: Int = 1652856443
+{code} 
+
+

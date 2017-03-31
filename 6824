@@ -1,0 +1,13 @@
+There is a workaround here:
+{code}
+import scala.util.continuations._
+class TailRecContinuation {
+  def foo(): Unit @suspendable = {
+    val v1 = shiftUnit0[String, Unit]("foo")
+    val v2 = locally(v1)
+    val _ = foo()
+  }
+}
+{code}
+
+But I don't know if the workaround cause memory leaks because it will create a linked list of closures(hold codes after foo()).

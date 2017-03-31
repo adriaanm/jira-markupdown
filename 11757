@@ -1,0 +1,12 @@
+[~ichoran] 
+The serialization was changed to this pattern due to changing hd from var to val:
+
+https://github.com/scala/scala/commit/a5fc6e69e0c26ca8537e01d17109e1037600af76
+
+The old serialization code mutated both list _and_ hd.
+
+I had plans to move tail to val as well, and stop using ListBuffer, but there was resistance since it requires changing the compiler in a couple places to not mutate it, and requires performance validation that the techniques used to become fully immutable do not hurt performance in various cases.    I still feel that there will be about as many wins as losses if done right, as there are performance opportunities in places like map and fold.
+
+Without the serialization proxy pattern, Java serialization will create an instance of the object without executing its constructor, and then readObject can mutate its fields.  If you have a val member, you can't use readObject because Scala won't let you mutate a val.
+
+Reversing the list on serialization will be slow on the other end when writing.

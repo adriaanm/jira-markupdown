@@ -1,0 +1,22 @@
+By the way, aside from the introduction of ResultOfNotWordForArray in Matchers.scala, one other line change is in ShouldMatchers.scala, which uses this new class. Here's the diff:
+
+{code}
+Macintosh-65:matchers bv$$ svn diff -r2069:HEAD ShouldMatchers.scala
+Index: ShouldMatchers.scala
+===================================================================
+--- ShouldMatchers.scala	(revision 2069)
++++ ShouldMatchers.scala	(revision 2087)
+@@ -1806,8 +1806,8 @@
+      *       ^
+      * </pre>
+      */
+-    def should(notWord: NotWord): ResultOfNotWordForSeq[T, Array[T]] =
+-      new ResultOfNotWordForSeq(left, false)
++    def should(notWord: NotWord): ResultOfNotWordForArray[T] =
++      new ResultOfNotWordForArray(left, false)
+   }
+   // Note, no should(beWord) is needed here because a different implicit conversion will be used
+   // on "array shoudl be ..." because this one doesn't solve the type error.
+{code}
+
+The addition of this new class in Matchers.scala and its use in ShouldMatchers.scala is sufficient to cause the compiler stack trace.

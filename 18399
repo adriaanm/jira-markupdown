@@ -1,0 +1,31 @@
+This is used in a number of places in the compiler. You can see the effect of the bug in eta-expansion:
+
+{code}
+scala> class C { def foo(a: Any)(b: Any) = a }; def c = new C
+defined class C
+c: C
+
+scala> reify{def x(c: => C) = c.foo(c) _}.tree
+res34: reflect.runtime.universe.Tree =
+{
+  def x(c: <byname>[$read.C]) = {
+    <synthetic> val eta$0$1 = c;
+    <synthetic> val eta$1$1 = c;
+    ((b) => eta$1$1.foo(eta$0$1)(b))
+  };
+  ()
+}
+
+scala> reify{def byname(f: (=> C) => Any) = (); byname(c => c.foo(c) _)}.tree
+res35: reflect.runtime.universe.Tree =
+{
+  def byname(f: Function1[<byname>[$read.C], Any]) = ();
+  byname(((c) => {
+    ((b) => c.foo(c)(b))
+  }))
+}
+{code}
+
+The two references to the by-name closure parameter {{c}} should have been lifted out, as per the first example with a by-name method parameter.
+
+See also my comments in https://github.com/scala/scala/commit/83ae74c.

@@ -1,0 +1,12 @@
+Another example of case classes only meeting half the equals contract:
+{code}
+scala> case class Foo(xs: Int*)
+defined class Foo
+
+scala> Foo(1,2,3) == Foo(1,2,3)
+res0: Boolean = true
+
+scala> Foo(1,2,3).hashCode == Foo(1,2,3).hashCode
+res1: Boolean = false
+{code}
+Equal objects must have equal hashcodes! I think this is a serious bug.

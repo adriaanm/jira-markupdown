@@ -1,0 +1,20 @@
+Steps to repro:
+
+{code}
+cat test/files/pos/t8461/Impl.scala
+import reflect.macros.Context
+import language.experimental._
+
+object Macro {
+  def readsImpl[A: c.WeakTypeTag](c: Context): c.Expr[Unit] = c.literalUnit
+  def reads[A] = macro readsImpl[A]
+}
+
+  ~/code/scala (qbin/scalac -nobootcp -Dscala.usejavacp=false -Xsource:2.10 -classpath $HOME/.m2/repository/org/scala-lang/scala-library/2.10.3/scala-library-2.10.3.jar:$HOME/.m2/repository/org/scala-lang/scala-reflect/2.10.3/scala-reflect-2.10.3.jar test/files/pos/t8461/Impl.scala )
+test/files/pos/t8461/Impl.scala:6: error: macro implementations cannot have implicit parameters other than WeakTypeTag evidences
+  def reads[A] = macro readsImpl[A]
+                       ^
+one error found
+{code}
+
+What we need to do is make the looks for `whitebox.Context` fallback to `Context`.

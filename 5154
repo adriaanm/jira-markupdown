@@ -1,0 +1,83 @@
+An update of SeqLike.combinations. Now combinations(n) will return a Iterator whose elements are in lexicographical order.
+Note: the "lexicographical order" in here is not the same as general.
+For a sequence s0s1s2...s(n-1) (of type Seq[T]), without the assumption of type T is subclass of Ordered[T], we can define the weight of s(k) (0<=k<n) which determined by the sequence itself. i.e. 
+{code}
+weight(s(k)) = 0 //if k = 0
+             = weight(s(i)) if exists 0<= i < k such that s(i) == s(k)
+             = max{ weight(s(i)), 0<=i <k } + 1 //else
+{code}
+Then we can define a order of s(k) by weight. 
+.......
+Damn, my english is too poor to describe it clearly. Just go and see the code.
+
+{code}
+trait SeqLike[+A, +Repr] extends IterableLike[A, Repr] { self =>
+  
+  /**
+    generating all combinations of n-elements in lexicographical order
+  */
+  def combinations(n: Int): Iterator[Repr] = 
+    if(n < 0 || n > self.size) Iterator.empty
+    else new CombinationsItr(n)
+    
+  private class CombinationsItr(n: Int) extends Iterator[Repr]{ 
+    val (elms,cnts,nums) = init()
+    val offs = cnts.scanLeft(0){ _+_ }
+    /*
+       generating all nums such that:
+       (1) nums(0) + .. + nums(length-1) = n
+       (2) 0 <= nums(i) <= cnts(i), where 0 <= i <= cnts.length-1
+    */
+    
+    var _hasNext = true
+    
+    override def hasNext = _hasNext
+    
+    override def next: Repr = {
+      if(!hasNext) Iterator.empty.next
+      
+      val sb = self.newBuilder
+      for(k <- 0 until nums.length; j <- 0 until nums(k)) {
+        sb += elms(offs(k)+j)
+      }
+      val res = sb.result
+      
+      var idx = nums.length - 1
+      while(idx >= 0 && nums(idx) == cnts(idx)) idx -= 1
+      idx = nums.lastIndexWhere(_ > 0, idx-1)
+      
+      if(idx < 0) {
+        _hasNext = false
+        return res
+      }
+      var sum = nums.view(idx+1, nums.length).sum + 1
+      nums(idx) -= 1
+      for(k <- (idx+1) until nums.length) {
+        nums(k) = sum min cnts(k)
+        sum -= nums(k)
+      }
+      res
+    }
+    
+    /**
+      rearrange seq to newSeq = a0a0..a0a1..a1...ak..ak where seq.count{ _== aj} = cnts(j) and init nums
+      @return (newSeq,cnts,nums)
+    */
+    def init(): (IndexedSeq[A], Array[Int], Array[Int]) = {
+      val m = mutable.HashMap[A,Int]()
+
+      //   e => (e, weight(e))
+      val (es,is) = self.map{ e => (e,m.getOrElseUpdate(e,m.size)) }.sortBy{ _._2 }.unzip
+      val cs = new Array[Int](m.size)
+      for(i <- is) cs(i) += 1
+      val ns = new Array[Int](cs.length)
+      var r = n
+      for(k <- 0 until ns.length) {
+        ns(k) = r min cs(k)
+        r -= ns(k)
+      }
+      (es.toIndexedSeq, cs, ns)
+    }
+  }
+}
+{code}

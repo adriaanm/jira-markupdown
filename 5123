@@ -1,0 +1,19 @@
+There's another way out of this mess, which is not great for performance and is messy, but recovers most generality except for pairs of ill-behaved Integrals and/or those that cannot be embedded into any of the existing Integral types.
+
+If you have a new method on Numeric:
+
+{code}
+  def comparator[U <: Numeric[U]](u: U): Option[(T, U) => Int]
+{code}
+
+and you have a new trait that is something like:
+
+{code}
+  trait EmbeddableNumber {
+    def embed: Either[ Either[Long, Double], Either[BigInt, BigDecimal] ]
+  }
+{code}
+
+from which any new numeric types should inherit, then if you define a comparator on all four types into which you might embed, you can do a binary search for contains on any numeric type that defines EmbeddableNumber.  This gives non-ideal performance, of course, but it's O(log N) instead of O(N), and it works extremely generally.
+
+(The key feature of embedding is that for your type T, T embeds into type U iff for all numeric types V, T==V iff U==V.)

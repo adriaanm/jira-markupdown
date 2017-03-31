@@ -1,0 +1,23 @@
+Scala 2.7.2 final produces invalid parsing errors when loading a file into an interactive shell. This happens when either an object or a class definition has a newline between the `id` and the `TemplateBody`'s opening curly brace.
+
+Let's say we have the following code in a file called `Foo.scala`:
+{code}
+object Foo
+{
+    def bar = 0
+}
+{code}
+
+When we load `Foo.scala` by running `scala -i Foo.scala`, the parsing fails, causing an error:
+{code}
+<console>:3: error: block must end in result expression, not in definition
+{code}
+
+After removing one newline character, the following code works:
+{code}
+object Foo {
+    def bar = 0
+}
+{code}
+But when running either version directly with the scala interpreter - as in `scala Foo.scala` - they both work.
+

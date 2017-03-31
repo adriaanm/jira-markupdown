@@ -1,0 +1,48 @@
+In the Language Spec
+
+
+section 6.3 says
+
+[null]
+eq(x ), ==(x ), equals(x ) return true iff their argument x is also the “null” object.
+
+section 12.1 says
+
+"final def == (that: Any): Boolean = this equals that"
+
+
+(BTW, The Programming in Scala book says something similar: " ‘==’ is always the same as equals ")
+
+
+
+But in practice
+    null equals ...
+causes a NullPointerException while
+    null == ...
+does not.
+
+
+I'm raising this as a documentation issue as I expect developers are happy with the current implementation
+(i.e. we like == being convenient and we like equals being fast).
+
+
+
+
+
+Here's the closest I came to a correction:-
+
+In section 6.3
+
+[null]
+eq(x ) returns true iff the argument x is also the “null” object.
+
+
+In section 12.1
+
+"final def == (that: Any): Boolean = if (null eq this) (null eq that) else (this equals that)"
+
+"final def != (that: Any): Boolean = if (null eq this) !(null eq that) else !(this equals that)"
+
+
+This is still imperfect as eq (e.g. "this eq null" or "null eq this") only compiles when the LHS and RHS are AnyRef, not Any. (But note this flaw is already present elsewhere: see  AnyRef's equals.)
+

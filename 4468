@@ -1,0 +1,13 @@
+My theory is this:
+ * The `uncurry` phase would translate `ImplicitMethodType` to `MethodType`.  It did not and does not remove the `IMPLICIT` flag from a parameter list.
+ * `matchesType` in `Types` used to compare:
+{code}
+tp1.isInstanceOf[ImplicitMethodType] == tp2.isInstanceOf[ImplicitMethodType] 
+{code}
+ but now does:
+{code}
+tp1.isImplicit == tp2.isImplicit
+{code}
+ * `checkNoDoubleDefs` in `Erasure` uses `Type.matches` and therefore doesn't think that an implicit parameter list and a non-implicit parameter list erase to the same type.
+
+A solution might be for `uncurry` to remove the `IMPLICIT` flag where it used to translate `ImplicitMethodType` to `MethodType`.  I will look into this later.

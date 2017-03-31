@@ -1,0 +1,15 @@
+Here's a partest:
+
+{code}
+import scala.tools.partest.ReplTest
+
+object Test extends ReplTest {
+  def code = """
+    import scala.language.experimental.macros
+    import scala.reflect.macros.Macro
+    trait Foo extends Macro { def foo(x: c.Expr[Int]) = x }
+    def foo(x: Int) = macro Foo.foo
+    foo(2)
+  """
+}
+{code}

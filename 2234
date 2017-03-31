@@ -1,0 +1,61 @@
+dcaoyuan@cymaca ~/tmp$$ scalac -version
+{code}
+Scala compiler version 2.8.0.r18542-b20090822210805 -- Copyright 2002-2009, LAMP/EPFL
+{code}
+
+dcaoyuan@cymaca ~/tmp$$ cat Ticket2287.scala 
+{code}
+object Ticket2287 {
+  
+  def test: String = {
+    val b = new B
+    "" + b.a // `a` is not member of `B`
+  }
+}
+
+class B {
+}
+{code}
+
+dcaoyuan@cymaca ~/tmp$$ scalac Ticket2287.scala 
+
+{code}
+Exception in thread "main" java.lang.Error: Unknown type: <error>, <error>[class scala.tools.nsc.symtab.Types$$ErrorType$$, class scala.tools.nsc.symtab.Types$$ErrorType$$] TypeRef? false, false
+	at scala.tools.nsc.Global.abort(Global.scala:188)
+	at scala.tools.nsc.backend.icode.TypeKinds$$class.toTypeKind(TypeKinds.scala:455)
+	at scala.tools.nsc.backend.icode.ICodes.toTypeKind(ICodes.scala:23)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:888)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.genLoadArguments(GenICode.scala:1111)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:828)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:947)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:116)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:73)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:73)
+	at scala.collection.generic.LinearSequenceTemplate$$class.foreach(LinearSequenceTemplate.scala:82)
+	at scala.collection.immutable.List.foreach(List.scala:27)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:73)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:138)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:92)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:73)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:73)
+	at scala.collection.generic.LinearSequenceTemplate$$class.foreach(LinearSequenceTemplate.scala:82)
+	at scala.collection.immutable.List.foreach(List.scala:27)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:73)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:83)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:69)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.apply(GenICode.scala:65)
+	at scala.tools.nsc.Global$$GlobalPhase.applyPhase(Global.scala:331)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:309)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:309)
+	at scala.collection.Iterator$$class.foreach(Iterator.scala:503)
+	at scala.collection.mutable.ListBuffer$$$$anon$$1.foreach(ListBuffer.scala:280)
+	at scala.tools.nsc.Global$$GlobalPhase.run(Global.scala:309)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.run(GenICode.scala:58)
+	at scala.tools.nsc.Global$$Run.compileSources(Global.scala:807)
+	at scala.tools.nsc.Global$$Run.compile(Global.scala:890)
+	at scala.tools.nsc.Main$$.process(Main.scala:91)
+	at scala.tools.nsc.Main$$.main(Main.scala:105)
+	at scala.tools.nsc.Main.main(Main.scala)
+{code}
+
+BTW, I think this issue also exists in Scala-2.7.x

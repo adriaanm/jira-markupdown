@@ -1,0 +1,13 @@
+Replying to [comment:3 moors]:
+> one revelation was triggered by overriding `def isLabellable` to be false like, all the time, and observe the broken code that is spat out... the condition that tests the result of the unapply is only generated for the final case, not in the else branches of the nested patterns -- this seems like a major clue
+
+You need to read my email where I explained the origin of SI-1697 and SI-2337 if you haven't already.
+
+http://article.gmane.org/gmane.comp.lang.scala.internals/2752
+
+The problem is in MixTypes, because the unapply gets broken up into two tests which end up separating and breaking the logic.
+
+It should be: if (x && y) body1 else body2
+but it ends up like: if (x) { if (y) body1 else fail } else body2
+
+However MixTypes has completely foiled my attempts to deconstruct it far enough to accomplish this.  The entirety of Patterns.scala and all code which uses it is essentially my attempt at rewriting the whole thing to keep such tests together.  By the way Patterns.scala should be a lot closer to code we want to use than the rest of it, but it still has many things I'm not proud because to use it I had to integrate with the rest of it.

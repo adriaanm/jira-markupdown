@@ -1,0 +1,64 @@
+Compile this code with both keys "-optimise" and "-target:jvm-1.7":
+{code}
+case class RichString[T](string: String, rich: List[(Int, T)]) {
+  def apply(index: Int): (Char, T) =
+    (string(index), rich.takeWhile(_._1 <= index).last._2)
+}
+object Main {
+  def main(args: Array[String]): Unit =
+    println(RichString("qwe", List((1, 1))));
+}
+{code}
+
+Then run it and you get this error message:
+
+{noformat}
+java.lang.VerifyError: Uninitialized object exists on backward branch 54
+Exception Details:
+  Location:
+    RichString.apply(I)Lscala/Tuple2; @136: goto
+  Reason:
+    Error exists in the bytecode
+  Bytecode:
+    0000000: bb00 2859 b200 2db2 0032 2ab6 0034 4e4d
+    0000010: 2d1b b600 38b8 003e 2ab6 0040 bb00 4259
+    0000020: 2a1b b700 463a 073a 04bb 0048 59b7 004b
+    0000030: 3a09 1904 3a0a 190a b900 5101 009a 0020
+    0000040: 190a b900 5701 00c0 0028 b600 5b19 07b4
+    0000050: 005f a300 0704 a700 0403 9a00 1519 09b6
+    0000060: 0062 b600 67c0 0028 b600 6ab7 006d b019
+    0000070: 0919 0ab9 0057 0100 b600 7157 190a b900
+    0000080: 7601 00c0 0064 3a0a a7ff ae            
+  Stackmap Table:
+    full_frame(@54,{Object[#2],Integer,Object[#47],Object[#121],Object[#100],Top,Top,Object[#66],Top,Object[#72],Object[#100]},{Uninitialized[#0],Uninitialized[#0],Object[#123]})
+    full_frame(@89,{Object[#2],Integer,Object[#47],Object[#121],Object[#100],Top,Top,Object[#66],Top,Object[#72],Object[#100]},{Uninitialized[#0],Uninitialized[#0],Object[#123]})
+    full_frame(@90,{Object[#2],Integer,Object[#47],Object[#121],Object[#100],Top,Top,Object[#66],Top,Object[#72],Object[#100]},{Uninitialized[#0],Uninitialized[#0],Object[#123],Integer})
+    full_frame(@93,{Object[#2],Integer,Object[#47],Object[#121],Object[#100],Top,Top,Object[#66],Top,Object[#72],Object[#100]},{Uninitialized[#0],Uninitialized[#0],Object[#123]})
+    full_frame(@111,{Object[#2],Integer,Object[#47],Object[#121],Object[#100],Top,Top,Object[#66],Top,Object[#72],Object[#100]},{Uninitialized[#0],Uninitialized[#0],Object[#123]})
+
+        at Main$.main(Main.scala:8)
+        at Main.main(Main.scala)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+        at java.lang.reflect.Method.invoke(Method.java:606)
+        at scala.reflect.internal.util.ScalaClassLoader$$anonfun$run$1.apply(ScalaClassLoader.scala:68)
+        at scala.reflect.internal.util.ScalaClassLoader$class.asContext(ScalaClassLoader.scala:31)
+        at scala.reflect.internal.util.ScalaClassLoader$URLClassLoader.asContext(ScalaClassLoader.scala:99)
+        at scala.reflect.internal.util.ScalaClassLoader$class.run(ScalaClassLoader.scala:68)
+        at scala.reflect.internal.util.ScalaClassLoader$URLClassLoader.run(ScalaClassLoader.scala:99)
+        at scala.tools.nsc.CommonRunner$class.run(ObjectRunner.scala:22)
+        at scala.tools.nsc.ObjectRunner$.run(ObjectRunner.scala:39)
+        at scala.tools.nsc.CommonRunner$class.runAndCatch(ObjectRunner.scala:29)
+        at scala.tools.nsc.ObjectRunner$.runAndCatch(ObjectRunner.scala:39)
+        at scala.tools.nsc.MainGenericRunner.runTarget$1(MainGenericRunner.scala:72)
+        at scala.tools.nsc.MainGenericRunner.process(MainGenericRunner.scala:94)
+        at scala.tools.nsc.MainGenericRunner$.main(MainGenericRunner.scala:103)
+        at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
+{noformat}
+
+Scala version is 2.11.1.
+java -version is:
+java version "1.7.0_55"
+OpenJDK Runtime Environment (IcedTea 2.4.7) (ArchLinux build 7.u55_2.4.7-1-x86_64)
+OpenJDK 64-Bit Server VM (build 24.51-b03, mixed mode)

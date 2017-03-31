@@ -1,0 +1,49 @@
+The following program should not compile, but instead fails at runtime.
+{code}
+class Gox {
+  object Zed { }
+  class Zed  { }
+}          
+
+object Test {
+  type GoxZed = t.Zed forSome { val t: Gox }
+  
+  def main(args: Array[String]): Unit = {
+    val x = new Gox
+    val y: GoxZed = x.Zed
+  }
+}
+{code}
+{code}
+% scala29 Test
+java.lang.ClassCastException: Gox$$Zed$$ cannot be cast to Gox$$Zed
+ at Test$$.main(gox.scala:11)
+ at Test.main(gox.scala)
+{code}
+
+The type of y is declared to be an instance of the class Zed, but the compiler allows the object Zed to be assigned to it.  We can verify this is a result of type/term blurring by making a small change:
+{code}
+class Gox {
+  object ZedZed { }
+  class Zed  { }
+}          
+
+object Test {
+  type GoxZed = t.Zed forSome { val t: Gox }
+
+  def main(args: Array[String]): Unit = {
+    val x = new Gox
+    val y: GoxZed = x.ZedZed
+  }
+}
+{code}
+Now the compiler correctly fails it.
+{code}
+% scalac29 zed2.scala 
+zed2.scala:11: error: type mismatch;
+ found   : x.ZedZed.type (with underlying type object x.ZedZed)
+ required: Test.GoxZed
+    val y: GoxZed = x.ZedZed
+                      ^
+one error found
+{code}

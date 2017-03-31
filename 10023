@@ -1,0 +1,30 @@
+I was experimenting with `reset`, and happened to require this feature fix.
+
+{code}
+scala> :reset
+Resetting interpreter state.
+Forgetting this session history:
+
+new base.Y().context
+
+Forgetting all expression results and named terms: $intp
+
+scala> base
+<console>:8: error: package base is not a value
+              base
+              ^
+
+scala> foo
+<console>:8: error: package foo is not a value
+              foo
+              ^
+
+scala> new base.Y().context
+java.lang.NoClassDefFoundError: base/Y
+  ... 32 elided
+Caused by: java.lang.ClassNotFoundException: base.Y
+  at scala.reflect.internal.util.AbstractFileClassLoader.findClass(AbstractFileClassLoader.scala:85)
+  at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
+  at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
+  ... 32 more
+{code}

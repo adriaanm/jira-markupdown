@@ -1,0 +1,23 @@
+I propose adding the following method to scala.Enumeration:
+
+{code}
+  /* Returns a Value from this Enumeration whose name matches the argument <var>s</var>.
+   * You must pass a String* set of names to the constructor,
+   * or initialize each Enumeration with Value(String),
+   * for valueOf to work.
+   * @param s an enumeration name
+   * @return <tt>Some(Value)</tt> if an enumeration's name matches <var>s</var>, 
+   * else <tt>None</tt>
+   */
+  def valueOf(s:String) = {
+    var v: Option[Value] = None
+    for( e <- elements ) if (s == e.toString()) v = Some(e)
+    v
+  }
+{code}
+
+
+Attached is a subclass of Enumeration which defines such a
+method, and sample Enumerations which use the method to
+show how it works for finding/matching values.
+

@@ -1,0 +1,16 @@
+{code}
+class C {
+  def f(o: Option[C]) = o.getOrElse(throw new NoSuchElementException(""))
+}
+{code}
+
+with latest 2.12.x
+
+{noformat}
+➜  sandbox git:(yoptInScala) qsc -Yopt:l:classpath Test.scala
+java.lang.AssertionError: assertion failed: jvmWiseLUB for null or nothing: Lscala/runtime/Nothing$; - Ljava/lang/Object;
+	at scala.Predef$.assert(Predef.scala:165)
+	at scala.tools.nsc.backend.jvm.BTypes$ClassBType.jvmWiseLUB(BTypes.scala:945)
+	at scala.tools.nsc.backend.jvm.BCodeHelpers$CClassWriter.getCommonSuperClass(BCodeHelpers.scala:71)
+	at scala.tools.asm.ClassWriter.getMergedType(ClassWriter.java:1654)
+{noformat}

@@ -1,0 +1,54 @@
+Under some circumstances, multiple cases in a catch clause causes invalid IL code to be generated (at least according to Mono). For example, running this:
+
+{code}
+object ExceptionCases {
+	def main(args: Array[String]) = {
+		try {
+			var (params, filename) = processArgs(args)
+			println("Okay")
+			
+		}catch{
+			case ex: ApplicationException ⇒ println("ApplicationException")
+			case ex: Exception ⇒ println("Other exception")
+		}
+	}
+	
+	def processArgs(args:Array[String]):(String, String) = ("", "")
+}
+{code}
+
+Causes this:
+
+{code}
+Unhandled Exception: System.InvalidProgramException: Invalid IL code in ExceptionCases$$:main (string[]): IL_002b: stloc.2   
+
+
+  at <Module>.Main (System.String[] args) [0x00000] 
+{code}
+
+Interestingly, convert it to this:
+
+{code}
+object ExceptionCases {
+	def main(args: Array[String]) = {
+		try {
+			var (params, filename) = processArgs(args)
+			println("Okay")
+			
+		}catch{
+			case exception: Exception ⇒ {
+				exception match {
+					case ex: ApplicationException ⇒ println("ApplicationException")
+					case ex: Exception ⇒ println("Other exception")
+				}
+			}
+		}
+	}
+	
+	def processArgs(args:Array[String]):(String, String) = ("", "")
+}
+{code}
+
+...and it runs fine.
+
+Not tested on JVM Scala

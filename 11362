@@ -1,0 +1,13 @@
+It's also interesting to note that the full signature for `Map#map` is also misleading:
+
+{code}
+Full Signature
+def map[B, That](f: ((A, B)) ⇒ B)(implicit bf: CanBuildFrom[Map[A, B], B, That]): That
+{code}
+
+Disambiguating:
+
+{code}
+def map[B, That](f: ((A, B/*a type parameter of class Map*/)) ⇒ B /*a type parameter of method map*/) ...
+{code}
+

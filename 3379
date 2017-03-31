@@ -1,0 +1,36 @@
+  I apologize for reposting the same thing, but the first time I did a mistake in  the formatting :( and I couldn't edit the original comment. 
+
+It seems this problem is still present in 2.8.0-rc1 . The code that triggers it:
+
+{code}
+object MyClass {
+  val duplicate: Int = 10
+}
+
+
+class MyClass {
+  private val duplicate = MyClass.duplicate
+}
+
+{code}
+
+Whenever an instance of !MyClass is created, the following exception is thrown: 
+{code}
+Exception in thread "main" java.lang.ClassFormatError: Duplicate method name&signature in class file duplicatemerthodsignaturescala/MyClass
+{code}
+
+Javap output: 
+{code}
+
+public class duplicatemerthodsignaturescala.MyClass extends java.lang.Object implements scala.ScalaObject{
+    private final int duplicate;
+    public static final int duplicate();
+    private int duplicate();
+    public duplicatemerthodsignaturescala.MyClass();
+}
+
+{code}
+
+JVM version: 1.6.0_18; Scala version: 2.8.0.RC1; OS: Ubuntu 9.10. 
+
+

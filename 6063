@@ -1,0 +1,39 @@
+I successfully predex Scala 2.9.2 library, upload it to emulator and boot with 2.2 image. "LinearAlloc exceeded" message gone.
+
+library.properties
+#Fri, 13 Apr 2012 03:37:12 +0200
+
+version.number=2.9.2
+maven.version.number=2.9.2
+osgi.version.number=2.9.2.v20120330-163119-949a4804e4
+copyright.string=Copyright 2002-2011, LAMP/EPFL
+
+adb log:
+
+D/qemud   (   38): client_registration: registration succeeded for client 2
+D/dalvikvm(   56): DexOpt: load 628ms, verify 1156ms, opt 44ms
+D/dalvikvm(   33): DexOpt: --- END 'scala-library.jar' (success) ---
+D/dalvikvm(   33): DEX prep '/data/framework/scala-library.jar': unzip in 302ms, rewrite 2348ms
+D/dalvikvm(   33): DexOpt: --- BEGIN 'scala-collection.jar' (bootstrap=1) ---
+D/dalvikvm(   60): DexOpt: load 7393ms, verify 1278ms, opt 34ms
+D/dalvikvm(   33): DexOpt: --- END 'scala-collection.jar' (success) ---
+D/dalvikvm(   33): DEX prep '/data/framework/scala-collection.jar': unzip in 145ms, rewrite 9181ms
+D/dalvikvm(   33): DexOpt: --- BEGIN 'scala-immutable.jar' (bootstrap=1) ---
+D/dalvikvm(   61): DexOpt: load 12497ms, verify 967ms, opt 21ms
+D/dalvikvm(   33): DexOpt: --- END 'scala-immutable.jar' (success) ---
+D/dalvikvm(   33): DEX prep '/data/framework/scala-immutable.jar': unzip in 73ms, rewrite 13753ms
+D/dalvikvm(   33): DexOpt: --- BEGIN 'scala-mutable.jar' (bootstrap=1) ---
+D/dalvikvm(   66): DexOpt: load 10876ms, verify 1442ms, opt 21ms
+D/dalvikvm(   33): DexOpt: --- END 'scala-mutable.jar' (success) ---
+D/dalvikvm(   33): DEX prep '/data/framework/scala-mutable.jar': unzip in 63ms, rewrite 12575ms
+D/dalvikvm(   33): DexOpt: --- BEGIN 'scala-actors.jar' (bootstrap=1) ---
+D/dalvikvm(   67): DexOpt: load 100ms, verify 1303ms, opt 13ms
+D/dalvikvm(   33): DexOpt: --- END 'scala-actors.jar' (success) ---
+D/dalvikvm(   33): DEX prep '/data/framework/scala-actors.jar': unzip in 31ms, rewrite 1547ms
+D/AndroidRuntime(   33): --- registering native functions ---
+I/SamplingProfilerIntegration(   33): Profiler is disabled.
+I/Zygote  (   33): Preloading classes...
+
+I am sure it is fixed now.
+
+BTW I successfully create Scala Android application (DigiSSHD) and publish it on Google Play. You may find a source code at GitHub. I suspect that is most complex application for Android at the moment (4Mb in summary) based on Scala 2.8.2. Unfortunately the *new* bug #SI-4626 prevent to build it and test with Scala 2.9 :( But library dex work properly at least.

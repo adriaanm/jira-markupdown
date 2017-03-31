@@ -1,0 +1,20 @@
+{code}
+class Foo {
+  def foo = ":("
+}
+
+trait Bar {
+  this: Foo =>
+
+  def bar = ":)"
+}
+
+object FooBar {
+  def fooBar(bar: Bar) {
+    println(bar.foo) // error: value foo is not a member of Bar
+    println(bar.bar)
+  }
+}
+{code}
+
+Since only descendants of {{Foo}} can have {{trait Bar}} mixed in I think public {{Foo}} members should be available through reference of type {{Bar}}

@@ -1,0 +1,41 @@
+[~roland.kuhn] I've tried to bring this patch across but I'm stuck. I must admit I still find the internals of `scala.concurrent._` a little hard to navigate. Could you take a look and see what I'm doing wrong?
+
+https://github.com/scala/scala/compare/2.11.x...retronym:ticket/9304
+
+{noformat}
+java.lang.IllegalArgumentException: requirement failed
+	at scala.Predef$.require(Predef.scala:207)
+	at scala.concurrent.BatchingExecutor$Batch.run(BatchingExecutor.scala:52)
+	at scala.concurrent.Future$InternalCallbackExecutor$.unbatchedExecute(Future.scala:599)
+	at scala.concurrent.BatchingExecutor$Batch.blockOn(BatchingExecutor.scala:92)
+	at scala.concurrent.package$.blocking(package.scala:123)
+	at BlockContexts_t9304$$anon$5$$anonfun$77$$anonfun$27.apply$mcVI$sp(scala-concurrent-tck.scala:586)
+	at BlockContexts_t9304$$anon$5$$anonfun$77$$anonfun$27.apply(scala-concurrent-tck.scala:584)
+	at BlockContexts_t9304$$anon$5$$anonfun$77$$anonfun$27.apply(scala-concurrent-tck.scala:584)
+	at scala.util.Success$$anonfun$map$1.apply(Try.scala:236)
+	at scala.util.Try$.apply(Try.scala:191)
+	at scala.util.Success.map(Try.scala:236)
+	at scala.concurrent.Future$$anonfun$map$1.apply(Future.scala:235)
+	at scala.concurrent.Future$$anonfun$map$1.apply(Future.scala:235)
+	at scala.concurrent.impl.CallbackRunnable.run(Promise.scala:32)
+	at scala.concurrent.BatchingExecutor$Batch$$anonfun$run$1.processBatch$1(BatchingExecutor.scala:63)
+	at scala.concurrent.BatchingExecutor$Batch$$anonfun$run$1.apply$mcV$sp(BatchingExecutor.scala:78)
+	at scala.concurrent.BatchingExecutor$Batch$$anonfun$run$1.apply(BatchingExecutor.scala:57)
+	at scala.concurrent.BatchingExecutor$Batch$$anonfun$run$1.apply(BatchingExecutor.scala:57)
+	at scala.concurrent.BlockContext$.withBlockContext(BlockContext.scala:72)
+	at scala.concurrent.BatchingExecutor$Batch.run(BatchingExecutor.scala:56)
+	at scala.concurrent.Future$InternalCallbackExecutor$.unbatchedExecute(Future.scala:599)
+	at scala.concurrent.BatchingExecutor$class.execute(BatchingExecutor.scala:105)
+	at scala.concurrent.Future$InternalCallbackExecutor$.execute(Future.scala:597)
+	at scala.concurrent.impl.CallbackRunnable.executeWithValue(Promise.scala:40)
+	at scala.concurrent.impl.Promise$DefaultPromise.scala$concurrent$impl$Promise$DefaultPromise$$dispatchOrAddCallback(Promise.scala:280)
+	at scala.concurrent.impl.Promise$DefaultPromise.onComplete(Promise.scala:270)
+	at scala.concurrent.Future$class.flatMap(Future.scala:249)
+	at scala.concurrent.impl.Promise$DefaultPromise.flatMap(Promise.scala:153)
+	at BlockContexts_t9304$$anon$5.run(scala-concurrent-tck.scala:579)
+	at scala.concurrent.Future$InternalCallbackExecutor$.unbatchedExecute(Future.scala:599)
+	at scala.concurrent.BatchingExecutor$class.execute(BatchingExecutor.scala:108)
+	at scala.concurrent.Future$InternalCallbackExecutor$.execute(Future.scala:597)
+	at BlockContexts_t9304$class.testTaskUsingBlockingMultipleTimes(scala-concurrent-tck.scala:577)
+	at Test$.testTaskUsingBlockingMultipleTimes(scala-concurrent-tck.scala:813)
+{noformat}

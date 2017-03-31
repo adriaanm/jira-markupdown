@@ -1,0 +1,24 @@
+Attached you will find a simple demo/benchmark for type specialization. It is possible to compile (with -Yspecialize), but running will lead to an error:
+{code}
+tmp$$ rm -r demo
+tmp$$ fsc -Yspecialize SpecializedDemo.scala
+tmp$$ scala demo.SpecializedDemo
+91180000
+java.lang.AbstractMethodError
+	at scala.collection.IndexedSeqLike$$class.foreach(IndexedSeqLike.scala:87)
+	at scala.collection.immutable.IndexedSeq$$Impl.foreach(IndexedSeq.scala:34)
+	at demo.SpecializedDemo$$.specialized(SpecializedDemo.scala:23)
+	at demo.SpecializedDemo$$.main(SpecializedDemo.scala:9)
+	at demo.SpecializedDemo.main(SpecializedDemo.scala)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at scala.tools.nsc.util.ScalaClassLoader$$$$anonfun$$run$$1.apply(ScalaClassLoader.scala:55)
+	at scala.tools.nsc.util.ScalaClassLoader$$class.asContext(ScalaClassLoader.scala:22)
+	at scala.tools.nsc.util.ScalaClassLoader$$URLClassLoader.asContext(ScalaClassLoader.scala:61)
+	at scala.tools.nsc.util.ScalaClassLoader$$class.run(ScalaClassLoader.scala:55)
+	at scala.tools.nsc.util.ScalaClassLoader$$URLClassLoader.run(ScalaClassLoader.scala:61)
+	at scala.tools.nsc.MainGenericRunner$$.main(MainGenericRunner.scala:153)
+	at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
+{code}

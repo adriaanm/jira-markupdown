@@ -1,0 +1,178 @@
+The following code give this error when written in scala (while deploying) :
+
+{code}
+org.hibernate.MappingException: Could not determine type for: GUID, at table: COM_MAPPING, for columns: [org.hibernate.mapping.Column(modified_by)]
+{code}
+
+but not when written in Java, I assume the annotations are improperly handled by the compiler and thus at runtime hibernate gets confused. I tried several versions of Hibernate too (before I tried coding it in Java) and this happened with all the ones I tried (3.x). Here is the (simplified) Scala code :
+
+// Scala Start ----------------------------------------------------------------------
+{code}
+@MappedSuperclass
+@TypeDef(name="GUID",typeClass=classOf[com.toto.persistence.GUIDAsStringType])
+trait RefDataEntity {
+
+  @Id
+  @Type(`type`="GUID")
+  @Column(name="id", nullable=false)
+  @BeanProperty
+  var id : GUID = null;
+
+  @Column(name="short_code", nullable=false, unique=true)
+  @BeanProperty
+  var shortCode : String = null;
+
+  @Type(`type`="GUID")
+  @Column(name="modified_by", nullable=false)
+  @BeanProperty
+  var modifiedBy : GUID = null;
+}
+{code}
+
+{code}
+@Entity()
+@Table(name="COM_MAPPING")
+@NamedQueries(Array(
+  new NamedQuery(name="ComEntity.FindAll", query="SELECT e FROM ComEntity e"),
+  new NamedQuery(name="ComEntity.FindByShortCode", query="SELECT e FROM ComEntity e WHERE e.shortCode = :shortCode")))
+class ComEntity extends RefDataEntity {
+
+  @Column(name="com_name", nullable=false)
+  @BeanProperty
+  var comName : String = null
+}
+
+object ComEntity {
+
+  object QueryNames {
+
+    val FIND_ALL = "ComEntity.FindAll"
+    val FIND_BY_SHORT_CODE = "ComEntity.FindByShortCode"
+  }
+}
+{code}
+
+{code}
+@Entity()
+@Table(name="CUR_MAPPING")
+@NamedQueries(Array(
+  new NamedQuery(name="CurEntity.FindAll", query="SELECT e FROM CurEntity e"),
+  new NamedQuery(name="CurEntity.FindByShortCode", query="SELECT e FROM CurEntity e WHERE e.shortCode = :shortCode")))
+class CurEntity extends RefDataEntity {
+
+  @Column(name="cur_name", nullable=false)
+  @BeanProperty
+  var curName : String = null
+}
+
+object CurEntity {
+
+  object QueryNames {
+
+    val FIND_ALL = "CurEntity.FindAll"
+    val FIND_BY_SHORT_CODE = "CurEntity.FindByShortCode"
+  }
+}
+{code}
+// Scala End --------------------------------------------------------------------------
+
+And the Java code that does work:
+
+// Java Begin --------------------------------------------------------------------------
+{code}
+@MappedSuperclass
+@TypeDef(name = "GUID", typeClass = com.toto.persistence.GUIDAsStringType.class)
+public abstract class RefDataEntityJ {
+
+    @Id
+    @Type(type = "GUID")
+    @Column(name = "id", nullable = false)
+    public GUID id = null;
+
+    @Column(name = "short_code", nullable = false, unique = true)
+    public String shortCode = null;
+
+    @Type(type = "GUID")
+    @Column(name = "modified_by", nullable = false)
+    public GUID modifiedBy = null;
+
+    public GUID getId() {
+        return id;
+    }
+
+    public void setId(GUID id) {
+        this.id = id;
+    }
+
+    public String getShortCode() {
+        return shortCode;
+    }
+
+    public void setShortCode(String shortCode) {
+        this.shortCode = shortCode;
+    }
+
+    public GUID getModifiedBy() {
+        return modifiedBy;
+    }
+
+    public void setModifiedBy(GUID modifiedBy) {
+        this.modifiedBy = modifiedBy;
+    }
+}
+{code}
+
+{code}
+@Entity()
+@Table(name = "COM_MAPPING")
+@NamedQueries({
+        @NamedQuery(name = "ComEntity.FindAll", query = "SELECT e FROM ComEntityJ e"),
+        @NamedQuery(name = "ComEntity.FindByShortCode", query = "SELECT e FROM ComEntityJ e WHERE e.shortCode = :shortCode")})
+public class ComEntityJ extends RefDataEntityJ {
+
+    public interface QueryNames {
+
+        public final String FIND_ALL = "ComEntity.FindAll";
+        public final String FIND_BY_SHORT_CODE = "ComEntity.FindByShortCode";
+    }
+
+    @Column(name = "com_name", nullable = false)
+    public String comName = null;
+
+    public String getComName() {
+        return comName;
+    }
+
+    public void setComName(String comName) {
+        this.comName = comName;
+    }
+}
+{code}
+
+{code}
+@Entity()
+@Table(name = "CUR_MAPPING")
+@NamedQueries({
+        @NamedQuery(name = "CurEntity.FindAll", query = "SELECT e FROM CurEntityJ e"),
+        @NamedQuery(name = "CurEntity.FindByShortCode", query = "SELECT e FROM CurEntityJ e WHERE e.shortCode = :shortCode")})
+public class CurEntityJ extends RefDataEntityJ {
+
+    public interface QueryNames {
+
+        public final String FIND_ALL = "CurEntity.FindAll";
+        public final String FIND_BY_SHORT_CODE = "CurEntity.FindByShortCode";
+    }
+
+    @Column(name = "cur_name", nullable = false)
+    public String curName = null;
+
+    public String getCurName() {
+        return curName;
+    }
+
+    public void setCurName(String curName) {
+        this.curName = curName;
+    }
+}
+{code}
+// Java End --------------------------------------------------------------------------

@@ -1,0 +1,53 @@
+{code}
+import scala.tools.nsc.reporters._
+import scala.tools.nsc.Settings
+import reflect.runtime.Mirror.ToolBox
+
+object Test extends App {
+  val code = scala.reflect.Code.lift{
+    new Object().getClass
+  };
+
+  val reporter = new ConsoleReporter(new Settings)
+  val toolbox = new ToolBox(reporter)
+  val ttree = toolbox.typeCheck(code.tree)
+  toolbox.runExpr(ttree)
+}
+{code}
+
+{code}
+java.lang.StackOverflowError
+  at scala.reflect.internal.Importers$Importer.importTree(Importers.scala:229)
+  at scala.reflect.internal.Importers$Importer.importTree(Importers.scala:299)
+  at scala.reflect.internal.Importers$Importer.importTree(Importers.scala:279)
+  at scala.reflect.internal.Importers$Importer.importTree(Importers.scala:299)
+  at scala.reflect.internal.Importers$Importer.importTree(Importers.scala:290)
+  at scala.reflect.internal.Importers$Importer.importTree(Importers.scala:299)
+  at scala.reflect.internal.Importers$Importer.importTree(Importers.scala:290)
+  at scala.reflect.internal.Importers$Importer.doImport$1(Importers.scala:43)
+  at scala.reflect.internal.Importers$Importer.importOrRelink$1(Importers.scala:130)
+  at scala.reflect.internal.Importers$Importer$$anonfun$importSymbol$1.apply(Importers.scala:132)
+  at scala.reflect.internal.Importers$Importer$$anonfun$importSymbol$1.apply(Importers.scala:132)
+  at scala.collection.mutable.MapLike$class.getOrElseUpdate(MapLike.scala:169)
+  at scala.collection.mutable.AbstractMap.getOrElseUpdate(Map.scala:91)
+  at scala.reflect.internal.Importers$Importer.importSymbol(Importers.scala:132)
+  at scala.reflect.internal.Importers$Importer.importType(Importers.scala:137)
+  at scala.reflect.internal.Importers$Importer$$anonfun$importType$1.apply(Importers.scala:137)
+  at scala.reflect.internal.Importers$Importer$$anonfun$importType$1.apply(Importers.scala:137)
+  at scala.collection.TraversableLike$$anonfun$map$1.apply(TraversableLike.scala:237)
+  at scala.collection.TraversableLike$$anonfun$map$1.apply(TraversableLike.scala:237)
+  at scala.collection.LinearSeqOptimized$class.foreach(LinearSeqOptimized.scala:59)
+  at scala.collection.immutable.List.foreach(List.scala:77)
+  at scala.collection.TraversableLike$class.map(TraversableLike.scala:237)
+  at scala.collection.AbstractTraversable.map(Traversable.scala:112)
+  at scala.reflect.internal.Importers$Importer.importType(Importers.scala:137)
+  at scala.reflect.internal.Importers$Importer.importTree(Importers.scala:331)
+  at scala.reflect.internal.Importers$Importer.doImport$1(Importers.scala:43)
+  at scala.reflect.internal.Importers$Importer.importOrRelink$1(Importers.scala:130)
+  at scala.reflect.internal.Importers$Importer$$anonfun$importSymbol$1.apply(Importers.scala:132)
+  at scala.reflect.internal.Importers$Importer$$anonfun$importSymbol$1.apply(Importers.scala:132)
+  at scala.collection.mutable.MapLike$class.getOrElseUpdate(MapLike.scala:169)
+  at scala.collection.mutable.AbstractMap.getOrElseUpdate(Map.scala:91)
+  at scala.reflect.internal.Importers$Importer.importSymbol(Importers.scala:132)
+  at scala.reflect.internal.Importers$Importer.importType(Importers.scala:137)
+{code}

@@ -1,0 +1,35 @@
+This is actually just a classpath ordering issue. Starting from the project you provided I was able to reproduce the problem and your work around. I then removed the output folder from the classpath and removed and re-added the specs .jar. This had the effect of moving specs towards the end of the classpath (ie. after JUnit, but before the project's output folder). With this configuation the test runs as expected.
+
+The before and after of the .classpath are,
+
+Before (ie. failing)
+{code}
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="test"/>
+	<classpathentry kind="con" path="ch.epfl.lamp.sdt.launching.SCALA_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/specs-1.6.1-2.8.0.Beta1-RC3.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
+{code}
+
+After (ie. succeeding)
+{code}
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="test"/>
+	<classpathentry kind="con" path="ch.epfl.lamp.sdt.launching.SCALA_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="lib" path="lib/specs-1.6.1-2.8.0.Beta1-RC3.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
+{code}
+
+So I think that the behaviour you're seeing is to be expected in the absence of specs-specific tooling which knows about the correct relative ordering of the specs and JUnit jars.
+
+Feel free to open an enhancement ticket for that, and in the meantime you'll need to deal with this manually ... the rule would be: add the JUnit library to the classpath before the specs jar.

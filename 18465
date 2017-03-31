@@ -1,0 +1,30 @@
+Attempting to use the Guava cache package without the JSR-305 and JSR-330 annotations in the classpath results in some rather strange error messages:
+
+{noformat}
+warning: Class javax.annotation.Nullable not found - continuing with a stub.
+warning: Caught: java.lang.NullPointerException while parsing annotations in /home/users/alex/.m2/repository/com/google/guava/guava/14.0.1/guava-14.0.1.jar(com/google/common/cache/LocalCache.class)
+error: error while loading LocalCache, class file '/home/users/alex/.m2/repository/com/google/guava/guava/14.0.1/guava-14.0.1.jar(com/google/common/cache/LocalCache.class)' is broken
+(class java.lang.RuntimeException/bad constant pool tag 9 at byte 125)
+warning: Class javax.annotation.CheckReturnValue not found - continuing with a stub.
+warning: Caught: java.lang.NullPointerException while parsing annotations in /home/users/alex/.m2/repository/com/google/guava/guava/14.0.1/guava-14.0.1.jar(com/google/common/cache/CacheBuilder.class)
+error: error while loading CacheBuilder, class file '/home/users/alex/.m2/repository/com/google/guava/guava/14.0.1/guava-14.0.1.jar(com/google/common/cache/CacheBuilder.class)' is broken
+(class java.lang.RuntimeException/bad constant pool index: 0 at pos: 15184)
+/home/users/alex/code/projects/java/scala-safe-cast/src/main/scala/scalaSafeCast/package.scala:66: error: value build is not a member of com.google.common.cache.CacheBuilder[Object,Object]
+possible cause: maybe a semicolon is missing before `value build'?
+		.build(CacheLoader.from(new com.google.common.base.Function[ClassSymbol, immutable.Seq[MethodSymbol]] {
+                 ^
+warning: Class javax.annotation.Nullable not found - continuing with a stub.
+warning: Caught: java.lang.NullPointerException while parsing annotations in /home/users/alex/.m2/repository/com/google/guava/guava/14.0.1/guava-14.0.1.jar(com/google/common/cache/Cache.class)
+error: error while loading Cache, class file '/home/users/alex/.m2/repository/com/google/guava/guava/14.0.1/guava-14.0.1.jar(com/google/common/cache/Cache.class)' is broken
+(class java.lang.RuntimeException/bad constant pool index: 1025 at pos: 1213)
+warning: Class javax.annotation.Nullable not found - continuing with a stub.
+warning: Caught: java.lang.NullPointerException while parsing annotations in /home/users/alex/.m2/repository/com/google/guava/guava/14.0.1/guava-14.0.1.jar(com/google/common/base/Function.class)
+error: error while loading Function, class file '/home/users/alex/.m2/repository/com/google/guava/guava/14.0.1/guava-14.0.1.jar(com/google/common/base/Function.class)' is broken
+(class java.lang.RuntimeException/bad constant pool index: 0 at pos: 479)
+{noformat}
+
+At a minimum, the compiler should explain that compilation against Java class files with missing annotations is not allowed, and not emit all of those other strange messages.
+
+It would be preferable, however, for the compiler to proceed without the missing annotations, like the Java compiler does.
+
+It seems that [others have run into this problem as well|http://stackoverflow.com/questions/13856266/class-broken-error-with-joda-time-using-scala], but I couldn't find any mention of it in the issue tracker.

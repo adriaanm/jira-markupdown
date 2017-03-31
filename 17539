@@ -1,0 +1,78 @@
+Named and default arguments have been introduced in Scala 2.8, and were outlined in SIP #1. An important scenario has been overlooked in the SIP, which is to define interaction of named and default arguments with pattern matching cases. Adding support for named arguments in pattern matching improves Scala in two ways:
+
+(1) It increases the regularity of the language in the sense that a feature (named arguments) is applicable to more scenarios, and case class constructor calls and pattern cases are more symmetrical
+(2) It brings the benefits of named arguments to a widely used feature of Scala (pattern matching): Avoiding boiler plate, and avoiding mistakes when multiple arguments of the extractor have the same type.
+
+Example:
+
+{code}
+    case class Advance(time: Long, isSeek: Boolean, isPlaying: Boolean, added: List[Any] = Nil, removed: List[Any] = Nil)
+{code}
+
+An instance of this class can be conveniently created such as this:
+
+{code}
+    Advance(time=0L, isSeek=false, isPlaying=true)
+{code}
+
+But a pattern match is only possible like this:
+
+{code}
+    def update(u: Any) = u match {
+      case Advance(time, isSeek, isPlaying, added, removed) => ...
+    }
+{code}
+
+With a real trap like the following:
+
+{code}
+    def update(u: Any) = u match {
+      case Advance(time, isPlaying, isSeek, removed, added) => ...
+    }
+{code}
+
+Or even this, if not all arguments are used and therefore undergoing successive type checks:
+
+{code}
+    def update(u: Any) = u match {
+      case Advance(isSeek, isPlaying, time, _, _) => ...
+    }
+{code}
+
+Cf. [here|https://github.com/Sciss/SoundProcesses3/commit/fd8234992e30fd79ce309c09303af5b42e62d93e#commitcomment-1997303]
+
+If named arguments were allowed, the following would be valid:
+
+{code}
+    def update(u: Any) = u match {
+      case Advance(time = t, isSeek = false, isPlaying = true, removed = r, added = a) => ...
+    }
+{code}
+
+Furthermore, if a "default" argument in an extractor is equated with {{_}}, the following would be valid:
+
+{code}
+    def update(u: Any) = u match {
+      case Advance(isPlaying = true) => ...
+    }
+{code}
+
+...and equivalent to...
+
+{code}
+    def update(u: Any) = u match {
+      case Advance(time = _, isSeek = _, isPlaying = true, removed = _, added = _) => ...
+    }
+{code}
+
+Cutting boiler plate in pattern match cases and make them more readable.
+
+A problem I can see is where arguments are omitted but no named arguments used, such as:
+
+{code}
+    def update(u: Any) = u match {
+      case Advance(time, isSeek) => ...
+    }
+{code}
+
+In the constructor case this would be only legal if default arguments were given for {{isPlaying}}, {{added}} and {{removed}}, whereas in the deconstruction/extractor case it would be always legal if a default of {{_}} is implied for each argument. Perhaps a compromise would be to allow default arguments only where named arguments are used?

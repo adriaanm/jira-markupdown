@@ -1,0 +1,133 @@
+just updated to following and the ant build failed -- note previously i have built scala in the same directory back on Feb12.
+I have ant 1.6.5 and java 5 on aix:
+
+
+{code}
+Updated to revision 14293.
+zeus> svn info
+Path: .
+URL: http://lampsvn.epfl.ch/svn-repos/scala/scala/trunk
+Repository Root: http://lampsvn.epfl.ch/svn-repos/scala
+Repository UUID: 5e8d7ff9-d8ef-0310-90f0-a4852d11357a
+Revision: 14293
+Node Kind: directory
+Schedule: normal
+Last Changed Author: michelou
+Last Changed Rev: 14291
+Last Changed Date: 2008-03-06 10:33:39 -0500 (Thu, 06 Mar 2008)
+
+> (export ANT_OPTS="-Xmx700m"; /usr/local/ant/1.6.5/bin/ant build)
+Buildfile: build.xml
+     [echo] Running SABBUS for scala-core...
+
+ant-init:
+
+init:
+     [echo] OS:     UNIX (AIX ppc 5.3);
+     [echo] Java:   IBM J9 VM 2.3 ('/usr/java5/jre');
+     [echo] Memory: 700 MB;
+     [echo] Ant:    Apache Ant version 1.6.5 compiled on June 2 2005.
+
+setup:
+     [echo] STARR updated: LOCKER is obsolete and will be rebuilt.
+
+ant-init:
+
+clean.build:
+   [delete] Deleting directory /tmp_mnt/iscp/common/bord/scala/scala/build
+     [echo] Build number is '2.7.0.r14293-b20080306141638'
+     [echo] Built Thursday, 6 March 2008, 14:16:38 (EST) from SVN revision 1429
+3
+
+build.locker:
+    [mkdir] Created dir: /tmp_mnt/iscp/common/bord/scala/scala/build/locker/lib
+/library
+    [javac] Compiling 12 source files to /tmp_mnt/iscp/common/bord/scala/scala/
+build/locker/lib/library
+    [starr] Compiling 1 source file to /tmp_mnt/iscp/common/bord/scala/scala/bu
+ild/locker/lib/library
+    [starr] Compiling 327 source files to /tmp_mnt/iscp/common/bord/scala/scala
+/build/locker/lib/library
+    [mkdir] Created dir: /tmp_mnt/iscp/common/bord/scala/scala/build/locker/lib
+/compiler
+    [starr] Compiling 203 source files to /tmp_mnt/iscp/common/bord/scala/scala
+/build/locker/lib/compiler
+[stopwatch] [timer.locker: 7:12.438 sec]
+     [copy] Copying 6 files to /tmp_mnt/iscp/common/bord/scala/scala/build/lock
+er/lib/compiler
+  [symlink] ln -s /tmp_mnt/iscp/common/bord/scala/scala/lib/fjbg.jar /tmp_mnt/i
+scp/common/bord/scala/scala/build/locker/lib/fjbg.jar
+  [symlink] ln -s /tmp_mnt/iscp/common/bord/scala/scala/lib/msil.jar /tmp_mnt/i
+scp/common/bord/scala/scala/build/locker/lib/msil.jar
+  [symlink] ln -s /tmp_mnt/iscp/common/bord/scala/scala/lib/jline.jar /tmp_mnt/
+iscp/common/bord/scala/scala/build/locker/lib/jline.jar
+    [mkdir] Created dir: /tmp_mnt/iscp/common/bord/scala/scala/build/locker/bin
+
+
+setup.locker:
+Overriding previous definition of reference to locker.classpath
+
+build:
+    [mkdir] Created dir: /tmp_mnt/iscp/common/bord/scala/scala/build/quick/lib/
+library
+    [javac] Compiling 12 source files to /tmp_mnt/iscp/common/bord/scala/scala/
+build/quick/lib/library
+   [locker] Compiling 1 source file to /tmp_mnt/iscp/common/bord/scala/scala/bu
+ild/quick/lib/library
+   [locker] Compiling 327 source files to /tmp_mnt/iscp/common/bord/scala/scala
+/build/quick/lib/library
+    [mkdir] Created dir: /tmp_mnt/iscp/common/bord/scala/scala/build/quick/lib/
+dbc
+   [locker] Compiling 65 source files to /tmp_mnt/iscp/common/bord/scala/scala/
+build/quick/lib/dbc
+    [mkdir] Created dir: /tmp_mnt/iscp/common/bord/scala/scala/build/quick/lib/
+actors
+    [javac] Compiling 6 source files to /tmp_mnt/iscp/common/bord/scala/scala/b
+uild/quick/lib/actors
+   [locker] Compiling 20 source files to /tmp_mnt/iscp/common/bord/scala/scala/
+build/quick/lib/actors
+    [mkdir] Created dir: /tmp_mnt/iscp/common/bord/scala/scala/build/quick/lib/
+compiler
+   [locker] Compiling 203 source files to /tmp_mnt/iscp/common/bord/scala/scala
+/build/quick/lib/compiler
+   [locker] java.lang.NoClassDefFoundError: scala.tools.nsc.reporters.ConsoleRe
+porter$$$$anonfun$$1
+   [locker]     at scala.tools.nsc.reporters.ConsoleReporter.printMessage(Conso
+leReporter.scala:49)
+   [locker]     at scala.tools.nsc.reporters.ConsoleReporter.print(ConsoleRepor
+ter.scala:72)
+   [locker]     at scala.tools.nsc.reporters.ConsoleReporter.display(ConsoleRep
+orter.scala:106)
+   [locker]     at scala.tools.nsc.reporters.AbstractReporter.info0(AbstractRep
+orter.scala:41)
+   [locker]     at scala.tools.nsc.reporters.Reporter.error(Reporter.scala:46)
+   [locker]     at scala.tools.nsc.Global.error(Global.scala:111)
+   [locker]     at scala.tools.nsc.Global$$Run.compile(Global.scala:631)
+   [locker]     at scala.tools.ant.Scalac.execute(Scalac.scala:576)
+   [locker]     at org.apache.tools.ant.UnknownElement.execute(UnknownElement.j
+ava:275)
+   [locker]     at org.apache.tools.ant.Task.perform(Task.java:364)
+   [locker]     at org.apache.tools.ant.Target.execute(Target.java:341)
+   [locker]     at org.apache.tools.ant.Target.performTasks(Target.java:369)
+   [locker]     at org.apache.tools.ant.Project.executeSortedTargets(Project.ja
+va:1216)
+   [locker]     at org.apache.tools.ant.Project.executeTarget(Project.java:1185
+)
+   [locker]     at org.apache.tools.ant.helper.DefaultExecutor.executeTargets(D
+efaultExecutor.java:40)
+   [locker]     at org.apache.tools.ant.Project.executeTargets(Project.java:106
+8)
+   [locker]     at org.apache.tools.ant.Main.runBuild(Main.java:668)
+   [locker]     at org.apache.tools.ant.Main.startAnt(Main.java:187)
+   [locker]     at org.apache.tools.ant.launch.Launcher.run(Launcher.java:246)
+   [locker]     at org.apache.tools.ant.launch.Launcher.main(Launcher.java:67)
+
+BUILD FAILED
+/tmp_mnt/iscp/common/bord/scala/scala/build.xml:618: Compile failed because of 
+an internal compiler error (scala.tools.nsc.reporters.ConsoleReporter$$$$anonfun$$
+1); see the error output for details.
+
+Total time: 17 minutes 8 seconds
+{code}
+
+

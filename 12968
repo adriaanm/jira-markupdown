@@ -1,0 +1,24 @@
+When trying to call hasNext on an Range iterator, I get the following error in the Visual Studio debugger:
+
+A first chance exception of type 'System.InvalidProgramException' occurred in predef.dll
+
+Looking into what an InvalidProgramException is further, I found out that its sort of like a VerificationError on JVM, microsoft has its own managed code verification tool called PEVerify.exe. Fix the bugs and run PEVerify on dlls after they have been verified. It probably works ok on Mono, but for obvious reasons, I'm not allowed to run Mono :) Here is the output when run on predef.dll:
+
+Microsoft (R) .NET Framework PE Verifier.  Version  2.0.50727.42
+Copyright (c) Microsoft Corporation.  All rights reserved.
+
+[IL]: Error: [D:\projects\SketcherEngine\SketcherEngine\predef.dll : scala.List::span] Type load failed.
+[IL]: Error: [D:\projects\SketcherEngine\SketcherEngine\predef.dll : scala.List::toStream][offset 0x00000001] Unable to resolve token.
+[IL]: Error: [D:\projects\SketcherEngine\SketcherEngine\predef.dll : scala.BufferedIterator$$Advanced$$class::startsWith][offset 0x0000003D] The 'this' parameter to the call must be the calling method's 'this' parameter.
+[IL]: Error: [D:\projects\SketcherEngine\SketcherEngine\predef.dll : scala.collection.immutable.HashMap::size][offset 0x00000070] Stack underflow.
+[IL]: Error: [D:\projects\SketcherEngine\SketcherEngine\predef.dll : scala.collection.immutable.HashMap::get][offset 0x000000A9] Return out of try block.
+[IL]: Error: [D:\projects\SketcherEngine\SketcherEngine\predef.dll : scala.collection.immutable.HashMap::$$minus][offset 0x00000061] Stack depth differs depending on path.
+[IL]: Error: [D:\projects\SketcherEngine\SketcherEngine\predef.dll : scala.Iterator$$Partner$$1::hasNext][offset 0x000000CC][found Int32][expected ref 'System.Object'] Unexpected type on the stack.
+[IL]: Error: [D:\projects\SketcherEngine\SketcherEngine\predef.dll : scala.None::get][offset 0x00000005] Call not allowed on abstract methods.
+[IL]: Error: [D:\projects\SketcherEngine\SketcherEngine\predef.dll : scala.util.DynamicVariable::withValue][offset 0x0000002F] Return value missing on the stack.
+9 Errors Verifying predef.dll
+
+D:\projects\SketcherEngine\SketcherEngine>
+
+
+

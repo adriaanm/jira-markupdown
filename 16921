@@ -1,0 +1,27 @@
+When trying to run the below code you are presented with an error:
+
+{code}
+error: type arguments [Any] do not conform to trait Cloneable's type parameter bounds [+A <: AnyRef]
+              for (param <- andString.split('&')){
+{code}
+========================================================================================================
+{code}
+import scala.collection.mutable.Map
+import scala.collection.mutable.ListBuffer
+
+val appleHolder = Map[String,ListBuffer[AnyRef]]()
+val andString = "apple=all&apple=123"
+for (param <- andString.split('&')){
+      val tempSplit = param.split('=')
+      appleHolder.get(tempSplit(0)) match{
+        case Some(x) => x += tempSplit(1)
+        case None => appleHolder += tempSplit(0) -> ListBuffer[AnyRef](tempSplit(1))
+      }
+}
+{code}
+
+changing the case for None to the below is a workaround
+
+{code}
+appleHolder(tempSplit(0)) = ListBuffer[AnyRef](tempSplit(1))
+{code}

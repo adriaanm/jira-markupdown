@@ -1,0 +1,38 @@
+Given the following code on Scala 2.11.5 or 2.11.6:
+
+{code:scala}
+class Foo[A]
+trait Bar[A] extends Foo[A]
+class Baz[A] extends Bar[A]
+{code}
+
+{{scalap}} says {{Baz}} extends {{Foo}}:
+
+{code:scala}
+class Baz[A] extends Foo[A] with Bar[A] {
+  def this() = { /* compiled code */ }
+}
+{code}
+
+But {{javap}} disagrees:
+
+{code:java}
+public class Baz<A> implements Bar<A> {
+  public Baz();
+}
+
+public interface Bar<A> {
+}
+{code}
+
+This is a change from 2.11.4, which produces this:
+
+{code:java}
+public class Baz<A> extends Foo<A> implements Bar<A> {
+  public Baz();
+}
+{code}
+
+Changing {{Baz}} to make it extend {{Foo}} directly has the same result. I don't see the issue when the classes and traits aren't generic.
+
+This caused [Twitter Util|https://github.com/twitter/util] to break when I tried to [update our build from 2.11.4 to 2.11.6 yesterday|https://twitter.com/travisbrown/status/578649688636796928]. I know we should probably be using a self type with a type constraint, but this was still a surprise.

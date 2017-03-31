@@ -1,0 +1,20 @@
+*See* [demonstration of the issue|https://github.com/tim-group/iterata/blob/master/src/test/scala/com/timgroup/iterata/MemoizeExhaustionIteratorSpec.scala#L8].
+
+The standard library method `Iterator#++` creates a `JoinIterator`. The `hasNext` method on JoinIterator *always* calls the left iterator's `hasNext` method, rather than remembering that it has been exhausted.
+
+In cases where the left iterator's hasNext method is expensive, such as any kind of IO, this was at the root of a baffling performance problem.
+
+This behavior is fixed in `ConcatIterator`, which never calls the underlying hasNext a second time for an iterator which already returned false. So that provides an easy, if dirty, workaround:
+
+{code:scala}
+val it1 = new IteratorWithExpensiveHasNext()
+val it2 = new IteratorWithExpensiveHasNext()
+
+// SLOW due to calling it1.hasNext every time
+(it1 ++ it2).foreach(_ => ())
+
+// FASTER due to NOT calling it1.hasNext every time
+(Iterator.empty ++ it1 ++ it2).foreach(_ => ())
+{code}
+
+*NOTE:* you can use `#memoizeExhaustion` from my [iterata|https://github.com/tim-group/iterata/blob/master/README.md#2-memoize-exhaustion-iterator-memoizeexhaustion] project as a workaround, as well.

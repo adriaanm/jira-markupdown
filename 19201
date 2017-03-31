@@ -1,0 +1,32 @@
+To reproduce, create two source files:
+
+{code:title=Foo.java}
+public enum Foo {
+    A,
+    B
+}
+{code}
+
+{code:title=Bar.scala}
+object Bar {
+    def baz(foo: Foo) = foo match {
+        case Foo.A => 1
+    }
+}
+{code}
+
+and then try compiling {{Bar.scala}} while passing {{Foo.java}} to {{scalac}} (without compiling it first). No warning will be printed, even though the pattern match isn't exhaustive.
+{noformat}
+$ scalac Foo.java Bar.scala
+{noformat}
+If, however, the enum is compiled first and then excluded from scalac run, the warning is printed as expected:
+
+{noformat}
+$ javac Foo.java 
+$ scalac Bar.scala 
+Bar.scala:2: warning: match may not be exhaustive.
+It would fail on the following input: B
+    def baz(foo: Foo) = foo match {
+                        ^
+one warning found
+{noformat}

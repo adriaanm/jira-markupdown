@@ -1,0 +1,7 @@
+Can we avoid generating "V" specializations in parameter positions? I acknowledge this may be necessary for reasons which my grasp of the possibilities does not make me aware of.  However, consider the substantial impact this small sounding change has.
+{code}
+final class Foo[@specialized T1, @specialized T2, @specialized R](f: (T1, T2) => R) { }
+{code}
+Right now that generates 10*10*10 = 1000 extra classfiles.  If it skipped Unit for T1 and T2, which are completely useless because Unit erases to BoxedUnit and T1 and T2 are already specialized on AnyRef, then it would generate 9*9*10 = 810 classfiles, a 19% reduction.  Or flipped around, we're eating an almost 25% size gain for nothing.
+
+One can of course enumerate the types (or make one of my fancy new groups in the Specializable companion) but the point of the ticket is that it would be even better if we didn't have to tell the compiler that we don't need 25% more custom code to handle all the incoming Units we intend on processing.

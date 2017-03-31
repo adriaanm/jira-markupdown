@@ -1,0 +1,17 @@
+Using annotation with default arguments sometimes causing a unnecessary warning. Order of parameters is same for usage and declaration so this is not caused by SI-7656. Tested on both 2.11.6 and 2.11.7.
+
+Here is minimal[1]:
+
+{code:scala}
+class Ann(a: Int = 1, b: Int = 2, c: Int = 4) extends StaticAnnotation
+
+@Ann() class TestAnn1 // no warning
+@Ann(a = 1) class TestAnn2 // no warning
+@Ann(a = 2, b = 1) class TestAnn3 // no warning
+@Ann(a = 2, b = 1, c = 1) class TestAnn4 // no warning
+@Ann(b = 1) class TestAnn5 // warning
+@Ann(b = 1, c = 1) class TestAnn6 // warning
+@Ann( c = 1) class TestAnn7 // warning
+{code}
+
+[1] https://gist.github.com/romanowski/aa495710f86c4185b525

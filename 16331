@@ -1,0 +1,55 @@
+When the collection size is of certain length, the map method works as expected.
+
+{noformat}
+Welcome to Scala version 2.9.0.1 (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_26).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> import scala.collection.mutable.HashSet
+import scala.collection.mutable.HashSet
+
+scala> val set1 = HashSet[Int]() ++ (1 to 10)
+set1: scala.collection.mutable.HashSet[Int] = Set(9, 10, 2, 6, 1, 4, 3, 7, 8, 5)
+
+scala> set1.par.map(_ + 1)
+res0: scala.collection.parallel.mutable.ParHashSet[Int] = ParHashSet(9, 11, 5, 2, 6, 4, 3, 7, 8, 10)
+
+
+But for greater lengths, the exception is thrown.
+
+
+scala> val set2 = HashSet[Int]() ++ (1 to 100)
+set2: scala.collection.mutable.HashSet[Int] = Set(18, 5, 60, 63, 85, 90, 95, 9, 76, 71, 61, 66, 98, 28, 36, 31, 41, 65, 68, 73, 19, 14, 22, 27, 32, 59, 64, 69, 78, 55, 50, 91, 81, 86, 82, 77, 72, 2, 34, 39, 100, 25, 20, 30, 47, 52, 89, 6, 1, 33, 38, 43, 46, 70, 13, 29, 24, 75, 80, 83, 4, 56, 51, 88, 93, 96, 26, 84, 37, 42, 74, 79, 87, 92, 12, 7, 17, 44, 49, 54, 8, 3, 35, 40, 45, 97, 67, 57, 62, 94, 99, 21, 53, 48, 16, 11, 58, 15, 10, 23)
+
+scala> set2.par.map(_ + 1)
+java.lang.ArrayIndexOutOfBoundsException: 256
+        at scala.collection.parallel.mutable.ParFlatHashTable$ParFlatHashTableIterator.scan(ParFlatHashTable.scala:36)
+        at scala.collection.parallel.mutable.ParFlatHashTable$ParFlatHashTableIterator.next(ParFlatHashTable.scala:53)
+        at scala.collection.parallel.AugmentedIterableIterator$class.map2combiner(RemainsIterator.scala:115)
+        at scala.collection.parallel.mutable.ParFlatHashTable$ParFlatHashTableIterator.map2combiner(ParFlatHashTable.scala:26)
+        at scala.collection.parallel.ParIterableLike$Map.leaf(ParIterableLike.scala:971)
+        at scala.collection.parallel.Tasks$Task$$anonfun$tryLeaf$1.apply$mcV$sp(Tasks.scala:66)
+        at scala.collection.parallel.Tasks$Task$class.tryLeaf(Tasks.scala:68)
+        at scala.collection.parallel.ParIterableLike$Map.tryLeaf(ParIterableLike.scala:968)
+        at scala.collection.parallel.AdaptiveWorkStealingTasks$TaskImpl$class.internal(Tasks.scala:179)
+        at scala.collection.parallel.AdaptiveWorkStealingForkJoinTasks$TaskImpl.internal(Tasks.scala:509)
+        at scala.collection.parallel.AdaptiveWorkStealingTasks$TaskImpl$class.compute(Tasks.scala:164)
+        at scala.collection.parallel.AdaptiveWorkStealingForkJoinTasks$TaskImpl.compute(Tasks.scala:509)
+        at scala.concurrent.forkjoin.RecursiveAction.exec(RecursiveAction.java:147)
+        at scala.concurrent.forkjoin.ForkJoinTask.quietlyExec(ForkJoinTask.java:422)
+        at scala.concurrent.forkjoin.ForkJoinWorkerThread.mainLoop(ForkJoinWorkerThread.java:340)
+        at scala.concurrent.forkjoin.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:325)
+{noformat}
+
+At the same time, when the parallel version of a hash set is created manually, the error does not appear.
+
+{noformat}
+scala> import scala.collection.parallel.mutable.ParHashSet
+import scala.collection.parallel.mutable.ParHashSet
+
+scala> val set3 = ParHashSet[Int]() ++ (1 to 100)
+set3: scala.collection.parallel.mutable.ParHashSet[Int] = ParHashSet(18, 23, 53, 60, 85, 90, 95, 9, 76, 71, 61, 66, 98, 28, 65, 31, 36, 41, 68, 73, 19, 14, 32, 69, 78, 22, 27, 59, 64, 55, 50, 91, 81, 86, 82, 77, 72, 2, 34, 39, 100, 25, 20, 30, 47, 52, 89, 6, 43, 80, 1, 33, 38, 46, 13, 29, 70, 75, 83, 24, 4, 56, 51, 88, 93, 96, 26, 84, 37, 42, 74, 79, 87, 92, 12, 17, 49, 54, 7, 44, 8, 3, 40, 45, 35, 97, 67, 57, 62, 94, 99, 21, 58, 63, 11, 16, 48, 15, 10, 5)
+
+scala> set3.map(_ + 1)
+res2: scala.collection.parallel.mutable.ParHashSet[Int] = ParHashSet(18, 60, 5, 85, 95, 16, 11, 9, 76, 71, 61, 66, 98, 28, 65, 78, 73, 31, 41, 36, 19, 32, 69, 14, 68, 27, 22, 59, 64, 55, 50, 91, 86, 81, 82, 77, 72, 2, 34, 39, 100, 30, 20, 25, 47, 52, 89, 43, 80, 6, 33, 70, 83, 38, 75, 29, 13, 46, 24, 4, 56, 51, 101, 96, 88, 93, 26, 84, 37, 42, 74, 79, 92, 87, 54, 12, 17, 49, 7, 44, 8, 3, 40, 45, 35, 97, 67, 62, 99, 57, 94, 21, 58, 63, 48, 53, 90, 15, 10, 23)
+{noformat}

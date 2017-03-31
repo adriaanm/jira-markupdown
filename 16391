@@ -1,0 +1,42 @@
+
+[This is an RFC on a patch I would go off and try to write -- not a request for someone else to do the work.]
+
+BACKGROUND: My colleagues and I are porting a large codebase to Scala, and we're finding we often use Option for fields or variables that are "optional". (In the Python original of the codebase, these would be variables where None is an acceptable value.) This results in a lot of comparisons like
+{{    if (someUid == someOtherUid) ... }}
+where it's easy to forget that, e.g., someUid is of type Option[Int] while someOtherUid is of type Int.
+
+PROBLEM: This comparison will always fail, even in the case where the programmer intended it to succeed, but scalac currently emits no warning. In SI-4978 I suggested enabling a comprehensive but imprecise test under -Xlint; that'd help, but it'd be better if we can have a warning for this that is always right so we can turn it on unconditionally.
+
+SOLUTION PROPOSAL: In nsc/typechecker/RefChecks.scala we have a number of fairly specific checks that try to warn in cases like this. Here's the broadest warning so far:
+
+{noformat}
+        // Whether def equals(other: Any) is overridden
+        def isUsingDefaultEquals = ...
+        def isWarnable           = isReferenceOp || (isUsingDefaultEquals && isUsingDefaultScalaOp)
+...
+        else if (isWarnable) {
+...
+          else if (receiver.isFinal && !(receiver isSubClass actual)) {  // object X, Y; X == Y
+            if (isEitherNullable)
+              nonSensible("non-null ", false)
+            else
+              nonSensible("", false)
+          }
+        }
+{noformat}
+
+IOW, we try to prove (a) that the equality method in question is the default one which just checks reference equality, and (b) that the types on the two sides have no values in common other than null, and if we can prove both (a) and (b) then we warn.
+
+In the case of Option[Int] and Int, (b) is true, but a bit trickier to prove because Option is not final. Fortunately Option is sealed, so all of its immediate subclasses are known, and its immediate subclasses Some and None are final, so indeed all of its subclasses are known. More complicated is (a). Some and None, as case classes, actually do have their own 'equals' methods, injected by typechecker/SyntheticMethods.scala. These synthetic case-class 'equals' methods still have straightforward semantics when the argument is of some alien type -- so long as the argument's isInstanceOf method is also straightforward and returns false in that case.
+
+So I think it should be feasible to prove both (b) and a version of (a) in a wider set of cases that would include Option[Int] vs Int. My rough plan would be something like
+
+* extend isFinal to a broader predicate allowing us to prove (b), along the lines of
+{{noformat}}
+      lazy val isNearFinal = isFinal || (isSealed && for (cls <- /* immediate subclasses */) cls.isNearFinal)
+{{noformat}}
+* have SyntheticMethods set a flag when it supplies 'equals', so we can distinguish its 'equals' from a user-supplied 'equals';
+* when isWarnable and receiver.isNearFinal, warn if !(T isSubClass actual) for all subclasses T of receiver;
+* otherwise if we're using the synthetic case-class 'equals' and receiver.isNearFinal, check that actual.isNearFinal and that we'll be using the default 'isInstanceOf', and warn unless one of the subclasses of receiver is also a subclass of actual.
+
+Does this plan make sense? If it does (or for some version of it that does), I'll go try to carry it out and come back with a patch.

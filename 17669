@@ -1,0 +1,31 @@
+Macro definition:
+
+{code:lang=java}
+import language.experimental.macros
+import scala.reflect.macros.Context
+
+object A {
+   def x(i: Int): String = macro adImpl
+   def xImpl(c: Context)(i: c.Expr[Int]): c.Expr[String] = {
+      def loop(i: Int): String = if(i > 0) loop(i-1) + "" else i.toString
+      println(loop(1000000))
+      ???
+   }
+}
+{code}
+
+Macro usage:
+
+{code:lang=java}
+object U {
+  val x = A.x(3)
+}
+{code}
+
+Full output from scalac:
+{code}
+error: exception during macro expansion: java.lang.StackOverflowError
+one error found
+{code}
+
+Note that the stack trace for a RuntimeException gets printed normally.

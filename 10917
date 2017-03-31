@@ -1,0 +1,10 @@
+{noformat}
+[error] uncaught exception during compilation: java.lang.StackOverflowError
+[trace] Stack trace suppressed: run last compile:compile for the full output.
+         ^
+         |--- that part is important! :)
+[error] (compile:compile) java.lang.StackOverflowError
+[error] Total time: 80 s, completed Apr 6, 2014 1:51:01 PM
+{noformat}
+
+I saw a SOE in implicit search when I first ran the test for SI-8478. Typechecking consumes stack proportional to the depth of the trees, and summoning a implicit for a long HList, element-by-element, will lead down that path pretty quickly.

@@ -1,0 +1,28 @@
+In java compiling Foo.java will always result in Foo.class (and an
+arbitrary number of other classes as well).  Build tools
+(like ant) determine if Foo.java needs to be rebuilt by comparing
+the times of Foo.java and Foo.class.
+
+The scalac ant task does this as well.
+
+With the present behaviour, if Foo.scala does not contain
+a class (or a "object") with the name Foo, then ant with
+the scalac task (or other java build tools) will rebuild 
+Foo.scala on every build.
+
+The present workaround is to run "ant -v" to find what is
+being pointlessly built and add a "object Foo {}" to the
+top of such files.
+
+Build tools use the filesystem as their database, so the fact
+that a file is compiled needs to leave some evidence on the
+filesystem that can be determined by the filename alone.
+
+While not a perfect solution: I would propose that Foo.scala
+always generate Foo.class (and empty class if required).
+
+I admit that this is a little bit gross ... but the alternative
+is even worse (and is confusing new users, or resulting in users
+getting the feeling that scalac is just a slow compiler when
+the problem is that they are rebuilding lots of their application
+all the time).

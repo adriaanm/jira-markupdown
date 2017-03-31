@@ -1,0 +1,7 @@
+JSR 223 is vague on various points, but what it says is: "Implementations whose scripting languages have well-defined constructs to display character output, must use the Writer returned by the getWriter method for this purpose."
+
+So a snippet that uses `println` can have an appropriate method injected or imported. (Similarly print and printf.) That avoids Console.out.
+
+It's too bad the `Predef.read` methods are deprecated because they would serve the same purpose.
+
+Otherwise, the solution is for the script engine to `Console.withOut` etc before evaluation. That also takes care of invoking components that use Console.

@@ -1,0 +1,79 @@
+{noformat}
+On Sat, Sep 29, 2012 at 8:44 AM, Hua Jiang <5451vs5451@gmail.com> wrote:
+> Define a function that prints its argument and returns true.
+>
+> scala> def f(i: Int) = { println("f(" + i + ")"); true }
+> f: (i: Int)Boolean
+>
+> And the following two tests shows different behavior. Why?
+>
+> scala> (1 to 2) collect { case i if f(i) => i }
+> f(1)
+> f(1)
+> f(2)
+> f(2)
+>
+> res21: scala.collection.immutable.IndexedSeq[Int] = Vector(1, 2)
+
+Collect is defined as:
+
+  def collect[B, That](pf: PartialFunction[A, B])
+                      (implicit bf: CanBuildFrom[Repr, B, That]): That = {
+    val b = bf(repr)
+    for (x <- this) if (pf.isDefinedAt(x)) b += pf(x)
+    b.result
+  }
+
+In Scala 2.9.2, `{ case i if f(i) => i }` is roughly compiled to:
+
+new PartialFunction[Int, Int] {
+  def isDefinedAt(i: Int) = f(i)
+  def apply(i: Int) = if (f(i)) i else throw new MatchError(i)
+}
+
+So that explains why `f` is invoked twice: `collect` calls
+`isDefinedAt`, and then `apply`, both of these call `f`. It's a bad
+practice to have side-effecting guard expressions, or for that matter,
+expensive guard expressions.
+
+> scala> (1 to 2) collect { case i if f(i) => i; case i => i }
+> f(1)
+> f(2)
+> res22: scala.collection.immutable.IndexedSeq[Int] = Vector(1, 2)
+
+In Scala 2.10, this gives the same output as the other two. The
+reimplemented pattern matcher fixed a *lot* of bugs.
+
+But this all still feels a bit ugly; do we really need to call `f`
+twice? The problem gets (exponentially) worse when chaining partial
+functions [1].
+
+Luckily, this issue has also been addressed in Scala 2.10 [2]. Rather
+than calling `isDefinedAt/apply`, we can make a single call to
+`runWith`.
+
+What seems to be missing are changes to the standard library to
+exploit the new feature. If we redefined collect as:
+
+  def collect[B, That](pf: PartialFunction[A, B])(implicit bf:
+CanBuildFrom[Repr, B, That]): That = {
+    val b = bf(repr)
+    foreach(pf.runWith(b += _))
+    b.result
+  }
+
+We see:
+
+scala> (1 to 2) collect { case i if f(i) => i; case i: Int => i }
+f(1)
+f(2)
+res0: scala.collection.immutable.IndexedSeq[Int] = Vector(1, 2)
+
+I'm going to raise a ticket in JIRA to update `collect` and friends.
+
+-jason
+
+[1] http://code.technically.us/post/13107005975/or-else-its-rilly-complex
+[2] https://github.com/scala/scala/commits?author=pavelpavlov
+
+{noformat}

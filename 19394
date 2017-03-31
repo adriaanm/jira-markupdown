@@ -1,0 +1,49 @@
+{noformat}
+git diff head -- test
+diff --git a/test/files/presentation/implicit-class-error.check b/test/files/presentation/implicit-class-error.check
+new file mode 100644
+index 0000000..3418049
+--- /dev/null
++++ b/test/files/presentation/implicit-class-error.check
+@@ -0,0 +1,7 @@
++reload: Source.scala
++
++askType at Source.scala(6,7)
++================================================================================
++[response] askTypeAt (6,7)
++scala.this.Predef.???
++================================================================================
+diff --git a/test/files/presentation/implicit-class-error/Runner.scala b/test/files/presentation/implicit-class-error/Runner.scala
+new file mode 100644
+index 0000000..0a8923a
+--- /dev/null
++++ b/test/files/presentation/implicit-class-error/Runner.scala
+@@ -0,0 +1,11 @@
++import scala.tools.nsc.interactive.tests.InteractiveTest
++
++object Test extends InteractiveTest {
++  override def runDefaultTests() {
++    // make sure typer is done.. the virtual pattern matcher might translate
++    // some trees and mess up positions. But we'll catch it red handed!
++    // sourceFiles foreach (src => askLoadedTyped(src).get)
++    super.runDefaultTests()
++  }
++
++}
+diff --git a/test/files/presentation/implicit-class-error/src/Source.scala b/test/files/presentation/implicit-class-error/src/Source.scala
+new file mode 100644
+index 0000000..7438ccc
+--- /dev/null
++++ b/test/files/presentation/implicit-class-error/src/Source.scala
+@@ -0,0 +1,8 @@
++object Foo {
++  implicit class MatCreator(val ctx: StringContext) extends AnyVal {
++    def m(args: Any*): Unit = {
++      ctx.checkLengths(args)
++    }
++    ???/*?*/
++  }
++}
+{noformat}
+
+That test currently fails with an assertion. I have a patch pending

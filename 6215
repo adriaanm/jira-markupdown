@@ -1,0 +1,15 @@
+Yes; I meant that the spec doesn't call T* a type, as opposed to =>A, where it does call it a type (albeit not the type of any value).
+
+It's a bit hard to reason about =>A, witness recent scala-user discussion about whether there is a subtype relation between A and =>A (based on subsitutability).  Let alone: isn't =>A just Function0[A]?
+
+So, it's at least as hard for T*.  "T* isAsHardToReasonAbout =>A".  Isn't T* just Seq[T]?  Really?  You're right, maybe the spec should use the language of the compiler and call it a type.
+
+For the record, my fix for this bug (which I also felt was definitely a bug) was just as Paul said: in this application, the effective type of m is to have k params.  In the impl, if both fixed- and vari-arity apply, you know what k is.  That is so obvious, it still bugs me.
+
+Yet it also seems proper that specificity is independent of a particular application.  But that may be wrong, because what we're really doing is selecting a member; maybe it's crazy that selection becomes detached from the call used to make the selection. This was also my question around using cbn as a tie-breaker.
+
+I was making a joke about the syntax f1(bs: B{2,}), but the disambiguated syntax means that I can't treat my args as a Seq[B] anymore.  That just seems wrong.  Is the only lesson to be drawn that overloading is evil?
+
+I'm not going to sleep well for a while.
+
+

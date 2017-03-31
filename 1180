@@ -1,0 +1,13 @@
+Thinking about it further, the correct analogy is not that 
+{code}
+implicit def byNameNothing2T(v: => Nothing):T = new T 
+{code}
+should work if
+{code}
+implicit def byNameNothing2T(v: () => Nothing):T = new T 
+{code}
+works, but if 
+{code}
+implicit def byNameNothing2T(v: Nothing):T = new T 
+{code}
+works, which it doesn't.  So this has nothing at all to do with by-name arguments.  If you really think that implicit conversions should be apply to expressions of type Nothing, file another ticket for that instead.  

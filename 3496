@@ -1,0 +1,13 @@
+As illustration, I just implemented -Xmigration and attached warnings to the bits of Stack which changed from 2.7 to 2.8.  Now compiling with that option one would see things like:
+{code}
+[scalacfork] Compiling 542 files to /scratch/trunk1/build/quick/classes/library
+[scalacfork] /scratch/trunk1/src/library/scala/collection/immutable/HashSet.scala:131: warning: method foreach in class Stack has changed semantics:
+[scalacfork]  Stack iterator and foreach now traverse in FIFO order.
+[scalacfork]     toUndo foreach undo
+[scalacfork]     ^
+[scalacfork] /scratch/trunk1/src/library/scala/collection/mutable/StackProxy.scala:68: warning: method ++= in class Stack has changed semantics:
+[scalacfork]  Stack ++= now pushes arguments on the stack from left to right.
+[scalacfork]     self ++= iter
+[scalacfork]     ^
+{code}
+Etc.

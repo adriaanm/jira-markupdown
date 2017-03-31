@@ -1,0 +1,58 @@
+The following:
+
+{noformat}
+import scala.util.continuations._
+
+object Test {
+  def dive(depth: Int, vars: List[Boolean], maxdepth: Int): Unit @suspendable = {
+    if (depth < maxdepth) {
+      val b = shift {
+        (k: Boolean => Unit) =>
+        k(true)
+        k(false)
+      }
+      dive(depth + 1, b :: vars, maxdepth)
+    } else check(vars)
+  }
+  
+  def check(vars: List[Boolean]) = println(vars)
+  
+  reset(dive(0, Nil, 4))
+}
+{noformat}
+
+fails during compilation. Adding {{{reset}}} around the recursive {{{dive}}} call eliminates the error.
+
+{noformat}
+Exception in thread "main" java.lang.Error: no-symbol does not have owner
+        at scala.reflect.internal.SymbolTable.abort(SymbolTable.scala:32)
+        at scala.reflect.internal.Symbols$NoSymbol$.owner(Symbols.scala:2312)
+        at scala.reflect.internal.Symbols$Symbol.logicallyEnclosingMember(Symbols.scala:1395)
+        at scala.tools.nsc.transform.LambdaLift$LambdaLifter.searchIn$1(LambdaLift.scala:229)
+        at scala.tools.nsc.transform.LambdaLift$LambdaLifter.proxy(LambdaLift.scala:237)
+        at scala.tools.nsc.transform.LambdaLift$LambdaLifter.scala$tools$nsc$transform$LambdaLift$LambdaLifter$$proxyRef(LambdaLift.scala:253)
+        at scala.tools.nsc.transform.LambdaLift$LambdaLifter.postTransform(LambdaLift.scala:383)
+        at scala.tools.nsc.transform.LambdaLift$LambdaLifter.transform(LambdaLift.scala:406)
+        at scala.reflect.api.Trees$Transformer$$anonfun$transformTrees$1.apply(Trees.scala:1214)
+        at scala.reflect.api.Trees$Transformer$$anonfun$transformTrees$1.apply(Trees.scala:1214)
+        at scala.collection.immutable.List.loop$1(List.scala:118)
+        at scala.collection.immutable.List.mapConserve(List.scala:134)
+        at scala.reflect.api.Trees$Transformer.transformTrees(Trees.scala:1214)
+        at scala.reflect.api.Trees$Transformer.transform(Trees.scala:1180)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:53)
+        at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:259)
+        at scala.tools.nsc.transform.LambdaLift$LambdaLifter.transform(LambdaLift.scala:406)
+        at scala.reflect.api.Trees$Transformer$$anonfun$transformTrees$1.apply(Trees.scala:1214)
+        at scala.reflect.api.Trees$Transformer$$anonfun$transformTrees$1.apply(Trees.scala:1214)
+        at scala.collection.immutable.List.loop$1(List.scala:118)
+        at scala.collection.immutable.List.mapConserve(List.scala:134)
+        at scala.reflect.api.Trees$Transformer.transformTrees(Trees.scala:1214)
+        at scala.reflect.api.Trees$Transformer.transform(Trees.scala:1180)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:53)
+        at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:259)
+        at scala.tools.nsc.transform.LambdaLift$LambdaLifter.transform(LambdaLift.scala:406)
+        at scala.reflect.api.Trees$Transformer.transform(Trees.scala:1144)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:53)
+        at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:259)
+        at scala.tools.nsc.transform.LambdaLift$LambdaLifter.transform(LambdaLift.scala:406)
+{noformat}

@@ -1,0 +1,16 @@
+The compiler complains about the sequence of arguments, being given as if they were a single named argument to the vararg param. Not just the second but the first callsite raises then the error: 
+
+{code}
+addIndex("tableName", "uniqueid", options = None, Some(2))
+{code}
+
+
+If several vararg arguments are given to a single named arg, how can the compiler distinguish the 2nd etc argument from being an argument to the next parameter? Once that ambiguity is removed the compiler can do its job: 
+
+{code}
+    val myOptions = Array(None, Some(2))
+    // compiles
+    addIndex("tableName", "uniqueid", myOptions : _*)
+    // compiles too 
+    addIndex(table_name = "tableName", column_name = "uniqueid", options = myOptions : _*)
+{code}

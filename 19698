@@ -1,0 +1,24 @@
+The following code:
+
+{code}
+object Foo {
+  /**
+   * @throws java.lang.Exception
+   */
+  def bar = ()
+}
+{code}
+
+causes scaladoc to emit the following warning:
+
+{code}
+[warn] /Users/jroper/tmp/scaladoc-link/Foo.scala:2: Could not find any member to link for "java.lang.Exception".
+[warn]   /**
+[warn]   ^
+[warn] one warning found
+{code}
+
+Two problems here:
+
+# The warning shouldn't be emitted, this warning makes it impossible to enabled -Xfatal-warnings
+# The line of code that its reported on is off by one

@@ -1,0 +1,67 @@
+I'm facing similar challenges, and have iterated to the following, custom resetter. It only resets symbols of {{Ident}} and {{This}} nodes which refer to symbols defined in the macro arguments. Yes, I had to cast to {{reflect.internal}} to achieve this; don't scold me Eugene :)
+
+{code}
+  private val internalSyms = origTree.collect {
+    case dt: DefTree => dt.symbol
+  }
+
+  private def resetInternalAttrs(tree: Tree) = utils.resetInternalAttrs(tree, internalSyms)
+{code}
+
+{code}
+  def resetInternalAttrs(tree: Tree, internalSyms: List[Symbol]) =
+    new ResetInternalAttrs(internalSyms.toSet).transform(tree)
+
+
+  /**
+   * Adaptation of [[scala.reflect.internal.Trees.ResetAttrs]]
+   *
+   * A transformer which resets symbol and tpe fields of all nodes in a given tree,
+   * with special treatment of:
+   * `TypeTree` nodes: are replaced by their original if it exists, otherwise tpe field is reset
+   * to empty if it started out empty or refers to local symbols (which are erased).
+   * `TypeApply` nodes: are deleted if type arguments end up reverted to empty
+   *
+   * `This` and `Ident` nodes referring to an external symbol are ''not'' reset.
+   */
+  private final class ResetInternalAttrs(internalSyms: Set[Symbol]) extends Transformer {
+
+    import language.existentials
+
+    override def transform(tree: Tree): Tree = super.transform {
+      def isExternal = tree.symbol != NoSymbol && !internalSyms(tree.symbol)
+
+      tree match {
+        case tpt: TypeTree                         => resetTypeTree(tpt)
+        case TypeApply(fn, args)
+          if args map transform exists (_.isEmpty) => transform(fn)
+        case EmptyTree                             => tree
+        case (_: Ident | _: This) if isExternal    => tree // #35 Don't reset the symbol of Ident/This bound outside of the async block
+        case _                                     => resetTree(tree)
+      }
+    }
+
+    private def resetTypeTree(tpt: TypeTree): Tree = {
+      if (tpt.original != null)
+        transform(tpt.original)
+      else if (tpt.tpe != null && tpt.asInstanceOf[symtab.TypeTree forSome {val symtab: reflect.internal.SymbolTable}].wasEmpty) {
+        val dupl = tpt.duplicate
+        dupl.tpe = null
+        dupl
+      }
+      else tpt
+    }
+
+    private def resetTree(tree: Tree): Tree = {
+      val hasSymbol: Boolean = {
+        val reflectInternalTree = tree.asInstanceOf[symtab.Tree forSome {val symtab: reflect.internal.SymbolTable}]
+        reflectInternalTree.hasSymbol
+      }
+      val dupl = tree.duplicate
+      if (hasSymbol)
+        dupl.symbol = NoSymbol
+      dupl.tpe = null
+      dupl
+    }
+  }
+{code}

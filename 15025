@@ -1,0 +1,46 @@
+{code}
+Welcome to Scala version 2.8.0.r20879-b20100214020153 (Java HotSpot(TM) Server VM, Java 1.6.0_15).
+Type in expressions to have them evaluated.                                                       
+Type :help for more information.    
+
+scala> val a = new Array[Int](10)
+a: Array[Int] = Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+
+scala> val a = new Array[Any](10)
+a: Array[Any] = Array(null, null, null, null, null, null, null, null, null, null)
+
+scala> val a = new Array[Int](10)
+a: Array[Int] = Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+
+scala> val b = new Array[Any](10)
+b: Array[Any] = Array(null, null, null, null, null, null, null, null, null, null)
+
+scala> for (i <- 0 until 10) b(i) = i
+
+scala> b
+res6: Array[Any] = Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
+
+scala> Array.copy(b, 3, a, 3, 7)
+
+scala> a
+res8: Array[Int] = Array(0, 1, 2, 3, 4, 5, 6, 0, 0, 0)
+
+{code}
+
+
+probably due to `slowcopy` ignoring some parameters in `scala.Array`:
+
+{code}
+  private def slowcopy(src : AnyRef, 
+                       srcPos : Int, 
+                       dest : AnyRef, 
+                       destPos : Int, 
+                       length : Int) {
+    var i = 0
+    while (i < length) {
+      array_update(dest, i, array_apply(src, i))
+      i += 1
+    }  
+  }
+
+{code}

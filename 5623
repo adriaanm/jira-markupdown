@@ -1,0 +1,35 @@
+I found a workaround, this however is not ideal because it relies on implementation specific details of Scala:
+
+{code}
+trait OnCreate extends DelayedInit {
+  def onCreate:Unit
+  
+  def delayedInit(body: => Unit) = {
+    body
+    
+    if ((body _).getClass.getDeclaringClass == this.getClass)
+    {
+      onCreate
+    }
+  }
+}
+
+class A extends OnCreate {
+  def onCreate = println("Creation is fully complete")
+  val x = ""
+  println("a complete")
+}
+
+class B extends A {
+  val y = ""
+  println("b complete")
+}
+{code}
+
+Executing {{new B}} results in:
+
+{code}
+a complete
+b complete
+Creation is fully complete
+{code}

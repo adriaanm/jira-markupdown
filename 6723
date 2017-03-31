@@ -1,0 +1,12 @@
+Forget that hunch.
+
+This seems more promising: https://github.com/retronym/scala/compare/ticket/5070?expand=1
+
+I think we can do better than:
+
+{code}
+    // more precise conceptually, but causes cyclic errors:    (paramss exists (_ contains sym))
+    override def isImmediatelyDependent = (sym ne NoSymbol) && (sym.owner.isMethod && sym.isValueParameter)
+{code}
+
+.. from within implicit search, as we know the the current implicit method in question, and need only check that the type is not dependent on one of its parameters.

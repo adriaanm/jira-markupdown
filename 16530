@@ -1,0 +1,28 @@
+Code that should work but doesn't:
+
+{code:test_placeholder.scala}
+class Foo[T] {
+  val x: T = _
+  def foo(x: T = _) {}
+}
+{code}
+
+Result:
+
+{noformat}
+test_placeholder.scala:4: error: unbound placeholder parameter
+  def foo(x: T = _) {}
+                 ^
+one error found
+{noformat}
+
+Default values for params should work exactly like values specified for fields.  As it happens, you can work around this like this:
+
+{noformat}
+class Foo[T] {
+  val x: T = _
+  def foo(x: T = null.asInstanceOf[T]) {}
+}
+{noformat}
+
+But this casting of 'null' (which works even if T is primitive) is highly non-obvious and clearly a kludge, probably non-portable as well.

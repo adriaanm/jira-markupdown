@@ -1,0 +1,35 @@
+I didn't mean general ambiguous overloading detection at the definition site, just disallowing any overloading at all.  I can't come up with an example where overloading works.  For example,
+
+{code:lang=java}
+import language.dynamics
+
+object J {
+   class X(i: Int) extends Dynamic {
+      def applyDynamic(name: String)(i: Int): Double = i + 0.5
+      def applyDynamic(name: String)(i: String): String = "i: " + i.toString
+   }
+
+   val x = new X(3)
+   val y1: String = x.call("adsf")
+   val y2: Double = x.call(3)
+}
+{code}
+
+{code}
+AD.scala:6: error: ambiguous reference to overloaded definition,
+both method applyDynamic in class X of type (name: String)(i: String)String
+and  method applyDynamic in class X of type (name: String)(i: Int)Double
+match argument types (String)
+error after rewriting to J.this.x.<applyDynamic: error>("call")
+possible cause: maybe a wrong Dynamic method signature?
+   val y1: String = x.call("adsf")
+                    ^
+AD.scala:7: error: ambiguous reference to overloaded definition,
+both method applyDynamic in class X of type (name: String)(i: String)String
+and  method applyDynamic in class X of type (name: String)(i: Int)Double
+match argument types (String)
+error after rewriting to J.this.x.<applyDynamic: error>("call")
+possible cause: maybe a wrong Dynamic method signature?
+   val y2: Double = x.call(3)
+                    ^
+{code}

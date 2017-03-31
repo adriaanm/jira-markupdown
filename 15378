@@ -1,0 +1,72 @@
+The compiler stack trace looks the same as for the fixed ticket SI-1857
+
+Using 2.8.0.r22065-b20100527020151
+
+{code}
+abstract class A[T, @specialized(scala.Int) U : Manifest]
+{
+    def f(state: T): Array[U]
+}
+
+abstract class B extends A[ Array[Byte], Int ]
+{
+    type T = Array[Byte]
+    type U = Int
+
+    val N = 0
+
+    def f(state: T): Array[U] =
+    {
+        new Array[U](N + state(N))
+    }
+}
+{code}
+
+{code}
+Exception in thread "main" java.lang.Error: Uncomparable type kinds: INT with REFERENCE(java.lang.Object)
+	at scala.tools.nsc.symtab.SymbolTable.abort(SymbolTable.scala:33)
+	at scala.tools.nsc.backend.icode.TypeKinds$$INT$$.maxType(TypeKinds.scala:210)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$getMaxType$$1.apply(GenICode.scala:1597)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$getMaxType$$1.apply(GenICode.scala:1597)
+	at scala.collection.LinearSeqOptimized$$class.foldLeft(LinearSeqOptimized.scala:123)
+	at scala.collection.immutable.List.foldLeft(List.scala:45)
+	at scala.collection.LinearSeqOptimized$$class.reduceLeft(LinearSeqOptimized.scala:137)
+	at scala.collection.immutable.List.reduceLeft(List.scala:45)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.getMaxType(GenICode.scala:1597)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.genArithmeticOp(GenICode.scala:220)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.genPrimitiveOp(GenICode.scala:426)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:724)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.genLoadArguments(GenICode.scala:1030)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:645)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:126)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:81)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:81)
+	at scala.collection.LinearSeqOptimized$$class.foreach(LinearSeqOptimized.scala:61)
+	at scala.collection.immutable.List.foreach(List.scala:45)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:81)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:148)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:100)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:81)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:81)
+	at scala.collection.LinearSeqOptimized$$class.foreach(LinearSeqOptimized.scala:61)
+	at scala.collection.immutable.List.foreach(List.scala:45)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:81)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:91)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:77)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.apply(GenICode.scala:73)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$applyPhase$$1.apply(Global.scala:276)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$applyPhase$$1.apply(Global.scala:276)
+	at scala.tools.nsc.reporters.Reporter.withSource(Reporter.scala:48)
+	at scala.tools.nsc.Global$$GlobalPhase.applyPhase(Global.scala:276)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:252)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:252)
+	at scala.collection.Iterator$$class.foreach(Iterator.scala:631)
+	at scala.collection.mutable.ListBuffer$$$$anon$$1.foreach(ListBuffer.scala:304)
+	at scala.tools.nsc.Global$$GlobalPhase.run(Global.scala:252)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.run(GenICode.scala:66)
+	at scala.tools.nsc.Global$$Run.compileSources(Global.scala:733)
+	at scala.tools.nsc.Global$$Run.compile(Global.scala:813)
+	at scala.tools.nsc.Main$$.process(Main.scala:108)
+	at scala.tools.nsc.Main$$.main(Main.scala:122)
+	at scala.tools.nsc.Main.main(Main.scala)
+{code}

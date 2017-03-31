@@ -1,0 +1,32 @@
+`-Ycheck:inliner` warns about:
+
+{noformat}
+3	LOAD_LOCAL(variable $inlThis3#26559)
++    3	LOAD_FIELD value nonLocalReturnKey1$1#25361
+{noformat}
+
+{noformat}
+[log dce] ** Checking Block 16 [S: 3] [P: 14] <closed>
+warning: !! ICode checker fatality in A.crash
+  at: Block 16 [S: 3] [P: 14] <closed>
+  error message:  value nonLocalReturnKey1$1#25361 is not defined in class A
+{noformat}
+
+I believe that the error message itself might be misleading; that error is issued after determining that Object doesn't contain the field.
+
+{code}
+        def checkField(obj: TypeKind, field: Symbol): Unit = obj match {
+          case REFERENCE(sym) =>
+            if (sym.info.member(field.name) == NoSymbol)
+              icodeError(" " + field + " is not defined in class " + clasz)
+          case _ =>
+            icodeError(" expected reference type, but " + obj + " found")
+        }
+{code}
+
+Object is the type (unconditionally) attributed to `$inlThis`.
+
+{code}
+        // store the '$this' into the special local
+        val inlinedThis = newLocal("$inlThis", REFERENCE(ObjectClass))
+{code}

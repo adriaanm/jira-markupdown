@@ -1,0 +1,16 @@
+The floating point parser in scala.util.parsing.combinator.JavaTokenParsers appears to be incorrect.  The function in the code is:
+
+
+{code}
+def floatingPointNumber: Parser[String] = 
+    """-?(\d+(\.\d*)?|\d*\.\d+)[eEfFdD]?([+-]?\d+)?""".r
+{code}
+
+However, this regular expression fails to correctly parse all valid floats.  For example, 9e4f, which is valid in java, fails with the above regex.  Even worse, it allows through invalid expressions.  For example, 9+3, which is not a parsable float, is successfully captured by the above regex.  
+
+I believe the regular expression should be modified to allow trailing exponents only if "e" or "E" trails the first number sequence; to allow "D"/"d"/"F"/"f" if there is an exponent; and to allow an optional "+" at the front of the expression.  I am not a regex expert, but I believe the following definition will satisfy the above requirements:
+
+{code}
+def floatingPointNumber: Parser[String] =
+    """[+-]?(\d+(\.\d*)?|\d*\.\d+)([eE][+-]?\d+)?[fFdD]?""".r
+{code}

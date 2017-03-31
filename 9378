@@ -1,0 +1,48 @@
+Okay, everyone take a good look at this. I was confused during this discussion (in part) because everyone seems to be saying the 2.9 behavior is correct and 2.10 was a regression. It looks like the 2.9 behavior is at least as wrong as 2.10. I'm currently of the opinion that it should look like the Java example to the extent it is possible - I forget what the obstacles are but I'm sure I'll have the joy of rediscovering them.
+
+So if you think the "Java" example here is NOT the ideal, please speak now or forever hold your linkage errors. 
+{code}
+trait A { def f(): Int }
+trait B1 extends A
+abstract class B2 extends A
+class B3 extends A { def f(): Int = 1 }
+class B4 extends B3
+
+class C {
+  (null: A).f()
+  (null: B1).f()
+  (null: B2).f()
+  (null: B3).f()
+  (null: B4).f()
+}
+
+/*****
+
+2.9.3:
+
+ 1: invokespecial #10                 // Method java/lang/Object."<init>":()V
+ 7: invokeinterface #16,  1           // InterfaceMethod A.f:()I
+16: invokeinterface #16,  1           // InterfaceMethod A.f:()I
+25: invokeinterface #16,  1           // InterfaceMethod A.f:()I
+34: invokevirtual #19                 // Method B3.f:()I
+41: invokevirtual #22                 // Method B4.f:()I
+
+2.10.1:
+
+ 1: invokespecial #12                 // Method java/lang/Object."<init>":()V
+ 7: invokeinterface #18,  1           // InterfaceMethod A.f:()I
+16: invokeinterface #21,  1           // InterfaceMethod B1.f:()I
+25: invokeinterface #18,  1           // InterfaceMethod A.f:()I
+34: invokevirtual #24                 // Method B3.f:()I
+41: invokevirtual #24                 // Method B3.f:()I
+
+Java:
+
+ 4: invokeinterface #7,  1            // InterfaceMethod A.f:()I
+14: invokeinterface #8,  1            // InterfaceMethod B1.f:()I
+24: invokevirtual #9                  // Method B2.f:()I
+32: invokevirtual #10                 // Method B3.f:()I
+40: invokevirtual #11                 // Method B4.f:()I
+
+****/
+{code}

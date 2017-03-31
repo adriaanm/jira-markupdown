@@ -1,0 +1,42 @@
+If at some point i need to get into details of my use case, please let me know, but i was able to isolate the problem which is now reproducible with this simple code
+{code}
+object VerifyErrorTest {
+  def main(args: Array[String]): Unit = {
+    Foo.foo("")
+  }
+}
+
+trait CommonTrait {
+  def foo(any: Object): DecoratedFoo = {
+    null
+  }
+}
+
+class Foo {}
+
+object Foo {
+  def apply() = new Foo() with CommonTrait
+
+  def foo(o: Object): DecoratedFoo  = {
+    null
+  }
+}
+
+class DecoratedFoo {}
+
+{code} 
+
+If I comment _apply()_ method or remove _with CommonTrait_ it works fine, otherwise i get this:
+{code}
+Exception in thread "main" java.lang.VerifyError: class Foo$$anon$1 overrides final method foo.(Ljava/lang/Object;)LDecoratedFoo;
+	at java.lang.ClassLoader.defineClass1(Native Method)
+	at java.lang.ClassLoader.defineClassCond(ClassLoader.java:632)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:616)
+	at java.security.SecureClassLoader.defineClass(SecureClassLoader.java:141)
+	at java.net.URLClassLoader.defineClass(URLClassLoader.java:283)
+	at java.net.URLClassLoader.access$000(URLClassLoader.java:58)
+	at java.net.URLClassLoader$1.run(URLClassLoader.java:197)
+. . .. 
+{code}
+
+I've classified it as a Bug for now, but as I am in the process of learning Scala I may very well be doing something wrong, so please let me  know

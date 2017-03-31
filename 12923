@@ -1,0 +1,66 @@
+Problem seems to occur on pattern match of form 'head :: tail'.  I have created and attached a minimal plug-in project that can cause the error.  It contains this class:
+
+{code}
+package bug.actions
+
+import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.IWorkbenchWindowActionDelegate;
+
+class SampleAction extends IWorkbenchWindowActionDelegate {
+	def run(action : IAction) {
+	  List("A") match {
+	    case head :: tail => println(head)
+	    case _ => ()
+	  }
+	}
+
+	def selectionChanged(action : IAction, selection : ISelection) { }
+	def dispose() { }
+	def init(window : IWorkbenchWindow) { }
+}
+{code}
+
+Instructions:
+
+  * unzip and put the project into your workspace (It depends on the old Scala plugin and depends on the Scala project in the workspace, just like the Scala plugin)
+  * Run the bug plug-in
+  * Open the error log view
+  * Click the installed menu item (Sample Menu/Sample Action)
+  * An "Unhandled event loop exception" appears in the error log with the following stack trace:
+
+{code}
+java.lang.IllegalAccessError: tried to access method scala.$$colon$$colon.hd()Ljava/lang/Object; from class bug.actions.SampleAction
+at bug.actions.SampleAction.run(SampleAction.scala:10)
+at org.eclipse.ui.internal.PluginAction.runWithEvent(PluginAction.java:256)
+at org.eclipse.ui.internal.WWinPluginAction.runWithEvent(WWinPluginAction.java:229)
+at org.eclipse.jface.action.ActionContributionItem.handleWidgetSelection(ActionContributionItem.java:546)
+at org.eclipse.jface.action.ActionContributionItem.access$$2(ActionContributionItem.java:490)
+at org.eclipse.jface.action.ActionContributionItem$$5.handleEvent(ActionContributionItem.java:402)
+at org.eclipse.swt.widgets.EventTable.sendEvent(EventTable.java:66)
+at org.eclipse.swt.widgets.Widget.sendEvent(Widget.java:938)
+at org.eclipse.swt.widgets.Display.runDeferredEvents(Display.java:3682)
+at org.eclipse.swt.widgets.Display.readAndDispatch(Display.java:3293)
+at org.eclipse.ui.internal.Workbench.runEventLoop(Workbench.java:2389)
+at org.eclipse.ui.internal.Workbench.runUI(Workbench.java:2353)
+at org.eclipse.ui.internal.Workbench.access$$4(Workbench.java:2219)
+at org.eclipse.ui.internal.Workbench$$4.run(Workbench.java:466)
+at org.eclipse.core.databinding.observable.Realm.runWithDefault(Realm.java:289)
+at org.eclipse.ui.internal.Workbench.createAndRunWorkbench(Workbench.java:461)
+at org.eclipse.ui.PlatformUI.createAndRunWorkbench(PlatformUI.java:149)
+at org.eclipse.ui.internal.ide.application.IDEApplication.start(IDEApplication.java:106)
+at org.eclipse.equinox.internal.app.EclipseAppHandle.run(EclipseAppHandle.java:169)
+at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.runApplication(EclipseAppLauncher.java:106)
+at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.start(EclipseAppLauncher.java:76)
+at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:363)
+at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:176)
+at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+at java.lang.reflect.Method.invoke(Unknown Source)
+at org.eclipse.equinox.launcher.Main.invokeFramework(Main.java:508)
+at org.eclipse.equinox.launcher.Main.basicRun(Main.java:447)
+at org.eclipse.equinox.launcher.Main.run(Main.java:1173)
+at org.eclipse.equinox.launcher.Main.main(Main.java:1148)
+{code}

@@ -1,0 +1,16 @@
+Another example from SI-8563.
+
+{code}
+object Test extends App {
+  sealed trait Node[+A]
+  case class L[C,D](f: C => D) extends Node[C => D]
+ 
+  def test[A,B](n: Node[A => B]): A => B = n match {
+    case l: L[c,d] => l.f
+  }
+ 
+  println {
+    test(new L[Int,Int](identity) with Node[Nothing]: Node[Int => String])(3): String // java.lang.Integer cannot be cast to java.lang.String
+  }
+}
+{code}

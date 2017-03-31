@@ -1,0 +1,22 @@
+This was defensible when the type of object foo was "object foo", but now it is foo.type and this is a bug.
+
+{code}
+class A {
+  implicit object foo
+  // it compiles if we uncomment this
+  // implicit val bar = foo
+  implicitly[foo.type]
+}
+// 
+// ./a.scala:4: error: could not find implicit value for parameter e: A.this.foo.type
+//   implicitly[foo.type]
+//             ^
+// one error found
+{code}
+{noformat}
+scala> object foo
+defined module foo
+
+scala> def f = foo
+f: foo.type
+{noformat}

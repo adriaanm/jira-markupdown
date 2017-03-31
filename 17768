@@ -1,0 +1,29 @@
+{code}
+import scala.reflect.macros.Context
+
+class C
+
+object Impls {
+  def impl[T](c: Context) = c.universe.Ident(c.universe.TypeName("C"))
+}
+
+{code}
+
+{code}
+import Impls._
+
+object Test1 {
+  trait T1 { type T[U] <: C }
+  trait T2 extends T1 { override type T[U] = macro impl[U] }
+  object M extends T2
+  type T = M.T
+}
+{code}
+
+{code}
+00:38 ~/Projects/Kepler_typemacros/sandbox (paradise/macros)$ scalac Test.scala 
+Test.scala:7: error: macro expansion C violates bounds  <: [U]C of the overridden type T in trait T1
+  type T = M.T
+             ^
+one error found
+{code}

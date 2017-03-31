@@ -1,0 +1,42 @@
+I have this Java class with inner class:
+
+MyClassWithInner.java:
+
+{code}
+public class MyClassWithInner {
+    public class MyInnerClass {}
+}
+{code}
+
+Then another Java class using MyInnerClass:
+
+MyBaseJavaClass.java:
+
+{code}
+public class MyBaseJavaClass {
+    public void passInner(MyClassWithInner.MyInnerClass myInner) {}
+}
+{code}
+
+Finally, this Scala class:
+
+MyDerivedScalaClass.scala:
+
+{code}
+class MyDerivedScalaClass extends MyBaseJavaClass {
+    override def passInner(myInner: MyClassWithInner#MyInnerClass) = {}
+}
+{code}
+
+Compiling:
+
+scalac scala/*.scala java/*.java
+
+java/MyBaseJavaClass.java:2: error: not found: value MyClassWithInner
+    public void passInner(MyClassWithInner.MyInnerClass myInner) {}
+
+Same result with 2.7.7 and 2.8.0.Beta1.
+
+See this discussion:
+
+http://comments.gmane.org/gmane.comp.lang.scala.user/24133

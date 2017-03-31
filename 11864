@@ -1,0 +1,23 @@
+Here's a smaller test case:
+
+{code}
+import scala.language.higherKinds
+trait Proxy[+T]
+case class Stuff[+P[PP] <: Proxy[PP]]()
+{code}
+
+The most self contained workaround seems to be manually implementing `canEqual`.
+
+{code}
+import scala.language.higherKinds
+trait Proxiable {
+  def source: String
+}
+trait Proxy[+T <: Proxiable] {
+  def source: String
+}
+case class Data(source: String) extends Proxiable
+case class Stuff[+P[PP <: Proxiable] <: Proxy[PP]](content: P[Data]) {
+  def canEqual(x$1: Any): Boolean = x$1 match { case _: Stuff[_] => true; case _ => false}
+}
+{code}

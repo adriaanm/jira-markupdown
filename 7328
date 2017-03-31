@@ -1,0 +1,21 @@
+I was able to find an alternative formulation for the {{size}} function, which avoids the bug. But it is less efficient, as it must call the implicit function {{neg}} twice.
+
+{code}
+def size[T](t: T)(implicit d: D[D[T]] <:< D[D[Int] with D[String]]) = (t: D[D[T]]) match {
+  case x: D[D[Int]] => x.get[D[Int]].get[Int]
+  case x: D[D[String]] => x.get[D[String]].get[String]
+}
+
+size(5)
+res2: Any = 5
+
+size("hi")
+res4: Any = hi
+
+It correctly fails to compile for input types that should not be allowed.
+
+size(5.0)
+error: could not find implicit value for parameter d: <:<[D[D[Double]],D[D[Int] with D[String]]]
+       size(5.0)
+           ^
+{code}

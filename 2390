@@ -1,0 +1,28 @@
+Still a problem with 2.10.x
+
+{code}
+scala> object A { implicit val x = 1 }
+defined module A
+
+scala> import A.{x => y}
+import A.{x=>y}
+
+scala> y
+res1: Int = 1
+
+scala> implicitly[Int]
+<console>:10: error: could not find implicit value for parameter e: Int
+              implicitly[Int]
+                        ^
+
+scala> :implicits
+No implicits have been imported other than those in Predef.
+
+scala> import A.x
+import A.x
+
+scala> :implicits
+/* 1 implicit members imported from A */
+  /* 1 defined in A */
+  implicit val x: Int
+{code}

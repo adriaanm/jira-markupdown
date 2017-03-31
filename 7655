@@ -1,0 +1,13 @@
+Partial diagnosis: the {{VerifyError}} goes away when {{scala.reflect.internal.BaseTypeSeqs$BaseTypeSeq.typeError}} is emitted from a modified version:
+
+{noformat}
+    private def typeError(msg: String): TypeError =
+      new TypeError(
+        "the type intersection "+(parents mkString " with ")+" is malformed"+
+        "\n --- because ---\n"+msg)
+{noformat}
+
+(its callsites updated to read "{{throw typeError(...}}"). With those changes, the result of that method can be stored into a local var, just like {{InlineExceptionHandlers}} wants. 
+
+Therefore it's not a GenASM bug.
+

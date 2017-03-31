@@ -1,0 +1,29 @@
+It might be possible to extend the grammar to allow this in pattern binders:
+
+I think we could change:
+
+{quote}
+Pattern2 ::= varid ‘@’ Pattern3
+{quote}
+
+to:
+
+{quote}
+Pattern2 ::= id ‘@’ Pattern3
+{quote}
+
+Which would admit both of:
+
+{code}
+scala> val Some(Tpe @ _) = Some(1)
+<console>:1: error: ')' expected but '@' found.
+       val Some(Tpe @ _) = Some(1)
+                    ^
+
+scala> val Some(`type` @ _) = Some(1)
+<console>:1: error: ')' expected but '@' found.
+       val Some(`type` @ _) = Some(1)
+                       ^
+{code}
+
+Perhaps you can think over this proposal critically. If you can make a case that it doesn't introduce ambiguity, lets discuss at the Scala meeting.

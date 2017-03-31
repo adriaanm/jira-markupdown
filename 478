@@ -1,0 +1,17 @@
+The documentation for String.replaceAll says that invoking
+
+{{    str.replaceAll(regex, repl) }}
+
+is equivalent to
+
+{{    Pattern.compile(regex).matcher(str).replaceAll(repl) }}
+
+If you look at {{Matcher.replaceAll}} (or the 1.6 documentation for {{String.replaceAll}}, which now explicitly indicates this), it says "Dollar signs may be treated as references to captured subsequences ...", so you need the following if you want to use {{replaceAll}}:
+
+{{    replaceAll("/", java.util.regex.Matcher.quoteReplacement("_$$_")) }}
+
+For future reference, backslashes are also treated specially and need escaping:
+[http://java.sun.com/j2se/1.5.0/docs/api/java/util/regex/Matcher.html#replaceAll(java.lang.String) Matcher.replaceAll]
+
+In any case, Sean's change should fix the issue.
+

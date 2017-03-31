@@ -1,0 +1,22 @@
+{code}
+class Foo (x: Int) {
+  def this() = this( {
+    def bar() = 5
+    bar
+  } )
+}
+{code}
+{code}
+scala> new Foo()
+java.lang.VerifyError: (class: Foo, method: <init> signature: ()V) Expecting to find object/array on stack
+	at .<init>(<console>:5)
+	at .<clinit>(<console>)
+	at RequestResult$$.<init>(<console>:4)
+	at RequestResult$$.<clinit>(<console>)
+	at RequestResult$$result(<console>)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Nati...
+{code}
+While it may appear perverse to define functions inside a block just to pass a parameter to the primary, the motivation is noble - it avoids the creation of unwanted long term storage associated with intended-to-be-temporary values.  Presently this is nearly impossible to do without using an external def somewhere (if one can afford to recalculate the value repeatedly) or ending up with extra fields.
+
+See http://www.nabble.com/Temporary-Values-in-Constructors-Retained-As-Fields-td22526316.html for background.

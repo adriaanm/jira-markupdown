@@ -1,0 +1,59 @@
+Not sure whether this is a new bug, or whether I'm missing something here:
+
+{code}
+import scala.{ specialized => spec }
+
+object Example {
+  class Bar[@spec(Int) X] {}
+
+  def main(args: Array[String]) {
+    def foo1 = new Bar[Int]()
+    def foo2[@spec(Int) X](a: X) = new Bar[X]()
+    def foo3[@spec(Int) X, Y](a: X, b: Y) = new Bar[X]()
+
+    println(foo1.getClass.getName)
+    println(foo2(0).getClass.getName)
+    println(foo3(0, 1).getClass.getName)
+  }
+}
+{code}
+
+Output:
+
+{code}
+Example$Bar$mcI$sp
+Example$Bar
+Example$Bar
+{code}
+
+Surprisingly,
+
+{code}
+object Example {
+  class Bar[@spec(Int) X] {}
+
+  object Implicits {
+    implicit def foo1 = new Bar[Int]()
+    implicit def foo2[@spec(Int) X](a: X) = new Bar[X]()
+    implicit def foo3[@spec(Int) X, Y](a: X, b: Y) = new Bar[X]()
+  }
+
+  def main(args: Array[String]) {
+    import Implicits._
+
+    println(foo1.getClass.getName)
+    println(foo2(0).getClass.getName)
+    println(foo3(0, 1).getClass.getName)
+  }
+}
+{code}
+
+yields
+
+{code}
+Example$Bar$mcI$sp
+Example$Bar$mcI$sp
+Example$Bar
+{code}
+
+I would have expected Example$Bar$mcI$sp in all three cases in both examples.

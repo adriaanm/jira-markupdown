@@ -1,0 +1,22 @@
+Something like this might fix it:
+
+{noformat}
+⚡ git diff head
+diff --git a/src/compiler/scala/tools/nsc/typechecker/Typers.scala b/src/compiler/scala/tools/nsc/typechecker/Typers.scala
+index 84af923..f34319f 100644
+--- a/src/compiler/scala/tools/nsc/typechecker/Typers.scala
++++ b/src/compiler/scala/tools/nsc/typechecker/Typers.scala
+@@ -5472,8 +5472,10 @@ trait Typers extends Adaptations with Tags with TypersTracking with PatternTyper
+     /** Types qualifier `tree` of a select node.
+      *  E.g. is tree occurs in a context like `tree.m`.
+      */
+-    def typedQualifier(tree: Tree, mode: Mode, pt: Type): Tree =
+-      typed(tree, PolyQualifierModes | mode.onlyTypePat, pt) // TR: don't set BYVALmode, since qualifier might end up as by-name param to an implicit
++    def typedQualifier(tree: Tree, mode: Mode, pt: Type): Tree = {
++      val typer = if (mode.typingPatternOrTypePat) newTyper(context.outer) else this
++      typer.typed(tree, PolyQualifierModes | mode.onlyTypePat, pt) // TR: don't set BYVALmode, since qualifier might end up as by-name param to an implicit
++    }
+
+     /** Types qualifier `tree` of a select node.
+      *  E.g. is tree occurs in a context like `tree.m`.
+{noformat}

@@ -1,0 +1,32 @@
+As iulian suggested, this is a consequence of how objects are compiled. For every object, Scala generates a class which looks like this (java-syntax):
+{code}
+class Obj {
+  public static Obj MODULE$$ = null;
+  static this() { MODULE$$ = new Obj(); }
+  this() { /* module constructor code */ }
+}
+{code}
+
+The static initializer is executed exactly once, when the class is loaded.
+
+Every reference to the object {{Obj}} is compiled to an access to the static field {{Obj.MODULE$$}}.
+
+
+Now for your example, here's the initialization sequence. Note that classes are flattened, so {{Foo.F1}} is {{Foo$$F1}}.
+
+{code}
+Bug.<static-init> -> Bug.this() -> foo = Foo$$F1.MODULE$$ -> Foo$$F1.<static-init> ->
+Foo$$F1.this() -> Foo.Foo$$$$init$$default$$1() -> Foo.<staic-init> ->
+Foo.this() -> values = Set(Foo$$F1.MODULE$$ [*], Foo$$F2.MODULE$$) ->
+Foo$$F2.<static-init> -> Foo$$F2.this() -> Foo.Foo$$$$init$$default$$2() [%] ->
+
+OK for Foo$$F2, the super constructor is called, an object is created,
+the access to Foo$$F2.MODULE$$ returns the instance.
+
+[*] static init of Foo$$F1 has already been launched, so just get to the field.
+    Since the constructor is still running, the MODULE$$ filed is still null.
+[%] static init of Foo has already been launched, so just run to the init$$default$$2 method
+{code}
+
+
+I don't think there's a way to fix this issue. Iulian, please let me know if you agree.

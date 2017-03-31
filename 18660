@@ -1,0 +1,13 @@
+compiler produces unhandled exception in this self-explanatory snippet:
+
+{code:scala}
+package object Bug {
+  // final class Test { - OK
+  // object Test { - OK
+  trait Test { // need to be trait
+    //private val outer = 1 - OK
+    private[this] val outer = 1 // need to be private[this]
+    val inner : Int => Int = x => x + outer //generate any closure
+  }
+}
+{code}

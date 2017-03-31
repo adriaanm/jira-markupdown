@@ -1,0 +1,5 @@
+The concrete [problem|https://github.com/nparry/orderly4jvm/pull/3] is that {{CharArrayReader}}'s constructor implicitly uses {{Predef.arrayToCharSequence}} which implements {{CharSequence.subSequence}} by calling {{Array.slice}} on the underlying array which creates a new copy of the array containing the subsequence. Contrast this with {{String.subSequence}} which creates a shallow copy with only updated indices.
+
+Using a {{CharArrayReader}} in parser combinators can therefore lead to really bad performance issues which can't be figured out easily.
+
+The next question is if {{Predef.arrayToCharSequence}} really should implement {{subsequence}} by making a copy. The problem is that {{java.lang.CharSequence}} isn't explicit in what to expect from ``subSequence`` if the underlying data structure is mutable.

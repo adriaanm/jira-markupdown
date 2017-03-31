@@ -1,0 +1,20 @@
+Allright, here's what's going on. The macro emits
+
+{code}
+{
+  final class $anon extends scala.AnyRef {
+    def <init>() = {
+      super.<init>();
+      ()
+    };
+    def isEmpty = false;
+    def get = this;
+    def unapply(x: String) = this
+  };
+  new $anon()
+}.unapply(<unapply-selector>)
+{code}
+
+Then this code under the alias of `fun1` gets into https://github.com/xeno-by/scala/blob/master/src/compiler/scala/tools/nsc/typechecker/PatternTypers.scala#L306. Then `patmat.alignPatterns(fun1, args)` is called, which figures out that there's an arityError (https://github.com/xeno-by/scala/blob/master/src/compiler/scala/tools/nsc/transform/patmat/ScalacPatternExpanders.scala#L108), which gets reported by stringifying the type of `fun1`, which looks like `TypeRef(NoPrefix, TypeName("$anon"), List())`. 
+
+Apparently it's the stringification that causes an infinite loop, because the type is self-referential. I thought we detect these cases already, but apparently not quite. I'll figure this out and submit a pull request later today.

@@ -1,0 +1,40 @@
+while trying to get the windows nightly running again. this should really be fixed quickly.
+
+----
+
+*pos*: tests are fine
+
+----
+
+*neg*: almost all tests fail. there are several observations here:
+
+1) some of the failed tests produce a "test.log" file (e.g. bug700), some a "test-neg.log" file (names-defaults), some do both (bug944, t2779).
+
+2) in the case only one ".log" file is produced (test.log or test-neg.log), the error messages contain the full path to the source file, e.g.
+{code}
+H:\trunk\test\files\neg\bug700.scala:6: error: ....
+{code}
+where the .check file contains
+{code}
+bug700.scala:6: error: ...
+{code}
+
+3) in the case both ".log" files are produced, the "test.log" contains the full path, and the "test-neg.log" only contains the filename. so the "test-neg.log" is actually identical with the "test.check" file. but the test still fails.
+
+4) some test (e.g. bug1038) do not fail (`[ OK ]`), but they still produce a "test.log" file, and the content does *not* match the "test.check" file, instead it contains the full path again.
+
+----
+
+*run*: roughly 1/4 of the tests fail.
+
+1) i checked the "test.log" files for some failed tests (bug2276, streams, t0005, t0017, structural, Course-2002-01, t0833), and they all match exactly the "test.check" files.
+
+2) again, some of the log files are named "test.log" (bug2276, streams, t0005), others are named "test-run.log" (Course-2002-01, t0833).
+
+----
+
+I killed the test suite during the "run" tests, so not sure if there are other problems (scalap, shootout, continuations, buildmanager, scalacheck).
+
+----
+
+related to SI-3283

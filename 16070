@@ -1,0 +1,137 @@
+Hello.
+
+Running scalac on my 64bit Java 7 install throws a NPE:
+{code}
+C:\_\>scalac
+error: java.lang.NullPointerException
+        at scala.collection.immutable.HashSet$$HashTrieSet.updated0(HashSet.scala:228)
+        at scala.collection.immutable.HashSet.$$plus(HashSet.scala:54)
+        at scala.collection.immutable.HashSet.$$plus(HashSet.scala:32)
+        at scala.collection.mutable.SetBuilder.$$plus$$eq(SetBuilder.scala:24)
+        at scala.collection.mutable.SetBuilder.$$plus$$eq(SetBuilder.scala:22)
+        at scala.collection.TraversableLike$$$$anonfun$$map$$1.apply(TraversableLike.scala:245)
+        at scala.collection.TraversableLike$$$$anonfun$$map$$1.apply(TraversableLike.scala:245)
+        at scala.collection.mutable.HashSet.foreach(HashSet.scala:75)
+        at scala.collection.TraversableLike$$class.map(TraversableLike.scala:245)
+        at scala.collection.mutable.HashSet.scala$$collection$$SetLike$$$$super$$map(HashSet.scala:42)
+        at scala.collection.SetLike$$class.map(SetLike.scala:91)
+        at scala.collection.mutable.HashSet.map(HashSet.scala:42)
+        at scala.tools.nsc.CompilerCommand.helpSyntaxColumnWidth(CompilerCommand.scala:30)
+        at scala.tools.nsc.CompilerCommand.format(CompilerCommand.scala:34)
+        at scala.tools.nsc.CompilerCommand.helpStr$$1(CompilerCommand.scala:51)
+        at scala.tools.nsc.CompilerCommand$$$$anonfun$$createUsageMsg$$1.apply(CompilerCommand.scala:60)
+        at scala.tools.nsc.CompilerCommand$$$$anonfun$$createUsageMsg$$1.apply(CompilerCommand.scala:60)
+        at scala.collection.TraversableLike$$$$anonfun$$map$$1.apply(TraversableLike.scala:245)
+        at scala.collection.TraversableLike$$$$anonfun$$map$$1.apply(TraversableLike.scala:245)
+        at scala.collection.LinearSeqOptimized$$class.foreach(LinearSeqOptimized.scala:59)
+        at scala.collection.immutable.List.foreach(List.scala:45)
+        at scala.collection.TraversableLike$$class.map(TraversableLike.scala:245)
+        at scala.collection.immutable.List.map(List.scala:45)
+        at scala.tools.nsc.CompilerCommand.createUsageMsg(CompilerCommand.scala:60)
+        at scala.tools.nsc.CompilerCommand.usageMsg(CompilerCommand.scala:67)
+        at scala.tools.nsc.Main$$.process(Main.scala:101)
+        at scala.tools.nsc.Main$$.main(Main.scala:123)
+        at scala.tools.nsc.Main.main(Main.scala)
+
+Exception in thread "main" java.lang.NullPointerException
+        at scala.collection.immutable.HashSet$$HashTrieSet.updated0(HashSet.scala:228)
+        at scala.collection.immutable.HashSet.$$plus(HashSet.scala:54)
+        at scala.collection.immutable.HashSet.$$plus(HashSet.scala:32)
+        at scala.collection.mutable.SetBuilder.$$plus$$eq(SetBuilder.scala:24)
+        at scala.collection.mutable.SetBuilder.$$plus$$eq(SetBuilder.scala:22)
+        at scala.collection.TraversableLike$$$$anonfun$$map$$1.apply(TraversableLike.scala:245)
+        at scala.collection.TraversableLike$$$$anonfun$$map$$1.apply(TraversableLike.scala:245)
+        at scala.collection.mutable.HashSet.foreach(HashSet.scala:75)
+        at scala.collection.TraversableLike$$class.map(TraversableLike.scala:245)
+        at scala.collection.mutable.HashSet.scala$$collection$$SetLike$$$$super$$map(HashSet.scala:42)
+        at scala.collection.SetLike$$class.map(SetLike.scala:91)
+        at scala.collection.mutable.HashSet.map(HashSet.scala:42)
+        at scala.tools.nsc.CompilerCommand.helpSyntaxColumnWidth(CompilerCommand.scala:30)
+        at scala.tools.nsc.CompilerCommand.format(CompilerCommand.scala:34)
+        at scala.tools.nsc.CompilerCommand.helpStr$$1(CompilerCommand.scala:51)
+        at scala.tools.nsc.CompilerCommand$$$$anonfun$$createUsageMsg$$1.apply(CompilerCommand.scala:60)
+        at scala.tools.nsc.CompilerCommand$$$$anonfun$$createUsageMsg$$1.apply(CompilerCommand.scala:60)
+        at scala.collection.TraversableLike$$$$anonfun$$map$$1.apply(TraversableLike.scala:245)
+        at scala.collection.TraversableLike$$$$anonfun$$map$$1.apply(TraversableLike.scala:245)
+        at scala.collection.LinearSeqOptimized$$class.foreach(LinearSeqOptimized.scala:59)
+        at scala.collection.immutable.List.foreach(List.scala:45)
+        at scala.collection.TraversableLike$$class.map(TraversableLike.scala:245)
+        at scala.collection.immutable.List.map(List.scala:45)
+        at scala.tools.nsc.CompilerCommand.createUsageMsg(CompilerCommand.scala:60)
+        at scala.tools.nsc.CompilerCommand.usageMsg(CompilerCommand.scala:67)
+        at scala.tools.nsc.Main$$.process(Main.scala:101)
+        at scala.tools.nsc.Main$$.main(Main.scala:123)
+        at scala.tools.nsc.Main.main(Main.scala)
+{code}
+
+My PATH variables are set to use the 64bit JRE as the default. If I explicitly run scalac under the 32bit JRE, with this line:
+{code}
+C:\_\>"C:\Program Files (x86)\Java\jre7\bin\java.exe" -Dscala.home="C:\PROGRA~2\Scal
+a" -cp "C:\PROGRA~2\Scala\lib\jline.jar;C:\PROGRA~2\Scala\lib\scala-compiler.jar;C:\PROGRA~2\Scala\lib\scala-dbc.jar;C:\PROGRA~2\Scala
+\lib\scala-library.jar;C:\PROGRA~2\Scala\lib\scala-swing.jar;C:\PROGRA~2\Scala\lib\scalap.jar" scala.tools.nsc.Main
+{code}
+
+.. everything works fine. 
+
+The problem first occured in Scala 2.8.1, then I updated to 2.9-RC1 and the issue is identical.
+
+Now, I'm not sure if it's maybe a JRE 7 bug, but seeing only Scala sources in the NPE stacktrace, I wanted to report it here, just in case.
+
+Scala itself seems to run fine under 64bit Java 7. However, when I type "import scala.collection.immutable.HashSet" on the REPL, I get this:
+
+{code}
+java.lang.NullPointerException
+        at scala.collection.immutable.HashMap$$HashTrieMap.updated0(HashMap.scala:269)
+        at scala.collection.immutable.HashMap.$$plus(HashMap.scala:53)
+        at scala.collection.immutable.HashMap.$$plus(HashMap.scala:36)
+        at scala.collection.mutable.MapBuilder.$$plus$$eq(MapBuilder.scala:28)
+        at scala.collection.mutable.MapBuilder.$$plus$$eq(MapBuilder.scala:24)
+        at scala.collection.generic.Growable$$$$anonfun$$$$plus$$plus$$eq$$1.apply(Growable.scala:48)
+        at scala.collection.generic.Growable$$$$anonfun$$$$plus$$plus$$eq$$1.apply(Growable.scala:48)
+        at scala.collection.IndexedSeqOptimized$$class.foreach(IndexedSeqOptimized.scala:34)
+        at scala.collection.mutable.WrappedArray.foreach(WrappedArray.scala:33)
+        at scala.collection.generic.Growable$$class.$$plus$$plus$$eq(Growable.scala:48)
+        at scala.collection.mutable.MapBuilder.$$plus$$plus$$eq(MapBuilder.scala:24)
+        at scala.collection.generic.MapFactory.apply(MapFactory.scala:48)
+        at scala.tools.nsc.typechecker.Modes$$class.$$init$$(Modes.scala:111)
+        at scala.tools.nsc.Global$$analyzer$$.<init>(Global.scala:347)
+        at scala.tools.nsc.Global.analyzer(Global.scala:347)
+        at scala.tools.nsc.Global.computeInternalPhases(Global.scala:554)
+        at scala.tools.nsc.Global.computePhaseDescriptors(Global.scala:593)
+        at scala.tools.nsc.Global.phaseDescriptors(Global.scala:600)
+        at scala.tools.nsc.Global$$Run.<init>(Global.scala:689)
+        at scala.tools.nsc.interpreter.IMain.scala$$tools$$nsc$$interpreter$$IMain$$$$_initialize(IMain.scala:114)
+        at scala.tools.nsc.interpreter.IMain$$$$anonfun$$initialize$$1.apply$$mcZ$$sp(IMain.scala:148)
+        at scala.tools.nsc.interpreter.IMain$$$$anonfun$$initialize$$2.apply(IMain.scala:148)
+        at scala.tools.nsc.interpreter.IMain$$$$anonfun$$initialize$$2.apply(IMain.scala:148)
+        at scala.concurrent.ThreadRunner$$$$anon$$2$$$$anonfun$$run$$2.apply(ThreadRunner.scala:45)
+        at scala.concurrent.ThreadRunner.scala$$concurrent$$ThreadRunner$$$$tryCatch(ThreadRunner.scala:31)
+        at scala.concurrent.ThreadRunner$$$$anon$$2.run(ThreadRunner.scala:45)
+        at java.lang.Thread.run(Thread.java:722)
+
+The repl compiler has crashed spectacularly. Shall I replay your
+session? I can re-run all lines except the last one.
+[y/n]Exception in thread "main" java.lang.RuntimeException: No char-based input in SimpleReader
+        at scala.sys.package$$.error(package.scala:27)
+        at scala.tools.nsc.interpreter.SimpleReader.readOneKey(SimpleReader.scala:35)
+        at scala.tools.nsc.interpreter.SimpleReader.readOneKey(SimpleReader.scala:13)
+        at scala.tools.nsc.interpreter.InteractiveReader$$class.readYesOrNo(InteractiveReader.scala:30)
+        at scala.tools.nsc.interpreter.SimpleReader.readYesOrNo(SimpleReader.scala:13)
+        at scala.tools.nsc.interpreter.InteractiveReader$$class.readAssumingNo(InteractiveReader.scala:34)
+        at scala.tools.nsc.interpreter.SimpleReader.readAssumingNo(SimpleReader.scala:13)
+        at scala.tools.nsc.interpreter.ILoop$$$$anonfun$$31.apply(ILoop.scala:422)
+        at scala.tools.nsc.interpreter.ILoop$$$$anonfun$$31.apply(ILoop.scala:401)
+        at scala.tools.nsc.interpreter.ILoop.loop(ILoop.scala:450)
+        at scala.tools.nsc.interpreter.ILoop.process(ILoop.scala:730)
+        at scala.tools.nsc.MainGenericRunner$$.runTarget$$1(MainGenericRunner.scala:72)
+        at scala.tools.nsc.MainGenericRunner$$.process(MainGenericRunner.scala:85)
+        at scala.tools.nsc.MainGenericRunner$$.main(MainGenericRunner.scala:33)
+        at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
+{code}
+(it crashes before giving me a chance to type y/n)
+
+Scala: 2.9.0.RC1
+Java: Java 1.7.0-ea-b136 (64 and 32bit)
+OS: Windows 7 Professional x64
+
+Thanks and I apologize in advance if this is a known issue (I searched trac and found nothing relevant).

@@ -1,0 +1,13 @@
+The rewrite of rep1 in the Parsers trait in [r20573|https://lampsvn.epfl.ch/trac/scala/changeset/20573] caused a regression of #SI-1100.
+
+The inner method of rep1 should probably be changed to:
+{code}
+@tailrec def applyp(in0: Input): ParseResult[List[T]] = p0(in0) match {
+  case Success(x, rest) => elems += x ; applyp(rest)
+  case e: Error         => e
+  case _                => Success(elems.toList, in0)
+}
+{code}
+Just adding the line with case e: Error
+
+(Is it ok to create a new issue in such cases, or better to reopen the old one?)

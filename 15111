@@ -1,0 +1,30 @@
+In 2.7.7 this use of an enumeration compiles, but in 2.8b1 it does not
+
+{code}
+$$ cat test.scala
+object Color extends Enumeration {
+  val Blue = Value
+  val Green = Value
+}
+
+class Board {
+  val grid = Array(Color.Blue, Color.Green)
+}
+
+println((new Board).grid)
+{code}
+
+{code}
+$$ /usr/lib/scala-2.8.0.Beta1-prerelease/bin/scala test.scala
+(fragment of test.scala):7: error: private object Color escapes its defining scope as part of type Array[this.Color.Value]
+  val grid = Array(Color.Blue, Color.Green)
+       ^
+one error found
+!!!
+discarding <script preamble>
+{code}
+
+{code}
+$$ /usr/lib/scala-2.7.7.final/bin/scala test.scala
+[Lscala.Enumeration$$Value;@366025e7
+{code}

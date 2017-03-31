@@ -1,0 +1,26 @@
+The issue is not specific to the REPL.  It is not specific to constructors and doesn't require an empty parameter list:
+{code}
+class B {
+   def x(i: Int) = 3
+   def x(implicit x: Int) = 5
+}
+{code}
+
+The output of javap on B is:
+{code}
+public class B extends java.lang.Object implements scala.ScalaObject{
+    public int x(int);
+    public int x(int);
+    public B();
+}
+{code}
+
+In 2.7.7 a compile error is generated:
+{code}
+B.scala:4: error: double definition:
+method x:(implicit Int)Int and
+method x:(Int)Int at line 3
+have same type after erasure: (Int)Int
+        def x(implicit x: Int) = 5
+            ^
+{code}

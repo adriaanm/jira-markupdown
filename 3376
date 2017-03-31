@@ -1,0 +1,108 @@
+Also here is the -Xprint for the phase before (flatten) and the phase when (mixin) the setter is added:
+flatten:
+{code}
+[[syntax trees at end of flatten]]// Scala source: Foo.scala
+package bizz {
+  abstract trait DecXTMaker extends java.lang.Object {
+    def mkA(ctorData: Long): bizz.DecXT;
+    <stable> <accessor> def hashPrecision(): Int
+  };
+  abstract trait DecXTFactory extends java.lang.Object with bizz.DecXTMaker;
+  abstract class DecXT extends java.lang.Object with bizz.DecXTFactory with ScalaObject {
+    <paramaccessor> private[this] val raw: Long = _;
+    <stable> <accessor> <paramaccessor> def raw(): Long = DecXT.this.raw;
+    def this(raw: Long): bizz.DecXT = {
+      DecXT.this.raw = raw;
+      DecXT.super.this();
+      ()
+    }
+  };
+  abstract trait DecXMaker extends java.lang.Object with bizz.DecXTMaker with ScalaObject {
+    override def mkA(ctorData: Long): bizz.DecX;
+    override <stable> <accessor> def hashPrecision(): Int
+  };
+  final class DecX extends java.lang.Object with bizz.DecXTFactory with bizz.DecXMaker with ScalaObject {
+    override <bridge> def mkA(ctorData: Long): bizz.DecXT = DecX.this.mkA(ctorData);
+    def this(): object bizz.DecX = {
+      DecX.super.this();
+      DecX.this.$$asInstanceOf[bizz.DecXMaker$$class]()./*DecXMaker$$class*/$$init$$();
+      ()
+    }
+  };
+  class DecX extends bizz.DecXT with bizz.DecXMaker with ScalaObject {
+    override <bridge> def mkA(ctorData: Long): bizz.DecXT = DecX.this.mkA(ctorData);
+    def this(raw: Long): bizz.DecX = {
+      DecX.super.this(raw);
+      DecX.this.$$asInstanceOf[bizz.DecXMaker$$class]()./*DecXMaker$$class*/$$init$$();
+      ()
+    }
+  };
+  abstract trait DecXMaker$$class extends java.lang.Object with bizz.DecXTMaker with ScalaObject with bizz.DecXMaker {
+    override def mkA(ctorData: Long): bizz.DecX = new bizz.DecX(ctorData);
+    private[this] val hashPrecision: Int = _;
+    override <stable> <accessor> def hashPrecision(): Int = DecXMaker$$class.this.hashPrecision;
+    def /*DecXMaker$$class*/$$init$$(): Unit = {
+      DecXMaker$$class.this.hashPrecision = 9;
+      ()
+    }
+  }
+}
+{code}
+
+
+mixin:
+{code}
+[[syntax trees at end of mixin]]// Scala source: Foo.scala
+package bizz {
+  abstract trait DecXTMaker extends java.lang.Object {
+    def mkA(ctorData: Long): bizz.DecXT;
+    <stable> <accessor> def hashPrecision(): Int
+  };
+  abstract trait DecXTFactory extends java.lang.Object with bizz.DecXTMaker;
+  abstract class DecXT extends java.lang.Object with bizz.DecXTFactory with ScalaObject {
+    <paramaccessor> private[this] val raw: Long = _;
+    <stable> <accessor> <paramaccessor> def raw(): Long = DecXT.this.raw;
+    def this(raw: Long): bizz.DecXT = {
+      DecXT.this.raw = raw;
+      DecXT.super.this();
+      ()
+    }
+  };
+  abstract trait DecXMaker extends java.lang.Object with bizz.DecXTMaker with ScalaObject {
+    <accessor> def bizz$$DecXMaker$$_setter_#Precision_=(x$$1: Int): Unit;
+    override def mkA(ctorData: Long): bizz.DecX;
+    override <stable> <accessor> def hashPrecision(): Int
+  };
+  final class DecX extends java.lang.Object with bizz.DecXTFactory with bizz.DecXMaker with ScalaObject {
+    override <stable> <accessor> def hashPrecision(): Int = DecX.this.hashPrecision;
+    private[this] val hashPrecision: Int = _;
+    <accessor> def bizz$$DecXMaker$$_setter_#Precision_=(x$$1: Int): Unit = DecX.this.hashPrecision = x$$1;
+    override def mkA(ctorData: Long): bizz.DecX = bizz.DecXMaker$$class.mkA(DecX.this, ctorData);
+    override <bridge> def mkA(ctorData: Long): bizz.DecXT = DecX.this.mkA(ctorData);
+    def this(): object bizz.DecX = {
+      DecX.super.this();
+      bizz.DecXMaker$$class./*DecXMaker$$class*/$$init$$(DecX.this);
+      ()
+    }
+  };
+  class DecX extends bizz.DecXT with bizz.DecXMaker with ScalaObject {
+    override <stable> <accessor> def hashPrecision(): Int = DecX.this.hashPrecision;
+    private[this] val hashPrecision: Int = _;
+    <accessor> def bizz$$DecXMaker$$_setter_#Precision_=(x$$1: Int): Unit = DecX.this.hashPrecision = x$$1;
+    override def mkA(ctorData: Long): bizz.DecX = bizz.DecXMaker$$class.mkA(DecX.this, ctorData);
+    override <bridge> def mkA(ctorData: Long): bizz.DecXT = DecX.this.mkA(ctorData);
+    def this(raw: Long): bizz.DecX = {
+      DecX.super.this(raw);
+      bizz.DecXMaker$$class./*DecXMaker$$class*/$$init$$(DecX.this);
+      ()
+    }
+  };
+  abstract trait DecXMaker$$class extends  {
+    override def mkA($$this: bizz.DecXMaker, ctorData: Long): bizz.DecX = new bizz.DecX(ctorData);
+    def /*DecXMaker$$class*/$$init$$($$this: bizz.DecXMaker): Unit = {
+      $$this.bizz$$DecXMaker$$_setter_#Precision_=(9);
+      ()
+    }
+  }
+}
+{code}

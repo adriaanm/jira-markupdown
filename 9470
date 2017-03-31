@@ -1,0 +1,30 @@
+At the cost of more boilerplate, you can create a concrete upper bound for the abstract type, and hang a companion off that:
+
+{code}
+package s1 {
+  trait AbDingos {
+    type Dingo <: BaseDingo
+
+    trait BaseDingo
+    object BaseDingo {
+      implicit def string2dingo(s: String): Dingo = Dingo.string2dingo(s)
+    }
+
+    val Dingo: DingoCompanion
+    abstract class DingoCompanion {
+      implicit def string2dingo(s: String): Dingo
+    }
+  }
+  object Dingos extends AbDingos {
+    class Dingo extends BaseDingo
+    object Dingo extends DingoCompanion {
+      implicit def string2dingo(s: String): Dingo = new Dingo
+    }
+  }
+  class A {
+    def f1(x: AbDingos)     = { import x._ ; import Dingo._ ; "a": Dingo } // ok
+    def f2(x: Dingos.type)  = { import x._ ; "a": Dingo }                  // ok
+    def f3(x: AbDingos)     = { import x._ ; "a": Dingo }                  // ok
+  }
+}
+{code}

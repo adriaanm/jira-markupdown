@@ -1,0 +1,21 @@
+Yep, the deadlock is there even without using Application at all. The following will deadlock as well.
+
+{code}
+import scala.concurrent.ops._;
+
+object Blocks {
+  val foo = "foo";
+  val willBeFoo = future(foo);
+  println(willBeFoo());
+}
+
+object Main {
+  def main(args: Array[String]) {
+    Blocks
+  }
+}
+{code}
+
+Maybe we should document this somewhere. I really don't think we can do much, while keeping the current semantics for object initialization (meaning lazy). We make it a bit easier than Java to shoot yourself in the foot, but the same thing happens if the static initializer of a class waits for some thread that in turn depends on the class being initialized.
+
+So I leave this open until we figure out where this piece of documentation should go. Or maybe someone has a better idea.

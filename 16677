@@ -1,0 +1,9 @@
+Given my own usage, I'd like to see a definition like this in the standard library:
+
+{code}
+def groupInto[B, C](toKey: A => B)(toValue: A => C): Map[B, Seq[C]] = this groupBy toKey map { case (k, vs) => k -> vs.toSeq map toValue }
+{code}
+
+To check whether this method was useful enough, I checked Scala sources. Out of 29 uses of groupBy, five where followed by mapValues on the same line, and two followed by a map that does the same thing. That's just short of 25%, which I think is pretty good.
+
+There are two clear differences in the semantics betweep groupBy + mapValues and what I'm asking for. First, mapValues returns a view (in all but name), and, second, groupBy returns the value type as Repr. The two groupBy+map uses actually get the same results I'm asking for (well, maybe except for Seq -- they both deal in parallels, so perhaps GenSeq would be required).

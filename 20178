@@ -1,0 +1,14 @@
+Now implementation of scanLeft for TraversableViewLike is this
+
+
+{code:java}
+override def scanLeft[B, That](z: B)(op: (B, A) => B)(implicit bf: CanBuildFrom[This, B, That]): That =
+    newForced(thisSeq.scanLeft(z)(op)).asInstanceOf[That]
+{code}
+
+
+It goes to calculate all the collection when we call some method of the "view". But it is not the way, because we may want to take only a part of collection with "takeWhile" or "find" or "indexWhere". It should be implemented like "foldLeft" for "views"—using "foreach" call. But better potential implementations of many view's methods are with "iterator". And it should not be forced—it is a "view" after all. All the operations should be lazy. 
+
+Now it is 100 times slower than it should be.
+
+Probably, they are another view methods, these have non-lazy implementations.

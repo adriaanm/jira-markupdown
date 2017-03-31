@@ -1,0 +1,15 @@
+The issue isn't particular to getClass. The change that was made to getClass merely exposes something about the least-upper-bound algorithm that hasn't changed in many years. 2.9, 2.8, and 2.7 all show:
+
+{noformat}
+scala> abstract class A { def f: Class[_] }
+defined class A
+
+scala> class A1 extends A { override def f = classOf[Int] }
+defined class A1
+
+scala> class A2 extends A { override def f = classOf[Char] }
+defined class A2
+
+scala> List(new A1) ++ List(new A2)
+res2: List[A{def f: java.lang.Class[_ >: Int with Char <: AnyVal]}] = List(A1@52ac5024, A2@2ec195e3)
+{noformat}

@@ -1,0 +1,16 @@
+The following error occurs on cygwin with 2.7.2.RC1 but didn't occur with earlier Scala releases. 
+
+C:\> set | grep JAVA
+JAVA_HOME=C:/Program Files/Java/jdk1.5.0_05
+
+C:\> bash
+
+$ set | grep JAVA
+JAVA_HOME='C:/Program Files/Java/jdk1.5.0_05'
+
+$ scala -version
+scala: line 65: C:/Program: No such file or directory
+scala: line 65: exec: C:/Program: cannot execute: No such file or directory
+
+A simple workaround might be to add quotes to the last line of scaladoc, scalac, scala, fsc:-
+exec "${JAVACMD:=java}" ...

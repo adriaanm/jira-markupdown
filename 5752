@@ -1,0 +1,54 @@
+Self-contained, shorter, example. 
+
+{code}
+package test
+
+class Pixel[@specialized T] protected (var v: T) 
+
+object Pixel {
+
+  type Pixel1d = Pixel[Double]
+  
+  def apply(v: Double): Pixel1d = new Pixel1d(v)
+}
+{code}
+
+Causes the compiler (r24667) to crash upon displaying an error message: 
+
+{code}
+error: scala.tools.nsc.symtab.Types$$TypeError: constructor Pixel$$mcD$$sp in class Pixel$$mcD$$sp cannot be accessed in object Pixel
+ Access to protected constructor Pixel$$mcD$$sp not permitted because
+ enclosing class object Pixel in package test is not a subclass of 
+ class Pixel$$mcD$$sp in package test where target is defined
+	at scala.tools.nsc.typechecker.Contexts$$Context.error(Contexts.scala:291)
+	at scala.tools.nsc.typechecker.Infer$$Inferencer.error(Infer.scala:205)
+	at scala.tools.nsc.typechecker.Infer$$Inferencer.errorTree(Infer.scala:209)
+{code}
+
+Thrown nearby this snippet in `Contexts.scala`
+
+{code}
+      /** Is protected access to target symbol permitted */
+      def isProtectedAccessOK(target: Symbol) = {
+        val c = enclosingSubClassContext(sym.owner)
+        if (c == NoContext) 
+          lastAccessCheckDetails = 
+            "\n Access to protected "+target+" not permitted because"+
+            "\n "+"enclosing class "+this.enclClass.owner+this.enclClass.owner.locationString+" is not a subclass of "+
+            "\n "+sym.owner+sym.owner.locationString+" where target is defined"
+        c != NoContext && {
+          val res = 
+            isSubClassOrCompanion(pre.widen.typeSymbol, c.owner) ||
+            c.owner.isModuleClass && 
+            isSubClassOrCompanion(pre.widen.typeSymbol, c.owner.linkedClassOfClass)
+          if (!res) 
+            lastAccessCheckDetails = 
+              "\n Access to protected "+target+" not permitted because"+
+              "\n prefix type "+pre.widen+" does not conform to"+
+              "\n "+c.owner+c.owner.locationString+" where the access take place"
+          res
+        }
+      }
+{code}
+
+If the example is reworked to do away with `[@specialized T]` , then the compiler does not crash anymore. Same goes for removing `protected`. 

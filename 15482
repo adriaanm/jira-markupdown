@@ -1,0 +1,24 @@
+If I declare a method in a class in "scala-sequence" style:
+{code}
+    def foo(args: String*) : Unit
+{code}
+And inspect the generated class file (as if it had been generated from a Java class), the signature looks like:
+{code}
+    public void foo(scala.collection.Seq<java.lang.String> p0)
+{code}
+I think that, for interop with Java, it would be nice if we could generate a Java varargs method signature (that is, taking a String *array* with the *transient* modifier set):
+
+{code}
+    public transient void foo(java.lang.String[] p0)
+{code}
+
+
+I tried adding the _@transient_ annotation but this was ignored by scalac!
+
+I would ask for either:
+
+1. The compiler automatically generates Java varargs-style "forwarder" methods for Scala sequence ones
+
+2. A @varargs annotation is supplied, which, when used in conjunction with a scala-sequence method, generates a Java varargs forwarder as in SI-1
+
+Chris

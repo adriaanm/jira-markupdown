@@ -1,0 +1,70 @@
+Consider the following:
+
+{code}
+import scala.annotation._
+import meta._
+
+class Foo extends scala.annotation.Annotation
+
+case class A(@(Foo@field) x: Int)
+{code}
+
+We would expect the annotation {{Foo}} to be put on the accessor of {{x}} only. However, the synthesized {{apply}} method's parameter {{x}} still has the annotation:
+
+{code}
+[[syntax trees at end of                     typer]] // test.scala
+package <empty> {
+  import scala.annotation._;
+  import scala.annotation.meta._;
+  class Foo extends scala.annotation.Annotation {
+    def <init>(): Foo = {
+      Foo.super.<init>();
+      ()
+    }
+  };
+  case class A extends AnyRef with Product with Serializable {
+    @Foo @scala.annotation.meta.field <caseaccessor> <paramaccessor> private[this] val x: Int = _;
+    <stable> <caseaccessor> <accessor> <paramaccessor> def x: Int = A.this.x;
+    def <init>(x: Int): A = {
+      A.super.<init>();
+      ()
+    };
+    <synthetic> def copy(x: Int = x): A = new A(x);
+    <synthetic> def copy$default$1: Int @scala.annotation.unchecked.uncheckedVariance = A.this.x;
+    override <synthetic> def productPrefix: String = "A";
+    <synthetic> def productArity: Int = 1;
+    <synthetic> def productElement(x$1: Int): Any = x$1 match {
+      case 0 => A.this.x
+      case _ => throw new IndexOutOfBoundsException(x$1.toString())
+    };
+    override <synthetic> def productIterator: Iterator[Any] = runtime.this.ScalaRunTime.typedProductIterator[Any](A.this);
+    <synthetic> def canEqual(x$1: Any): Boolean = x$1.$isInstanceOf[A]();
+    override <synthetic> def hashCode(): Int = {
+      <synthetic> var acc: Int = -889275714;
+      acc = Statics.this.mix(acc, x);
+      Statics.this.finalizeHash(acc, 1)
+    };
+    override <synthetic> def toString(): String = ScalaRunTime.this._toString(A.this);
+    override <synthetic> def equals(x$1: Any): Boolean = A.this.eq(x$1.asInstanceOf[Object]).||(x$1 match {
+  case (_: A) => true
+  case _ => false
+}.&&({
+      <synthetic> val A$1: A = x$1.asInstanceOf[A];
+      A.this.x.==(A$1.x).&&(A$1.canEqual(A.this))
+    }))
+  };
+  <synthetic> object A extends scala.runtime.AbstractFunction1[Int,A] with Serializable {
+    def <init>(): A.type = {
+      A.super.<init>();
+      ()
+    };
+    final override <synthetic> def toString(): String = "A";
+    case <synthetic> def apply(@Foo @scala.annotation.meta.field x: Int): A = new A(x);
+    case <synthetic> def unapply(x$0: A): Option[Int] = if (x$0.==(null))
+      scala.this.None
+    else
+      Some.apply[Int](x$0.x);
+    <synthetic> private def readResolve(): Object = A
+  }
+}
+{code}

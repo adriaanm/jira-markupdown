@@ -1,0 +1,48 @@
+I got also problems with extractors - but I used unapplySeq instead of unapply. Comment out the first case to get the expected output.
+
+{code}
+object MyListTest extends App {
+  val xs = MyList(1 to 5: _*)
+  xs match {
+//    case MyList(head) => println("no") // works fine
+    case head :: MyNil => println("no") // produces a MatchError
+    case MyList(head, tail @ _*) => println("yay")
+  }
+}
+
+object MyList {
+  def apply[A](a: A*): MyList[A] =
+    (a :\ empty[A]) { _ :: _ }
+    
+  def empty[A]: MyList[A] = MyNil
+  
+  def unapplySeq[A](a: MyList[A]): Option[Seq[A]] = {
+    var xs: List[A] = Nil
+    var ys = a
+    while (!ys.isEmpty) {
+      xs = ys.head :: xs
+      ys = ys.tail
+    }
+    Some(xs.reverse)
+  }
+}
+
+abstract class MyList[+A] {
+  def head: A
+  def tail: MyList[A]
+  def isEmpty: Boolean
+  
+  def :: [B >: A](b: B): MyList[B] =
+    new ::(b, this)
+}
+
+case class :: [A](head: A, tail: MyList[A]) extends MyList[A] {
+  def isEmpty = false
+}
+
+case object MyNil extends MyList[Nothing] {
+  def head = throw new UnsupportedOperationException("nil head")
+  def tail = throw new UnsupportedOperationException("nil tail")
+  def isEmpty = true
+}
+{code}

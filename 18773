@@ -1,0 +1,107 @@
+{code}
+package p {
+  trait A {
+    private[p] def f(): String = "A"
+  }
+  trait B extends A {
+    // Here we're implementing a method with the same signature
+    // as an inherited one, and we can see the inherited one, and
+    // we are not required to override.
+    private[B] def f(): String = "B/" + super.f()
+
+    def hmm(x: B): String = {
+      // Both implementations are visible externally, depending on static
+      // type of receiver.
+      val s1 = (x: A).f()
+      val s2 = (x: B).f()
+      "" + ((s1, s2))
+    }
+  }
+  trait C extends B {
+    // Written like this, fails as shown:
+    //
+    // private[p] def f(): String = "C"
+    // a.scala:16: error: overriding method f in trait A of type ()String;
+    //  method f needs `override' modifier
+    //     private[p] def f(): String = "C"
+    //                    ^
+    // one error found
+    //
+    // But we can't call the method we're required to override!
+    // Written like this, fails as shown:
+    //
+    // override private[p] def f(): String = "C" + super.f()
+    // a.scala:27: error: method f in trait B cannot be accessed in p.B
+    //       override private[p] def f(): String = "C" + super.f()
+    //                                                         ^
+    // one error found
+  }
+
+  object Test {
+    def main(args: Array[String]): Unit = {
+      val b = new B { }
+      println(b hmm b)
+      // prints: (A,B/A)
+    }
+  }
+}
+{code}
+
+{code}
+package p1.p2 {
+  abstract class A {
+    private[p2] def f(): String = "A"
+    override def toString = s"A:f=$f"
+  }
+  class C1 extends A {
+    // Compiles, extending A directly
+    override def toString = super.toString + " " + s"C1:f=$f"
+  }
+  class C2 extends p1.p3.B1 {
+    // SHOULD compile - the f() defined in the superclass B1 is private,
+    // so this f should refer to the f() inherited from A, which is visible
+    // to us since we are in the same package. The f() defined in B1 should
+    // not affect us in any way. That's what "private" means.
+    override def toString = super.toString + " " + s"C2:f=$f"
+    // a.scala:10: error: method f in class B1 cannot be accessed in p1.p2.C2
+    //     override def toString = super.toString + " " + s"C2:f=$f"
+    //                                                            ^
+    // one error found
+  }
+  class C3 extends p1.p3.B2 {
+    // Compiles, extending B2 which extends A.
+    override def toString = super.toString + " " + s"C3:f=$f"
+  }
+}
+
+package p1.p3 {
+  abstract class B1 extends p1.p2.A {
+    // SHOULD compile - the f() defined in the superclass A is private with a
+    // scope which excludes us. That means it should not affect us in any way.
+    // That's what "private" means.
+    private def f(): String = "B1"
+    // a.scala:24: error: overriding method f in class A of type ()String;
+    //  method f has weaker access privileges; it should not be private
+    //     private def f(): String = "B1"
+    //                 ^
+    // one error found
+    override def toString = super.toString + " " + s"B1:f=$f"
+  }
+  abstract class B2 extends p1.p2.A {
+    // Letting f pass through
+    override def toString = super.toString + " " + "B2"
+  }
+}
+
+object Test {
+  def main(args: Array[String]): Unit = {
+    println(new p1.p2.C1)
+    println(new p1.p2.C2)
+    println(new p1.p2.C3)
+  }
+}
+{code}
+
+Thanks to Paul for the test cases.
+
+This is a followup to SI-8143

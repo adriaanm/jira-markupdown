@@ -1,0 +1,53 @@
+using scalac from r18657, I get:
+
+{code}
+Test.scala:11: error: class C cannot be instantiated because it does not conform to its self-type C with A[D.Q]
+ val c = new C
+         ^
+one error found
+{code}
+
+The immediate problem is that you need `(A[X] forSome {type X})` as self-type, not `A[X forSome {type X}]` (which is what `A[D.Q]` is equivalent to).
+
+The more severe problem is that I don't think this workaround is valid, because type aliases are transparent: they are simply expanded in-place. Thus, two syntactically different occurrences of `D.Q` represent two completely unrelated types. For example, this is perfectly safe:
+
+{code}
+object D {
+  type Q = X forSome {type X}
+}
+
+object Test {
+  val x: D.Q = 1
+  var y: D.Q = "a"
+  
+  y = x
+}
+{code}
+
+This should explain why D.Q cannot be used to represent *the* choice of the existential type X in:
+
+{code}
+public interface A<U> {
+  U get();
+}
+ 
+public abstract class B implements A {}
+// == abstract class B extends (A[X] forSome {type X})
+// can we reference the X that scalac choses for the existential??
+{code}
+
+
+PS: just for fun, I also tried this:
+{code}
+class C[T](implicit w: B <:< A[T]) extends B {
+  def get = "hello world" // error: found T (in C), required T (in A) -- 
+  // scalac does not (and will not...) derive that they are equal from  C[T] <: B and B <:< A[T] 
+  // even though this holds in principle (assuming the type params are invariant)
+}
+
+
+object Test extends Application {
+  val c = new C // scalac infers A's type parameter U for C's type param T
+  // not very clean, of course...
+}
+{code}

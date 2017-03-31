@@ -1,0 +1,44 @@
+Somebody had a simple question, so this must be a simple bug, right?
+
+In 2.11.4, it doesn't crash until evaluating `Y.f(42)`.
+
+{code}
+scala> import util._
+import util._
+
+scala> :pa
+// Entering paste mode (ctrl-D to finish)
+
+object Y {
+def f[A](a: =>  A) = 1
+def f[A](a: => Either[Exception, A]) = 2
+}
+
+// Exiting paste mode, now interpreting.
+
+<console>:12: error: double definition:
+def f[A](a: => A): Int at line 11 and
+def f[A](a: => scala.util.Either[Exception,A]): Int at line 12
+have same type after erasure: (a: Function0)Int
+       def f[A](a: => Either[Exception, A]) = 2
+           ^
+
+scala> :pa
+// Entering paste mode (ctrl-D to finish)
+
+object Y {
+def f[A](a: =>  A) = 1
+def f[A](a: => Either[Exception, A])(d: DummyImplicit) = 2
+}
+
+// Exiting paste mode, now interpreting.
+
+java.lang.NullPointerException
+	at scala.tools.nsc.Global$Run.compileLate(Global.scala:1595)
+	at scala.tools.nsc.GlobalSymbolLoaders.compileLate(GlobalSymbolLoaders.scala:29)
+	at scala.tools.nsc.symtab.SymbolLoaders$SourcefileLoader.doComplete(SymbolLoaders.scala:369)
+	at scala.tools.nsc.symtab.SymbolLoaders$SymbolLoader.complete(SymbolLoaders.scala:212)
+	at scala.reflect.internal.Symbols$Symbol.info(Symbols.scala:1488)
+	at scala.tools.nsc.transform.SpecializeTypes.scala$tools$nsc$transform$SpecializeTypes$$specializedClass$1(SpecializeTypes.scala:538)
+
+{code}

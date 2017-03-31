@@ -1,0 +1,22 @@
+Replying to [comment:28 mellit]:
+> I tried to create a script with the following:
+> 
+> {code}
+> ...
+> def repeat(n : Int, f : Int => Unit) : Unit = {
+>     var i = 0
+>     while (i<n) {
+>         f(i)
+>         i += 1
+>     }
+> }
+> }}
+
+Thanks for the suggestion. I hesitate to try or rely on this for several
+reasons:
+
+1) having to remember to not use the standard {{for}} loop is problematic. The syntax is different and not based on generators and less general, although one could certainly patch it to be more general; i.e pass in start and end and optional increment values: repeat(start:Int, end:Int, increment:Int) or repeat(range:Range) etc. (and also handle backwards iteration when called for).
+
+2) This may still involve at least an extra function call per iteration. If the compiler has to inject other synthetic calls into the body to allow access to other lexically scoped variables, this may also affect performance. The goal of this optimization is to achieve Java-level performance of for loops where possible.
+
+3) most critically, if/when the Scala compiler implements this ticket's optimization, then all code using this repeat control would *not* get the optimization, requiring code maintenance to undo it.

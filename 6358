@@ -1,0 +1,9 @@
+I've encountered the same problem and solved it this way:
+
+{code} 
+protected def comment: Parser[Any] = 
+  rep(chrExcept(EofCh, '*') | '*' ~ not('/')) ~ '*' ~ '/' 
+    ^^^ ' '
+{code}
+
+Probably not the most performant solution, but without recursion whatsoever.

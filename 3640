@@ -1,0 +1,22 @@
+As a test, I recoded the error-causing code to be based on an object rather than be in class scope.  It made no difference, the error happened again on names.nextElement(), so I guess that was a false lead:
+
+
+{code}
+class ScalaServlet extends HttpServlet
+{
+    
+    private def getInitParameterMap(svlt: ScalaServlet) =
+        {
+        var parms = Map[String,String]().withDefaultValue("")
+        val names = svlt.getInitParameterNames
+        while (names.hasMoreElements)
+            {
+            val name = names.nextElement.asInstanceOf[String]
+            parms += name -> svlt.getInitParameter(name)
+            }  
+        parms      
+        }
+
+    val initParameters = getInitParameterMap(this)
+
+{code}

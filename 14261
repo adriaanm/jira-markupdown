@@ -1,0 +1,28 @@
+separate compilation when the second sources refer to inner classes of the first.
+
+problem: getType is called with {{Outer.Inner}} instead of {{Outer+Inner}}, or in case of a module, {{OuterModule$$+Inner}}.
+
+example: Predef$$.GetClassWrapper, happens when compiling source code which uses x.getClass
+
+{code}
+Exception in thread "main" java.lang.Error: class GetClassWrapper
+  symbol = final class GetClassWrapper
+  owner  = final <module> object Predef with name scala.Predef.GetClassWrapper
+	at scala.tools.nsc.backend.msil.GenMSIL$$BytecodeGenerator.getType(GenMSIL.scala:1989)
+	at scala.tools.nsc.backend.msil.GenMSIL$$BytecodeGenerator.scala$$tools$$nsc$$backend$$msil$$GenMSIL$$BytecodeGenerator$$$$msilType(GenMSIL.scala:1972)
+	at scala.tools.nsc.backend.msil.GenMSIL$$BytecodeGenerator.scala$$tools$$nsc$$backend$$msil$$GenMSIL$$BytecodeGenerator$$$$msilType(GenMSIL.scala:1976)
+	at scala.tools.nsc.backend.msil.GenMSIL$$BytecodeGenerator.scala$$tools$$nsc$$backend$$msil$$GenMSIL$$BytecodeGenerator$$$$getMethod(GenMSIL.scala:2371)
+	at scala.tools.nsc.backend.msil.GenMSIL$$BytecodeGenerator$$$$anonfun$$genBlock$$2.apply(GenMSIL.scala:1472)
+	at scala.tools.nsc.backend.msil.GenMSIL$$BytecodeGenerator$$$$anonfun$$genBlock$$2.apply(GenMSIL.scala:1215)
+	at scala.collection.generic.VectorTemplate$$class.foreach(VectorTemplate.scala:62)
+	at scala.runtime.BoxedArray.foreach(BoxedArray.scala:24)
+	at scala.tools.nsc.backend.icode.BasicBlocks$$BasicBlock.foreach(BasicBlocks.scala:130)
+	at scala.tools.nsc.backend.msil.GenMSIL$$BytecodeGenerator.genBlock(GenMSIL.scala:1215)
+	at scala.tools.nsc.backend.msil.GenMSIL$$BytecodeGenerator.genBlocks(GenMSIL.scala:1166)
+	at scala.tools.nsc.backend.msil.GenMSIL$$BytecodeGenerator.genCode(GenMSIL.scala:602)
+	at scala.tools.nsc.backend.msil.GenMSIL$$BytecodeGenerator.scala$$tools$$nsc$$backend$$msil$$GenMSIL$$BytecodeGenerator$$$$genMethod(GenMSIL.scala:583)
+	at scala.tools.nsc.backend.msil.GenMSIL$$BytecodeGenerator$$$$anonfun$$scala$$tools$$nsc$$backend$$msil$$GenMSIL$$$$genClass$$3.apply(GenMSIL.scala:540)
+	at scala.tools.nsc.backend.msil.GenMSIL$$BytecodeGenerator$$$$anonfun$$scala$$tools$$nsc$$backend$$msil$$GenMSIL$$$$genClass$$3.apply(GenMSIL.scala:540)
+	at scala.collection.generic.LinearSequenceTemplate$$class.foreach(LinearSequenceTemplate.scala:81)
+	at scala.collection.immutable.List.foreach
+{code}

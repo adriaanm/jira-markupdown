@@ -1,0 +1,16 @@
+I had thought I checked in a workaround in r18719, but I noticed only now that the workaround didn't even work, so I checked in a new more brute-force attempt in r18806.  This seems like a sketchy situation and it's not apparent to me what to do.
+
+See also SI-2087.
+
+{code}
+scala> def foo = new (Short => Char) { def apply(x: Short) = x.toChar }
+foo: java.lang.Object with (Short) => Char
+
+// here is where it would crash without the workaround
+scala> foo(-100)                                                       
+res0: Char = ?
+
+// but through the front door it figures things out.
+scala> java.lang.Character.valueOf((-100).toChar)
+res0: java.lang.Character = ?
+{code}

@@ -1,0 +1,22 @@
+2.8.0 liked the code fine.
+
+{code}
+  ~/newbug> cat J.java 
+package p1;
+public abstract class J {
+	protected abstract void foo();
+}
+  ~/newbug> cat S.scala 
+package p2
+
+class S extends p1.J {
+  override def foo() { }
+}
+  ~/newbug> /usr/local/scala-2.8.0.final/bin/scalac J.java S.scala
+  ~/newbug> rm -r p2
+  ~/newbug> /usr/local/scala-2.8.1.RC3/bin/scalac J.java S.scala  
+S.scala:4: error: method foo overrides nothing
+  override def foo() { }
+               ^
+one error found
+{code}

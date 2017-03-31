@@ -1,0 +1,17 @@
+When using a 2.8.0 snapshot from 11 September combined with Hibernate JPA annotations like javax.persistence.Column I am experiencing some strange behaviour depending on how I name my variables.
+
+@Column(name="ISO_CODE", nullable=false, length=4)
+@BeanProperty var isoCode: String = _
+
+yields a :
+
+org.hibernate.MappingException: Repeated column in mapping for entity: ... MyClass column: ISO_CODE (should be mapped with insert="false" update="false")
+
+Changing the variable to name to :
+
+@BeanProperty var whateverCode; String = _
+
+solves the problem.
+
+Essentially 'is*' fails.
+

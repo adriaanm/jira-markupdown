@@ -1,0 +1,23 @@
+{code}
+scala> case class C(c: String = "hi")
+defined class C
+
+scala> { def any2stringadd = ??? ; C() + "EOS" }
+<console>:13: error: value + is not a member of C
+       { def any2stringadd = ??? ; C() + "EOS" }
+                                       ^
+
+scala> { def any2stringadd = ??? ; (C(): any2stringadd[C]) + "EOS" }
+res1: String = C(hi)EOS
+
+scala> { def any2stringadd = ??? ; type any2stringadd[_] = Nothing ; (C(): any2stringadd[C]) + "EOS" }
+<console>:13: error: type mismatch;
+ found   : C
+ required: any2stringadd[C]
+    (which expands to)  Nothing
+       { def any2stringadd = ??? ; type any2stringadd[_] = Nothing ; (C(): any2stringadd[C]) + "EOS" }
+                                                                       ^
+<console>:13: error: value + is not a member of any2stringadd[C]
+       { def any2stringadd = ??? ; type any2stringadd[_] = Nothing ; (C(): any2stringadd[C]) + "EOS" }
+                                                                                             ^
+{code}

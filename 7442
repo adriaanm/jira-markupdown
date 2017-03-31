@@ -1,0 +1,54 @@
+It turns out not to be ignored, but useful.  Without the annotation on old, I see warnings on my gazillion calls to Y2K_workaround.
+
+On visibility,  I think the helpful warning on Fooer.foo (because someone added an impl in Foo) is not different from a helpful warning on fun (because someone, maybe me, moved it from Fooer into usage, not noticing the invocation further down; or maybe I lost track of indentation and I pasted it in the wrong place when I was converting tabs to spaces and adding scaladoc).
+
+It's useful to see either a warning that the local @deprecation won't generate warnings, or a warning on each invocation (such as old, which really does invoke deprecated public API).
+
+Full disclosure: I actually have no reason to care about this. The use case was inspired by SI-5715.
+
+{code}
+package object deprlocal {
+  def ??! = throw new NoLongerImplementedError
+}
+
+package deprlocal {
+
+final class NoLongerImplementedError(msg: String = "Deprecation cycle complete") extends Error(msg)
+
+class Foo {
+  def foo: Unit = ???
+}
+
+class Fooer extends Foo {
+  // warn about broken usage
+  @deprecated("foo", "") override def foo = useCase()
+
+  def usage() {
+    // refactored from class, no warning
+    @deprecated("the fun is gone","") def fun = ??!
+    // 1000 LOC
+    fun
+  }
+
+  def useCase() {
+    val f = new Features
+    @deprecated("I call deprecated features!","") def old() {
+      val old_data = f.Y2K_workaround()
+      val older_data = f.Y2K_workaround()
+      // other deprecated calls
+    }
+    old() // TODO: use the new stuff
+  }
+}
+class Features {
+  @deprecated("Welcome to the 20th C","") def Y2K_workaround() = ??!
+}
+
+object Test {
+  def main(args: Array[String]) {
+    val f: Foo = new Fooer
+    f.foo
+  }
+}
+}
+{code}

@@ -1,0 +1,9 @@
+This one's easy to fix:
+
+{code}
+def assertEquals[A](msg: String, expected: A, actual: => A) {
+  val a = actual; if (expected != a) fail(msg, expected, a)
+}
+{code}
+
+(Or maybe with lazy parameters if they were supported) Is there a reason why expected is not call by name too? It seems that all other asserts (except assertEquals) are call by name on both, expected and actual. And why call by name at all?

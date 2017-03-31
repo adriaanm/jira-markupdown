@@ -1,0 +1,11 @@
+We also have no idea what the caching is buying us. Here's a data point:
+{noformat}
+Master, "ant test" from scratch:
+BUILD SUCCESSFUL
+Total time: 39 minutes 9 seconds
+
+Vs. always calling normalizeImpl in TypeRef:
+BUILD SUCCESSFUL
+Total time: 37 minutes 47 seconds
+{noformat}
+This difference is within the noise, and I didn't look at memory consumption because I didn't set out to compare them, but it's large enough that it should remind us it's a bad idea to assume without evidence that such code is helping.

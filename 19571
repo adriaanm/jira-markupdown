@@ -1,0 +1,19 @@
+{code}
+$ cat unused.scala
+object Unused {
+  val optTup = Some((1, 2))
+
+  for {
+    tup <- optTup
+    (num1, num2) = tup
+  } yield (num1 + num2)
+}
+$ scalac -Ywarn-unused unused.scala
+unused.scala:6: warning: local val in value $anonfun is never used
+    (num1, num2) = tup
+     ^
+unused.scala:6: warning: local val in value $anonfun is never used
+    (num1, num2) = tup
+           ^
+two warnings found
+{code}

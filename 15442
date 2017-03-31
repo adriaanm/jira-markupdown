@@ -1,0 +1,32 @@
+I have a class that I can implicitly convert to NodeSeq.  It looks something like this:
+
+{code}
+import scala.xml._
+
+class Xmlable(val i: Int)
+
+object Xmlable {
+  implicit def xmlableToNodeSeq(x: Xmlable): NodeSeq = Text("i = " + x.i)
+}
+{code}
+
+I'm surprised that when I use an instance of Xmltable this class in a XML-mode Scala escape expression (not sure exactly what the name for it is), Scala does not invoke the implicit conversion.  It seems like it would make sense for Scala to attempt to convert the escape expression to a NodeSeq and only fall back on a default conversion (to Atom or Text via toString) if necessary.
+
+Strangely Scala does use the implicit conversion if I use an Xmlable as an attribute.
+
+{code}
+scala> import scala.xml._    
+import scala.xml._
+
+scala> val x = new Xmlable(1)
+x: Xmlable = Xmlable@de35b38
+
+scala> val ns: NodeSeq = x // Implicit conversion used  
+ns: scala.xml.NodeSeq = i = 1
+
+scala> <sometag attr={x}/> // Implicit conversion used
+res0: scala.xml.Elem = <sometag attr="i = 1"></sometag>
+
+scala> <sometag>{x}</sometag> // Implicit conversion NOT used
+res1: scala.xml.Elem = <sometag>Xmlable@de35b38</sometag>
+{code}

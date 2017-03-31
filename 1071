@@ -1,0 +1,33 @@
+Thanks for taking the time to explain the issue in detail.
+
+It seems to me that 500, 501 and this case are all various
+symptoms of a common problem. The fixes have cured individual
+symptoms (at the cost of rejecting some safe programs), but not
+the underlying cause.
+
+To my understanding, the underlying cause is the fact that a
+stable identifier bound to {{null}} can have a singleton type.
+With value members this "only" leads to a NullPointerException,
+but with type members it leads to the situation that {{null}}
+is accepted as a witness to prove that some type with given
+constraints actually exists. And this is not always the case.
+
+The fix to 501 and this case take different approaches, though:
+the 501 fix (requiring bounds to be statically conforming) tries
+to prevent us from even expressing "bad" constraints that
+{{null}} would then illegally prove. In your above example,
+however, we can _express_ the impossible constraints in {{{type T = Int } with { type T <: B }}}, but we just prevent
+{{null}} from proving it.
+
+I don't think {{null}} is inherently evil, but its interaction
+with singleton types seems to be broken. To my understanding, it
+would _in principle_ suffice to substitute {{NotNull}} in place of {{AnyRef}} in section 3.2.1 of the spec, though this would of
+course bring enormous practical difficulties. But it seems like
+the right thing to do. Then the all the fixes to individual
+symptoms could be removed.
+
+It's funny, now I realize that my ticket SI-1273 is completely
+upside down: it's _right_ that {{Null <: Singleton}} doesn't
+hold. The problem is instead that {{Null <: p.type}} holds. :)
+
+Have I understood the situation correctly?

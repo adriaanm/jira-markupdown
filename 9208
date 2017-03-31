@@ -1,0 +1,13 @@
+Not casting related per se, this also doesn't work whereas just returning x without pattern matching is fine.
+
+{code}
+class Buffer {
+  def f[@specialized(Int) T](): T = {
+    var x: T = 0.asInstanceOf[T]
+    0 match {
+      case 0 => x
+      case 1 => x
+    } 
+  }
+}
+{code}

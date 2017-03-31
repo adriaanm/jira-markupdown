@@ -1,0 +1,15 @@
+Please see the following brief (edited) IRC log:
+
+{code}
+[16:28:53] <jmorrison> I need to figure out if there is a way to match namespace prefixed attributes
+[16:29:06] <jmorrison> or if it's just a bug that \ and \\ ignore them
+[16:29:41] <mithraic> You want to pull out elements with such-and-such:foo attribute?
+[16:29:50] <mithraic> I haven't done exactly that.
+[16:30:30] <jmorrison> <a b="c"> \ "@b" gives me a NodeSeq of c
+[16:30:58] <jmorrison> <a x:b="c" xmlns:x="urn:y"> \ "@b" gives me an empty NodeSeq
+[16:31:03] <jmorrison> <a x:b="c" xmlns:x="urn:y"> \ "@x:b" gives me an empty NodeSeq
+[16:39:44] <mithraic> jmorrison: Here's the relevant source: http://scala-tools.org/tmp/scaladocs-scalalibrary/scala/xml/NodeSeq.scala.html#Some(34)
+[16:40:33] <mithraic> In particular, on line 74, if the string starts with '@', it looks like it does this test: y.attribute(k) match { ... }
+[16:41:11] <mithraic> & that method only looks up unprefixed attributes.
+[16:41:17] <mithraic> so I'd say it's a bug.
+{code}

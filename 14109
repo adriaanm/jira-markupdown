@@ -1,0 +1,77 @@
+Taking scala compiler source code from "scala-2.7.3.final/src/scala-compiler-src.jar" and making a project in Eclipse 3.4.2 produces an error. The auto-build appears to work, however when attempting to open a source file from the project, everything stops responding and a following error comes up:
+{code}
+Unhandled event loop exception
+GC overhead limit exceeded
+{code}
+
+Using Netbeans 6.5 to build the scala compiler results in the following error (takes a very long time for error to show up, during which time everything stops responding):
+{code}
+java.lang.OutOfMemoryError: GC overhead limit exceeded
+        at scala.List.flatMap(List.scala:1122)
+        at scala.tools.nsc.backend.icode.BasicBlocks$$BasicBlock.findSucc$$1(BasicBlocks.scala:428)
+        at scala.tools.nsc.backend.icode.BasicBlocks$$BasicBlock$$$$anonfun$$exceptionalSucc$$1.apply(BasicBlocks.scala:431)
+        at scala.tools.nsc.backend.icode.BasicBlocks$$BasicBlock$$$$anonfun$$exceptionalSucc$$1.apply(BasicBlocks.scala:431)
+        at scala.List.flatMap(List.scala:1125)
+        at scala.tools.nsc.backend.icode.BasicBlocks$$BasicBlock.exceptionalSucc(BasicBlocks.scala:431)
+        at scala.tools.nsc.backend.icode.BasicBlocks$$BasicBlock.successors(BasicBlocks.scala:415)
+        at scala.tools.nsc.backend.icode.BasicBlocks$$BasicBlock$$$$anonfun$$predecessors$$1.apply(BasicBlocks.scala:439)
+        at scala.tools.nsc.backend.icode.BasicBlocks$$BasicBlock$$$$anonfun$$predecessors$$1.apply(BasicBlocks.scala:439)
+        at scala.Iterator$$PredicatedIterator.fill(Iterator.scala:325)
+        at scala.BufferedIterator$$Default.peekList(BufferedIterator.scala:170)
+        at scala.BufferedIterator$$Advanced$$class.hasNext(BufferedIterator.scala:120)
+        at scala.BufferedIterator$$Default.hasNext(BufferedIterator.scala:155)
+        at scala.Iterator$$class.toList(Iterator.scala:696)
+        at scala.BufferedIterator$$Default.toList(BufferedIterator.scala:150)
+        at scala.tools.nsc.backend.icode.BasicBlocks$$BasicBlock.predecessors(BasicBlocks.scala:439)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.prune0$$1(GenICode.scala:1579)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$prune$$1.apply(GenICode.scala:1645)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$prune$$1.apply(GenICode.scala:1645)
+        at scala.List.foreach(List.scala:834)
+        at scala.tools.nsc.backend.icode.Members$$Code.traverse(Members.scala:77)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.prune(GenICode.scala:1645)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:130)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:71)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:71)
+        at scala.List.foreach(List.scala:834)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:71)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:136)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:90)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:71)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:71)
+        at scala.List.foreach(List.scala:834)
+/home/lex/Dev/Code/ScalaCompiler/nbproject/build-impl.xml:423: The following error occurred while executing this line:
+/home/lex/Dev/Code/ScalaCompiler/nbproject/build-impl.xml:247: Compile failed because of an internal compiler error (GC overhead limit exceeded); see the error output for details.
+BUILD FAILED (total time: 2 minutes 41 seconds)
+{code}
+
+Netbeans provides more details about the error. Note the second last line: "Compile failed because of an internal compiler error (GC overhead limit exceeded); see the error output for details."
+
+Can be replicated - always.
+
+Steps to replicate:
+{code}
+Eclipse 3.4.2:
+1. Make a new project.
+2. Optionally add ant.jar as a library to the project.
+3. Close eclipse.
+4. Unzip "scala-2.7.3.final/src/scala-compiler-src.jar" into the src folder of the project.
+5. Optionally delete scala.tools.ant package if you did not add ant.jar as a library to the project.
+6. Open eclipse.
+7. Wait for autobuild to finish.
+8. Open the file "scala.tools.nsc.Main.scala".
+
+Netbeans 6.5:
+1. Make a new project.
+2. Unzip "scala-2.7.3.final/src/scala-compiler-src.jar" into the src folder of the project.
+3. Either delete scala.tools.ant package or add ant.jar as a library to the project.
+4. Build the project.
+{code}
+
+Found on:
+{code}
+System: Ubuntu 8.10
+Java: 1.6.0_u10, 64-Bit
+Scala: 2.7.3-final
+{code}
+
+Not tested using a command line or build tools.

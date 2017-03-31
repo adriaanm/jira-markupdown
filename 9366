@@ -1,0 +1,19 @@
+I would like some consistency, since a crash is (IMHO) never a valid answer.
+
+It can make sense to give such a bug a low priority, but I'd say it's still a bug, because referring to identifiers with '$' must be allowed, as I'm going to explain.
+
+First, "'$' is reserved" means that it *must not* be used, not that it *shouldn't* be used. Also, "should" in a language spec reminds me of "undefined behavior" from C, something which Java removed from the world.
+
+Truth is, '$' is allowed by the JLS, so interoperability *forces* us to support using it. Still, one could forbid using it in definitions (and change the spec), and allow it in references. I suspect those could be distinguished at parse time.
+
+Quoting from http://docs.oracle.com/javase/specs/jls/se7/html/jls-3.html#jls-3.8:
+
+"The "Java letters" include uppercase and lowercase ASCII Latin letters A-Z (\u0041-\u005a), and a-z (\u0061-\u007a), and, for historical reasons, the ASCII underscore (_, or \u005f) and dollar sign ($, or \u0024). The $ character should be used only in mechanically generated source code or, rarely, to access pre-existing names on legacy systems."
+
+The theoretical problem is that then one can't write a trait/class/object implementing the following Java interface:
+{code}
+interface Foo {
+  void can$tOverrideMe();
+}
+{code}
+But I suspect that no such published interface exists.

@@ -1,0 +1,26 @@
+{code}
+
+class IdAndMsg(val id: Int,  val msg: String = "")
+
+case object ObjA extends IdAndMsg(1)
+case object ObjB extends IdAndMsg(2)
+
+object IdAndMsg {
+  val values = List(ObjA , ObjB)
+}
+
+object Test {
+  def main(args: Array[String]): Unit = {
+    ObjA
+    println(IdAndMsg.values)
+  }
+}
+
+/*
+Output:
+List(null, ObjB)
+*/
+{code}
+The cycle is that if one references ObjA first, its superclass has a default argument which is retrieved from object IdAndMsg, which has a val which refers to ObjA, which is null.
+
+It doesn't seem necessary - IdAndMsg.init$default$2 is a static method, but it creates IdAndMsg$ and populates the MODULE$ field so it can call IdAndMsg$.init$default$2.  At least in the case of constants, the static method could return it directly and avoid loading the object.

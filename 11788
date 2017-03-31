@@ -1,0 +1,27 @@
+One hypothesis is that the pattern matcher intermittently fails to emit the `ValDef` for the temporary in the first place.
+
+By introducing such a fault, we can exhibit the same failure mode:
+
+{noformat}
+git diff head -- src/compiler/scala/tools/nsc/transform/patmat/MatchCodeGen.scala
+diff --git a/src/compiler/scala/tools/nsc/transform/patmat/MatchCodeGen.scala b/src/compiler/scala/tools/nsc/transform/patmat/MatchCodeGen.scala
+index 06b39b0..a470c4f 100644
+--- a/src/compiler/scala/tools/nsc/transform/patmat/MatchCodeGen.scala
++++ b/src/compiler/scala/tools/nsc/transform/patmat/MatchCodeGen.scala
+@@ -216,7 +216,7 @@ trait MatchCodeGen extends Interface {
+         def flatMapCond(cond: Tree, res: Tree, nextBinder: Symbol, next: Tree): Tree = {
+           val rest = (
+             // only emit a local val for `nextBinder` if it's actually referenced in `next`
+-            if (next.exists(_.symbol eq nextBinder))
++            if (next.exists(_.symbol eq nextBinder) && math.random > .01)
+               BLOCK(ValDef(nextBinder, res), next)
+             else next
+           )
+{noformat}
+
+{noformat}
+% qscalac -d /tmp -optimize $(find src/scalap/ -name '*.scala')
+error: symbol value x2#77162 does not exist in scala.tools.scalap.scalax.rules.scalasig.ScalaSigPrinter.printModifiers, which contains locals value x1#77152,value x#77164,value x1#77161,value symbol#71698
+error: scala.reflect.internal.FatalError: symbol value x2#77162 does not exist in scala.tools.scalap.scalax.rules.scalasig.ScalaSigPrinter.printModifiers, which contains locals value x1#77152,value x#77164,value x1#77161,value symbol#71698
+	at scala.reflect.internal.Reporting$class.abort(Reporting.scala:59)
+{noformat}

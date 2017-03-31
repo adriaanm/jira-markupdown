@@ -1,0 +1,22 @@
+So actually I guess this is getting better, not worse because this:
+{code}
+class A
+final case class B(xs: List[A]) extends A
+
+object Test {
+  def f(x: B) = x match { case B(x: A)          => true ; case _ => false }
+  def g(x: B) = x match { case B((x: A) :: Nil) => true ; case _ => false }
+
+  def main(args: Array[String]): Unit = {
+    println(f(B(new A :: Nil)))
+    println(g(B(new A :: Nil)))
+  }
+}
+{code}
+Compiles with no warning in 2.9, but warns in 2.10. Which I should know, having written the warning.
+{noformat}
+a.scala:5: warning: fruitless type test: a value of type List[A] cannot also be a A
+  def f(x: B) = x match { case B(x: A)          => true ; case _ => false }
+                                    ^
+one warning found
+{noformat} 

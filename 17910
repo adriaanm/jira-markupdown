@@ -1,0 +1,144 @@
+Consider the following code to create an AST for a constructor:
+
+{code}
+lazy val enumConstructor =
+  DefDef(
+    mods = Modifiers(PRIVATE),
+    name = nme.CONSTRUCTOR,
+    tparams  = List(),
+    vparamss =
+      List(
+        List(
+          ValDef(
+            mods = Modifiers(PARAM),
+            name = TermName("name"),
+            tpt  = Ident(TypeName("String")),
+            rhs  = EmptyTree
+          ),
+          ValDef(
+            mods = Modifiers(PARAM),
+            name = TermName("ordinal"),
+            tpt  = Ident(TypeName("Int")),
+            rhs  = EmptyTree
+          )
+        )
+      ),
+    tpt  = TypeTree(), // Ident(TypeName("Unit")),
+    rhs  =
+      Block(
+        List(
+          Apply(
+            Select(Super(This(tpnme.EMPTY), tpnme.EMPTY), nme.CONSTRUCTOR),
+            List(Ident(TermName("name")), Ident(TermName("ordinal")))
+          )
+        ),
+        Literal(Constant(()))
+      )
+  )
+{code}
+
+
+If I set
+
+{{tpt  = Ident(TypeName("Unit"))}}
+
+instead of
+
+{{tpt  = TypeTree()}}
+
+in {{enumConstructor}}, I get the following error:
+
+{code}
+type mismatch;
+[error]  found   : Unit
+[error]  required: scalax.Day
+{code}
+
+That's pretty weird in my opinion, because the {{()}} at the end of the constructor body should force the return type to be {{Unit}}.
+
+If I keep {{tpt  = TypeTree()}} and leave out the {{Literal(Constant(()))}} block it results in a compiler crash:
+
+{code}
+rhs  =
+  Apply(
+    Select(Super(This(tpnme.EMPTY), tpnme.EMPTY), nme.CONSTRUCTOR),
+    List(Ident(TermName("name")), Ident(TermName("ordinal")))
+  )
+{code}
+
+{code}
+> compile
+[info] Compiling 1 Scala source to /home/soc/Entwicklung/enum-paradise/core/target/scala-2.11/classes...
+java.lang.Enum[Day] {
+  private def <init>(name: String, ordinal: Int) = super.<init>(name, ordinal);
+  private val Monday: Day = new Day("Monday", 0);
+  private val Tuesday: Day = new Day("Tuesday", 1);
+  private val Wednesday: Day = new Day("Wednesday", 2);
+  private val Thursday: Day = new Day("Thursday", 3);
+  private val Friday: Day = new Day("Friday", 4);
+  private[this] val $VALUES: scala.Array[Day] = scala.Array.apply[Day]()(Predef.implicitly);
+  def values: scala.Array[Day] = $VALUES.clone();
+  def valueOf(name: String): Day = java.lang.Enum.valueOf(classOf[Day], name)
+}
+
+     while compiling: /home/soc/Entwicklung/enum-paradise/core/src/main/scala/enum.scala
+        during phase: uncurry
+     library version: version 2.11.0-20130119-233428-42f34f61ce
+    compiler version: version 2.11.0-20130119-233428-42f34f61ce
+  reconstructed args: -bootclasspath /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/resources.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/rt.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/sunrsasign.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/jsse.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/jce.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/charsets.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/netx.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/plugin.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/rhino.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/jfr.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/classes:/home/soc/.sbt/0.12.2/boot/org.scala-lang.macro-paradise.scala-2.11.0-SNAPSHOT/lib/scala-library.jar -d /home/soc/Entwicklung/enum-paradise/core/target/scala-2.11/classes -classpath /home/soc/Entwicklung/enum-paradise/core/target/scala-2.11/classes:/home/soc/Entwicklung/enum-paradise/macros/target/scala-2.11/classes:/home/soc/.ivy2/cache/org.scala-lang.macro-paradise/scala-reflect/jars/scala-reflect-2.11.0-SNAPSHOT.jar:/home/soc/.ivy2/cache/org.scala-lang.macro-paradise/scala-compiler/jars/scala-compiler-2.11.0-SNAPSHOT.jar
+
+  last tree to typer: type Main
+              symbol: object Main in package scalax (flags: <module>)
+   symbol definition: class Main extends App
+                 tpe: <notype>
+       symbol owners: object Main -> package scalax
+      context owners: constructor Day -> class Day -> package scalax
+
+== Enclosing template or block ==
+
+<tpt> // tree.tpe=Enum[scalax.Day]
+
+== Expanded type of tree ==
+
+<notype>
+
+unhandled exception while transforming enum.scala
+[error] uncaught exception during compilation: MatchError("Day.super.<init>(name, ordinal) (of class scala.reflect.internal.Trees$Apply)") @ scala.tools.nsc.transform.UnCurry$UnCurryTransformer$$anonfun$5$$anonfun$apply$5.apply(UnCurry.scala:434)
+scala.MatchError: Day.super.<init>(name, ordinal) (of class scala.reflect.internal.Trees$Apply)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer$$anonfun$5$$anonfun$apply$5.apply(UnCurry.scala:434)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer$$anonfun$5$$anonfun$apply$5.apply(UnCurry.scala:433)
+	at scala.reflect.api.Trees$Transformer.atOwner(Trees.scala:3057)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:30)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.mainTransform(UnCurry.scala:431)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.transform(UnCurry.scala:102)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.transform(UnCurry.scala:64)
+	at scala.reflect.api.Trees$Transformer$$anonfun$transformStats$1.apply(Trees.scala:3046)
+	at scala.reflect.api.Trees$Transformer$$anonfun$transformStats$1.apply(Trees.scala:3044)
+	at scala.collection.immutable.List.loop$1(List.scala:164)
+	at scala.collection.immutable.List.mapConserve(List.scala:180)
+	at scala.reflect.api.Trees$Transformer.transformStats(Trees.scala:3044)
+	at scala.reflect.internal.Trees$class.itransform(Trees.scala:1332)
+	at scala.reflect.internal.SymbolTable.itransform(SymbolTable.scala:13)
+[error] (core/compile:compile) scala.MatchError: Day.super.<init>(name, ordinal) (of class scala.reflect.internal.Trees$Apply)
+{code}
+
+Eugene agrees that something really weird is going on. First of all, namers explicitly set tpts of constructors to their enclosing class. Secondly, typers typecheck constructor bodies against WildcardType, not against those tpts.
+
+Imho, either constructors ...
+
+- should have the return type of the class
+- {{()}} should be unnecessary (and wrong)
+- the transformations to conform do the JVM requirements should be treated as an implementation detail
+
+... or ...
+
+- should have an return type of Unit
+- {{()}} might be necessary (no idea, seems the automatic Unit-appending transformation happens quite early)
+- the transformations to conform do the JVM requirements are an integral part of how reflection works
+
+It feels like somehow we are stuck in the middle currently. 
+
+
+====================
+
+This report is the summary of https://groups.google.com/d/topic/scala-language/UqPS3W8jEjM/discussion and https://groups.google.com/d/topic/scala-internals/D8WU4dvw8rg/discussion

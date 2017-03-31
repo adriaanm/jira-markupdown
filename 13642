@@ -1,0 +1,13 @@
+Chapter 11.3 of ScalaByExample first defines "type Action = () => Unit", later makes a method named 'addAction(a: Action)', and finally tries to call this method with:
+
+wire addAction { println("foo") }
+
+but this is not legal; it would have to be { () => println("foo") }. Turning the method parameter into call-by-name doesn't help. It seems that, without using implicit def, there doesn't seem to be a way to solve this dilemma.
+
+Option 1: Fix ScalaByExample by adding { () => println("foo") }
+
+Option 2: Add a predef so that a parameter of type '() => FOOBAR' can be called similar to pass-by-name. 
+
+Option 3: Make => Unit a proper type, so that you could write "type Action = => Unit".
+
+

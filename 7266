@@ -1,0 +1,13 @@
+Well, that makes me feel slightly less bad about my println-based debugging strategy.
+
+I'm not sure this qualifies as a break though, but I am now seeing *something* that explains what's going on. Basically, asSeenFrom uses the AsSeenFromMap whose apply() methods calls itself recursively for awhile until it finds something it can return.
+
+The problem is that for C2 if you follow the chain of calls down you end up finding a TypeRef(prefix, sym, args) whose sym is actually C2$mcLZ$sp.A$sp (notice the Z not the I). Here's the debugging output:
+
+{code}
+TypeRef prefix=<noprefix> sym=type A$sp/C2$mcLZ$sp.A$sp args=List()
+{code}
+
+This is the problem... it's somehow got ahold of the wrong A$sp so from there on down things explode. That's probably why it works for @spec(Int, AnyRef)... in those cases it doesn't find the "wrong" class' A$sp type param.
+
+I don't know where this gets us, but it's something.

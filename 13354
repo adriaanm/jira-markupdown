@@ -1,0 +1,42 @@
+With 2.7.1.RC2, this code
+
+{code}
+class Test
+{
+  private[this] final val a = 10
+}
+{code}
+
+generates this stack trace:
+
+{code}
+Exception in thread "main" java.lang.AssertionError: assertion failed: final private[this] val a: Int(10) = 10
+        at scala.Predef$$.assert(Predef.scala:92)
+        at scala.tools.nsc.transform.Constructors$$ConstructorTransformer$$$$anonfun$$transformClassTemplate$$3.apply(Constructors.scala:155)
+        at scala.tools.nsc.transform.Constructors$$ConstructorTransformer$$$$anonfun$$transformClassTemplate$$3.apply(Constructors.scala:143)
+        at scala.List.foreach(List.scala:827)
+        at scala.tools.nsc.transform.Constructors$$ConstructorTransformer.transformClassTemplate(Constructors.scala:143)
+        at scala.tools.nsc.transform.Constructors$$ConstructorTransformer.transform(Constructors.scala:217)
+        at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transformStats$$1.apply(Trees.scala:1403)
+        at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transformStats$$1.apply(Trees.scala:1401)
+        at scala.List$$.loop$$1(List.scala:293)
+        at scala.List$$.mapConserve(List.scala:310)
+        at scala.tools.nsc.ast.Trees$$Transformer.transformStats(Trees.scala:1401)
+        at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transform$$1.apply(Trees.scala:1277)
+        at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transform$$1.apply(Trees.scala:1277)
+        at scala.tools.nsc.ast.Trees$$Transformer.atOwner(Trees.scala:1409)
+        at scala.tools.nsc.ast.Trees$$Transformer.transform(Trees.scala:1276)
+        at scala.tools.nsc.transform.Constructors$$ConstructorTransformer.transform(Constructors.scala:219)
+        at scala.tools.nsc.ast.Trees$$Transformer.transformUnit(Trees.scala:1404)        at scala.tools.nsc.transform.Transform$$Phase.apply(Transform.scala:30)
+        at scala.tools.nsc.Global$$GlobalPhase.applyPhase(Global.scala:257)
+        at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:243)
+        at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:243)
+        at scala.Iterator$$class.foreach(Iterator.scala:395)
+        at scala.collection.mutable.ListBuffer$$$$anon$$1.foreach(ListBuffer.scala:266)
+        at scala.tools.nsc.Global$$GlobalPhase.run(Global.scala:243)
+        at scala.tools.nsc.Global$$Run.compileSources(Global.scala:555)
+        at scala.tools.nsc.Global$$Run.compile(Global.scala:640)
+        at scala.tools.nsc.Main$$.process(Main.scala:84)
+        at scala.tools.nsc.Main$$.main(Main.scala:98)
+        at scala.tools.nsc.Main.main(Main.scala)
+{code}

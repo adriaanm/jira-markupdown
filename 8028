@@ -1,0 +1,19 @@
+For reference, that commit turns the example in comments into a compile time error, which is better than nothing I guess.  The difference in the generated scala class is:
+{noformat}
+--- i/Func1ReturnString.class
++++ w/Func1ReturnString.class
+@@ -1,7 +1,7 @@
+ 
+ Compiled from "S_1.scala"
+ public class Func1ReturnString<T> implements Func1<T, java.lang.String> {
+-  public java.lang.String apply(T);
++  public java.lang.Object apply(java.lang.Object);
+     Signature: (Ljava/lang/Object;)Ljava/lang/Object;
+     Code:
+ ##: aload_1       
+{noformat}
+That demonstrates the essence of the problem: concrete types cannot be directly substituted for corresponding type parameters in the signatures of mixed in methods, because the underlying concrete implementation will have the erasure of the type parameters, not of the concrete types.
+
+In other words, "Func1" knows nothing of "String", but "Func1ReturnString" thinks it can substitute String for T and everything will work out.  It won't.
+
+It's elaborated on at some length in the commit.

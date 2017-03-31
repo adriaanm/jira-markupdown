@@ -1,0 +1,24 @@
+This works in the [Ammonite REPL|http://lihaoyi.github.io/Ammonite/#Ammonite-REPL], not with raw jar files, but you can specify any coordinate on maven central and the REPL will pull down any transitive dependencies necessary. e.g. here I am asking for `upickle` and getting `jawn-parser` for free:
+
+{code:scala}
+@ load.ivy("com.lihaoyi" %% "upickle" % "0.2.6")
+:: resolving dependencies :: com.lihaoyi#upickle_2.11-caller;working
+	confs: [default]
+	found com.lihaoyi#upickle_2.11;0.2.6 in central
+	found org.scala-lang#scala-library;2.11.4 in central
+	[2.11.4] org.scala-lang#scala-library;2.11.4
+	found org.spire-math#jawn-parser_2.11;0.7.0 in central
+	found com.lihaoyi#acyclic_2.11;0.1.2 in central
+	found org.scala-lang#scala-compiler;2.11.0 in central
+	found org.scala-lang.modules#scala-xml_2.11;1.0.1 in central
+	found org.scala-lang.modules#scala-parser-combinators_2.11;1.0.1 in central
+	found org.scala-lang#scala-reflect;2.11.4 in central
+	[2.11.4] org.scala-lang#scala-reflect;2.11.4
+res17: Unit = ()
+@ import upickle._
+import upickle._
+@ upickle.write(Seq(1, 2, 3))
+res19: String = "[1,2,3]"
+@
+{code}
+

@@ -1,0 +1,28 @@
+Repro case below
+
+{code:scala}
+import scala.concurrent._
+import scala.concurrent.duration._
+import scala.concurrent.ExecutionContext.Implicits.global
+
+trait Foo {
+  def a = Inner.a
+  private[this] object Inner { val a = 1 }
+}
+
+trait Bar { self: Foo =>
+  def b = Inner.b
+  private[this] object Inner {
+    val b = Await.result(Future(a), 1.seconds)
+  }
+}
+
+object Baz extends Foo with Bar {
+  val c = 1
+}
+
+object Main extends App {
+  println(Baz.c)
+  println(Baz.b) // Throws timeout here
+}
+{code}

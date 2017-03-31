@@ -1,0 +1,37 @@
+The weird and wonderful scopes of primary constructors.
+
+Let's examine this example:
+
+{code}
+class Base[M](i: Int)
+
+class Derived()(implicit i: Int) extends Base({println(i); 0})
+{code}
+
+Within the type completer for `Derived`.
+
+{noformat}
+ classSig
+   templateSig
+     parentTypes  -  cscope = context.outer.makeNewScope          // package <empty>
+      typePrimaryConstrBody  -  namer.enterValueParams(vparamss)  // `implicit val i` will have the owner `package <empty>`
+
+       ...
+         typedArg  - fun = new [M]<empty>.this.Base[M][M].<init>
+                     args = List({println(i);0})
+                     i.sym.owner = package <empty>
+
+           ...
+              i.info
+                Namers#complete
+                  ...
+                     Namers#validate
+                        i.owner.isPackageClass = true // KABOOM
+
+{noformat}
+
+Enclosing {{Derived}} in an object masks the problem.
+
+Adding an explicit type argument to the {{Base}} constructor invocation masks the problem.
+
+Note to future self: pinned down with {{-Yshow-syms -Ydebug -Ylog:namer}}; and subsequently caught the package-owned symbol {{i}} in {{Namers#logAssignSymbol}}.

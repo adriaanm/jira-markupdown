@@ -1,0 +1,10 @@
+I don't think it is a duplicate. SI-2215 discusses the case
+  @BeanProperty var foo_ = "hi"
+  def foo_=(s: String) = foo_ = s
+
+And the expectation is to generate a setFoo (not setFoo_) and call foo_= (not foo__=)
+
+I wish for a simpler case
+  @BeanProperty def foo_=(s: String) = // whatever
+
+to create a setFoo to call foo_. I think it is a lot simpler

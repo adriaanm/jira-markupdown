@@ -1,0 +1,10 @@
+This is actually a BitSet problem. The example works on 2.9, because it did not use BitSet internally.
+If you try:
+scala> val b = new mutable.BitSet
+scala> b+= 2000000000
+you will get either:
+res0: b.type = BitSet()
+or 
+java.lang.OutOfMemoryError: Java heap space
+Now when you use number like 2000000000 and -2000000000, since they are converted to a positive integer to store in the BitSet, you get an int overflow.
+

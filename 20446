@@ -1,0 +1,296 @@
+I have the following build.sbt file:
+
+{code:sbt}
+scalaVersion := "2.12.1" // same error also happens for 2.11.8
+addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
+{code}
+
+The following file doesn't compile:
+
+{code:scala}
+import scala.annotation.StaticAnnotation
+
+class A(z: Any) extends StaticAnnotation
+class B extends StaticAnnotation
+
+@A({
+  trait CCC {
+    @B def x: Unit
+  }
+  ()
+})
+trait D {
+
+}
+{code}
+
+with error message:
+
+{code}
+[error] /Users/d066276/test181/test.scala:6: illegal cyclic reference involving trait CCC
+[error]   trait CCC {
+[error]         ^
+[error] one error found
+[error] (compile:compileIncremental) Compilation failed
+[error] Total time: 4 s, completed 16.03.2017 16:09:05
+{code}
+
+When removing paradise compiler plugin it works perfectly
+
+Additional information:
+
+when changing the trait CCC to an object we even get a compiler crash: with
+
+{code:scala}
+import scala.annotation.StaticAnnotation
+
+class A(z: Any) extends StaticAnnotation
+class B extends StaticAnnotation
+
+@A({
+  object CCC {
+    @B def x: Unit = ???
+  }
+  ()
+})
+trait D {
+
+}
+{code}
+
+
+we get the following output
+
+{code}
+[debug] [naha]
+[debug] [naha] Initial source changes:
+[debug] [naha]  removed:Set()
+  [debug] [naha]  added: Set()
+  [debug] [naha]  modified: Set(.../ScalaBugTest.scala)
+[debug] [naha] Invalidated products: Set()
+  [debug] [naha] External API changes: API Changes: Set()
+  [debug] [naha] Modified binary dependencies: Set()
+  [debug] [naha] Initial directly invalidated sources: Set(.../ScalaBugTest.scala)
+[debug] [naha]
+[debug] [naha] Sources indirectly invalidated by:
+[debug] [naha]  product: Set()
+  [debug] [naha]  binary dep: Set()
+  [debug] [naha]  external source: Set()
+  [debug] All initially invalidated sources: Set(.../ScalaBugTest.scala)
+[debug] [naha] Initial set of included nodes: Set(.../ScalaBugTest.scala)
+[info] Compiling 1 Scala source to .../jvm/target/scala-2.11/test-classes...
+[debug] Getting org.scala-sbt:compiler-interface:0.13.13:component from component compiler for Scala 2.11.8
+  [debug] Getting org.scala-sbt:compiler-interface:0.13.13:component from component compiler for Scala 2.11.8
+  [debug] Running cached compiler 6919732, interfacing (CompilerInterface) with Scala compiler version 2.11.8
+  [debug] Calling Scala compiler with arguments  (CompilerInterface):
+[debug]         -deprecation
+  [debug]         -feature
+  [debug]         -unchecked
+  [debug]         -Ybackend:GenBCode
+  [debug]         -Xfatal-warnings
+  [debug]         -Xplugin:.../.coursier/cache/v1/http/.../nexus/content/groups/build.snapshots/org/scalamacros/paradise_2.11.8/2.1.0/paradise_2.11.8-2.1.0.jar
+  [debug]         -bootclasspath
+  ...
+[debug]         -classpath
+  ...
+[error] .../ScalaBugTest.scala:7: illegal cyclic reference involving object CCC
+[error]   object CCC {
+  [error]          ^
+  scala.reflect.internal.FatalError:
+    no progress in completing object CCC: <?>
+  while compiling: .../ScalaBugTest.scala
+  during phase: typer
+  library version: version 2.11.8
+  compiler version: version 2.11.8
+  reconstructed args:   ...
+    
+  last tree to typer: Select(Ident(scala), AnyRef)
+  tree position: line 10 of .../ScalaBugTest.scala
+  tree tpe: AnyRef
+  symbol: type AnyRef in package scala
+  symbol definition: type AnyRef = Object (a AliasTypeSymbol)
+  symbol package: scala
+  symbol owners: type AnyRef
+  call site: object CCC in package <empty>
+
+    == Source file context for tree position ==
+
+    7     @B def x: Unit = ???
+    8   }
+    9   ()
+    10 })
+    11 trait D {
+    12
+    13 }
+    at scala.reflect.internal.Reporting$class.abort(Reporting.scala:59)
+    at scala.reflect.internal.SymbolTable.abort(SymbolTable.scala:16)
+    at scala.reflect.internal.Symbols$Symbol.info(Symbols.scala:1522)
+    at scala.tools.nsc.typechecker.Typers$Typer.typedTemplate(Typers.scala:1889)
+    at scala.tools.nsc.typechecker.Typers$Typer.typedModuleDef(Typers.scala:1808)
+    at scala.tools.nsc.typechecker.Typers$Typer.typedMemberDef$1(Typers.scala:5310)
+    at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:5359)
+    at scala.tools.nsc.typechecker.Typers$Typer.runTyper$1(Typers.scala:5396)
+    at scala.tools.nsc.typechecker.Typers$Typer.scala$tools$nsc$typechecker$Typers$Typer$$typedInternal(Typers.scala:5423)
+    at scala.tools.nsc.typechecker.Typers$Typer.body$2(Typers.scala:5370)
+    at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:5374)
+    at scala.tools.nsc.typechecker.Typers$Typer.typedByValueExpr(Typers.scala:5452)
+    at scala.tools.nsc.typechecker.Typers$Typer.scala$tools$nsc$typechecker$Typers$Typer$$typedStat$1(Typers.scala:3047)
+    at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$65.apply(Typers.scala:3151)
+    at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$65.apply(Typers.scala:3151)
+    at scala.collection.immutable.List.loop$1(List.scala:173)
+    at scala.collection.immutable.List.mapConserve(List.scala:189)
+    at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:3151)
+    at scala.tools.nsc.typechecker.Typers$Typer.typedBlock(Typers.scala:2381)
+    at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$typedOutsidePatternMode$1$1.apply(Typers.scala:5318)
+    at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$typedOutsidePatternMode$1$1.apply(Typers.scala:5318)
+    at scala.tools.nsc.typechecker.Typers$Typer.typedOutsidePatternMode$1(Typers.scala:5317)
+    at scala.tools.nsc.typechecker.Typers$Typer.typedInAnyMode$1(Typers.scala:5353)
+    at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:5360)
+    at scala.tools.nsc.typechecker.Typers$Typer.runTyper$1(Typers.scala:5396)
+    at scala.tools.nsc.typechecker.Typers$Typer.scala$tools$nsc$typechecker$Typers$Typer$$typedInternal(Typers.scala:5423)
+    at scala.tools.nsc.typechecker.Typers$Typer.body$2(Typers.scala:5370)
+    at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:5374)
+    at scala.tools.nsc.typechecker.Typers$Typer.typedArg(Typers.scala:3164)
+    at scala.tools.nsc.typechecker.PatternTypers$PatternTyper$class.typedArgWithFormal$1(PatternTypers.scala:112)
+    at scala.tools.nsc.typechecker.PatternTypers$PatternTyper$$anonfun$2.apply(PatternTypers.scala:115)
+    at scala.tools.nsc.typechecker.PatternTypers$PatternTyper$$anonfun$2.apply(PatternTypers.scala:115)
+    at scala.runtime.Tuple2Zipped$$anonfun$map$extension$1.apply(Tuple2Zipped.scala:46)
+    at scala.runtime.Tuple2Zipped$$anonfun$map$extension$1.apply(Tuple2Zipped.scala:44)
+    at scala.collection.immutable.List.foreach(List.scala:381)
+    at scala.runtime.Tuple2Zipped$.map$extension(Tuple2Zipped.scala:44)
+    at scala.tools.nsc.typechecker.PatternTypers$PatternTyper$class.typedArgsForFormals(PatternTypers.scala:115)
+    at scala.tools.nsc.typechecker.Typers$Typer.typedArgsForFormals(Typers.scala:111)
+    at scala.tools.nsc.typechecker.Typers$Typer.scala$tools$nsc$typechecker$Typers$Typer$$handleMonomorphicCall$1(Typers.scala:3470)
+    at scala.tools.nsc.typechecker.Typers$Typer.doTypedApply(Typers.scala:3495)
+    at scala.tools.nsc.typechecker.Typers$Typer.normalTypedApply$1(Typers.scala:4546)
+    at scala.tools.nsc.typechecker.Typers$Typer.typedApply$1(Typers.scala:4580)
+    at scala.tools.nsc.typechecker.Typers$Typer.typedInAnyMode$1(Typers.scala:5343)
+    at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:5360)
+    at scala.tools.nsc.typechecker.Typers$Typer.runTyper$1(Typers.scala:5396)
+    at scala.tools.nsc.typechecker.Typers$Typer.scala$tools$nsc$typechecker$Typers$Typer$$typedInternal(Typers.scala:5423)
+    at scala.tools.nsc.typechecker.Typers$Typer.body$2(Typers.scala:5370)
+    at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:5374)
+    at scala.tools.nsc.typechecker.Typers$Typer.typedAnnotation(Typers.scala:3723)
+    at scala.tools.nsc.typechecker.Namers$Namer$$anonfun$23$$anonfun$apply$17$$anonfun$apply$18.apply(Namers.scala:1504)
+    at scala.tools.nsc.typechecker.Namers$Namer$$anonfun$23$$anonfun$apply$17$$anonfun$apply$18.apply(Namers.scala:1504)
+    at scala.reflect.internal.SymbolTable.enteringPhase(SymbolTable.scala:235)
+    at scala.tools.nsc.typechecker.Namers$Namer$$anonfun$23$$anonfun$apply$17.apply(Namers.scala:1504)
+    at scala.tools.nsc.typechecker.Namers$Namer$$anonfun$23$$anonfun$apply$17.apply(Namers.scala:1504)
+    at scala.reflect.internal.AnnotationInfos$LazyAnnotationInfo.forcedInfo$lzycompute(AnnotationInfos.scala:212)
+    at scala.reflect.internal.AnnotationInfos$LazyAnnotationInfo.forcedInfo(AnnotationInfos.scala:212)
+    at scala.reflect.internal.AnnotationInfos$LazyAnnotationInfo.completeInfo(AnnotationInfos.scala:225)
+    at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$typedTemplate$1.apply(Typers.scala:1864)
+    at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$typedTemplate$1.apply(Typers.scala:1864)
+    at scala.collection.immutable.List.map(List.scala:273)
+    at scala.tools.nsc.typechecker.Typers$Typer.typedTemplate(Typers.scala:1864)
+    at scala.tools.nsc.typechecker.Typers$Typer.typedClassDef(Typers.scala:1762)
+    at scala.tools.nsc.typechecker.Typers$Typer.typedMemberDef$1(Typers.scala:5309)
+    at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:5359)
+    at scala.tools.nsc.typechecker.Typers$Typer.runTyper$1(Typers.scala:5396)
+    at scala.tools.nsc.typechecker.Typers$Typer.scala$tools$nsc$typechecker$Typers$Typer$$typedInternal(Typers.scala:5423)
+    at scala.tools.nsc.typechecker.Typers$Typer.body$2(Typers.scala:5370)
+    at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:5374)
+    at scala.tools.nsc.typechecker.Typers$Typer.typedByValueExpr(Typers.scala:5452)
+    at scala.tools.nsc.typechecker.Typers$Typer.scala$tools$nsc$typechecker$Typers$Typer$$typedStat$1(Typers.scala:3047)
+    at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$65.apply(Typers.scala:3151)
+    at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$65.apply(Typers.scala:3151)
+    at scala.collection.immutable.List.loop$1(List.scala:173)
+    at scala.collection.immutable.List.mapConserve(List.scala:189)
+    at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:3151)
+    at scala.tools.nsc.typechecker.Typers$Typer.typedPackageDef$1(Typers.scala:5015)
+    at scala.tools.nsc.typechecker.Typers$Typer.typedMemberDef$1(Typers.scala:5312)
+    at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:5359)
+    at scala.tools.nsc.typechecker.Typers$Typer.runTyper$1(Typers.scala:5396)
+    at scala.tools.nsc.typechecker.Typers$Typer.scala$tools$nsc$typechecker$Typers$Typer$$typedInternal(Typers.scala:5423)
+    at scala.tools.nsc.typechecker.Typers$Typer.body$2(Typers.scala:5370)
+    at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:5374)
+    at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:5448)
+    at scala.tools.nsc.typechecker.Analyzer$typerFactory$$anon$3.apply(Analyzer.scala:102)
+    at scala.tools.nsc.Global$GlobalPhase$$anonfun$applyPhase$1.apply$mcV$sp(Global.scala:440)
+    at scala.tools.nsc.Global$GlobalPhase.withCurrentUnit(Global.scala:431)
+    at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:440)
+    at scala.tools.nsc.typechecker.Analyzer$typerFactory$$anon$3$$anonfun$run$1.apply(Analyzer.scala:94)
+    at scala.tools.nsc.typechecker.Analyzer$typerFactory$$anon$3$$anonfun$run$1.apply(Analyzer.scala:93)
+    at scala.collection.Iterator$class.foreach(Iterator.scala:893)
+    at scala.collection.AbstractIterator.foreach(Iterator.scala:1336)
+    at scala.tools.nsc.typechecker.Analyzer$typerFactory$$anon$3.run(Analyzer.scala:93)
+    at scala.tools.nsc.Global$Run.compileUnitsInternal(Global.scala:1501)
+    at scala.tools.nsc.Global$Run.compileUnits(Global.scala:1486)
+    at scala.tools.nsc.Global$Run.compileSources(Global.scala:1481)
+    at scala.tools.nsc.Global$Run.compile(Global.scala:1582)
+    at xsbt.CachedCompiler0.run(CompilerInterface.scala:116)
+    at xsbt.CachedCompiler0.run(CompilerInterface.scala:95)
+    at xsbt.CompilerInterface.run(CompilerInterface.scala:26)
+    at sun.reflect.GeneratedMethodAccessor33.invoke(Unknown Source)
+    at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+    at java.lang.reflect.Method.invoke(Method.java:498)
+    at sbt.compiler.AnalyzingCompiler.call(AnalyzingCompiler.scala:107)
+    at sbt.compiler.AnalyzingCompiler.compile(AnalyzingCompiler.scala:53)
+    at sbt.compiler.AnalyzingCompiler.compile(AnalyzingCompiler.scala:47)
+    at sbt.compiler.MixedAnalyzingCompiler$$anonfun$compileScala$1$1.apply$mcV$sp(MixedAnalyzingCompiler.scala:50)
+    at sbt.compiler.MixedAnalyzingCompiler$$anonfun$compileScala$1$1.apply(MixedAnalyzingCompiler.scala:50)
+    at sbt.compiler.MixedAnalyzingCompiler$$anonfun$compileScala$1$1.apply(MixedAnalyzingCompiler.scala:50)
+    at sbt.compiler.MixedAnalyzingCompiler.timed(MixedAnalyzingCompiler.scala:74)
+    at sbt.compiler.MixedAnalyzingCompiler.compileScala$1(MixedAnalyzingCompiler.scala:49)
+    at sbt.compiler.MixedAnalyzingCompiler.compile(MixedAnalyzingCompiler.scala:64)
+    at sbt.compiler.IC$$anonfun$compileInternal$1.apply(IncrementalCompiler.scala:160)
+    at sbt.compiler.IC$$anonfun$compileInternal$1.apply(IncrementalCompiler.scala:160)
+    at sbt.inc.IncrementalCompile$$anonfun$doCompile$1.apply(Compile.scala:66)
+    at sbt.inc.IncrementalCompile$$anonfun$doCompile$1.apply(Compile.scala:64)
+    at sbt.inc.IncrementalCommon.cycle(IncrementalCommon.scala:32)
+    at sbt.inc.Incremental$$anonfun$1.apply(Incremental.scala:72)
+    at sbt.inc.Incremental$$anonfun$1.apply(Incremental.scala:71)
+    at sbt.inc.Incremental$.manageClassfiles(Incremental.scala:99)
+    at sbt.inc.Incremental$.compile(Incremental.scala:71)
+    at sbt.inc.IncrementalCompile$.apply(Compile.scala:54)
+    at sbt.compiler.IC$.compileInternal(IncrementalCompiler.scala:160)
+    at sbt.compiler.IC$.incrementalCompile(IncrementalCompiler.scala:138)
+    at sbt.Compiler$.compile(Compiler.scala:155)
+    at sbt.Compiler$.compile(Compiler.scala:141)
+    at sbt.Defaults$.sbt$Defaults$$compileIncrementalTaskImpl(Defaults.scala:879)
+    at sbt.Defaults$$anonfun$compileIncrementalTask$1.apply(Defaults.scala:870)
+    at sbt.Defaults$$anonfun$compileIncrementalTask$1.apply(Defaults.scala:868)
+    at scala.Function1$$anonfun$compose$1.apply(Function1.scala:47)
+    at sbt.$tilde$greater$$anonfun$$u2219$1.apply(TypeFunctions.scala:40)
+    at sbt.std.Transform$$anon$4.work(System.scala:63)
+    at sbt.Execute$$anonfun$submit$1$$anonfun$apply$1.apply(Execute.scala:228)
+    at sbt.Execute$$anonfun$submit$1$$anonfun$apply$1.apply(Execute.scala:228)
+    at sbt.ErrorHandling$.wideConvert(ErrorHandling.scala:17)
+    at sbt.Execute.work(Execute.scala:237)
+    at sbt.Execute$$anonfun$submit$1.apply(Execute.scala:228)
+    at sbt.Execute$$anonfun$submit$1.apply(Execute.scala:228)
+    at sbt.ConcurrentRestrictions$$anon$4$$anonfun$1.apply(ConcurrentRestrictions.scala:159)
+    at sbt.CompletionService$$anon$2.call(CompletionService.scala:28)
+    at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+    at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
+    at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+    at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+    at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+    at java.lang.Thread.run(Thread.java:745)
+    [error] (utilsJVM/test:compileIncremental) scala.reflect.internal.FatalError:
+    [error]   no progress in completing object CCC: <?>
+    [error]      while compiling: .../ScalaBugTest.scala
+    [error]         during phase: typer
+    [error]      library version: version 2.11.8
+    [error]     compiler version: version 2.11.8
+    [error]   reconstructed args: -deprecation -bootclasspath /Library/Java/JavaVirtualMachines/jdk1.8.0_121.jdk/Contents/Home/jre/lib/resources.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_121.jdk/Contents/Home/jre/lib/rt.jar:...
+    [error]
+    [error]   last tree to typer: Select(Ident(scala), AnyRef)
+    [error]        tree position: line 10 of .../ScalaBugTest.scala
+    [error]             tree tpe: AnyRef
+    [error]               symbol: type AnyRef in package scala
+    [error]    symbol definition: type AnyRef = Object (a AliasTypeSymbol)
+    [error]       symbol package: scala
+    [error]        symbol owners: type AnyRef
+    [error]            call site: object CCC in package <empty>
+      [error]
+      [error] == Source file context for tree position ==
+      [error]
+      [error]      7     @B def x: Unit = ???
+      [error]      8   }
+      [error]      9   ()
+      [error]     10 })
+      [error]     11 trait D {
+    [error]     12
+  [error]     13 }
+{code}

@@ -1,0 +1,24 @@
+Further reduced:
+
+{code}
+package pack
+
+object Named {
+  import O.empty
+  def foo(empty: Any): Any = ???
+  // is `empty` a named arg or an assignment? Checking for that has nasty side effects!
+  foo(empty = ???)
+}
+
+object O {
+  // order matters (!!!)
+  def empty(implicit a: Any): Any = ???
+  def empty[E]: C[E] = ???
+}
+
+abstract class C[E] {
+  def foo[BB](f: BB)
+  def test[B](f: B): Any = foo(f)
+}
+
+{code}

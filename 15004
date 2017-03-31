@@ -1,0 +1,29 @@
+scala> Predef.printf("%%")
+java.util.UnknownFormatConversionException: Conversion = '%'
+        at java.util.Formatter.checkText(Formatter.java:2503)
+        at java.util.Formatter.parse(Formatter.java:2485)
+        at java.util.Formatter.format(Formatter.java:2414)
+        at java.util.Formatter.format(Formatter.java:2367)
+        at java.lang.String.format(String.java:2769)
+        at scala.collection.immutable.StringLike$$class.format(StringLike.scala:247)
+        at scala.collection.immutable.StringOps.format(StringOps.scala:20)
+        at scala.Console$$.printf(Console.scala:214)
+        at scala.Predef$$.printf(Predef.scala:153)
+        ...
+
+scala> Predef.printf("%%%%")
+%
+
+scala> println("%%".format())
+%
+
+scala> println("%%%%".format())
+%%
+
+
+It's perhaps a little easier to see what's happening with this example:
+
+scala> Predef.printf("%%Q")
+java.util.UnknownFormatConversionException: Conversion = 'Q'
+        at java.util.Formatter$$FormatSpecifier.conversion(Formatter.java:2606)
+        ...

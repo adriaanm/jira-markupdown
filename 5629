@@ -1,0 +1,15 @@
+For now, scala collection views are not usable at all, see errors below. It is very bad thing, since there are NO WARNINGS about broken feature in API docs. I thought Scala API is more or less stable, disregarding small bugs. I believe it is wrong to leave broken features in Scala releases.
+
+scala> util.Properties.versionString
+res9: java.lang.String = version 2.9.1.final
+
+scala> Seq(1,2,3,4).view(1,3).slice(0,1)
+java.lang.UnsupportedOperationException: SeqViewS(...).newBuilder
+        at scala.collection.TraversableViewLike$class.newBuilder(TraversableView
+Like.scala:69)
+        at scala.collection.SeqViewLike$$anon$6.newBuilder(SeqViewLike.scala:80)
+
+        at scala.collection.IterableLike$class.slice(IterableLike.scala:95)
+        at scala.collection.SeqViewLike$$anon$6.slice(SeqViewLike.scala:80)
+        at scala.collection.SeqViewLike$$anon$6.slice(SeqViewLike.scala:80)
+  ... skipped ...

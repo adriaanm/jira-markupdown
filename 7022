@@ -1,0 +1,39 @@
+Another example. This stems from use of {{isExprSafeToInline}} in {{Erasure#unbox1}}.
+
+{noformat}
+topic/typer-crash-cleanup /code/scala tail sandbox/{t1,c}.scala
+==> sandbox/t1.scala <==
+object T { println("!!!"); val x: Unit = () }
+==> sandbox/c.scala <==
+object C {
+  def main(args: Array[String]) {
+    Some[Unit](T.x)
+  }
+}
+topic/typer-crash-cleanup /code/scala qbin/scalac -d sandbox -Xprint:erasure sandbox/{t1,c}.scala
+[[syntax trees at end of                   erasure]] // t1.scala
+package <empty> {
+  object T extends Object {
+    def <init>(): T.type = {
+      T.super.<init>();
+      ()
+    };
+    private[this] val x: scala.runtime.BoxedUnit = scala.runtime.BoxedUnit.UNIT;
+    <stable> <accessor> def x(): Unit = ()
+  }
+}
+
+ // c.scala
+package <empty> {
+  object C extends Object {
+    def <init>(): C.type = {
+      C.super.<init>();
+      ()
+    };
+    def main(args: Array[String]): Unit = {
+      new Some(scala.runtime.BoxedUnit.UNIT);
+      ()
+    }
+  }
+}
+{noformat}

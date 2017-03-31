@@ -1,0 +1,5 @@
+Yes, that explains why `pos` and `neg` stay at 100% CPU utilization. 
+
+# Starting dedicated JVMs avoids races in scalac, but that doesn't mean we should wait with idle CPUs for that to finish (more workers can't saturate the I/O bandwith, rather improve throughput instead). 
+# Looks like the granularity of tests (except `pos` and `neg`) is such that they could be taken one at a time from a queue (a single queue actually). Together with the above we would get optimal throughput then.
+

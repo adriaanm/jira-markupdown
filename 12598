@@ -1,0 +1,31 @@
+Currently, it will always compile your script. To avoid recompilation, use {{Compilable}} as [here|https://github.com/scala/scala/blob/v2.12.0/test/junit/scala/tools/nsc/interpreter/ScriptedTest.scala#L51].
+
+But modifying your example:
+{code}
+        script = "java.lang.System.out.println(n)";
+        engine.put("n", -1);
+        CompiledScript compiled = ((Compilable) engine).compile(script);
+        Bindings b = engine.createBindings();
+         
+        for (int n = 0; n < 10; n++) {
+            long s2 = System.currentTimeMillis();
+            b.put("n", n);
+            compiled.eval(b);
+            long end2 = System.currentTimeMillis();
+            System.out.println("getEngineByName:" + (end1 - s1) + ", eval:" + (end2-s2));
+        }
+{code}
+
+results in
+
+{noformat}
+0
+getEngineByName:536, eval:3
+1
+getEngineByName:536, eval:103
+2
+getEngineByName:536, eval:98
+{noformat}
+
+It looks like the first invocation is simple invocation, but subsequently it incurs a compilation. That could be improved, [here|https://github.com/scala/scala/blob/v2.12.0/src/repl/scala/tools/nsc/interpreter/Scripted.scala#L238].
+

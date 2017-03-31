@@ -1,0 +1,14 @@
+In the example above no inlining will take place, even after adding inline and final flags to specialized members for two reasons:
+ - as Erik pointed out, the inferred type for the accessor is {{C2\[Boolean\]}} (instead of {{C2$mcZ$sp}}) + accessor is not final and not inlined => intra-procedural TFA will infer {{C2\[Boolean\]}} for the stack slot
+ - the inliner doesn't consider the constructor basic blocks as possible inlining targets (that's the actual reason there's no message for the {{cNormal(true)}} and {{cSpec(true)}})
+
+A test case one could use here is:
+{code}
+class C2[@specialized(Boolean) U]() {
+  @inline final def apply(x: U): U = x
+}
+
+class B {
+  (new C2[Boolean]())(true)
+}
+{code}

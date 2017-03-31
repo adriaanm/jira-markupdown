@@ -1,0 +1,11 @@
+That's some fancy naming for `Validator[T]` -- never seen that trick before!
+
+Both definitions should be accepted. Workaround is to duplicate the type alias, or to factor our the type constructor used for the bound on T's X.
+
+This compiles:
+{code}
+class Bar[U] extends Foo[U] {
+  type VU[This <: Validator[U, This]] = Validator[U, This]
+  val g: TypePreservingFn[VU] = ???  // does not compile
+}
+{code}

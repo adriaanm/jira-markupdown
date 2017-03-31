@@ -1,0 +1,131 @@
+Tested with version 2.8.0.RC1.
+
+Example code:
+
+{code}
+package test
+
+package p {
+  class A(a: String = "")
+}
+
+package object po {
+  type A = p.A
+}
+
+import po._
+class C {
+  val a = new A
+}
+{code}
+
+In the above code, if we supply an argument when constructing `A` or if we import `A` from `p` and not `po` the code compiles successfully.
+
+Produced stacktrace:
+
+{code}
+java.lang.AssertionError: assertion failed
+at scala.Predef$$.assert(Predef.scala:79)
+at scala.tools.nsc.ast.TreeGen.mkCast(TreeGen.scala:140)
+at scala.tools.nsc.Global$$gen$$.mkAttributedCast(Global.scala:74)
+at scala.tools.nsc.ast.TreeDSL$$CODE$$TreeMethods.AS_ATTR(TreeDSL.scala:125)
+at scala.tools.nsc.transform.Erasure$$Eraser.cast(Erasure.scala:503)
+at scala.tools.nsc.transform.Erasure$$Eraser.adaptMember(Erasure.scala:626)
+at scala.tools.nsc.transform.Erasure$$Eraser.liftedTree1$$1(Erasure.scala:652)
+at scala.tools.nsc.transform.Erasure$$Eraser.typed1(Erasure.scala:651)
+at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:4151)
+at scala.tools.nsc.typechecker.Typers$$Typer.typedQualifier(Typers.scala:4218)
+at scala.tools.nsc.typechecker.Typers$$Typer.typedQualifier(Typers.scala:4226)
+at scala.tools.nsc.transform.Erasure$$Eraser.adaptMember(Erasure.scala:613)
+at scala.tools.nsc.transform.Erasure$$Eraser.liftedTree1$$1(Erasure.scala:652)
+at scala.tools.nsc.transform.Erasure$$Eraser.typed1(Erasure.scala:651)
+at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:4151)
+at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$typedApply$$1$$1.apply(Typers.scala:3357)
+at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$typedApply$$1$$1.apply(Typers.scala:3357)
+at scala.tools.nsc.typechecker.Typers$$Typer.silent(Typers.scala:731)
+at scala.tools.nsc.typechecker.Typers$$Typer.typedApply$$1(Typers.scala:3357)
+at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:3997)
+at scala.tools.nsc.transform.Erasure$$Eraser.liftedTree1$$1(Erasure.scala:652)
+at scala.tools.nsc.transform.Erasure$$Eraser.typed1(Erasure.scala:651)
+at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:4151)
+at scala.tools.nsc.typechecker.Typers$$Typer.typedArg(Typers.scala:2215)
+at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$typedArgs$$3.apply(Typers.scala:2225)
+at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$typedArgs$$3.apply(Typers.scala:2224)
+at scala.collection.TraversableLike$$$$anonfun$$map$$1.apply(TraversableLike.scala:203)
+at scala.collection.TraversableLike$$$$anonfun$$map$$1.apply(TraversableLike.scala:203)
+at scala.collection.LinearSeqOptimized$$class.foreach(LinearSeqOptimized.scala:62)
+at scala.collection.immutable.List.foreach(List.scala:46)
+at scala.collection.TraversableLike$$class.map(TraversableLike.scala:203)
+at scala.collection.immutable.List.map(List.scala:46)
+at scala.tools.nsc.typechecker.Typers$$Typer.typedArgs(Typers.scala:2224)
+at scala.tools.nsc.typechecker.Typers$$Typer.doTypedApply(Typers.scala:2423)
+at scala.tools.nsc.typechecker.Typers$$Typer.typedApply$$1(Typers.scala:3373)
+at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:3997)
+at scala.tools.nsc.transform.Erasure$$Eraser.liftedTree1$$1(Erasure.scala:652)
+at scala.tools.nsc.transform.Erasure$$Eraser.typed1(Erasure.scala:651)
+at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:4151)
+at scala.tools.nsc.typechecker.Typers$$Typer.transformedOrTyped(Typers.scala:4295)
+at scala.tools.nsc.typechecker.Typers$$Typer.typedValDef(Typers.scala:1583)
+at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:3812)
+at scala.tools.nsc.transform.Erasure$$Eraser.liftedTree1$$1(Erasure.scala:652)
+at scala.tools.nsc.transform.Erasure$$Eraser.typed1(Erasure.scala:651)
+at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:4151)
+at scala.tools.nsc.typechecker.Typers$$Typer.typedStat$$1(Typers.scala:2141)
+at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$20.apply(Typers.scala:2209)
+at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$20.apply(Typers.scala:2209)
+at scala.collection.immutable.List.loop$$1(List.scala:116)
+at scala.collection.immutable.List.mapConserve(List.scala:133)
+at scala.tools.nsc.typechecker.Typers$$Typer.typedStats(Typers.scala:2209)
+at scala.tools.nsc.typechecker.Typers$$Typer.typedTemplate(Typers.scala:1528)
+at scala.tools.nsc.typechecker.Typers$$Typer.typedClassDef(Typers.scala:1309)
+at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:3806)
+at scala.tools.nsc.transform.Erasure$$Eraser.liftedTree1$$1(Erasure.scala:652)
+at scala.tools.nsc.transform.Erasure$$Eraser.typed1(Erasure.scala:651)
+at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:4151)
+at scala.tools.nsc.typechecker.Typers$$Typer.typedStat$$1(Typers.scala:2141)
+at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$20.apply(Typers.scala:2209)
+at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$20.apply(Typers.scala:2209)
+at scala.collection.immutable.List.loop$$1(List.scala:116)
+at scala.collection.immutable.List.mapConserve(List.scala:133)
+at scala.tools.nsc.typechecker.Typers$$Typer.typedStats(Typers.scala:2209)
+at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:3802)
+at scala.tools.nsc.transform.Erasure$$Eraser.liftedTree1$$1(Erasure.scala:652)
+at scala.tools.nsc.transform.Erasure$$Eraser.typed1(Erasure.scala:651)
+at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:4151)
+at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:4199)
+at scala.tools.nsc.transform.Erasure$$ErasureTransformer$$$$anonfun$$transform$$1.apply(Erasure.scala:1085)
+at scala.tools.nsc.transform.Erasure$$ErasureTransformer$$$$anonfun$$transform$$1.apply(Erasure.scala:1082)
+at scala.tools.nsc.symtab.SymbolTable.atPhase(SymbolTable.scala:104)
+at scala.tools.nsc.transform.Erasure$$ErasureTransformer.transform(Erasure.scala:1082)
+at scala.tools.nsc.ast.Trees$$Transformer.transformUnit(Trees.scala:851)
+at scala.tools.nsc.transform.Transform$$Phase.apply(Transform.scala:31)
+at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$applyPhase$$1.apply(Global.scala:272)
+at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$applyPhase$$1.apply(Global.scala:272)
+at scala.tools.nsc.reporters.Reporter.withSource(Reporter.scala:49)
+at scala.tools.nsc.Global$$GlobalPhase.applyPhase(Global.scala:272)
+at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:248)
+at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:248)
+at scala.collection.Iterator$$class.foreach(Iterator.scala:627)
+at scala.collection.mutable.ListBuffer$$$$anon$$1.foreach(ListBuffer.scala:305)
+at scala.tools.nsc.Global$$GlobalPhase.run(Global.scala:248)
+at scala.tools.nsc.Global$$Run.compileSources(Global.scala:729)
+at scala.tools.nsc.Global$$Run.compileFiles(Global.scala:800)
+at scala.tools.nsc.interactive.RefinedBuildManager.update0$$1(RefinedBuildManager.scala:127)
+at scala.tools.nsc.interactive.RefinedBuildManager.update(RefinedBuildManager.scala:186)
+at scala.tools.nsc.interactive.RefinedBuildManager.update(RefinedBuildManager.scala:93)
+at scala.tools.eclipse.EclipseBuildManager.build(EclipseBuildManager.scala:119)
+at scala.tools.eclipse.ScalaProject.build(ScalaProject.scala:421)
+at scala.tools.eclipse.ScalaBuilder.build(ScalaBuilder.scala:87)
+at org.eclipse.core.internal.events.BuildManager$$2.run(BuildManager.java:627)
+at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:170)
+at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:201)
+at org.eclipse.core.internal.events.BuildManager$$1.run(BuildManager.java:253)
+at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:256)
+at org.eclipse.core.internal.events.BuildManager.basicBuildLoop(BuildManager.java:309)
+at org.eclipse.core.internal.events.BuildManager.build(BuildManager.java:341)
+at org.eclipse.core.internal.events.AutoBuildJob.doBuild(AutoBuildJob.java:140)
+at org.eclipse.core.internal.events.AutoBuildJob.run(AutoBuildJob.java:238)
+at org.eclipse.core.internal.jobs.Worker.run(Worker.java:55)
+{code}

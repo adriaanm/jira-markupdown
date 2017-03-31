@@ -1,0 +1,21 @@
+{code}
+object Main extends Application
+{
+  def test[In,Out](a:In,b:In)(implicit result : (In,In) => Option[Out]) : Out = result (a, b) match
+  {
+    case Some(c) => c
+    case None => error("should not occur")
+  }
+  
+  
+  implicit def compute(a :Int, b :int) = if (a > b) Some(a - b) else None
+    
+  test (1,2)                      // works not
+  test (1,2) (compute)            // works
+  test[Int,Int] (1,2)             // works also  
+}
+{code}
+
+The first usage does not work because the implicit parameter type of _result_ is assumed to be {{(Int, Int) => Option[Nothing]}} instead of a generic one.
+
+I'm not sure if this behavior is intentional, because with generic implicit pts ambiguities can arise. However, if and only if so one should be forced to resolve this by explicitly adding the generic types, e.g. {{test[Int,Int](1,2)}} or {{test(1,2)(compute)}}.

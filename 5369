@@ -1,0 +1,33 @@
+More related brokenness reported by Dima Golubets:
+
+{code}
+scala> Array(1, 2, 3, 4).view
+res60: scala.collection.mutable.IndexedSeqView[Int,Array[Int]] = SeqView(...)
+OK
+
+scala> Array(1, 2, 3, 4).view.map{x => println(x); x}
+res61: scala.collection.SeqView[Int,Array[Int]] = SeqViewM(...)
+OK
+
+scala> Array(1, 2, 3, 4).view.map{x => println(x); x}.map{x => println(x); x}
+res62: Seq[Int] = SeqViewMM(...)
+WTF? Why Seq?
+
+After that point I can't call a force method. But I want to get some results so lets try:
+
+scala> Array(1, 2, 3, 4).view.map{x => println(x); x}.map{x => println(x); x}.take(1).toList
+1
+1
+res64: List[Int] = List(1)
+OK..
+
+scala> Array(1, 2, 3, 4).view.map{x => println(x); x}.map{x => println(x); x}.take(1).toArray
+1
+1
+1
+1
+res65: Array[Int] = Array(1)
+Double view evaluation!
+{code}
+
+Note that double view evaluation isn't forbidden by the contract, but views should perhaps be a little smarter about the choice of algorithm

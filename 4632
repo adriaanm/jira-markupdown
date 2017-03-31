@@ -1,0 +1,29 @@
+{code}
+// A.java
+package a;
+
+public abstract class A {
+  abstract String foo();
+  public void run() {
+   System.out.println(foo());
+  }
+}
+
+// B.java
+package b;
+
+public class B extends a.A {
+  public String foo() {return "b";}
+}
+{code}
+
+$$ javac *.java
+
+{code}
+B.java:4: b.B is not abstract and does not override abstract method foo() in a.A
+public class B extends a.A {
+       ^
+1 error
+{code}
+
+there's no way to implement method foo() in a.A outside of package a (I think)

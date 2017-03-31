@@ -1,0 +1,37 @@
+To make up for this, I threw in this one:
+{code}
+object Test2 {
+  import scala.collection.immutable.List
+
+  class Carb[+_]
+  implicit def bar[M[_], A]: Carb[M[A]] = null
+
+  type ListInt = List[Int]
+
+  val x: List[Int] = List(1)
+  val y: ListInt = List(1)
+
+  type ListSingletonX = x.type
+  type ListSingletonY = y.type
+
+  bar: Carb[List[Int]]
+  bar: Carb[ListInt]
+  bar: Carb[ListSingletonX]
+  bar: Carb[ListSingletonY]
+}
+{code}
+Compiles with my imminent pull request, in 2.9 did this:
+{noformat}
+scalac29 -d /tmp test/files/pos/t6846.scala 
+test/files/pos/t6846.scala:25: error: polymorphic expression cannot be instantiated to expected type;
+ found   : [M[_], A]Test2.Carb[M[A]]
+ required: Test2.Carb[Test2.ListSingletonX]
+  bar: Carb[ListSingletonX]
+  ^
+test/files/pos/t6846.scala:26: error: polymorphic expression cannot be instantiated to expected type;
+ found   : [M[_], A]Test2.Carb[M[A]]
+ required: Test2.Carb[Test2.ListSingletonY]
+  bar: Carb[ListSingletonY]
+  ^
+two errors found
+{noformat}

@@ -1,0 +1,25 @@
+this code 
+{code}
+class C {
+  case class M(currentUser: String)(message: String = "")
+  def model = Option(M("")()).getOrElse(M("")()).copy(currentUser = "")()
+}
+{code}
+leads to Error: symbol value x$4$1 does not exist in C.model in 2.9.1 and 2.9.2
+or something like the following in later versions
+uncaught exception during compilation: java.lang.AssertionError
+java.lang.AssertionError: assertion failed:
+     while compiling:  <console>
+       current phase:  icode
+     library version:  version 2.10.0-20120428-143539-774cd4f87b
+    compiler version:  version 2.10.0-20120428-143539-774cd4f87b
+  reconstructed args:
+
+Trying to access the this of another class: tree.symbol = class $read$$iw$$iw$C,
+ ctx.clazz.symbol = anonymous class $read$$iw$$iw$C$$anonfun$1 compilation unit:
+<console>
+        at scala.Predef$.assert(Predef.scala:182)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$bac
+kend$icode$GenICode$ICodePhase$$genLoad(GenICode.scala:944)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.genLoadQualifier(Ge
+nICode.scala:1151)

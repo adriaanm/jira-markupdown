@@ -1,0 +1,9 @@
+Okay, I've found it in the spec now. Many thanks for that, but I couldn't find it before.
+
+But, I have to say, I think the requirement in the spec that no type is given (although the type still must be inferred), is nothing less than crazy. Making the inferred type explicit simply shouldn't change the code generation like that, and the fact that the inliner gave no warnings is also disappointing. Even if the intention is that the @inline annotation does nothing in that position, the log should at least _say something_ to that effect.
+
+How would an "average" user the of the language (if such a person exists), when making seemingly safe changes to the code by adding an explicit type (perhaps for the sake of documentation, if, say, the type annotation is a synonym introduced by the {{type}} keyword), know that the expression is no longer considered a "constant expression" for the purposes of code generation or inlining, especially when no warnings are given by -Yinline-warnings and the @inline annotation has been applied?
+
+My current solution in such situations is to inspect the bytecode generated after each compilation, since this is the only way I know for sure that the compiler is doing _what I think_ it _should_ be doing. But, I rarely have to do this with Java, and I don't think I should have to do it with Scala to that extent.
+
+If this issue has nothing to do with @inline and the warnings or logs of the inliner, then maybe the compiler should warn the user if s/he puts an explicit type on a final val? Although, the best fix IMO is for the spec to say something different (for Scala 2.12 perhaps?). I don't think that doing nothing is an option.

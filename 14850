@@ -1,0 +1,97 @@
+This innocent code has no problems:
+
+{code}
+object Stooges extends Enumeration {
+  type Stooge = Value
+  val Larry, Curly, Moe = Value
+}
+{code}
+
+This still innocent code produces the weirdest stuff:
+
+{code}
+object Stooges extends Enumeration {
+  type Stooge = Value
+  val Larry, Curly, Moe = Value
+  def nextStooge(v:Stooges.Stooge):Stooges.Stooge =
+    Stooges((v.id+1) % Stooges.maxId)
+}
+{code}
+
+By weirdest, I mean the following:
+
+{code}
+scala> Stooges.Larry
+java.lang.IllegalArgumentException: wrong number of arguments
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+        at java.lang.reflect.Method.invoke(Method.java:597)
+        at scala.Enumeration$$$$anonfun$$scala$$Enumeration$$$$nameOf$$2.apply(Enumeration.scala:176)
+        at scala.Enumeration$$$$anonfun$$scala$$Enumeration$$$$nameOf$$2.apply(Enumeration.scala:171)
+        at scala.collection.TraversableLike$$WithFilter$$$$anonfun$$foreach$$1.apply(TraversableLike.scala:1218)
+        at scala.collection.IndexedSeqLike$$class.foreach(IndexedSeqLike.scala:87)
+        at scala.collection.mutable.ArrayOps.foreach(ArrayOps.scala:20)
+        at scala.collection.TraversableLike$$WithFilter.foreach(TraversableLike.scala:1217)
+        at scala.Enumeration.scala$$Enumeration$$$$nameOf(Enumeration.scala:171)
+        at scala.Enumeration$$Val.toString(Enumeration.scala:237)
+        at scala.runtime.ScalaRunTime$$.stringOf(ScalaRunTime.scala:145)
+        at RequestResult$$.<init>(<console>:9)
+        at RequestResult$$.<clinit>(<console>)
+        at RequestResult$$scala_repl_result(<console>)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+        at java.lang.reflect.Method.invoke(Method.java:597)
+        at scala.tools.nsc.Interpreter$$Request$$$$anonfun$$loadAndRun$$1$$$$anonfun$$apply$$13.apply(Interpreter.scala:798)
+        at scala.tools.nsc.Interpreter$$Request$$$$anonfun$$loadAndRun$$1$$$$anonfun$$apply$$13.apply(Interpreter.scala:798)
+        at scala.util.control.Exception$$Catch.apply(Exception.scala:79)
+        at scala.tools.nsc.Interpreter$$Request$$$$anonfun$$loadAndRun$$1.apply(Interpreter.scala:797)
+        at scala.tools.nsc.Interpreter$$Request$$$$anonfun$$loadAndRun$$1.apply(Interpreter.scala:797)
+        at scala.util.control.Exception$$Catch.apply(Exception.scala:79)
+        at scala.tools.nsc.Interpreter$$Request.loadAndRun(Interpreter.scala:796)
+        at scala.tools.nsc.Interpreter.interpret(Interpreter.scala:445)
+        at scala.tools.nsc.Interpreter.interpret(Interpreter.scala:435)
+        at scala.tools.nsc.InterpreterLoop.interpretStartingWith(InterpreterLoop.scala:345)
+        at scala.tools.nsc.InterpreterLoop.command(InterpreterLoop.scala:322)
+        at scala.tools.nsc.InterpreterLoop.processLine...
+scala> Stooges.Curly
+java.lang.IllegalArgumentException: wrong number of arguments
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+        at java.lang.reflect.Method.invoke(Method.java:597)
+        at scala.Enumeration$$$$anonfun$$scala$$Enumeration$$$$nameOf$$2.apply(Enumeration.scala:176)
+        at scala.Enumeration$$$$anonfun$$scala$$Enumeration$$$$nameOf$$2.apply(Enumeration.scala:171)
+        at scala.collection.TraversableLike$$WithFilter$$$$anonfun$$foreach$$1.apply(TraversableLike.scala:1218)
+        at scala.collection.IndexedSeqLike$$class.foreach(IndexedSeqLike.scala:87)
+        at scala.collection.mutable.ArrayOps.foreach(ArrayOps.scala:20)
+        at scala.collection.TraversableLike$$WithFilter.foreach(TraversableLike.scala:1217)
+        at scala.Enumeration.scala$$Enumeration$$$$nameOf(Enumeration.scala:171)
+        at scala.Enumeration$$Val.toString(Enumeration.scala:237)
+        at scala.runtime.ScalaRunTime$$.stringOf(ScalaRunTime.scala:145)
+        at RequestResult$$.<init>(<console>:9)
+        at RequestResult$$.<clinit>(<console>)
+        at RequestResult$$scala_repl_result(<console>)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+        at java.lang.reflect.Method.invoke(Method.java:597)
+        at scala.tools.nsc.Interpreter$$Request$$$$anonfun$$loadAndRun$$1$$$$anonfun$$apply$$13.apply(Interpreter.scala:798)
+        at scala.tools.nsc.Interpreter$$Request$$$$anonfun$$loadAndRun$$1$$$$anonfun$$apply$$13.apply(Interpreter.scala:798)
+        at scala.util.control.Exception$$Catch.apply(Exception.scala:79)
+        at scala.tools.nsc.Interpreter$$Request$$$$anonfun$$loadAndRun$$1.apply(Interpreter.scala:797)
+        at scala.tools.nsc.Interpreter$$Request$$$$anonfun$$loadAndRun$$1.apply(Interpreter.scala:797)
+        at scala.util.control.Exception$$Catch.apply(Exception.scala:79)
+        at scala.tools.nsc.Interpreter$$Request.loadAndRun(Interpreter.scala:796)
+        at scala.tools.nsc.Interpreter.interpret(Interpreter.scala:445)
+        at scala.tools.nsc.Interpreter.interpret(Interpreter.scala:435)
+        at scala.tools.nsc.InterpreterLoop.interpretStartingWith(InterpreterLoop.scala:345)
+        at scala.tools.nsc.InterpreterLoop.command(InterpreterLoop.scala:322)
+        at scala.tools.nsc.InterpreterLoop.processLine...
+scala> Stooges.Moe
+res2: Stooges.Value = Moe
+{code}
+
+The `Stooge` which won't crash has varied in my tests with no discernible pattern I could detect. Granted, I didn't spend much time trying to detect a pattern.
+

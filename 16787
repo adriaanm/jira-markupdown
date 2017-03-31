@@ -1,0 +1,17 @@
+Compile the following code with scalac 2.10.0-M2.
+
+{code:none}
+class AnonFun {
+  def f(l: List[String]) {
+    l.foreach(_.size)
+  }
+}
+{code}
+
+The generated class {{AnonFun$$anonfun$f$1}} contains 3 {{apply}} methods, 2 of them I why:
+* {{java.lang.Object apply(java.lang.Object)}} which is the implementation of {{Function1#apply}}.
+* {{int apply(java.lang.String)}} which contains the actual code.
+
+The last one {{int apply(java.lang.Object)}} seems not needed. It is not called from inside {{AnonFun$$anonfun$f$1}} and cannot be called from outside.
+
+When compiled with scalac 2.9.1 or 2.10.0-M1, only the 2 first {{apply}} methods are generated.

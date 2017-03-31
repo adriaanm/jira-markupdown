@@ -1,0 +1,11 @@
+Extractor patterns within a pattern match typically disable analysis of exhaustivity and reachability. There is a special case for `unapply` methods that are irrefutable, that is, they statically return `Some[T]` rather than just `Option[T]`. Such patterns are considered to always match for the purposes of analysis.
+
+Guards similarly hamper analysis:
+
+{code}
+object Test {
+  def noWarningHere(x: Option[Any]): Any = x match {
+    case Some(1) if "".isEmpty => ???
+  }
+}
+{code}

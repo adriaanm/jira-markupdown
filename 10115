@@ -1,0 +1,16 @@
+The type error is correct. Here's how to downcast the internals:
+
+
+{noformat}
+scala> import scala.reflect.runtime.universe._
+import scala.reflect.runtime.universe._
+
+scala>  class Foo(val i: Int, val j: Int = 0)
+defined class Foo
+
+scala> val symTab = scala.reflect.runtime.universe.asInstanceOf[reflect.internal.SymbolTable]
+symTab: scala.reflect.internal.SymbolTable = scala.reflect.runtime.JavaUniverse@1247de8f
+
+scala> symTab.nme.defaultGetterName(symTab.nme.CONSTRUCTOR, 1).asInstanceOf[Name]
+res2: reflect.runtime.universe.Name = $lessinit$greater$default$1
+{noformat}

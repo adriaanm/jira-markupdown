@@ -1,0 +1,35 @@
+This is actually an eta-expansion problem, very nifty:
+
+{code}
+object Bug {
+  def main(args: Array[String]): Unit = {
+    var test: String = null
+    val fun1: Int => () => Unit = foo(test) _
+    val fun2: Int => () => Unit = foo(test)(_)
+    test = "some string"
+    fun1(1)()
+    fun2(1)()
+  }
+  
+  def foo(s: => String)(dummy: Int) = () => println(s)
+}
+{code}
+
+This prints
+
+{code}
+null
+some string
+{code}
+
+because the two functions {{f1}} and {{f2}} are constructed differently ({{-Xprint:typer}})
+
+{code}
+val fun1: Int => (() => Unit) = {
+  <synthetic> val eta$0$1: String = test;
+  ((dummy: Int) => Bug.this.foo(eta$0$1)(dummy))
+};
+val fun2: Int => (() => Unit) = ((x$1: Int) => Bug.this.foo(test)(x$1));
+{code}
+
+I guess the synthetic value should be lazy.

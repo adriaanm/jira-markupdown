@@ -1,0 +1,85 @@
+{code}
+sun@sun-cpu:~/workspace/dev/miniboxing-plugin/sandbox(wip)$ scalac -version
+Scala compiler version 2.11.5-20141107-114204-b1e6f57b2b -- Copyright 2002-2013, LAMP/EPFL
+
+sun@sun-cpu:~/workspace/dev/miniboxing-plugin/sandbox(wip)$ scala -version
+Scala code runner version 2.11.5-20141107-114204-b1e6f57b2b -- Copyright 2002-2013, LAMP/EPFL
+
+sun@sun-cpu:~/workspace/dev/miniboxing-plugin/sandbox(wip)$ cat gh-bug-181-spec.scala 
+package miniboxing.tests.bug181.spec_crash
+import annotation.tailrec
+
+class ConsList[@specialized(Int) A](head: A, tail: ConsList[A]) {
+  @tailrec final def print(a: A): Unit = {
+    print(head)
+    if (tail != null) {
+      print(", ")
+      tail.print(a)
+    }
+  }
+}
+
+object Test {
+  def main(args: Array[String]): Unit = {
+    
+    def makeEnd[T](t: T) = new ConsList[T](t, null)
+
+    val intList = new ConsList(1,
+                    new ConsList(2,
+                      new ConsList(3, 
+                        makeEnd(4)
+                      )
+                    )
+                  )
+
+    // expected output: 1, 2, 3, 4
+    // actual output: 1, 2, 3, 0
+    intList.print(4)
+  }
+}
+
+sun@sun-cpu:~/workspace/dev/miniboxing-plugin/sandbox(wip)$ scalac gh-bug-181-spec.scala 
+
+sun@sun-cpu:~/workspace/dev/miniboxing-plugin/sandbox(wip)$ scala miniboxing.tests.bug181.spec_crash.Test
+java.lang.VerifyError: Bad type on operand stack
+Exception Details:
+  Location:
+    miniboxing/tests/bug181/spec_crash/ConsList$mcI$sp.print$mcI$sp(I)V @4: getfield
+  Reason:
+    Type 'miniboxing/tests/bug181/spec_crash/ConsList' (current frame, stack[1]) is not assignable to 'miniboxing/tests/bug181/spec_crash/ConsList$mcI$sp'
+  Current Frame:
+    bci: @4
+    flags: { }
+    locals: { 'miniboxing/tests/bug181/spec_crash/ConsList', integer }
+    stack: { 'scala/Predef$', 'miniboxing/tests/bug181/spec_crash/ConsList' }
+  Bytecode:
+    0000000: b200 182a b400 1ab8 0020 b600 242a b400
+    0000010: 26c7 0008 b200 2c57 b1b2 0018 122e b600
+    0000020: 242a b400 261b 3c4b a7ff d8            
+  Stackmap Table:
+    full_frame(@0,{Object[#5],Integer},{})
+    same_frame(@25)
+
+	at miniboxing.tests.bug181.spec_crash.Test$.main(gh-bug-181-spec.scala:19)
+	at miniboxing.tests.bug181.spec_crash.Test.main(gh-bug-181-spec.scala)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:606)
+	at scala.reflect.internal.util.ScalaClassLoader$$anonfun$run$1.apply(ScalaClassLoader.scala:70)
+	at scala.reflect.internal.util.ScalaClassLoader$class.asContext(ScalaClassLoader.scala:31)
+	at scala.reflect.internal.util.ScalaClassLoader$URLClassLoader.asContext(ScalaClassLoader.scala:101)
+	at scala.reflect.internal.util.ScalaClassLoader$class.run(ScalaClassLoader.scala:70)
+	at scala.reflect.internal.util.ScalaClassLoader$URLClassLoader.run(ScalaClassLoader.scala:101)
+	at scala.tools.nsc.CommonRunner$class.run(ObjectRunner.scala:22)
+	at scala.tools.nsc.ObjectRunner$.run(ObjectRunner.scala:39)
+	at scala.tools.nsc.CommonRunner$class.runAndCatch(ObjectRunner.scala:29)
+	at scala.tools.nsc.ObjectRunner$.runAndCatch(ObjectRunner.scala:39)
+	at scala.tools.nsc.MainGenericRunner.runTarget$1(MainGenericRunner.scala:65)
+	at scala.tools.nsc.MainGenericRunner.run$1(MainGenericRunner.scala:87)
+	at scala.tools.nsc.MainGenericRunner.process(MainGenericRunner.scala:98)
+	at scala.tools.nsc.MainGenericRunner$.main(MainGenericRunner.scala:103)
+	at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
+{code}
+
+Found while debugging https://github.com/miniboxing/miniboxing-plugin/issues/181.

@@ -1,0 +1,17 @@
+Another way to trigger this bug:
+
+ 1. Create and save a file A.scala like the following:
+{code}
+class A
+class B
+{code}
+ 2. Create and save a file C.scala like the following:
+{code}
+class C {
+  val a: A = new B
+}
+{code}
+
+B does not yet extend A so we correctly get a compilation error _type mismatch; found : pack.B required: pack.A_. Now if we change B to extend A and save A.scala the error message will get removed from the Problems View but not from the editor.
+
+In this example, in contrast with the example provided in the bug report, editing (adding whitespace) and saving C.scala removes the error message from the editor.

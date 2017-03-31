@@ -1,0 +1,26 @@
+This now gives a nice error message explaining what's going on:
+
+{code}
+scala> case class Foo[A,B](f: (A, B) => A)
+defined class Foo
+
+scala> case class Person(name:String)
+defined class Person
+
+scala> val name = Foo[Person,String]((a, b) => a.copy(name = b))
+<console>:11: error: not found: value b
+       val name = Foo[Person,String]((a, b) => a.copy(name = b))
+                                                             ^
+<console>:11: warning: type-checking the invocation of method copy checks if the named argument expression 'name = ...' is a valid assignment
+in the current scope. The resulting type inference error (see above) can be fixed by providing an explicit type in the local definition for name.
+       val name = Foo[Person,String]((a, b) => a.copy(name = b))
+                                                           ^
+
+scala> val wibble = Foo[Person,String]((a, b) => a.copy(name = b))
+wibble: Foo[Person,String] = Foo(<function2>)
+
+scala> 
+
+scala> val wibble = Foo[Person,String]((a, b) => a.copy(name = b))
+wibble: Foo[Person,String] = Foo(<function2>)
+{code}

@@ -1,0 +1,28 @@
+My interpretation based on the somewhat difficult to parse spec and the current behaviour is that if I can refer to something by an identifier then it should be eligibile to be passed as an implicit argument.
+
+The problem here actually seems to be somewhat different. It appears that while we have:
+
+{code}
+scala> perhaps[String]
+res0: Option[String] = Some(Hello)
+{code}
+
+The type parameter is incorrectly picked up when we assign a type to the overall expression:
+
+{code}
+scala> (perhaps : Option[String])
+<console>:7: error: no implicit argument matching parameter type Nothing was fou
+nd.
+       (perhaps : Option[String])
+        ^
+{code}
+
+So I think this is probably the source of the problem, not the actual implicits mechanism?
+
+Incidentally, I tried to see what would happen if I attempted this with 
+
+{code}
+implicit val foo : Nothing = null;
+{code}
+
+And blew up the compiler again, in more or less the same manner as SI-590. I'll attach a comment about that there.

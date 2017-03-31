@@ -1,0 +1,11 @@
+With trunk the error message is:
+
+{code}
+scala> val a = Array[{def x: Int}](new { def x = 3 })
+<console>:7: error: type mismatch;
+ found   : scala.reflect.Manifest[java.lang.Object]
+ required: scala.reflect.ClassManifest[AnyRef{def x: Int}]
+Note: java.lang.Object >: AnyRef{def x: Int}, but trait ClassManifest is invariant in type T.
+You may wish to investigate a wildcard type such as `_ >: AnyRef{def x: Int}`. (SLS 3.2.10)
+       val a = Array[{def x: Int}](new { def x = 3 })
+{code}

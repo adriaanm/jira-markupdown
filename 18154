@@ -1,0 +1,34 @@
+{code}
+  trait A[C[_]]{
+    def id: Int
+  }
+  object B1{
+    def unapply(id: Int): Option[B1] = if(id == 1) Some(apply()) else None
+  }
+  case class B1() extends A[Iterable]{
+    val id = 1
+  }
+  object B2{
+    def unapply(id: Int): Option[B2] = if(id == 2) Some(apply()) else None
+  }
+  case class B2() extends A[Option]{
+    val id = 2
+  }
+
+  def pf(id: Int) = id match{
+    case B1(a) => a 
+    case B2(a) => a
+  }
+  
+  val b1 = B1()
+  val b1a = pf(b1.id)
+
+   println(b1 == b1a) // prints true
+{code}
+The code compiles with the following warning:
+
+{noformat}
+comparing values of types test.Temp.B1 and Product with Serializable with
+  test.Temp.A[_ >: [+A][+A]Iterable[A] with [+A]Option[A] <: Equals]
+  using `==' will always yield false
+{noformat}

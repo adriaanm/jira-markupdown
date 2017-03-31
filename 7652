@@ -1,0 +1,53 @@
+And here's the source for the above:
+
+{code:title=snippet.scala|borderStyle=solid}
+            try {
+              mergePrefixAndArgs(variants, -1, lubDepth(variants)) match {
+                case Some(tp0) =>
+                  pending(i) = false
+                  elems(i) = tp0
+                  tp0
+                case None =>
+                  typeError(
+                    "no common type instance of base types "+(variants mkString ", and ")+" exists.")
+              }
+            } catch {
+              case CyclicInheritance =>
+                typeError(
+                  "computing the common type instance of base types "+(variants mkString ", and ")+" leads to a cycle.")
+            }
+{code}
+
+which is part of method:
+
+{code:title=method.scala|borderStyle=solid}
+    def apply(i: Int): Type =
+      if(pending contains i) {
+        pending.clear()
+        throw CyclicInheritance
+      } else
+        elems(i) match {
+          case rtp @ RefinedType(variants, decls) =>
+            // can't assert decls.isEmpty; see t0764
+            //if (!decls.isEmpty) assert(false, "computing closure of "+this+":"+this.isInstanceOf[RefinedType]+"/"+closureCache(j))
+            //Console.println("compute closure of "+this+" => glb("+variants+")")
+            pending += i
+            try {
+              mergePrefixAndArgs(variants, -1, lubDepth(variants)) match {
+                case Some(tp0) =>
+                  pending(i) = false
+                  elems(i) = tp0
+                  tp0
+                case None =>
+                  typeError(
+                    "no common type instance of base types "+(variants mkString ", and ")+" exists.")
+              }
+            } catch {
+              case CyclicInheritance =>
+                typeError(
+                  "computing the common type instance of base types "+(variants mkString ", and ")+" leads to a cycle.")
+            }
+          case tp =>
+            tp
+        }
+{code}

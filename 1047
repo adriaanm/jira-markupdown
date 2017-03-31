@@ -1,0 +1,15 @@
+This code fails with the above error (on 2.7.2 RC1):
+{code}
+object Helpers {
+  implicit def func2Runnable(f: => Unit) = new Runnable {
+    def run { f }
+  }
+
+  def inBackground(f: => Unit) {
+    // works:
+    //new Thread(f).start
+    // fails:
+    new Thread(f, "Background Thread").start
+  }
+}
+{code}

@@ -1,0 +1,13 @@
+h4. In short
+I claim that if a library if forward binary compatible in Java (like the Android standard library), it should also be compatible in Scala, and we have here a valid counterexample. What Android developers did was valid by the JLS, and what the bug reporter did would have been clearly valid in Java.
+
+I don't know if this is a bug or a feature request, but if the fix is as easy as I suggested, I'm not interested in figuring that out.
+
+h4. In detail
+TL;DR.
+
+This issue is indeed about forward binary compatibility. But then, my other JLS quote applies:
+
+"A reference to a method must be resolved at compile time to a symbolic reference to the erasure (§4.6) of the qualifying type of the invocation, plus the erasure of the signature of the method (§8.4.2)."
+
+I won't paste what "qualifying type" means, but in our case that's the type of the receiver (http://docs.oracle.com/javase/specs/jls/se5.0/html/binaryComp.html for the general definition, but I'd recommend to just trust me for a while). Any Java compiler implementing that will also guarantee forward binary compatibility - viceversa, the Android developers can use that JLS clause to prove that their change is forward binary compatible against Java code; yet, this does not extend to Scala code. So I'd say Scalac is wrong.

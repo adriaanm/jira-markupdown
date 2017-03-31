@@ -1,0 +1,23 @@
+Specifically, the method force should be overrided in Stream.
+{code}
+Welcome to Scala version 2.8.0.r22104-b20100529020133 (Java HotSpot(TM) Client VM, Java 1.6.0_20).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> val st = Stream.from(0)
+st: scala.collection.immutable.Stream[Int] = Stream(0, ?)
+
+scala> st.view.force 
+java.lang.OutOfMemoryError: Java heap space
+	at scala.collection.mutable.ListBuffer.$$plus$$eq(ListBuffer.scala:119)
+	at scala.collection.mutable.ListBuffer.$$plus$$eq(ListBuffer.scala:42)
+	at scala.collection.generic.Growable$$$$anonfun$$$$plus$$plus$$eq$$1.apply(Growable.scala:48)
+	at scala.collection.generic.Growable$$$$anonfun$$$$plus$$plus$$eq$$1.apply(Growable.scala:48)
+	at scala.collection.immutable.Stream.foreach(Stream.scala:254)
+	at scala.collection.generic.Growable$$class.$$plus$$plus$$eq(Growable.scala:48)
+	at scala.collection.TraversableOnce$$class.toList(TraversableOnce.scala:393)
+	at scala.collection.immutable.Stream.toList(Stream.scala:46)
+	at scala.collection.LinearSeqLike$$$$anon$$1.toList(LinearSeqLike.scala:59)
+	at scala.collection.TraversableOnce$$class.toStream(TraversableOnce.scala:423)
+	at...
+{code}

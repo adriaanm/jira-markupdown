@@ -1,0 +1,39 @@
+{code}
+abstract class A {
+ def f(x : this.type) : B
+}
+
+class B extends A {
+ override def f(x : this.type) : B = x
+}
+
+class C extends A {
+ override def f(x : this.type) : B = null
+}
+
+object Program {
+ def main(args : Array[String]) {
+   (new B : A).f(new C)
+ }
+}
+{code}
+
+This code compiles well, but fails with ClassCastException at run-time:
+
+{code}
+java.lang.ClassCastException: C
+       at B.f(1.scala:5)
+       at Program$$.main(1.scala:15)
+       at Program.main(1.scala)
+       at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+       at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+       at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+       at java.lang.reflect.Method.invoke(Unknown Source)
+       at scala.tools.nsc.ObjectRunner$$$$anonfun$$0.apply(ObjectRunner.scala:75)
+       at scala.tools.nsc.ObjectRunner$$.withContextClassLoader(ObjectRunner.scala:49)
+       at scala.tools.nsc.ObjectRunner$$.run(ObjectRunner.scala:74)
+       at scala.tools.nsc.MainGenericRunner$$.main(MainGenericRunner.scala:154)
+       at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
+{code}
+
+Compiler should restrict non-type-safe usages of 'this.type'.

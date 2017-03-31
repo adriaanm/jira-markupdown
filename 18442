@@ -1,0 +1,21 @@
+Calling {{Future.traverse}} on a stream shouldn't need to need to consume the stream before returning a future.
+
+Contrast the following, for example (using [Scalaz 7|https://github.com/scalaz/scalaz] and the [contrib|https://github.com/typelevel/scalaz-contrib/blob/master/scala210/main/scala/Future.scala] applicative functor instance for futures):
+
+{code}
+import scala.concurrent._
+import scala.concurrent.ExecutionContext.Implicits.global
+
+def toFutureString(value: Int) = Future(value.toString)
+val xs = Stream.from(0)
+
+// Hangs.
+val stdRes = Future.traverse(xs)(toFutureString)
+
+import scalaz._, Scalaz._, scalaz.contrib.std._
+
+// Returns immediately.
+val scalazRes = xs traverse toFutureString
+{code}
+
+See [this Stack Overflow question|http://stackoverflow.com/q/18043749/334519] for more discussion.

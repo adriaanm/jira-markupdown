@@ -1,0 +1,18 @@
+Arguably we need to get rid of flags in Modifiers (similarly to what've been done for Symbols). 
+
+However, it'd also be great to support the following use case:
+
+{code}
+def buildParams(methodType: Type) =
+  paramss(methodType) map { params =>
+    params map { p =>
+      ValDef(
+        Modifiers(p.flags),
+        newTermName(p.name.toString),
+        paramType(p.typeSignature),
+        EmptyTree)
+    }
+  }
+{code}
+
+Rather controversial requirements, but this only makes it more interesting.

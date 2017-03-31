@@ -1,0 +1,15 @@
+I've found example very similar to Option example above, but I think even simpler. This was without realizing there was such ticket. I'm adding this as an example as suggested on mailing list.
+
+{code}
+class Wrapper(val value: Int) extends AnyVal
+abstract class Test { def check(the: Wrapper): Boolean }
+new Test { def check(the: Wrapper) = true }
+{code}
+{code}
+error: bridge generated for member method check: (the: Wrapper)Boolean in anonymous class $anon
+which overrides method check: (the: Wrapper)Boolean in class Test
+clashes with definition of the member itself;
+both have erased type (the: Int)Boolean
+              new Test { def check(the: Wrapper) = true }
+                             ^
+{code}

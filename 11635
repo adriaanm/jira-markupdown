@@ -1,0 +1,26 @@
+Encoding the dependencies using formulas such that they don't blow up seems straightforward:
+just add implications such that a type assignment implies the types of it's arguments.
+However, I just figured out that I'm going in the wrong direction, the problem is something different...
+
+If I replace this line
+{code}
+final case class Two(b: B, a: A) extends C
+{code}
+with
+{code}
+final case class Two(b1: B, a1: A) extends C
+{code}
+
+Then it suddenly seems to work:
+{code}
+~/Documents/scala-branch/moretest:topic/more-exhaustive-bugs$ scalac  -Xfatal-warnings -unchecked -Xfatal-warnings -Ypatmat-exhaust-depth 100 Same3.scala 
+Same3.scala:21: warning: match may not be exhaustive.
+It would fail on the following inputs: Two(B1, A2), Two(B2, A2)
+  def foo(c: C): Unit = c match {
+                        ^
+error: No warnings can be incurred under -Xfatal-warnings.
+one warning found
+one error found
+{code}
+
+I can't make much sense out of this but I'll investigate what happens differently in both cases...

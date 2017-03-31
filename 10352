@@ -1,0 +1,22 @@
+Even something as simple as this triggers the decribed issue:
+
+{code}
+import scala.reflect.macros.whitebox._
+import scala.language.experimental.macros
+
+object Macros {
+  def impl(c: Context)(x: c.Tree) = {
+    import c.universe._
+    q"()"
+  }
+
+  def foo(x: Any): Any = macro impl
+}
+
+object Test extends App {
+  Macros.foo {
+    1
+    2
+  }
+}
+{code}

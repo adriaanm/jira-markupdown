@@ -1,0 +1,188 @@
+The code in question is here:
+
+https://github.com/soc/enum-paradise/blob/java-enums-via-macro-annotations/macros/src/main/scala/scalax/EnumMacroUsingStaticMembers.scala
+
+Printing the AST gives us:
+
+{code}
+final class Day extends java.lang.Enum[Day] {
+  <paramaccessor> private[this] val name: java.lang.String = _;
+  <paramaccessor> private[this] val ordinal: scala.Int = _;
+  private def <init>(name: String, ordinal: Int) = {
+    super.<init>(name, ordinal);
+    ()
+  };
+  <stable> <static> val Monday: Day = new Day("Monday", 1);
+  <stable> <static> val Tuesday: Day = new Day("Tuesday", 2);
+  <stable> <static> val Wednesday: Day = new Day("Wednesday", 3);
+  <stable> <static> val Thursday: Day = new Day("Thursday", 4);
+  <stable> <static> val Friday: Day = new Day("Friday", 5);
+  <stable> <static> val Saturday: Day = new Day("Saturday", 6);
+  <stable> <static> val Sunday: Day = new Day("Sunday", 7);
+  <static> private[this] val $VALUES: scala.Array[Day] = scala.Array.apply[Day](Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday)(Predef.implicitly);
+  <static> def values: scala.Array[Day] = $VALUES.clone();
+  <static> def valueOf(name: java.lang.String): Day = java.lang.Enum.valueOf(classOf[Day], name)
+}
+{code}
+
+But inspecting the generated class file shows us that the static field initializers are erroneously added to <init> instead of <clinit>:
+
+{code}
+% javap -c -p Day
+Warning: Binary file Day contains scalax.Day
+Compiled from "Day.scala"
+public final class scalax.Day extends java.lang.Enum<scalax.Day> {
+  private static final scalax.Day Monday;
+
+  private static final scalax.Day Tuesday;
+
+  private static final scalax.Day Wednesday;
+
+  private static final scalax.Day Thursday;
+
+  private static final scalax.Day Friday;
+
+  private static final scalax.Day Saturday;
+
+  private static final scalax.Day Sunday;
+
+  private static final scalax.Day[] $VALUES;
+
+  public static scalax.Day Monday();
+    Code:
+       0: getstatic     #22                 // Field Monday:Lscalax/Day;
+       3: areturn      
+
+  public static scalax.Day Tuesday();
+    Code:
+       0: getstatic     #24                 // Field Tuesday:Lscalax/Day;
+       3: areturn      
+
+  public static scalax.Day Wednesday();
+    Code:
+       0: getstatic     #26                 // Field Wednesday:Lscalax/Day;
+       3: areturn      
+
+  public static scalax.Day Thursday();
+    Code:
+       0: getstatic     #28                 // Field Thursday:Lscalax/Day;
+       3: areturn      
+
+  public static scalax.Day Friday();
+    Code:
+       0: getstatic     #30                 // Field Friday:Lscalax/Day;
+       3: areturn      
+
+  public static scalax.Day Saturday();
+    Code:
+       0: getstatic     #32                 // Field Saturday:Lscalax/Day;
+       3: areturn      
+
+  public static scalax.Day Sunday();
+    Code:
+       0: getstatic     #34                 // Field Sunday:Lscalax/Day;
+       3: areturn      
+
+  public static scalax.Day[] values();
+    Code:
+       0: getstatic     #38                 // Field $VALUES:[Lscalax/Day;
+       3: invokevirtual #43                 // Method "[Lscalax/Day;".clone:()Ljava/lang/Object;
+       6: checkcast     #39                 // class "[Lscalax/Day;"
+       9: areturn      
+
+  public static scalax.Day valueOf(java.lang.String);
+    Code:
+       0: ldc           #2                  // class scalax/Day
+       2: aload_0      
+       3: invokestatic  #48                 // Method java/lang/Enum.valueOf:(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;
+       6: checkcast     #2                  // class scalax/Day
+       9: areturn      
+
+  private scalax.Day(java.lang.String, int);
+    Code:
+       0: aload_0      
+       1: aload_1      
+       2: iload_2      
+       3: invokespecial #54                 // Method java/lang/Enum."<init>":(Ljava/lang/String;I)V
+       6: new           #2                  // class scalax/Day
+       9: dup          
+      10: ldc           #55                 // String Monday
+      12: iconst_1     
+      13: invokespecial #56                 // Method "<init>":(Ljava/lang/String;I)V
+      16: putstatic     #22                 // Field Monday:Lscalax/Day;
+      19: new           #2                  // class scalax/Day
+      22: dup          
+      23: ldc           #57                 // String Tuesday
+      25: iconst_2     
+      26: invokespecial #56                 // Method "<init>":(Ljava/lang/String;I)V
+      29: putstatic     #24                 // Field Tuesday:Lscalax/Day;
+      32: new           #2                  // class scalax/Day
+      35: dup          
+      36: ldc           #58                 // String Wednesday
+      38: iconst_3     
+      39: invokespecial #56                 // Method "<init>":(Ljava/lang/String;I)V
+      42: putstatic     #26                 // Field Wednesday:Lscalax/Day;
+      45: new           #2                  // class scalax/Day
+      48: dup          
+      49: ldc           #59                 // String Thursday
+      51: iconst_4     
+      52: invokespecial #56                 // Method "<init>":(Ljava/lang/String;I)V
+      55: putstatic     #28                 // Field Thursday:Lscalax/Day;
+      58: new           #2                  // class scalax/Day
+      61: dup          
+      62: ldc           #60                 // String Friday
+      64: iconst_5     
+      65: invokespecial #56                 // Method "<init>":(Ljava/lang/String;I)V
+      68: putstatic     #30                 // Field Friday:Lscalax/Day;
+      71: new           #2                  // class scalax/Day
+      74: dup          
+      75: ldc           #61                 // String Saturday
+      77: bipush        6
+      79: invokespecial #56                 // Method "<init>":(Ljava/lang/String;I)V
+      82: putstatic     #32                 // Field Saturday:Lscalax/Day;
+      85: new           #2                  // class scalax/Day
+      88: dup          
+      89: ldc           #62                 // String Sunday
+      91: bipush        7
+      93: invokespecial #56                 // Method "<init>":(Ljava/lang/String;I)V
+      96: putstatic     #34                 // Field Sunday:Lscalax/Day;
+      99: bipush        7
+     101: anewarray     #2                  // class scalax/Day
+     104: dup          
+     105: iconst_0     
+     106: invokestatic  #64                 // Method Monday:()Lscalax/Day;
+     109: aastore      
+     110: dup          
+     111: iconst_1     
+     112: invokestatic  #66                 // Method Tuesday:()Lscalax/Day;
+     115: aastore      
+     116: dup          
+     117: iconst_2     
+     118: invokestatic  #68                 // Method Wednesday:()Lscalax/Day;
+     121: aastore      
+     122: dup          
+     123: iconst_3     
+     124: invokestatic  #70                 // Method Thursday:()Lscalax/Day;
+     127: aastore      
+     128: dup          
+     129: iconst_4     
+     130: invokestatic  #72                 // Method Friday:()Lscalax/Day;
+     133: aastore      
+     134: dup          
+     135: iconst_5     
+     136: invokestatic  #74                 // Method Saturday:()Lscalax/Day;
+     139: aastore      
+     140: dup          
+     141: bipush        6
+     143: invokestatic  #76                 // Method Sunday:()Lscalax/Day;
+     146: aastore      
+     147: checkcast     #78                 // class "[Ljava/lang/Object;"
+     150: checkcast     #39                 // class "[Lscalax/Day;"
+     153: putstatic     #38                 // Field $VALUES:[Lscalax/Day;
+     156: return       
+}
+{code}
+
+So we are basically missing a check for STATIC somewhere which prevents the initializers from getting added to <init>.
+
+To be clear, this bug is not specific to macros and has probably existed for a long time already.

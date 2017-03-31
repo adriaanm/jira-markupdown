@@ -1,0 +1,110 @@
+Hi folks,
+
+I'm working with latest the Scala repository and observe a Java instance field i n the compiler generated output that I presume does not belong.
+Worse, at runtime via Java reflection I access the field and find its referencing a java/scala object that to my thinking should be available to GC. So, I view this as a compiler generated code caused memory leak.
+the version of scala is
+
+> /common/bord/scala/scala/build/quick/bin/scala -version
+Scala code runner version 2.7.1.r14632-b20080411163142 -- (c) 2002-2008 LAMP/EPFL
+
+and I'm using Java 6/Solaris 10 and/or Java 5/AIX for the test
+I also observed the same with 2.7.0GA where I first saw it.
+I include the code below and when run observe:
+ad.big$$1 is [I@e140e14
+
+Note that if you change the code to comment out the (0 to 0).map ... line and use instead the new ... ArrayBuffer() ... line
+then the code up until the Console.println does the same thing,
+yet no big$$1 field is in A$$Helper$$2$$ and thus no memory issue and when run yields expected:
+Exception in thread "main" java.lang.NoSuchFieldException: big$$1
+
+After the code listing is the javap -private output of the various .class files generated and one sees the A$$Helper$$2$$ having the big$$1 field
+
+in my real world application "big" is a large intialization object constructed from parsing lots of data from a file and I want to see it getting GC'ed after its use in building the next stage object
+
+Craig Bordelon
+bord@iscp.telcordia.com
+
+{code}
+object A { 
+  abstract class DuringApply {
+    val msg1:String 
+    val msgs:RandomAccessSeq[String] 
+  }
+  
+  def apply(n:int,z:int) = {
+    val big = Array.make(n, z)
+
+    object Helper extends DuringApply {
+      val msg1 = big(0).toString 
+      val msgs:RandomAccessSeq[String] =
+        (0 to 0).map(big(_).toString) 
+      //new scala.collection.mutable.ArrayBuffer?() ++ List(big(0).toString)
+    }
+
+    new AA(Helper)
+
+  } 
+  def main(args:Array[String]) {
+    var a = A(1,1) 
+    Console.println("ad.big$$1 is "+
+     Class.forName("A$$Helper$$2$$").getDeclaredField("big$$1").get(a.ad))
+  } 
+}
+
+class AA(val ad:A.DuringApply)
+{code}
+
+
+{code}
+Compiled from "A.scala"
+public final class A extends java.lang.Object{
+    public static final int $$tag();
+    public static final void main(java.lang.String[]);
+    public static final AA apply(int, int);
+}
+
+Compiled from "A.scala"
+public final class A$$ extends java.lang.Object implements scala.ScalaObject{
+    public static final A$$ MODULE$$;
+    public static {};
+    public A$$();
+    private final A$$Helper$$2$$ Helper$$1(int[], scala.runtime.ObjectRef);
+    public void main(java.lang.String[]);
+    public AA apply(int, int);
+    public int $$tag();
+}
+
+Compiled from "A.scala"
+public final class A$$Helper$$2$$ extends A$$DuringApply implements scala.ScalaObjec
+t{
+    public final int[] big$$1;
+    private final scala.RandomAccessSeq msgs;
+    private final java.lang.String msg1;
+    public A$$Helper$$2$$(int[]);
+    public scala.RandomAccessSeq msgs();
+    public java.lang.String msg1();
+}
+
+Compiled from "A.scala"
+public final class A$$Helper$$2$$$$anonfun$$1 extends java.lang.Object implements sca
+la.Function1,scala.ScalaObject,java.io.Serializable{
+    public final A$$Helper$$2$$ $$outer;
+    public A$$Helper$$2$$$$anonfun$$1(A$$Helper$$2$$);
+    public final java.lang.Object apply(java.lang.Object);
+    public A$$Helper$$2$$ A$$Helper$$$$anonfun$$$$$$outer();
+    public final java.lang.String apply(int);
+    public int $$tag();
+    public scala.Function1 andThen(scala.Function1);
+    public scala.Function1 compose(scala.Function1);
+    public java.lang.String toString();
+}
+
+Compiled from "A.scala"
+public abstract class A$$DuringApply extends java.lang.Object implements scala.Sc
+alaObject{
+    public A$$DuringApply();
+    public abstract scala.RandomAccessSeq msgs();
+    public abstract java.lang.String msg1();
+    public int $$tag();
+}
+{code}

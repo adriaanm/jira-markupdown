@@ -1,0 +1,14 @@
+After reading the discussion on SI-3295, I'd like to add a bit of context re: what itch this script scratches.
+
+I have been using scala (quite successfully, thank you) as my primary scripting language for the last 2 years.
+There are only a couple of remaining significant limitations that force me to solve a few problems without using scala:
+
+1. scala needs the ability to carry its' own data (the role of "here-documents" in most scripting languages).   
+
+2. although not related to this ticket, it's still quite difficult for a stand-alone scala script to know where it resides in the filesystem
+
+Both of these features are necessary for a scala script (and/or equivalent executable jar file) to be distributed as a single file, placed anywhere in the filesystem, and executed without a wrapper (e.g., a bash script).
+
+The failing script referred to here was generated via the command line 'find tmp -type f | xargs cksum > listItems.sc', after which I intended to quickly convert the output to a script that permits duplicate files (those with equal cksum in column 1) to be reported.  Due to the length of the list and the foldRight limitation, I haven't figured out how I might resolve this (without resorting to ruby).
+
+Feature #2 is a trivial operation in mainstream scripting languages, and although it is possible in scala, the solution is quite ugly: see 'showScript.sc', attached).

@@ -1,0 +1,66 @@
+from https://groups.google.com/d/topic/scala-user/bjar0Qcl9eA/discussion
+
+this produces bytecode that assigns repeatedly to vars marked *final*,
+which results in unpredictable run-time behavior (well, it's predictably wrong)
+
+{code}
+
+final class Box {
+  private[this] final var TMP:Object = null
+
+  final def put(o:Object) {
+    TMP = o
+  }
+
+  final def get() = {
+    val tmp = TMP
+    TMP = null
+    tmp
+  }
+}
+
+class Client(box:Box) {
+  var count = 0
+
+  final def run(cycles:Int) {
+    if (cycles > 0) {
+      box.put(new Object)
+      if (box.get() != null) count += 1
+      run(cycles - 1)
+    }
+  }
+}
+
+object Main {
+
+  def main(args:Array[String]) {
+    val c = new Client(new Box)
+    val N = 1000000000
+    c.run(N)
+    assert(c.count == N, c.count)
+  }
+
+}
+
+$ sbt run
+[error] (run-main) java.lang.AssertionError: assertion failed: 999982178
+java.lang.AssertionError: assertion failed: 999982178
+        at scala.Predef$.assert(Predef.scala:103)
+        at Main$.main(Bug.scala:33)
+        at Main.main(Bug.scala)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+        at java.lang.reflect.Method.invoke(Method.java:597)
+java.lang.RuntimeException: Nonzero exit code: 1
+        at scala.sys.package$.error(package.scala:27)
+
+$ java -version
+java version "1.6.0_26"
+Java(TM) SE Runtime Environment (build 1.6.0_26-b03)
+Java HotSpot(TM) Server VM (build 20.1-b02, mixed mode)
+
+$ scala -version
+Scala code runner version 2.9.1.final -- Copyright 2002-2011, LAMP/EPFL
+
+{code}

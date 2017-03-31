@@ -1,0 +1,30 @@
+when reporting a problem with overriding an abstract type with a concrete type, the involved type should be normalised so the error message becomes more explicit
+
+
+{code}
+trait Lists { // developed by Func Inc.
+  type TList[x] <: List[x]
+  trait List[T]
+}
+
+// Our component
+trait MyComponent { self: Lists with MyComponent =>
+  val input: TList[Int]
+}
+
+trait SpecialLists extends Lists {
+  // The following does not type check:
+  type TList[x <: B] <: BoundedList[x]
+
+  trait B
+  trait BoundedList[T <: B] extends List[T]   
+}
+{code}
+
+error message:
+{code}
+error: error overriding type TList in trait Lists with bounds [x]>: Nothing <: SpecialLists.this.List[x];
+ type TList has incompatible type SpecialLists.this.TList[x]
+  type TList[x <: B] <: BoundedList[x]
+       ^
+{code}

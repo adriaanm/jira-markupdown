@@ -1,0 +1,37 @@
+The following is for -make:transitive, not the refined build manager.
+
+Clients of changed Java sources are not recompiled:
+
+A.java
+{code}
+public class A { public void x() {} }
+{code}
+
+C.scala
+{code}
+object C { (new A).x }
+{code}
+
+{code}
+$$ scalac -make:transitive A.java C.scala
+{code}
+
+Rename A.x to A.y:
+{code}
+public class A { public void y() {} }
+{code}
+
+Recompile:
+{code}
+$$ scalac -make:transitive A.java C.scala
+{code}
+
+No error is generated.  Removing .scala_dependencies and recompiling causes the error to show up properly.
+
+Also, Java sources are always processed.
+
+{code}
+$$ scalac -Ydebug -Ybuild-manager-debug -make:transitive A.java
+{code}
+
+shows A.java being processed each run.

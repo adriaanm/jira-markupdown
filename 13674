@@ -1,0 +1,45 @@
+{code}
+trait Foo {
+  @reflect.BeanProperty
+  var status = ""
+}
+{code}
+
+crashes the compiler (2.7.1, r15800) with
+
+{code}
+Exception in thread "main" java.lang.Error: implMethod missing for method getStatus
+        at scala.tools.nsc.transform.AddInterfaces.implMethodDef(AddInterfaces.scala:240)
+        at scala.tools.nsc.transform.AddInterfaces.scala$$tools$$nsc$$transform$$AddInterfaces$$$$implMemberDef(AddInterfaces.scala:245)
+        at scala.tools.nsc.transform.AddInterfaces$$$$anonfun$$4.apply(AddInterfaces.scala:259)
+        at scala.tools.nsc.transform.AddInterfaces$$$$anonfun$$4.apply(AddInterfaces.scala:259)
+        at scala.List.map(List.scala:805)
+        at scala.tools.nsc.transform.AddInterfaces.scala$$tools$$nsc$$transform$$AddInterfaces$$$$implTemplate(AddInterfaces.scala:259)
+        at scala.tools.nsc.transform.AddInterfaces$$$$anonfun$$implClassDefs$$1.apply(AddInterfaces.scala:274)
+        at scala.tools.nsc.transform.AddInterfaces$$$$anonfun$$implClassDefs$$1.apply(AddInterfaces.scala:268)
+        at scala.List.foreach(List.scala:834)
+        at scala.tools.nsc.transform.AddInterfaces.implClassDefs(AddInterfaces.scala:268)
+        at scala.tools.nsc.transform.AddInterfaces$$$$anon$$1.transformStats(AddInterfaces.scala:306)
+        at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transform$$1.apply(Trees.scala:1306)
+        at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transform$$1.apply(Trees.scala:1306)
+        at scala.tools.nsc.ast.Trees$$Transformer.atOwner(Trees.scala:1438)
+        at scala.tools.nsc.ast.Trees$$Transformer.transform(Trees.scala:1305)
+        at scala.tools.nsc.transform.AddInterfaces$$$$anon$$1.transform(AddInterfaces.scala:346)
+        at scala.tools.nsc.transform.Erasure$$ErasureTransformer$$$$anonfun$$transform$$1.apply(Erasure.scala:1053)
+        at scala.tools.nsc.transform.Erasure$$ErasureTransformer$$$$anonfun$$transform$$1.apply(Erasure.scala:1052)
+        at scala.tools.nsc.symtab.SymbolTable.atPhase(SymbolTable.scala:106)
+        at scala.tools.nsc.transform.Erasure$$ErasureTransformer.transform(Erasure.scala:1052)
+        at scala.tools.nsc.ast.Trees$$Transformer.transformUnit(Trees.scala:1433)
+        at scala.tools.nsc.transform.Transform$$Phase.apply(Transform.scala:30)
+        at scala.tools.nsc.Global$$GlobalPhase.applyPhase(Global.scala:268)
+        at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:247)
+        at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:247)
+        at scala.Iterator$$class.foreach(Iterator.scala:410)
+        at scala.collection.mutable.ListBuffer$$$$anon$$1.foreach(ListBuffer.scala:266)
+        at scala.tools.nsc.Global$$GlobalPhase.run(Global.scala:247)
+        at scala.tools.nsc.Global$$Run.compileSources(Global.scala:579)
+        at scala.tools.nsc.Global$$Run.compile(Global.scala:663)
+        at scala.tools.nsc.Main$$.process(Main.scala:84)
+        at scala.tools.nsc.Main$$.main(Main.scala:98)
+        at scala.tools.nsc.Main.main(Main.scala)
+{code}

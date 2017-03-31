@@ -1,0 +1,29 @@
+That still has a companion. I've tested this at work:
+
+{code}
+class Test()(implicit x: Bop.Box) {
+  println(x.value)
+}
+
+object Bop {
+  abstract class Box {
+    val value: Int
+  }
+
+  implicit val a: Box = new Box {
+    val value= 1
+  }
+
+  def main(args: Array[String]) {
+    implicit val b: Box= new Box {
+      val value= 2
+    }
+
+    new Object {
+      new Test()
+    }
+    // compare with:
+    // new Test()
+  }
+}
+{code}

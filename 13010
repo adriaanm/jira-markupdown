@@ -1,0 +1,26 @@
+Given the following file:
+
+{code}
+object Hello2 {
+  def main(args: Array[String]) =
+    println("Hello " + args(0) + "!")
+}
+
+class Hello2 {
+  def main(args: Array[String]) = throw new UnsupportedOperationException
+}
+{code}
+
+This is the result:
+{code}
+$$ scala -classpath . Hello2 you
+java.lang.NoSuchMethodException: Hello2.main is not static
+{code}
+
+If the class's main() method is renamed, this is the result:
+{code}
+$$ scala -classpath . Hello2 you
+java.lang.NoSuchMethodException: Hello2.main([Ljava.lang.String;)}}
+{code}
+
+It appears that the launcher always loads the class with the matching name, if one exists, and if that succeeds, no matter what methods that class has, it never attempts to load the object.  Considering it's not possible to run a non-static main() method, the launcher should always load the object from the launcher.  

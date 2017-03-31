@@ -1,0 +1,13 @@
+Before annotation the inferred type was:
+
+{code}
+private def intSampleFormat(bitsPerSample: Int): Product with de.sciss.synth.io.SampleFormat{def bidiFactory: Some[Any]; def writerFactory: Some[Any]; def readerFactory: Some[Any]} = bitsPerSample match {
+        case 8 => de.sciss.synth.io.SampleFormat.Int8
+        case 16 => de.sciss.synth.io.SampleFormat.Int16
+        case 24 => de.sciss.synth.io.SampleFormat.Int24
+        case 32 => de.sciss.synth.io.SampleFormat.Int32
+        case (v @ _) => throw new java.io.IOException("Unsupported AIFF encoding (".+(v).+(" bits-per-sample)"))
+      }
+{code}
+
+Still not clear when `NotNull` comes into play.

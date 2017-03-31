@@ -1,0 +1,42 @@
+I took a look, too, with the same conclusion. I didn't notice #2 about renames but verified it. #3 I'm not sure. There's a related ticket for handling imported implicits, which is why I looked at it. Were you planning a PR?
+
+Showing failure on rename. Works on regular module import. Also the failure on package import from the other ticket.
+{code}
+$ scala -Yrepl-class-based
+Welcome to Scala 2.12.0-M5 (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_92).
+Type in expressions for evaluation. Or try :help.
+
+scala> object X { def x = 42 }
+defined object X
+
+scala> import X.{x => y}
+import X.{x=>y}
+
+scala> class C(i: Int = y)
+<console>:11: error: not found: value y
+       class C(i: Int = y)
+                        ^
+
+scala> class C ; y
+<console>:13: error: not found: value y
+        y
+        ^
+
+scala> import X.x
+import X.x
+
+scala> class C(i: Int = x)
+defined class C
+
+scala> import concurrent.Future
+import concurrent.Future
+
+scala> class C(f: Future[Int])
+<console>:11: error: not found: type Future
+       class C(f: Future[Int])
+                  ^
+
+scala> def f: Future[Int] = ???
+f: scala.concurrent.Future[Int]
+
+{code}

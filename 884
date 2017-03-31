@@ -1,0 +1,8 @@
+I agree that for a _Stream_ implementing this type of behavior is super inefficient and it makes no sense to do so.
+
+However, with different behavioral implementation for such a standard method one cannot safely program with the base classes (_Iterable_,_Collection_,_Seq_,..) anymore since the implementations and their differences are unknown. However, this is what abstracting / object oriented programming is all about!
+
+
+How about keeping _Projection.map_ strict, which means changing the _{Array,Set,..}.projection_ implementation. Then updates on the elements would not be reflected anymore, only changes to themself (as with _List_/_Stream_). This also seems more reasonable as _Array.toStream().map_ does exactly that and is what I would expect from _Array.projection.map'.
+
+I would go even further: Remove the _Projection_ classes and _projection_ methods from _Iterable_ and all its derications. Create wrapper classes for mutable collections instead, like _ProjectedArray_ (compare Rich..) ) , which reflect all _updates_. Note: there is no need for it with immutable ones anyway. The current _Projection_ stuff only makes the standard library unnecessary complicated!

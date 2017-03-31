@@ -1,0 +1,30 @@
+For my reference, this is another example of inferred types not conforming to bounds.
+Note the "with scala.collection.mutable.Cloneable[Any]" despite Cloneable's AnyRef bound.
+{code}
+scala> lub(List("Set", "Seq") map (intp types "scala.collection.mutable." + _) map (s => typeRef(NoPrefix, s, List(ObjectClass.tpe))))
+
+res22: $r.intp.global.Type = 
+  scala.collection.mutable.Iterable[java.lang.Object] 
+  with java.lang.Object 
+  with Int => Any 
+  with scala.collection.mutable.Cloneable[
+    scala.collection.mutable.Iterable[java.lang.Object] 
+    with java.lang.Object 
+    with Int => Any 
+    with scala.collection.mutable.Cloneable[
+      scala.collection.mutable.Iterable[java.lang.Object] 
+      with java.lang.Object 
+      with Int => Any 
+      with scala.collection.mutable.Cloneable[
+        scala.collection.mutable.Iterable[java.lang.Object] 
+        with Nothing => Any 
+        with scala.collection.mutable.Cloneable[Any]
+      ] {
+        def seq:  scala.collection.mutable.Iterable[java.lang.Object] 
+                    with Nothing => Any 
+                    with scala.collection.mutable.Cloneable[Any]
+        }
+    ]
+  ]
+{code}
+

@@ -1,0 +1,27 @@
+{code:scala}
+class Base[T] {
+  def set(t: T): Unit = ()
+}
+class Inter[T] extends Base[T]
+class Concrete extends Inter[List[String]]
+
+object Fail {
+  val r: Base[_] = new Concrete
+  r match {
+    case i: Inter[_] =>
+      i match {
+        case c: Concrete =>
+          c.set(Nil)
+      }
+  }
+}
+{code}
+
+Result:
+{code}
+Error:(16, 17) type mismatch;
+ found   : scala.collection.immutable.Nil.type
+ required: _1
+          c.set(Nil)
+                ^
+{code}

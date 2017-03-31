@@ -1,0 +1,23 @@
+Good catch, thanks!
+
+I saw the report while in a bar, so I haven't looked at the actual code yet, but I think there's a clone missing on the type symbols of the type arguments... 
+
+In theory, the derivation is:
+
+{code}
+T: (A: (* -> *(T[A, B]))) -> B: * -> *(T[A, B])
+
+ T[T2, B] well-kinded iff
+   T2 : * -> *(T[T2, B])
+      iff Forall X. T2[X] <: T[T2, B]   
+   B : *
+{code}
+
+However, in the implementation, the check `Forall X. T2[X] <: T[T2, B]` seems to end up being:
+
+{code}
+      T2[B] <: T[T2, B]  
+{code}
+
+Because the arguments to T2 and the bound happen to coincide, this check succeeds, even though it should fail.
+I'll implement a fix ASAP.

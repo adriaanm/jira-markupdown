@@ -1,0 +1,14 @@
+See [http://www.nabble.com/Converting-a-Java-wildcard-to-a-Scala-existential-td15047532.html#a15047532 this thread] for details.
+
+The upshot is that the compiler seems to produce existential types (for Java methods) that one can't actually write in Scala, but that one would like to write:
+
+Scala sees the Type of the following Java code:
+{code}
+public static <T extends Comparable<? super T>> void sort(List<T> list) {}
+{code} 
+as:
+{code}
+sort{[T <: java.lang.Comparable[T_sort1] forSome { T_sort1 >: T }](java.util.List[T])Unit}
+{code}
+
+But we cannot define a method with this type in Scala, even though we would like to. Is this correct? If so, why?

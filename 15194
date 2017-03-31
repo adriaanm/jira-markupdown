@@ -1,0 +1,30 @@
+The following sample defines two implicit conversions and assumes the first one will be used on the argument of overloaded method "c":
+
+{code}
+object Bug {
+    
+    class A[T]
+    class B[T]
+    class C
+    
+    implicit def f(a: A[_]): B[AnyRef] = null
+    implicit def g[T <: AnyRef](src: A[T]): B[T] = null
+    
+    def c[T <: AnyRef](x : B[T]) = null
+    def c(x : C) = null
+    
+    c(null: A[_])
+    
+}
+{code}
+
+It fails to compile in scala 2.8 with error:
+
+{code}
+overloaded method value c with alternatives (x: Bug.C)Null <and> [T <: AnyRef](x: Bug.B[T])Null cannot be applied to (Bug.A[_$$2])
+    c(null: A[_])
+    ^
+
+{code}
+
+If we comment out second "c" variant, or "g", the code compiles.

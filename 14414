@@ -1,0 +1,38 @@
+On my machine this runs for about 40 seconds and then the error occurs.  I've tried this on both the nightly 2.8 build, 2.7.3final (Ubuntu) and whatever Netbeans is bringing along with it.  There doesn't seem to be any reason for this that has become apparent to me from looking at the Scala code underlying the related methods.
+
+{code}
+def nextNumber(number: Long): Long =
+{
+    if (number % 2 == 0)
+    {
+        return number / 2;
+    }
+    else
+    {
+        return (number * 3) + 1;
+    }
+}
+
+def numberStream(number: Long): Stream[Long] =
+{
+    if (number == 1)
+    {
+        return Stream.cons(1, Stream.empty);
+    }
+    return Stream.cons(number, numberStream(nextNumber(number)));
+}
+
+def numberRangeStream(number: Long): Stream[Long] =
+{
+    if (number == 999999L)
+    {
+        return Stream.cons(999999L, Stream.empty);
+    }
+    return Stream.cons(number, numberRangeStream(number + 2));
+}
+
+val maxValue = numberRangeStream(500001).map(numberStream(_)).reduceLeft((left, right) => (
+ if (left.length > right.length) left else right
+ )).first;
+println("Largest value = " + maxValue);
+{code}

@@ -1,0 +1,47 @@
+Here's the code for trampolines:
+{code}
+abstract class TailRec[+A] 
+
+object TailRec {
+
+  case class Call[A](rest: () => TailRec[A]) extends TailRec[A]
+  case class Done[A](result: A) extends TailRec[A]
+
+  def tailcall[A](rest: => TailRec[A]) = new Call(() => rest)
+  def done    [A](result: A) = new Done(result)
+  def trampoline[A](body: TailRec[A]): A = {
+    def loop(body: TailRec[A]): A = body match {
+      case Call(rest) => loop(rest())
+      case Done(result) => result
+    }
+    loop(body)
+  }
+  def loop[A](body: TailRec[A]): A = body match {
+    case Call(rest) => loop[A](rest())
+    case Done(result) => result
+  }
+}
+
+
+import TailRec._
+
+object test extends Application {
+
+  def isEven(x: Int): TailRec[Boolean] = 
+    if (x == 0) done(true) else tailcall(isOdd(x - 1))
+
+  def isOdd(x: Int): TailRec[Boolean] = 
+    if (x == 0) done(false) else tailcall(isEven(x - 1))
+
+  def testEven(x: Int) = trampoline(isEven(x))
+  def testEven2(x: Int) = loop(isEven(x))
+
+  println(testEven(0)) // OK
+  println(testEven(1111)) // OK
+  println(testEven(1000000)) // OK
+  println(testEven2(1000000)) // stackoverflow
+  
+}
+{code}
+The last call gives a stack overflow with the loop method.
+The call before that, which has the same loop as a local method, succeeded.

@@ -1,0 +1,48 @@
+This example compiles using Scala 2.10.4 but not with 2.11.7
+
+{code}
+import scala.reflect.runtime.universe._
+
+trait Parser {
+  type Result
+  def parse(s: String): Result
+}
+
+object Parser {
+
+  type TP[A] = Parser { type Result = A }
+
+  def apply[A](fn: String => A): Parser { type Result = A } =
+    new Parser {
+      override type Result = A
+      override def parse(s: String): Result = fn(s)
+    }
+
+  def register[A : TypeTag](parser: Parser.TP[A]): Unit = {
+    // do registration ...
+  }
+
+  register(Parser(_.toInt))
+}
+{code}
+
+{code}
+[ERROR] Parser.scala:24: error: No TypeTag available for this.Result
+[ERROR]   register(Parser(_.toInt))
+[ERROR]           ^
+{code}
+
+
+An easy workaround it to just change the change the type of apply:
+
+{code}
+def apply[A](fn: String => A): Parser.TP[A] = ...
+{code}
+
+Another workaround is to specify the type parameter when calling register:
+
+{code}
+register[Int](Parser(_.toInt))
+{code}
+
+

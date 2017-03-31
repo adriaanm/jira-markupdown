@@ -1,0 +1,29 @@
+Color preferences are saved in:
+.metadata\.plugins\org.eclipse.core.runtime\.settings\org.eclipse.ui.editors.prefs
+
+I realized ALL general colors (AbstractTextEditor below) are ignored, e.g. selection.
+
+AbstractTextEditor.Color.Foreground=255,255,255
+AbstractTextEditor.Color.Background=32,32,32
+AbstractTextEditor.Color.Foreground.SystemDefault=false
+AbstractTextEditor.Color.Background.SystemDefault=false
+AbstractTextEditor.Color.SelectionForeground=128,0,0
+AbstractTextEditor.Color.SelectionBackground=255,255,128
+AbstractTextEditor.Color.SelectionForeground.SystemDefault=false
+AbstractTextEditor.Color.SelectionBackground.SystemDefault=false
+AbstractTextEditor.Color.FindScope=128,128,128
+ch.epfl.lamp.sdt.core.type.Color.Foreground=210,0,0
+ch.epfl.lamp.sdt.core.type.Color.Background=-1
+ch.epfl.lamp.sdt.core.package.Color.Foreground=128,64,0
+ch.epfl.lamp.sdt.core.package.Color.Background=-1
+
+Btw those colors work with the example code on settings page. This code is used and working (lampion\eclipse\EditorPreferences.scala):
+
+      val fg = plugin.colorMap(PreferenceConverter.getColor(store, AbstractTextEditor.PREFERENCE_COLOR_FOREGROUND))
+      val bg = plugin.colorMap(PreferenceConverter.getColor(store, AbstractTextEditor.PREFERENCE_COLOR_BACKGROUND))
+      text.setForeground(fg)
+      text.setBackground(bg)
+
+
+I can't see any other reference in scala-plugin to AbstractTextEditor.PREFERENCE_COLOR_BACKGROUND or similar.
+Sorry I can't help, I'm not so familiar with PDE...

@@ -1,0 +1,42 @@
+h3. Problem
+
+ScalaDoc should expand redefined macros in documentation for inherited members to the macro bodies from the subclass, but expands the redefined macros to their old bodies from the superclass instead.
+
+h3. Background
+
+According to https://wiki.scala-lang.org/display/SW/Tags+and+Annotations, documentation inheritance and ScalaDoc macros should interact as follows (emphasis mine):
+
+{quote}If a comment containing macros is inherited, macros will normally be extended to the bodies defined in the super-class. However, It is possible to redefine macros in the sub-class (using @define tags with the same names) such that macros in inherited comments are extended to the redefined bodies. *This happens even if members are inherited, as opposed to being overridden or implemented.*{quote}
+
+Contrary to this description, Scaladoc only expands macros to their redefined bodies if members are overriden or implemented, but not if members are merely inherited.
+
+h3. Example
+
+{code}
+package doctest
+
+/** @define macro Super */
+class Super {
+  /** $macro */ def inherited
+  /** $macro */ def implemented
+  /** $macro */ def overriden {}
+}
+
+/** @define macro Sub */
+class Sub extends Super {
+  def implemented {}
+  override def overriden {}
+}
+{code}
+
+h3. Expected Behavior
+
+In the documentation of Sub, all three methods should be documented with "Sub".
+
+h3. Actual Behavior
+
+In the documentation of Sub, only overriden and implemented (the methods that show up in the body of Sub) are documented with "Sub", but inherited (the method that is only inherited) is documented with "Super".
+
+h3. Screenshot of Actual Behavior
+
+!inherited.png|thumbnail!

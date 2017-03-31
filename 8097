@@ -1,0 +1,16 @@
+As discussed on scala-internals (https://groups.google.com/d/topic/scala-internals/5mebTX1bqDU/discussion), (a variant of) the problem is even easier to trigger. It seems that {{Any}} should never be used as parameter type.
+
+The following looks like an identity macro but isn't:
+{code}
+def macroId(arg: Any) = macro macroId_impl
+def macroId_impl(c: Context)(arg: c.Expr[Any]): c.Expr[Any] = arg
+{code}
+for the same reason for which {{def idAny(v: Any): Any = v}} is not an identity function: its argument gets typechecked against {{Any}}.
+
+The correct version of the macro is:
+{code}
+def macroId[T](arg: T): T = macro macroId_impl[T]
+def macroId_impl[T: c.AbsTypeTag](c: Context)(arg: c.Expr[T]): c.Expr[T] = arg
+{code}
+
+The problem could be reduced by having the typechecker special-case {{Any}} as a target type, and treating it as {{WildcardType}}. Of course, this doesn't solve the general problem, it just makes it less common; but since using the expected type is part of bidirectional type inference, it seems that a general solution could be quite complex.

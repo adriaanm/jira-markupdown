@@ -1,0 +1,12 @@
+Injecting my comment from the scala-internals thread because it seems plausibly among the least bad ways to go from here.
+{noformat}
+
+Hmm, maybe we should let people declare the copy signature they want, and accommodate it if possible.
+
+case class C(x: Int)(y: Int)(implicit z: Int) {
+  def copy(x: Int = x)(y: Int = y): C  // this way z is fixed at construction, and gets a field
+  def copy(x: Int = x)(y: Int = y)(implicit z: Int = z): C // this way z is an optional implicit, and gets a field
+  def copy(x: Int = x)(y: Int = y)(implicit z: Int): C // this way z is a mandatory implicit, no field
+  def copy(x: Int = x)(y: Int)(implicit z: Int): C // and this way neither y nor z gets a field
+}
+{noformat}

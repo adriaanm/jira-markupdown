@@ -1,0 +1,15 @@
+I'm not sure they should be rejected but I don't see why they would behave differently. According to the spec the type of the method arguments during eta-expansion is guided by the method type:
+
+{quote}
+Second, one creates a fresh name yi for every argument type Ti of the method (i=1,…,n)
+{quote}
+
+The implementation, however, seems to be based on the expected function type, so that overload resolution works as expected for the {{Int}} case:
+
+{code}
+scala.this.Predef.Set.apply[Int](2, 1).reduce[Int]({
+  ((x: Int, y: Int) => scala.math.`package`.max(x, y))
+})
+{code}
+
+This looks like the right thing to do and I think it should also work for {{Long}}.

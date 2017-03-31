@@ -1,0 +1,14 @@
+if Text("My name is ") followed by Text("Harry") the space following the word "is" will be incorrectly trimmed out.  Adjacent Text nodes need to be combined before whitespace is removed.
+
+{code}
+scala> import scala.xml._
+import scala.xml._
+
+scala> <div>{Text("My name is ")}{Text("Harry")}</div>
+res0: scala.xml.Elem = <div>My name is Harry</div>
+
+scala> Utility.trim(res0)
+res1: scala.xml.Node = <div>My name isHarry</div>
+{code}
+
+This is important when modifying XML and then trimming it.  For example we might start with <div>My name is <user:name/></div> and then replace the <user:name/> Elem with "Harry" thus leading to the adjacent Text nodes.

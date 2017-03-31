@@ -1,0 +1,6 @@
+There at least two easy ways this ticket could be fixed:
+(1) Trac SI-2540 suggests an efficient implementation for Iterator.withFilter.
+(2) Declare
+        def withFilter(p: A => Boolean) = filter(p) 
+
+The commented out implementation using toStream is inappropriate as Scala's streams are not sufficiently lazy for such usage: the iterator's hasNext and next would be called too early.

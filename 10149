@@ -1,0 +1,165 @@
+Here's another typical day at the old error mill. I was commenting out extraneous imports and commented out one too many. The only thing preventing the command line from succeeding is that one file is missing one import. That's the first error. Then I'm given 49 more. We can't figure out that the gazillion unknown identifiers are rather likely to be residents of the parent class we can't find?
+{code}
+% qscalac -d /tmp -J-Xmx2g $(find ./src/compiler -name '*.scala')
+./src/compiler/scala/tools/nsc/transform/OverridingPairs.scala:18: error: not found: type SymbolPairs
+abstract class OverridingPairs extends SymbolPairs {
+                                       ^
+./src/compiler/scala/tools/nsc/Global.scala:138: error: type SymbolPair is not a member of object Global.this.overridingPairs
+  type SymbolPair = overridingPairs.SymbolPair
+                                    ^
+./src/compiler/scala/tools/nsc/transform/OverridingPairs.scala:21: error: type Cursor is not a member of AnyRef
+  class Cursor(base: Symbol) extends super.Cursor(base) {
+                                           ^
+./src/compiler/scala/tools/nsc/transform/OverridingPairs.scala:19: error: not found: value global
+  import global._
+         ^
+./src/compiler/scala/tools/nsc/transform/OverridingPairs.scala:27: error: value hasFlag is not a member of Symbol
+    override protected def exclude(sym: Symbol) = (sym hasFlag PRIVATE | ARTIFACT) || sym.isConstructor
+                                                       ^
+./src/compiler/scala/tools/nsc/transform/Erasure.scala:374: error: type mismatch;
+ found   : Erasure.this.global.Symbol
+ required: scala.Symbol
+        override def exclude(sym: Symbol) = !sym.isMethod || super.exclude(sym)
+                                                                           ^
+./src/compiler/scala/tools/nsc/transform/Erasure.scala:372: error: type mismatch;
+ found   : Erasure.this.global.Symbol
+ required: scala.Symbol
+      new overridingPairs.Cursor(root) {
+                                 ^
+./src/compiler/scala/tools/nsc/transform/Erasure.scala:443: error: not found: value low
+      val member = low
+                   ^
+./src/compiler/scala/tools/nsc/transform/Erasure.scala:444: error: not found: value high
+      val other  = high
+                   ^
+./src/compiler/scala/tools/nsc/transform/Erasure.scala:445: error: not found: value highErased
+      val otpe   = highErased
+                   ^
+./src/compiler/scala/tools/nsc/transform/Erasure.scala:856: error: value isErroneous is not a member of Erasure.this.global.SymbolPair
+      if (!pair.isErroneous) {
+                ^
+./src/compiler/scala/tools/nsc/transform/Erasure.scala:858: error: not found: value low
+          if (low.owner == high.owner) "double definition"
+              ^
+./src/compiler/scala/tools/nsc/transform/Erasure.scala:859: error: not found: value low
+          else if (low.owner == base) "name clash between defined and inherited member"
+                   ^
+./src/compiler/scala/tools/nsc/transform/Erasure.scala:862: error: not found: value lowType
+        val when = if (exitingRefchecks(lowType matches highType)) "" else " after erasure: " + exitingPostErasure(highType)
+                                        ^
+./src/compiler/scala/tools/nsc/transform/Erasure.scala:862: error: not found: value highType
+        val when = if (exitingRefchecks(lowType matches highType)) "" else " after erasure: " + exitingPostErasure(highType)
+                                                                                                                   ^
+./src/compiler/scala/tools/nsc/transform/Erasure.scala:864: error: not found: value pos
+        unit.error(pos,
+                   ^
+./src/compiler/scala/tools/nsc/transform/Erasure.scala:871: error: not found: value low
+      low setInfo ErrorType
+      ^
+./src/compiler/scala/tools/nsc/transform/Erasure.scala:902: error: type mismatch;
+ found   : Erasure.this.global.Symbol
+ required: scala.Symbol
+      object opc extends Cursor(root) {
+                                ^
+./src/compiler/scala/tools/nsc/transform/Erasure.scala:907: error: type mismatch;
+ found   : Erasure.this.global.Symbol
+ required: scala.Symbol
+          || super.exclude(sym)
+                           ^
+./src/compiler/scala/tools/nsc/transform/OverridingPairs.scala:32: error: value isType is not a member of Symbol
+    override protected def matches(sym1: Symbol, sym2: Symbol) = sym1.isType || (
+                                                                      ^
+./src/compiler/scala/tools/nsc/transform/Erasure.scala:915: error: not found: value lowType
+        !exitingRefchecks(lowType matches highType) && exitingPostErasure(low.tpe =:= high.tpe)
+                          ^
+./src/compiler/scala/tools/nsc/transform/Erasure.scala:917: error: value iterator is not a member of object opc
+      opc.iterator filter sameTypeAfterErasure foreach doubleDefError
+          ^
+./src/compiler/scala/tools/nsc/transform/OverridingPairs.scala:22: error: not found: type RelativeTo
+    lazy val relatively = new RelativeTo(base.thisType)
+                              ^
+./src/compiler/scala/tools/nsc/typechecker/RefChecks.scala:310: error: not found: value low
+        val member   = low
+                       ^
+./src/compiler/scala/tools/nsc/typechecker/RefChecks.scala:311: error: not found: value high
+        val other    = high
+                       ^
+./src/compiler/scala/tools/nsc/typechecker/RefChecks.scala:312: error: not found: value lowType
+        def memberTp = lowType
+                       ^
+./src/compiler/scala/tools/nsc/typechecker/RefChecks.scala:313: error: not found: value highType
+        def otherTp  = highType
+                       ^
+./src/compiler/scala/tools/nsc/typechecker/RefChecks.scala:317: error: value isErroneous is not a member of RefChecks.this.global.SymbolPair
+        def noErrorType = !pair.isErroneous
+                                ^
+./src/compiler/scala/tools/nsc/typechecker/RefChecks.scala:322: error: not found: value high
+          "overriding " + high.fullLocationString + " with " + low.fullLocationString + ":\n" +
+                          ^
+./src/compiler/scala/tools/nsc/typechecker/RefChecks.scala:474: error: value sameKind is not a member of RefChecks.this.global.SymbolPair
+          if (pair.sameKind && lowType.substSym(low.typeParams, high.typeParams) =:= highType) ()
+                   ^
+./src/compiler/scala/tools/nsc/typechecker/RefChecks.scala:480: error: not found: value highInfo
+          if (!(highInfo.bounds containsType lowType)) { // (1.7.1)
+                ^
+./src/compiler/scala/tools/nsc/typechecker/RefChecks.scala:482: error: not found: value highInfo
+            explainTypes(_.bounds containsType _, highInfo, lowType)
+                                                  ^
+./src/compiler/scala/tools/nsc/typechecker/RefChecks.scala:486: error: not found: value high
+          typer.infer.checkKindBounds(high :: Nil, lowType :: Nil, rootType, low.owner) match { // (1.7.2)
+                                      ^
+./src/compiler/scala/tools/nsc/typechecker/RefChecks.scala:496: error: not found: value low
+          if (low.isAliasType) {
+              ^
+./src/compiler/scala/tools/nsc/typechecker/RefChecks.scala:497: error: not found: value low
+            typer.infer.checkKindBounds(low :: Nil, lowType.normalize :: Nil, rootType, low.owner) match {
+                                        ^
+./src/compiler/scala/tools/nsc/typechecker/RefChecks.scala:501: error: not found: value lowType
+                  "The kind of the right-hand side "+lowType.normalize+" of "+low.keyString+" "+
+                                                     ^
+./src/compiler/scala/tools/nsc/typechecker/RefChecks.scala:506: error: not found: value low
+          else if (low.isAbstractType && lowType.isVolatile && !highInfo.bounds.hi.isVolatile)
+                   ^
+./src/compiler/scala/tools/nsc/typechecker/RefChecks.scala:511: error: not found: value lowType
+          if (!overridesTypeInPrefix(lowType, highType, rootType)) { // 8
+                                     ^
+./src/compiler/scala/tools/nsc/typechecker/RefChecks.scala:513: error: not found: value lowType
+            explainTypes(lowType, highType)
+                         ^
+./src/compiler/scala/tools/nsc/typechecker/RefChecks.scala:515: error: not found: value low
+          if (low.isStable && !highType.isVolatile) {
+              ^
+./src/compiler/scala/tools/nsc/typechecker/RefChecks.scala:516: error: not found: value lowType
+            if (lowType.isVolatile)
+                ^
+./src/compiler/scala/tools/nsc/typechecker/RefChecks.scala:518: error: not found: value lowType
+            else lowType.normalize.resultType match {
+                 ^
+./src/compiler/scala/tools/nsc/typechecker/RefChecks.scala:530: error: not found: value high
+          if (high.isAliasType)         checkOverrideAlias()
+              ^
+./src/compiler/scala/tools/nsc/typechecker/RefChecks.scala:531: error: not found: value high
+          else if (high.isAbstractType) checkOverrideAbstract()
+                   ^
+./src/compiler/scala/tools/nsc/typechecker/RefChecks.scala:532: error: not found: value high
+          else if (high.isTerm)         checkOverrideTerm()
+                   ^
+./src/compiler/scala/tools/nsc/typechecker/RefChecks.scala:544: error: type mismatch;
+ found   : RefChecks.this.global.Symbol
+ required: scala.Symbol
+      val opc = new overridingPairs.Cursor(clazz)
+                                           ^
+./src/compiler/scala/tools/nsc/typechecker/RefChecks.scala:545: error: value hasNext is not a member of RefChecks.this.global.overridingPairs.Cursor
+      while (opc.hasNext) {
+                 ^
+./src/compiler/scala/tools/nsc/typechecker/RefChecks.scala:546: error: value high is not a member of RefChecks.this.global.overridingPairs.Cursor
+        if (!opc.high.isClass)
+                 ^
+./src/compiler/scala/tools/nsc/typechecker/RefChecks.scala:547: error: value currentPair is not a member of RefChecks.this.global.overridingPairs.Cursor
+          checkOverride(opc.currentPair)
+                            ^
+./src/compiler/scala/tools/nsc/typechecker/RefChecks.scala:549: error: value next is not a member of RefChecks.this.global.overridingPairs.Cursor
+        opc.next()
+            ^
+50 errors found
+{code}

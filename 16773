@@ -1,0 +1,30 @@
+{code:title=Macros.scala}
+object Macros {
+  object Shmacros {
+    def macro foo(x: Int): Int = x
+  }
+}
+{code}
+
+{code:title=Test.scala}
+object Test extends App {
+  import Macros.Shmacros._
+  println(foo(2))
+}
+{code}
+
+{code}
+C:\Projects\Kepler\sandbox>myke compile "C:\Projects\Kepler\sandbox\Test.scala"
+macroExpand: Macros#12.Shmacros#9529.foo#9531(2)
+looking for macro implementation: Macros#13.Shmacros#9528.foo#9531
+found implementation at: Macros#13.Shmacros#9528.defmacro$foo#9533
+loading implementation class: Macros.Shmacros
+classloader is: Cl#1882910486 of type class scala.tools.nsc.util.ScalaClassLoader$URLClassLoader
+classpath is: [elided for brevity, contains directory with macro]
+implementation class failed to load: java.lang.ClassNotFoundException: Macros.Shmacros
+macro is not overridden: Macros#12.Shmacros#9529.foo#9531
+C:\Projects\Kepler\sandbox\Test.scala:3: error: macro implementation not found: foo
+  println(foo(2))
+             ^
+one error found
+{code}

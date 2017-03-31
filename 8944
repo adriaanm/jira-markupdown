@@ -1,0 +1,8 @@
+To my knowledge this is the expected behavior. Declaring the type as "o.x.I forSome { val o: O }" ties the type to some specific unknown "val o: O", and then you try to assign (new O).v to it, but this "new O" is not the specific unknown o. When you allow the type to be inferred, the compiler infers the type of the O you created, so they match.
+
+I'm not 100% sure why the type alias works, but I offer as possibilities:
+
+1) It's a bug (and should also fail)
+2) Since it doesn't directly expose 'o' in its type it doesn't get handcuffed to "new O" in the same way
+
+I'll leave it open for someone more confident about things.

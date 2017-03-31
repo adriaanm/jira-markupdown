@@ -1,0 +1,16 @@
+Of course it is loosely related, because this issue (which is not a bug but a feature request!) and the two bugs linked both involve default arguments. But this:
+
+{code}
+    object Foo {
+      object X { def unapply(x : Int)(y: Int) = Some((2,2)) }
+      42 match { case _ X _ => () }
+    }
+{code}
+
+has nothing to do with allowing named and default arguments in pattern match cases, unless I am missing something, and I'm trying hard to think of how they would be related, or how this feature request relies on those bugs? In the other example
+
+{code}
+    object X { def unapply(x : Int)(y : Option[Int] = None) = None }
+{code}
+
+the point seems to be allowing to match using an {{unapply}} method which has multiple parameter lists (explicit or implicit) for which defaults exists. How would fixing those bugs produce correct/desired behaviour in this case?

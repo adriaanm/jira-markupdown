@@ -1,0 +1,35 @@
+I have seen a number of implicit resolution issues that have to do with declaration order. But they all seem to occur in fairly esoteric examples. I have what I think is a very normal example:
+
+{code}
+class B extends A { implicitly[Int] }
+class A { implicit val i = 3 }
+
+error: could not find implicit value for parameter e: Int
+       class B extends A { implicitly[Int] }
+{code}
+
+It works in the reverse order:
+
+{code}
+class A { implicit val i = 3 }
+class B extends A { implicitly[Int] }
+{code}
+
+
+----
+
+A funny thing is, if you try to work around it by bringing the implicit into scope manually, you get an error because you have two implicits:
+
+{code}
+class B extends A { val x = { implicit val j = i; implicitly[Int] } }
+class A { implicit val i = 3 }
+
+error: ambiguous implicit values:
+ both value i in class A of type => Int
+ and value j of type Int
+ match expected type Int
+       class B extends A { val x = { implicit val j = i; implicitly[Int] } }
+                                                                   ^
+{code}
+
+But if you delete the {{implicit val j = i}} line then it cannot find the implicit.

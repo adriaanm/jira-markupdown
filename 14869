@@ -1,0 +1,23 @@
+With version 2.7.7 of scala, the following code does not call paint or paintComponent. If '!FlowPanel' is replaced with '!BoxPanel(Orientation.Vertical)', then paint is called. 
+
+{code}
+import swing._
+import java.awt._
+object Test extends SimpleGUIApplication {
+  override def top = new MainFrame {    
+    title = "Test"
+    contents = new FlowPanel {
+      background = Color.green
+      override def paint(g:Graphics):Unit={
+        println("paint!")
+        super.paint(g)
+      }
+      override def paintComponent(g:Graphics):Unit={
+        println("paintComponent")
+        super.paintComponent(g)
+      }
+    }
+    minimumSize = new Dimension(300,300)
+  }
+}  
+{code}

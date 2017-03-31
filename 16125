@@ -1,0 +1,41 @@
+Is test-opt no longer a jenkins tested target? On my machine, this never terminates, including with 2.9.0 final.
+{code}
+  scalac -optimise ./test/files/run/lisp.scala 
+{code}
+Here's where it stops producing output under -Ylog:all:
+{code}
+[log parser] parsing ScalaRunTime$$$$anonfun$$inner$$1$$5.class
+[log inliner] Inlining scala.runtime.ScalaRunTime.inlinedEquals in LispAny.asBoolean at pos: 9620
+[log inliner] Analyzing LispAny.asBoolean count 0 with 15 blocks
+[log inliner]  LispAny.asBoolean blocks before inlining: 4 (13) after: 13 (44)
+[log inliner] Analyzing LispAny.normalize count 0 with 105 blocks
+{code}
+And if you wait long enough:
+{code}
+Exception in thread "main" java.lang.OutOfMemoryError: Java heap space
+	at scala.tools.nsc.util.HashSet.growTable(HashSet.scala:98)
+	at scala.tools.nsc.util.HashSet.findEntryOrUpdate(HashSet.scala:40)
+	at scala.tools.nsc.symtab.Types$$class.scala$$tools$$nsc$$symtab$$Types$$$$unique(Types.scala:2891)
+	at scala.tools.nsc.symtab.Types$$TypeRef$$.apply(Types.scala:1948)
+	at scala.tools.nsc.symtab.Types$$class.typeRef(Types.scala:2677)
+	at scala.tools.nsc.symtab.SymbolTable.typeRef(SymbolTable.scala:13)
+	at scala.tools.nsc.symtab.Types$$SubstSymMap.toType(Types.scala:3482)
+	at scala.tools.nsc.symtab.Types$$SubstSymMap.toType(Types.scala:3480)
+	at scala.tools.nsc.symtab.Types$$SubstMap.subst(Types.scala:3435)
+	at scala.tools.nsc.symtab.Types$$SubstMap.apply(Types.scala:3470)
+{code}
+A look at the method it is analyzing might tempt one to implicate the pattern matcher, and one might be right, but I'm attaching -Xprint:expl, which looks well normal range.
+{code}
+def normalize(x: Data): Data = x match {
+  case CONS(SYM("def"),
+         CONS(CONS(SYM(name), args), CONS(body, CONS(expr, NIL())))) =>
+    normalize(list(SYM("def"),
+      SYM(name), list(SYM("lambda"), args, body), expr))
+  case CONS(SYM("cond"), CONS(CONS(SYM("else"), CONS(expr, NIL())),NIL())) =>
+    normalize(expr)
+  case CONS(SYM("cond"), CONS(CONS(test, CONS(expr, NIL())), rest)) =>
+    normalize(list(SYM("if"), test, expr, CONS(SYM("cond"), rest)))
+  case CONS(h, t) => CONS(normalize(h), normalize(t))
+  case _ => x
+}
+{code}

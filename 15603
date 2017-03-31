@@ -1,0 +1,62 @@
+While verifying the bytecode emitted by Scala.NET I noticed a "final lazy val" field being written outside a constructor, something the .NET VM doesn't like. 
+
+In package scala.util.regexp there's the following: 
+
+{code}
+abstract class WordExp extends Base {
+
+  abstract class Label
+
+  type _regexpT <: RegExp
+  type _labelT <: Label
+
+  case class Letter(a: _labelT) extends RegExp {
+    final lazy val isNullable = false
+    var pos = -1
+  }
+
+  case class Wildcard() extends RegExp {
+    final lazy val isNullable = false
+    var pos = -1
+  }
+}
+{code}
+
+
+which gets transformed into: 
+
+{code}
+
+[[syntax trees at end of cleanup]]// Scala source: WordExp.scala
+package scala.util.regexp {
+  abstract class WordExp extends scala.util.regexp.Base with ScalaObject {
+    . . . 
+    @serializable case class Wildcard extends scala.util.regexp.Base#RegExp with ScalaObject with Product {
+
+      @volatile protected var bitmap$$0: Int = 0;
+
+      final lazy private[this] var isNullable: Boolean = _; /*- it's a final field */
+
+      final <stable> <accessor> lazy def isNullable(): Boolean = {
+        if (Wildcard.this.bitmap$$0.&(1).==(0))
+          {
+            Wildcard.this.synchronized({
+              if (Wildcard.this.bitmap$$0.&(1).==(0))
+                {
+                  Wildcard.this.isNullable = false; /*- yet it's written outside a constructor. 
+                                                        The CLR doesn't like this. */
+                  Wildcard.this.bitmap$$0 = Wildcard.this.bitmap$$0.|(1);
+                  ()
+                };
+              scala.runtime.BoxedUnit.UNIT
+            });
+            ()
+          };
+        Wildcard.this.isNullable
+      };
+    . . . 
+{code}
+
+
+
+Is this a bug? 

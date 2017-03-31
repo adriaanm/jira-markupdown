@@ -1,0 +1,14 @@
+Here's another test:
+{code}
+scala> object O { def foo(x: String) = x; def foo(x: Int) = x }
+defined module O
+
+scala> O.foo _
+<console>:9: error: ambiguous reference to overloaded definition,
+both method foo in object O of type (x: Int)Int
+and  method foo in object O of type (x: String)String
+match expected type ?
+              O.foo _
+                ^
+{code}
+I believe everything is as expected. It will do overloading resolution and report an error if ambiguous. Overloading resolution does pick nullary methods over methods with parameters, so that explains the behavior in the jetbrains list.

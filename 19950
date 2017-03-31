@@ -1,0 +1,38 @@
+Having multiple implicit conversions can lead to duplicate members in a template. This affects `scala.Array` which has its members duplicated 10 times.
+
+Here's a minimized example:
+
+{code}
+$ cat A.scala 
+package a
+
+trait Foo[S] {
+  def foo(t: S): Int = 123
+}
+
+trait Boo[T]
+
+object Boo {
+  implicit class BooCharIsFoo(boo: Boo[Char]) extends Foo[Char]
+  implicit class BooLongIsFoo(boo: Boo[Long]) extends Foo[Long]
+}
+{code}
+
+If you look at the result of running:
+{code}
+$ scaladoc -implicits A.scala
+{code}
+
+You see that the member `foo` in `trait Boo` is duplicated:
+!double-def.png!
+
+The reason is that it's added through the different conversions (`BooCharIsFoo` and `BooLongIsFoo`). 
+
+Now, if the signatures are identical, we could fold the "Implicit Member" information:
+{code}
+This member can be added in several ways:
+  * by the implicit conversion X if ...
+  * by the implicit conversion Y if ...
+{code}
+
+Now, what if the signatures are different, as is the case here? I don't know what to do. Any suggestions?

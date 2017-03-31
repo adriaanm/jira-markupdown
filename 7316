@@ -1,0 +1,19 @@
+I can't reproduce the small testcase on trunk, but I managed to reproduce the bug with Function1:
+
+{code}
+$ git log --oneline -n 5
+3525296 Oops, all the preceding meant SI-5541.
+777dbd7 Revert attempt to limit private types in lubs.
+f708b87 Overcame trait/protected/java limitation.
+fb87f2d Test case closes SI-4777.
+61d34ed An old patch on pattern matcher exhaustivity.
+$ ant quick.clean; ant
+[...]
+$ cat a.scala
+trait F[@specialized(AnyRef) R] {
+  def f(): R
+  def g() = () => f()
+}
+$ rm -rf out && mkdir out && scalac -cp out -d out ./a.scala && scalac -cp out -d out ./a.scala
+$ # it ran fine
+{code}

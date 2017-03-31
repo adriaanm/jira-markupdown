@@ -1,0 +1,27 @@
+Here's a tighter look at this. Relevant spec extracts inline:
+
+{code}
+object p {
+  trait A {
+    private val privateMember = 1
+    private[p] val qualifiedPrivateMember = 1
+  }
+
+  // The private modifier can be used with any definition or declaration in a template.
+  // Such members can be accessed only from within the directly enclosing template and
+  // its companion module or companion class. They are not inherited by subclasses and
+  // they may not override definitions in parent classes.
+  def usePrivate(b: Mix) =
+    b.privateMember // not a member
+
+  // The modifier can be qualified with an identifier C (e.g. private[C]) that must
+  // denote a class or package enclosing the definition. Members labeled with such a
+  // modifier are accessible respectively only from code inside the package C or only
+  // from code inside the class C and its companion module.
+
+  def useQualifiedPrivate(b: Mix) =
+    b.qualifiedPrivateMember // allowed, but should it be?
+}
+
+trait Mix extends p.A
+{code}

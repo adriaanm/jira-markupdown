@@ -1,0 +1,24 @@
+Nevermind, I see you are using the undocumented -Ywarn-dead-code option.  You shouldn't really expect any reliability from -Y options.  However, this particular instance appears to have something to do with the fact that 
+{code}
+def x = synchronized { throw new Exception }
+{code}
+is translated into 
+{code}
+def x = this.synchronized[Nothing](throw new Exception)
+{code}
+Further testing reveals it doesn't really have anything to do with synchronized.  The following reports no error:
+{code}
+class Foo {
+  def y(arg:Any) = println("foo")
+  def z = this.y(throw new Exception)
+}
+{code}
+while the following does:
+{code}
+class Foo {
+  def y[T](arg:T) = println("foo")
+  def z = this.y(throw new Exception)
+}
+{code}
+
+

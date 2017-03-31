@@ -1,0 +1,13 @@
+You probably shouldn't be using straight val's in Test (at least not in the trait).
+
+try this in the repl:
+
+trait Test {
+ val x = {println("x"); new Test { override def toString = "trait Test" }}
+}
+object Test {
+ val y = {println("y"); new Test { override def toString = "object Test" }}
+}
+Test.y
+
+turning them into lazy vals will fix this

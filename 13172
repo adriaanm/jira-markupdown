@@ -1,0 +1,49 @@
+The following C# code
+{code}
+using System;
+public class Client {
+    public static void Main(string[] args) {
+        DateTime nowTime = DateTime.UtcNow;
+        DateTime baseTime = new DateTime(1970, 1, 1, 0, 0, 0);
+        Int64 x = (nowTime.Ticks - baseTime.Ticks) / 10000;
+        Console.WriteLine("test: "+x);
+    }
+}
+{code}
+prints out the current time in millis:
+{code}
+﻿test: 1204215032018
+{code}
+while the Scala program below
+{code}
+object test extends Application {
+  val nowTime = System.DateTime.UtcNow  
+  val baseTime = new System.DateTime(1970, 1, 1, 0, 0, 0)
+  val x = (nowTime.Ticks - baseTime.Ticks) / 10000
+  println("test: "+x)
+}
+{code}
+crashes in the type checker (wrong input from CLR type parser ?):
+{code}
+exception when typing test.this.nowTime().Ticks
+value Ticks is not a member of System.Object in file test.scala
+scala.tools.nsc.symtab.Types$$TypeError: value Ticks is not a member of System.Object
+    at scala.tools.nsc.typechecker.Contexts$$Context.error(Contexts.scala:345)
+    at scala.tools.nsc.typechecker.Infer$$Inferencer.error(Infer.scala:251)
+    at scala.tools.nsc.typechecker.Typers$$Typer.typedSelect$$1(Typers.scala:2638)
+    at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:3086)
+    at scala.tools.nsc.transform.Erasure$$Eraser.typed1(Erasure.scala:504)
+    at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3167)
+    at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$typedApply$$1$$1.apply(Typers.scala:2465)
+    at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$typedApply$$1$$1.apply(Typers.scala:2465)
+    at scala.tools.nsc.typechecker.Typers$$Typer.silent(Typers.scala:561)
+    at scala.tools.nsc.typechecker.Typers$$Typer.typedApply$$1(Typers.scala:2465)
+    at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:3064)
+    at scala.tools.nsc.transform.Erasure$$Eraser.typed1(Erasure.scala:504)
+    at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3167)
+    at scala.tools.nsc.typechecker.Typers$$Typer.typedQualifier(Typers.scala:3224)
+    at scala.tools.nsc.transform.Erasure$$Eraser.adaptMember(Erasure.scala:468)
+    at scala.tools.nsc.transform.Erasure$$Eraser.typed1(Erasure.scala:504)
+    at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3167)
+    [..]
+{code}

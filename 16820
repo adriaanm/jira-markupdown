@@ -1,0 +1,14 @@
+It is surprising that we have so little code coverage for inferExprAlternative. This breaks:
+
+{code}
+class Base[T]
+
+object Foo {
+  def apply[T](a: Int): Base[T] = new Base[T]
+  def apply[T](z: String): Base[T] = new Base[T]
+}
+
+object Test {
+  def test[T]: Int = Foo[T]
+}
+{code}

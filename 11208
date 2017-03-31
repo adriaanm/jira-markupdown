@@ -1,0 +1,31 @@
+Very interesting exception occured before just  exception described in issue:
+{noformat}
+/Users/wedens/Documents/Projects/vim-scala-completion/src/main/scala/vim/scalacompletion/Projects.scala:12: error: illegal cyclic reference involving object Projects
+  case class ProjectInfo(configPath: Path, projectPath: Path, projectActor: ActorRef) {
+             ^
+{noformat}
+code of this object:
+{code:scala}
+object Projects {
+  case class ProjectInfo(configPath: Path, projectPath: Path, projectActor: ActorRef) {
+    def contains(filePath: Path) = filePath.startsWith(projectPath)
+  }
+
+  case class Create(configPath: String)
+  case class Restarted(projectActor: ActorRef)
+  case class GetProjectFor(filePath: String)
+}
+{code}
+full source: https://github.com/wedens/vim-scala-completion/blob/7412613aa8e0fc29e1bf039224285a49b5b10e3c/src/main/scala/vim/scalacompletion/Projects.scala
+
+I attached full stacktrace as _exception2.txt_. Will try to run it with -Ytyper-debug and extract some useful output.
+
+upd: this exception occurs every time before FatalError!
+{noformat}
+/Users/wedens/Documents/Projects/vim-scala-completion/src/main/scala/vim/scalacompletion/filesystem/FileSystemEvents.scala:10: error: illegal cyclic reference involving object FileSystemEvents
+  case class Created(override val fileOrDirectory: File) extends FileSystemEvent
+             ^
+error: no progress in completing object FileSystemEvents: <?>
+[/Users/wedens/Documents/Projects/vim-scala-completion/src/main/scala/vim/scalacompletion/filesystem/FileSystemEvents.scala]: exception during background compile: scala.reflect.internal.FatalError: no progress in completing object FileSystemEvents: <?>
+scala.reflect.internal.FatalError: no progress in completing object FileSystemEvents: <?>
+{noformat}

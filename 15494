@@ -1,0 +1,49 @@
+On the theory java 7 will come out someday, we should have a strategy in mind for dealing with it.  As things stand it looks to me like we would have to fork java6 and java7 versions.  This is due to the generification of certain classes such as javax.swing.Jlist:
+
+[http://java.sun.com/javase/6/docs/api/javax/swing/JList.html java 6 JList]
+
+[http://download.java.net/jdk7/docs/api/javax/swing/JList.html java 7 JList<E>]
+
+Since SI-2970 was closed wontfix I take it improving support for raw types is not on the agenda.  I spent some time tweaking trunk toward compiling but any change which leads toward success on java 7 invariably leads toward failure on java 6.  This may be a bullet we just have to take, but I'm opening this so everyone knows the gun has been fired.
+
+The outcome of compiling trunk scala.swing against java7:
+{code}
+[scalacfork] /scratch/trunk4/src/swing/scala/swing/ComboBox.scala:134: error: type mismatch;
+[scalacfork]  found   : AnyRef
+[scalacfork]  required: E
+[scalacfork]       def getElementAt(n: Int) = items(n).asInstanceOf[AnyRef]
+[scalacfork]                                                       ^
+[scalacfork] /scratch/trunk4/src/swing/scala/swing/ListView.scala:32: error: trait ListCellRenderer takes type parameters
+[scalacfork]     def wrap[A](r: ListCellRenderer): Renderer[A] = new Wrapped[A](r)
+[scalacfork]                    ^
+[scalacfork] /scratch/trunk4/src/swing/scala/swing/ListView.scala:72: error: trait ListCellRenderer takes type parameters
+[scalacfork]     def peer: ListCellRenderer = new ListCellRenderer {
+[scalacfork]               ^
+[scalacfork] /scratch/trunk4/src/swing/scala/swing/ListView.scala:27: error: class JList takes type parameters
+[scalacfork]   def wrap[A](c: JList) = new ListView[A] {
+[scalacfork]                  ^
+[scalacfork] /scratch/trunk4/src/swing/scala/swing/ListView.scala:145: error: class JList takes type parameters
+[scalacfork]   override lazy val peer: JList = new JList with SuperMixin
+[scalacfork]                           ^
+[scalacfork] /scratch/trunk4/src/swing/scala/swing/ListView.scala:37: error: trait ListCellRenderer takes type parameters
+[scalacfork]   	class Wrapped[A](override val peer: ListCellRenderer) extends Renderer[A] {
+[scalacfork]                                             ^
+[scalacfork] /scratch/trunk4/src/swing/scala/swing/ListView.scala:72: error: trait ListCellRenderer takes type parameters
+[scalacfork]     def peer: ListCellRenderer = new ListCellRenderer {
+[scalacfork]                                      ^
+[scalacfork] /scratch/trunk4/src/swing/scala/swing/ListView.scala:73: error: class JList takes type parameters
+[scalacfork]       def getListCellRendererComponent(list: JList, a: Any, index: Int, isSelected: Boolean, focused: Boolean) = 
+[scalacfork]                                              ^
+[scalacfork] /scratch/trunk4/src/swing/scala/swing/ListView.scala:126: error: trait ListCellRenderer takes type parameters
+[scalacfork]     override lazy val peer: ListCellRenderer = new DefaultListCellRenderer
+[scalacfork]                             ^
+[scalacfork] /scratch/trunk4/src/swing/scala/swing/ListView.scala:153: error: type mismatch;
+[scalacfork]  found   : AnyRef
+[scalacfork]  required: Nothing
+[scalacfork]     def getElementAt(n: Int) = items(n).asInstanceOf[AnyRef]
+[scalacfork]                                                     ^
+[scalacfork] /scratch/trunk4/src/swing/scala/swing/ListView.scala:195: error: too many arguments for constructor Object: ()java.lang.Object
+[scalacfork]     object indices extends Indices(peer.getSelectedIndices) {
+[scalacfork]                    ^
+[scalacfork] 11 errors found
+{code}

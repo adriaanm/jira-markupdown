@@ -1,0 +1,31 @@
+The basic idea was that universal traits will undergo the same transformation as value classes:
+
+
+{code}
+trait StringVal extends Any { def value: String ; final override def toString = value }
+{code}
+
+becomes
+
+{code}
+trait StringVal extends Any { def value: String ; final override def toString = StringVal$.toString_extension(this)  }
+object StringVal { final override def toString_extension[T <: StringVal](t: T): String = t.value }
+{code}
+
+This would allow to pass a value class to the value class to the extension method.
+Then, I'd have a run of specialization(likely linker-driven on-demand), that would rewrite the code to take a StringVal. 
+{code}
+object StringVal { // specialized
+  final override def toString_extension[T <: StringVal](t: T): String = t.value 
+  final override def toString_extension_spec$1[T = Foo](t: T): String = t.value 
+}
+{code}
+
+This would mean that the normal boxing elimination of value classes would kick-in. 
+
+{code}
+object StringVal {  // erased
+  final override def toString_extension(t: StringVal): String = t.value 
+  final override def toString_extension_spec$1(t: String): String = Foo$.value_extension(t)
+}
+{code}

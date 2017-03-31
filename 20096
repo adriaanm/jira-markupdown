@@ -1,0 +1,50 @@
+When preparing twitter util for cross-publishing to scala 2.12, we found that a method that we had previously used without having to specify types now required type annotations.
+
+The diff is here:
+
+https://github.com/twitter/util/pull/163/files
+
+The method is Witness#apply, which is overloaded.
+
+https://github.com/twitter/util/blob/develop/util-core/src/main/scala/com/twitter/util/Event.scala#L416-L442
+
+We did a little more thinking about what might be going on here:
+
+https://github.com/twitter/util/issues/162#issuecomment-220800665
+
+We were able to construct a reproduction case which succeeds on 2.11, but fails on 2.12.
+
+{code}
+trait Updatable[T] {
+  def update(t: T): Unit
+}
+
+object A {
+  def apply[T](f: T => Unit): T => Unit = f
+
+  def apply[T](u: Updatable[T]): T => Unit = { t: T =>
+    u() = t
+  }
+}
+
+object C {
+  val x: Any => Unit = A(println(_)) // fails
+  val y: Int => Unit = A({ num => num + 2 }) // fails
+}
+{code}
+
+The output on 2.12 is:
+
+{code}
+[error] /Users/moses/projects/reproduce/src/main/scala/com/mosesn/reproduce/Driver.scala:14: missing parameter type for expanded function ((x$1: <error>) => println(x$1))
+[error]   val x: Any => Unit = A(println(_)) // fails
+[error]                                  ^
+[error] /Users/moses/projects/reproduce/src/main/scala/com/mosesn/reproduce/Driver.scala:15: missing parameter type
+[error]   val y: Int => Unit = A({ num => num + 2 }) // fails
+[error]                            ^
+[error] two errors found
+[error] (compile:compile) Compilation failed
+[error] Total time: 4 s, completed May 29, 2016 8:06:20 AM
+{code}
+
+Under 2.11, it compiles successfully.

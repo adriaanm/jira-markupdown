@@ -1,0 +1,33 @@
+Example:
+
+{noformat}
+sealed trait Foo {
+    val index: Int
+}
+
+case class BasicFoo(index: Int) extends Foo
+
+class NonExhaustive {
+    case class FancyFoo(index: Int) extends Foo
+
+    def convert(foos: Vector[Foo]): Vector[Int] = {
+        foos.foldLeft(Vector.empty[Int]) {
+            case (acc, basic: BasicFoo) => acc :+ basic.index
+            case (acc, fancy: FancyFoo) => acc :+ fancy.index
+        }
+    }
+}
+{noformat}
+
+Output:
+
+{noformat}
+NonExhaustive.scala:15: match may not be exhaustive.
+It would fail on the following input: (_, FancyFoo(_))
+foos.foldLeft(Vector.empty[Int]) {
+                                 ^
+{noformat}
+
+This doesn't make sense, because the code explicitly matches that pattern.
+
+If I move the definition of {{FancyFoo}} out of {{NonExhaustive}}, the warning goes away.

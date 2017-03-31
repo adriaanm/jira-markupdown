@@ -1,0 +1,29 @@
+I found similar reports to this elsewhere, but they seemed to be marked as resolved in an older version of Scala, so this seems to be a new issue.
+
+{noformat}
+$ scala -Ywarn-dead-code
+Welcome to Scala version 2.10.0-M7 (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_35).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> def e(msg: String) = new Exception(msg)
+e: (msg: String)Exception
+
+scala> def a(b: Boolean) = {
+     |   b match {
+     |     case true => throw e("true")
+     |     case false => throw e("false")
+     |   }
+     | }
+<console>:10: warning: dead code following this construct
+           case true => throw e("true")
+                        ^
+<console>:11: warning: dead code following this construct
+           case false => throw e("false")
+                         ^
+a: (b: Boolean)Nothing
+{noformat}
+
+This doesn't happen if I replace {{e}} with {{new Exception}}.
+
+As an aside, is {{-Ywarn-dead-code}} going to be enabled by default along with {{-Xlint}} in 2.10 final?  I saw some mention by Paul Phillips in another ticket of a branch that got rid of it, but that branch no longer exists and none of the tickets that were referring to it are closed yet, so I've got no idea what the status of that is.  The warning is quite helpful, helped me find lots of dead code in Play, but there are lots of spurious warnings, I don't know if I should be reporting them or ignoring them... it can be a lot of effort to try and replicate some of the complex cases in the repl so that I can create a good bug report.

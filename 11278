@@ -1,0 +1,21 @@
+Isn't this the same as String.format with primitives?
+
+On the linked ticket, I'll contribute the old error message (from 2.9?), which said verbosely that the conversion isn't automatic, but you can "safely use 1.asInstanceOf Integer (jira munches brackets)" or whatever the wording was.  There might be better words, too.
+
+The current "failed to apply" message is somewhat obscure.
+
+{code}
+scala> foo.f(2, "a", "b")  // java methods as in the ticket
+res0: String = a&b&
+
+scala> foo.f(2, "a", 1)
+<console>:12: error: overloaded method value f with alternatives:
+  (x$1: Int,x$2: String*)String <and>
+  (x$1: Int,x$2: Object*)String
+ cannot be applied to (Int, String, Int)
+              foo.f(2, "a", 1)
+                  ^
+
+scala> foo.f(2, "a", 1: Integer)
+res2: String = a/1/
+{code}

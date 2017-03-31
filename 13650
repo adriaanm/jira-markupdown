@@ -1,0 +1,28 @@
+In 2.7.1 final
+
+{code}
+{ object Bar ; Bar }
+{code}
+causes type error
+{code}
+<console>:4: error: type mismatch;
+ found   : Bar.type(in object $$iw) where type Bar.type(in object $$iw) <: Bar with Singleton
+ required: Bar.type(in value res0) forSome { type Bar.type(in value res0) <: Bar(in value res0) with Singleton; type Bar(in value res0) <: java.lang.Object with ScalaObject }
+       val res0 = 
+{code}
+
+Whereas the somewhat similar code 
+{code}
+{class Bar; new Bar()}
+{code}
+results in
+{code}
+res1: java.lang.Object with ScalaObject = Bar$$1@6f9f88
+{code}
+The first example should probably result in a ScalaObject with Singleton or similar.  And, in fact, explicitly typing the block solves the problem
+{code}
+{object Bar; Bar}:ScalaObject with Singleton
+res2: ScalaObject with Singleton = Bar$$2$$@189b9bd
+{code}
+
+

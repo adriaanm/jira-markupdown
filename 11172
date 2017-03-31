@@ -1,0 +1,37 @@
+I think you need parens around the match.
+
+{code}
+scala> var s = ""
+s: String = ""
+
+scala> s += 2 match { case 1 => "one" case 2 => "two" }
+<console>:9: error: type mismatch;
+ found   : Int(1)
+ required: Unit
+              s += 2 match { case 1 => "one" case 2 => "two" }
+                                  ^
+<console>:9: error: type mismatch;
+ found   : Int(2)
+ required: Unit
+              s += 2 match { case 1 => "one" case 2 => "two" }
+                                                  ^
+
+scala> s += (2 match { case 1 => "one" case 2 => "two" })
+
+scala> s
+res8: String = two
+
+scala> s = s + 2 match { case 1 => "one" case 2 => "two" }
+<console>:8: error: type mismatch;
+ found   : Int(1)
+ required: String
+       s = s + 2 match { case 1 => "one" case 2 => "two" }
+                              ^
+<console>:8: error: type mismatch;
+ found   : Int(2)
+ required: String
+       s = s + 2 match { case 1 => "one" case 2 => "two" }
+                                              ^
+
+
+{code}

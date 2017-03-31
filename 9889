@@ -1,0 +1,28 @@
+It seems likely that this other example has the same underlying cause:
+
+{code}
+import scala.reflect.macros._
+
+trait BuilderResult[C <: Context with Singleton] {
+  val ctx: C
+  def aTree: ctx.universe.Tree
+}
+
+object Impl {
+  def make(c: Context): BuilderResult[c.type] = new BuilderResult[c.type] {
+    val ctx: c.type = c
+    val aTree /*: c.universe.Tree*/ = c.universe.TypeApply(???, ???)
+  }
+}
+{code}
+
+The error:
+{code}
+A.scala:11: error: overriding method aTree in trait BuilderResult of type => this.ctx.universe.Tree;
+ value aTree has a volatile type; cannot override a member with non-volatile type
+    val aTree /*: ctx.universe.Tree*/ = c.universe.TypeApply(???, ???)
+        ^
+one error found
+{code}
+
+Uncommenting the explicit type makes the error go away, so I assume it is this same inference issue and not related to the volatile override checking change in fada1ef6b315326ac0329d9e78951cfc95ad0eb0.

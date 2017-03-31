@@ -1,0 +1,15 @@
+Echoing my comment in SI-2252 in response to jstrachan:
+I think it would be simpler to eliminate the annotation replication from fields onto generated functions entirely. If the developer requires an annotation on the function instead of the field, he would omit the annotation from said field, and explicitly declare one or both accessor/mutator functions with the desired annotations upon them. For example, we go from:
+{code}
+  @Foo
+  var bar: String = _
+{code}
+to defining a (Scala convention) mutator on a virtual property:
+{code}
+  var barInternal: String = _
+
+  @Foo
+  def bar_(b: String) = {
+    barInternal = bar
+  }
+{code}

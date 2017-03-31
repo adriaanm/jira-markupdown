@@ -1,0 +1,41 @@
+Given the following code:
+
+{code}
+    object SomeOddThing extends App {
+      val c: C = new C
+      val a: A = c
+      val b: B = c
+      // these will all print None
+      println(a.x)
+      println(b.x)
+      println(c.x)
+    }
+
+    abstract class A {
+      def x: Option[String] = None
+    }
+
+    abstract class B extends A {
+      override def x: Option[String] = Some("xyz")
+    }
+
+    // this shouldn't compile!
+    class C extends B {
+      // x now has type None.type instead of Option[String]
+      override def x = None
+    }
+
+    trait T {
+      this: B =>
+      override def x = Some("ttt")
+    }
+
+    // and this won't compile with the following error
+    // error: overriding method x in class C of type => None.type;
+    //  method x in trait T of type => Some[String] has incompatible type
+    // class D extends C with T {}
+    //       ^
+    class D extends C with T {}
+{code}
+
+The compiler seems to infer the type of C.x as None.type so D doesn't compile. 

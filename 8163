@@ -1,0 +1,52 @@
+Decoupled the test from Try.
+
+{code}
+  ~/code/scala/test/files/run/t6188 cat t6188_1.scala 
+package t6188
+
+object Bug {
+  def withFilter[U](f: Any => Any): Unit =
+    try f(0)
+    catch {
+      case e: Throwable =>
+    }
+}
+  ~/code/scala/test/files/run/t6188 cat t6188_2.scala 
+package t6188
+
+object Test {
+  def main(args: Array[String]) {
+    val e = new Exception("this is an exception")
+    Bug.withFilter((x) => throw e)
+  }
+}
+
+  ~/code/scala/test/files/run/t6188 export SB="$HOME/code/scala/build/quick/bin" &&  $SB/scalac -optimize t6188_1.scala && $SB/scalac -optimize t6188_2.scala && $SB/scala t6188.Test
+java.lang.Exception: this is an exception
+	at t6188.Test$.main(t6188_2.scala:5)
+{code}
+
+The method name must be one of the monadic names, presumably to trigger {{Inliners#isMonadicMethod}}. 
+
+Separate compilation is also required.
+
+{noformat}
+Scala Version  Result
+---------------------
+2.8.0          OK
+2.9.0          Compiler Crash ("java.lang.Error: Open block: 4 <dirtypreds> <dirtysuccs>")          
+2.9.1          As reported in this ticket.
+2.10.0-M1+     As reported in this ticket.
+{noformat}
+
+{noformat}
+[log inliner] Analyzing t6188.Test.main count 1 with 7 blocks
+[log inliner] shouldInline(t6188.Test$$anonfun$main$1.apply) score: 3
+[log inliner] Inlining t6188.Test$$anonfun$main$1.apply in t6188.Test.main at pos: 114
+[log inliner] Analyzing t6188.Test.main count 1 with 9 blocks
+[log inliner] shouldInline(t6188.Test$$anonfun$main$1.apply) score: 3
+[log inliner] Inlining t6188.Test$$anonfun$main$1.apply in t6188.Test.main at pos: 114
+[log inliner] Analyzing t6188.Test.main count 1 with 11 blocks
+[log inliner] !!! Found open but empty block while inlining t6188.Test.main: removing from block list.
+[log inliner]  t6188.Test.main blocks before inlining: 1 (17) after: 3 (36)
+{noformat}

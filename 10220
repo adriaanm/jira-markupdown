@@ -1,0 +1,33 @@
+Back to the original report, here's another relevant piece of code:
+
+{code}
+  object packageObjects extends {
+    val global: Analyzer.this.global.type = Analyzer.this.global
+  } with SubComponent {
+    val phaseName = "packageobjects"
+    val runsAfter = List[String]()
+    val runsRightAfter= Some("namer")
+
+    def newPhase(_prev: Phase): StdPhase = new StdPhase(_prev) {
+      override val checkable = false
+      import global._
+
+      val openPackageObjectsTraverser = new Traverser {
+        override def traverse(tree: Tree): Unit = tree match {
+          case ModuleDef(_, _, _) =>
+            if (tree.symbol.name == nme.PACKAGEkw) {
+              openPackageModule(tree.symbol, tree.symbol.owner)
+            }
+          case ClassDef(_, _, _, _) => () // make it fast
+          case _ => super.traverse(tree)
+        }
+      }
+
+      def apply(unit: CompilationUnit) {
+        openPackageObjectsTraverser(unit.body)
+      }
+    }
+  }
+{code}
+
+Does this run as per normal in the presentation compiler? Or, might the compilation unit containing the package object be evade from this phase, only to be later loaded by the presentations compiler's BrowsingLoader?

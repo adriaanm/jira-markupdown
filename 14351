@@ -1,0 +1,29 @@
+The following code crashes the compiler
+{code}
+class Foo(x: Int)
+class Bar extends Foo(1)
+
+trait A {
+  def foo[T <: Foo]
+}
+class B extends A {
+  def foo[Bar] { println("B.foo[Bar]") }
+}
+object test {
+  val x = new B
+  val y = new A {
+    def foo[Bar] { println("A.foo[Bar]") }
+  }
+  def main(args: Array[String]) {
+    x.foo // ok
+    y.foo // java.lang.AssertionError: assertion failed (Erasure.scala:441 in r18338))
+  }
+}
+{code}
+with all versions of Scala newer than 2.6.0 !
+
+With the Scala compiler version 2.6.0, it prints out:
+{code}
+B.foo[Bar]
+A.foo[Bar]
+{code}

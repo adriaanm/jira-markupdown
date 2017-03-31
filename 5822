@@ -1,0 +1,38 @@
+
+Sorry for the "far from minimal" initial reproduction case, here is a cleaner one.
+The compiler says that conv3 and conv4 are applicable to resolve the actual param of bFunc.
+My first interrogation is why conv3 is considered as applicable.
+To further convince myself that conv3 is not applicable, if I commented out conv4,
+then the compiler finds no applicable conversions at all, not even conv3 that 
+was considered a candidate implicit conv.
+
+Another thing that I can't explain that commenting out conv5 makes the compiler happy
+
+{code}
+object ImplicitConvAmbiguity {
+
+  class N[T]
+  class NE[T] extends N[T]
+  class NN[T] extends N[T]
+  class AA[A1,A2]
+  class BB[A]    
+
+  implicit def conv1(i: Option[Float]) = new NE[Option[Float]]
+  implicit def conv2(i: Int) = new NE[Int]
+  implicit def conv3(op: AA[Byte,Byte]) = new N[Byte]
+  implicit def conv4(op: AA[Float,Int]) = new N[Float]
+  implicit def conv5(e: BB[java.util.Date]) = new NN[java.util.Date]
+
+  
+  def aFunc[A,B](a: NE[Option[A]], b: NE[B]) = new AA[A,B]
+
+  def aFunc[A](a: NN[Option[A]], b: NN[A]) = new BB[A]
+
+  def bFunc[T1](e1: N[T1]) = {}
+  
+  //bFunc(aFunc(conv1(Some(4F)), conv2(0)))
+  
+  bFunc(aFunc(Some(4F), 0))
+}
+
+{code}

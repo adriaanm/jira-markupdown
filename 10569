@@ -1,0 +1,29 @@
+SI-1753 is related and instructive, but incomplete. It only says that
+{code}
+class A { type T }
+{code}
+is intentionally allowed.
+
+But what about objects? Why is the following forbidden?
+
+{code}
+object WTF_A0 {
+  type T //Error: only classes can have declared but undefined members
+}
+{code}
+
+I don't think that objects were indeed meant to be special.
+
+Otherwise, the following should be also forbidden:
+{code}
+trait A {
+  type T
+}
+ 
+object A extends A
+{code}
+
+If this inconsistency is by design, I'd demand more explanation than this:
+> I'm pretty sure it's been discussed before and it falls into the not-a-bug category.
+
+Additionally, on the implementation level, the mere fact that the the check for undefined members is different from the check for undefined *inherited* members seem debatable — I guess the former can be done earlier, but it seems the two checks should still share logic.

@@ -1,0 +1,35 @@
+The following code throws the exception on "toString". There is TypeRef(_, definitions.ByNameParamClass, Nil) but it seems that Nil is a not valid value.
+ 
+{code:scala}
+    val content = """
+    package org.example
+    object Test {         }
+    """.stripMargin
+    val x = new Response[List[Member]]
+    val src = new BatchSourceFile("test.scala", content)
+    askScopeCompletion(rangePos(src, 38, 38, 38), x)
+
+    do {
+    } while (!x.isComplete)
+
+    ask[Unit] (() => {
+      for (m <- x.get.left.get) {
+        m match {
+          case m @ ScopeMember(sym, tpe, accessible, viaView) =>
+            println(sym.toString) // "class <byname>"
+            println(tpe.toString) // <- exception here
+        }
+      }
+    })
+{code}
+
+{noformat}
+Caused by: java.util.NoSuchElementException: head of empty list
+	at scala.collection.immutable.Nil$.head(List.scala:420)
+	at scala.collection.immutable.Nil$.head(List.scala:417)
+	at scala.reflect.internal.Types$TypeRef.customToString(Types.scala:2275)
+	at scala.reflect.internal.Types$TypeRef.safeToString(Types.scala:2304)
+	at scala.reflect.internal.tpe.TypeToStrings$class.typeToString(TypeToStrings.scala:43)
+	at scala.reflect.internal.SymbolTable.typeToString(SymbolTable.scala:16)
+	at scala.reflect.internal.Types$Type.toString(Types.scala:927)
+{noformat}

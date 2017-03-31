@@ -1,0 +1,34 @@
+{code}
+import scala.reflect.macros.Context
+import language.experimental.macros
+
+object Macros {
+  def impl(c: Context): c.Expr[Any] = {
+    import c.universe._
+    return c.Expr(null)
+  }
+
+  def foo = macro impl
+}
+{code}
+
+{code}
+object Test extends App {
+  Macros.foo
+}
+{code}
+
+{code}
+21:34 ~/Projects/210x/sandbox (2.10.x)$ ss
+Test.scala:2: error: exception during macro expansion:
+java.lang.NullPointerException
+	at scala.tools.nsc.typechecker.Macros$class.scala$tools$nsc$typechecker$Macros$$macroExpandWithRuntime(Macros.scala:836)
+	at scala.tools.nsc.typechecker.Macros$$anonfun$scala$tools$nsc$typechecker$Macros$$macroExpand1$1.apply(Macros.scala:796)
+	at scala.tools.nsc.typechecker.Macros$$anonfun$scala$tools$nsc$typechecker$Macros$$macroExpand1$1.apply(Macros.scala:787)
+	at scala.tools.nsc.Global.withInfoLevel(Global.scala:190)
+	at scala.tools.nsc.typechecker.Macros$class.scala$tools$nsc$typechecker$Macros$$macroExpand1(Macros.scala:787)
+
+  Macros.foo
+         ^
+one error found
+{code}

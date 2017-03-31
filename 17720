@@ -1,0 +1,8 @@
+The JVM spec states in Sec. 4.7.6 that for each {{CONSTANT_Class_info}} (constant-pool entry) which represents a class or interface that is not a member of a package an entry should be made in the class' InnerClasses JVM attribute.
+
+According to the above, the mere fact an inner class is mentioned in, for example, an annotation wouldn't be reason enough for adding it to the InnerClasses JVM attribute.
+
+However that's what GenASM (apparently?) does.
+
+As an aside, this issue came up in the context of GenBCode, where {{refreshInnerClasses()}} in file [BCodeOpt.scala | https://github.com/magarciaEPFL/scala/blob/GenBCodeOpt/src/compiler/scala/tools/nsc/backend/jvm/BCodeOpt.scala] follows a literal interpretation of the spec.
+

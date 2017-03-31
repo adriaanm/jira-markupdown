@@ -1,0 +1,35 @@
+The following program worked in 2.7, does not work on Windows in 2.8:
+{code}
+import scala.io.Source
+  
+object LongLines {
+  def processFile(filename: String, width: Int) {
+	val source = Source.fromPath(filename)
+	println(compat.Platform.EOL.charAt(0).toInt)
+	println("\n".charAt(0).toInt)
+	for (line <- source.getLines()) {
+	  processLine(filename, width, line)
+	}
+  }
+  def processLine(filename: String, width: Int, line: String) {
+    if (line.length > width) println(filename+": "+line)
+  }
+}
+
+object FindLongLines {
+  def main(args : Array[String]) : Unit = {
+	val width = args(0).toInt
+	for (arg <- args.drop(1))
+	  LongLines.processFile(arg, width)
+  }
+}
+{code}
+The problem is that `getLines()` reads in the whole input file as a single line. Investigation shows that `getLines()` expands to 
+getLines(compat.Platform.EOL), which expands to a CR character on windows(!!!). Doing an explicit getLines("\n") works. 
+
+Something is clearly wrong here. I suspect it's the `lineSeparator` property, which is `propOrElse("line.separator", "\n")`. Probably it should be always "\n". Or else the default argument for `getLines` is wrong. 
+
+In any case we cannot release 2.8 like this. This is very basic functionality, which we cannot afford it to break between 2.7 and 2.8.
+
+Since this involves several components I am not sure who's best to handle this. I assign to you Paul, but feel free to pass it on if you think there's a better expert on this.
+

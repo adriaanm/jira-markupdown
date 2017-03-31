@@ -1,0 +1,26 @@
+{code}
+        case Select(qual, name) if sym.owner.isImplClass && !isStaticOnly(sym) =>
+          assert(!sym.isMethod, "no method allowed here: %s%s %s".format(sym, sym.isImplOnly, flagsToString(sym.flags)))
+          // refer to fields in some implementation class via an abstract
+          // getter in the interface.
+          val iface  = toInterface(sym.owner.tpe).typeSymbol
+          val getter = sym getter iface orElse abort("No getter for " + sym + " in " + iface)
+
+          typedPos(tree.pos)((qual DOT getter)())
+{code}
+
+{{sym.owner.tpe}} (the trait implementation class) contains the a member, ev$1, but this isn't reflected in the trait interface.
+
+This comment seems relevant:
+
+{code}
+    /** If this symbol is an implementation class, its interface, otherwise the symbol itself
+     *  The method follows two strategies to determine the interface.
+     *   - during or after erasure, it takes the last parent of the implementation class
+     *     (which is always the interface, by convention)
+     *   - before erasure, it looks up the interface name in the scope of the owner of the class.
+     *     This only works for implementation classes owned by other classes or traits.
+     *     !!! Why?
+     */
+    def toInterface: Symbol = this
+{code}

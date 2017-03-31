@@ -1,0 +1,27 @@
+The following two programs should both give ambiguity errors,  but only the first one does:
+{code}
+package object foo {
+  implicit val x: Bippy = new Bippy("x")
+}
+package foo {
+  class Bippy(override val toString: String) { }
+  class Dingus {
+    implicit val z: Bippy = new Bippy("z")
+    def f1 = implicitly[Bippy]
+  }
+}
+{code}
+This one compiles without error, but shouldn't:
+{code}
+package object foo {
+  implicit val x: Bippy = new Bippy("x")
+}
+package foo {
+  class Bippy(override val toString: String){ }
+  class Dingus {
+    def f1 = {
+      implicit val z: Bippy = new Bippy("z")
+      implicitly[Bippy]
+    }
+  }
+{code}

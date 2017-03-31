@@ -1,0 +1,20 @@
+{code}
+case class Foo private (num: Int)
+
+object Foo {
+  def apply(x: Double): Foo = x.toInt match {
+    case x if x < 0 => throw new Exception(x + " < 0")
+    case x          => new Foo(x)
+  }
+}
+
+object Test {
+  def main(args: Array[String]): Unit = {
+    val x = Foo(5d)
+    println(x -> x.copy(num = -1000))
+  }
+}
+
+// % scala Test
+// (Foo(5),Foo(-1000))
+{code}

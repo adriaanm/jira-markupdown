@@ -1,0 +1,34 @@
+This should produce a better error message.
+
+Java file:
+
+{code}
+public class Test<T> {
+  public T[] values;
+}
+{code}
+
+Scala file:
+
+{code}
+class T {
+  def foo() {
+    val t = new Test[Int]
+    val arr: Array[Int] = Array(1,2)
+    t.values = arr
+  }
+}
+{code}
+
+{{scalac}} barks (when compiling together, or the Java file first):
+
+{code}
+T.scala:8: error: type mismatch;
+ found   : Array[Int]
+ required: Array[Int]
+Note: Int >: Int, but class Array is invariant in type T.
+You may wish to investigate a wildcard type such as `_ >: Int`. (SLS 3.2.10)
+    t.values = arr
+               ^
+one error found
+{code}

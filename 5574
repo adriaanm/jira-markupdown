@@ -1,0 +1,36 @@
+{code}
+scala> import xml._
+import xml._
+
+scala> val n = new PCData("hi there.")
+n: scala.xml.PCData = <![CDATA[hi there.]]>
+
+scala> val p = new PrettyPrinter(80,5)
+p: scala.xml.PrettyPrinter = scala.xml.PrettyPrinter@c86b9e3
+
+scala> p format n
+res0: String = <![CDATA[hi there.]]>
+
+scala> val n = new PCData("""hi there,
+     |   is there any way to fix this?""")
+n: scala.xml.PCData =
+<![CDATA[hi there,
+  is there any way to fix this?]]>
+
+scala> p format n
+res1: String =
+<![CDATA[hi there,
+  is there any way to fix this?]]>
+
+scala> p format <a>{n}</a>
+res2: String = <a><![CDATA[hi there, is there any way to fix this?]]></a>
+{code}
+
+Footnote, you don't get incomplete parses from embedded Scala blocks:
+
+{code}
+scala> <a>{ PCData("""
+<console>:1: error: in XML literal:  expected end of Scala block
+       <a>{ PCData("""
+                      ^
+{code}

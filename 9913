@@ -1,0 +1,32 @@
+The best performance improvement I can get is about 40% by replacing
+
+{noformat}
+  override def foreach[B](f: Int => B) {
+    for (i <- 0 until nwords) {
+      val w = word(i)
+      for (j <- i * WordLength until (i + 1) * WordLength) {
+        if ((w & (1L << j)) != 0L) f(j)
+      }
+    }
+  }
+{noformat}
+
+with
+
+{noformat}
+  override def foreach[B](f: Int => B) {
+    for (i <- 0 until nwords) {
+      var w = word(i)
+      var j = i * WordLength
+      while (w != 0) {
+        if ((w & 1) != 0) f(j)
+        w = w >>> 1
+        j += 1
+      }
+    }
+  }
+{noformat}
+
+and making sure that `WordLength` is a `final val` (which it is not right now).
+
+Making the outer `for` loop a `while` also improves things a little presently but I expect optimizer improvements to fix this soon.

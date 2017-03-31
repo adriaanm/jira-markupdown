@@ -1,0 +1,65 @@
+[Original report is classified as out of scope; ticket is open for (NaN min 0) wrongness.]
+
+{{*import* scala.math.Ordering.Double._}}
+
+Hi Scala folks!
+
+I find something in Scala, that made me searching the web, reading documentations and rummaging in the sources of Scala and trying many things. So far so good, but I'm still wondering why is the following expression {{*true*}}:
+*{code}
+max(Double.NaN, 0) != min(Double.NaN)
+{code}*
+
+I found out that {{NaN}} in {{Ordering.Double}} is bigger than everything else, even that {{_PositivInfinity_}}! And {{NaN}} is equal to it self. The implementation in {{java.lang.Double.compare}} have the same behaviour.
+
+The other implementation is the the native one, based on IEEE. (You know {{<}}, {{>=}} and so on.) This one says that every comparison with {{NaN}} returns {{*false*}}, even {{NaN&nbsp;==&nbsp;NaN}} is {{*false*}}.
+
+I think is a philosophical discussion what the better way is. I prefer IEEE but that doesn't matter.
+
+The point is the code snipped at the top with {{min}} and {{max}}. I can not say what is bigger. {{NaN}} or 0? I also can't say what is smaller. {{NaN}} or {{0}}? I have the same problem, so I expected the same result of both methods. Currently {{max}} returns always {{NaN}} and {{min}} the other number (0 in my example).
+
+Now I see four possible solutions for this inconsistency:
+(I tried to mark pro and contra, but they are not weighted. Some points are definitely stronger than others.)
+
+# Throwing an exception every time a methods in {{Ordering.Double}} gets an {{NaN}}.
+  (+) That is a hyper correct dealing with {{NaN}}
+  (-) and a hidden trap for many programmers, because this solution would be far away from the native handling with {{NaN}} and the use of an {{Ordering}} with {{*implicit*}} parameters isn't visible for starting programmers.
+  (-) Throwing an exception for normal program flow? Doesn't sounds good.
+  (-) Currently fine working code could throw suddenly exceptions.
+# Keep as it is and add at least one comment in the documentation.
+  (-) Leave the problem
+  (+) Leave the code
+# Using an arithmetic expression to solve {{min}} and {{max}} for {{Double}}:
+  {code}
+  def max(a, b)=mean(a, b) + abs(a - b)
+  {code}
+  (+) That means the result is {{NaN}} and would make {{NaN}} more dominant like in other arithmetic operations.
+  (-) I fear that someone had used {{min}} and {{max}} to sort something.
+  {code}
+  def sorted(a, b)=(max(a, b), min(a, b))
+  {code}
+  A single {{NaN}} could duplicate its self this way. Old code is may not cable of handling this behaviour.
+  (-) This changes treats to change the {{min}} and {{max}} methods in {{TraversableOnce}} to:
+  {code}
+  def max[B >: A](implicit cmp: Ordering[B]):A = reduce(cmp.max)
+  {code}
+  (+) But I think that would be good changes anyway.
+# {{Ordering.Double}} should be direct child of {{ParticalOrdering}}
+  (+) That's an other hyper correct dealing {{NaN}}.
+  (-) {{RichDouble}} or its parent {{ScalaNumberProxy}} need {{Double}} as a {{Numeric}} and {{Numeric}} depends on {{Ordered}}. I think that can be resolved with more re-factoring, but it would be hard work.
+  (+) It's possible to mark the old way as *deprecated*. Every becomes a warning, if he use {{min}} or {{max}} on {{Doubles}}.
+  (-) Many people (like me) want to use the {{min}} and {{max}} methods in {{TraversableOnce}}, so the methods have to handle this new situation.
+  A very naive implementation of {{max}} could be:
+  {code}
+  def max[B >: A](implicit cmp: ParticalOrdering[B]):A =
+    first( x => forall(cmp.lteq(_, x)) && forall(cmp.tryCompare(_, x) != None))
+  {code}
+  This would have to throw an exception if {{NaN}} part of the collection.
+  (+) But maybe that expand the use of {{ParticalOrdering}}.
+
+You see, I'm very focused on {{min}} and {{max}}, that's because I can't decide what the best way is to deal with {{NaN}} and {{<}}, {{>=}}. Solution number three gives a good reason why {{min}} and {{max}} returns what they do and works around {{<}}, {{>=}}.
+Maybe it is possible for solution number three get the (+) with *deprecated* of solution number four, but I have no idea how.
+
+My favourite solution is number three. What do you think about it?
+
+Sincerely,
+D. Jentsch

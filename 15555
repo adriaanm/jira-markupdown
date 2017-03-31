@@ -1,0 +1,30 @@
+Not sure yet whether this is specific to pos, or whether it is the flags being ignored or the failure not being recognized.
+
+{code}
+[paulp@jon test (props)]$$ cat files/pos/bug3495.scala 
+class Foo { }
+
+[paulp@jon test (props)]$$ cat files/pos/bug3495.flags
+-Dsoot.class.path=bin:.
+
+[paulp@jon test (props)]$$ ../build/pack/bin/scalac `cat files/pos/bug3495.flags` files/pos/bug3495.scala 
+scalac error: Parameter '-Dsoot.class.path=bin' is not recognised by Scalac.
+  scalac -help  gives more information
+scalac error: bad option: '-Dsoot.class.path=bin:.'
+  scalac -help  gives more information
+
+[paulp@jon test (props)]$$ ./partest files/pos/bug3495.scala 
+Scala compiler classes in: /scratch/trunk1/build/pack
+Scala version is:          Scala compiler version 2.8.0.r22647-b20100729092439 -- Copyright 2002-2010, LAMP/EPFL
+Scalac options are:        -deprecation
+Java binaries in:          /System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Home/bin
+Java runtime is:           Java HotSpot(TM) 64-Bit Server VM (build 16.3-b01-279, mixed mode)
+Java options are:          -Xss2m -Xms256M -Xmx1024M
+Source directory is:       /scratch/trunk1/test/files
+
+
+Testing individual files
+testing: [...]/files/pos/bug3495.scala                                [  OK  ]
+
+All of 1 tests were successful (elapsed time: 00:00:03)
+{code}

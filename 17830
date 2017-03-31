@@ -1,0 +1,32 @@
+The following code compiles fine with scalac 2.9.2 but causes version 2.10.0 to crash:
+{code:title=Test.scala}
+trait C1[A] {
+  def m1(key: A)
+  def m2() {}
+}
+
+trait C2[A] extends C1[A] {
+  abstract override def m1(key: A) { super.m1(key) }
+}
+
+class C3[A] extends C1[A] {
+  override def m1(key: A) {}
+}
+
+class Test {
+  val c = 2 match {
+    case 1 => new C3[String] with C2[String]
+    case _ => null
+  }
+}
+{code} 
+Compiling above code first reports the following error:
+{noformat}
+Test.scala:16: error: Member method m1 of mixin trait C2 is missing a concrete super implementation.
+    case 1 => new C3[String] with C2[String]
+{noformat}
+and then compiler crashes during mixin phase (full error report is attached)
+This is as far as I was able to simplify the case. Further reduction makes the issue completely or partially go away.
+For example commenting out m2 method definition in C1 trait prevents compiler from crashing while still reports syntax error.
+Removing match statement or introducing named class make the error go away completely.
+Either case is compiled without errors or warnings by scalac 2.9.2

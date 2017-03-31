@@ -1,0 +1,23 @@
+A compile-time error would be nice.
+
+The following bit does not compile (on 2.11.8):
+
+{code}
+Set(1,2,3) match {
+  case Nil => "oops"
+  case x :: xs => "ok"
+}
+{code}
+
+Whereas the following works just fine:
+
+{code}
+Iterable(1,2,3) match {
+  case Nil => "oops"
+  case x :: xs => "ok"
+}
+{code}
+
+Since {{m.keys}} produces an {{Iterable}} I would either expect it to compile and run fine or say at compile time that it's not possible because a {{Set}} is used in the background and sets don't allow {{Cons}}. 
+
+I'm not sure this if feasible (or desired) really. I'm just saying that {{Set}} and {{Iterable}} produce results I expect but with the {{Map.keys}} method the results are not as clear cut (unless I'm missing something fundamental here) even though as a user I should not be too fazed about the implementation in the background.

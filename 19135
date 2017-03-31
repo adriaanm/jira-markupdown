@@ -1,0 +1,189 @@
+I tried to minimize the problem but I couldn't remove scalamock3 dependency. 
+
+{code:title=example.scala}
+package example
+
+import org.scalamock.Mock
+import org.scalamock.MockFactoryBase
+
+trait Service {
+  def serviceMethod(a: Int): Int
+}
+
+abstract class Example extends MockFactoryBase {
+  def fun(): Unit = {
+    var serviceMock = mock[Service]
+    (serviceMock.serviceMethod _).expects(3).returning(10)
+  }
+}
+{code}
+
+bq. $ scala-2.10.4/bin/scalac -classpath scalamock-core_2.10-3.1.RC1.jar example.scala
+
+{noformat}
+error: symbol value eta$0$1 does not exist in example.Example.fun
+error: uncaught exception during compilation: scala.reflect.internal.FatalError
+error: scala.reflect.internal.FatalError:
+     while compiling: example.scala
+        during phase: icode
+     library version: version 2.10.4
+    compiler version: version 2.10.4
+  reconstructed args: -classpath scalamock-core_2.10-3.1.RC1.jar
+
+  last tree to typer: ApplyToImplicitArgs(constructor MockFunction1)
+              symbol: constructor MockFunction1 in class MockFunction1 (flags: <method> <triedcooking>)
+   symbol definition: def <init>(factory: org.scalamock.MockFactoryBase,name: Symbol,implicit evidence$2: org.scalamock.Defaultable): org.scalamock.MockFunction1
+                 tpe: org.scalamock.MockFunction1
+       symbol owners: constructor MockFunction1 -> class MockFunction1 -> package scalamock
+      context owners: anonymous class anon$1 -> package example
+
+== Enclosing template or block ==
+
+Template( // val <local $anon>: <notype>, tree.tpe=example.anon$1
+  "java.lang.Object", "example.Service" // parents
+  ValDef(
+    private
+    "_"
+    <tpt>
+    <empty>
+  )
+  // 4 statements
+  DefDef( // override def serviceMethod(a: Int): Int
+    <method> override
+    "serviceMethod"
+    []
+    // 1 parameter list
+    ValDef( // a: Int
+      <param> <triedcooking>
+      "a"
+      <tpt> // tree.tpe=Int
+      <empty>
+    )
+    <tpt> // tree.tpe=Int
+    Apply( // def unbox(x: Object): Int in object Int, tree.tpe=Int
+      "scala"."Int"."unbox" // def unbox(x: Object): Int in object Int, tree.tpe=(x: Object)Int
+      Apply( // def apply(v1: Object): Object in class FakeFunction1, tree.tpe=Object
+        Example$$anon$1.this.mock$serviceMethod$0()."apply" // def apply(v1: Object): Object in class FakeFunction1, tree.tpe=(v1: Object)Object
+        Apply( // def box(x: Int): Integer in object Int, tree.tpe=Object
+          "scala"."Int"."box" // def box(x: Int): Integer in object Int, tree.tpe=(x: Int)Integer
+          "a" // a: Int, tree.tpe=Int
+        )
+      )
+    )
+  )
+  ValDef( // private[this] val mock$serviceMethod$0: org.scalamock.MockFunction1
+    private <local> <triedcooking>
+    "mock$serviceMethod$0 "
+    <tpt> // tree.tpe=org.scalamock.MockFunction1
+    <empty>
+  )
+  DefDef( // val mock$serviceMethod$0(): org.scalamock.MockFunction1
+    <method> <stable> <accessor> <triedcooking>
+    "mock$serviceMethod$0"
+    []
+    List(Nil)
+    <tpt> // tree.tpe=org.scalamock.MockFunction1
+    Example$$anon$1.this."mock$serviceMethod$0 " // private[this] val mock$serviceMethod$0: org.scalamock.MockFunction1, tree.tpe=org.scalamock.MockFunction1
+  )
+  DefDef( // def <init>(arg$outer: example.Example): example.anon$1
+    <method> <triedcooking>
+    "<init>"
+    []
+    // 1 parameter list
+    ValDef( // $outer: example.Example
+      <param>
+      "$outer"
+      <tpt> // tree.tpe=example.Example
+      <empty>
+    )
+    <tpt> // tree.tpe=example.anon$1
+    Block( // tree.tpe=Unit
+      // 2 statements
+      Apply( // def <init>(): Object in class Object, tree.tpe=Object
+        Example$$anon$1.super."<init>" // def <init>(): Object in class Object, tree.tpe=()Object
+        Nil
+      )
+      Assign( // tree.tpe=Unit
+        Example$$anon$1.this."mock$serviceMethod$0 " // private[this] val mock$serviceMethod$0: org.scalamock.MockFunction1, tree.tpe=org.scalamock.MockFunction1
+        Apply( // def <init>(factory: org.scalamock.MockFactoryBase,name: Symbol,implicit evidence$2: org.scalamock.Defaultable): org.scalamock.MockFunction1 in class MockFunction1, tree.tpe=org.scalamock.MockFunction1
+          new org.scalamock.MockFunction1."<init>" // def <init>(factory: org.scalamock.MockFactoryBase,name: Symbol,implicit evidence$2: org.scalamock.Defaultable): org.scalamock.MockFunction1 in class MockFunction1, tree.tpe=(factory: org.scalamock.MockFactoryBase, name: Symbol, implicit evidence$2: org.scalamock.Defaultable)org.scalamock.MockFunction1
+          // 3 arguments
+          Apply( // implicit val _factory(): org.scalamock.MockFactoryBase in trait MockFactoryBase, tree.tpe=org.scalamock.MockFactoryBase
+            "$outer"."_factory" // implicit val _factory(): org.scalamock.MockFactoryBase in trait MockFactoryBase, tree.tpe=()org.scalamock.MockFactoryBase
+            Nil
+          )
+          Apply( // override def apply(name: String): Symbol in object Symbol, tree.tpe=Symbol
+            "scala"."Symbol"."apply" // override def apply(name: String): Symbol in object Symbol, tree.tpe=(name: String)Symbol
+            "serviceMethod"
+          )
+          "org"."scalamock"."Defaultable$defaultInt" // implicit object Defaultable$defaultInt in package scalamock, tree.tpe=org.scalamock.Defaultable$defaultInt.type
+        )
+      )
+      ()
+    )
+  )
+)
+
+== Expanded type of tree ==
+
+TypeRef(
+  TypeSymbol(
+    class MockFunction1 extends FakeFunction1 with MockFunction
+  )
+)
+
+symbol value eta$0$1 does not exist in example.Example.fun
+        at scala.reflect.internal.SymbolTable.abort(SymbolTable.scala:49)
+        at scala.tools.nsc.Global.abort(Global.scala:254)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.genLoadIdent$1(GenICode.scala:1035)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$backend$icode$GenICode$ICodePhase$$genLoad(GenICode.scala:1041)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.genLoadQualifier(GenICode.scala:1193)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.genLoadApply6$1(GenICode.scala:932)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$backend$icode$GenICode$ICodePhase$$genLoad(GenICode.scala:964)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.genLoadQualifier(GenICode.scala:1193)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.genLoadApply6$1(GenICode.scala:932)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$backend$icode$GenICode$ICodePhase$$genLoad(GenICode.scala:964)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.genLoadQualifier(GenICode.scala:1193)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.genLoadApply6$1(GenICode.scala:932)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$backend$icode$GenICode$ICodePhase$$genLoad(GenICode.scala:964)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.genLoadQualifier(GenICode.scala:1193)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.genLoadApply1$1(GenICode.scala:741)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$backend$icode$GenICode$ICodePhase$$genLoad(GenICode.scala:766)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.genLoadQualifier(GenICode.scala:1193)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.genLoadApply6$1(GenICode.scala:932)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$backend$icode$GenICode$ICodePhase$$genLoad(GenICode.scala:964)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.genLoadQualifier(GenICode.scala:1193)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.genLoadApply6$1(GenICode.scala:932)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$backend$icode$GenICode$ICodePhase$$genLoad(GenICode.scala:964)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$backend$icode$GenICode$ICodePhase$$genStat(GenICode.scala:187)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$genStat$1.apply(GenICode.scala:156)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$genStat$1.apply(GenICode.scala:156)
+        at scala.collection.LinearSeqOptimized$class.foldLeft(LinearSeqOptimized.scala:111)
+        at scala.collection.immutable.List.foldLeft(List.scala:84)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$backend$icode$GenICode$ICodePhase$$genLoad(GenICode.scala:1065)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$backend$icode$GenICode$ICodePhase$$genLoad(GenICode.scala:1066)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:124)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:72)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:149)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:99)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:72)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:90)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:68)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.apply(GenICode.scala:64)
+        at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:464)
+        at scala.tools.nsc.Global$GlobalPhase$$anonfun$run$1.apply(Global.scala:431)
+        at scala.tools.nsc.Global$GlobalPhase$$anonfun$run$1.apply(Global.scala:431)
+        at scala.collection.Iterator$class.foreach(Iterator.scala:727)
+        at scala.collection.AbstractIterator.foreach(Iterator.scala:1157)
+        at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:431)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.run(GenICode.scala:57)
+        at scala.tools.nsc.Global$Run.compileUnitsInternal(Global.scala:1583)
+        at scala.tools.nsc.Global$Run.compileUnits(Global.scala:1557)
+        at scala.tools.nsc.Global$Run.compileSources(Global.scala:1553)
+        at scala.tools.nsc.Global$Run.compile(Global.scala:1662)
+        at scala.tools.nsc.Driver.doCompile(Driver.scala:33)
+        at scala.tools.nsc.Main$.doCompile(Main.scala:79)
+        at scala.tools.nsc.Driver.process(Driver.scala:54)
+        at scala.tools.nsc.Driver.main(Driver.scala:67)
+        at scala.tools.nsc.Main.main(Main.scala)
+{noformat}

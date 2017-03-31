@@ -1,0 +1,29 @@
+To combine the fix from the other bug report:
+
+https://issues.scala-lang.org/browse/SI-5549?focusedCommentId=57261&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-57261
+
+{code}
+class D[-A] (v: A) { def get = (v : Any) }
+
+class DD[-A >: D[Any]] (v: A) { def get = (v : Any) }
+
+implicit def neg[A](x: A) = new DD[D[A]]( new D[A](x) )
+
+def size[T](t: T)(implicit d: DD[D[T]] <:< DD[D[Int] with D[String]]) = t
+
+scala> size(5)
+res0: Int = 5
+
+scala> size("")
+res1: java.lang.String = 
+
+scala> size(5.0)
+error: could not find implicit value for parameter d: <:<[DD[D[Double]],DD[D[Int] with D[String]]]
+       size(5.0)
+           ^
+
+scala> size(5.0 : Any)
+error: could not find implicit value for parameter d: <:<[DD[D[Any]],DD[D[Int] with D[String]]]
+       size(5.0 : Any)
+           ^
+{code}

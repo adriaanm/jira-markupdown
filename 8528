@@ -1,0 +1,23 @@
+Might be related but stack traces are very different.
+
+This:
+{code}
+explicitouter
+        at scala.Predef$.assert(Predef.scala:173)
+        at scala.tools.nsc.Global.assert(Global.scala:231)
+        at scala.tools.nsc.transform.Erasure$ErasureTransformer.bridgeDefs(Erasure.scala:903)
+{code}
+and:
+{code}
+patmat
+        at scala.Predef$.assert(Predef.scala:173)
+        at scala.tools.nsc.Global.assert(Global.scala:231)
+        at scala.tools.nsc.transform.Erasure$ErasureTransformer.bridgeDefs(Erasure.scala:903)
+{code}
+SI-6299 has:
+{code}
+java.lang.NullPointerException
+	at scala.reflect.internal.SymbolTable.afterPhase(SymbolTable.scala:208)
+	at scala.tools.nsc.Global.afterFlatten(Global.scala:1092)
+	at scala.tools.nsc.transform.Flatten$$anon$1$$anonfun$1.apply(Flatten.scala:70)
+{code}

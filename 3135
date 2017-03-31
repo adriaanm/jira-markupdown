@@ -1,0 +1,18 @@
+Maybe this is the right place to raise another possible extension to the `implicit` modifier (which I couldn't find elsewhere - sorry if it is). Namely, given, e.g. 
+
+{code}
+trait MyStateMonad[F[_]] extends MonadState[F, Int]{
+      import scalaz.syntax.monad._
+      implicit val _ = this // necessary in order to use the syntactic sugar
+      ...
+}
+{code}
+
+it'd be nice to be able to write that just as follows:
+
+{code}
+trait MyStateMonad[F[_]] extends MonadState[F, Int]{ implicit this =>
+      import scalaz.syntax.monad._
+      ...
+}
+{code}

@@ -1,0 +1,14 @@
+the question is if the scala compiler reads `org.infinispan.marshall.Ids` from a classfile that was previously compiled by javac, or if you pass the .java source file to the scala compiler.
+
+if the former is true and you get the error, please provide a minimal example and re-open.
+
+if the latter is the case (see example below), it's a duplicate of SI-2764.
+
+
+{code}
+rytz@lamppc12:~/scala/trunk/sandbox$$ ../build/pack/bin/scalac t3236.scala Ann.java Const.java 
+t3236.scala:1: error: annotation argument needs to be a constant; found: Const.HOTROD_CACHE_KEY
+@Ann(id = Const.HOTROD_CACHE_KEY)
+                ^
+one error found
+{code}

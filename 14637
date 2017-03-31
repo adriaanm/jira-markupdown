@@ -1,0 +1,33 @@
+As a new user of Scala, I was thrilled to find out that Scala had a way to generate those boring, repetitive implementations of equals, hashCode, and toString for me. Case classes rule!
+
+I was not so thrilled when I checked the collision rate of those automatically generated case class hash codes. The following program should report approximately 1 collision:
+
+{code}
+object XTest {
+
+    case class C (x: Int, y: Int) { }
+
+    def main (args: Array[String]) = {
+        var hashCodeCounts: Map[Int,Int] = Map()
+        var repetitions = 0
+        for (x <- 0 until 300; y <- 0 until 300) {
+            val c = C(x,y)
+            val h = c.hashCode
+            val numTimesSeen = hashCodeCounts.getOrElse(h,0)
+            if (numTimesSeen > 0) {
+                System.out.println(
+                    "Already saw hash code " + h + " for " + c + " " +
+                        numTimesSeen + " times.")
+                repetitions += 1
+            }
+            hashCodeCounts = hashCodeCounts.update(h,numTimesSeen + 1)
+        }
+        System.out.println("\n" + repetitions + " repetitions.\n")
+    }
+
+}
+{code}
+
+Instead, it reports 77,441.
+
+A number of good algorithms for automatically generating hash codes come to mind. You might, for example, pass the bytes composing the name of the class and any non-reference fields through a high-quality bytestring hash algorithm (like Bob Jenkins's lookup3; see http://burtleburtle.net/bob/c/lookup3.c), and add the result to the sum of the hash codes from reference fields (this produces a well-distributed result if the reference field hash codes are themselves well-distributed).

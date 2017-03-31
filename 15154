@@ -1,0 +1,26 @@
+Distilled from a problem discovered by @soc on #scala.
+
+{code}
+object lists{
+  implicit def array2list[T](array: Array[T]) = array.toList
+}
+import lists._
+
+def size[T](list: List[T]) = list.size
+
+//scala.this.Predef.assert(Main$$$$anon$$1.this.size(Main$$$$anon$$1.this.lists().array2list(
+//   scala.Array.apply(
+//        scala.this.Predef.genericWrapArray(Array[Nothing]{}.$$asInstanceOf[Array[java.lang.Object]]()),
+//        reflect.this.Manifest.Nothing()
+//   )
+//)).==(0));
+assert(size(array2list(Array())) == 0)
+
+// scala.this.Predef.assert(Main$$$$anon$$1.this.size(Main$$$$anon$$1.this.lists().array2list(
+//    scala.Array.apply(
+//      scala.runtime.BoxedUnit.UNIT, 
+//      scala.this.Predef.wrapUnitArray(Array[scala.runtime.BoxedUnit]{})
+//    )
+// )).==(1));
+assert(size(Array()) == 1)
+{code}

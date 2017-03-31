@@ -1,0 +1,26 @@
+I'm still unable to craft a test to trigger this. My hypothesis is that the field `Typer#context` is mutated between the point when the lazy annotation info is created and when it is forced.
+
+A few breadcrumbs for code that might be of interest:
+{code}
+    // Namers.scala
+    def enterSyms(trees: List[Tree]): Namer = {
+      trees.foldLeft(this: Namer) { (namer, t) =>
+        val ctx = namer enterSym t
+        // for Import trees, enterSym returns a changed context, so we need a new namer
+        if (ctx eq namer.context) namer
+        else newNamer(ctx)
+      }
+    }
+{code}
+
+{code}
+          // Typer#typeStats
+          stat match {
+            case imp @ Import(_, _) =>
+              imp.symbol.initialize
+              if (!imp.symbol.isError) {
+                context = context.makeNewImport(imp)
+                typedImport(imp)
+              } else EmptyTree
+{code}
+

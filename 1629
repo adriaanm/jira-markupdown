@@ -1,0 +1,30 @@
+The problem occurs in a much simpler situation:
+{code}
+class A {
+  def +(that: A) = new A
+  def *(that: A) = new A
+}
+
+class B {
+  def +(that: B) = new B
+  def *(that: B) = new B
+}
+
+implicit def a2b(a: A) = new B
+
+val a = new A
+val b = new B
+
+a+b*a // works
+a*b+a // works
+b*a+a // works
+
+a+a*b
+
+<console>:58: error: type mismatch;
+ found   : B
+ required: A
+       ret(0) = a+a*b
+                    ^
+{code}
+By the way this is in version 2.7.3.final.

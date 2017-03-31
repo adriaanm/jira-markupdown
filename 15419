@@ -1,0 +1,45 @@
+As in Java, javax.swing.JComboBox has a JComboBox() constructor (with no parameters). In scala, swing.ComboBox has a constructor ComboBox(items:Seq[A]) b . ut if one tries sending an empty Seq i.e. new ComboBox(Seq()), the instance fails.
+
+{code}
+scala> val c = new swing.ComboBox(List())
+java.lang.IndexOutOfBoundsException
+	at scala.collection.LinearSeqLike$$class.apply(LinearSeqLike.scala:78)
+	at scala.collection.immutable.List.apply(List.scala:46)
+	at scala.swing.ComboBox$$$$anon$$3.<init>(ComboBox.scala:127)
+	at scala.swing.ComboBox$$.newConstantModel(ComboBox.scala:126)
+	at scala.swing.ComboBox$$$$anon$$1.<init>(ComboBox.scala:164)
+	at scala.swing.ComboBox.peer(ComboBox.scala:164)
+	at scala.swing.ComboBox.peer(ComboBox.scala:163)
+	at scala.swing.UIElement$$.scala$$swing$$UIElement$$$$cache(UIElement.scala:24)
+	at scala.swing.UIElement$$class.$$init$$(UIElement.scala:78)
+	at scala.swing.Component.<init>(Component.scala:46)
+	at scala.swing.ComboBox.<init>(ComboBox.scala:163)
+	at .<init>(<console>:7)
+	at .<clinit>(<console>)
+	at RequestResult$$.<init>(<console>:4)
+	at RequestResult$$.<clinit>(<console>)
+	at RequestResult$$scala_repl_result(<console>)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at scala.tools.nsc.Interpreter$$Request$$$$anonfun$$loadAndRun$$1$$$$anonfun$$apply$$13.apply(Interpreter.scala:827)
+	at scala.tools.nsc.Interpreter$$Request$$$$anonfun$$loadAndRun$$1$$$$anonfun$$apply$$13.apply(Interpreter.scala:827)
+	at scala.util.control.Exception$$Catch.apply(Exception.scala:79)
+	at scala.tools.nsc.Interpreter$$Request$$$$anonfun$$loadAndRun$$1.apply(Interpreter.scala:826)
+	at scala.tools.nsc.Interpreter$$Request$$$$anonfun$$loadAndRun$$1.apply(Interpreter.scala:826)
+	at scala.util.control.Exception$$Catch.apply(Exception.scala:79)
+	at scala.tools.nsc.Interpreter$$Request.loadAndRun(Interpreter.scala:825)
+	at scala.tools.nsc.Interpreter.interpret(Interpreter.scala:467)
+	at scala.tools.nsc.InterpreterLoop.interpretStartingWith(InterpreterLoop.scala:391)
+	at scala.tools.nsc.InterpreterLoop.command(InterpreterLoop.scala:367)
+	at scala.tools.nsc.InterpreterLoop.processLine$$1(InterpreterLoop.scala:249)
+	at scala.tools.nsc.InterpreterLoop.repl(InterpreterLoop.scala:267)
+	at scala.tools.nsc.InterpreterLoop.main(InterpreterLoop.scala:439)
+	at scala.tools.nsc.MainGenericRunner$$.createLoop$$1(MainGenericRunner.scala:118)
+	at scala.tools.nsc.MainGenericRunner$$.main(MainGenericRunner.scala:143)
+	at scala.tools.nsc.MainGenericRunner.main(MainGeneric...
+{code}
+
+
+Using 2.8.0.RC3.

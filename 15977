@@ -1,0 +1,39 @@
+{code}
+object SomeEnum extends Enumeration {
+	type SomeEnum = Value;
+	val ONE, TWO = Value;
+}
+
+object EnumTest {
+
+	def main (args : Array[String]) {
+		println(SomeEnum.values.size)
+		println(SomeEnum.values);
+		println(SomeEnum.values.size);
+		println(SomeEnum.values);
+	}
+}
+{code} 
+
+Should result in:
+{code}
+2
+SomeEnum.ValueSet(ONE, TWO)
+2
+SomeEnum.ValueSet(ONE, TWO)
+{code}
+
+But results in adding "Value" as new element of !SomeEnum:
+{code}
+2
+SomeEnum.ValueSet(ONE, TWO)
+3
+SomeEnum.ValueSet(ONE, TWO, Value)
+{code}
+
+It doesn't work with:
+  - Scala: 2.8.1.final
+  - Java: Java !HotSpot(TM) Client VM (build 1.5.0_17-b04, mixed mode, sharing)
+  - Operating system: Windows XP
+It works as expected with Scala 2.8.0.final.
+Clearly there was some bug introduced to Enumeration implementation between those versions - maybe something related to SI-3616.

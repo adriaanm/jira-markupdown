@@ -1,0 +1,22 @@
+The following code
+
+
+{noformat}
+class A {
+  def compareTo(o: Any): Int = 0
+}
+class B extends A with Comparable[B] {
+  def compareTo(b: B): Int = 0
+}
+object C {
+  def main(args: Array[String]): Unit = {
+    println(new B().compareTo(new Object()))
+  }
+}
+{noformat}
+
+compiles without warnings.  And it should be executed without any runtime error.  However, ClassCastException occurs when the code is executed.
+
+This problem is also known as an already fixed bug of Java Generics:
+
+http://www.concurrentaffair.org/2006/10/10/java-generics-unsound/

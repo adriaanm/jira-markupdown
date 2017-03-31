@@ -1,0 +1,13 @@
+In scala 2.7, this class had one field.  In scala 2.8 and beyond, it has three.
+{code}
+case class A(x: String)(y: String, z: String) { }
+{code}
+I'm pretty sure that using parameter lists beyond the first has been an advertised way of avoiding field creation for case class parameters.  This was undone, since the copy method references all the parameters in all the lists and so fields are created.
+
+You can somewhat distastefully get around this by inhibiting the creation of the copy method.
+{code}
+case class A(x: String)(y: String, z: String) {
+  private def copy = "no fields for y and z"
+}
+{code}
+This business should at least be documented.

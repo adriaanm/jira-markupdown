@@ -1,0 +1,22 @@
+This is with the latest trunk.
+
+{code}
+class Foo {
+	def bar: Boolean = {
+		lazy val go = { return true }
+		go
+	}
+}
+{code}
+
+{code}
+exception when transforming go$$lzy$$1 = return scala.Boolean.box(true).$$asInstanceOf[Nothing]()
+exception when transforming {
+  go$$lzy$$1 = return scala.Boolean.box(true).$$asInstanceOf[Nothing]();
+  bitmap$$0$$1 = bitmap$$0$$1.|(1);
+  ()
+}
+[lots more]
+Exception in thread "main" java.lang.AssertionError: assertion failed: value go$$1
+[etc]
+{code}

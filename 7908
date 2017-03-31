@@ -1,0 +1,56 @@
+This example
+
+{noformat}
+object Test {
+  def guard(x: Any): Boolean = true
+
+  def main(args: Array[String]) {
+    try { } catch { case x => if (!guard(x)) throw x }
+  }
+
+}
+{noformat}
+
+shows that this assertion
+
+{noformat}
+assert(relevantBBs.isEmpty || relevantBBs.contains(m.startBlock),
+       "you gave me dead code")
+{noformat}
+
+
+isn't as general as originally thought, because for {{main}} in the example its ICode 
+
+{noformat}
+  def main(args: Array[String] (ARRAY[REF(class String)])): Unit {
+  locals: value args, value x
+  startBlock: 1
+  blocks: [1,2,3,4]
+  
+  1:                   <--------------------- the start block
+    ?	JUMP 2
+    
+  3:                   <--------------------- catch block, part 1 of 2
+    9	LOAD_EXCEPTION(class Throwable)
+    9	STORE_LOCAL(value x)
+    9	THIS(Test)
+    9	LOAD_LOCAL(value x)
+    9	CALL_METHOD Test.guard (dynamic)
+    9	CZJUMP (BOOL)NE ? 2 : 4
+    
+  2:                   <--------------------- normal exit block
+    9	RETURN(UNIT)
+    
+  4:                   <--------------------- catch block, part 2 of 2
+    9	LOAD_LOCAL(value x)
+    9	THROW(Throwable)
+    
+  }
+  Exception handlers: 
+    catch (Throwable) in ArrayBuffer() starting at: 3
+      consisting of blocks: List(4, 3)
+      with finalizer: null
+{noformat}
+
+shows that 3 (the only block with callsites) has to show up  in {{relevantBBs}} while the {{startBlock}} doesn't have to (it's not necessary to compute its output typeflow to compute the input typeflow of 3, by virtue of 3 being the start of a catch block).
+

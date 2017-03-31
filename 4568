@@ -1,0 +1,14 @@
+Replying to [comment:4 extempore]:
+> That's up to martin.  For better or worse the "official" way to stringify objects in scala is .toString.  The repl is a piece of software we ship and we can reasonably improve on that behavior in that context.  Changing how Traversable goes about it is a more far-reaching change.  If we were going to do it I'd hope to do a lot better than catching NPEs and improving how Array is printed, not that those aren't worthwhile things.
+
+So it seems like there are really two things going on.
+
+One is a bug in the REPL: the "official" way to stringify an object in scala is not used by the REPL for types that extend Traversable.  Perhaps this ticket should be re-filed as a defect rather than enhancement, accordingly?
+
+At the same time, we're starting a discussing on something that's more of a feature or enhancement, which is how to fix toString in some more general way.  While that would be great, I don't think we should have to do it before we fix the REPL.
+
+> A simple backward compatible approach would be to define a new method like toScalaString with a default implementation which calls toString, maybe even taking some useful implicit argument with an empty default.  But so far martin hasn't been too enthusiastic about such proposals.
+
+This would be a method on Traversable?  Seems like adding a new method (and thereby introducing more API that might change) might be a bigger deal than changing Traversable's toString to properly handle nulls and arrays ...
+
+dan

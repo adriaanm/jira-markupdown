@@ -1,0 +1,31 @@
+Using Scala 2.8.0.r20873 on Java 1.6,
+
+As discussed on mailing list: http://old.nabble.com/Scopes-td27568723.html.
+
+Given the following sources:
+
+A.scala
+{code}
+package P { object X }
+package Q { object X }
+{code}
+
+B.scala
+{code}
+package P {
+  object A {
+    import Q._
+    println("L7: " + X)
+  }
+}
+{code}
+
+The reference to X in P.A should be ambiguous because the wildcard import has lower precedence than the definition of P.X.  If the code is in a single file instead of two, scalac generates the proper error:
+
+{code}
+error: reference to X is ambiguous;
+it is both defined in package P and imported subsequently by 
+import Q._
+      println("L7: " + X)
+                       ^
+{code}

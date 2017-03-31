@@ -1,0 +1,192 @@
+Here's what I'm getting when I take your branch, change `scalaVersion` to `2.11.0-M8` and run `sbt compile`. Looks like a different error from what you mentioned. How do I reproduce your problem? Also, could you post your compilation log - maybe it will give some ideas.
+
+{code}
+> compile
+[warn] Credentials file /Users/xeno_by/.sbt/specs2.credentials does not exist
+[warn] Credentials file /Users/xeno_by/.sbt/specs2.credentials does not exist
+[warn] Credentials file /Users/xeno_by/.sbt/specs2.credentials does not exist
+[warn] Credentials file /Users/xeno_by/.sbt/specs2.credentials does not exist
+[warn] Credentials file /Users/xeno_by/.sbt/specs2.credentials does not exist
+[warn] Credentials file /Users/xeno_by/.sbt/specs2.credentials does not exist
+[warn] Credentials file /Users/xeno_by/.sbt/specs2.credentials does not exist
+[warn] Credentials file /Users/xeno_by/.sbt/specs2.credentials does not exist
+[warn] Credentials file /Users/xeno_by/.sbt/specs2.credentials does not exist
+[warn] Credentials file /Users/xeno_by/.sbt/specs2.credentials does not exist
+[warn] Credentials file /Users/xeno_by/.sbt/specs2.credentials does not exist
+[warn] Credentials file /Users/xeno_by/.sbt/specs2.credentials does not exist
+[warn] Credentials file /Users/xeno_by/.sbt/specs2.credentials does not exist
+[info] Compiling 97 Scala sources to /Users/xeno_by/Projects/specs2/core/target/scala-2.11.0-M8/classes...
+[info] Compiling 315 Scala sources to /Users/xeno_by/Projects/specs2/target/scala-2.11.0-M8/classes...
+[warn] /Users/xeno_by/Projects/specs2/core/src/main/scala/org/specs2/specification/AutoExamples.scala:6: Unused import
+[warn] import text._
+[warn]             ^
+[warn] /Users/xeno_by/Projects/specs2/core/src/main/scala/org/specs2/specification/Fragments.scala:4: Unused import
+[warn] import collection.Iterablex._
+[warn]                             ^
+[warn] /Users/xeno_by/Projects/specs2/core/src/main/scala/org/specs2/specification/AutoExamples.scala:6: Unused import
+[warn] import text._
+[warn]             ^
+[warn] /Users/xeno_by/Projects/specs2/core/src/main/scala/org/specs2/specification/Fragments.scala:4: Unused import
+[warn] import collection.Iterablex._
+[warn]                             ^
+[warn] /Users/xeno_by/Projects/specs2/core/src/main/scala/org/specs2/specification/SpecificationStringContext.scala:111: type Context in package macros is deprecated: Use blackbox.Context or whitebox.Context instead
+[warn]   def s2Implementation(c: MContext)(variables: c.Expr[SpecPart]*) : c.Expr[Fragments] = {
+[warn]                           ^
+[warn] /Users/xeno_by/Projects/specs2/core/src/main/scala/org/specs2/specification/SpecificationStringContext.scala:125: method literal in trait ExprUtils is deprecated: Use quasiquotes instead
+[warn]         c.literal(content).tree,
+[warn]           ^
+[warn] /Users/xeno_by/Projects/specs2/core/src/main/scala/org/specs2/specification/SpecificationStringContext.scala:126: method literal in trait ExprUtils is deprecated: Use quasiquotes instead
+[warn]         c.literal(Yrangepos).tree,
+[warn]           ^
+[warn] /Users/xeno_by/Projects/specs2/form/src/main/scala/org/specs2/form/Cells.scala:146: local val in method xml is never used
+[warn]     val executed = e.valueOrResult match {
+[warn]         ^
+[warn] /Users/xeno_by/Projects/specs2/form/src/main/scala/org/specs2/form/Cells.scala:155: private method in class EffectCell is never used
+[warn]   private def statusName(r: Result) = r match {
+[warn]               ^
+[warn] /Users/xeno_by/Projects/specs2/form/src/main/scala/org/specs2/form/Form.scala:6: Unused import
+[warn] import collection.Iterablex._
+[warn]                             ^
+[error] symbol value x2 does not exist in org.specs2.mutable.AutoExamples$class.getSourceCode
+[warn] /Users/xeno_by/Projects/specs2/matcher/src/main/scala/org/specs2/matcher/CanBeEqual.scala:16: a type was inferred to be `Any`; this may indicate a programming error.
+[warn]     def ===[S >: T](other: =>S) = createExpectable(t).applyMatcher(new BeEqualTo(other))
+[warn]                                                                    ^
+[warn] /Users/xeno_by/Projects/specs2/matcher/src/main/scala/org/specs2/matcher/MatchResult.scala:252: Unused import
+[warn]   import Expectable._
+[warn]                     ^
+[warn] /Users/xeno_by/Projects/specs2/matcher/src/main/scala/org/specs2/matcher/MustExpectable.scala:15: a type was inferred to be `Any`; this may indicate a programming error.
+[warn]   def mustEqual(other: =>Any)    = applyMatcher(new BeEqualTo(other))
+[warn]                                                 ^
+[warn] /Users/xeno_by/Projects/specs2/matcher/src/main/scala/org/specs2/matcher/MustExpectable.scala:17: a type was inferred to be `Any`; this may indicate a programming error.
+[warn]   def must_==(other: =>Any)      = applyMatcher(new BeEqualTo(other))
+[warn]                                                 ^
+[warn] /Users/xeno_by/Projects/specs2/matcher/src/main/scala/org/specs2/matcher/ShouldExpectable.scala:15: a type was inferred to be `Any`; this may indicate a programming error.
+[warn]   def shouldEqual(other: =>Any)    = applyMatcher(new BeEqualTo(other))
+[warn]                                                   ^
+[warn] /Users/xeno_by/Projects/specs2/matcher/src/main/scala/org/specs2/matcher/ShouldExpectable.scala:17: a type was inferred to be `Any`; this may indicate a programming error.
+[warn]   def should_==(other: =>Any)      = applyMatcher(new BeEqualTo(other))
+[warn]                                                   ^
+[warn] /Users/xeno_by/Projects/specs2/common/src/main/scala/org/specs2/execute/ResultExecution.scala:105: match may not be exhaustive.
+[warn] It would fail on the following input: Right(_)
+[warn]   def executeProperty[T](prop: Property[T], default: Result = Success("no value")) = executeEither(prop.optionalValue) match {
+[warn]                                                                                                   ^
+[warn] /Users/xeno_by/Projects/specs2/common/src/main/scala/org/specs2/json/Json.scala:110: match may not be exhaustive.
+[warn] It would fail on the following input: JSONArray(_)
+[warn]                                          keyedObjects: (Any, Any) => Seq[T]): Seq[T] = json match {
+[warn]                                                                                        ^
+[warn] /Users/xeno_by/Projects/specs2/matcher-extra/src/main/scala/org/specs2/matcher/JsonMatchers.scala:99: match may not be exhaustive.
+[warn] It would fail on the following input: Some(_)
+[warn]       parse(s.value).map(navigate) match {
+[warn]                         ^
+[warn] /Users/xeno_by/Projects/specs2/matcher-extra/src/main/scala/org/specs2/matcher/JsonMatchers.scala:117: match may not be exhaustive.
+[warn] It would fail on the following input: Some(_)
+[warn]       parse(s.value.notNull).map(navigate) match {
+[warn]                                 ^
+[warn] /Users/xeno_by/Projects/specs2/matcher-extra/src/main/scala/org/specs2/matcher/JsonMatchers.scala:181: match may not be exhaustive.
+[warn] It would fail on the following input: Some(_)
+[warn]       parse(s.value.notNull).map(navigate) match {
+[warn]                                 ^
+[warn] /Users/xeno_by/Projects/specs2/common/src/main/scala/org/specs2/execute/Snippets.scala:64: type Context in package macros is deprecated: Use blackbox.Context or whitebox.Context instead
+[warn]   def create[T](c: MContext)(code: c.Expr[T])(params: c.Expr[SnippetParams[T]]): c.Expr[Snippet[T]] = {
+[warn]                    ^
+[warn] /Users/xeno_by/Projects/specs2/common/src/main/scala/org/specs2/execute/Snippets.scala:67: method literal in trait ExprUtils is deprecated: Use quasiquotes instead
+[warn]     val result = c.Expr(methodCall(c)("createSnippet", c.literal(c.macroApplication.pos.isRange).tree, stringExpr(c)(code), code.tree.duplicate, params.tree))
+[warn]                                                          ^
+[warn] /Users/xeno_by/Projects/specs2/common/src/main/scala/org/specs2/io/MockFileSystem.scala:48: object Pair in object Predef is deprecated: Use built-in tuple syntax or Tuple2 instead
+[warn]     files += Pair(path, content)
+[warn]              ^
+[warn] /Users/xeno_by/Projects/specs2/common/src/main/scala/org/specs2/reflect/Macros.scala:8: type Context in package macros is deprecated: Use blackbox.Context or whitebox.Context instead
+[warn]   def toAST[A](c: Context)(xs: c.Tree*)(implicit tt: c.TypeTag[A]): c.Tree = {
+[warn]                   ^
+[warn] /Users/xeno_by/Projects/specs2/common/src/main/scala/org/specs2/reflect/Macros.scala:10: method newTermName in trait Names is deprecated: Use TermName instead
+[warn]     Apply(Select(Ident(typeOf[A].typeSymbol.companionSymbol), newTermName("apply")), xs.toList)
+[warn]                                                               ^
+[warn] /Users/xeno_by/Projects/specs2/common/src/main/scala/org/specs2/reflect/Macros.scala:13: type Context in package macros is deprecated: Use blackbox.Context or whitebox.Context instead
+[warn]   def methodCall(c: Context)(name: String, xs: c.Tree*): c.Tree = {
+[warn]                     ^
+[warn] /Users/xeno_by/Projects/specs2/common/src/main/scala/org/specs2/reflect/Macros.scala:15: method newTermName in trait Names is deprecated: Use TermName instead
+[warn]     Apply(Ident(newTermName(name)), xs.toList)
+[warn]                 ^
+[warn] /Users/xeno_by/Projects/specs2/common/src/main/scala/org/specs2/reflect/Macros.scala:18: type Context in package macros is deprecated: Use blackbox.Context or whitebox.Context instead
+[warn]   def stringExpr(c: Context)(variable: c.Expr[Any]): c.Tree =
+[warn]                     ^
+[warn] /Users/xeno_by/Projects/specs2/common/src/main/scala/org/specs2/reflect/Macros.scala:19: method literal in trait ExprUtils is deprecated: Use quasiquotes instead
+[warn]     c.literal(sourceOf(c)(variable)).tree
+[warn]       ^
+[warn] /Users/xeno_by/Projects/specs2/common/src/main/scala/org/specs2/reflect/Macros.scala:21: type Context in package macros is deprecated: Use blackbox.Context or whitebox.Context instead
+[warn]   def sourceOf(c: Context)(expr: c.Expr[_]): String = {
+[warn]                   ^
+[warn] /Users/xeno_by/Projects/specs2/common/src/main/scala/org/specs2/reflect/Macros.scala:28: type Context in package macros is deprecated: Use blackbox.Context or whitebox.Context instead
+[warn]   def termName(c: Context)(m: c.Expr[Any]): c.Expr[String] = {
+[warn]                   ^
+[warn] /Users/xeno_by/Projects/specs2/common/src/main/scala/org/specs2/reflect/Macros.scala:42: method literal in trait ExprUtils is deprecated: Use quasiquotes instead
+[warn]     c.literal(name.toString.trim)
+[warn]       ^
+[warn] /Users/xeno_by/Projects/specs2/core/src/main/scala/org/specs2/specification/SpecificationStringContext.scala:111: type Context in package macros is deprecated: Use blackbox.Context or whitebox.Context instead
+[warn]   def s2Implementation(c: MContext)(variables: c.Expr[SpecPart]*) : c.Expr[Fragments] = {
+[warn]                           ^
+[warn] /Users/xeno_by/Projects/specs2/core/src/main/scala/org/specs2/specification/SpecificationStringContext.scala:125: method literal in trait ExprUtils is deprecated: Use quasiquotes instead
+[warn]         c.literal(content).tree,
+[warn]           ^
+[warn] /Users/xeno_by/Projects/specs2/core/src/main/scala/org/specs2/specification/SpecificationStringContext.scala:126: method literal in trait ExprUtils is deprecated: Use quasiquotes instead
+[warn]         c.literal(Yrangepos).tree,
+[warn]           ^
+[warn] /Users/xeno_by/Projects/specs2/matcher-extra/src/main/scala/org/specs2/matcher/MatcherMacros.scala:28: type Context in package macros is deprecated: Use blackbox.Context or whitebox.Context instead
+[warn]   def matcherMacroImpl[T : c.WeakTypeTag](c: Context): c.Expr[Matcher[T]] = { import c.universe._
+[warn]                                              ^
+[warn] /Users/xeno_by/Projects/specs2/matcher-extra/src/main/scala/org/specs2/matcher/MatcherMacros.scala:30: method newTypeName in trait Names is deprecated: Use TypeName instead
+[warn]     val matcherClassType = newTypeName(matcherClassName[T](c))
+[warn]                            ^
+[warn] /Users/xeno_by/Projects/specs2/matcher-extra/src/main/scala/org/specs2/matcher/MatcherMacros.scala:42: method newTermName in trait Names is deprecated: Use TermName instead
+[warn]       val methodName = newTermName(fieldName)
+[warn]                        ^
+[warn] /Users/xeno_by/Projects/specs2/matcher-extra/src/main/scala/org/specs2/matcher/MatcherMacros.scala:44: method newTermName in trait Names is deprecated: Use TermName instead
+[warn]       val parameterName = newTermName(fieldName)
+[warn]                           ^
+[warn] /Users/xeno_by/Projects/specs2/matcher-extra/src/main/scala/org/specs2/matcher/MatcherMacros.scala:89: type Context in package macros is deprecated: Use blackbox.Context or whitebox.Context instead
+[warn]   def fieldMatcherImplementation[F, T : c.WeakTypeTag](c: Context)(fieldValue: c.Expr[F]) = {
+[warn]                                                           ^
+[warn] /Users/xeno_by/Projects/specs2/matcher-extra/src/main/scala/org/specs2/matcher/MatcherMacros.scala:93: method newTermName in trait Names is deprecated: Use TermName instead
+[warn]     val prefixVal = newTermName(c.fresh)
+[warn]                     ^
+[warn] /Users/xeno_by/Projects/specs2/matcher-extra/src/main/scala/org/specs2/matcher/MatcherMacros.scala:93: method fresh in trait Names is deprecated: Use freshName instead
+[warn]     val prefixVal = newTermName(c.fresh)
+[warn]                                   ^
+[warn] /Users/xeno_by/Projects/specs2/matcher-extra/src/main/scala/org/specs2/matcher/MatcherMacros.scala:103: type Context in package macros is deprecated: Use blackbox.Context or whitebox.Context instead
+[warn]   def fieldMatcherImplementation2[F : c.WeakTypeTag, T : c.WeakTypeTag, R](c: Context)(fieldValue: c.Expr[F])(asResult: c.Expr[R]) = { import c.universe._
+[warn]                                                                               ^
+[warn] /Users/xeno_by/Projects/specs2/matcher-extra/src/main/scala/org/specs2/matcher/MatcherMacros.scala:106: method newTermName in trait Names is deprecated: Use TermName instead
+[warn]     val prefixVal = newTermName(c.fresh)
+[warn]                     ^
+[warn] /Users/xeno_by/Projects/specs2/matcher-extra/src/main/scala/org/specs2/matcher/MatcherMacros.scala:106: method fresh in trait Names is deprecated: Use freshName instead
+[warn]     val prefixVal = newTermName(c.fresh)
+[warn]                                   ^
+[warn] /Users/xeno_by/Projects/specs2/matcher-extra/src/main/scala/org/specs2/matcher/MatcherMacros.scala:118: type Context in package macros is deprecated: Use blackbox.Context or whitebox.Context instead
+[warn]   private def matcherClassName[T : c.WeakTypeTag](c: Context) = c.universe.weakTypeOf[T].typeSymbol.name.encoded+"Matcher"
+[warn]                                                      ^
+[warn] /Users/xeno_by/Projects/specs2/matcher-extra/src/main/scala/org/specs2/matcher/MatcherMacros.scala:120: type Context in package macros is deprecated: Use blackbox.Context or whitebox.Context instead
+[warn]   private def isConstructor(c: Context) = { import c.universe._
+[warn]                                ^
+[warn] /Users/xeno_by/Projects/specs2/matcher-extra/src/main/scala/org/specs2/matcher/MatcherMacros.scala:127: type Context in package macros is deprecated: Use blackbox.Context or whitebox.Context instead
+[warn]   private def isSynthetic(c: Context) = { import c.universe._
+[warn]                              ^
+[warn] /Users/xeno_by/Projects/specs2/matcher-extra/src/main/scala/org/specs2/matcher/MatcherMacros.scala:131: type Context in package macros is deprecated: Use blackbox.Context or whitebox.Context instead
+[warn]   private def extractBody(c: Context) = { import c.universe._
+[warn]                              ^
+[warn] /Users/xeno_by/Projects/specs2/matcher-extra/src/main/scala/org/specs2/matcher/MatcherMacros.scala:137: type Context in package macros is deprecated: Use blackbox.Context or whitebox.Context instead
+[warn]   private def replaceThises(c: Context)(className: String, prefixVal: c.TermName) = {
+[warn]                                ^
+[warn] /Users/xeno_by/Projects/specs2/matcher-extra/src/main/scala/org/specs2/matcher/MatcherMacros.scala:148: type Context in package macros is deprecated: Use blackbox.Context or whitebox.Context instead
+[warn]   private def setPosition(c: Context)(position: c.Position) = { import c.universe._
+[warn]                              ^
+[warn] /Users/xeno_by/Projects/specs2/matcher-extra/src/main/scala/org/specs2/matcher/MatcherMacros.scala:156: type Context in package macros is deprecated: Use blackbox.Context or whitebox.Context instead
+[warn]   private def setMacroPosition(c: Context) = setPosition(c)(c.macroApplication.pos.makeTransparent)
+[warn]                                   ^
+[error] symbol value x8 does not exist in org.specs2.collection.Iterablex$ExtendedIterable.containsInOrder
+[trace] Stack trace suppressed: run last specs2/compile:compile for the full output.
+[trace] Stack trace suppressed: run last specs2-core/compile:compile for the full output.
+[error] (specs2/compile:compile) scala.reflect.internal.FatalError: symbol value x8 does not exist in org.specs2.collection.Iterablex$ExtendedIterable.containsInOrder
+[error] (specs2-core/compile:compile) scala.reflect.internal.FatalError: symbol value x2 does not exist in org.specs2.mutable.AutoExamples$class.getSourceCode
+[error] Total time: 79 s, completed Jan 31, 2014 7:22:28 AM
+>
+{code}

@@ -1,0 +1,20 @@
+(In r24533) [I'm laptop only so there's some chance this will incur temporary
+breakage, but it needs committing.]
+
+Heading off gratuitous complications which haven't yet shipped, I
+eliminated the -jar startup option in favor of doing what we already do,
+figuring it out.  So now all these things work.
+
+  scala foo/bar.scala // if file is a script or has one main method
+  scala foo.Bar       // if it has a legal main method
+  scala foo.jar       // if it has a legal MainClass attribute
+
+Also changed "-savecompiled" to "-save" and given scala source
+called foo.scala, generate foo.jar rather than foo.scala.jar.
+Cleaned up a bunch of related code and further polished the
+scala startup message.  And unbroke choice settings and improved
+that error too, which closes SI-3849.
+
+While trying to write a test for the choice setting, was reminded
+that partest just discards invalid flags files.  Made it fail instead,
+which closes SI-3712.  Fixed the new failures that revealed.  No review.

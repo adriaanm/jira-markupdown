@@ -1,0 +1,353 @@
+The following 300 lines of seeming innocent scala code (no higher-kinded types) fail to compile with 500Mb of ram.
+
+This example is reduced from unit testing code using ScalaTest. The example is actually short with most of the code being the repeat of the same block.
+The code can be compiled if most of the repeats are commented out, leaving one or two blocks.
+
+The excessive compilation requirements show up very often when using ScalaTest.
+
+{code}
+object CompilerBug {
+
+  // Mocking ScalaTest.
+  def test(s: String)(f: => Unit) { }
+  def intercept[T <: Throwable :ClassManifest](f: => Unit) {}
+  
+  // Mock api being tested.
+  trait M { type Tr;  type Tc <: Tr }
+  sealed trait D
+
+  class ParentClass[E <: M, Sr, +R <: D] { def size = 0 }
+  class ChildClass[E <: M, Sr <: Sw, Sw, +R <: D] extends ParentClass[E, Sr, R]
+  
+  trait ParentTrait[E <: M, +R <: D] extends ParentClass[E, E#Tc, R]
+  trait ChildTrait[E <: M, +R <: D] extends ChildClass[E, E#Tc, E#Tr, R] with ParentTrait[E, R]
+
+  def combine[
+    E1 <: M, R1 <: D, E2 <: M, R2 <: D, E3 <: M, R3 <: D, E4 <: M, R4 <: D, E5 <: M, R5 <: D, E6 <: M, R6 <: D,
+    E7 <: M, R7 <: D, E8 <: M, R8 <: D, E9 <: M, R9 <: D, E10 <: M, R10 <: D, E11 <: M, R11 <: D, E12 <: M, R12 <: D
+  ](
+    s1: ChildTrait[E1, R1], s2: ChildTrait[E2, R2], s3: ChildTrait[E3, R3], s4: ChildTrait[E4, R4], s5: ChildTrait[E5, R5], s6: ChildTrait[E6, R6],
+    s7: ChildTrait[E7, R7], s8: ChildTrait[E8, R8], s9: ChildTrait[E9, R9], s10: ChildTrait[E10, R10], s11: ChildTrait[E11, R11], s12: ChildTrait[E12, R12]
+  )(size: Int) = (
+    null.asInstanceOf[ChildTrait[E1, R1]], null.asInstanceOf[ChildTrait[E2, R2]], null.asInstanceOf[ChildTrait[E3, R3]], null.asInstanceOf[ChildTrait[E4, R4]],
+    null.asInstanceOf[ChildTrait[E5, R5]], null.asInstanceOf[ChildTrait[E6, R6]], null.asInstanceOf[ChildTrait[E7, R7]], null.asInstanceOf[ChildTrait[E8, R8]],
+    null.asInstanceOf[ChildTrait[E9, R9]], null.asInstanceOf[ChildTrait[E10, R10]], null.asInstanceOf[ChildTrait[E11, R11]], null.asInstanceOf[ChildTrait[E12, R12]]
+  )
+
+  // Helper methods.
+  private def get(s: Int) :ChildTrait[_ <: M, _ <: D] = null
+  private def testCombined(src: Seq[ChildTrait[_ <: M, _ <: D]], combined: Seq[ChildTrait[_ <: M, _ <: D]]) {}
+
+
+  test("Signature from ScalaTest") {
+    val s = 10
+
+    for (i <- 0 until 100) {
+      // Adding more of these blocks causes compilation requirements to grow excessively.
+      {
+        val src = Array(get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s))
+        val (i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12) = combine(
+          src(0), src(1), src(2), src(3), src(4), src(5), src(6), src(7), src(8), src(9), src(10), src(11)
+        )(s)
+
+        testCombined(src, Array(i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12))
+
+        intercept[IllegalArgumentException] {
+          combine(src(0), src(1), src(2), src(3), src(4), src(5), src(6), src(7), src(8), src(9), src(10), src(11))(s + 1)
+        }
+      }
+
+      {
+        val src = Array(get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s))
+        val (i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12) = combine(
+          src(0), src(1), src(2), src(3), src(4), src(5), src(6), src(7), src(8), src(9), src(10), src(11)
+        )(s)
+
+        testCombined(src, Array(i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12))
+
+        intercept[IllegalArgumentException] {
+          combine(src(0), src(1), src(2), src(3), src(4), src(5), src(6), src(7), src(8), src(9), src(10), src(11))(s + 1)
+        }
+      }
+
+      {
+        val src = Array(get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s))
+        val (i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12) = combine(
+          src(0), src(1), src(2), src(3), src(4), src(5), src(6), src(7), src(8), src(9), src(10), src(11)
+        )(s)
+
+        testCombined(src, Array(i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12))
+
+        intercept[IllegalArgumentException] {
+          combine(src(0), src(1), src(2), src(3), src(4), src(5), src(6), src(7), src(8), src(9), src(10), src(11))(s + 1)
+        }
+      }
+
+      {
+        val src = Array(get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s))
+        val (i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12) = combine(
+          src(0), src(1), src(2), src(3), src(4), src(5), src(6), src(7), src(8), src(9), src(10), src(11)
+        )(s)
+
+        testCombined(src, Array(i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12))
+
+        intercept[IllegalArgumentException] {
+          combine(src(0), src(1), src(2), src(3), src(4), src(5), src(6), src(7), src(8), src(9), src(10), src(11))(s + 1)
+        }
+      }
+
+      {
+        val src = Array(get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s))
+        val (i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12) = combine(
+          src(0), src(1), src(2), src(3), src(4), src(5), src(6), src(7), src(8), src(9), src(10), src(11)
+        )(s)
+
+        testCombined(src, Array(i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12))
+
+        intercept[IllegalArgumentException] {
+          combine(src(0), src(1), src(2), src(3), src(4), src(5), src(6), src(7), src(8), src(9), src(10), src(11))(s + 1)
+        }
+      }
+
+      {
+        val src = Array(get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s))
+        val (i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12) = combine(
+          src(0), src(1), src(2), src(3), src(4), src(5), src(6), src(7), src(8), src(9), src(10), src(11)
+        )(s)
+
+        testCombined(src, Array(i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12))
+
+        intercept[IllegalArgumentException] {
+          combine(src(0), src(1), src(2), src(3), src(4), src(5), src(6), src(7), src(8), src(9), src(10), src(11))(s + 1)
+        }
+      }
+
+      {
+        val src = Array(get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s))
+        val (i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12) = combine(
+          src(0), src(1), src(2), src(3), src(4), src(5), src(6), src(7), src(8), src(9), src(10), src(11)
+        )(s)
+
+        testCombined(src, Array(i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12))
+
+        intercept[IllegalArgumentException] {
+          combine(src(0), src(1), src(2), src(3), src(4), src(5), src(6), src(7), src(8), src(9), src(10), src(11))(s + 1)
+        }
+      }
+
+      {
+        val src = Array(get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s))
+        val (i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12) = combine(
+          src(0), src(1), src(2), src(3), src(4), src(5), src(6), src(7), src(8), src(9), src(10), src(11)
+        )(s)
+
+        testCombined(src, Array(i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12))
+
+        intercept[IllegalArgumentException] {
+          combine(src(0), src(1), src(2), src(3), src(4), src(5), src(6), src(7), src(8), src(9), src(10), src(11))(s + 1)
+        }
+      }
+
+      {
+        val src = Array(get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s))
+        val (i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12) = combine(
+          src(0), src(1), src(2), src(3), src(4), src(5), src(6), src(7), src(8), src(9), src(10), src(11)
+        )(s)
+
+        testCombined(src, Array(i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12))
+
+        intercept[IllegalArgumentException] {
+          combine(src(0), src(1), src(2), src(3), src(4), src(5), src(6), src(7), src(8), src(9), src(10), src(11))(s + 1)
+        }
+      }
+
+      {
+        val src = Array(get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s))
+        val (i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12) = combine(
+          src(0), src(1), src(2), src(3), src(4), src(5), src(6), src(7), src(8), src(9), src(10), src(11)
+        )(s)
+
+        testCombined(src, Array(i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12))
+
+        intercept[IllegalArgumentException] {
+          combine(src(0), src(1), src(2), src(3), src(4), src(5), src(6), src(7), src(8), src(9), src(10), src(11))(s + 1)
+        }
+      }
+
+      {
+        val src = Array(get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s))
+        val (i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12) = combine(
+          src(0), src(1), src(2), src(3), src(4), src(5), src(6), src(7), src(8), src(9), src(10), src(11)
+        )(s)
+
+        testCombined(src, Array(i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12))
+
+        intercept[IllegalArgumentException] {
+          combine(src(0), src(1), src(2), src(3), src(4), src(5), src(6), src(7), src(8), src(9), src(10), src(11))(s + 1)
+        }
+      }
+
+      {
+        val src = Array(get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s))
+        val (i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12) = combine(
+          src(0), src(1), src(2), src(3), src(4), src(5), src(6), src(7), src(8), src(9), src(10), src(11)
+        )(s)
+
+        testCombined(src, Array(i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12))
+
+        intercept[IllegalArgumentException] {
+          combine(src(0), src(1), src(2), src(3), src(4), src(5), src(6), src(7), src(8), src(9), src(10), src(11))(s + 1)
+        }
+      }
+
+      {
+        val src = Array(get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s))
+        val (i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12) = combine(
+          src(0), src(1), src(2), src(3), src(4), src(5), src(6), src(7), src(8), src(9), src(10), src(11)
+        )(s)
+
+        testCombined(src, Array(i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12))
+
+        intercept[IllegalArgumentException] {
+          combine(src(0), src(1), src(2), src(3), src(4), src(5), src(6), src(7), src(8), src(9), src(10), src(11))(s + 1)
+        }
+      }
+
+      {
+        val src = Array(get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s))
+        val (i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12) = combine(
+          src(0), src(1), src(2), src(3), src(4), src(5), src(6), src(7), src(8), src(9), src(10), src(11)
+        )(s)
+
+        testCombined(src, Array(i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12))
+
+        intercept[IllegalArgumentException] {
+          combine(src(0), src(1), src(2), src(3), src(4), src(5), src(6), src(7), src(8), src(9), src(10), src(11))(s + 1)
+        }
+      }
+
+      {
+        val src = Array(get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s))
+        val (i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12) = combine(
+          src(0), src(1), src(2), src(3), src(4), src(5), src(6), src(7), src(8), src(9), src(10), src(11)
+        )(s)
+
+        testCombined(src, Array(i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12))
+
+        intercept[IllegalArgumentException] {
+          combine(src(0), src(1), src(2), src(3), src(4), src(5), src(6), src(7), src(8), src(9), src(10), src(11))(s + 1)
+        }
+      }
+
+      {
+        val src = Array(get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s))
+        val (i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12) = combine(
+          src(0), src(1), src(2), src(3), src(4), src(5), src(6), src(7), src(8), src(9), src(10), src(11)
+        )(s)
+
+        testCombined(src, Array(i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12))
+
+        intercept[IllegalArgumentException] {
+          combine(src(0), src(1), src(2), src(3), src(4), src(5), src(6), src(7), src(8), src(9), src(10), src(11))(s + 1)
+        }
+      }
+
+      {
+        val src = Array(get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s))
+        val (i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12) = combine(
+          src(0), src(1), src(2), src(3), src(4), src(5), src(6), src(7), src(8), src(9), src(10), src(11)
+        )(s)
+
+        testCombined(src, Array(i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12))
+
+        intercept[IllegalArgumentException] {
+          combine(src(0), src(1), src(2), src(3), src(4), src(5), src(6), src(7), src(8), src(9), src(10), src(11))(s + 1)
+        }
+      }
+
+      {
+        val src = Array(get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s))
+        val (i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12) = combine(
+          src(0), src(1), src(2), src(3), src(4), src(5), src(6), src(7), src(8), src(9), src(10), src(11)
+        )(s)
+
+        testCombined(src, Array(i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12))
+
+        intercept[IllegalArgumentException] {
+          combine(src(0), src(1), src(2), src(3), src(4), src(5), src(6), src(7), src(8), src(9), src(10), src(11))(s + 1)
+        }
+      }
+
+      {
+        val src = Array(get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s))
+        val (i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12) = combine(
+          src(0), src(1), src(2), src(3), src(4), src(5), src(6), src(7), src(8), src(9), src(10), src(11)
+        )(s)
+
+        testCombined(src, Array(i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12))
+
+        intercept[IllegalArgumentException] {
+          combine(src(0), src(1), src(2), src(3), src(4), src(5), src(6), src(7), src(8), src(9), src(10), src(11))(s + 1)
+        }
+      }
+
+      {
+        val src = Array(get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s), get(s))
+        val (i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12) = combine(
+          src(0), src(1), src(2), src(3), src(4), src(5), src(6), src(7), src(8), src(9), src(10), src(11)
+        )(s)
+
+        testCombined(src, Array(i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12))
+
+        intercept[IllegalArgumentException] {
+          combine(src(0), src(1), src(2), src(3), src(4), src(5), src(6), src(7), src(8), src(9), src(10), src(11))(s + 1)
+        }
+      }
+    }
+  }
+}
+{code}
+
+Exception with 2.8.1 (with 2.9.0.r23749 compiler hangs indefinitely):
+{code}
+JAVA_OPTS="-Xmx512M" scalac CompilerBug.scala
+Exception in thread "main" java.lang.OutOfMemoryError: Java heap space
+        at scala.tools.nsc.util.HashSet.growTable(HashSet.scala:93)
+        at scala.tools.nsc.util.HashSet.findEntryOrUpdate(HashSet.scala:38)
+        at scala.tools.nsc.symtab.Types$$class.scala$$tools$$nsc$$symtab$$Types$$$$unique(Types.scala:2804)
+        at scala.tools.nsc.symtab.Types$$class.typeRef(Types.scala:2599)
+        at scala.tools.nsc.symtab.SymbolTable.typeRef(SymbolTable.scala:13)
+        at scala.tools.nsc.symtab.Symbols$$TypeSymbol.tpe(Symbols.scala:1827)
+        at scala.tools.nsc.symtab.Types$$AsSeenFromMap.stabilize(Types.scala:3231)
+        at scala.tools.nsc.symtab.Types$$AsSeenFromMap.toPrefix$$1(Types.scala:3260)
+        at scala.tools.nsc.symtab.Types$$AsSeenFromMap.apply(Types.scala:3267)
+        at scala.tools.nsc.symtab.Types$$AsSeenFromMap.apply(Types.scala:3189)
+        at scala.tools.nsc.symtab.Types$$TypeMap.mapOver(Types.scala:2923)
+        at scala.tools.nsc.symtab.Types$$AsSeenFromMap.apply(Types.scala:3313)
+        at scala.tools.nsc.symtab.Types$$AsSeenFromMap.apply(Types.scala:3189)
+        at scala.tools.nsc.symtab.Types$$TypeMap.mapOver(Types.scala:2967)
+        at scala.tools.nsc.symtab.Types$$AsSeenFromMap.apply(Types.scala:3313)
+        at scala.tools.nsc.symtab.Types$$Type.asSeenFrom(Types.scala:516)
+        at scala.tools.nsc.symtab.Types$$TypeRef.transformInfo(Types.scala:1647)
+        at scala.tools.nsc.symtab.Types$$TypeRef.thisInfo(Types.scala:1651)
+        at scala.tools.nsc.symtab.Types$$TypeRef.bounds(Types.scala:1671)
+        at scala.tools.nsc.symtab.Types$$class.fourthTry$$1(Types.scala:4553)
+        at scala.tools.nsc.symtab.Types$$class.thirdTryRef$$1(Types.scala:4470)
+        at scala.tools.nsc.symtab.Types$$class.firstTry$$1(Types.scala:4414)
+        at scala.tools.nsc.symtab.Types$$class.scala$$tools$$nsc$$symtab$$Types$$$$isSubType2(Types.scala:4569)
+        at scala.tools.nsc.symtab.Types$$$$anonfun$$isSubType$$1.apply$$mcZ$$sp(Types.scala:4284)
+        at scala.tools.nsc.symtab.Types$$undoLog$$.undoUnless(Types.scala:127)
+        at scala.tools.nsc.symtab.Types$$class.isSubType(Types.scala:4271)
+        at scala.tools.nsc.symtab.SymbolTable.isSubType(SymbolTable.scala:13)
+        at scala.tools.nsc.symtab.Types$$Type.$$less$$colon$$less(Types.scala:601)
+        at scala.tools.nsc.symtab.Types$$class.thirdTryRef$$1(Types.scala:4474)
+        at scala.tools.nsc.symtab.Types$$class.firstTry$$1(Types.scala:4414)
+        at scala.tools.nsc.symtab.Types$$class.scala$$tools$$nsc$$symtab$$Types$$$$isSubType2(Types.scala:4569)
+        at scala.tools.nsc.symtab.Types$$$$anonfun$$isSubType$$1.apply$$mcZ$$sp(Types.scala:4284)
+{code} 
+
+
+=== Versions ===
+  - Scala: tested on 2.8.1.final (exception) and 2.9.0.r23749 (compiler hangs indefinitely)
+  - Java: 1.6.0_22
+  - Operating system: Linux-64bit

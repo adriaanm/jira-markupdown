@@ -1,0 +1,24 @@
+OK, so I found out that the problem is not related to `react` or `loop`. Instead, it seems to be a problem with the underlying thread pool. The code runs fine when using a Java 5 `Executor`. This can be done by overriding `scheduler` in class `WorkerHandler`:
+{code}
+override val scheduler = new scala.actors.SchedulerAdapter {
+  def execute(fun: => Unit) {
+    tpool.execute(new Runnable {
+      def run() { fun }
+    })
+  }
+}
+{code}
+`tpool` is declared in object `Messaging` as
+{code}
+val tpool = java.util.concurrent.Executors.newFixedThreadPool(4)
+{code}
+Moreover, when the central handler exits we also have to shut down the executor:
+{code}
+if (actors == vmax && actors == deadActors) {
+  println("central exit")
+  tpool.shutdown()
+  exit()
+}
+{code}
+
+Using this work around I have not been able to reproduce the problem. So, it seems that in the default fork/join pool sometimes submitted tasks are either lost or not executed. I'll take a look at it, but I'm not sure it is easy to fix. Doug Lea who is the original author of the fork/join pool recommends switching to the new version which is going to be included in Java 7. The problem here is that the new code base depends on certain classes in `java.util.concurrent` which are not available on Java 1.4. I imagine that most of them could be back ported from the original JSR166 sources, though.

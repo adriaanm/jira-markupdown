@@ -1,0 +1,137 @@
+That change exposed an existing bug in the our tree generation.
+
+{noformat}
+JAVA_OPTS=$DO qbin/scala
+Listening for transport dt_socket at address: 5006
+Welcome to Scala version 2.11.0-20130902-030930-a8c05274f7 (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_37).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> :paste -raw
+// Entering paste mode (ctrl-D to finish)
+
+package test; class C { object O }
+
+// Exiting paste mode, now interpreting.
+
+
+scala> :power
+** Power User mode enabled - BEEP WHIR GYVE **
+** :phase has been set to 'typer'.          **
+** scala.tools.nsc._ has been imported      **
+** global._, definitions._ also imported    **
+** Try  :help, :vals, power.<tab>           **
+
+scala> val c = typeOf[C].typeSymbol
+<console>:33: error: not found: type C
+       val c = typeOf[C].typeSymbol
+                      ^
+
+scala> val c = typeOf[test.C].typeSymbol
+c: $r.intp.global.Symbol = class C
+
+scala> val o = c.info.decl(TermName("O"))
+o: $r.intp.global.Symbol = object O
+
+scala> val packageType = o.owner.owner.thisType
+packageType: $r.intp.global.Type = test.type
+
+scala> showRaw(exitingFlatten(gen.mkAttributedRef(packageType, o)))
+res0: String = Select(Select(This(TypeName("test")), nme.PACKAGE), TermName("O"))
+
+scala> exitingFlatten((o.owner, o.moduleClass.owner))
+res1: ($r.intp.global.Symbol, $r.intp.global.Symbol) = (class C,package test)
+
+scala> o.getClass
+res2: Class[_ <: $r.intp.global.Symbol] = class scala.reflect.internal.Symbols$ModuleSymbol
+{noformat}
+
+The incorrect part is `Select(Select(This(TypeName("test")), nme.PACKAGE), TermName("O"))`; there is
+no package object here! The qualifier is attributed with {{NoSymbol}}.
+
+This is emitted by the structural type encoding in {{Cleanup}}. Before f21b1ce7fd, the qualifier was
+elided by {{GenICode}} which masked the problem.
+
+The owner of a {{ModuleSymbol}} is given by:
+
+{code}
+    override def owner = {
+      if (Statistics.hotEnabled) Statistics.incCounter(ownerCount)
+      if (!isMethod && needsFlatClasses) rawowner.owner
+      else rawowner
+{code}
+
+whereas the owner of a {{ModuleClassSymbol}} is:
+
+{code}
+    override def owner: Symbol = {
+      if (Statistics.hotEnabled) Statistics.incCounter(ownerCount)
+      if (needsFlatClasses) rawowner.owner else rawowner
+    }
+{code}
+
+The difference is material to {{mkAttributedSelect}} which decides whether the selected name should come from a package or the corresponding package object.
+
+{code}
+      // Have to recognize anytime a selection is made on a package
+      // so it can be rewritten to foo.bar.`package`.name rather than
+      // foo.bar.name if name is in the package object.
+      // TODO - factor out the common logic between this and
+      // the Typers method "isInPackageObject", used in typedIdent.
+      val qualsym = (
+        if (qual.tpe ne null) qual.tpe.typeSymbol
+        else if (qual.symbol ne null) qual.symbol
+        else NoSymbol
+      )
+      val needsPackageQualifier = (
+           (sym ne null)
+        && qualsym.isPackage
+        && !sym.isDefinedInPackage
+      )
+      val pkgQualifier =
+        if (needsPackageQualifier) {
+          // The owner of a symbol which requires package qualification may be the
+          // package object iself, but it also could be any superclass of the package
+          // object.  In the latter case, we must go through the qualifier's info
+          // to obtain the right symbol.
+          val packageObject = if (sym.owner.isModuleClass) sym.owner.sourceModule else qual.tpe member nme.PACKAGE
+          Select(qual, nme.PACKAGE) setSymbol packageObject setType singleType(qual.tpe, packageObject)
+        }
+{code}
+
+The {{isMethod}} check related to the peculiar situation elucidated by Paul:
+
+{code}
+    /** A little explanation for this confusing situation.
+     *  Nested modules which have no static owner when ModuleDefs
+     *  are eliminated (refchecks) are given the lateMETHOD flag,
+     *  which makes them appear as methods after refchecks.
+     *  Here's an example where one can see all four of FF FT TF TT
+     *  for (isStatic, isMethod) at various phases.
+     *
+     *    trait A1 { case class Quux() }
+     *    object A2 extends A1 { object Flax }
+     *    // --  namer         object Quux in trait A1
+     *    // -M  flatten       object Quux in trait A1
+     *    // S-  flatten       object Flax in object A2
+     *    // -M  posterasure   object Quux in trait A1
+     *    // -M  jvm           object Quux in trait A1
+     *    // SM  jvm           object Quux in object A2
+     *
+     *  So "isModuleNotMethod" exists not for its achievement in
+     *  brevity, but to encapsulate the relevant condition.
+     */
+    def isModuleNotMethod = isModule && !isMethod
+{code}
+
+Any solution for this should be tested with joint and separate compilation, given this note:
+
+{code}
+  /** A class for module class symbols
+   *  Note: Not all module classes are of this type; when unpickled, we get
+   *  plain class symbols!
+   */
+  class ModuleClassSymbol protected[Symbols] (_owner: Symbol, pos: Position, name: TypeName)
+{code}
+
+As a short term fix for 2.11.0-M5, I might add a special case to https://github.com/scala/scala/commit/f21b1ce7fda9022d6d805a708882c5a2ab241f41#L0R840 to detect and correct the situation.

@@ -1,0 +1,30 @@
+Given the following class that emulates a particular aspect of prepending to an HList:
+
+{code}
+scala> class A {
+  def ::[T](x: T) : Option[T] = Some(x)
+}
+defined class A
+
+scala> val a = new A
+a: A = A@62d5b9c1
+{code}
+
+and usage:
+{code}
+scala> val b: Option[String] = 3 :: a
+<console>:9: error: type mismatch;
+ found   : Int(3)
+ required: String
+       val b: Option[String] = 3 :: a
+                                 ^
+
+scala> val b: Option[String] = a.::(3)
+<console>:9: error: type mismatch;
+ found   : Int(3)
+ required: String
+       val b: Option[String] = a.::(3)
+                                    ^
+{code}
+
+The direct call syntax in the second case produces a more useful error message than the first case.

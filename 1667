@@ -1,0 +1,8 @@
+> The error is frustrating for me, because I want the code to work whether it is the first thing that happens on a thread or not. But maybe I'm using Channel wrong in some way?
+
+I'm not sure if the way you're using it is "wrong."  It sounds a little odd but reasonable.  The thing is not using "self" when the Channel is constructed appears to be a very conscious design decision, although it might be based on historic needs that no longer apply.  recv is private[actors], which usually indicates that it will be twiddled somewhere else in the library.  However it still compiles if you remove the package qualifier, so it currently is not being twiddled.  If the library intended to set the value sometime after construction, then it would make sense to not create an ActorProxy for it.
+
+My instinct would be to drop recv, make receiver a val instead of a def, and provide an alternate constructor that sets receiver to Actor.self.  I'll give that a shot and see what the result is.
+
+I'd also like to hear from Philipp on it, since not initializing self was clearly a conscious decision.
+

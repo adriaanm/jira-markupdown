@@ -1,0 +1,32 @@
+It doesn't seem possible to use {{(=> A) => B}} in contexts requiring {{A => B}}:
+
+{code}
+scala> def log(a: => Any): Unit = println(a)
+log: (a: => Any)Unit
+
+scala> def apply[A, B](a: A)(f: A => B) = f(a)
+apply: [A, B](a: A)(f: A => B)B
+
+scala> apply("hello")(log)
+<console>:10: error: type mismatch;
+ found   : (=> Any) => Unit
+ required: Int => ?
+              apply("hello")(log)
+                             ^
+{code}
+
+If you try to go the other direction, using {{A => B}} in contexts requiring {{(=> A) => B}}, the result depends on how you're trying to do it:
+
+{code}
+scala> def log(a: Any) = println(a)
+log: (a: Any)Unit
+
+scala> def apply[A, B](a: A)(f: (=> A) => B) = f(a)
+apply: [A, B](a: A)(f: (=> A) => B)B
+
+scala> apply("hello")(log)
+<function0>
+
+scala> apply("hello")(identity)
+java.lang.ClassCastException: $anonfun$apply$1 cannot be cast to java.lang.String
+{code}

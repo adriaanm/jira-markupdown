@@ -1,0 +1,17 @@
+{code}
+trait A { 
+  def foo: Int
+  def bar: Int
+}
+case class B( foo: Int )( bar: Int ) extends A 
+{code}
+
+fails with compiler error: "class B needs to be abstract, since method bar in trait A of type => Int is not defined"
+
+Explicitly adding a 'val' for the 'bar' field makes the code compilable:
+
+{code}
+case class B( foo: Int )( val bar: Int ) extends A 
+{code}
+
+Not sure if this is by design. I discovered this when trying to store the element type of an array into a case class using a secondary parameter list with an implicit ClassManifest[T]. Having automatic field generation for the secondary parameter list seems to be useful for such cases. 

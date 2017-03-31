@@ -1,0 +1,18 @@
+Replying to [comment:5 andrew]:
+> I am seeing what looks like the same issue when I use structural typing to match a generic class.  When I call a method defined in the structural type the underlying generic implementation is called with the argument type in the structural type rather than Object (as above).
+
+This ticket might actually be zeroing in on closeable.  Approaches 1 and 2 above work as they should, and on closer examination the problem with 3 is not that it doesn't work but that it compiles at all.  As nearly as I can see it is a fine example of the prohibition "Parameter type in structural refinement may not refer to abstract type defined outside that same refinement", but not being detected.
+
+See http://article.gmane.org/gmane.comp.lang.scala/7013 for an old explanation of why this is disallowed; old but I think still valid.  It catches this case no problem:
+{code}
+scala> type foo[A] = { def bar(x: A): A }       
+<console>:4: error: Parameter type in structural refinement may not refer to abstract type defined outside that same refinement
+       type foo[A] = { def bar(x: A): A }
+                                  ^
+{code}
+But it will let you create this:
+{code}
+scala> def foo[A] = new { def bar(x: A): A = x }
+foo: [A]java.lang.Object{def bar(x: A): A}
+{code}
+...resulting in a bar method which cannot be called unless A is Object.

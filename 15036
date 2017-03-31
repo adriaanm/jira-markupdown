@@ -1,0 +1,49 @@
+For classes annotated with !BeanInfo, java.beansIntrospector works when the class is at a top level. Otherwise fails to return the properties. Here's an example .. 
+
+Case 1: ** this works correctly **
+{code}
+@BeanInfo case class Bar(age: Int, name: String)
+def foo {   
+  val b = Bar(12, "dg")
+  Introspector.getBeanInfo(b.getClass)
+              .getPropertyDescriptors
+              .foreach(e=>println(e.getName))
+}
+
+val f = new Foo 
+f.foo
+{code}
+
+generates the output :
+
+{code}
+age
+name
+{code}
+
+But when I have the following ..
+
+Case 2: ** does not work **
+{code}
+@BeanInfo class Foo {
+  @BeanInfo case class Bar(age: Int, name: String)
+  def foo {   
+    val b = Bar(12, "dg")
+    Introspector.getBeanInfo(b.getClass)
+                .getPropertyDescriptors
+                .foreach(e=>println(e.getName))
+  }
+}
+
+val f = new Foo 
+f.foo
+{code}
+
+generates the output :
+
+{code}
+class
+{code}
+and I don't get back the properties age and name.
+
+I am using Scala 2.7.7 on Java 6 ..

@@ -1,0 +1,77 @@
+It looks like this goes all the way back to 2.11.0, based on https://groups.google.com/forum/#!topic/scala-internals/trzjEv-D53U
+
+The log is no longer available, but from the thread I infer it was using af7cf11:
+{code}
+From af7cf11f07581bf92628c82b7bf2cf3cca3e32c9 Mon Sep 17 00:00:00 2001
+From: Adriaan Moors <adriaan.moors@typesafe.com>
+Date: Fri, 14 Feb 2014 14:08:01 -0800
+Subject: [PATCH] Merge pull request #3533 from adriaanm/t8283
+
+SI-8283 mutation-free bound inference for existentials
+{code}
+
+The oldest actual log I could find is at https://scala-webapps.epfl.ch/jenkins/job/scala-nightly-main-2.11.x/81/, for 50167e3f1d (2.11.2-ish).
+
+
+
+
+
+
+I grepped the jenkins logs on scala-ci (the new CI). It occurs in the core build job as well as the test suite, both in quick and locker. Scrolling will reveal URLs etc:
+
+{code}
+symbol value x2 does not exist in scala.tools.nsc.typechecker.Contexts$Context.implicitss                                                                                                                                                                                                     https://scala-ci.typesafe.com/job/scala-2.11.x-validate-publish-core/789/consoleText  [locker.compiler]
+symbol value x2 does not exist in scala.tools.nsc.typechecker.Contexts$Context.implicitss                                                                                                                                                                                                     https://scala-ci.typesafe.com/job/scala-2.11.x-validate-publish-core/789/consoleText  [locker.compiler]
+symbol value x2 does not exist in scala.tools.nsc.typechecker.Implicits$ImplicitSearch.isImpossibleSubType                                                                                                                                                                                    https://scala-ci.typesafe.com/job/scala-2.11.x-validate-test/435/consoleText          [quick.compiler] 
+symbol value x2 does not exist in scala.tools.nsc.typechecker.Implicits$ImplicitSearch.isImpossibleSubType                                                                                                                                                                                    https://scala-ci.typesafe.com/job/scala-2.11.x-validate-test/435/consoleText          [quick.compiler] 
+symbol value x2#803320 does not exist in scala.tools.nsc.typechecker.ContextErrors$TyperContextErrors$TyperErrorGen.AdaptTypeError, which contains locals value x1#803317,value foundType#508052,value req#508050,value found#508049,value tree#508048                                        https://scala-ci.typesafe.com/job/scala-2.11.x-validate-test/568/consoleText          [quick.compiler] 
+symbol value x2#803320 does not exist in scala.tools.nsc.typechecker.ContextErrors$TyperContextErrors$TyperErrorGen.AdaptTypeError, which contains locals value x1#803317,value foundType#508052,value req#508050,value found#508049,value tree#508048                                        https://scala-ci.typesafe.com/job/scala-2.11.x-validate-test/568/consoleText          [quick.compiler] 
+symbol value x2#807114 does not exist in scala.tools.nsc.typechecker.ContextErrors$TyperContextErrors$TyperErrorGen.AdaptTypeError, which contains locals value x1#807111,value foundType#511891,value req#511889,value found#511888,value tree#511887                                        https://scala-ci.typesafe.com/job/scala-2.11.x-validate-publish-core/815/consoleText  [quick.compiler] 
+symbol value x2#807114 does not exist in scala.tools.nsc.typechecker.ContextErrors$TyperContextErrors$TyperErrorGen.AdaptTypeError, which contains locals value x1#807111,value foundType#511891,value req#511889,value found#511888,value tree#511887                                        https://scala-ci.typesafe.com/job/scala-2.11.x-validate-publish-core/815/consoleText  [quick.compiler] 
+symbol value x2#807259 does not exist in scala.tools.nsc.transform.patmat.Solving$Solver$class.findTseitinModelFor, which contains locals value unitLit#507616,value x#807262,value x1#807258,value satisfiableWithModel#507095,value start#507094,value clauses#1148776,value $this#1250982. https://scala-ci.typesafe.com/job/scala-2.11.x-validate-publish-core/917/consoleText  [quick.compiler] 
+symbol value x2#807259 does not exist in scala.tools.nsc.transform.patmat.Solving$Solver$class.findTseitinModelFor, which contains locals value unitLit#507616,value x#807262,value x1#807258,value satisfiableWithModel#507095,value start#507094,value clauses#1148776,value $this#1250982. https://scala-ci.typesafe.com/job/scala-2.11.x-validate-publish-core/917/consoleText  [quick.compiler] 
+symbol value x2#811892 does not exist in scala.tools.nsc.typechecker.Implicits$ImplicitSearch.scala$tools$nsc$typechecker$Implicits$ImplicitSearch$$implicitsOfExpectedType, which contains locals value x#811896,value x1#811891                                                             https://scala-ci.typesafe.com/job/scala-2.11.x-validate-test/508/consoleText          [quick.compiler] 
+symbol value x2#811892 does not exist in scala.tools.nsc.typechecker.Implicits$ImplicitSearch.scala$tools$nsc$typechecker$Implicits$ImplicitSearch$$implicitsOfExpectedType, which contains locals value x#811896,value x1#811891                                                             https://scala-ci.typesafe.com/job/scala-2.11.x-validate-test/508/consoleText          [quick.compiler] 
+symbol value x2#820443 does not exist in scala.tools.nsc.typechecker.Implicits$ImplicitSearch.scala$tools$nsc$typechecker$Implicits$ImplicitSearch$$implicitsOfExpectedType, which contains locals value x#820447,value x1#820442.                                                            https://scala-ci.typesafe.com/job/scala-2.11.x-validate-test/596/consoleText          [quick.compiler] 
+symbol value x2#820443 does not exist in scala.tools.nsc.typechecker.Implicits$ImplicitSearch.scala$tools$nsc$typechecker$Implicits$ImplicitSearch$$implicitsOfExpectedType, which contains locals value x#820447,value x1#820442.                                                            https://scala-ci.typesafe.com/job/scala-2.11.x-validate-test/596/consoleText          [quick.compiler] 
+symbol value x4 does not exist in scala.tools.nsc.transform.patmat.MatchOptimization$SwitchEmission$SwitchMaker.scala$tools$nsc$transform$patmat$MatchOptimization$SwitchEmission$SwitchMaker$$patternImplies                                                                                 https://scala-ci.typesafe.com/job/scala-2.11.x-validate-publish-core/820/consoleText  [locker.compiler]
+symbol value x4 does not exist in scala.tools.nsc.transform.patmat.MatchOptimization$SwitchEmission$SwitchMaker.scala$tools$nsc$transform$patmat$MatchOptimization$SwitchEmission$SwitchMaker$$patternImplies                                                                                 https://scala-ci.typesafe.com/job/scala-2.11.x-validate-publish-core/820/consoleText  [locker.compiler]
+symbol value x5 does not exist in scala.tools.nsc.typechecker.DestructureTypes$DestructureType$$anonfun$apply$1.apply                                                                                                                                                                         https://scala-ci.typesafe.com/job/scala-2.11.x-validate-publish-core/760/consoleText  [quick.compiler] 
+symbol value x5 does not exist in scala.tools.nsc.typechecker.DestructureTypes$DestructureType$$anonfun$apply$1.apply                                                                                                                                                                         https://scala-ci.typesafe.com/job/scala-2.11.x-validate-publish-core/760/consoleText  [quick.compiler] 
+symbol value x5#781214 does not exist in scala.tools.nsc.transform.patmat.MatchTranslation$MatchTranslator$PatternBoundToUnderscore.unapply, which contains locals variable eqEqTemp$4#1279646,value x#781237,variable eqEqTemp$3#1279642,value x2#781208,value x1#781206,value pat#484460    https://scala-ci.typesafe.com/job/scala-2.11.x-validate-test/588/consoleText          [quick.compiler] 
+symbol value x5#781214 does not exist in scala.tools.nsc.transform.patmat.MatchTranslation$MatchTranslator$PatternBoundToUnderscore.unapply, which contains locals variable eqEqTemp$4#1279646,value x#781237,variable eqEqTemp$3#1279642,value x2#781208,value x1#781206,value pat#484460    https://scala-ci.typesafe.com/job/scala-2.11.x-validate-test/588/consoleText          [quick.compiler] 
+{code}
+
+2.11.6: https://scala-ci.typesafe.com/job/scala-2.11.x-validate-publish-core/789/consoleText
+
+
+It occurs on EPFL's CI as well, so not some freaky VM thing only seen on EC2: https://scala-webapps.epfl.ch/jenkins/job/scala-checkin/9771/consoleFull  d7835d62cf, 2.11.3ish
+
+I checked all scala-checkin builds older than 9771 and could find no mention of "symbol value .* does not exist in", so it must have been introduced in that period.*
+
+{code}
+/data/tomcat/.hudson/jobs/scala-checkin/builds$ grep "symbol value .* does not exist in" 10???/log
+10239/log:[locker.compiler] error: symbol value x3 does not exist in scala.tools.nsc.typechecker.Infer$Inferencer.isAsSpecific
+10239/log:[locker.compiler] error: scala.reflect.internal.FatalError: symbol value x3 does not exist in scala.tools.nsc.typechecker.Infer$Inferencer.isAsSpecific
+10252/log:[quick.compiler] error: symbol value x5#790503 does not exist in scala.tools.nsc.transform.patmat.MatchOptimization$SwitchEmission$RegularSwitchMaker.isDefault, which contains locals variable eqEqTemp$16#1288588,value x1#790497,value x#494859.
+10252/log:[quick.compiler] error: scala.reflect.internal.FatalError: symbol value x5#790503 does not exist in scala.tools.nsc.transform.patmat.MatchOptimization$SwitchEmission$RegularSwitchMaker.isDefault, which contains locals variable eqEqTemp$16#1288588,value x1#790497,value x#494859.
+10269/log:[quick.compiler] error: symbol value x2#803110 does not exist in scala.tools.nsc.typechecker.ContextErrors$TyperContextErrors$TyperErrorGen.AdaptTypeError, which contains locals value x1#803107,value foundType#509247,value req#509245,value found#509244,value tree#509243
+10269/log:[quick.compiler] error: scala.reflect.internal.FatalError: symbol value x2#803110 does not exist in scala.tools.nsc.typechecker.ContextErrors$TyperContextErrors$TyperErrorGen.AdaptTypeError, which contains locals value x1#803107,value foundType#509247,value req#509245,value found#509244,value tree#509243
+10275/log:[quick.compiler] error: symbol value x2#804218 does not exist in scala.tools.nsc.typechecker.ContextErrors$TyperContextErrors$TyperErrorGen.MissingParameterTypeError, which contains locals value x1#804215,value withTupleAddendum#510505,value pt#510504,value vparam#510503,value fun#510502.
+10275/log:[quick.compiler] error: scala.reflect.internal.FatalError: symbol value x2#804218 does not exist in scala.tools.nsc.typechecker.ContextErrors$TyperContextErrors$TyperErrorGen.MissingParameterTypeError, which contains locals value x1#804215,value withTupleAddendum#510505,value pt#510504,value vparam#510503,value fun#510502.
+10333/log:[quick.compiler] error: symbol value x2#802590 does not exist in scala.tools.nsc.typechecker.EtaExpansion$class.liftoutPrefix$1, which contains locals value x#802614,value x1#802587,value tree1#516629,value typer$1#1192802,value unit$1#1192801,value defs$1#1192800,value cnt$1#1192799,value tree#516627,value $this#1242702
+10333/log:[quick.compiler] error: scala.reflect.internal.FatalError: symbol value x2#802590 does not exist in scala.tools.nsc.typechecker.EtaExpansion$class.liftoutPrefix$1, which contains locals value x#802614,value x1#802587,value tree1#516629,value typer$1#1192802,value unit$1#1192801,value defs$1#1192800,value cnt$1#1192799,value tree#516627,value $this#1242702
+10394/log:[locker.compiler] error: symbol value x5 does not exist in scala.tools.nsc.typechecker.DestructureTypes$DestructureType$$anonfun$apply$1.apply
+10394/log:[locker.compiler] error: scala.reflect.internal.FatalError: symbol value x5 does not exist in scala.tools.nsc.typechecker.DestructureTypes$DestructureType$$anonfun$apply$1.apply
+{code}
+
+Here are some older builds of other jobs
+  - https://scala-webapps.epfl.ch/jenkins/job/scala-release-2.11.x/298/console  841389bc6f (between 2.11.5 and 2.11.6)
+
+{code}
+/data/tomcat/.hudson/jobs/scala-nightly-main-2.11.x/builds$ grep "symbol value .* does not exist in" */log
+296/log:[strap.compiler] error: symbol value x2 does not exist in scala.tools.nsc.transform.patmat.Solving$Solver$class.findTseitinModelFor
+296/log:[strap.compiler] error: scala.reflect.internal.FatalError: symbol value x2 does not exist in scala.tools.nsc.transform.patmat.Solving$Solver$class.findTseitinModelFor
+81/log:[strap.compiler] error: symbol value x4 does not exist in scala.tools.nsc.transform.patmat.MatchOptimization$SwitchEmission$SwitchMaker.scala$tools$nsc$transform$patmat$MatchOptimization$SwitchEmission$SwitchMaker$$patternImplies
+81/log:[strap.compiler] error: scala.reflect.internal.FatalError: symbol value x4 does not exist in scala.tools.nsc.transform.patmat.MatchOptimization$SwitchEmission$SwitchMaker.scala$tools$nsc$transform$patmat$MatchOptimization$SwitchEmission$SwitchMaker$$patternImplies
+{code}

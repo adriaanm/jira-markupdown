@@ -1,0 +1,22 @@
+The compiler error is the same for cases where no manifest is available at all: 
+
+{code}
+def foo[T](a: T) = manifest[T]
+error: No Manifest available for T.
+{code}
+
+and for cases where it is not available _yet_:
+
+{code}
+class Foo[T : Manifest](val id: String = manifest[T].toString)
+error: No Manifest available for T.
+{code}
+
+While of course technically correct, it would be nice to have a more precise error message for the second case showing the desugared version, like:
+
+{code}
+error: No Manifest available for T yet. Manifest is used before it is declared:
+class Foo[T](val id: String = implicitly[Manifest[T]].toString)(implicit ev$1: Manifest[T])
+{code}
+
+

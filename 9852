@@ -1,0 +1,21 @@
+Also note that creating overriding members for all overridden symbols (instead of just the first) will generate duplicate members with the exact same signature:
+
+{code}
+trait Base1[@specialized(Long) T, S] {
+  def overrideMe(t: T, s: S): T = t
+}
+
+trait Base2[@specialized(Long) T, S] {
+  def overrideMe(t: T, s: S): T = t
+}
+
+trait Base3[@specialized(Long) T, @specialized(Long) S] {
+  def overrideMe(t: T, s: S): T = t
+}
+
+class LongIsBase1Base2andBase3 extends Base1[Long, Long] with Base2[Long, Long] with Base3[Long, Long] {
+  override def overrideMe(t: Long, s: Long): Long = s
+}
+{code}
+
+Compilation will blow up with a message regarding double definition of member `overrideMe$mcJ$sp`, caused by trying to override both `overrideMe` in `Base1` and `Base2` with the same signature.

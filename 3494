@@ -1,0 +1,6 @@
+I agree with you completely - it would be more consistent to return an entirely new collection. However, I believe deprecation was introduced for reasons of not breaking existing client code relying on `++` returning the very same object instance. In any case, I think this will have to be discussed before taking any action.
+
+As for the object statically typed as `Traversable` behaving as a `Traversable` although its dynamic type is a `ListBuffer`, I believe this could be considered a bug - the reason is that the method `++` in `Traversable` is overloaded to a curried method taking an additional parameter - a builder factory (`CanBuildFrom`) which is marked as an implicit. On the other hand, buffers overload this method to only take another traversable collection and not a builder factory. In short - methods `++` above are not the same methods in these 2 cases. 
+
+What will probably happen at some point is that the `++` in `BufferLike` (and similar members) will be removed completely, which means that the correct method will be resolved at compile time - the one expecting an implicit builder factory. If you are asking when this will happen - my guess is in 2.9.
+

@@ -1,0 +1,16 @@
+Ok, so scalac crashes when compiling the scala file (it doesn't matter if you use javac to compile the java file first or whether you include it in the scalac run). NoSymbol does not have owner.
+
+Martin, I propose the following patch, but am unsure whether that covers it -- please re-assign if this is ok.
+
+{code}
+--- a/src/compiler/scala/tools/nsc/typechecker/SuperAccessors.scala
++++ b/src/compiler/scala/tools/nsc/typechecker/SuperAccessors.scala
+@@ -439,8 +439,9 @@ abstract class SuperAccessors extends transform.Transform with transform.TypingT
+           || enclPackage(referencingClass) == enclPackage(sym.owner)) {
+         assert(referencingClass.isClass)
+         referencingClass
+-      } else
++      } else if(referencingClass.owner.enclClass != NoSymbol)
+         hostForAccessorOf(sym, referencingClass.owner.enclClass)
++      else referencingClass
+{code}

@@ -1,0 +1,29 @@
+Since Scala 2.11.0, case classes can have an arbitrary number of fields (well, up to JVM limits which I believe is ~256).
+
+However, these newly unleached gargantuan classes can easily trigger a StackOverflowError in type checker. Actually, it seems to happen in erasure phases typechecker first, perhaps that is more stack hungry at each level of recursion.
+
+The troublesome expression is the expression: `field1.==(other.field1).&&(field2 == other.field2).&& ...`.
+
+We could break this up into group of, say, 32 fields:
+
+{code}
+val result = false
+result ||= field1.==(other.field1).&&(field2 == other.field2).&& ..
+if (!result) return false
+result ||= field33.==(other.field33).&&(field34 == other.field34).&& ..
+...
+{code}
+
+Workaround is to increase the stack size of the compiler, or to refactor the code to avoid such big classes. While we recommend the latter option as a matter of good style, we shouldn't forget that case classes might be the result of code generators.
+
+Another workaround is to manaully define the equals method.
+
+{code}
+case class Gargantuan(f1: T1, ... f100: T100) {
+  override def equals(other: Any) = other match {
+    case g: Gargantuan => g.productIterator.toList == productIterator.toList
+    case _ => false
+  }
+{code}
+
+The compiler could choose to emit this once N passed some threshold, too, although we might not want to incur the boxing penalty.

@@ -1,0 +1,11 @@
+There are similar cases not covered by the mentioned patch:
+{code}
+scala> new C(42).foo[String].get
+java.lang.ClassCastException: java.lang.Integer cannot be cast to java.lang.String
+
+scala> new C(42).foo[String].get : Int
+res2: Int = 42
+{code}
+Here, the [String] parameter is ignored, again. This time because the cxTree starts with the type annotation: (new C.<init>(42).foo[String].get: Int)
+
+Is there an easy way to find everything which can possibly get attached to cxTree?

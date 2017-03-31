@@ -1,0 +1,34 @@
+Replying to [ticket:3975 magarcia]:
+
+The example in ticket SI-3974 does not show method-chaining of dynamic calls, but they are also amenable to refactoring as the following example shows: 
+
+{code}
+    new AnyRef {
+      def abc { ... }
+    }.abc
+{code}
+
+
+formulated using "atomic evaluation" becomes 
+
+{code}
+  {
+    val tmp = new AnyRef {
+      def abc { ... }
+    }
+    tmp.abc
+  }
+{code}
+
+thus making room for the class definition: 
+
+{code}
+  {
+    class Boilerplate extends AnyRef {
+      def abc { ... }
+    }
+    val tmp = new Boilerplate
+    tmp.abc
+  }
+{code}
+

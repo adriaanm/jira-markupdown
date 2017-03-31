@@ -1,0 +1,38 @@
+Perhaps it's confused because there is a type alias in the package object. Is that supported?
+
+https://github.com/seratch/AWScala/blob/develop/src/main/scala/awscala/package.scala#L3
+
+{code}
+scala> import badpack._
+import badpack._
+
+scala> Region
+<console>:10: error: type mismatch;
+ found   : badpack.Region.type
+ required: Any
+Note that Region extends Any, not AnyRef.
+Such types can participate in value classes, but instances
+cannot appear in singleton types or in reference comparisons.
+ + "res0: badpack.Region.type = " + scala.runtime.ScalaRunTime.replStringOf(res0, 1000)
+                                                                                                         ^
+
+scala> Region.something
+<console>:11: error: value something is not a member of object badpack.Region
+              Region.something
+                     ^
+
+scala> :quit
+$ cat badpack/Region.scala
+
+package badpack
+
+object Region {
+  val something = 42
+}
+$ cat badpack/package.scala
+
+package object badpack {
+
+  type Region = String
+}
+{code}

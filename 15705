@@ -1,0 +1,41 @@
+A.scala:
+{code}
+abstract class A{
+    val a: Int
+    val b: Int
+    val c: Int = 12
+}
+{code}
+B.scala:
+{code}
+class B extends A{
+
+  val a = 10
+  //object bb
+  lazy val bb = 17
+  val b = 12
+}
+
+object Test {
+    def main(args: Array[String]) {
+        println(new B().bb)
+    }
+}
+{code}
+The order of compilation *matters*! So
+{code}
+scalac A.scala B.scala -Xcheckinit
+scala -cp . test
+0
+{code}
+but 
+{code}
+scalac B.scala A.scala -Xcheckinit
+scala -cp . test
+17
+{code}
+
+The problem is that in the first case we use the inherited bitmap from A, but in the second one we actually create a new one for class B (yet still using the same bit).
+This breaks current nightly with Xcheckinit flag because of the nested object to lazy val translation (SI-1591). Both SpecializeTypes.TypeEnv and SubComponent.internal share the same bit and bitmap and the latter is set during the initialization.
+I wonder how we were so "lucky" not to hit this bug before.
+Seems to be connected to SI-3038.

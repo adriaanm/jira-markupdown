@@ -1,0 +1,15 @@
+I managed to reduce it to a small test case (traits in separate files):
+{code}
+trait B extends D {
+	def bar: Int = 12
+}
+
+trait D {
+  self: B => 
+  def foo(a: B) = a.bar
+}
+{code}
+1. Clean build
+2. Restart eclipse
+3. Type a space in B to trigger compilation
+4. Build => NPE

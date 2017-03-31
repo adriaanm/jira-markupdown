@@ -1,0 +1,26 @@
+Example:
+
+{code:scala}
+scala> trait Bottom { val x = "Hello"}
+defined trait Bottom
+
+scala> trait Middle extends Bottom { println(s"x is $x") }
+defined trait Middle
+
+scala> class DumbTop extends Middle
+defined class DumbTop
+
+scala> class MeddlesomeTop extends Middle { override val x = "World"}
+defined class MeddlesomeTop
+
+scala> val dt = new DumbTop
+x is Hello
+dt: DumbTop = DumbTop@7a1a14a4
+
+scala> val mt = new MeddlesomeTop
+x is null
+mt: MeddlesomeTop = MeddlesomeTop@4b40f651
+{code}
+The value of x is neither "Hello" as initialized in the base class (trait) not "World" as overridden in the derived class, but rather, null.
+
+Expected behavior - should use the base class initialized value until/unless overridden in derived class initializers.

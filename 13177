@@ -1,0 +1,19 @@
+The following code gives a classCastException with 2.7.0-RC3
+It runs silently with 2.6.0.
+
+{code}
+object Test extends Application {
+
+    def f(a: Array[_]) {}
+
+    val zero: BigInt = 0
+
+    f(
+        zero
+        .toByteArray
+        .dropWhile(_ == 0x00)  // java.lang.ClassCastException: scala.Array$$Projection$$$$anon$$1
+     )
+}
+{code}
+
+This underlying issue may be the same as Ticket SI-446 

@@ -1,0 +1,36 @@
+Reviewing some of the associated code, I think there are one or two bugs in this example:
+
+{code}
+package p
+
+trait D {
+  class C1 { override def toString = "D#C1" }
+}
+object `package` extends D {
+  class C2 { override def toString = "`package`.C2" }
+}
+
+class C1 { override def toString = "C1" }
+
+class C2 { override def toString = "C2" }
+
+object Test {
+  def main(args: Array[String]) {
+    println(new p.C1, new p.C2)
+  }
+}
+{code}
+
+{noformat}
+% qbin/scalac sandbox/test2.scala && qbin/scala p.Test
+(D#C1,`package`.C2)
+
+% qbin/scalac sandbox/test2.scala && qbin/scala p.Test
+sandbox/test2.scala:11: error: C1 is already defined as class C1 in package object D
+class C1 { override def toString = "C1" }
+      ^
+sandbox/test2.scala:13: error: C2 is already defined as class C2 in package object p
+class C2 { override def toString = "C2" }
+      ^
+two errors found
+{noformat}

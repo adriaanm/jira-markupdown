@@ -1,0 +1,17 @@
+It doesn't look like this is working in all cases.  For example, yesterday I encountered problems with the auto-generated method {{curry}}:
+{code}
+Function16$$$$anonfun$$curry$$1$$$$anonfun$$apply$$1$$$$anonfun$$apply$$2$$$$anonfun$$apply$$3$$$$anonfun$$apply$$4$$$$anonfun$$apply$$5$$$$anonfun$$apply$$6$$$$anonfun$$apply$$7$$$$anonfun$$apply$$8$$$$anonfun$$apply$$9$$$$anonfun$$apply$$10$$$$anonfun$$apply$$11$$$$anonfun$$apply$$12$$$$anonfun$$apply$$13$$$$anonfun$$apply$$14$$$$anonfun$$apply$$15.class
+{code}
+where the general pattern for the curry method is 
+{code}
+def curry : T1 => ... => Tn => R = 
+     { (x1: T1) => .... (xn: Tn) => apply(x1, ..., xn) }
+{code}
+Of course, it ought to be possible to rewrite it as 
+{code}
+def curry : T1 => ... => Tn => R = 
+     { (x1: T1) => ( (x2: T2, ..., xn: Tn) => this.apply(x1, ..., xn)).curry }
+{code}
+But this creates twice as many objects at runtime (I think), but that is probably acceptable if you really have a FunctionN for N > 8.  
+
+Regardless, of which is the best implementation of {{curry}}, this seems to indicate it is triggering a corner case that the fix does not handle.

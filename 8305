@@ -1,0 +1,21 @@
+Ok, here's the issue:
+
+{code}
+package org.specs2
+package control
+
+
+trait LanguageFeatures {
+  implicit val implicitsAreAllowed = language.implicitConversions
+  implicit val postfixOpsAreAllowed = language.postfixOps
+}
+
+trait NoLanguageFeatures extends LanguageFeatures {
+  override implicit val implicitsAreAllowed = language.implicitConversions
+  override implicit val postfixOpsAreAllowed = language.postfixOps
+}
+
+{code}
+
+
+These should be lazy vals, not vals, which is a huge tax to impose on implementers really.  I can update the documentation, then I'm going to mark this as "won't fix" for now.    We may want to think about warning the exact situation where a user assigns a language feature to a val or var.

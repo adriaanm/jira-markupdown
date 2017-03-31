@@ -1,0 +1,17 @@
+(In r23622) "I invite everyone to change this rule, and observe what breaks!"
+
+This much beloved comment from SI-1208 has been on my radar for two
+years.  The worm has turned.  Closes SI-1208.  The inferred type of an
+object is now Foo.type instead of "object Foo".  What once was this:
+
+  scala> val x: Map[Int, Singleton] = Map(1 -> None)
+  <console>:5: error: type mismatch;
+   found   : (Int, object None)
+   required: (Int, Singleton)
+
+Now exudes a pleasing aura of workingness:
+
+  scala> val x: Map[Int, Singleton] = Map(1 -> None)
+  x: Map[Int,Singleton] = Map(1 -> None)
+
+No review.

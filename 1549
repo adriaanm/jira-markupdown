@@ -1,0 +1,13 @@
+Replying to [comment:7 extempore]:
+> Okay, I just lost twenty minutes by accidentally closing my tab in firefox.  A rather abbreviated version of same:
+> 
+> I discovered while trying to figure this out all the way that the JVM1.4 build has its own private RichString, which does contain contains(String), added by you last april.
+
+Indeed.  I had completely forgotten about the fact that I added that.  While I wouldn't have seen it on the standard API documentation, as it is generated against the 1.5 version of the library, it does seem like it would be a good for a future version of scaladoc to try to include a section of "implicit" members.
+
+So you original patch probably would have been valid, though I think the implementation I gave for contains in RichString is subpar in that it won't properly handle arguments that include "\E".
+
+> Looking just at this, one might think that under 1.5 it tries to convert the argument from Char to something accepted by String (i.e. CharSequence) but then stops short of trying to convert the receiver to something which accepts Char (i.e. RichString.) That would sound like a great explanation except that my attempts to duplicate it do not fail that way, plus I assume such a thing would have been noticed long ago.  I think it is some variation on that, but with one or more additional complicating factors.
+
+Okay, I'll ask Martin if this is enough for him to go on.
+

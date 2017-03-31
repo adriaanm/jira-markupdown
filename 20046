@@ -1,0 +1,16 @@
+
+{code:scala}
+Set(2, 1).reduce(math.max)
+{code}
+compiles fine while 
+{code:scala}
+Set(2L, 1L).reduce(math.max)
+{code}
+fails with message: 
+    error: type mismatch;
+     found   : (Int, Int) => Int
+     required: (AnyVal, AnyVal) => AnyVal
+           Set(2L, 1L).reduce(math.max)
+
+Both should be rejected with message: ambiguous reference to overloaded definition
+

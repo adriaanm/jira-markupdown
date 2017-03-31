@@ -1,0 +1,19 @@
+
+Warning about def main(args: Array[String]) = ??? is ambiguous.
+
+This is a trivial matter, yet it burned a minute to see whether the test that provokes it is actually run.  (I think all the runners use ScalaClassLoader.run.)
+
+{code}
+apm@mara:~/projects/snytt/test$ skalac -d foo files/run/repl-backticks.scala
+files/run/repl-backticks.scala:3: warning: Test has a main method with parameter type Array[String], but Test will not be a runnable program.
+  Reason: main method must have exact signature (Array[String])Unit
+object Test {
+       ^
+one warning found
+apm@mara:~/projects/snytt/test$ ls foo
+Test.class  Test$.class
+apm@mara:~/projects/snytt/test$ skala -cp foo Test
+import java.lang.Thread.`yield`
+import scala.`package`.Throwable
+apm@mara:~/projects/snytt/test$ 
+{code}

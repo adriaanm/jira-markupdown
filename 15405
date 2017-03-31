@@ -1,0 +1,50 @@
+Pattern matching on Lists fails to match a list with an arbitrary number of values(List(_*)).
+The following example works in version 2.7.7 but fails in 2.8.0.RC3 and the latest release (2.8.0.r22158)
+{code}
+object ListMatchTest {
+	def main(args: Array[String]) {
+		val list = List(1,2,3)
+		list match {
+			case List(_, _) => println("List with two elements")
+			case List(_*) => println("Some List")
+		}
+	}
+}
+{code}
+
+The program fails at runtime with
+{code}
+scala.MatchError: List(4, 18, 52)
+        at ListTest$$$$anonfun$$main$$1.apply(ListTest.scala:9)
+        at ListTest$$$$anonfun$$main$$1.apply(ListTest.scala:8)
+        at scala.collection.LinearSeqOptimized$$class.foreach(LinearSeqOptimized.scala:61)
+        at scala.collection.immutable.List.foreach(List.scala:45)
+        at ListTest$$.main(ListTest.scala:8)
+        at ListTest.main(ListTest.scala)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+        at java.lang.reflect.Method.invoke(Method.java:597)
+        at scala.tools.nsc.util.ScalaClassLoader$$$$anonfun$$run$$1.apply(ScalaClassLoader.scala:81)
+        at scala.tools.nsc.util.ScalaClassLoader$$class.asContext(ScalaClassLoader.scala:24)
+        at scala.tools.nsc.util.ScalaClassLoader$$URLClassLoader.asContext(ScalaClassLoader.scala:86)
+        at scala.tools.nsc.util.ScalaClassLoader$$class.run(ScalaClassLoader.scala:81)
+        at scala.tools.nsc.util.ScalaClassLoader$$URLClassLoader.run(ScalaClassLoader.scala:86)
+        at scala.tools.nsc.MainGenericRunner$$.main(MainGenericRunner.scala:83)
+        at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
+{code}
+
+It works if I comment out the first case statement as in:
+{code}
+object ListMatchTest {
+	def main(args: Array[String]) {
+		val list = List(1,2,3)
+		list match {
+		//	case List(_, _) => println("List with two elements")
+			case List(_*) => println("Some List")
+		}
+	}
+}
+{code}
+
+Sorry if this problem is already known, I've searched the bugs and couldn't find anything about this.

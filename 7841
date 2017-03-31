@@ -1,0 +1,12 @@
+The following bash script keeps CPU utilization close to 100% (except at the very end) shaving 5 minutes off the test suite on an 8-core machine:
+
+{noformat}
+./partest --pos --neg --jvm --res --buildmanager --scalacheck --script --shootout --presentation & 
+./partest --run
+wait   # for subshells to finish.
+{noformat}
+
+With 16 cores a viable partitioning would be:
+- {{--pos --neg}}
+- {{--jvm --res --buildmanager --scalacheck --script --shootout --presentation}}
+- {{--run}}

@@ -1,0 +1,91 @@
+After heating the crucible further:
+
+{code}
+object Msg {
+  trait T
+  
+  trait TSeq
+  
+  object TSeq {
+    implicit def fromSeq(s: Seq[T]): TSeq = error("stub")
+  }
+
+  def render {
+    val msgs: TSeq = (List[(Any, Any)]().flatMap {
+      case (a, b) => {
+        a match {
+          case _ => b match {
+            case _ => error("stub")
+          }
+        }
+      }
+    } /*: Seq[T] Adding this type annotation avoids the compile error.*/)
+  }
+}
+{code}
+
+Dave -- the good news is that you can sidestep this bug by adding ': Seq[Node]' to Msg.scala:68. The bad news is that this takes you only as far as this error in the icode phase:
+
+{code}
+[WARNING] [log icode] Generating class: net.liftweb.builtin.snippet.Menu$$$$anonfun$$item$$1$$$$anonfun$$apply$$18$$$$anonfun$$apply$$19
+[WARNING] Exception in thread "main" java.lang.Error: symbol value e does not exist in net.liftweb.builtin.snippet.Menu$$$$anonfun$$item$$1$$$$anonfun$$apply$$18$$$$anonfun$$apply$$19.apply
+[WARNING] 	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:892)
+[WARNING] 	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.genLoadQualifier(GenICode.scala:1037)
+[WARNING] 	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:797)
+[WARNING] 	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:919)
+[WARNING] 	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:919)
+[WARNING] 	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:919)
+[WARNING] 	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:919)
+[WARNING] 	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:919)
+[WARNING] 	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:465)
+[WARNING] 	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:919)
+[WARNING] 	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:430)
+[WARNING] 	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genStat(GenICode.scala:193)
+[WARNING] 	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$genStat$$1.apply(GenICode.scala:156)
+[WARNING] 	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$genStat$$1.apply(GenICode.scala:155)
+[WARNING] 	at scala.collection.LinearSequenceLike$$class.foreach(LinearSequenceLike.scala:84)
+[WARNING] 	at scala.collection.immutable.List.foreach(List.scala:29)
+[WARNING] 	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.genStat(GenICode.scala:155)
+[WARNING] 	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:918)
+[WARNING] 	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:465)
+[WARNING] 	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:124)
+[WARNING] 	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:81)
+[WARNING] 	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:81)
+[WARNING] 	at scala.collection.LinearSequenceLike$$class.foreach(LinearSequenceLike.scala:84)
+[WARNING] 	at scala.collection.immutable.List.foreach(List.scala:29)
+[WARNING] 	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:81)
+[WARNING] 	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:146)
+[WARNING] 	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:100)
+[WARNING] 	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:81)
+[WARNING] 	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:81)
+[WARNING] 	at scala.collection.LinearSequenceLike$$class.foreach(LinearSequenceLike.scala:84)
+[WARNING] 	at scala.collection.immutable.List.foreach(List.scala:29)
+[WARNING] 	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:81)
+[WARNING] 	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:91)
+[WARNING] 	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:81)
+[WARNING] 	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:81)
+[WARNING] 	at scala.collection.LinearSequenceLike$$class.foreach(LinearSequenceLike.scala:84)
+[WARNING] 	at scala.collection.immutable.List.foreach(List.scala:29)
+[WARNING] 	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:81)
+[WARNING] 	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:91)
+[WARNING] 	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:81)
+[WARNING] 	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:81)
+[WARNING] 	at scala.collection.LinearSequenceLike$$class.foreach(LinearSequenceLike.scala:84)
+[WARNING] 	at scala.collection.immutable.List.foreach(List.scala:29)
+[WARNING] 	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:81)
+[WARNING] 	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:91)
+[WARNING] 	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:77)
+[WARNING] 	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.apply(GenICode.scala:73)
+[WARNING] 	at scala.tools.nsc.Global$$GlobalPhase.applyPhase(Global.scala:329)
+[WARNING] 	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:307)
+[WARNING] 	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:307)
+[WARNING] 	at scala.collection.Iterator$$class.foreach(Iterator.scala:536)
+[WARNING] 	at scala.collection.mutable.ListBuffer$$$$anon$$1.foreach(ListBuffer.scala:282)
+[WARNING] 	at scala.tools.nsc.Global$$GlobalPhase.run(Global.scala:307)
+[WARNING] 	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.run(GenICode.scala:66)
+[WARNING] 	at scala.tools.nsc.Global$$Run.compileSources(Global.scala:799)
+[WARNING] 	at scala.tools.nsc.Global$$Run.compile(Global.scala:882)
+[WARNING] 	at scala.tools.nsc.Main$$.process(Main.scala:91)
+[WARNING] 	at scala.tools.nsc.Main$$.main(Main.scala:105)
+[WARNING] 	at scala.tools.nsc.Main.main(Main.scala)
+{code}

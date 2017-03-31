@@ -1,0 +1,53 @@
+Also, can you tell me how to see it with NoPosition? Here is a test file:
+{code}
+class A {
+  def f1[T](x: T) = x
+  def f2[T >: Null](x: T) = x
+  def f3[T <: String](x: T) = x
+  def f4[T >: Null <: String](x: T) = x
+
+  type T1
+  type T2 >: Null
+  type T3 <: String
+  type T4 >: Null <: String
+}
+{code}
+With or without -Yrangepos, I don't see NoPosition anywhere except inside the constructor:
+{noformat}
+% scalac3 -Yrangepos -Xprint-pos -Xprint:parser,typer -d /tmp test/files/run/t7450.scala
+[[syntax trees at end of                    parser]] // t7450.scala
+[0:212]package [0:0]<empty> {
+  [0:212]class A extends [8:212][212]scala.AnyRef {
+    [8]def <init>() = [8]{
+      [NoPosition][NoPosition][NoPosition]super.<init>();
+      [8]()
+    };
+    [12:31]def f1[[19:20]T[20]]([22:26]x: [25:26]T) = [30:31]x;
+    [34:61]def f2[[41:50]T[46:50] >: [46:50]Null]([52:56]x: [55:56]T) = [60:61]x;
+    [64:93]def f3[[71:82]T[76:82] <: [76:82]String]([84:88]x: [87:88]T) = [92:93]x;
+    [96:133]def f4[[103:122]T[108:122] >: [108:112]Null <: [116:122]String]([124:128]x: [127:128]T) = [132:133]x;
+    [137:144]type [137:144]T1[145];
+    [147:162]type [147:162]T2[158:162] >: [158:162]Null;
+    [165:182]type [165:182]T3[176:182] <: [176:182]String;
+    [185:210]type [185:210]T4[196:210] >: [196:200]Null <: [204:210]String
+  }
+}
+
+[[syntax trees at end of                     typer]] // t7450.scala
+[0:212]package [0:0]<empty> {
+  [0:212]class A extends [8:212][212]scala.AnyRef {
+    [212]def <init>(): [8]A = [212]{
+      [212][212][212]A.super.<init>();
+      [8]()
+    };
+    [12:31]def f1[[19:20]T[19:20]]([22:26]x: [25:26]<type: [25:26]T>): [16]T = [30:31]x;
+    [34:61]def f2[[41:50]T[41:50] >: [41]Null]([52:56]x: [55:56]<type: [55:56]T>): [38]T = [60:61]x;
+    [64:93]def f3[[71:82]T[71:82] <: [71]String]([84:88]x: [87:88]<type: [87:88]T>): [68]T = [92:93]x;
+    [96:133]def f4[[103:122]T[103:122] >: [103]Null <: [103]String]([124:128]x: [127:128]<type: [127:128]T>): [100]T = [132:133]x;
+    [137:144]type [137:144]T1[145]<type: [145]>;
+    [147:162]type [147:162]T2[158:162]<type: [158:162] >: [158:162]<type: [158:162]scala.Null>>;
+    [165:182]type [165:182]T3[176:182]<type: [176:182] <: [176:182]<type: [176:182][176]scala.this.Predef.String>>;
+    [185:210]type [185:210]T4[196:210]<type: [196:210] >: [196:200]<type: [196:200]scala.Null> <: [204:210]<type: [204:210][204]scala.this.Predef.String>>
+  }
+}
+{noformat}

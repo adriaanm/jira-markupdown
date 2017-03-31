@@ -1,0 +1,11 @@
+I just ran in to this same NPE, at the same line in Parsers.NoSuccess. No that the NPE occurred when processing tens of thousands of JSON docs (Twitter API tweets, actually). The NPE seems to have occurred on a line of JSON input document that is well formed. The JSON parser is the Dispatch JSON parser, version 0.8.5.
+
+The tack trace I received is the same as the original reporter'sfor the last few stack frames:
+
+java.lang.NullPointerException: null
+at scala.util.parsing.combinator.Parsers$NoSuccess.<init>(Parsers.scala:132) ~[scala-library.jar:na]
+at scala.util.parsing.combinator.Parsers$Failure.<init>(Parsers.scala:159) ~[scala-library.jar:na]
+at scala.util.parsing.combinator.Parsers$$anonfun$acceptIf$1.apply(Parsers.scala:499) ~[scala-library.jar:na]
+at scala.util.parsing.combinator.Parsers$$anonfun$acceptIf$1.apply(Parsers.scala:497) ~[scala-library.jar:na]
+
+The offending line is 132. AFAICT, The only way an NPE would happen at this point is if the "next", "lastNoSuccess", or "lastNoSuccess.next" members are null. "lastNoSuccess" is a var in the outer class, so while the not-null check at line 132 would seem to guarantee "lastNoSuccess" is not null, the highly infrequent and random occurrence of the NPE points to a race condition -- perhaps the "lastNoSuccess" member is somehow being changed to null *after* the null check, but *before* the "< lastNoPosition.next" check?

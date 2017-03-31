@@ -1,0 +1,31 @@
+When running scaladoc with -diagrams on OS X 10.9 there are warnings printed to stderr of the dot process, and this is interpreted as a failure even though the process completes and produces the SVG.
+
+{code}
+**********************************************************************
+The graphviz dot diagram tool has malfunctioned and will be restarted.
+
+The following is the log of the failure:
+  DOT <error console>: 2013-11-05 14:30:26.674 dot[36780:507] CoreText performance note: Client called CTFontCreateWithName() using name "Arial" and got font with PostScript name "ArialMT". For best performance, only use PostScript names when calling this API.
+  DOT <error console>: 2013-11-05 14:30:26.675 dot[36780:507] CoreText performance note: Set a breakpoint on CTFontLogSuboptimalRequest to debug.
+  DOT <error console>: 2013-11-05 14:30:26.700 dot[36780:507] CoreText performance note: Client called CTFontCreateWithName() using name "Arial" and got font with PostScript name "ArialMT". For best performance, only use PostScript names when calling this API.
+  Error thread in akka: Exception: java.lang.ThreadDeath
+  Input thread in akka: Exception: java.lang.InterruptedException
+
+  Cleanup: Last template: akka
+  Cleanup: Last dot input:
+    digraph G {
+    compound="true";
+    rankdir="TB";
+    node [margin="0.08,0.01", fontsize="10.00", style="filled", height="0.0", penwidth="1", shape="rectangle", width="0.0", fontname="Arial"];
+    edge [arrowsize="0.5", fontcolor="#aaaaaa", fontsize="10.00", color="#d4d4d4", fontname="Arial"];
+
+    node0 [label=<<TABLE BORDER="0" CELLBORDER="0"><TR><TD><IMG SCALE="TRUE" SRC="/Users/bjorn/Source/typesafe/akka/master-3/akka-actor/target/api/lib/class_diagram.png" /></TD><TD VALIGN="MIDDLE">ConfigurationException </TD></TR></TABLE>>,fontcolor="#ffffff", URL="ConfigurationException.html#inheritance-diagram", color="#115F3B", id="class|graph1_0", fillcolor="#0A955B", tooltip="akka.ConfigurationException"];
+    node1 [label=<<TABLE BORDER="0" CELLBORDER="0"><TR><TD><IMG SCALE="TRUE" SRC="/Users/bjorn/Source/typesafe/akka/master-3/akka-actor/target/api/lib/class_diagram.png" /></TD><TD VALIGN="MIDDLE">AkkaException </TD></TR></TABLE>>,fontcolor="#ffffff", URL="AkkaException.html#inheritance-diagram", color="#115F3B", id="class|graph1_1", fillcolor="#0A955B", tooltip="akka.AkkaException"];
+    node1 -> node0 [id="inheritance|graph1_1_0", tooltip="ConfigurationException is a subtype of AkkaException", dir="back", arrowtail="empty"];
+    }
+
+  Cleanup: Dot path: dot
+  Cleanup: Dot exit code: 143
+**********************************************************************
+Graphviz will be restarted...
+{code}

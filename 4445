@@ -1,0 +1,9 @@
+OK, I could finally reproduce the failed test case (`Could not find a setter for property oCode`). However, I think this is not a bug of the scala compiler: when looking at the annotations of the classfile `DummyEntity.class`, they all seem to be correct (i used "jclasslib" to inspect the classfiles):
+
+ * method `getIsoCode` has the `@Column` annotation
+ * methods `setIsoCode`, `isoCode` and `isoCode_eq$$` have no annotations
+ * field `isoCode` has no annotations
+
+I think the problem is that the framework tries to interpret the method `isoCode` as a property getter, even if it does not have any annotations (maybe because the class is annotated by `@Entity`?). Obviously, it fails to find the corresponding setter `setoCode`.
+
+Could you try to reproduce the problem using java source code?

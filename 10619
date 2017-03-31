@@ -1,0 +1,92 @@
+The tree that reaches the LazyVal phase:
+
+{code}
+<stable> <accessor> lazy def i#15024(): Int#1750 = {
+  <synthetic> val nonLocalReturnKey1#24371: Object#149 = new Object#149();
+  try {
+    i$lzy#15025 = unbox#14934(o#14716.getOrElse#14953({
+      @SerialVersionUID#2329(0) final <synthetic> class $anonfun#24363 extends scala#21.runtime#2648.AbstractFunction0#3471 with Serializable#2326 {
+        def <init>#24367(): <$anon: Function0#934> = {
+          $anonfun#24363.super.<init>#24362();
+          ()
+        };
+        final def apply#24364(): Nothing#3010 = throw new scala#21.runtime#2648.NonLocalReturnControl$mcI$sp#26283(nonLocalReturnKey1#24371, -1);
+        final <bridge> <artifact> def apply#26857(): Object#149 = $anonfun#24363.this.apply#24364()
+      };
+      (new <$anon: Function0#934>(): Function0#934)
+    }));
+    i$lzy#15025
+  } catch {
+    case (ex#24759 @ (_: scala#21.runtime#2648.NonLocalReturnControl#3939)) => if (ex#24759.key#24372().eq#5777(nonLocalReturnKey1#24371))
+      ex#24759.value$mcI$sp#26186()
+    else
+      throw ex#24759
+  }
+}
+{code}
+
+What it expects:
+
+{code}
+i$lzy#15025 = unbox#14934(o#14716.getOrElse#14953({
+      @SerialVersionUID#2329(0) final <synthetic> class $anonfun#24363 extends scala#21.runtime#2648.AbstractFunction0#3471 with Serializable#2326 {
+        def <init>#24367(): <$anon: Function0#934> = {
+          $anonfun#24363.super.<init>#24362();
+          ()
+        };
+        final def apply#24364(): Nothing#3010 = throw new scala#21.runtime#2648.NonLocalReturnControl$mcI$sp#26283(nonLocalReturnKey1#24371, -1);
+        final <bridge> <artifact> def apply#26857(): Object#149 = $anonfun#24363.this.apply#24364()
+      };
+      (new <$anon: Function0#934>(): Function0#934)
+    }));
+    i$lzy#15025
+{code}
+
+The tree that it finds happens to have the same shape (a block with one statement and an expression) as what it expects (a statement to initialize the lazy val, and an expression to return it)
+
+{code}
+debuglog(s"create complete lazy def in $methOrClass for $lazyVal")
+      val (block, res) = tree match {
+        case Block(List(assignment), res) if !lazyUnit(lazyVal) =>
+          (mkBlock(assignment),  res)
+        case rhs                          =>
+          (mkBlock(rhs),         UNIT)
+      }
+{code}
+
+The upshot is that the definition of `nonLocalReturnKey1` ends up hidden inside the `synchronized` call:
+
+{code}
+<stable> private def i$lzycompute#27983(): Int#1750 = {
+  {
+    A#7598.this.synchronized#5786(if (bitmap$0#27975.&#27981(1).==#27982(0))
+      {
+        <synthetic> val nonLocalReturnKey1#24371: Object#149 = new Object#149();
+        bitmap$0#27975 = bitmap$0#27975.|#27980(1);
+        ()
+      });
+    ()
+  };
+  try {
+    i$lzy#15025 = unbox#14934(o#14716.getOrElse#14953({
+      @SerialVersionUID#2329(0) final <synthetic> class $anonfun#24363 extends scala#21.runtime#2648.AbstractFunction0#3471 with Serializable#2326 {
+        def <init>#24367(): <$anon: Function0#934> = {
+          $anonfun#24363.super.<init>#24362();
+          ()
+        };
+        final def apply#24364(): Nothing#3010 = throw new scala#21.runtime#2648.NonLocalReturnControl$mcI$sp#26283(nonLocalReturnKey1#24371, -1);
+        final <bridge> <artifact> def apply#26857(): Object#149 = $anonfun#24363.this.apply#24364()
+      };
+      (new <$anon: Function0#934>(): Function0#934)
+    }));
+    i$lzy#15025
+  } catch {
+    case (ex#24759 @ (_: scala#21.runtime#2648.NonLocalReturnControl#3939)) => if (ex#24759.key#24372().eq#5777(nonLocalReturnKey1#24371))
+      ex#24759.value$mcI$sp#26186()
+    else
+      throw ex#24759
+  }
+}
+{code}
+
+That fact shows up later on when the function for the by-name argument fails to capture it.

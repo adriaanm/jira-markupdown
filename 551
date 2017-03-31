@@ -1,0 +1,28 @@
+I had an error like this using version 2.7.3. 
+I just followed the example in 
+http://static.liftweb.net/StartingWithLift.pdf
+
+and having one typing error at one of the first examples (page 15)
+
+class Util {
+ def in(html: NodeSeq) =
+   if (User.loggedIn_ ?) html else NodeSeq.Empty // note the space
+before the question mark
+
+ def out(html : NodeSeq ) =
+   if (! User.loggedIn_?) html else NodeSeq.Empty
+}
+Compiling (i.e. mvn jetty:run) gives this error 
+[INFO] Compiling 1 source files to C:\Svein\scalating\todo\target 
+\classes
+[WARNING] Exception in thread "main" java.lang.RuntimeException:
+malformed Scala signature of User at 13804; reference type _1 of
+<none> refers to nonexisting symbol.
+[WARNING]       at scala.tools.nsc.symtab.classfile.UnPickler
+$$UnPickle.errorBadSignature(UnPickler.scala:762)
+[WARNING]       at scala.tools.nsc.symtab.classfile.UnPickler$$UnPickle.scala
+$$tools$$nsc$$symtab$$classfile$$UnPickler$$UnPickle$$$$readSymbol
+(UnPickler.scala:172)
+....
+
+

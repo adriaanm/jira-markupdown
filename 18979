@@ -1,0 +1,21 @@
+{code}
+scala> tb.typecheck(q"{ case 1 => 2 }", pt = typeOf[PartialFunction[Int, Int]]) match { case q"{ case 1 => 2 }" => }
+scala.MatchError: ({
+  @SerialVersionUID(0) final <synthetic> class $anonfun extends scala.runtime.AbstractPartialFunction[Int,Int] with Serializable {
+    def <init>(): <$anon: Int => Int> = {
+      $anonfun.super.<init>();
+      ()
+    };
+    final override def applyOrElse[A1 <: Int, B1 >: Int](x1: A1, default: A1 => B1): B1 = ((x1.asInstanceOf[Int]: Int): Int @unchecked) match {
+      case 1 => 2
+      case (defaultCase$ @ _) => default.apply(x1)
+    };
+    final def isDefinedAt(x1: Int): Boolean = ((x1.asInstanceOf[Int]: Int): Int @unchecked) match {
+      case 1 => true
+      case (defaultCase$ @ _) => false
+    }
+  };
+  new $anonfun()
+}: scala.PartialFunction[Int,Int]) (of class scala.reflect.internal.Trees$Typed)
+  ... 32 elided
+{code}

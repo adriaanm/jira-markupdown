@@ -1,0 +1,82 @@
+More context:
+{code}
+sun@sun-laptop:/mnt/data-local/Work/Workspace/dev/miniboxing-plugin/sandbox(wip)$ ../../scala-trunk/build/quick/bin/scalac gh-bug-18-2-spec.scala -Xprint:tailcalls -Xprint:specialize
+[[syntax trees at end of                 tailcalls]] // gh-bug-18-2-spec.scala
+package <empty> {
+  abstract class Dist[@specialized(scala.`package`.AnyRef) A >: Nothing <: Any, @specialized(scala.Int) B >: Nothing <: Any] extends Object {
+    def <init>(): Dist[A,B] = {
+      Dist.super.<init>();
+      ()
+    };
+    def apply(a: A): A;
+    def iterateUntil(): Dist[A,B] = {
+      final class $anon extends Dist[A,B] {
+        def <init>(): anonymous class $anon = {
+          $anon.super.<init>();
+          ()
+        };
+        private def loop(a: A): A = a;
+        def apply(a: A): A = $anon.this.loop(a)
+      };
+      new anonymous class $anon()
+    }
+  }
+}
+
+gh-bug-18-2-spec.scala:5: error: Parameter type in structural refinement may not refer to an abstract type defined outside that refinement
+    def loop(a: A): A = a
+             ^
+[[syntax trees at end of                specialize]] // gh-bug-18-2-spec.scala
+package <empty> {
+  abstract class Dist[@specialized(scala.`package`.AnyRef) A >: Nothing <: Any, @specialized(scala.Int) B >: Nothing <: Any] extends Object {
+    def <init>(): Dist[A,B] = {
+      Dist.super.<init>();
+      ()
+    };
+    def apply(a: A): A;
+    def iterateUntil(): Dist[A,B] = {
+      final class $anon extends Dist[A,B] {
+        def <init>(): anonymous class $anon = {
+          $anon.super.<init>();
+          ()
+        };
+        private def loop(a: A): A = a;
+        def apply(a: A): A = $anon.this.loop(a)
+      };
+      new anonymous class $anon()
+    };
+    <specialized> def iterateUntil$mcLI$sp(): Dist[A,Int] = Dist.this.iterateUntil().asInstanceOf[Dist[A,Int]]()
+  };
+  abstract <specialized> class Dist$mcLI$sp[A$sp >: Nothing <: AnyRef] extends Dist[A$sp,Int] {
+    <specialized> def <init>(): Dist$mcLI$sp[A$sp] = {
+      Dist$mcLI$sp.super.<init>();
+      ()
+    };
+    <specialized> def apply(a: A$sp): A$sp;
+    override <specialized> def iterateUntil(): Dist[A$sp,Int] = Dist$mcLI$sp.this.iterateUntil$mcLI$sp();
+    override <specialized> def iterateUntil$mcLI$sp(): Dist[A$sp,Int] = {
+      final class $anon extends Dist$mcLI$sp[A$sp] {
+        def <init>(): anonymous class $anon = {
+          $anon.super.<init>();
+          ()
+        };
+        def loop(a: A$sp): A$sp = a; // error is output when typechecking loop, which is not part of the Dist definition
+        def apply(a: A$sp): A$sp = $anon.this.loop(a)
+      };
+      new anonymous class $anon()
+    }
+  }
+}
+
+one error found
+{code}
+The check that outputs the error is in checkMethodStructuralCompatible in [Typers.scala at line 2112|https://github.com/scala/scala/blob/e9fbdb22c94cd3ab7c4d297c6e9c61fc86263b4c/src/compiler/scala/tools/nsc/typechecker/Typers.scala#L2112].
+Questions to typer hackers:
+ 1 - is it normal that after duplication the anonymous closure behaves as a refined type? Shouldn't it be a plain class?
+ 2 - would it make sense to only perform this check if the phase is before specialization?
+{code}
+      if (meth.isStructuralRefinementMember && (phaseId(currentPeriod) <= currentRun.specializationPhase.id))
+        checkMethodStructuralCompatible(ddef)
+{code}
+Any help is welcome, this becomes even more annoying in miniboxing, which always performs partial specialization. 
+And sorry for the watchers spam...

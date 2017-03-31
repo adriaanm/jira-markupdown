@@ -1,0 +1,45 @@
+Regardless of the eventual outcome, the current fix doesn't currently do what it purports to do:
+{code}
+object X {
+  def foo() ={ val c = 3; () => c}
+  def bar() = {val c = new scala.collection.immutable.HashSet[Int]; () => c};
+
+  def main(x : Array[String]) {
+    import java.io._;
+    classOf[scala.collection.immutable.HashSet[Int]].getInterfaces.foreach{println}
+    val out = new ObjectOutputStream(new FileOutputStream("foo"));
+    out.writeObject(new scala.collection.immutable.HashSet[Int]);
+    out.writeObject(foo());
+    out.writeObject(bar());
+  }
+}
+{code}
+
+gives this output:
+
+{code}
+$$ scala X
+interface scala.collection.immutable.Set
+interface scala.collection.mutable.FlatHashTable
+interface scala.ScalaObject
+interface java.io.Serializable
+java.io.NotSerializableException: smr.X$$$$anonfun$$bar$$1
+	at java.io.ObjectOutputStream.writeObject0(ObjectOutputStream.java:1156)
+	at java.io.ObjectOutputStream.writeObject(ObjectOutputStream.java:326)
+	at smr.X$$.main(test.scala:15)
+	at smr.X.main(test.scala)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at scala.tools.nsc.ObjectRunner$$$$anonfun$$run$$1.apply(ObjectRunner.scala:75)
+	at scala.tools.nsc.ObjectRunner$$.withContextClassLoader(ObjectRunner.scala:49)
+	at scala.tools.nsc.ObjectRunner$$.run(ObjectRunner.scala:74)
+	at scala.tools.nsc.MainGenericRunner$$.main(MainGenericRunner.scala:164)
+	at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
+{code}
+
+However, HashSet is marked as serializable...
+
+Thanks,
+David

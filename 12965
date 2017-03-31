@@ -1,0 +1,194 @@
+When feeding input like
+{code}
+case class A(i: short)
+
+case class B(j: short, as: Array[A])
+{code}
+to the Scala 2.6.1-final compiler with the -optimise flag, the result is the following internal compiler error:
+{code}
+############# Cought exception:
+scala.tools.nsc.backend.icode.CheckerError: Incompatible types:
+ARRAY[REFERENCE(A)] with BOXED(SHORT) #################
+
+Method: B.productElement
+Method owner: class B
+scala.tools.nsc.backend.icode.CheckerError: Incompatible types:
+ARRAY[REFERENCE(A)] with BOXED(SHORT)
+	at scala.tools.nsc.backend.icode.TypeKinds$$class.lub(TypeKinds.scala:123)
+	at scala.tools.nsc.backend.icode.ICodes.lub(ICodes.scala:21)
+	at scala.tools.nsc.backend.icode.analysis.TypeFlowAnalysis$$typeStackLattice$$$$anonfun$$lub2$$1.apply(TypeFlowAnalysis.scala:56)
+	at
+scala.tools.nsc.backend.icode.analysis.TypeFlowAnalysis$$typeStackLattice$$$$anonfun$$lub2$$1.apply(TypeFlowAnalysis.scala:56)
+	at scala.List$$.map2(List.scala:277)
+	at
+scala.tools.nsc.backend.icode.analysis.TypeFlowAnalysis$$typeStackLattice$$.lub2(TypeFlowAnalysis.scala:56)
+	at
+scala.tools.nsc.backend.icode.analysis.TypeFlowAnalysis$$typeFlowLattice$$.lub2(TypeFlowAnalysis.scala:100)
+	at
+scala.tools.nsc.backend.icode.analysis.TypeFlowAnalysis$$typeFlowLattice$$.lub2(TypeFlowAnalysis.scala:77)
+	at
+scala.tools.nsc.backend.icode.analysis.CompleteLattice$$$$anonfun$$lub$$1.apply(CompleteLattice.scala:40)
+	at scala.List.foldLeft(List.scala:978)
+	at scala.List.reduceLeft(List.scala:1006)
+	at
+scala.tools.nsc.backend.icode.analysis.CompleteLattice$$class.lub(CompleteLattice.scala:40)
+	at
+scala.tools.nsc.backend.icode.analysis.TypeFlowAnalysis$$typeFlowLattice$$.lub(TypeFlowAnalysis.scala:77)
+	at
+scala.tools.nsc.backend.icode.analysis.DataFlowAnalysis$$$$anonfun$$forwardAnalysis$$1.apply(DataFlowAnalysis.scala:71)
+	at
+scala.tools.nsc.backend.icode.analysis.DataFlowAnalysis$$$$anonfun$$forwardAnalysis$$1.apply(DataFlowAnalysis.scala:68)
+	at scala.List.foreach(List.scala:753)
+	at
+scala.tools.nsc.backend.icode.analysis.DataFlowAnalysis$$class.forwardAnalysis(DataFlowAnalysis.scala:68)
+	at
+scala.tools.nsc.backend.icode.analysis.TypeFlowAnalysis$$MethodTFA.forwardAnalysis(TypeFlowAnalysis.scala:104)
+	at
+scala.tools.nsc.backend.icode.analysis.TypeFlowAnalysis$$MethodTFA.run(TypeFlowAnalysis.scala:159)
+	at
+scala.tools.nsc.backend.opt.Inliners$$Inliner.analyzeMethod(Inliners.scala:291)
+	at
+scala.tools.nsc.backend.opt.Inliners$$Inliner$$$$anonfun$$analyzeClass$$1.apply(Inliners.scala:269)
+	at
+scala.tools.nsc.backend.opt.Inliners$$Inliner$$$$anonfun$$analyzeClass$$1.apply(Inliners.scala:269)
+	at scala.List.foreach(List.scala:753)
+	at
+scala.tools.nsc.backend.opt.Inliners$$Inliner.analyzeClass(Inliners.scala:269)
+	at
+scala.tools.nsc.backend.opt.Inliners$$InliningPhase.apply(Inliners.scala:36)
+	at
+scala.tools.nsc.backend.icode.ICodes$$ICodePhase$$$$anonfun$$apply$$1.apply(ICodes.scala:85)
+	at
+scala.tools.nsc.backend.icode.ICodes$$ICodePhase$$$$anonfun$$apply$$1.apply(ICodes.scala:85)
+	at scala.Iterator$$class.foreach(Iterator.scala:376)
+	at
+scala.collection.mutable.FlatHashTable$$$$anon$$1.foreach(FlatHashTable.scala:111)
+	at scala.Iterable$$class.foreach(Iterable.scala:257)
+	at scala.collection.mutable.HashSet.foreach(HashSet.scala:31)
+	at scala.tools.nsc.backend.icode.ICodes$$ICodePhase.apply(ICodes.scala:85)
+	at scala.tools.nsc.Global$$GlobalPhase.applyPhase(Global.scala:245)
+	at
+scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:233)
+	at
+scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:233)
+	at scala.Iterator$$class.foreach(Iterator.scala:376)
+	at
+scala.collection.mutable.ListBuffer$$$$anon$$1.foreach(ListBuffer.scala:255)
+	at scala.tools.nsc.Global$$GlobalPhase.run(Global.scala:233)
+	at scala.tools.nsc.Global$$Run.compileSources(Global.scala:529)
+	at scala.tools.nsc.Global$$Run.compile(Global.scala:613)
+	at scala.tools.nsc.Main$$.process(Main.scala:86)
+	at scala.tools.nsc.Main$$.main(Main.scala:107)
+	at scala.tools.nsc.Main.main(Main.scala)
+def productElement(x$$1: Int (INT)): java.lang.Object {
+locals: value x$$1, variable boxed3, variable boxed4
+startBlock: 1
+blocks: [1,2,4,6,7]
+
+1:
+  LOAD_LOCAL value x$$1
+  SWITCH ...
+
+2:
+  RETURN (REFERENCE(java.lang.Object))
+
+4:
+  THIS
+  CALL_METHOD BB.as (dynamic)
+  JUMP 2
+
+6:
+  THIS
+  CALL_METHOD BB.j (dynamic)
+  STORE_LOCAL variable boxed3
+  LOAD_LOCAL variable boxed3
+  BOX SHORT
+  JUMP 2
+
+7:
+  NEW REFERENCE(java.lang.IndexOutOfBoundsException)
+  DUP
+  LOAD_LOCAL value x$$1
+  STORE_LOCAL variable boxed4
+  LOAD_LOCAL variable boxed4
+  BOX INT
+  CALL_METHOD java.lang.Objectjava.lang.Object.toString (dynamic)
+  CALL_METHOD
+java.lang.IndexOutOfBoundsExceptionjava.lang.IndexOutOfBoundsException.<init>
+(static-instance)
+  THROW
+
+}
+Exception handlers:
+
+Exception in thread "main" scala.tools.nsc.backend.icode.CheckerError:
+Incompatible types: ARRAY[REFERENCE(A)] with BOXED(SHORT)
+	at scala.tools.nsc.backend.icode.TypeKinds$$class.lub(TypeKinds.scala:123)
+	at scala.tools.nsc.backend.icode.ICodes.lub(ICodes.scala:21)
+	at
+scala.tools.nsc.backend.icode.analysis.TypeFlowAnalysis$$typeStackLattice$$$$anonfun$$lub2$$1.apply(TypeFlowAnalysis.scala:56)
+	at
+scala.tools.nsc.backend.icode.analysis.TypeFlowAnalysis$$typeStackLattice$$$$anonfun$$lub2$$1.apply(TypeFlowAnalysis.scala:56)
+	at scala.List$$.map2(List.scala:277)
+	at
+scala.tools.nsc.backend.icode.analysis.TypeFlowAnalysis$$typeStackLattice$$.lub2(TypeFlowAnalysis.scala:56)
+	at
+scala.tools.nsc.backend.icode.analysis.TypeFlowAnalysis$$typeFlowLattice$$.lub2(TypeFlowAnalysis.scala:100)
+	at
+scala.tools.nsc.backend.icode.analysis.TypeFlowAnalysis$$typeFlowLattice$$.lub2(TypeFlowAnalysis.scala:77)
+	at
+scala.tools.nsc.backend.icode.analysis.CompleteLattice$$$$anonfun$$lub$$1.apply(CompleteLattice.scala:40)
+	at scala.List.foldLeft(List.scala:978)
+	at scala.List.reduceLeft(List.scala:1006)
+	at
+scala.tools.nsc.backend.icode.analysis.CompleteLattice$$class.lub(CompleteLattice.scala:40)
+	at
+scala.tools.nsc.backend.icode.analysis.TypeFlowAnalysis$$typeFlowLattice$$.lub(TypeFlowAnalysis.scala:77)
+	at
+scala.tools.nsc.backend.icode.analysis.DataFlowAnalysis$$$$anonfun$$forwardAnalysis$$1.apply(DataFlowAnalysis.scala:71)
+	at
+scala.tools.nsc.backend.icode.analysis.DataFlowAnalysis$$$$anonfun$$forwardAnalysis$$1.apply(DataFlowAnalysis.scala:68)
+	at scala.List.foreach(List.scala:753)
+	at
+scala.tools.nsc.backend.icode.analysis.DataFlowAnalysis$$class.forwardAnalysis(DataFlowAnalysis.scala:68)
+	at
+scala.tools.nsc.backend.icode.analysis.TypeFlowAnalysis$$MethodTFA.forwardAnalysis(TypeFlowAnalysis.scala:104)
+	at
+scala.tools.nsc.backend.icode.analysis.TypeFlowAnalysis$$MethodTFA.run(TypeFlowAnalysis.scala:159)
+	at
+scala.tools.nsc.backend.opt.Inliners$$Inliner.analyzeMethod(Inliners.scala:291)
+	at
+scala.tools.nsc.backend.opt.Inliners$$Inliner$$$$anonfun$$analyzeClass$$1.apply(Inliners.scala:269)
+	at
+scala.tools.nsc.backend.opt.Inliners$$Inliner$$$$anonfun$$analyzeClass$$1.apply(Inliners.scala:269)
+	at scala.List.foreach(List.scala:753)
+	at
+scala.tools.nsc.backend.opt.Inliners$$Inliner.analyzeClass(Inliners.scala:269)
+	at
+scala.tools.nsc.backend.opt.Inliners$$InliningPhase.apply(Inliners.scala:36)
+	at
+scala.tools.nsc.backend.icode.ICodes$$ICodePhase$$$$anonfun$$apply$$1.apply(ICodes.scala:85)
+	at
+scala.tools.nsc.backend.icode.ICodes$$ICodePhase$$$$anonfun$$apply$$1.apply(ICodes.scala:85)
+	at scala.Iterator$$class.foreach(Iterator.scala:376)
+	at
+scala.collection.mutable.FlatHashTable$$$$anon$$1.foreach(FlatHashTable.scala:111)
+	at scala.Iterable$$class.foreach(Iterable.scala:257)
+	at scala.collection.mutable.HashSet.foreach(HashSet.scala:31)
+	at scala.tools.nsc.backend.icode.ICodes$$ICodePhase.apply(ICodes.scala:85)
+	at scala.tools.nsc.Global$$GlobalPhase.applyPhase(Global.scala:245)
+	at
+scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:233)
+	at
+scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:233)
+	at scala.Iterator$$class.foreach(Iterator.scala:376)
+	at
+scala.collection.mutable.ListBuffer$$$$anon$$1.foreach(ListBuffer.scala:255)
+	at scala.tools.nsc.Global$$GlobalPhase.run(Global.scala:233)
+	at scala.tools.nsc.Global$$Run.compileSources(Global.scala:529)
+	at scala.tools.nsc.Global$$Run.compile(Global.scala:613)
+	at scala.tools.nsc.Main$$.process(Main.scala:86)
+	at scala.tools.nsc.Main$$.main(Main.scala:107)
+	at scala.tools.nsc.Main.main(Main.scala)
+{code}
+Without optimisations the code compiles correctly.

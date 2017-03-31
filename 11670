@@ -1,0 +1,19 @@
+One way to look at it is that the warning is there to keep you from doing something unintentional.
+
+The warning is not spurious, in that the for comprehension desugars into an extra packaging step; it's the for comprehension equivalent of autoboxing.
+
+http://stackoverflow.com/questions/14087014/what-are-the-scoping-rules-for-vals-in-scala-for-comprehensions
+
+See the part where he goes, "Wait, really?"  The locals in the yield block are unused.
+
+http://www.scala-lang.org/files/archive/spec/2.11/06-expressions.html#for-comprehensions-and-for-loops
+
+Intended:
+{code}
+  for {
+    tup <- optTup
+  } yield {
+    val (num1, num2) = tup
+    (num1 + num2)
+  }
+{code}

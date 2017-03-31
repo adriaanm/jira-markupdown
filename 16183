@@ -1,0 +1,35 @@
+The following code causes a crash when pasted to the REPL:
+{code}
+import scala.collection.generic.CanBuildFrom
+import collection.SeqLike
+
+case class Sub[Y, B[Y] <: SeqLike[Y, B[Y]]](b: B[Y]) {
+  def foo[X, B2[X] >: B[Y] <: SeqLike[X, B2[X]]](other: Sub[X, B2])(implicit cbf: CanBuildFrom[B2[X], X, B2[X]]) =  {
+    other.b ++ b
+  }
+}
+
+Sub(List(1)).foo(Sub(Seq(2)))
+{code}
+
+{noformat}
+scala> scala.tools.nsc.symtab.Types$NoCommonType: lub/glb of incompatible types: [X]List[Int] and Seq
+
+Exception in thread "main" java.lang.RuntimeException: No char-based input in SimpleReader
+        at scala.sys.package$.error(package.scala:27)
+        at scala.tools.nsc.interpreter.SimpleReader.readOneKey(SimpleReader.scala:35)
+        at scala.tools.nsc.interpreter.SimpleReader.readOneKey(SimpleReader.scala:13)
+        at scala.tools.nsc.interpreter.InteractiveReader$class.readYesOrNo(InteractiveReader.scala:30)
+        at scala.tools.nsc.interpreter.SimpleReader.readYesOrNo(SimpleReader.scala:13)
+        at scala.tools.nsc.interpreter.ILoop$$anonfun$15.fn$1(ILoop.scala:535)
+        at scala.tools.nsc.interpreter.ILoop$$anonfun$15.apply(ILoop.scala:536)
+        at scala.tools.nsc.interpreter.ILoop$$anonfun$15.apply(ILoop.scala:516)
+        at scala.tools.nsc.interpreter.ILoop.loop(ILoop.scala:561)
+        at scala.tools.nsc.interpreter.ILoop.process(ILoop.scala:827)
+        at scala.tools.nsc.MainGenericRunner.runTarget$1(MainGenericRunner.scala:67)
+        at scala.tools.nsc.MainGenericRunner.process(MainGenericRunner.scala:80)
+        at scala.tools.nsc.MainGenericRunner$.main(MainGenericRunner.scala:89)
+        at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
+{noformat}
+
+(P.S. It would be nice to be able to use \{code:scala\})

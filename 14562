@@ -1,0 +1,48 @@
+Compiler crashes building Lift with Scala 2.8 20091001
+
+{code}
+WARNING] Exception in thread "main" java.lang.Error: no-symbol does not have owner
+[WARNING] 	at scala.tools.nsc.symtab.Symbols$$NoSymbol$$.owner(Symbols.scala:1870)
+[WARNING] 	at scala.tools.nsc.transform.LambdaLift$$LambdaLifter.outer(LambdaLift.scala:75)
+[WARNING] 	at scala.tools.nsc.transform.LambdaLift$$LambdaLifter.scala$$tools$$nsc$$transform$$LambdaLift$$LambdaLifter$$$$enclMethOrClass(LambdaLift.scala:106)
+[WARNING] 	at scala.tools.nsc.transform.LambdaLift$$LambdaLifter.searchIn$$1(LambdaLift.scala:286)
+[WARNING] 	at scala.tools.nsc.transform.LambdaLift$$LambdaLifter.proxy(LambdaLift.scala:299)
+[WARNING] 	at scala.tools.nsc.transform.LambdaLift$$LambdaLifter.proxyRef(LambdaLift.scala:315)
+[WARNING] 	at scala.tools.nsc.transform.LambdaLift$$LambdaLifter.postTransform(LambdaLift.scala:391)
+[WARNING] 	at scala.tools.nsc.transform.LambdaLift$$LambdaLifter.transform(LambdaLift.scala:407)
+[WARNING] 	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transform$$4.apply(Trees.scala:1434)
+[WARNING] 	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transform$$4.apply(Trees.scala:1433)
+[WARNING] 	at scala.tools.nsc.ast.Trees$$Transformer.atOwner(Trees.scala:1560)
+[WARNING] 	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:37)
+[WARNING] 	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:30)
+[WARNING] 	at scala.tools.nsc.ast.Trees$$Transformer.transform(Trees.scala:1432)
+[WARNING] 	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.transform(TypingTransformers.scala:52)
+[WARNING] 	at scala.tools.nsc.transform.ExplicitOuter$$OuterPathTransformer.transform(ExplicitOuter.scala:230)
+[WARNING] 	at scala.tools.nsc.transform.LambdaLift$$LambdaLifter.transform(LambdaLift.scala:407)
+{code}
+
+Smaller test case (thanks retronym):
+{code}
+object Msg {
+  trait T
+  
+  trait TSeq
+  
+  object TSeq {
+    implicit def fromSeq(s: Seq[T]): TSeq = error("stub")
+  }
+
+  def render {
+    val msgs: TSeq = (List[(Any, Any)]().flatMap {
+      case (a, b) => {
+        a match {
+          case _ => b match {
+            case _ => error("stub")
+          }
+        }
+      }
+    } /*: Seq[T] Adding this type annotation avoids the compile error.*/)
+  }
+}
+{code}
+

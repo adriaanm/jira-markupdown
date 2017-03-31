@@ -1,0 +1,41 @@
+actually, I think it's probably going to be easier to fix after all -- need to construct the correct prefix in enumerateSubtypes
+
+here's what i've been experimenting with using :power in the repl:
+
+{code}
+scala> trait Companion {
+     |    sealed trait Super
+     |    object Subs {
+     |       case object Decimal extends Super
+     |       case object Integer extends Super
+     |       case class Time(t: String) extends Super
+     |    }
+     | }
+defined trait Companion
+
+scala> 
+
+scala> object Outer extends Companion
+defined module Outer
+
+scala> 
+
+scala> 
+
+scala> val tp = ?[Outer.Super].tpe
+tp: $r.power.intp.global.Type = Outer.Super
+
+scala> val subSyms = tp.typeSymbol.sealedDescendants
+subSyms: Set[$r.power.intp.global.Symbol] = Set(object Decimal, object Integer, class Time, trait Super)
+
+scala> val subSym = subSyms.head
+subSym: $r.power.intp.global.Symbol = object Decimal
+
+scala> 
+
+scala> tp.prefix.memberType(subSym.owner).memberType(subSyms.head)
+res1: $r.power.intp.global.Type = Outer.Subs.type#Decimal.type
+
+{code}
+
+Outer.Subst.Decimal is closer to the type we should for the sealed descendant of Outer.Super -- currently we use Companion.Subst.Decimal...

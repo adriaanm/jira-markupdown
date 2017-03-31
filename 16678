@@ -1,0 +1,93 @@
+See SI-3197 for a different side of the same coin.  This is worse though.
+{code}
+
+scala> class Bar1 extends Bar { protected def f(): Int = 5 }
+defined class Bar1
+
+scala> class Bar2 extends Bar { protected def f(): Int = 5 }
+defined class Bar2
+
+scala> List(new Bar1, new Bar2)
+res1: List[Bar{protected def f(): Int}] = List(Bar1@55661f7b, Bar2@239cf00a)
+
+scala> type BarF = { def f(): Int }
+defined type alias BarF
+
+scala> var x: BarF = _
+x: BarF = null
+
+scala> x = res1.head
+x: BarF = Bar1@55661f7b
+
+scala> x.f
+res2: Int = 5
+
+scala> (new Bar1).f
+<console>:10: error: method f in class Bar1 cannot be accessed in Bar1
+ Access to protected method f not permitted because
+ enclosing object $iw is not a subclass of 
+ class Bar1 where target is defined
+              (new Bar1).f
+                         ^
+{code}
+We really need to establish what is allowed in terms of modifiers within refinement types.  You can't even declare them, they have to be inferred:
+{code}
+scala> type Foo = { protected def f(): Int }
+<console>:1: error: illegal start of declaration
+       type Foo = { protected def f(): Int }
+                    ^
+{code}
+It loses the local boundary:
+{code}
+scala> class A {
+     |   abstract class Bar { protected[this] def f(): Any }
+     |   class Bar1 extends Bar { protected[this] def f(): Int = 5 }
+     |   class Bar2 extends Bar { protected[this] def f(): Int = 5 }
+     |   
+     |   def f = List(new Bar1, new Bar2)
+     | }
+defined class A
+
+scala> (new A).f _
+res0: () => List[A#Bar{protected def f(): Int}] = <function0>
+{code}
+It doesn't notice refinements in access on their own, but applies them if it is in the neighborhood refining the return type, leading to unpredictable behavior:
+{code}
+
+package bippy {
+  package dingus {
+    abstract class Bar { protected[dingus] def f(): Any }
+    class Bar1 extends Bar { protected[bippy] def f(): Int = 5 }
+    class Bar2 extends Bar { protected[bippy] def f(): Int = 5 }
+    // Infers List[Bar{protected[bippy] def f(): Int}]
+    
+    abstract class Bar { protected[dingus] def f(): Int } // note no return type refinement
+    class Bar1 extends Bar { protected[bippy] def f(): Int = 5 }
+    class Bar2 extends Bar { protected[bippy] def f(): Int = 5 }
+    // Infers List[Bar]
+  }
+  import dingus._
+  object A { def g2 = List(new Bar1, new Bar2) }
+}
+{code}
+There is no way to widen access if a method was declared protected but may be widened in subclasses, as demonstrated in SI-3197.
+
+To top it off, all the access modifiers are useless.  You can't call a protected method unless you're a member of the same class, but when is this going to arise with an inferred structural type (and again, the access modifiers can only arise through inference.)
+{code}
+scala> object A {
+     |   abstract class Bar { protected def f(): Any }
+     |   class Bar1 extends Bar { protected def f(): Int = 5 }
+     |   class Bar2 extends Bar { protected def f(): Int = 5 ; def h = g map (_.f()) }
+     |   
+     |   def g = List(new Bar1, new Bar2)
+     | }
+<console>:10: error: method f cannot be accessed in A.Bar{protected def f(): Int}
+ Access to protected method f not permitted because
+ enclosing class Bar2 in object A is not a subclass of 
+ A in object A where target is defined
+         class Bar2 extends Bar { protected def f(): Int = 5 ; def h = g map (_.f()) }
+                                                                                ^                                                                                      ^
+{code}
+Now there's a nice confusing error.  Regardless of what ought to happen, I don't think there's any way to call that protected f.
+
+I propose that structural types only infer public signatures.  If everything going into the lub doesn't have a public signature, there's no such method in the lub.  Simple and removes no capability which actually works.

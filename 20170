@@ -1,0 +1,107 @@
+Having a base trait, {{AbstractOverrideTest}}, with a specialized version {{EnhancedAOT}}, intended to be implemented as a mixin using stacked traits pattern, results in the following code compiling, but throwing {{ClassCastException}} as the abstract override method expects
+an {{EnhancedAOT}} instead of root {{AbstractOverrideTest}}. In practice, the following mixin shouldn't compile:
+{code:scala}
+trait AbstractOverrideTest[-I, +O] { self =>
+
+	def flatMap[T](f :O=>Seq[T]) :AbstractOverrideTest[I, T] //=
+
+	override def toString = "AbstractOverrideTest"
+}
+
+trait EnhancedAOT[-I, +O] extends AbstractOverrideTest[I, O] { self =>
+	override def flatMap[T](f: (O) => Seq[T]): EnhancedAOT[I, T] //= new EnhancedAOT[I, T]{
+
+	override def toString = "EnhancedAOT"
+}
+
+trait EnhancedMixin[-I, +O] extends EnhancedAOT[I, O] {
+	self =>
+//	self :EnhancedAOT[I, O] =>
+	override def toString = "EnhancedMixin"
+
+	abstract override def flatMap[T](f: (O) => Seq[T]): EnhancedAOT[I, T] = {
+		println(s"EhancedMixin[$self].flatMap{ ...")
+		val e = super.flatMap(f)
+		new EnhancedAOT[I, T] {
+			println(s"... } EnhancedMixin[$self].flatMap($e)")
+
+			override def toString = s"EnhancedMixin[$self].flatMap($e).new"
+
+			override def flatMap[S](g: (T) => Seq[S]): EnhancedAOT[I, S] = {
+				println(s"EnhancedMixin[$self].flatMap.new[$this]{")
+				self.flatMap(f(_).flatMap(g))
+			}
+		}
+	}
+}
+
+
+
+class RealAOT[-I, +O] extends AbstractOverrideTest[I, O] {
+	override def flatMap[T](f: (O) => Seq[T]): AbstractOverrideTest[I, T] = new RealAOT[I, T]
+
+	override def toString = s"RealAOT"
+}
+
+class Mixed[-I, +O] extends RealAOT[I, O] with EnhancedAOT[I, O] with EnhancedMixin[I, O] {
+	override def toString = s"Mixed"
+}
+
+
+object AbstractOverrideApp extends App {
+	case object MakeSeq extends (Any=>Seq[Any]) {
+		override def apply(v1: Any): Seq[Any] = Seq(v1)
+	}
+
+	val m = new Mixed[Any, Any]
+	println(s"m:\n$m\n")
+	//below throws a ClassCast because EnhancedMixin expects an EnhancedAOT result in abstract override instead of just AbstractOverrideTest
+	val mf = m.flatMap(MakeSeq)
+	println(s"m.flatMap:\n$mf\n")
+
+	val mff = mf.flatMap(MakeSeq)
+	println(s"m.flatMap.flatMap:\n$mff\n")
+}
+
+{code}
+
+And the resulting stack trace:
+
+{noformat}
+m:
+Exception in thread "main" java.lang.ClassCastException: pl.proplus.station.recombiners.RealAOT cannot be cast to pl.proplus.station.recombiners.EnhancedAOT
+Mixed
+	at pl.proplus.station.recombiners.Mixed.pl$proplus$station$recombiners$EnhancedMixin$$super$flatMap(AbstractOverrideTest.scala:48)
+
+	at pl.proplus.station.recombiners.EnhancedMixin$class.flatMap(AbstractOverrideTest.scala:26)
+EhancedMixin[Mixed].flatMap{ ...
+	at pl.proplus.station.recombiners.Mixed.flatMap(AbstractOverrideTest.scala:48)
+	at pl.proplus.station.recombiners.AbstractOverrideApp$.delayedEndpoint$pl$proplus$station$recombiners$AbstractOverrideApp$1(AbstractOverrideTest.scala:64)
+	at pl.proplus.station.recombiners.AbstractOverrideApp$delayedInit$body.apply(AbstractOverrideTest.scala:53)
+	at scala.Function0$class.apply$mcV$sp(Function0.scala:34)
+	at scala.runtime.AbstractFunction0.apply$mcV$sp(AbstractFunction0.scala:12)
+	at scala.App$$anonfun$main$1.apply(App.scala:76)
+	at scala.App$$anonfun$main$1.apply(App.scala:76)
+	at scala.collection.immutable.List.foreach(List.scala:381)
+	at scala.collection.generic.TraversableForwarder$class.foreach(TraversableForwarder.scala:35)
+	at scala.App$class.main(App.scala:76)
+	at pl.proplus.station.recombiners.AbstractOverrideApp$.main(AbstractOverrideTest.scala:53)
+	at pl.proplus.station.recombiners.AbstractOverrideApp.main(AbstractOverrideTest.scala)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:497)
+	at com.intellij.rt.execution.application.AppMain.main(AppMain.java:144)
+
+Process finished with exit code 1
+{noformat}
+
+Proper implementation with the following change:
+{code:scala}
+trait EnhancedMixin[-I, +O] extends AbstractOverrideTest[I, O] {
+	self : EnhancedAOT[I, O] =>
+{code}
+
+Works as expected, so this is a minor issue which should just report an error during compilation.
+
+

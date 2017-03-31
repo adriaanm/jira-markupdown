@@ -1,0 +1,15 @@
+The 2.7.3-final compiler fails on the following code with "java.lang.Error: no-symbol does not have owner":
+
+{code}
+import java.util.Properties
+import javax.mail.{Message, Session}
+import javax.mail.internet.MimeMessage
+
+object CompilerTest extends Application {    
+    val session = Session.getInstance(new Properties(), null)
+    val msg = new MimeMessage(session)
+    msg.setRecipients(Message.RecipientType.TO, "to")
+}
+{code}
+
+This code compiled successfully under 2.7.1 (I did not try 2.7.2).

@@ -1,0 +1,67 @@
+
+{code}
+object Test{
+  def test[t](x: t forSome { type a <% Int }) = x
+}
+{code}
+
+Yields into compiler crash:
+
+
+{code}
+d:\temp\test.scala:2: error: `=', `>:', or `<:' expected
+  def test[t](x: t forSome { type a <% Int }) = x
+
+                                    ^
+Exception in thread "main" java.util.NoSuchElementException: None.get
+	at scala.None$$.get(Option.scala:136)
+	at scala.None$$.get(Option.scala:134)
+	at scala.tools.nsc.ast.parser.Parsers$$Parser.scala$$tools$$nsc$$ast$$parser$$Parsers$$Parser$$$$p2i(Parsers.scala:115)
+	at scala.tools.nsc.ast.parser.Parsers$$Parser$$$$anonfun$$typ$$1.apply(Parsers.scala:725)
+	at scala.tools.nsc.ast.parser.Parsers$$Parser$$$$anonfun$$typ$$1.apply(Parsers.scala:720)
+	at scala.List.foreach(List.scala:753)
+	at scala.tools.nsc.ast.parser.Parsers$$Parser.typ(Parsers.scala:720)
+	at scala.tools.nsc.ast.parser.Parsers$$Parser$$$$anonfun$$12.apply(Parsers.scala:1742)
+	at scala.tools.nsc.ast.parser.Parsers$$Parser$$$$anonfun$$12.apply(Parsers.scala:1742)
+	at scala.tools.nsc.ast.parser.Parsers$$Parser.placeholderTypeBoundary(Parsers.scala:193)
+	at scala.tools.nsc.ast.parser.Parsers$$Parser.paramType(Parsers.scala:1742)
+	at scala.tools.nsc.ast.parser.Parsers$$Parser.param$$1(Parsers.scala:1687)
+	at scala.tools.nsc.ast.parser.Parsers$$Parser.paramClause$$1(Parsers.scala:1703)
+	at scala.tools.nsc.ast.parser.Parsers$$Parser.paramClauses(Parsers.scala:1715)
+	at scala.tools.nsc.ast.parser.Parsers$$Parser.funDefOrDcl(Parsers.scala:2050)
+	at scala.tools.nsc.ast.parser.Parsers$$Parser.defOrDcl(Parsers.scala:1921)
+	at scala.tools.nsc.ast.parser.Parsers$$Parser.nonLocalDefOrDcl(Parsers.scala:1933)
+	at scala.tools.nsc.ast.parser.Parsers$$Parser$$$$anonfun$$templateStatSeq$$1$$$$anonfun$$apply$$2.apply(Parsers.scala:2396)
+	at scala.tools.nsc.ast.parser.Parsers$$Parser$$$$anonfun$$templateStatSeq$$1$$$$anonfun$$apply$$2.apply(Parsers.scala:2396)
+	at scala.tools.nsc.ast.parser.Parsers$$Parser.joinComment(Parsers.scala:373)
+	at scala.tools.nsc.ast.parser.Parsers$$Parser$$$$anonfun$$templateStatSeq$$1.apply(Parsers.scala:2396)
+	at scala.tools.nsc.ast.parser.Parsers$$Parser$$$$anonfun$$templateStatSeq$$1.apply(Parsers.scala:2371)
+	at scala.tools.nsc.ast.parser.Parsers$$Parser.checkNoEscapingPlaceholders(Parsers.scala:170)
+	at scala.tools.nsc.ast.parser.Parsers$$Parser.templateStatSeq(Parsers.scala:2371)
+	at scala.tools.nsc.ast.parser.Parsers$$Parser.templateBody(Parsers.scala:2289)
+	at scala.tools.nsc.ast.parser.Parsers$$Parser.templateBodyOpt(Parsers.scala:2297)
+	at scala.tools.nsc.ast.parser.Parsers$$Parser.templateOpt(Parsers.scala:2269)
+	at scala.tools.nsc.ast.parser.Parsers$$Parser.objectDef(Parsers.scala:2205)
+	at scala.tools.nsc.ast.parser.Parsers$$Parser.tmplDef(Parsers.scala:2148)
+	at scala.tools.nsc.ast.parser.Parsers$$Parser.topLevelTmplDef(Parsers.scala:2131)
+	at scala.tools.nsc.ast.parser.Parsers$$Parser$$$$anonfun$$topStatSeq$$1.apply(Parsers.scala:2354)
+	at scala.tools.nsc.ast.parser.Parsers$$Parser$$$$anonfun$$topStatSeq$$1.apply(Parsers.scala:2354)
+	at scala.tools.nsc.ast.parser.Parsers$$Parser.joinComment(Parsers.scala:373)
+	at scala.tools.nsc.ast.parser.Parsers$$Parser.topStatSeq(Parsers.scala:2354)
+	at scala.tools.nsc.ast.parser.Parsers$$Parser.compilationUnit(Parsers.scala:2489)
+	at scala.tools.nsc.ast.parser.Parsers$$Parser.parse(Parsers.scala:147)
+	at scala.tools.nsc.ast.parser.SyntaxAnalyzer$$ParserPhase.apply(SyntaxAnalyzer.scala:21)
+	at scala.tools.nsc.Global$$GlobalPhase.applyPhase(Global.scala:245)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:233)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:233)
+	at scala.Iterator$$class.foreach(Iterator.scala:376)
+	at scala.collection.mutable.ListBuffer$$$$anon$$1.foreach(ListBuffer.scala:255)
+	at scala.tools.nsc.Global$$GlobalPhase.run(Global.scala:233)
+	at scala.tools.nsc.Global$$Run.compileSources(Global.scala:532)
+	at scala.tools.nsc.Global$$Run.compile(Global.scala:616)
+	at scala.tools.nsc.Main$$.process(Main.scala:86)
+	at scala.tools.nsc.Main$$.main(Main.scala:107)
+	at scala.tools.nsc.Main.main(Main.scala)
+
+
+{code}

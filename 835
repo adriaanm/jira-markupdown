@@ -1,0 +1,17 @@
+Okay, I see.
+
+Here's a shorter version:
+{code}
+class Component { compSelf:Component =>
+  class FXProp[T] {
+    type ReturnType = compSelf.type
+    def apply(): ReturnType =  compSelf.asInstanceOf[ReturnType]
+  }
+  
+  val propA = new FXProp[String]
+}
+
+object Crasher {
+  new Component() propA() propA() propA() propA() propA() propA()
+}
+{code}

@@ -1,0 +1,5 @@
+I agree this is a pain, and a Java logging framework is the simplest way forward. For example, Code is using stdio as a transport protocol for its language server and any unwanted output is going to break it down completely.
+
+[~moors], can you elaborate why Java logging isn't an option?
+
+If we go for overridable methods we still need to make them "not inline", which may or may not hurt performance. I don't know what the current optimizer can do, but at some point in the past, @inline log saved about 8% in code size and a couple of percentages in speed. It may not be an issue in 2.12 and Java 8 lambdas, but I think any fix should be backported to 2.11 too.

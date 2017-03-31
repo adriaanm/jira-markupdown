@@ -1,0 +1,24 @@
+An alternative that doesn't break binary compatibility is
+
+{code}
+var x = try{...}catch{...}
+{code}
+
+transforms to
+
+{code}
+val temp$ = try {...}catch{...}
+var x = temp$
+{code}
+
+which, when x is captured, turns turns into 
+{code}
+... instructions loading initialValue
+STORE temp$
+NEW ObjectRef
+DUP
+LOAD temp$
+INVOKESPECIAL scala.runtime.ObjectRef.<init>(initialValue)
+{code}
+
+It wastes a variable slot in cases when var is not captured, though (unless we're smarter about optimizing away variables than I think we are), so we'd want to replace it with the cleaner static factory version in 2.11.

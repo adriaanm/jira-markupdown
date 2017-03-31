@@ -1,0 +1,33 @@
+The leak may affect for-comprehensions as well and cause serialization overhead. The following snippet is extracted from a program where this is causing an issue.
+
+{code}
+  case class Id[A](a:A) {
+    def map[B](f:A => B):Id[B] = Id(f(a))
+    def flatMap[B](f: A => Id[B]):Id[B] = f(a) 
+  }
+    
+  def foo(x:Id[Int]):Id[Unit] = for {
+    u <- Id(4)
+    // v <- Id(5)
+    w <- x.map(_ + u)
+  } yield w
+
+  foo(Id(1))
+{code}
+
+The closure passed to map captures only 'u' if "v <- Id(5)" is commented out. 
+
+{code}
+-> f	      Test$$anonfun$foo$1$$anonfun$apply$1  (id=21)	
+ -> u$1	      4	
+{code}
+
+If the line is uncommented, although it is completely unrelated, the closure captures x. 
+
+{code}
+-> f          Test$$anonfun$foo$1$$anonfun$apply$3$$anonfun$apply$1  (id=22)	
+ -> $outer    Test$$anonfun$foo$1$$anonfun$apply$3  (id=29)	
+  -> $outer   Test$$anonfun$foo$1  (id=34)	
+   -> x$2     Test$Id<A>  (id=21)	
+   -> u$1     4	
+{code}

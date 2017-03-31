@@ -1,0 +1,92 @@
+I am using the nightly from 06 August 2008.
+
+Steps to reproduce:
+
+1. Right-click package in scala project and select New->File
+
+2. Type Foo.scala and press enter.
+
+3. Type
+
+{code}
+package bar
+
+class Foo {
+{code}
+
+followed by Enter.
+
+A BadLocationExceptionr1 is thrown and the Enter has no effect. If I type something else (e.g. a letter), it works and a closing brace is inserted. Would it be possible to insert the newline and closing brace when Enter is pressed?
+
+This works correctly if "New Scala Class" is used instead of "New File" so unclear to me why it doesn't when "New File" is used (even after closing and reopening the file).
+
+Low priority, but if the fix is easy, it would be nice.
+
+{code}
+r1 org.eclipse.jface.text.BadLocationException
+	at org.eclipse.jface.text.AbstractDocument.getChar(AbstractDocument.java:772)
+	at org.eclipse.core.internal.filebuffers.SynchronizableDocument.getChar(SynchronizableDocument.java:109)
+	at lampion.eclipse.UIPlugin$$ProjectImpl$$FileImpl$$content0$$.apply(UIPlugin.scala:199)
+	at lampion.eclipse.UIPlugin$$ProjectImpl$$FileImpl$$content0$$.apply(UIPlugin.scala:196)
+	at lampion.presentation.AutoEdits$$ProjectImpl$$FileImpl$$class.indentOfThisLine(AutoEdits.scala:99)
+	at scala.tools.eclipse.Driver$$Project$$File.indentOfThisLine(Driver.scala:21)
+	at lampion.presentation.Matchers$$ProjectImpl$$FileImpl$$class.beforeEdit(Matchers.scala:56)
+	at scala.tools.eclipse.Driver$$Project$$File.scala$$tools$$editor$$Presentations$$ProjectImpl$$FileImpl$$$$super$$beforeEdit(Driver.scala:21)
+	at scala.tools.editor.Presentations$$ProjectImpl$$FileImpl$$class.beforeEdit(Presentations.scala:334)
+	at scala.tools.eclipse.Driver$$Project$$File.beforeEdit(Driver.scala:21)
+	at lampion.eclipse.Editor.customizeDocumentCommand(Editor.scala:50)
+	at org.eclipse.jface.text.TextViewer.customizeDocumentCommand(TextViewer.java:3568)
+	at org.eclipse.jface.text.TextViewer.handleVerifyEvent(TextViewer.java:3597)
+	at org.eclipse.jface.text.source.projection.ProjectionViewer.handleVerifyEvent(ProjectionViewer.java:1249)
+	at lampion.eclipse.SourceViewer.handleVerifyEvent(SourceViewer.scala:47)
+	at org.eclipse.jface.text.TextViewer$$TextVerifyListener.verifyText(TextViewer.java:419)
+	at org.eclipse.swt.widgets.TypedListener.handleEvent(TypedListener.java:249)
+	at org.eclipse.swt.widgets.EventTable.sendEvent(EventTable.java:84)
+	at org.eclipse.swt.widgets.Widget.sendEvent(Widget.java:1158)
+	at org.eclipse.swt.widgets.Widget.sendEvent(Widget.java:1182)
+	at org.eclipse.swt.widgets.Widget.sendEvent(Widget.java:1167)
+	at org.eclipse.swt.widgets.Widget.notifyListeners(Widget.java:1007)
+	at org.eclipse.swt.custom.StyledText.modifyContent(StyledText.java:5844)
+	at org.eclipse.swt.custom.StyledText.sendKeyEvent(StyledText.java:6631)
+	at org.eclipse.swt.custom.StyledText.doContent(StyledText.java:2186)
+	at org.eclipse.swt.custom.StyledText.handleKey(StyledText.java:5145)
+	at org.eclipse.swt.custom.StyledText.handleKeyDown(StyledText.java:5170)
+	at org.eclipse.swt.custom.StyledText$$7.handleEvent(StyledText.java:4873)
+	at org.eclipse.swt.widgets.EventTable.sendEvent(EventTable.java:84)
+	at org.eclipse.swt.widgets.Widget.sendEvent(Widget.java:1158)
+	at org.eclipse.swt.widgets.Widget.sendEvent(Widget.java:1182)
+	at org.eclipse.swt.widgets.Widget.sendEvent(Widget.java:1167)
+	at org.eclipse.swt.widgets.Widget.sendKeyEvent(Widget.java:1194)
+	at org.eclipse.swt.widgets.Widget.gtk_key_press_event(Widget.java:698)
+	at org.eclipse.swt.widgets.Control.gtk_key_press_event(Control.java:2761)
+	at org.eclipse.swt.widgets.Composite.gtk_key_press_event(Composite.java:702)
+	at org.eclipse.swt.widgets.Widget.windowProc(Widget.java:1543)
+	at org.eclipse.swt.widgets.Control.windowProc(Control.java:4502)
+	at org.eclipse.swt.widgets.Display.windowProc(Display.java:4099)
+	at org.eclipse.swt.internal.gtk.OS._gtk_main_do_event(Native Method)
+	at org.eclipse.swt.internal.gtk.OS.gtk_main_do_event(OS.java:5783)
+	at org.eclipse.swt.widgets.Display.eventProc(Display.java:1177)
+	at org.eclipse.swt.internal.gtk.OS._g_main_context_iteration(Native Method)
+	at org.eclipse.swt.internal.gtk.OS.g_main_context_iteration(OS.java:1541)
+	at org.eclipse.swt.widgets.Display.readAndDispatch(Display.java:3031)
+	at org.eclipse.ui.internal.Workbench.runEventLoop(Workbench.java:2382)
+	at org.eclipse.ui.internal.Workbench.runUI(Workbench.java:2346)
+	at org.eclipse.ui.internal.Workbench.access$$4(Workbench.java:2198)
+	at org.eclipse.ui.internal.Workbench$$5.run(Workbench.java:493)
+	at org.eclipse.core.databinding.observable.Realm.runWithDefault(Realm.java:288)
+	at org.eclipse.ui.internal.Workbench.createAndRunWorkbench(Workbench.java:488)
+	at org.eclipse.ui.PlatformUI.createAndRunWorkbench(PlatformUI.java:149)
+	at org.eclipse.ui.internal.ide.application.IDEApplication.start(IDEApplication.java:113)
+	at org.eclipse.equinox.internal.app.EclipseAppHandle.run(EclipseAppHandle.java:193)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.runApplication(EclipseAppLauncher.java:110)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.start(EclipseAppLauncher.java:79)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:382)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:179)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at org.eclipse.equinox.launcher.Main.invokeFramework(Main.java:549)
+	at org.eclipse.equinox.launcher.Main.basicRun(Main.java:504)
+	at org.eclipse.equinox.launcher.Main.run(Main.java:1236)
+{code}

@@ -1,0 +1,19 @@
+actually, erasure has already been refined with a similar use case in mind, except it's different from yours
+
+since `Node` is an abstract type, the traits are not considered more specific (since `Node` could be ANY subtype of `INode`)
+
+this set of bounds
+
+{code}
+type Element <: INode with IElement
+type Document <: INode with IDocument
+{code}
+
+yields the same output as these:
+
+{code}
+type Element <: IElement with INode
+type Document <: IDocument with INode
+{code}
+
+I would argue the current behaviour is the correct one, but I'll leave the ticket open because it's the weekend

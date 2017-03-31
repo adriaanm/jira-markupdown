@@ -1,0 +1,17 @@
+At least two untrue claims about Booleans in the SLS:
+{code}
+The test x .asInstanceOf[T ] is treated specially if T is a numeric value type 
+(�12.2. In this case the cast will be translated to an application of a conversion 
+method x.toT (�12.2.1). For non-numeric values x the operation will raise a 
+ClassCastException. 
+{code}
+This would be undesirable if true, but fortunately it isn't.  Neither boolean values nor () throw a CCE if cast to AnyRef.
+{code}
+The hashCode method returns 1 when invoked on true, and 
+0 when invokend on false.
+{code}
+Those hashCodes would be suboptimal choices, but we can't choose the hashCodes for java.lang.Boolean anyway.  They are:
+{code}
+scala> (true.hashCode, false.hashCode)
+res0: (Int, Int) = (1231,1237)
+{code}

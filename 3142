@@ -1,0 +1,15 @@
+{code}
+class Bar
+class Foo {
+    def & (that: Bar): Foo = this
+    def <==(that: Foo): Bar = new Bar()
+    def <--(that: Foo): Bar = new Bar()
+
+    // Compiles:
+    this & (this <== this)
+    // Does not compile but should because '<' has higher precedence than '&':
+    // this & this <== this
+    // Compiles:
+    this & this <-- this
+}
+{code}

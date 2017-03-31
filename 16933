@@ -1,0 +1,18 @@
+Given the following macro definition
+
+{code}
+  def mkInt = macro mkIntImpl
+  def mkIntImpl(c: Context): c.Expr[Any] = {
+    println(c.enclosingApplication)
+    c.reify{ 23 }
+  }
+{code}
+
+I would expect something other than EmptyTree to be returned in the body of the macro when applied like so,
+
+{code}
+val i1 = mkInt
+val i2 = identity(mkInt)
+{code}
+
+However in both cases the result is EmptyTree.

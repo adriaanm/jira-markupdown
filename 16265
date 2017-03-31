@@ -1,0 +1,14 @@
+Methods in specialized classes should have specialized versions if their type parameters require it.  In particular, if you pass in a specialized class or trait of the same type, the method should be specialized.  Unfortunately, this rule is lost if traits are composed, yielding unspecialized code.
+
+Minimal example:
+
+package spectest2 {
+  trait Mutable[@specialized A] { def a: A; def a_=(a0: A): Unit }
+  trait NotSpecialized { def not: String }
+  class Arr[@specialized A](val arr: Array[A]) {
+    def lode(m: Mutable[A]) { m.a = arr(0) }
+    def load(m: Mutable[A] with NotSpecialized) { m.a = arr(0) }
+  }
+}
+
+In this case, method "lode" is correctly specialized in, for example, the Int version of the class.  However, method "load" is not.  Even if the second trait is in fact specialized, the same behavior is observed.

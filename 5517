@@ -1,0 +1,33 @@
+Not done misrepresenting this ticket.  Using items, far from making the crash go away, actually achieves the rare "double stack trace".
+
+{code}
+class A {
+  PartialFunction.condOpt(Nil) {
+    case items@List(_*) if true => items
+  }
+}
+{code}
+{code}
+% scalac29 -d /tmp test/files/pos/bug4269.scala
+error: java.lang.Error: symbol value items does not exist in A$$$$anonfun$$1.isDefinedAt
+	at scala.tools.nsc.symtab.SymbolTable.abort(SymbolTable.scala:35)
+	// snip remainder
+
+Exception in thread "main" java.lang.Error: symbol value items does not exist in A$$$$anonfun$$1.isDefinedAt
+	at scala.tools.nsc.symtab.SymbolTable.abort(SymbolTable.scala:35)
+{code}
+And also to note is that the "if true" is there because without it the matcher says "unreachable code", even though there's only one case and if the scrutinee is of type Any.  That ticket is open somewhere though.
+{code}
+class A {
+  PartialFunction.condOpt(Nil: Any) {
+    case items@List(_*) => items
+  }
+}
+{code}
+{code}
+/tmp/a.scala:2: error: unreachable code
+  PartialFunction.condOpt(Nil: Any) {
+                                    ^
+one error found
+{code}
+All in all, pretty ridiculous.

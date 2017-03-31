@@ -1,0 +1,15 @@
+Hah, nice one. This is because implicit conversions that target a superclass of AnyRef are ruled out:
+
+{code}
+        pt match {
+          case Function1(_, out) =>
+            // must inline to avoid capturing result
+            def prohibit(sym: Symbol) = (sym.tpe <:< out) && { // BUG: when looking for implicit conversion to `?{def clone: ?}`, this triggers because AnyRef has that method
+              maybeInvalidConversionError(s"the result type of an implicit conversion must be more specific than ${sym.name}")
+              true
+            }
+            if (prohibit(AnyRefClass) || (settings.isScala211 && prohibit(AnyValClass)))
+              result = SearchFailure
+          case _                 => false
+        }
+{code}

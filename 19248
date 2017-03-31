@@ -1,0 +1,29 @@
+Consider the following code:
+
+{noformat}
+object Main extends App {
+case class IntOnly(i: Int)
+case class IntAndDouble(i: Int, d: Double)
+println(s"Int: ${IntOnly(1).productElement(0).getClass}")
+println(s"Double: ${IntAndDouble(1, 1.0).productElement(1).getClass}")
+println(s"Int: ${IntAndDouble(1, 1.0).productElement(0).getClass}")
+}
+{noformat}
+
+When compiled with no arguments, it outputs:
+{noformat}
+Int: class java.lang.Integer
+Double: class java.lang.Double
+Int: class java.lang.Integer
+{noformat}
+
+When compiled with -Xexperimental, it outputs:
+{noformat}
+Int: int
+Double: double
+Int: double
+{noformat}
+
+The last line is the bug. I don't have any issue with the change from boxed to unboxed return types, but It's definitely wrong that IntAndDouble(1, 1.0).productElement(0) returns a double - it should return an int (boxed or otherwise).
+
+(This causes misbehaviour when serializing case classes with spray-json).

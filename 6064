@@ -1,0 +1,32 @@
+Please respond to what I said about boxing/unboxing. If you feel that "implements X" wasn't intended exclusively for Unit, the auto-boxing/unboxing still should be in the spec.
+
+{quote}
+The test x .asInstanceOf[T ] is treated specially if T is a numeric value type
+(§12.2). In this case the cast will be translated to an application of a conversion
+method x.toT (§12.2.1). For non-numeric values x the operation will raise a
+ClassCastException.
+{quote}
+
+{code}
+object Main {
+
+  def main(args: Array[String]) {
+    val o: AnyRef = ().asInstanceOf[AnyRef]
+    o.asInstanceOf[Unit] //should be a ClassCastException                       
+    println("no problems")
+  }
+}
+{code}
+
+There is no toUnit, as this won't compile:
+{code}
+object Main {
+
+  def main(args: Array[String]) {
+    val o: AnyRef = ().asInstanceOf[AnyRef]
+    o.toUnit
+  }
+}
+{code}
+
+I can open a separate ticket if you'd like.

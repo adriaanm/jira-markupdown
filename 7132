@@ -1,0 +1,92 @@
+It's an "Attempt to enter try block with non-empty stack"
+
+Input program:
+
+{code}
+  def main(args: Array[String]) { 
+    for (x <- List(1))
+      return try { 1 } catch { case _ => 0 }
+    0
+  }
+{code}
+
+After cleanup:
+
+{code}
+    @SerialVersionUID(0) final <synthetic> class $anonfun$main$1 extends scala.runtime.AbstractFunction1 with Serializable {
+
+      final def apply(x: Int): Nothing = 
+        throw new scala.runtime.NonLocalReturnControl(
+          $anonfun$main$1.this.nonLocalReturnKey1$1, {
+        var exceptionResult1: Object = _;
+        try {
+          exceptionResult1 = {
+            1;
+            scala.runtime.BoxedUnit.UNIT
+          }
+        } catch {
+          case _ => {
+            exceptionResult1 = {
+              0;
+              scala.runtime.BoxedUnit.UNIT
+            }
+          }
+        };
+        exceptionResult1
+      });
+
+      final <bridge> def apply(v1: Object): Object = $anonfun$main$1.this.apply(scala.Int.unbox(v1));
+
+      <synthetic> <paramaccessor> private[this] val nonLocalReturnKey1$1: Object = _;
+      def <init>(nonLocalReturnKey1$1: Object): anonymous class $anonfun$main$1 = {
+        $anonfun$main$1.this.nonLocalReturnKey1$1 = nonLocalReturnKey1$1;
+        $anonfun$main$1.super.<init>();
+        ()
+      }
+    };
+{code}
+
+What Scala.Net emits:
+
+{code}
+.method public hidebysig virtual final instance class [mscorlib]System.Exception 
+        apply(int32 x) cil managed
+{
+  // Code size       52 (0x34)
+  .maxstack  2
+  .locals init (object V_0)
+  IL_0000:  ldarg.0
+  IL_0001:  ldfld      object ABC$/$anonfun$main$1::nonLocalReturnKey1$1
+  IL_0006:  ldnull
+  IL_0007:  stloc.0
+  .try
+  {
+    IL_0008:  ldc.i4.1
+    IL_0009:  pop
+    IL_000a:  ldsfld     class [scalalib]scala.runtime.BoxedUnit [scalalib]scala.runtime.BoxedUnit::UNIT
+    IL_000f:  stloc.0
+    IL_0010:  leave      IL_002d
+    IL_0015:  leave      IL_002d
+  }  // end .try
+  catch [mscorlib]System.Exception 
+  {
+    IL_001a:  pop
+    IL_001b:  ldc.i4.0
+    IL_001c:  pop
+    IL_001d:  ldsfld     class [scalalib]scala.runtime.BoxedUnit [scalalib]scala.runtime.BoxedUnit::UNIT
+    IL_0022:  stloc.0
+    IL_0023:  leave      IL_002d
+    IL_0028:  leave      IL_002d
+  }  // end handler
+  IL_002d:  ldloc.0
+  IL_002e:  newobj     instance void [scalalib]scala.runtime.NonLocalReturnControl::.ctor(object,
+                                                                                          object)
+  IL_0033:  throw
+} // end of method $anonfun$main$1::apply
+{code}
+
+And the error message:
+
+{code}
+ABC$+$anonfun$main$1::apply][offset 0x00000008] Attempt to enter a try block with nonempty stack.
+{code}

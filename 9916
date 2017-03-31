@@ -1,0 +1,22 @@
+Well actually the equivalent of the structural refinement with a var would be
+
+{code}
+ def build(v: String) = new AImpl {
+    private var _a = new VC(v)    
+    override def a : VC = _a
+    def a_=(newA: VC) { _a = newA }
+  }
+{code}
+
+Which fails with a better error message:
+
+{code}
+error: Parameter type in structural refinement may not refer to a user-defined value class
+    def a_=(newA: VC) { _a = newA }
+{code}
+
+At least here we know where the error come from (the focus is on the method rather than the whole class).
+
+I believe this is the desired behavior due to implementation restrictions. That's what `def checkMethodStructuralCompatible` says in `Typers`.
+
+I change the title to confusing instead of incorrect.

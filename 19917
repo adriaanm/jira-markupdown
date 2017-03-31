@@ -1,0 +1,13 @@
+See https://groups.google.com/forum/m/#!topic/scala-internals/gnvcWsmAPaY:
+
+{code}
+class Test {
+  def foo = {
+// workaround: val dv: QuasiTensor[Int,Int] = DenseVector[Int]() // QuasiTensor does not have overloaded apply
+   val dv = breeze.linalg.DenseVector[Int]()
+   dv.apply(0) // java.lang.AssertionError: assertion failed: List(method apply$mcI$sp, method apply$mcI$sp)
+  }
+}
+{code}
+
+fails with breeze 0.11.x and 0.12-SNAPSHOT (the latter was compiled with 2.11.7, afaict)

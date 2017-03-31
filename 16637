@@ -1,0 +1,16 @@
+Affected Scala Version: 2.10.0.rdev-4005-2011-12-13-g278a225 (current master)
+
+orElse called on a simple partial function like:
+
+{code} 
+val pf: PartialFunction[Any, Unit] = { case _ => }
+pf orElse pf
+{code}
+
+throws a NPE:
+
+{code}
+java.lang.NullPointerException
+        at scala.runtime.AbstractPartialFunction.orElse(AbstractPartialFunction.scala:41)
+...
+{code}

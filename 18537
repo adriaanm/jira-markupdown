@@ -1,0 +1,13 @@
+I had a look through the source for Future and found a few place where we aren't preparing ExecutionConexts properly.
+
+In the methods below, the EC is not prepared explicitly. Since some of the code within these methods can run on different threads, and the unprepared EC is implicitly passed to this code, we can end up with an unprepared EC being passed to code that runs on different threads. At this point, the code is either operating on an unprepared EC (which it shouldn't) or it will prepare the EC, but on the wrong thread (which is wrong).
+
+The fix is to explicitly prepare the EC at the start of each of the methods and use the prepared EC throughout these methods.
+
+Here's the code I was looking at: https://github.com/scala/scala/blob/master/src/library/scala/concurrent/Future.scala
+
+Here are the places an unprepared EC is implicitly passed to code that can run on a different thread:
+* nested onComplete in recoverWith
+* nested onComplete in flatMap
+* nested map in sequence
+* nested map in traverse

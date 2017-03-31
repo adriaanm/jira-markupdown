@@ -1,0 +1,10 @@
+The test_match attachment minimized is:
+{code}
+  def foo(h: Any, t: List[Any]) = h match {
+    case 5 :: _ => ()
+    case List(from) => from
+  }
+{code}
+This one is a buzzkill because it looks to arise from the pattern matcher cheating on case List(...) in a way it doesn't with anything else so as to offer the same performance (i.e. not use unapplySeq.) Thus there is special code for treating List like it's a series of :: and someone, me we can presume, has broken that code.
+
+I'm not sure it's the same issue as the reporter's, except that the pattern matcher can legitimately be viewed as one giant issue.

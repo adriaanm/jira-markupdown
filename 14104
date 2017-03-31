@@ -1,0 +1,23 @@
+without MathContext there is a risk of ArithmeticException
+
+{code}
+val one  :BigDecimal = 1
+val three:BigDecimal = 3
+
+val result = one/three
+
+java.lang.ArithmeticException: Non-terminating decimal expansion; no exact representable decimal result.
+	at java.math.BigDecimal.divide(BigDecimal.java:1514)
+	at scala.BigDecimal.$$div(BigDecimal.scala:168)
+	at .<init>(<console>:7)
+	at .<clinit>(<console>)
+	at RequestResult$$.<init>(<console>:3)
+	at RequestResult$$.<clinit>(<console>)
+	at RequestResult$$result(<console>)
+	at sun.reflect....
+{code}
+java.math.BigDecimal has overloaded versions of divide operation
+{code}
+ BigDecimal  divide(BigDecimal divisor, int scale, RoundingMode roundingMode) 
+ BigDecimal  divide(BigDecimal divisor, MathContext mc) 
+{code}

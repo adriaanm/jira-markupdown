@@ -1,0 +1,23 @@
+It's pretty hard to know what's happening without source code to reproduce the problem. You could minimize by paring down your test sources until the problem goes away; if they are relatively disentangled, that's doable with a binary search.
+
+But I took a look at the heap dump anyway to see what I could glean. There is an enormous AST generated at this point in your code:
+
+{code}
+  test("1 requiredParam") {
+    implicit val v = mock[Validator]
+    (v.validate _).expects(*).returning(true)
+       // ^-- here
+{code}
+
+(The test sources are visible in the heap dump)
+
+I suspect the root cause is a bug in, or at least related to, ScalaMock. Try commenting out all tests using ScalaMock tests to confirm this.
+
+You could try to see the output of compiling just that file in more detail.
+
+Here's one way:
+
+  - Temporarily introduce a compile error in the test sources
+  - With SBT, run `export test:compile`. This will print out the full classpath used by the compiler.
+  - From the command line run `scalac -Xprint:all -classpath <copy/paste classpath from previous step> /path/to/RequestValidatorTest`
+

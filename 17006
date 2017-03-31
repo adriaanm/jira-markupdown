@@ -1,0 +1,28 @@
+In MacPorts we install symlinks into $prefix/bin for all the shell scripts.  The symlinks are relative, so `scala` is a symlink to ``../share/scala-2.10/bin/` instead of using an absolute symlink (makes it slightly more relocatable.)  This works in 2.9 and breaks in 2.10.  The 2.10 code works if one is cd'ed into the directory where the symlink resolved, but most times people are not cd'ed into $prefix/bin.
+
+# This works:
+cd /tmp
+tar xvfz /opt/local/var/macports/distfiles/scala29/scala-2.9.2.tgz
+mkdir bin
+cd bin
+ln -sf ../scala-2.9.2/bin/scala .
+cd /
+/tmp/bin/scala
+
+
+# This doesn't work:
+cd /tmp
+tar xvfz /opt/local/var/macports/distfiles/scala210/scala-2.10.0-M3.tgz
+mkdir bin
+cd bin
+ln -sf ../scala-2.10.0-M3/bin/scala .
+cd /
+/tmp/bin/scala
+
+
+Returns
+
+/tmp/bin/scala: line 15: cd: ../scala-2.10.0-M3/bin/..: No such file or directory
+Error: Could not find or load main class scala.tools.nsc.MainGenericRunner
+
+I'll change the symlinks in MacPorts to absolute.

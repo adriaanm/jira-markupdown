@@ -1,0 +1,12 @@
+I didn't know about the -Xdisable-assertions switch.  However, this switch is of limited utility unless it is also possible to disable the evaluation of the predicate at the same time.  I'm thinking of the following case:
+
+{code}
+def performTask(...) {
+  assert(someExpensiveOp())
+  ...
+}
+{code}
+
+I think most users would find it a little odd if their "disabled" assertions continued to impose a runtime penalty.
+
+I do realize that call-by-name is a tradeoff, but it's mostly in space rather than time.  I've performed some fairly extensive benchmarking including by-name vs by-value in a non-trivial application.  The conclusion (on a 1.5 JVM even) was that the JVM does a tremendous job of optimizing away a lot of things which *should* be quite expensive.  There was literally no appreciable difference between call-by-name and call-by-value in terms of timed performance.  Obviously, the permgen was a little more crowded, and the JVM did need to allocate a new object for each by-name param, but that object remained in the young heap and was thus allocated and deallocated without any significant cost.

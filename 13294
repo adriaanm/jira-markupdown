@@ -1,0 +1,26 @@
+Behold as the following code deadlocks:
+
+{code}
+import scala.concurrent.ops._;
+
+object Blocks extends Application{
+  val foo = "foo";
+  val willBeFoo = future(foo);
+  println(willBeFoo());
+}
+{code}
+
+Whereas the following works fine:
+
+{code}
+import scala.concurrent.ops._;
+object Blocks{
+  def main(args : Array[String]) = {
+    val foo = "foo";
+    val willBeFoo = future(foo);
+    println(willBeFoo());
+  }
+}
+{code}
+
+The reason is that fields of the object are not visible to a new thread until after the construction has finished. This is an inherent problem with the concept of Application. 

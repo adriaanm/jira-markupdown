@@ -1,0 +1,33 @@
+I have an irresolvable issue which I can't allocate to the build process.  I'd really like to be able to use java7 for the speed and better tools, but I can't finish porting swing because of this.
+{code}
+% JAVA_HOME=/Library/Java/JavaVirtualMachines/openjdk-1.7-x86_64/Contents/Home scala29
+Welcome to Scala version 2.9.0.r23690-b20101205201822 (OpenJDK 64-Bit Server VM, Java 1.7.0-internal).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> new javax.swing.DefaultComboBoxModel { }
+<console>:6: error: illegal inheritance;
+ anonymous class $$anon inherits different type instances of trait ListModel:
+javax.swing.ListModel[E] and javax.swing.ListModel[E]
+       new javax.swing.DefaultComboBoxModel { }
+           ^
+{code}
+This interesting situation arises because javax.swing.ComboBoxModel extends javax.swing.ListModel.  But the interface is javax.swing.ListModel<E>, so it swallows up the type parameter in an unrecoverable way.  Meanwhile javax.swing.AbstractListModel<E> extends javax.swing.ListModel<E>.  In scala.swing this hits in ComboBox:
+{code}
+// the code at present
+new AbstractListModel with ComboBoxModel
+// what it needs to look like
+new AbstractListModel[something] with ComboBoxModel
+// what happens, regardless of "something"
+//
+// [scalacfork]  anonymous class $$anon inherits different type instances of trait ListModel:
+// [scalacfork] javax.swing.ListModel and javax.swing.ListModel[AnyRef]
+// [scalacfork]     new AbstractListModel[AnyRef] with ComboBoxModel {
+// [scalacfork]         ^
+//
+// [scalacfork]  anonymous class $$anon inherits different type instances of trait ListModel:
+// [scalacfork] javax.swing.ListModel and javax.swing.ListModel[Nothing]
+// [scalacfork]     new AbstractListModel with ComboBoxModel {
+// [scalacfork]         ^
+{code}
+Reclassifying as defect and kicking back to scala reviewer.  It's worth the trouble to figure something out now that lets us use java7, even if we don't anticipate supporting it for a long while yet.

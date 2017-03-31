@@ -1,0 +1,25 @@
+Looks like a bug in the resident mode of the compiler.
+
+{code}
+$$ fsc A.scala
+$$ fsc B.scala
+$$ fsc B.scala
+scala.tools.nsc.symtab.Types$$TypeError: type mismatch;
+ found   : Boolean
+ required: Boolean
+        at scala.tools.nsc.typechecker.Contexts$$Context.error(Contexts.scala:273)
+        at scala.tools.nsc.typechecker.Infer$$Inferencer.error(Infer.scala:213)
+        at scala.tools.nsc.typechecker.Infer$$Inferencer.typeError(Infer.scala:223)
+        at scala.tools.nsc.typechecker.Infer$$Inferencer.typeErrorTree(Infer.scala:238)
+        ...
+{code}
+
+A.scala
+{code}
+case class A()
+{code}
+
+B.scala
+{code}
+case class B extends A()
+{code}

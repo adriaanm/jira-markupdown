@@ -1,0 +1,73 @@
+Following code:
+
+{code}
+import scala.reflect.runtime.universe._
+import scala.reflect.runtime.{currentMirror => cm}
+import scala.tools.reflect.ToolBox
+import scala.tools.reflect.Eval
+
+object Test extends App {
+  val tb = cm.mkToolBox()
+  val block = "println(2 + 2)"
+  val tree = tb.parse(s"""
+    import scala.reflect.runtime.universe._
+    object Wrapper { $block }
+    """)
+  tb.eval(tree)
+}
+{code}
+
+Crashes badly at runtime:
+
+{code}
+scala.reflect.internal.FatalError:
+     while compiling: <no file>
+        during phase: typer
+     library version: version 2.11.0-20130618-104149-97271ef9f7
+    compiler version: version 2.11.0-20130618-104149-97271ef9f7
+  reconstructed args:
+
+  last tree to typer: term Wrapper
+       tree position: line 4 of <toolbox>
+              symbol: <none> (flags: )
+   symbol definition: <none> (a NoSymbol with SynchronizedSymbol)
+      symbol package: <none>
+       symbol owners:
+           call site: <none> in <none>
+
+<Cannot read source file>
+	at scala.reflect.internal.SymbolTable.abort(SymbolTable.scala:53)
+	at scala.tools.nsc.Global.abort(Global.scala:244)
+	at scala.reflect.internal.Symbols$NoSymbol.owner(Symbols.scala:3339)
+	at scala.tools.nsc.typechecker.Namers$class.companionSymbolOf(Namers.scala:1689)
+	at scala.tools.nsc.Global$$anon$1.companionSymbolOf(Global.scala:437)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedModuleDef(Typers.scala:1873)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:5305)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:5356)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedBlock(Typers.scala:2474)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$typed1$1.apply(Typers.scala:5291)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$typed1$1.apply(Typers.scala:5291)
+	at scala.tools.nsc.typechecker.Typers$Typer.typerWithLocalContext(Typers.scala:472)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:5291)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:5356)
+{code}
+
+While the same code with import inside of an object work fine:
+
+{code}
+import scala.reflect.runtime.universe._
+import scala.reflect.runtime.{currentMirror => cm}
+import scala.tools.reflect.ToolBox
+import scala.tools.reflect.Eval
+
+object Test extends App {
+  val tb = cm.mkToolBox()
+  val block = "println(2 + 2)"
+  val tree = tb.parse(s"""    
+    object Wrapper {
+      import scala.reflect.runtime.universe._
+      $block 
+    }""")
+  tb.eval(tree)
+}
+{code}

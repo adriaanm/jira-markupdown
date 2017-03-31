@@ -1,0 +1,33 @@
+extempore here: I'm updating the summary and reassigning to scala_reviewer because I don't want this to get overlooked as "just" a manifest bug.  It actually can strike anytime you have an implicit val.
+{code}
+scala> class foo(implicit val x: Int)
+defined class foo
+
+scala> new foo()
+<console>:6: error: could not find implicit value for parameter x: Int
+       new foo()
+       ^
+
+scala> new foo() {}
+java.lang.VerifyError: (class: $$anon$$1, method: <init> signature: ()V) Expecting to find object/array on stack
+{code}
+
+In 2.7 both the last two calls to new do the right thing.
+
+-- original report follows -- 
+
+I have produced this in both 2.7.3 and 2.8.0 at r18450. Happens only when the  singleton is extending a class with an implicit Manifest marked as a field in the constructor, and only when that Manifest is accessed. 
+
+class Test[A](implicit val m: Manifest[A])
+class Foo
+object Bar extends Test[Foo]
+Bar.m
+
+java.lang.VerifyError: (class: Bar$$, method: <init> signature: ()V) Expecting to find object/array on stack
+
+Meanwhile (new Test[Foo]).m works great. the work around is...
+
+class Test[A](implicit m: Manifest[A]) { val foo = m}
+object Bar extends Test[Foo]
+Bar.foo
+

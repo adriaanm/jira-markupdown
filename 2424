@@ -1,0 +1,27 @@
+Well, I got it to work for the example, but can't figure out what to do for nested arrays. Giving up...
+
+FWIW, here's my patch as-is (including debugging code)
+
+replace the original case for TypeApply(...) for isInstanceOf on Arrays in Erasure's preTransformer by:
+{code}
+          case Apply(fn @ TypeApply(instanceOfCall @ Select(qual, name), args @ List(arg)), List()) 
+                if (fn.symbol == Any_isInstanceOf || fn.symbol == Object_isInstanceOf) &&
+                   unboundedGenericArrayLevel(arg.tpe) > 0 =>
+            val level = unboundedGenericArrayLevel(arg.tpe)
+            def isArrayTest(instanceOfCall: Tree) =  {
+              val arrayTree = instanceOfCall match {
+                case Select(qual, _) => gen.mkAttributedCast(qual, ObjectClass.tpe)
+                case other => println((other, other.getClass)); other
+              }
+              gen.mkRuntimeCall("isArray", List(arrayTree, Literal(Constant(level))))
+            }
+            val tree2 = 
+              if (level == 1) isArrayTest(instanceOfCall)
+              else gen.evalOnce(instanceOfCall, currentOwner, unit) { instanceOfCall1 =>
+                gen.mkAnd(
+                  treeCopy.TypeApply(tree, instanceOfCall1(), args),
+                  isArrayTest(instanceOfCall1()))
+              }
+            println(tree2)
+            typedPos(tree.pos)(tree2)
+{code}

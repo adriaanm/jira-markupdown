@@ -1,0 +1,12 @@
+To enable dynamical Swing comboboxes, scala.swing.ComboBox should also be able to use the MutableComboBoxModel. Something like the addition of a mutable model in addition to the existing constant model:
+
+{code}
+class MutableModel[A](items: Buffer[A]) extends ConstantModel(items) with MutableComboBoxModel {
+   def removeElementAt( n: Int ) = items.remove( n )
+   def removeElement( item: Any ) = items.remove( items.indexOf(item) )
+   def insertElementAt( item: Any, n: Int ) = items.insert( n, item.asInstanceOf[A] )
+   def addElement( item: Any ) = items.append( item.asInstanceOf[A] )
+}
+{code}
+
+The choice of the model could depend on some parameters in the constructor (e.g. matching Seq or Buffer).

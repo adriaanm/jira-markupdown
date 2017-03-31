@@ -1,0 +1,24 @@
+Okay, I think that this is a more accurate minimization:
+
+{code}
+trait A {  
+  type Type
+  type MethodType <: Type
+  
+  val MethodType: MethodTypeExtractor = null
+
+  abstract class MethodTypeExtractor {    
+    def unapply(tpe: MethodType): Option[(Any, Any)]
+  }
+}
+
+object Test {  
+  val a: A = null
+
+  def foo(tpe: a.Type) = tpe match {
+    case a.MethodType(_, _) =>
+  }
+}
+{code}
+
+Who is at fault: compiler or library?

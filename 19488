@@ -1,0 +1,26 @@
+{code}
+Welcome to Scala version 2.11.4 (OpenJDK 64-Bit Server VM, Java 1.8.0_25).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> :paste
+// Entering paste mode (ctrl-D to finish)
+
+
+object subtypcycle {
+  trait Y {
+    type A <: { type T >: B }
+    type B >: { type T >: A }
+  }
+
+  val y: Y = ???
+  val a: y.A = ???
+  val b: y.B = a
+}
+
+// Exiting paste mode, now interpreting.
+{code}
+
+Runs into an infinite loop while checking if y.A is a subtype of y.B.
+
+I also reported the issue for dotty: https://github.com/lampepfl/dotty/issues/318

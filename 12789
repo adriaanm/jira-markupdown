@@ -1,0 +1,24 @@
+The source code below shows the minimal context that I've been able to extract that demonstrates the problem and is compilable on its own.  Essentially, the problem is that a type is upper-bounded too aggressively in a match-in-match context such that an expression is considered as having type Any where it should have had type Output, and hence the program is rejected as having a type mismatch where it could actually have been accepted as type safe.
+
+{code}
+
+// scalac 2.6.0-final produces an error message for this at '=> Success(so)':
+// type mismatch, found: Any, required: Output, but so:Output _is_ knowable
+
+class ParseResult[+T]
+case class Success[+T](t: T) extends ParseResult[T]
+
+abstract class Nonterminal[Output] {
+
+  type SubNonterminal = Nonterminal[T] forSome { type T <: Output }
+
+  def parse: ParseResult[Output]
+
+  def parse1(nts: List[SubNonterminal]): ParseResult[Output] =
+    nts match {
+      case nt::nts => nt.parse match { case Success(so) => Success(so) }
+      case Nil => throw new Error
+    }
+}
+
+{code}

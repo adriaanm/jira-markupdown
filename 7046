@@ -1,0 +1,19 @@
+There are two sides to the problem:
+1. Detecting function-wide synchronized(this) and marking it on the method symbol - should be done early on, in a phase that manipulates trees
+2. Avoiding the boxing and unboxing - scalac -optimize does the job properly:
+
+{code}
+public boolean f();
+  Code:
+   0:	aload_0
+   1:	dup
+   2:	astore_1
+   3:	monitorenter
+   4:	aload_0
+   5:	monitorexit
+   6:	iconst_0
+   7:	ireturn
+   8:	aload_1
+   9:	monitorexit
+   10:	athrow
+{code}

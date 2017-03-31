@@ -1,0 +1,43 @@
+{code:title=AnotherInconsistency.scala}
+    val it = Stream("a", "b", "c").map { letter =>
+      println("map " + letter)
+      letter
+    }.iterator
+
+    println("hasNext")
+    it.hasNext
+    println("next " + it.next())
+    println("hasNext")
+    it.hasNext
+    println("next " + it.next())
+    println("hasNext")
+    it.hasNext
+    println("next " + it.next())
+{code}
+Actual Output :
+{code}
+map a
+hasNext
+next a
+hasNext
+map b
+next b
+hasNext
+map c
+next c
+{code}
+
+Expected outout: 
+{code}
+hasNext
+map a
+next a
+hasNext
+map b
+next b
+hasNext
+map c
+next c
+{code}
+
+It is totally unexpected that the Head element is treated differently than the others, from the user point of view it feels like operations are not executed lazily on the head element, because they are executed before the actual iterator.hasNext method call.

@@ -1,0 +1,53 @@
+MSIL version of Scala.
+
+I’ve run into this problem in a few different contexts. Basically it seems that in many circumstances, the default element-equality algorithm for collections wants to turn the elements into integers-- and then fails when it cannot parse string elements as ints.
+
+For example:
+
+{code}
+import scala.collection.immutable.HashSet
+
+object MapBug extends Application {
+	
+	var working = new HashSet[String]++List("A", "B")
+	println("contains(A) == " + working.contains("A"))	
+
+	// Throws an exception:
+	var buggy = Set[String]("A", "B")
+	println("contains(B) == " + buggy.contains("B"))	
+}
+{code}
+
+Outputs:
+
+{code}
+contains(A) == True
+
+Unhandled Exception: System.TypeInitializationException: An exception was thrown by the type initializer for MapBug$$ ---> System.FormatException: Input string was not in the correct format
+  at System.Int32.Parse (System.String s, NumberStyles style, IFormatProvider fp) [0x00000] 
+  at System.Int32.Parse (System.String s, IFormatProvider fp) [0x00000] 
+  at System.Convert.ToInt32 (System.String value, IFormatProvider provider) [0x00000] 
+  at System.String.System.IConvertible.ToInt32 (IFormatProvider provider) [0x00000] 
+  at scala.runtime.Comparator.equals (System.Object a, System.Object b) [0x00000] 
+  at scala.collection.immutable.Set1.contains (System.Object elem) [0x00000] 
+  at scala.collection.immutable.Set1.$$plus (System.Object elem) [0x00000] 
+  at scala.collection.immutable.Set$$$$anonfun$$$$plus$$plus$$1.apply (Set s, System.Object elem) [0x00000] 
+  at scala.collection.immutable.Set$$$$anonfun$$$$plus$$plus$$1.apply (System.Object x$$1, System.Object x$$2) [0x00000] 
+  at scala.Iterator$$class.foldLeft (Iterator $$this, System.Object z, Function2 op) [0x00000] 
+  at scala.runtime.BoxedArray$$$$anon$$2.foldLeft (System.Object x$$1, Function2 x$$2) [0x00000] 
+  at scala.Iterable$$class.foldLeft (Iterable $$this, System.Object z, Function2 op) [0x00000] 
+  at scala.runtime.BoxedArray.foldLeft (System.Object x$$1, Function2 x$$2) [0x00000] 
+  at scala.Iterable$$class.$$div$$colon (Iterable $$this, System.Object z, Function2 op) [0x00000] 
+  at scala.runtime.BoxedArray.$$div$$colon (System.Object x$$1, Function2 x$$2) [0x00000] 
+  at scala.collection.immutable.Set$$class.$$plus$$plus (Set $$this, Iterable elems) [0x00000] 
+  at scala.collection.immutable.EmptySet.$$plus$$plus (Iterable x$$1) [0x00000] 
+  at scala.collection.immutable.Set$$.apply (Seq elems) [0x00000] 
+  at MapBug$$..ctor () [0x00000] 
+  at MapBug$$..cctor () [0x00000] --- End of inner exception stack trace ---
+
+  at <Module>.Main (System.String[] args) [0x00000] 
+{code}
+
+scalac-net -version
+Scala compiler version 2.7.1.final -- Copyright 2002-2008, LAMP/EPFL
+

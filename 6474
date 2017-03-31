@@ -1,0 +1,27 @@
+This sort of works, but I'm not sure it follows the principle of least surprise (and it can't completely get around the default args vs. varargs limitation):
+
+{code}
+scala> case class D(a: Int, bs: Int*) {
+     |   def copy(a: Int = this.a): D = new D(a, bs: _*)
+     |   def copy(a: Int, bs: Int*): D = new D(
+     |     a,
+     |     (if (bs.length < this.bs.length) bs ++ this.bs.drop(bs.length) else bs): _*
+     |   )
+     | }
+defined class D
+
+scala> D(1,2,3)
+res11: D = D(1,WrappedArray(2, 3))
+
+scala> res11.copy()
+res12: D = D(1,WrappedArray(2, 3))
+
+scala> res11.copy(4)
+res13: D = D(4,WrappedArray(2, 3))
+
+scala> res11.copy(4,5)
+res14: D = D(4,ArrayBuffer(5, 3))
+
+scala> res11.copy(4,5,6,7)
+res15: D = D(4,WrappedArray(5, 6, 7))
+{code}

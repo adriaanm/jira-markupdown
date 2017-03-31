@@ -1,0 +1,82 @@
+Suggested test:
+
+{code}
+import scala.reflect.runtime.universe._
+import scala.reflect.runtime.{currentMirror => cm}
+
+class C {
+  def fooi0(xs: Int*) = xs
+  def fooi1(x: Int, xs: Int*) = (x, xs)
+
+  def foos0(xs: String*) = xs
+  def foos1(x: String, xs: String*) = (x, xs)
+
+  def foog0[T](xs: T*) = xs
+  def foog1[T](x: T, xs: T*) = (x, xs)
+
+  def fool0[T](xss: List[T]*) = xss
+  def fool1[T](xs: List[T], xss: List[T]*) = (xs, xss)
+}
+
+object Test extends App {
+  def test(methName: String, args: Any*) = {
+    val instanceOfC = cm.reflect(new C)
+    val msym = instanceOfC.symbol.typeSignature.declaration(newTermName(methName)).asMethod
+    val mmirror = instanceOfC.reflectMethod(msym)
+    val mresult =
+      try { mmirror(args) }
+      catch {
+        case ex: Exception =>
+          val ex1 = scala.reflect.runtime.ReflectionUtils.unwrapThrowable(ex)
+          s"${ex1.getClass}: ${ex1.getMessage}"
+      }
+    println(s"meth = $msym, result = $mresult")
+  }
+
+  test("fooi0")
+  test("fooi0", 1)
+  test("fooi0", 1, 2)
+  test("fooi0", 1, 2, 3)
+
+  test("fooi1")
+  test("fooi1", 1)
+  test("fooi1", 1, 2)
+  test("fooi1", 1, 2, 3)
+
+  test("foos0")
+  test("foos0", "1")
+  test("foos0", "1", "2")
+  test("foos0", "1", "2", "3")
+
+  test("foos1")
+  test("foos1", "1")
+  test("foos1", "1", "2")
+  test("foos1", "1", "2", "3")
+
+  test("foog0")
+  test("foog0", 1.0)
+  test("foog0", 1.0, 2.0)
+  test("foog0", 1.0, 2.0, 3.0)
+
+  test("foog1")
+  test("foog1", 1.0)
+  test("foog1", 1.0, 2.0)
+  test("foog1", 1.0, 2.0, 3.0)
+
+  test("fool0")
+  test("fool0", List(1))
+  test("fool0", List(1), List(2))
+  test("fool0", List(1), List(2), List(3))
+
+  test("fool1")
+  test("fool1", List(1))
+  test("fool1", List(1), List(2))
+  test("fool1", List(1), List(2), List(3))
+
+  println("===============")
+  val fooi0 = classOf[C].getMethods().filter(m => m.getName == "fooi0").head
+  val invoke = typeOf[java.lang.reflect.Method].declaration(newTermName("invoke")).asMethod
+  val mm = cm.reflect(fooi0).reflectMethod(invoke)
+  println(mm(new C, 1, 2))
+}
+{code}

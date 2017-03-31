@@ -1,0 +1,24 @@
+The following code compiles but throws an exception at runtime:
+  Exception in thread "main" java.lang.ClassFormatError: Duplicate field name&signature in class file Test$C$2
+
+{code}
+object Test extends App {
+  
+  test()
+  
+  def test () {
+    
+    val a = 42
+    
+    trait T {
+      def f { a }
+    }
+    
+    case class C () extends T
+    
+    C()
+    
+  }
+  
+}
+{code}

@@ -1,0 +1,6 @@
+The patch is very elegant!  I've learned a couple of things about Scala just by looking at it.  For some reason it never occurred to me that I could default an implicit parameter.
+
+I'd be surprised if there are too much existing code where (a) some class X is defined, (b) there's an implicit conversion from X to NodeSeq in scope, and (c) an expression evaluating to X is used within {}, but (d) the developer expects the X to be converted to NodeSeq via toString.
+
+One suggestion: If the method is called with an Iterable[T] and there is an implicit conversion from T to NodeSeq in scope, then IMHO the method should map the Iterable with the conversion function before passing it to addAny.
+

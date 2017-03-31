@@ -1,0 +1,27 @@
+I was trying the new generics support from Java and ran across what seems like a bug. The scala library was generated from revision 15717.
+
+{code}
+javac -cp /home/ijuma/src/scala/dists/latest/lib/scala-library.jar:. Test.java
+Test.java:6: cannot access scala.PartialFunction
+bad class file: scala/PartialFunction.class(scala:PartialFunction.class)
+undeclared type variable: B1
+Please remove or make sure it appears in the correct subdirectory of the classpath.
+    Map<String, String> map = Map.empty();
+                                 ^
+1 error
+{code}
+
+Test.java:
+
+{code}
+import scala.collection.immutable.Map;
+
+public class Test {
+
+  void foo() {
+    Map<String, String> map = Map.empty();
+  }
+}
+{code}
+
+javac -version outputs javac 1.6.0_10-rc. The Eclipse compiler also died horribly when I tried the Test class so it does not seem to me like this is a bug in javac.

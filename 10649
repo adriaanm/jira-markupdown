@@ -1,0 +1,33 @@
+Note that this crashes later in 2.11.0-SNAPSHOT as we let the erroneous type flow through to the backend, rather than traversing all types in pickler: https://github.com/scala/scala/commit/5024246
+
+{code}
+object M {
+  def batch(executions: Any): Any = ???
+}
+
+abstract class Bug {
+  
+  def foo(p: Any) 
+  foo {
+    val inBatch = M.batch(executions = Nil)
+    val batch = println(inBatch)
+    println(batch) // <-- Compiler error: "erroneous or inaccessible type" (crash in 2.11.0)
+    val executions = batch
+    ()
+  }
+}
+
+{code}
+
+Interestingly, if `inBatch` is defined in `Bug`, we give the error: 
+
+{noformat}
+qbin/scalac sandbox/t8274.scala
+sandbox/t8274.scala:6: error: recursive value inBatch needs type
+    val batch = println(inBatch)
+        ^
+{noformat}
+
+Which is a known limitation of named/default arguments. Because we share the same syntax for assignment and named arguments, if you use a argument name that corresponds to an in-scope identifier, we have to typecheck that identifier to see if the interpretation as an assignment is possible. But if typechecking that assignment depends on the results of the application we started typechecking, we have a cycle and require you to add an explicit type annotation somewhere to break it. For example, annotated `executions`, or `batch`.
+
+I'm not sure why defining `inBatch` in `M` prevents us from issuing this cyclic error message.

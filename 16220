@@ -1,0 +1,54 @@
+// compiling this
+
+import java.util.Comparator
+
+trait Trait1[T] {
+  def foo(arg: Comparator[T])
+}
+
+trait Trait2[T] extends Trait1[T] {
+  def foo(arg: Comparator[String]): Int = 0
+}
+
+class Class1  extends Trait2[String] {
+}
+
+// crashes compiler (below)
+// adding :Int to foo() in Trait1 or 
+// changing arg to a simpler type (e.g. String) works
+//
+
+Exception in thread "main" java.lang.ArrayIndexOutOfBoundsException: 8
+        at ch.epfl.lamp.fjbg.JExtendedCode.emitT2T(JExtendedCode.java:426)
+        at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator.genPrimitive$1(GenJVM.scala:1561)
+        at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator$$anonfun$genBlock$1$1.apply(GenJVM.scala:1135)
+        at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator$$anonfun$genBlock$1$1.apply(GenJVM.scala:1059)
+        at scala.collection.IndexedSeqOptimized$class.foreach(IndexedSeqOptimized.scala:34)
+        at scala.collection.mutable.ArrayOps.foreach(ArrayOps.scala:35)
+        at scala.tools.nsc.backend.icode.BasicBlocks$BasicBlock.foreach(BasicBlocks.scala:137)
+        at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator.genBlock$1(GenJVM.scala:1059)
+        at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator.genBlocks$1(GenJVM.scala:986)
+        at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator.genCode(GenJVM.scala:1593)
+        at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator.genMethod(GenJVM.scala:659)
+        at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator$$anonfun$genClass$4.apply(GenJVM.scala:257)
+        at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator$$anonfun$genClass$4.apply(GenJVM.scala:257)
+        at scala.collection.LinearSeqOptimized$class.foreach(LinearSeqOptimized.scala:61)
+        at scala.collection.immutable.List.foreach(List.scala:45)
+        at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator.genClass(GenJVM.scala:257)
+        at scala.tools.nsc.backend.jvm.GenJVM$JvmPhase.apply(GenJVM.scala:56)
+        at scala.tools.nsc.backend.jvm.GenJVM$JvmPhase$$anonfun$run$3.apply(GenJVM.scala:52)
+        at scala.tools.nsc.backend.jvm.GenJVM$JvmPhase$$anonfun$run$3.apply(GenJVM.scala:52)
+        at scala.collection.mutable.HashMap$$anon$2$$anonfun$foreach$3.apply(HashMap.scala:89)
+        at scala.collection.mutable.HashMap$$anon$2$$anonfun$foreach$3.apply(HashMap.scala:89)
+        at scala.collection.Iterator$class.foreach(Iterator.scala:631)
+        at scala.collection.mutable.HashTable$$anon$1.foreach(HashTable.scala:161)
+        at scala.collection.mutable.HashTable$class.foreachEntry(HashTable.scala:194)
+        at scala.collection.mutable.HashMap.foreachEntry(HashMap.scala:39)
+        at scala.collection.mutable.HashMap$$anon$2.foreach(HashMap.scala:89)
+        at scala.tools.nsc.backend.jvm.GenJVM$JvmPhase.run(GenJVM.scala:52)
+        at scala.tools.nsc.Global$Run.compileSources(Global.scala:741)
+        at scala.tools.nsc.Global$Run.compile(Global.scala:822)
+        at scala.tools.nsc.Main$.process(Main.scala:106)
+        at scala.tools.nsc.Main$.main(Main.scala:120)
+        at scala.tools.nsc.Main.main(Main.scala)
+

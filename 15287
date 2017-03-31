@@ -1,0 +1,38 @@
+{code}
+Welcome to Scala version 2.8.0.RC1 (Java HotSpot(TM) Client VM, Java 1.6.0_11).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> trait TraitWithDefault { def method(p: String = "From Trait") }
+defined trait TraitWithDefault
+
+scala> class ClassA extends TraitWithDefault { def method(p: String = "From Class A") = println(p) }
+defined class ClassA
+
+scala> val a: TraitWithDefault = new ClassA
+a: TraitWithDefault = ClassA@1be3bb2
+
+scala> a.method()
+From Class A
+
+scala>
+
+scala> trait TraitWithoutDefault { def method(p: String) }
+defined trait TraitWithoutDefault
+
+scala> class ClassB extends TraitWithoutDefault { def method(p: String = "From Class B") = println(p) }
+defined class ClassB
+
+scala> val b: TraitWithoutDefault = new ClassB
+b: TraitWithoutDefault = ClassB@1ee40a4
+
+scala> b.method()
+<console>:9: error: not enough arguments for method method: (p: String)Unit.
+Unspecified value parameter p.
+       b.method()
+               ^
+
+scala>
+{code}
+
+I would expect that the call a2.method() would work.

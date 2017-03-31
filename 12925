@@ -1,0 +1,22 @@
+The following code works in 2.6.0 but not in 2.6.1-RC1:
+
+{code}
+// Just return the input for this example.
+def someRPCmethod[T](in : T) = in
+
+// Some flag if an additional parameter to the RPC should be added.
+val flag = true
+
+val requests = Array(1,2,3)
+val requests_for_rpc = if (flag) (Array(-1) ++ requests) else requests
+val responses_from_rpc = someRPCmethod(requests_for_rpc)
+val responses = if (flag) responses_from_rpc.drop(1) else responses_from_rpc
+requests.zip(responses).foreach { tuple => tuple } 
+{code}
+
+Sean suggested that Array.zip should accept an Iterable or Seq and not
+just an Array.  See this post:
+
+http://article.gmane.org/gmane.comp.lang.scala/8451
+
+Blair

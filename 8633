@@ -1,0 +1,28 @@
+{noformat}
+2.10.x ~/code/scala git diff
+diff --git a/src/compiler/scala/tools/nsc/typechecker/RefChecks.scala b/src/compiler/scal
+index fbeb401..9d05412 100644
+--- a/src/compiler/scala/tools/nsc/typechecker/RefChecks.scala
++++ b/src/compiler/scala/tools/nsc/typechecker/RefChecks.scala
+@@ -894,7 +894,7 @@ abstract class RefChecks extends InfoTransform with scala.reflect.int
+               // However, if `sym` does override a type in a base class
+               // we have to assume NoVariance, as there might then be
+               // references to the type parameter that are not variance checked.
+-              state = if (sym.isOverridingSymbol) NoVariance else AnyVariance
++              state = NoVariance
+             }
+
+2.10.x ~/code/scala  squalac sandbox/t6566.scala
+sandbox/t6566.scala:1: error: covariant type T occurs in invariant position in type T of type MyType
+class In[+T] { type MyType = T }
+                    ^
+one error found
+{noformat}
+
+https://github.com/scala/scala/commit/68bcc9e7
+
+{quote}
+Suppresses variance checking in type aliases; exapnds all type aliases
+instead.
+{quote}
+

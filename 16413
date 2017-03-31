@@ -1,0 +1,41 @@
+I was looking today at refchecks in order to learn how modules are transformed. In so doing I spotted a bug. 
+
+scalac wrongly tells there's an error in the following program (the program is OK, in fact): 
+
+{noformat}
+class D { 
+  object p // (program point 1) 
+}  
+
+class C { 
+  def m: D = { 
+    if("abc".length == 0) {
+      object p       // (program point 2)
+    }
+    null 
+  } 
+}
+{noformat}
+
+Summary: {{eliminateModuleDefs(tree: Tree)}} wants to expand the {{ModuleDef}} at "program point 2". 
+As part of that, it invokes 
+
+{noformat}
+  def findOrCreateModuleVar() = localTyper.typedPos(tree.pos) {
+    lazy val createModuleVar = gen.mkModuleVarDef(sym)
+    sym.owner.info.decl(nme.moduleVarName(sym.name.toTermName)) match {
+      // In case we are dealing with local symbol then we already have
+      // to correct error with forward reference
+      case NoSymbol => createModuleVar
+      case vsym     => ValDef(vsym)
+    }
+  }
+{noformat}
+with {{tree}} bound to that {{ModuleDef}}. Normal behavior would be to enter the {{case NoSymbol}}, 
+however it finds a {{vsym}} (surprisingly, for the lowering of another module, that in "program point 1"). 
+
+The assumptions under which {{findOrCreateModuleVar}} are written appear to be: 
+ (a) for a module owned by class, {{sym.owner.info}} is a {{ClassInfo}} and thus {{decl()}} on it looks up where intended. 
+ (b) for a module owned by something else, that same lookup will be performed on an {{EmptyScope}}. 
+
+Assumption (b) proves wrong when {{sym.owner.info}} returns a {{NullaryMethodType}}. In that case,  {{NullaryMethodType.decls}} delegates to {{resultType.decls}}. In our case, that {{resultType}} ("D") happens to have as member an object with the same name, but not the one we're looking for. 

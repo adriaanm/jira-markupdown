@@ -1,0 +1,18 @@
+Pretty sweet right here:
+{code}
+scala> implicit def compareComparables[T](x: T)(implicit ord: Ordering[T]): Ordering[T]#Ops = new ord.Ops(x)
+compareComparables: [T](x: T)(implicit ord: Ordering[T])scala.math.Ordering[T]#Ops
+
+scala> "abc" < "abd"
+res0: Boolean = true
+
+scala> "abc" < "abc"
+res1: Boolean = false
+{code} 
+However if I don't give the result type of that method it fails it.  Having the type inferencer infer something it knows is illegal and then proclaim "that's illegal!" without proceeding to infer the perfectly legal, slightly more general type seems rather uncouth.
+{code}
+scala> implicit def compareComparables[T](x: T)(implicit ord: Ordering[T]) = new ord.Ops(x)
+<console>:8: error: illegal dependent method type
+       implicit def compareComparables[T](x: T)(implicit ord: Ordering[T]) = new ord.Ops(x)
+                                                         ^
+{code}

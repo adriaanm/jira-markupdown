@@ -1,0 +1,28 @@
+The replacement of the ScalaPlugin.findFileFor(file : PlainFile) shown below solves the problem for me:
+
+{code}
+    private def findFileFor(file : PlainFile) : Option[ScalaPlugin.this.File] = {
+      import org.eclipse.core.runtime._
+      var path = Path.fromOSString(file.path)
+      val allProjects = underlying :: externalDepends.toList
+
+      val targetProject = allProjects.find { p => plugin.javaProject(p) match {
+        case None     => false
+        case Some(jp) => plugin.sourceFolders(jp).find(_.getLocation.isPrefixOf(path)).isDefined
+      }}
+
+      targetProject match {
+        case None => None
+        case Some(javaProject) => projectSafe(javaProject) match {
+          case None => None
+          case Some(scalaProject) => 
+            val relPath = path.removeFirstSegments(javaProject.getLocation.segmentCount)
+            val iFile = javaProject.getFile(relPath)
+            scalaProject.fileSafe(iFile)
+        }
+      }
+    }
+
+{code}
+
+OTOH, this code uses plugin.sourceFolders and isn't suitable for not-source files. As I don't know anything about the method overall using, I can not be sure the code is correct at all use cases.

@@ -1,0 +1,73 @@
+In trunk:
+
+{code}
+case class Property[T](private var t: T) {
+ var beforeChanges: List[(T, T) => Unit] = Nil
+ var afterChanges: List[T => Unit] = Nil
+ def apply = t
+ def update(t2: T) = {
+  beforeChanges foreach (_(t, t2))
+  t = t2
+  afterChanges foreach (_(t2))
+ }
+}
+{code}
+causes:
+{code}
+Exception in thread "main" java.lang.Error: symbol value t$$1$$1 does not exist in line3$$object$$$$iw$$$$iw$$Property.equals
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:918)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.genLoadArguments(GenICode.scala:1109)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:826)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.genCond(GenICode.scala:1401)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:432)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:945)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:945)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:945)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:455)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:945)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:945)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.genCond(GenICode.scala:1401)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:764)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:114)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:71)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:71)
+        at scala.collection.generic.LinearSequenceTemplate$$class.foreach(LinearSequenceTemplate.scala:81)
+        at scala.collection.immutable.List.foreach(List.scala:26)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:71)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:136)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:90)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:71)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:71)
+        at scala.collection.generic.LinearSequenceTemplate$$class.foreach(LinearSequenceTemplate.scala:81)
+        at scala.collection.immutable.List.foreach(List.scala:26)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:71)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:81)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:67)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.apply(GenICode.scala:63)
+        at scala.tools.nsc.Global$$GlobalPhase.applyPhase(Global.scala:311)
+        at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:289)
+        at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:289)
+        at scala.collection.Iterator$$class.foreach(Iterator.scala:500)
+        at scala.collection.mutable.ListBuffer$$$$anon$$1.foreach(ListBuffer.scala:280)
+        at scala.tools.nsc.Global$$GlobalPhase.run(Global.scala:289)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.run(GenICode.scala:56)
+        at scala.tools.nsc.Global$$Run.compileSources(Global.scala:787)
+        at scala.tools.nsc.Interpreter$$Request.compile(Interpreter.scala:712)
+        at scala.tools.nsc.Interpreter.interpret(Interpreter.scala:426)
+        at scala.tools.nsc.InterpreterLoop.interpretStartingWith(InterpreterLoop.scala:329)
+        at scala.tools.nsc.InterpreterLoop.interpretStartingWith(InterpreterLoop.scala:339)
+        at scala.tools.nsc.InterpreterLoop.interpretStartingWith(InterpreterLoop.scala:339)
+        at scala.tools.nsc.InterpreterLoop.interpretStartingWith(InterpreterLoop.scala:339)
+        at scala.tools.nsc.InterpreterLoop.interpretStartingWith(InterpreterLoop.scala:339)
+        at scala.tools.nsc.InterpreterLoop.interpretStartingWith(InterpreterLoop.scala:339)
+        at scala.tools.nsc.InterpreterLoop.interpretStartingWith(InterpreterLoop.scala:339)
+        at scala.tools.nsc.InterpreterLoop.interpretStartingWith(InterpreterLoop.scala:339)
+        at scala.tools.nsc.InterpreterLoop.interpretStartingWith(InterpreterLoop.scala:339)
+        at scala.tools.nsc.InterpreterLoop.interpretStartingWith(InterpreterLoop.scala:339)
+        at scala.tools.nsc.InterpreterLoop.command(InterpreterLoop.scala:306)
+        at scala.tools.nsc.InterpreterLoop.processLine$$1(InterpreterLoop.scala:203)
+        at scala.tools.nsc.InterpreterLoop.repl(InterpreterLoop.scala:221)
+        at scala.tools.nsc.InterpreterLoop.main(InterpreterLoop.scala:377)
+        at scala.tools.nsc.MainGenericRunner$$.main(MainGenericRunner.scala:126)
+        at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
+{code}

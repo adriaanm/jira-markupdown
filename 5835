@@ -1,0 +1,9 @@
+According to {{BufferLike}} ScalaDocs, also {{insertAll}} needs to be overridden, but it's not in [trunk|https://lampsvn.epfl.ch/trac/scala/browser/scala/trunk//src//library/scala/collection/mutable/ObservableBuffer.scala]. Not only that method is affected - it's called also by {{++=:}} and {{insert}}. I've attached a runnable testcase+fix (IssueSI4461.scala). It compares the behavior trunk ObservableBuffer with another trait which also overrides insertAll correctly, confirming that the bug occurs - look at the console output and notice the difference between notifications of the two buffers. The implementation of insertAll could be added to ObservableBuffer directly.
+
+Moreover, your implementation disables any optimized implementation. Would you consider a different fix? I'm giving it a shot.
+
+An unrelated question - {{ArrayBuffer}} duplicates this definition of {{++=:}} from BufferLike, and that's bad. Is the duplication needed because of some weird reason? If yes, I'd like to know, because it should be addressed.
+
+{code}
+override def ++=:(xs: TraversableOnce[A]): this.type = { insertAll(0, xs.toTraversable); this }
+{code}

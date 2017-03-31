@@ -1,0 +1,19 @@
+A workaround seems to be to use object `package`. What does that tell us about the bug?
+
+{code}
+package foo {
+  class Foo
+
+  // okay
+  //
+  // object `package` {
+  //   implicit class PimpedFoo1(value: Foo)
+  // }
+}
+
+package object foo {
+  // No synthetics for method PimpedFoo2: synthetics contains 
+  implicit class PimpedFoo2(value: Foo)
+}
+
+{code}

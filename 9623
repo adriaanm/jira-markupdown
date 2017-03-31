@@ -1,0 +1,14 @@
+Re how to exploit this, exploiting this is what propagateKnownTypes does.
+{noformat}
+[log typer] Checking checkability of (x: Bar[S]) against pattern FooBar
+[P1] false  X <: P             // Bar[S]  <: FooBar
+[P2] false  x ? P              // (x ? Bar[S]) ? (x ? FooBar)
+[P3] true   XR <: P            // FooBar <: FooBar
+[P4] false  None of the above  // !(P1 || P2 || P3)
+[log typer] !(FooBar <:< Bar[S]), but after propagateKnownTypes we find (FooBar <:< FooBar) - pattern inference improved
+{noformat}
+However it's not enough by itself, because the selection on foo.system still comes up with _1 as its type. I'm not sure who to blame. Given invariant Foo[T], a value, and the knowledge that the value is both a Foo[Bar] and a Foo[Quux], all scala can come up with is that the value is
+{noformat}
+Foo[_1] forSome { type _1 >: glb(Bar, Quux) <: lub(Bar, Quux) }
+{noformat}
+This seems far too weak. AFAICS _1 should be both lower and upper bounded by glb(Bar, Quux), in other words no matter what the _1 in Foo[_1] is, it has to be <: Bar and it has to be <: Quux. And indeed changing the calculation in that fashion makes everything in this ticket start compiling. But things can't be done that way in general - if the above description is accurate, it's only accurate when the types you are folding are known to be inhabited by the same value. There would have to be a different facility for calculating this.

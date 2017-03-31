@@ -1,0 +1,51 @@
+{code}
+import scala.reflect.makro.Context
+
+object Macros {
+  def foo(c: Context) = {
+    import c.mirror._
+    val ids = collection.mutable.ListBuffer[Ident]()
+    //val expr =
+    //  Apply(
+    //    Select(
+    //      Literal(Constant("hey")),
+    //      newTermName("format")),
+    //    List(ids: _* )
+    //  )
+    val expr = c.reify("hey".format((ids.map(id => Expr(id).eval)) : _*))
+    expr
+  }
+}
+{code}
+
+{code}
+C:\Projects\Kepler\sandbox @ master>myke compile Test.scala
+Test.scala:14: error: exception during macro expansion:
+scala.MatchError: (ids.map[Nothing, scala.collection.mutable.ListBuffer[Nothing]](((id: c.mirror.Ident) => c.mirror.Expr.apply[Nothing](id)(c.mirror.TypeTag.Nothing).eval))(mutable.this.ListBuffer.canBuildFrom[Nothing]): _*) (of class sc
+ala.reflect.api.Trees$Typed)
+        at scala.reflect.reify.phases.Reshape$$anon$1.toPreTyperTypedOrAnnotated(Reshape.scala:157)
+        at scala.reflect.reify.phases.Reshape$$anon$1.transform(Reshape.scala:35)
+        at scala.reflect.api.Trees$Transformer$$anonfun$transformTrees$1.apply(Trees.scala:1549)
+        at scala.reflect.api.Trees$Transformer$$anonfun$transformTrees$1.apply(Trees.scala:1549)
+        at scala.collection.immutable.List.loop$1(List.scala:163)
+        at scala.collection.immutable.List.mapConserve(List.scala:179)
+        at scala.reflect.api.Trees$Transformer.transformTrees(Trees.scala:1549)
+        at scala.reflect.api.Trees$Transformer.transform(Trees.scala:1513)
+        at scala.reflect.reify.phases.Reshape$$anon$1.transform(Reshape.scala:85)
+        at scala.reflect.reify.Phases$$anonfun$mkReificationPipeline$1.apply(Phases.scala:28)
+        at scala.reflect.reify.Phases$$anonfun$mkReificationPipeline$1.apply(Phases.scala:18)
+        at scala.reflect.reify.Reifier.liftedTree1$1(Reifier.scala:61)
+        at scala.reflect.reify.Reifier.reified(Reifier.scala:47)
+        at scala.reflect.reify.package$.reifyTree(package.scala:26)
+        at scala.reflect.makro.runtime.Reifiers$class.reifyTree(Reifiers.scala:18)
+        at scala.reflect.makro.runtime.Context.reifyTree(Context.scala:6)
+        at scala.reflect.makro.internal.Utils$$anonfun$2.apply(Utils.scala:117)
+        at scala.reflect.makro.internal.Utils$$anonfun$2.apply(Utils.scala:117)
+        at scala.reflect.makro.internal.Utils.translatingReificationErrors(Utils.scala:123)
+        at scala.reflect.makro.internal.Utils.materializeExpr(Utils.scala:117)
+        at scala.reflect.makro.Context$.reify(Context.scala:42)
+
+    val expr = c.reify("hey".format((ids.map(id => Expr(id).eval)) : _*))
+                      ^
+one error found
+{code}

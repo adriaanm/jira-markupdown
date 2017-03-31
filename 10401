@@ -1,0 +1,18 @@
+It is used like this:
+{code}
+managers(name).packAsset(asset)
+{code}
+where
+{code}
+packAsset[T](asset: T): Option[Asset]
+{code}
+has implementation dependent on name (like file extension). Those methods look like
+{code}
+  def packAsset[T](asset: T): Option[Asset] = asset match {
+    case (gdxAsset: GdxBitmapFont) => Some(BitmapFontAsset(gdxAsset))
+    case _ => None
+  }
+{code}
+I use this to pack unrelated classes from Java library (not having common parent other than Object) into AnyVal subclasses of Asset trait, and include type information that was previously enclosed only in fileName: String.
+
+In that case adding "Any" to asset value is valid thing to do?

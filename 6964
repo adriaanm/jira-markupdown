@@ -1,0 +1,35 @@
+This is fixed in 2.10.x, I believe by 97ae6f6.
+
+I tested a version of Marc's original example:
+
+{code}
+class M[@specialized(Int) T](x: T) {
+  def m1[@specialized(Int) W](f: T => W): W = f(x)
+  def m2(f: T => T): T = f(x)
+}
+
+class C[@specialized(Int) T, @specialized(Int) W](x: T) {
+  def m3(f: T => W): W = f(x)
+  def m4(f: T => T): T = f(x)
+}
+
+object Test {
+  def aaa = new M[Int](33).m1((z:Int) => z + 1)
+  def bbb = new M[Int](34).m2((z:Int) => z + 2)
+  def ccc = new C[Int, Int](35).m3((z:Int) => z + 3)
+  def ddd = new C[Int, Int](36).m4((z:Int) => z + 4)
+}
+{code}
+
+For method invocations, I saw:
+
+{code}
+aaa: M$mcI$sp.m1$mIcI$sp // class specialized on T=I, method on W=I as well
+bbb: M$mcI$sp.m2$mcI$sp // class specialized on I only, method on same T
+ccc: C$mcII$sp.m3$mcII$sp // class specialized on T=I, W=I, method on same
+ddd: C$mcII$sp.m4$mcI$sp // class specialized on T=I, W=I, method only on T
+{code}
+
+This looks like what is expected.
+
+If someone else wants to doublecheck that would be great. Otherwise I'll close since I'm the assignee.

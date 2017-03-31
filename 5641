@@ -1,0 +1,29 @@
+More good times, seeing what happens if I start pulling on the thread regarding the supposed abstract methods javac doesn't believe I have implemented.
+{code}
+// try with Traversable types applied - we get "found A, required B"
+BippyAbstract<String> b1 = new BippyAbstract<String>() {
+  public <A1,A2,A3> scala.Tuple3<Traversable<A1>,Traversable<A2>,Traversable<A3>> 
+    unzip3(scala.Function1<java.lang.String,scala.Tuple3<A1,A2,A3>> f) {
+      return null;
+    }
+}
+// J.java:11: <A1,A2,A3>unzip3(scala.Function1<java.lang.String,scala.Tuple3<A1,A2,A3>>) in  cannot override <A1,A2,A3>unzip3(scala.Function1<A,scala.Tuple3<A1,A2,A3>>) in BippyAbstract; attempting to use incompatible return type
+// found   : scala.Tuple3<scala.collection.Traversable,scala.collection.Traversable,scala.collection.Traversable>
+// required: scala.Tuple3<scala.collection.Traversable<A1>,scala.collection.Traversable<A2>,scala.collection.Traversable<A3>>
+//       unzip3(scala.Function1<java.lang.String,scala.Tuple3<A1,A2,A3>> f) {
+//       ^
+
+// try as type constructors - and it's "found B, required A"
+BippyAbstract<String> b1 = new BippyAbstract<String>() {
+  public <A1,A2,A3> scala.Tuple3<Traversable, Traversable, Traversable>
+    unzip3(scala.Function1<java.lang.String,scala.Tuple3<A1,A2,A3>> f) {
+      return null;
+    }
+}         
+// J.java:22: <A1,A2,A3>unzip3(scala.Function1<java.lang.String,scala.Tuple3<A1,A2,A3>>) in  cannot implement <A1,A2,A3>unzip3(scala.Function1<A,scala.Tuple3<A1,A2,A3>>) in scala.collection.generic.GenericTraversableTemplate; attempting to use incompatible return type
+// found   : scala.Tuple3<scala.collection.Traversable<A1>,scala.collection.Traversable<A2>,scala.collection.Traversable<A3>>
+// required: scala.Tuple3<scala.collection.Traversable,scala.collection.Traversable,scala.collection.Traversable>
+//       unzip3(scala.Function1<java.lang.String,scala.Tuple3<A1,A2,A3>> f) {
+//       ^
+{code}
+It's like a bad video game where you're not supposed to go that way yet.

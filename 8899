@@ -1,0 +1,8 @@
+For some reason if the overriding implicit is typed without an expected type, the failure is reported. It looks to me like it proceeds to type the override with an expected type of Int, at which point it finds the implicit, but it's too late. Supposed to be a silent context being used somewhere?
+{code}
+import scala.concurrent.duration._
+
+trait Foo { implicit val v: Duration = 1.seconds }
+trait Bar1 extends Foo { override implicit val v = 2.seconds } // fails
+trait Bar2 extends Foo { override implicit val v: Duration = 2.seconds } // compiles
+{code}

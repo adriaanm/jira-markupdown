@@ -1,0 +1,279 @@
+Yes, it's also broken in 2.10.0 and all RCs of 2.10.1 as well.
+
+Stack trace:
+
+{noformat}
+[error] uncaught exception during compilation: scala.reflect.internal.Types$Type
+Error
+scala.reflect.internal.Types$TypeError: ambiguous reference to overloaded defini
+tion,
+both value $outer in object PKTestTable of type ()no.allegretto.<refinement>.typ
+e
+and  value $outer in object PKTestTable of type ()no.allegretto.test.feature.PKT
+estTables
+match expected type ?
+        at scala.tools.nsc.typechecker.Contexts$Context.issueAmbiguousError(Cont
+exts.scala:405)
+        at scala.tools.nsc.typechecker.ContextErrors$ErrorUtils$.issueAmbiguousT
+ypeError(ContextErrors.scala:81)
+        at scala.tools.nsc.typechecker.ContextErrors$InferencerContextErrors$Inf
+erErrorGen$.AmbiguousExprAlternativeError(ContextErrors.scala:875)
+        at scala.tools.nsc.typechecker.Infer$Inferencer$$anonfun$inferExprAltern
+ative$1.apply(Infer.scala:1546)
+        at scala.tools.nsc.typechecker.Infer$Inferencer$$anonfun$inferExprAltern
+ative$1.apply(Infer.scala:1512)
+        at scala.tools.nsc.typechecker.Infer$Inferencer.tryTwice(Infer.scala:170
+7)
+        at scala.tools.nsc.typechecker.Infer$Inferencer.inferExprAlternative(Inf
+er.scala:1512)
+        at scala.tools.nsc.typechecker.Typers$Typer.adapt(Typers.scala:1094)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:5645)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedType(Typers.scala:5749)
+
+        at scala.tools.nsc.typechecker.Typers$Typer.typedType(Typers.scala:5752)
+
+        at scala.tools.nsc.typechecker.Typers$Typer.typedDefDef(Typers.scala:223
+3)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:5557)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:5630)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:5687)
+        at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.mixi
+nOuterAccessorDef(ExplicitOuter.scala:400)
+        at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer$$ano
+nfun$transform$1$$anonfun$apply$mcV$sp$1.apply(ExplicitOuter.scala:496)
+        at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer$$ano
+nfun$transform$1.apply$mcV$sp(ExplicitOuter.scala:494)
+        at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer$$ano
+nfun$transform$1.apply(ExplicitOuter.scala:487)
+        at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer$$ano
+nfun$transform$1.apply(ExplicitOuter.scala:487)
+        at scala.reflect.api.Trees$Transformer.atOwner(Trees.scala:2936)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwne
+r(TypingTransformers.scala:34)
+        at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.tran
+sform(ExplicitOuter.scala:486)
+        at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.tran
+sform(ExplicitOuter.scala:360)
+        at scala.reflect.api.Trees$Transformer.transformTemplate(Trees.scala:290
+4)
+        at scala.reflect.internal.Trees$$anonfun$itransform$4.apply(Trees.scala:
+1280)
+        at scala.reflect.internal.Trees$$anonfun$itransform$4.apply(Trees.scala:
+1279)
+        at scala.reflect.api.Trees$Transformer.atOwner(Trees.scala:2936)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwne
+r(TypingTransformers.scala:34)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwne
+r(TypingTransformers.scala:28)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwne
+r(TypingTransformers.scala:19)
+        at scala.reflect.internal.Trees$class.itransform(Trees.scala:1278)
+        at scala.reflect.internal.SymbolTable.itransform(SymbolTable.scala:13)
+        at scala.reflect.internal.SymbolTable.itransform(SymbolTable.scala:13)
+        at scala.reflect.api.Trees$Transformer.transform(Trees.scala:2897)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transf
+orm(TypingTransformers.scala:48)
+        at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transfor
+m(ExplicitOuter.scala:299)
+        at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.tran
+sform(ExplicitOuter.scala:594)
+        at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.tran
+sform(ExplicitOuter.scala:360)
+        at scala.reflect.api.Trees$Transformer$$anonfun$transformStats$1.apply(T
+rees.scala:2927)
+        at scala.reflect.api.Trees$Transformer$$anonfun$transformStats$1.apply(T
+rees.scala:2925)
+        at scala.collection.immutable.List.loop$1(List.scala:170)
+        at scala.collection.immutable.List.mapConserve(List.scala:186)
+        at scala.reflect.api.Trees$Transformer.transformStats(Trees.scala:2925)
+        at scala.reflect.internal.Trees$class.itransform(Trees.scala:1276)
+        at scala.reflect.internal.SymbolTable.itransform(SymbolTable.scala:13)
+        at scala.reflect.internal.SymbolTable.itransform(SymbolTable.scala:13)
+        at scala.reflect.api.Trees$Transformer.transform(Trees.scala:2897)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.scala$
+tools$nsc$transform$TypingTransformers$TypingTransformer$$super$transform(Typing
+Transformers.scala:44)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer$$anonf
+un$transform$1.apply(TypingTransformers.scala:44)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer$$anonf
+un$transform$1.apply(TypingTransformers.scala:44)
+        at scala.reflect.api.Trees$Transformer.atOwner(Trees.scala:2936)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwne
+r(TypingTransformers.scala:34)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transf
+orm(TypingTransformers.scala:44)
+        at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transfor
+m(ExplicitOuter.scala:299)
+        at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.tran
+sform(ExplicitOuter.scala:499)
+        at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.tran
+sform(ExplicitOuter.scala:360)
+        at scala.reflect.api.Trees$Transformer.transformTemplate(Trees.scala:290
+4)
+        at scala.reflect.internal.Trees$$anonfun$itransform$4.apply(Trees.scala:
+1280)
+        at scala.reflect.internal.Trees$$anonfun$itransform$4.apply(Trees.scala:
+1279)
+        at scala.reflect.api.Trees$Transformer.atOwner(Trees.scala:2936)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwne
+r(TypingTransformers.scala:34)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwne
+r(TypingTransformers.scala:28)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwne
+r(TypingTransformers.scala:19)
+        at scala.reflect.internal.Trees$class.itransform(Trees.scala:1278)
+        at scala.reflect.internal.SymbolTable.itransform(SymbolTable.scala:13)
+        at scala.reflect.internal.SymbolTable.itransform(SymbolTable.scala:13)
+        at scala.reflect.api.Trees$Transformer.transform(Trees.scala:2897)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transf
+orm(TypingTransformers.scala:48)
+        at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transfor
+m(ExplicitOuter.scala:299)
+        at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.tran
+sform(ExplicitOuter.scala:594)
+        at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.tran
+sform(ExplicitOuter.scala:360)
+        at scala.reflect.api.Trees$Transformer$$anonfun$transformStats$1.apply(T
+rees.scala:2927)
+        at scala.reflect.api.Trees$Transformer$$anonfun$transformStats$1.apply(T
+rees.scala:2925)
+        at scala.collection.immutable.List.loop$1(List.scala:170)
+        at scala.collection.immutable.List.mapConserve(List.scala:186)
+        at scala.reflect.api.Trees$Transformer.transformStats(Trees.scala:2925)
+        at scala.reflect.internal.Trees$$anonfun$itransform$7.apply(Trees.scala:
+1298)
+        at scala.reflect.internal.Trees$$anonfun$itransform$7.apply(Trees.scala:
+1298)
+        at scala.reflect.api.Trees$Transformer.atOwner(Trees.scala:2936)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwne
+r(TypingTransformers.scala:34)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwne
+r(TypingTransformers.scala:28)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwne
+r(TypingTransformers.scala:19)
+        at scala.reflect.internal.Trees$class.itransform(Trees.scala:1297)
+        at scala.reflect.internal.SymbolTable.itransform(SymbolTable.scala:13)
+        at scala.reflect.internal.SymbolTable.itransform(SymbolTable.scala:13)
+        at scala.reflect.api.Trees$Transformer.transform(Trees.scala:2897)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.scala$
+tools$nsc$transform$TypingTransformers$TypingTransformer$$super$transform(Typing
+Transformers.scala:44)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer$$anonf
+un$transform$2.apply(TypingTransformers.scala:46)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer$$anonf
+un$transform$2.apply(TypingTransformers.scala:46)
+        at scala.reflect.api.Trees$Transformer.atOwner(Trees.scala:2936)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwne
+r(TypingTransformers.scala:34)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transf
+orm(TypingTransformers.scala:46)
+        at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transfor
+m(ExplicitOuter.scala:299)
+        at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.tran
+sform(ExplicitOuter.scala:594)
+        at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.tran
+sform(ExplicitOuter.scala:360)
+        at scala.tools.nsc.ast.Trees$Transformer.transformUnit(Trees.scala:227)
+        at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.scal
+a$tools$nsc$transform$ExplicitOuter$ExplicitOuterTransformer$$super$transformUni
+t(ExplicitOuter.scala:602)
+        at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer$$ano
+nfun$transformUnit$1.apply(ExplicitOuter.scala:602)
+        at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer$$ano
+nfun$transformUnit$1.apply(ExplicitOuter.scala:602)
+        at scala.reflect.internal.SymbolTable.atPhase(SymbolTable.scala:207)
+        at scala.reflect.internal.SymbolTable.afterPhase(SymbolTable.scala:216)
+        at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.tran
+sformUnit(ExplicitOuter.scala:602)
+        at scala.tools.nsc.transform.Transform$Phase.apply(Transform.scala:30)
+        at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:463)
+        at scala.tools.nsc.Global$GlobalPhase$$anonfun$run$1.apply(Global.scala:
+430)
+        at scala.tools.nsc.Global$GlobalPhase$$anonfun$run$1.apply(Global.scala:
+430)
+        at scala.collection.Iterator$class.foreach(Iterator.scala:727)
+        at scala.collection.AbstractIterator.foreach(Iterator.scala:1157)
+        at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:430)
+        at scala.tools.nsc.Global$Run.compileUnitsInternal(Global.scala:1582)
+        at scala.tools.nsc.Global$Run.compileUnits(Global.scala:1556)
+        at scala.tools.nsc.Global$Run.compileSources(Global.scala:1552)
+        at scala.tools.nsc.Global$Run.compile(Global.scala:1661)
+        at xsbt.CachedCompiler0.run(CompilerInterface.scala:90)
+        at xsbt.CachedCompiler0.run(CompilerInterface.scala:72)
+        at xsbt.CompilerInterface.run(CompilerInterface.scala:26)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.
+java:57)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAcces
+sorImpl.java:43)
+        at java.lang.reflect.Method.invoke(Method.java:601)
+        at sbt.compiler.AnalyzingCompiler.call(AnalyzingCompiler.scala:73)
+        at sbt.compiler.AnalyzingCompiler.compile(AnalyzingCompiler.scala:35)
+        at sbt.compiler.AnalyzingCompiler.compile(AnalyzingCompiler.scala:29)
+        at sbt.compiler.AggressiveCompile$$anonfun$4$$anonfun$compileScala$1$1.a
+pply$mcV$sp(AggressiveCompile.scala:71)
+        at sbt.compiler.AggressiveCompile$$anonfun$4$$anonfun$compileScala$1$1.a
+pply(AggressiveCompile.scala:71)
+        at sbt.compiler.AggressiveCompile$$anonfun$4$$anonfun$compileScala$1$1.a
+pply(AggressiveCompile.scala:71)
+        at sbt.compiler.AggressiveCompile.sbt$compiler$AggressiveCompile$$timed(
+AggressiveCompile.scala:101)
+        at sbt.compiler.AggressiveCompile$$anonfun$4.compileScala$1(AggressiveCo
+mpile.scala:70)
+        at sbt.compiler.AggressiveCompile$$anonfun$4.apply(AggressiveCompile.sca
+la:88)
+        at sbt.compiler.AggressiveCompile$$anonfun$4.apply(AggressiveCompile.sca
+la:60)
+        at sbt.inc.IncrementalCompile$$anonfun$doCompile$1.apply(Compile.scala:2
+4)
+        at sbt.inc.IncrementalCompile$$anonfun$doCompile$1.apply(Compile.scala:2
+2)
+        at sbt.inc.Incremental$.cycle(Incremental.scala:40)
+        at sbt.inc.Incremental$.compile(Incremental.scala:25)
+        at sbt.inc.IncrementalCompile$.apply(Compile.scala:20)
+        at sbt.compiler.AggressiveCompile.compile2(AggressiveCompile.scala:96)
+        at sbt.compiler.AggressiveCompile.compile1(AggressiveCompile.scala:44)
+        at sbt.compiler.AggressiveCompile.apply(AggressiveCompile.scala:31)
+        at sbt.Compiler$.apply(Compiler.scala:79)
+        at sbt.Defaults$$anonfun$compileTask$1.apply(Defaults.scala:572)
+        at sbt.Defaults$$anonfun$compileTask$1.apply(Defaults.scala:572)
+        at sbt.Scoped$$anonfun$hf2$1.apply(Structure.scala:578)
+        at sbt.Scoped$$anonfun$hf2$1.apply(Structure.scala:578)
+        at scala.Function1$$anonfun$compose$1.apply(Function1.scala:49)
+        at sbt.Scoped$Reduced$$anonfun$combine$1$$anonfun$apply$12.apply(Structu
+re.scala:311)
+        at sbt.Scoped$Reduced$$anonfun$combine$1$$anonfun$apply$12.apply(Structu
+re.scala:311)
+        at sbt.$tilde$greater$$anonfun$$u2219$1.apply(TypeFunctions.scala:41)
+        at sbt.std.Transform$$anon$5.work(System.scala:71)
+        at sbt.Execute$$anonfun$submit$1$$anonfun$apply$1.apply(Execute.scala:23
+2)
+        at sbt.Execute$$anonfun$submit$1$$anonfun$apply$1.apply(Execute.scala:23
+2)
+        at sbt.ErrorHandling$.wideConvert(ErrorHandling.scala:18)
+        at sbt.Execute.work(Execute.scala:238)
+        at sbt.Execute$$anonfun$submit$1.apply(Execute.scala:232)
+        at sbt.Execute$$anonfun$submit$1.apply(Execute.scala:232)
+        at sbt.ConcurrentRestrictions$$anon$4$$anonfun$1.apply(ConcurrentRestric
+tions.scala:159)
+        at sbt.CompletionService$$anon$2.call(CompletionService.scala:30)
+        at java.util.concurrent.FutureTask$Sync.innerRun(FutureTask.java:334)
+        at java.util.concurrent.FutureTask.run(FutureTask.java:166)
+        at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:47
+1)
+        at java.util.concurrent.FutureTask$Sync.innerRun(FutureTask.java:334)
+        at java.util.concurrent.FutureTask.run(FutureTask.java:166)
+        at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.
+java:1145)
+        at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor
+.java:615)
+        at java.lang.Thread.run(Thread.java:722)
+[error] (test:compile) scala.reflect.internal.Types$TypeError: ambiguous referen
+ce to overloaded definition,
+[error] both value $outer in object PKTestTable of type ()no.allegretto.<refinem
+ent>.type
+[error] and  value $outer in object PKTestTable of type ()no.allegretto.test.fea
+ture.PKTestTables
+[error] match expected type ?
+>
+{noformat}

@@ -1,0 +1,33 @@
+Perhaps this comment will be getting even further away from the actual bug, which is more general to unification of compound types.
+
+I found a work-around for the prior comment that does not require writing down the types for each literal element.
+
+{code}
+type None = Option[Nothing]
+
+class DArray[T >: D[Any]](val len: Int) {
+  var array = new Array[DD[T]](len)
+  var length = 0
+  def apply[A](v: A)(implicit d: DD[D[A]] <:< DD[T]): DArray[T] = {
+    array(length) = v : DD[D[A]]
+    length += 1
+    this
+  }
+}
+
+val test = new DArray[D[None] with D[Int] with D[String]](3)
+
+scala> test(None).apply(1).apply("two").array
+res0: Array[DD[D[None] with D[Int] with D[String]]] = Array(DD@179eb02, DD@133e7a1, DD@ac0b08)
+{code}
+
+I was trying for a more concise version of the code below, but it can not be used because [issue SI-6630|https://issues.scala-lang.org/browse/SI-6630] is not a bug.
+
+{code}
+scala> test(None)(1)("two")
+error: type mismatch;
+ found   : Int(1)
+ required: <:<[DD[D[object scala.None]],DD[D[None] with D[Int] with D[String]]]
+       test(None)(1)("two")
+                  ^
+{code}

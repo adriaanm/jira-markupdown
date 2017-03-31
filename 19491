@@ -1,0 +1,22 @@
+In scala.util, Random.alphanumeric is defined as
+
+{code}
+def alphanumeric: Stream[Char] = {
+    def isAlphaNum(c: Char) = (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9')
+
+    Stream continually nextPrintableChar filter isAlphaNum
+}
+{code}
+
+This is inefficient - there are 62 chars which match isAlphaNum, but 94 equidistributed nextPrintableChar chars - so we end up taking about 50% more chars from the stream than we need.
+
+How about
+
+{code}
+def nextAlphaNum(): Char = {
+  val chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+  chars(self.nextInt(62))
+}
+
+def alphanumeric: Stream[Char] = Stream continually nextAlphaNum
+{code}

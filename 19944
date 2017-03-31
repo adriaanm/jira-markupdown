@@ -1,0 +1,45 @@
+The following code fails to compile.
+
+The failure happens when a method has a default parameter, has a return type depending on one of its parameters; when the method itself is not called from a stable identifier.
+
+See code below, the failure pattern is the same for all Scala version affected.
+
+{code:scala}
+trait Container[S <: Seq[Int] with Singleton] {
+  val s: S
+}
+
+trait Builder {
+  def withoutDefault(s0: Seq[Int]): Container[s0.type] = new Container[s0.type] {
+    val s: s0.type = s0
+  }
+  def withDefault(s0: Seq[Int], i: Int = 0): Container[s0.type] = withoutDefault(s0)
+}
+
+object Builder {
+  val instance1 = new Builder { }
+  def instance2 = new Builder { }
+}
+
+object Builder1 {
+  def withoutDefault(s0: Seq[Int]): Container[s0.type] = new Container[s0.type] {
+    val s: s0.type = s0
+  }
+  def withDefault(s0: Seq[Int], i: Int = 0): Container[s0.type] = withoutDefault(s0)
+}
+
+object Test {
+  val seq = Seq(1, 2, 3, 4)
+  val works1: Container[seq.type] = Builder1.withoutDefault(seq)
+  val works2: Container[seq.type] = Builder1.withDefault(seq, 0)
+  val works3: Container[seq.type] = Builder1.withDefault(seq)
+
+  val works4: Container[seq.type] = Builder.instance1.withoutDefault(seq)
+  val works5: Container[seq.type] = Builder.instance1.withDefault(seq, 0)
+  val works6: Container[seq.type] = Builder.instance1.withDefault(seq)
+
+  val works7: Container[seq.type] = Builder.instance2.withoutDefault(seq)
+  val works8: Container[seq.type] = Builder.instance2.withDefault(seq, 0)
+  val fails: Container[seq.type] = Builder.instance2.withDefault(seq)
+}
+{code}

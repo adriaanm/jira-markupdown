@@ -1,0 +1,12 @@
+We isolated a hang in our code to the following issue. We had assumed that immutable Maps would act like the other persistent data structures when accessed as head/tail, allowing us to reuse some code on them. However, this isn't the case: `Map#tail` does not return a piece of the current map in memory, but fully builds another Map.
+
+{code}
+var m = (1 to 85000).map(i => (i, i)).toMap
+
+// Takes a very long time to complete
+while (!m.isEmpty) {
+  m = m.tail
+}
+{code}
+
+Is this intended behavior? It is easy to work around and use this code as-is, for example by calling `Map#toStream`, which supports the above `isEmpty` / `tail` calls very quickly. But the behavior as it exists today seems surprising enough to report.

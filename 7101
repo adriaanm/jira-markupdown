@@ -1,0 +1,40 @@
+This is a duplicate of SI-967, surely.
+
+As an aside, it's possible to encode your way around the problem if you're really desperate,
+
+{code}
+// Gilles' fix for SI-967 causes the definition of Nat to be rejected with
+// the error "Parameter type in structural refinement may not refer to a type
+// member of that refinement". However we can work around the problem by 
+// quantifying out the problematic parameter type and reinstating it via
+// a generalized type constraint.
+
+type Num = {
+  type Rep
+  val zero : Rep
+  def succ[R](r : R)(implicit ev : R =:= Rep) : Rep
+  def show[R](r : R)(implicit ev : R =:= Rep) : String
+}
+
+val IntNum : Num = new {
+  type Rep = Int
+  val zero = 0
+  def succ[R](r : R)(implicit ev : R =:= Rep) : Rep = r+1
+  def show[R](r : R)(implicit ev : R =:= Rep) = r.toString
+}
+
+val DoubleNum : Num = new {
+  type Rep = Double
+  val zero = 0.0
+  def succ[R](r : R)(implicit ev : R =:= Rep) : Rep = r+1.0
+  def show[R](r : R)(implicit ev : R =:= Rep) = r.toString
+}
+
+def two(n : Num) = n.show(n.succ(n.succ(n.zero)))
+
+scala> two(IntNum)
+res0: String = 2
+
+scala> two(DoubleNum)
+res1: String = 2.0
+{code}

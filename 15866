@@ -1,0 +1,56 @@
+This first crash is interesting because it reminds us that Unit becomes BoxedUnit when a method parameter.  Here it appears method overloading is resolved as if the parameter were boxed, but then it is unwilling to actually box it.
+{code}
+@inline def hash(x: Unit): Int = 0
+// is seen as
+(x: scala.runtime.BoxedUnit)Int
+{code}
+So that's this crash:
+{code}
+scala> ().##                          
+exception when typing ScalaRunTime.this.hash(())
+overloaded method value hash with alternatives:
+  (x: java.lang.Long)Int <and>
+  (x: java.lang.Number)Int <and>
+  (x: scala.runtime.BoxedUnit)Int <and>
+  (x: Boolean)Int <and>
+  (x: Char)Int <and>
+  (x: Byte)Int <and>
+  (x: Short)Int <and>
+  (x: Int)Int <and>
+  (lv: scala.Long)Int <and>
+  (fv: Float)Int <and>
+  (dv: Double)Int <and>
+  (x: java.lang.Object)Int
+ cannot be applied to (Unit) in file <console>
+scala.tools.nsc.symtab.Types$$TypeError: overloaded method value hash with alternatives:
+[snip]
+at scala.tools.nsc.typechecker.Contexts$$Context.error(Contexts.scala:280)
+at scala.tools.nsc.typechecker.Infer$$Inferencer.error(Infer.scala:203)
+at scala.tools.nsc.typechecker.Infer$$Inferencer.errorTree(Infer.scala:207)
+at scala.tools.nsc.typechecker.Infer$$Inferencer$$$$anonfun$$inferMethodAlternative$$1.apply$$mcV$$sp(Infer.scala:1617)
+at scala.tools.nsc.typechecker.Infer$$Inferencer.tryTwice(Infer.scala:1658)
+at scala.tools.nsc.typechecker.Infer$$Inferencer.inferMethodAlternative(Infer.scala:1575)
+at scala.tools.nsc.typechecker.Infer$$Inferencer$$$$anonfun$$inferMethodAlternative$$1.apply$$mcV$$sp(Infer.scala:1619)
+at scala.tools.nsc.typechecker.Infer$$Inferencer.tryTwice(Infer.scala:1658)  
+{code}
+And there is also this, which arises from a similar issue, but would not be addressed by fixing the overload resolution, and the compiler shouldn't crash anyway.
+{code}
+scala> null.##
+exception when typing ScalaRunTime.this.hash(null)
+ambiguous reference to overloaded definition,
+both method hash in object ScalaRunTime of type (x: java.lang.Long)Int
+and  method hash in object ScalaRunTime of type (x: scala.runtime.BoxedUnit)Int
+match argument types (Null) and expected result type Int in file <console>
+scala.tools.nsc.symtab.Types$$TypeError: ambiguous reference to overloaded definition,
+both method hash in object ScalaRunTime of type (x: java.lang.Long)Int
+and  method hash in object ScalaRunTime of type (x: scala.runtime.BoxedUnit)Int
+match argument types (Null) and expected result type Int
+	at scala.tools.nsc.typechecker.Contexts$$Context.ambiguousError(Contexts.scala:304)
+	at scala.tools.nsc.typechecker.Infer$$Inferencer$$$$anonfun$$inferMethodAlternative$$1.apply$$mcV$$sp(Infer.scala:1623)
+	at scala.tools.nsc.typechecker.Infer$$Inferencer.tryTwice(Infer.scala:1658)
+	at scala.tools.nsc.typechecker.Infer$$Inferencer.inferMethodAlternative(Infer.scala:1575)
+	at scala.tools.nsc.typechecker.Typers$$Typer.doTypedApply(Typers.scala:2320)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedApply$$1(Typers.scala:3339)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:4026)
+	at scala.tools.nsc.transform.Erasure$$Eraser.liftedTree1$$1(Erasure.scala:646)  
+{code}

@@ -1,0 +1,50 @@
+Will add the constant {{Epsilon}} to the classes {{Double}} and {{Float}} as follows:
+{code}
+scala> final val Eps = java.lang.Double.longBitsToDouble(0x3ca0000000000000L)
+Eps: Double = 1.1102230246251565E-16
+
+scala> 1d+Eps == 1d
+res1: Boolean = true
+
+scala> 1d-Eps == 1d
+res2: Boolean = false
+
+scala> final val Eps = java.lang.Float.intBitsToFloat(0x33800000)
+Eps: Float = 5.9604645E-8
+
+scala> 1f+Eps == 1f
+res3: Boolean = true
+
+scala> 1f-Eps == 1f
+res4: Boolean = false
+{code}
+
+This value gives an upper bound on the relative error due to rounding real numbers to floating point numbers (either Floats or Doubles). For any floating point system with base B and precision (or mantissa length) p this upper bound is defined as B^(-(p-1))/2 (which corresponds to 1/2 ulp = 1/2 unit in the last place).
+
+  - Float (B=2 / p=24): Eps = 2^(-24)
+
+  - Double (B=2 / p=53): Eps = 2^(-53)
+
+The definition as the smallest value with {{1+Eps != 1}} or {{1-Eps != 1}} leads to slightly different values (if not only powers of 2 are considered). The following method computes the smallest value for {{1+Eps != 1}} for double precision, and you see, the result is the double number which is the neighbor of the above defined value for {{Epsilon}}.
+{code}
+scala> def epsilon = {
+     |   def eps(a: Double, b: Double): Double = {
+     |     val e = a + (b-a)/2
+     |     if(a < e && e < b) {
+     |       val f = 1 + e
+     |       if(f == 1.0) eps(e, b) else eps(a, e)
+     |     } else b
+     |   }
+     |   eps(0, 1)
+     | }
+epsilon: Double
+
+scala> val eps = epsilon
+eps: Double = 1.1102230246251568E-16
+
+scala> 1d+eps==1d
+res1: Boolean = false
+
+scala> f"${java.lang.Double.doubleToLongBits(eps)}%x"
+res2: String = 3ca0000000000001
+{code}

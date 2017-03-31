@@ -1,0 +1,41 @@
+I believe this is a regression caused by (or a latent bug uncovered by) https://github.com/scala/scala/pull/2977
+
+A workaround is to use {{-Yno-load-impl-class}}.
+
+{noformat}
+% /build-sbt/quick/bin/scalac /tmp/wrap.scala && printf ':silent\nimport bug._\nimport Wrap._\nobject Baz extends bug.Wrap.Foo\nBaz.foo\n' | ./build-sbt/quick/bin/scala -Xdev -nc -Yno-load-impl-class
+Welcome to Scala 2.11.8-20160304-115712-1706a37 (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_71).
+Type in expressions for evaluation. Or try :help.
+
+scala> :silent
+
+scala> import bug._
+
+scala> import Wrap._
+
+scala> object Baz extends bug.Wrap.Foo
+
+scala> Baz.foo
+!!
+
+scala> :quit
+
+% ./build-sbt/quick/bin/scalac /tmp/wrap.scala && printf ':silent\nimport bug._\nimport Wrap._\nobject Baz extends bug.Wrap.Foo\nBaz.foo\n' | ./build-sbt/quick/bin/scala -Xdev -nc
+Welcome to Scala 2.11.8-20160304-115712-1706a37 (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_71).
+Type in expressions for evaluation. Or try :help.
+
+scala> :silent
+
+scala> import bug._
+
+scala> import Wrap._
+
+scala> object Baz extends bug.Wrap.Foo
+warning: !!! Impl class flag is not set (abstract class Wrap$Foo$class in package bug,abstract trait Wrap$Foo in package bug)
+
+scala> Baz.foo
+java.lang.AbstractMethodError: Baz$.foo()V
+  ... 32 elided
+
+scala> :quit
+{noformat}

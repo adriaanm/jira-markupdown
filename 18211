@@ -1,0 +1,43 @@
+There are a few places in the language where the syntactic sugar has an absolute monopoly on decent expression. Most noticeable to me lately is that ((x, y)) means Tuple2. Tuple2, not Product2.
+{code}
+scala> trait Foo { def f: (Int, Int) }
+defined trait Foo
+
+scala> class Bippy extends Product2[Int, Int] { def _1 = 1 ; def _2 = 2 ; def canEqual(other: Any) = other.isInstanceOf[Bippy] }
+defined class Bippy
+
+scala> new Foo { def f = new Bippy }
+<console>:10: error: type mismatch;
+ found   : Bippy
+ required: (Int, Int)
+              new Foo { def f = new Bippy }
+                                ^
+{code}
+That's horrid. The type (Int, Int) should mean Product2[Int, Int], and the pattern syntax should mean the Product2 unapply:
+{code}
+scala> def g(x: Any) = x match { case (p, q) => println("two things") ; case _ => println("oops") }
+g: (x: Any)Unit
+
+scala> g(new Bippy)
+oops
+{code}
+...it's fine if a term (x, y) creates a Tuple though.
+
+A related issue is that we must be better stewards of these core types, again due to their absolute syntactic monopoly. There's no way to evade their warts, they follow us everywhere. Some examples of things which are completely inflexible:
+
+- Functions have a monopoly on function syntax
+- Partial Functions have a monopoly on partial function syntax
+- Tuples have a monopoly on PRODUCT syntax
+- For comprehensions hardcode foreach/map/flatMap/filter/withFilter
+
+Functions, for-comprehension participants, and other monopolists should be kept as pristine as possible.
+
+- canEqual should not be an abstract method on Product (it stands out like a sore thumb, just look at the code block above)
+- compose and andThen should not be on Function1
+- Map and other collections should definitely not extend Function1
+- You should be able to implement Function1 from java without a degree in rocket sciendentistry
+- You should be able to write "map" on Function1
+- Fundamentally, Function1 should be a pure abstraction, not a multi-purpose utility trait
+- PartialFunction should not extend Function1 (and should be renamed to something which doesn't confuse everyone who meets it)
+
+I am all too aware that these issues are as old as the hills, but there is no reason to live with them for the rest of our lives. Especially Product/Tuple.

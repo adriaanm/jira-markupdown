@@ -1,0 +1,5 @@
+Indeed, Java docs for {{Object.equals}} state that it should return {{false}} when the argument is {{null}}. It also states that it defines a symmetric relationship, and we don't use that when generating code because it's not true quite often. I am reluctant to use assumptions the compiler cannot check when generating code. Although it is very unlikely, someone might break it.
+
+I agree with your last point, and the compiler actually does it for you when you write it the other way around: {{null == superclass}} is translated to {{null eq superclass}}. It doesn't do it in the first case because the {{equals}} method might be overridden, as discussed above.
+
+I don't feel very strongly about this, but it feels more consistent and I don't think this is that bad in terms of performance.

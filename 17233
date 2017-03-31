@@ -1,0 +1,24 @@
+Scala 2.10.0-M5
+{noformat}
+scala> import language.existentials
+import language.existentials
+
+scala> implicitly[List[T forSome {type T}] =:= List[_]]
+res1: =:=[List[T forSome { type T }],List[_]] = <function1>
+
+scala> implicitly[(List[T] forSome {type T}) =:= List[_]]
+res2: =:=[List[_],List[_]] = <function1>
+
+scala> implicitly[List[Any] =:= List[_]]
+res3: =:=[List[Any],List[_]] = <function1>
+{noformat}
+
+Only res2 evaluates correctly.
+Expected is for res1 and res3 an error message like below "Cannot prove that ..."
+
+{noformat}
+scala> implicitly[Int =:= Long]
+<console>:9: error: Cannot prove that Int =:= Long.
+              implicitly[Int =:= Long]
+                        ^
+{noformat}

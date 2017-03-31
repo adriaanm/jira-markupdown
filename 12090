@@ -1,0 +1,19 @@
+This also shows that it's a bug that can result in runtime errors:
+
+{code}
+sealed trait Parent
+case object Boy  extends Parent
+case object Girl extends Parent
+
+trait HasGirl {
+  val x: Girl.type
+}
+
+case class Thing(x: Boy.type) extends HasGirl {
+  def y: Girl.type = (this: HasGirl).x
+}
+
+
+val t = Thing(Boy)
+t.y   // ClassCastException !
+{code}

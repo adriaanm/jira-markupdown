@@ -1,0 +1,115 @@
+https://github.com/scala/scala/commit/d40f1b81372e1cdb101790d14c5bc8c7c304c128
+
+{noformat}
+$ scala
+Welcome to Scala 2.12.1 (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_111).
+Type in expressions for evaluation. Or try :help.
+
+scala> throw new RuntimeException("Hello", new RuntimeException("World", new RuntimeException("X")))
+java.lang.RuntimeException: Hello
+  ... 29 elided
+Caused by: java.lang.RuntimeException: World
+  ... 29 more
+Caused by: java.lang.RuntimeException: X
+  ... 29 more
+
+scala> throw { val x = new RuntimeException("Hello", new RuntimeException("World", new RuntimeException("X"))) ; x.addSuppressed(new NullPointerException) ; x } 
+java.lang.RuntimeException: Hello
+  ... 32 elided
+Caused by: java.lang.RuntimeException: World
+  ... 32 more
+Caused by: java.lang.RuntimeException: X
+  ... 32 more
+  Suppressed: java.lang.NullPointerException
+    ... 32 more
+
+{noformat}
+
+{noformat}
+$ scala211
+Welcome to Scala 2.11.8 (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_111).
+Type in expressions for evaluation. Or try :help.
+
+scala> Seq(1,2).par.foreach(i => if (i == 2) ??? else throw new RuntimeException("Hello", new RuntimeException("World", new RuntimeException("X"))))
+java.lang.RuntimeException: Hello
+  at $anonfun$1.apply(<console>:12)
+  at $anonfun$1.apply(<console>:12)
+  at scala.collection.Iterator$class.foreach(Iterator.scala:893)
+  at scala.collection.AbstractIterator.foreach(Iterator.scala:1336)
+  at scala.collection.parallel.ParIterableLike$Foreach.leaf(ParIterableLike.scala:972)
+  at scala.collection.parallel.Task$$anonfun$tryLeaf$1.apply$mcV$sp(Tasks.scala:49)
+  at scala.collection.parallel.Task$$anonfun$tryLeaf$1.apply(Tasks.scala:48)
+  at scala.collection.parallel.Task$$anonfun$tryLeaf$1.apply(Tasks.scala:48)
+  at scala.collection.parallel.Task$class.tryLeaf(Tasks.scala:51)
+  at scala.collection.parallel.ParIterableLike$Foreach.tryLeaf(ParIterableLike.scala:969)
+  at scala.collection.parallel.AdaptiveWorkStealingTasks$WrappedTask$class.internal(Tasks.scala:159)
+  at scala.collection.parallel.AdaptiveWorkStealingForkJoinTasks$WrappedTask.internal(Tasks.scala:443)
+  at scala.collection.parallel.AdaptiveWorkStealingTasks$WrappedTask$class.compute(Tasks.scala:149)
+  at scala.collection.parallel.AdaptiveWorkStealingForkJoinTasks$WrappedTask.compute(Tasks.scala:443)
+  at scala.concurrent.forkjoin.RecursiveAction.exec(RecursiveAction.java:160)
+  at scala.concurrent.forkjoin.ForkJoinTask.doExec(ForkJoinTask.java:260)
+  at scala.concurrent.forkjoin.ForkJoinPool$WorkQueue.runTask(ForkJoinPool.java:1339)
+  at scala.concurrent.forkjoin.ForkJoinPool.runWorker(ForkJoinPool.java:1979)
+  at scala.concurrent.forkjoin.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:107)
+Caused by: java.lang.RuntimeException: World
+  ... 19 more
+Caused by: java.lang.RuntimeException: X
+  ... 19 more
+
+{noformat}
+
+
+{noformat}
+$ scala -Yrepl-class-based
+Welcome to Scala 2.12.1 (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_111).
+Type in expressions for evaluation. Or try :help.
+
+scala> Seq(1,2).par.foreach(i => if (i == 2) ??? else throw new RuntimeException("Hello", new RuntimeException("World", new RuntimeException("X"))))
+java.lang.RuntimeException: Hello
+  at $anonfun$res0$1(<console>:12)
+  at $anonfun$res0$1$adapted(<console>:12)
+  at scala.collection.Iterator.foreach(Iterator.scala:929)
+  at scala.collection.Iterator.foreach$(Iterator.scala:929)
+  at scala.collection.AbstractIterator.foreach(Iterator.scala:1406)
+  at scala.collection.parallel.ParIterableLike$Foreach.leaf(ParIterableLike.scala:970)
+  at scala.collection.parallel.Task.$anonfun$tryLeaf$1(Tasks.scala:49)
+  at scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.java:12)
+  at scala.util.control.Breaks$$anon$1.catchBreak(Breaks.scala:63)
+  at scala.collection.parallel.Task.tryLeaf(Tasks.scala:52)
+  at scala.collection.parallel.Task.tryLeaf$(Tasks.scala:46)
+  at scala.collection.parallel.ParIterableLike$Foreach.tryLeaf(ParIterableLike.scala:967)
+  at scala.collection.parallel.AdaptiveWorkStealingTasks$WrappedTask.internal(Tasks.scala:156)
+  at scala.collection.parallel.AdaptiveWorkStealingTasks$WrappedTask.internal$(Tasks.scala:153)
+  at scala.collection.parallel.AdaptiveWorkStealingForkJoinTasks$WrappedTask.internal(Tasks.scala:440)
+  at scala.collection.parallel.AdaptiveWorkStealingTasks$WrappedTask.compute(Tasks.scala:146)
+  at scala.collection.parallel.AdaptiveWorkStealingTasks$WrappedTask.compute$(Tasks.scala:145)
+  at scala.collection.parallel.AdaptiveWorkStealingForkJoinTasks$WrappedTask.compute(Tasks.scala:440)
+  at java.util.concurrent.RecursiveAction.exec(RecursiveAction.java:189)
+  at java.util.concurrent.ForkJoinTask.doExec(ForkJoinTask.java:289)
+  at java.util.concurrent.ForkJoinPool$WorkQueue.runTask(ForkJoinPool.java:1056)
+  at java.util.concurrent.ForkJoinPool.runWorker(ForkJoinPool.java:1692)
+  at java.util.concurrent.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:157)
+Caused by: java.lang.RuntimeException: World
+  ... 23 more
+Caused by: java.lang.RuntimeException: X
+  ... 23 more
+  Suppressed: scala.NotImplementedError: an implementation is missing
+    at scala.Predef$.$qmark$qmark$qmark(Predef.scala:284)
+    at $anonfun$res0$1(<console>:12)
+    at $anonfun$res0$1$adapted(<console>:12)
+    at scala.collection.Iterator.foreach(Iterator.scala:929)
+    at scala.collection.Iterator.foreach$(Iterator.scala:929)
+    at scala.collection.AbstractIterator.foreach(Iterator.scala:1406)
+    at scala.collection.parallel.ParIterableLike$Foreach.leaf(ParIterableLike.scala:970)
+    at scala.collection.parallel.Task.$anonfun$tryLeaf$1(Tasks.scala:49)
+    at scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.java:12)
+    at scala.util.control.Breaks$$anon$1.catchBreak(Breaks.scala:63)
+    at scala.collection.parallel.Task.tryLeaf(Tasks.scala:52)
+    at scala.collection.parallel.Task.tryLeaf$(Tasks.scala:46)
+    at scala.collection.parallel.ParIterableLike$Foreach.tryLeaf(ParIterableLike.scala:967)
+    at scala.collection.parallel.AdaptiveWorkStealingTasks$WrappedTask.compute(Tasks.scala:149)
+    ... 7 more
+
+
+{noformat}
+

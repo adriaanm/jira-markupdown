@@ -1,0 +1,13 @@
+Replying to [comment:2 xetas]:
+> Are you sure this is also valid behaviour? This looks like "variable field":
+> 
+> scala> case class C(var c: C = _);
+> <console>:1: error: unbound placeholder parameter
+>        case class C(var c: C = _);
+>                                ^
+
+the restriction applies here as well: for each default argument we generate a method returning that value. a method definition
+{code}
+  def init$$default$$1: C = _
+{code}
+is not valid, so we can't support this without major hackery.

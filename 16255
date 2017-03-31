@@ -1,0 +1,19 @@
+scalac drops an empty argument to -cp, using the next argument instead.  For example, in the following command line, it uses A.scala as the classpath and only B.scala is a source file.
+
+{code}
+scalac -cp "" A.scala B.scala
+{code}
+
+You can verify this by creating A.scala and B.scala as follows:
+
+A.scala
+{code}
+class A
+{code}
+
+B.scala
+{code}
+class B extends A
+{code}
+
+A won't be found when scalac compiles B.  This is a regression from 2.8.1

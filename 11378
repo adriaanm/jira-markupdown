@@ -1,0 +1,48 @@
+Making {{filterImpl}} non-private in [PR #3949|https://github.com/scala/scala/pull/3949] was indeed not binary compatible. The problem is that making a trait method non-private changes its calling convention. Here's an example:
+
+{code}
+trait Tl {
+  private def f1Impl = 0
+  def f1 = f1Impl
+
+  private[p] def f2Impl = 0
+  def f2 = f2Impl
+}
+
+class Mp extends Tl
+{code}
+
+The point is that the invocation of {{f1Impl}} is statically known. So the compiler optimizes it and directly invokes the static method {{f1Impl}} in the trait implementation class {{Tl$class}}.
+
+Method {{f2Impl}} on the other hand may be overwritten in subclasses of {{Tl}}, therefore the invocation is compiled as an invoke-interface of the method {{f2Impl}} in interface {{Tl}}. In the subclass {{Mp}}, a mixin is generated for {{f2Impl}}.
+
+{noformat}
+
+public abstract interface p/Tl {
+  // NOTE: f1Impl is missing - it's private!
+  public abstract f1()I
+  public abstract f2Impl()I
+  public abstract f2()I
+}
+
+public abstract class p/Tl$class {
+  private static f1Impl(Lp/Tl;)I
+  public static f1(Lp/Tl;)I
+    ALOAD 0
+    INVOKESTATIC p/Tl$class.f1Impl (Lp/Tl;)I  // Directly invokes the static method
+
+  public static f2Impl(Lp/Tl;)I
+  public static f2(Lp/Tl;)I
+    ALOAD 0
+    INVOKEINTERFACE p/Tl.f2Impl ()I  // Interface method
+}
+
+public class p/Mp implements p/Tl  {
+  // generated mixins (forward to the static functions in Tl$class)
+  public f1()I
+  public f2Impl()I
+  public f2()I
+}
+{noformat}
+
+The manifestation: subclasses of TraversableLike compiled with 2.11.2 don't have a mixin for {{filterImpl}}, but the standard library of 2.11.3 invokes the interface method.

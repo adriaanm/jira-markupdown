@@ -1,0 +1,23 @@
+Disregard last message. Code below compiles with the r20820.
+
+{code}
+
+import scala.collection.mutable.Publisher
+import scala.collection.mutable.Subscriber
+
+
+object PubSub {
+  class Event
+
+  class MyPublisher extends Publisher[Event] {
+    type Pub = MyPublisher
+  }
+  
+  class MySubscriber( val p: MyPublisher ) extends Subscriber[Event,MyPublisher] {
+    def notify(pub: MyPublisher, event: Event): Unit = {}
+  }
+
+}
+
+
+{code}

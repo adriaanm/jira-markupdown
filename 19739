@@ -1,0 +1,36 @@
+{code}
+class BaseClass(s: String) {
+  def print: Unit = {
+    println("hashCode=" + this.hashCode + " | " + this.getClass.getSimpleName + " " + s)
+    println(this.getClass.getDeclaringClass.getName)
+  }
+}
+
+object Object {
+  val s: String = "hello"
+
+  object AObj extends BaseClass(s)
+
+  object BObj extends BaseClass(s)
+
+  val list = List(AObj, BObj)
+
+  def print() {
+    println(list)
+  }
+}
+
+object ObjectInit {
+  def main(args: Array[String]) {
+    Object.AObj.print
+    Object.BObj.print
+    Object.print
+  }
+}
+{code}
+
+Output: AObj in list is null.
+List(null, fun.Object$BObj$@28d93b30)
+Expected: initialization of list should be initialized correctly independent from Object.AObj.print/Object.AObj.print.
+
+Note: If No Object.AObj.print/Object.AObj.print be called before Object.print, the initialization is correct.

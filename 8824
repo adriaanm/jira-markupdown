@@ -1,0 +1,26 @@
+Specifying a type tag explicitly for c.Expr[U] and peforming a cast saves the day:
+
+{code}
+import scala.language.experimental.macros
+import scala.reflect.macros.Context
+
+object Macros {
+  def tree[T,U](f:Function1[T,U]): Function1[T,U] = macro tree_impl[T,U]
+
+  def tree_impl[T:c.WeakTypeTag,U:c.WeakTypeTag](c: Context)
+      (f:c.Expr[Function1[T,U]]): c.Expr[Function1[T,U]] = {
+    import c.universe._
+
+    val ttag = c.weakTypeTag[U]
+
+    f match {
+      case Expr(Function(List(ValDef(_,n,_,_)),b)) =>
+        c.universe.reify(new (T => U) {
+          override def toString = c.literal(b.toString).splice
+          def apply(x: T): U = c.Expr[U](b)(ttag.asInstanceOf[c.WeakTypeTag[U]]).splice
+        })
+      case _ => sys.error("Bad function type")
+    }
+  }
+}
+{code}

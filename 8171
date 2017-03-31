@@ -1,0 +1,19 @@
+Minimized (regression): 
+{code}
+class Test {
+  class Foo1 {
+  	def must(x: scala.xml.Elem) = ()
+  }
+
+  class Foo2 {
+  	def must(x: Int) = ()
+  }
+  implicit def toFoo1(s: scala.xml.Elem) = new Foo1()
+  implicit def toFoo2(s: scala.xml.Elem) = new Foo2()
+
+  def is: Unit = { (<a>{"a"}</a>).must(<a>{"b"}</a>) }
+}
+{code}
+worked in M3, stopped in M4.
+The problem is that root package qualifier from _root_.scala.xml.Null somehow gets past Typer and later we crash.
+adaptToMemberWithArgs is a bit at fault but the underlying cause may be somewhere else. 

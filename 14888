@@ -1,0 +1,66 @@
+This occurs in recent 2.8.0 builds, including RC7.
+
+{code}
+scala> class A
+defined class A
+
+scala> class B
+defined class B
+
+scala> class C
+defined class C
+
+scala> class F[X]
+defined class F
+
+scala> implicit def a : F[A] = new F[A]()
+a: F[A]
+
+scala> implicit def b[X <: B] = new F[X]()
+b: [X <: B]F[X]
+
+scala> def f(implicit aa: F[A]) = println(aa)
+f: (implicit aa: F[A])Unit
+
+scala> f
+<console>:11: error: ambiguous implicit values:
+ both method b in object $$iw of type [X <: B]F[X]
+ and method a in object $$iw of type => F[A]
+ match expected type F[A]
+      f
+
+      ^
+{code}
+
+but b[A] is not well typed so there is no ambiguity:
+
+{code}
+scala>
+
+scala> class A
+defined class A
+
+scala> class B
+defined class B
+
+scala> class C
+defined class C
+
+scala> class F[X]
+defined class F
+
+scala> implicit def b[X <: B] = new F[X]()
+b: [X <: B]F[X]
+
+scala> def f(implicit aa: F[A]) = println(aa)
+f: (implicit aa: F[A])Unit
+
+scala> f
+<console>:16: error: type arguments [A] do not conform to method b's
+type parameter bounds [X <: B]
+      f
+      ^
+{code}
+
+and so even the above error is misleading,
+it should just say that no implicit was found.

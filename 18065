@@ -1,0 +1,180 @@
+Compiler crashes when run from sbt, see full error below.
+
+I could create a somewhat minimal case to reproduce the crash reliably: it is based on the scala-roles code from Michael Pradel, that I migrated to scala 2.10 and sbt.
+
+Find the code to reproduce here: https://github.com/fredfp/Scala-Roles in the branch "scalac-crash".
+"sbt compile" crashes, while "scalac *.scala" works fine.
+
+The "while compiling:" file shown in the error below does not seem meaningful (saw it change a couple of times).
+The crash seem to come from src/scala/roles/internal/Collaboration.scala:21. I changed this line in branch "works" to illustrate this.
+
+{code}
+scala.reflect.internal.FatalError: 
+     while compiling: /home/fred/upstreams/Scala-Roles/src/scala/roles/internal/InvocationHandler.scala
+        during phase: xsbt-api
+     library version: version 2.10.1-RC3
+    compiler version: version 2.10.1-RC3
+  reconstructed args: -d /home/fred/upstreams/Scala-Roles/target/scala-2.10/classes -bootclasspath /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/resources.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/rt.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/sunrsasign.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/jsse.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/jce.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/charsets.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/netx.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/plugin.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/rhino.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/jfr.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/classes:/home/fred/.sbt/boot/scala-2.10.1-RC3/lib/scala-library.jar -classpath /home/fred/upstreams/Scala-Roles/target/scala-2.10/classes
+
+  last tree to typer: Ident(Unit)
+              symbol: <none> (flags: )
+   symbol definition: <none>
+       symbol owners: 
+      context owners: object InvocationHandler -> package internal
+
+== Enclosing template or block ==
+
+Template( // val <local InvocationHandler>: <notype> in object InvocationHandler
+  "java.lang.Object" // parents
+  ValDef(
+    private
+    "_"
+    <tpt>
+    <empty>
+  )
+  // 2 statements
+  DefDef( // def <init>(): scala.roles.internal.InvocationHandler.type in object InvocationHandler
+    <method>
+    "<init>"
+    []
+    List(Nil)
+    <tpt> // tree.tpe=scala.roles.internal.InvocationHandler.type
+    Block( // tree.tpe=Unit
+      Apply( // def <init>(): Object in class Object, tree.tpe=Object
+        InvocationHandler.super."<init>" // def <init>(): Object in class Object, tree.tpe=()Object
+        Nil
+      )
+      ()
+    )
+  )
+  TypeDef( // type CallMapping = scala.collection.mutable.HashMap[String,List[() => Unit]] in object InvocationHandler
+    0
+    "CallMapping"
+    []
+    AppliedTypeTree(
+      "HashMap"
+      // 2 arguments
+      "String"
+      AppliedTypeTree(
+        "List"
+        AppliedTypeTree( // abstract trait Function0[+R] extends AnyRef in package scala
+          "_root_"."scala"."Function0" // abstract trait Function0[+R] extends AnyRef in package scala, tree.tpe=Function0
+          "Unit"
+        )
+      )
+    )
+  )
+)
+
+Player in trait AbstractRole cannot be instantiated from AbstractRole.this.type with Player
+        at scala.reflect.internal.SymbolTable.abort(SymbolTable.scala:49)
+        at scala.tools.nsc.Global.abort(Global.scala:253)
+        at scala.reflect.internal.Types$AsSeenFromMap.throwError$1(Types.scala:4562)
+        at scala.reflect.internal.Types$AsSeenFromMap.toInstance$1(Types.scala:4616)
+        at scala.reflect.internal.Types$AsSeenFromMap.apply(Types.scala:4620)
+        at scala.reflect.internal.Types$TypeMap.mapOver(Types.scala:4190)
+        at scala.reflect.internal.Types$AsSeenFromMap.apply(Types.scala:4622)
+        at scala.reflect.internal.Types$Type.asSeenFrom(Types.scala:754)
+        at scala.reflect.internal.Types$Type.computeMemberType(Types.scala:788)
+        at scala.reflect.internal.Symbols$MethodSymbol.typeAsMemberOf(Symbols.scala:2646)
+        at scala.reflect.internal.Types$Type.memberType(Types.scala:779)
+        at scala.reflect.internal.Types$Type.findMembers(Types.scala:1118)
+        at scala.reflect.internal.Types$Type.membersBasedOnFlags(Types.scala:718)
+        at scala.reflect.internal.Types$Type.members(Types.scala:661)
+        at xsbt.API.xsbt$API$$mkStructure(API.scala:233)
+        at xsbt.API$$anonfun$structure$1.apply(API.scala:227)
+        at xsbt.API$$anonfun$structure$1.apply(API.scala:227)
+        at scala.collection.mutable.MapLike$class.getOrElseUpdate(MapLike.scala:189)
+        at scala.collection.mutable.AbstractMap.getOrElseUpdate(Map.scala:91)
+        at xsbt.API.structure(API.scala:227)
+        at xsbt.API.structure(API.scala:225)
+        at xsbt.API.xsbt$API$$makeType(API.scala:361)
+        at xsbt.API$$anonfun$xsbt$API$$processType$1.apply(API.scala:310)
+        at xsbt.API$$anonfun$xsbt$API$$processType$1.apply(API.scala:310)
+        at scala.collection.mutable.MapLike$class.getOrElseUpdate(MapLike.scala:189)
+        at scala.collection.mutable.AbstractMap.getOrElseUpdate(Map.scala:91)
+        at xsbt.API.xsbt$API$$processType(API.scala:310)
+        at xsbt.API.typeDef(API.scala:214)
+        at xsbt.API.xsbt$API$$definition(API.scala:256)
+        at xsbt.API$$anonfun$xsbt$API$$processDefinitions$1.apply(API.scala:243)
+        at xsbt.API$$anonfun$xsbt$API$$processDefinitions$1.apply(API.scala:243)
+        at scala.collection.TraversableLike$$anonfun$flatMap$1.apply(TraversableLike.scala:251)
+        at scala.collection.TraversableLike$$anonfun$flatMap$1.apply(TraversableLike.scala:251)
+        at scala.collection.IndexedSeqOptimized$class.foreach(IndexedSeqOptimized.scala:33)
+        at scala.collection.mutable.ArrayOps$ofRef.foreach(ArrayOps.scala:105)
+        at scala.collection.TraversableLike$class.flatMap(TraversableLike.scala:251)
+        at scala.collection.mutable.ArrayOps$ofRef.flatMap(ArrayOps.scala:105)
+        at xsbt.API.xsbt$API$$processDefinitions(API.scala:243)
+        at xsbt.API$$anonfun$mkStructure$2.apply(API.scala:241)
+        at xsbt.API$$anonfun$mkStructure$2.apply(API.scala:241)
+        at xsbt.Message$$anon$1.apply(Message.scala:8)
+        at xsbti.SafeLazy$$anonfun$apply$1.apply(SafeLazy.scala:8)
+        at xsbti.SafeLazy$Impl._t(SafeLazy.scala:20)
+        at xsbti.SafeLazy$Impl.get(SafeLazy.scala:24)
+        at xsbt.API$$anonfun$xsbt$API$$forceStructures$1.apply(API.scala:95)
+        at xsbt.API$$anonfun$xsbt$API$$forceStructures$1.apply(API.scala:95)
+        at scala.collection.immutable.List.foreach(List.scala:318)
+        at xsbt.API.xsbt$API$$forceStructures(API.scala:95)
+        at xsbt.API$ApiPhase.processScalaUnit(API.scala:47)
+        at xsbt.API$ApiPhase.processUnit(API.scala:38)
+        at xsbt.API$ApiPhase$$anonfun$run$1.apply(API.scala:34)
+        at xsbt.API$ApiPhase$$anonfun$run$1.apply(API.scala:34)
+        at scala.collection.Iterator$class.foreach(Iterator.scala:727)
+        at scala.collection.AbstractIterator.foreach(Iterator.scala:1157)
+        at xsbt.API$ApiPhase.run(API.scala:34)
+        at scala.tools.nsc.Global$Run.compileUnitsInternal(Global.scala:1582)
+        at scala.tools.nsc.Global$Run.compileUnits(Global.scala:1556)
+        at scala.tools.nsc.Global$Run.compileSources(Global.scala:1552)
+        at scala.tools.nsc.Global$Run.compile(Global.scala:1661)
+        at xsbt.CachedCompiler0.run(CompilerInterface.scala:90)
+        at xsbt.CachedCompiler0.run(CompilerInterface.scala:72)
+        at xsbt.CompilerInterface.run(CompilerInterface.scala:27)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+        at java.lang.reflect.Method.invoke(Method.java:601)
+        at sbt.compiler.AnalyzingCompiler.call(AnalyzingCompiler.scala:73)
+        at sbt.compiler.AnalyzingCompiler.compile(AnalyzingCompiler.scala:35)
+        at sbt.compiler.AnalyzingCompiler.compile(AnalyzingCompiler.scala:29)
+        at sbt.compiler.AggressiveCompile$$anonfun$4$$anonfun$compileScala$1$1.apply$mcV$sp(AggressiveCompile.scala:71)
+        at sbt.compiler.AggressiveCompile$$anonfun$4$$anonfun$compileScala$1$1.apply(AggressiveCompile.scala:71)
+        at sbt.compiler.AggressiveCompile$$anonfun$4$$anonfun$compileScala$1$1.apply(AggressiveCompile.scala:71)
+        at sbt.compiler.AggressiveCompile.sbt$compiler$AggressiveCompile$$timed(AggressiveCompile.scala:101)
+        at sbt.compiler.AggressiveCompile$$anonfun$4.compileScala$1(AggressiveCompile.scala:70)
+        at sbt.compiler.AggressiveCompile$$anonfun$4.apply(AggressiveCompile.scala:88)
+        at sbt.compiler.AggressiveCompile$$anonfun$4.apply(AggressiveCompile.scala:60)
+        at sbt.inc.IncrementalCompile$$anonfun$doCompile$1.apply(Compile.scala:24)
+        at sbt.inc.IncrementalCompile$$anonfun$doCompile$1.apply(Compile.scala:22)
+        at sbt.inc.Incremental$.cycle(Incremental.scala:45)
+        at sbt.inc.Incremental$.compile(Incremental.scala:29)
+        at sbt.inc.IncrementalCompile$.apply(Compile.scala:20)
+        at sbt.compiler.AggressiveCompile.compile2(AggressiveCompile.scala:96)
+        at sbt.compiler.AggressiveCompile.compile1(AggressiveCompile.scala:44)
+        at sbt.compiler.AggressiveCompile.apply(AggressiveCompile.scala:31)
+        at sbt.Compiler$.apply(Compiler.scala:79)
+        at sbt.Defaults$$anonfun$compileTask$1.apply(Defaults.scala:572)
+        at sbt.Defaults$$anonfun$compileTask$1.apply(Defaults.scala:572)
+        at sbt.Scoped$$anonfun$hf2$1.apply(Structure.scala:578)
+        at sbt.Scoped$$anonfun$hf2$1.apply(Structure.scala:578)
+        at scala.Function1$$anonfun$compose$1.apply(Function1.scala:49)
+        at sbt.Scoped$Reduced$$anonfun$combine$1$$anonfun$apply$12.apply(Structure.scala:311)
+        at sbt.Scoped$Reduced$$anonfun$combine$1$$anonfun$apply$12.apply(Structure.scala:311)
+        at sbt.$tilde$greater$$anonfun$$u2219$1.apply(TypeFunctions.scala:41)
+        at sbt.std.Transform$$anon$5.work(System.scala:71)
+        at sbt.Execute$$anonfun$submit$1$$anonfun$apply$1.apply(Execute.scala:232)
+        at sbt.Execute$$anonfun$submit$1$$anonfun$apply$1.apply(Execute.scala:232)
+        at sbt.ErrorHandling$.wideConvert(ErrorHandling.scala:18)
+        at sbt.Execute.work(Execute.scala:238)
+        at sbt.Execute$$anonfun$submit$1.apply(Execute.scala:232)
+        at sbt.Execute$$anonfun$submit$1.apply(Execute.scala:232)
+        at sbt.ConcurrentRestrictions$$anon$4$$anonfun$1.apply(ConcurrentRestrictions.scala:160)
+        at sbt.CompletionService$$anon$2.call(CompletionService.scala:30)
+        at java.util.concurrent.FutureTask$Sync.innerRun(FutureTask.java:334)
+        at java.util.concurrent.FutureTask.run(FutureTask.java:166)
+        at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:471)
+        at java.util.concurrent.FutureTask$Sync.innerRun(FutureTask.java:334)
+        at java.util.concurrent.FutureTask.run(FutureTask.java:166)
+        at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+        at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:615)
+        at java.lang.Thread.run(Thread.java:722)
+{code}

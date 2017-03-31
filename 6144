@@ -1,0 +1,17 @@
+I downloaded the 2.8.1-final version of the compiler to see if that would help me find the problem. Success!
+
+Off in some stale testing code, I had written
+
+val id = new InputDeclaration("input", false, DOCUMENT, "//*")
+
+As I'd made progress, I'd made the InputDeclaration constructor "protected[model]" and changed its arguments. The 2.8.1-final compiler objected:
+
+src/com/xmlcalabash/driver/Test.scala:29: error: overloaded method constructor InputDeclaration with alternatives:
+  (parent: com.xmlcalabash.model.Artifact,portName: String,sequence: Boolean,kind: com.xmlcalabash.model.DocumentKind.DocumentKind,select: String,primary: Boolean)com.xmlcalabash.model.InputDeclaration <and>
+  (parent: com.xmlcalabash.model.Artifact,portName: String,isSeq: Boolean,docKind: com.xmlcalabash.model.DocumentKind.DocumentKind,selectExpr: String)com.xmlcalabash.model.InputDeclaration
+ cannot be applied to (java.lang.String, Boolean, com.xmlcalabash.model.DocumentKind.Value, java.lang.String)
+    val id = new InputDeclaration("input", false, DOCUMENT, "//*")
+
+Removing my out-of-date and bogus testing code seems to have resolved the 2.9.0.1 compiler crash.
+
+Hope that helps.

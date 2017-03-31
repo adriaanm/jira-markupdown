@@ -1,0 +1,38 @@
+This works:
+
+{noformat}
+scala> var x: AnyVal { def *(other: Int): Int } = _
+x: AnyVal{def *(other: Int): Int} = null
+
+scala> x = 5
+x: AnyVal{def *(other: Int): Int} = 5
+{noformat}
+
+This doesn't, nor obviously does any more useful attempt to apply existentials (more useful than the Int identity that is.)
+
+{noformat}
+scala> var x: AnyVal { def *(other: T forSome { type T >: Int <: Int }): Int } = _
+x: AnyVal{def *(other: T forSome { type T >: Int <: Int }): Int} = null
+
+scala> x = 5
+<console>:8: error: type mismatch;
+ found   : Int(5)
+ required: AnyVal{def *(other: T forSome { type T >: Int <: Int }): Int}
+       x = 5
+           ^
+{noformat}
+
+Putting the shoe back on the other foot, this works:
+
+{noformat}
+scala> type SomeT[Bound] = T forSome { type T >: Bound <: Bound }
+defined type alias SomeT
+
+scala> var x: AnyVal { def *(other: SomeT[Int]): Int } = _
+x: AnyVal{def *(other: SomeT[Int]): Int} = null
+
+scala> x = 5
+x: AnyVal{def *(other: SomeT[Int]): Int} = 5
+{noformat}
+
+So there are a lot of interesting questions here, but there is little doubt that at the least, it is a bug that it works with an alias but not by skipping the alias and using the identical expansion.

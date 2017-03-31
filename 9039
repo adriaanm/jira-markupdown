@@ -1,0 +1,25 @@
+Here's a slightly more isolated look at the problem:
+
+{code}
+import collection.generic._
+
+object Test {
+  def shuffle[T, CC[X] <: TraversableOnce[X]]
+             (xs: CC[T])
+             (implicit bf: CanBuildFrom[CC[T], T, CC[T]]): CC[T] = null.asInstanceOf[CC[T]]
+
+  def foo1(r: R1) = shuffle(r)                  // fail
+  def foo2(r: R1) = shuffle(r: IndexedSeq[Int]) // okay
+  def foo3(r: R2) = shuffle(r)                  // okay
+
+  abstract class AbstractSeq[+A] extends collection.Seq[A]
+
+  abstract class R1
+  extends AbstractSeq[Int]
+     with IndexedSeq[Int]
+
+  abstract class R2 extends IndexedSeq[Int]
+}
+{code}
+
+The intermediate class, {{AbstractSeq}}, is new in 2.10.0. It seems that the implicit search isn't looking deeper than the first parent of R1. This test file also fails in 2.9.2, which tells me this isn't a regression in type inference, but rather an existing bug/limitation which has been exposed by the change in the collection hierarchy.

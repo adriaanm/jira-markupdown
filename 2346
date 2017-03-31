@@ -1,0 +1,18 @@
+I do not see the bug in that example.
+{code}
+(null: Null) match { case x: AnyRef => ... } 
+{code}
+has an unreachable case because nothing of type Null can ever match a typed pattern (as specced.) (null: Any) is not the same pattern match as (null: Null), the pattern matcher takes the static type of the argument into consideration all over the place.
+
+In fact, I would almost expect a result more like this.
+{code}
+scala> (5: Int) match { case x: String => true }
+<console>:5: error: pattern type is incompatible with expected type;
+ found   : String
+ required: Int
+       (5: Int) match { case x: String => true }
+                                ^
+{code}
+Now if you don't want it to infer type Null for an unadorned null, that's understandable, but I don't see why an AnyRef case is reachable from a Null any more than a String case is reachable from an Int.
+
+On the Array case, the pattern matcher ignores type parameters (it always has) so the second case is indeed unreachable.  Achieving useful pattern matching on type parameters would certainly be nice, but that is another area that's going to take me some time to understand.

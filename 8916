@@ -1,0 +1,73 @@
+2.10 is inferring a more specific type for {{X}}, `this.V{val id: Int}`.
+
+I'm not sure whether that's a regression or a progression.
+
+The most straightforward workaround you have is to annotate the type of {{X}} as {{V}}.
+
+{code}
+ package <empty> {
+-  final object Main extends java.lang.Object with ScalaObject {
+-    def this(): object Main = {
+-      Main.super.this();
++  object Main extends scala.AnyRef {
++    def <init>(): Main.type = {
++      Main.super.<init>();
+       ()
+     };
+     def main(argv: Array[String]): Unit = {
+       val args: Array[String] = argv;
+       {
+         final class $anon extends scala.AnyRef {
+-          def this(): anonymous class $anon = {
+-            $anon.super.this();
++          def <init>(): anonymous class $anon = {
++            $anon.super.<init>();
+             ()
+           };
+           sealed abstract trait V extends scala.AnyRef {
+             def id: Int
+           };
+-          private[this] val X: java.lang.Object with this.V = {
+-            final class $anon extends java.lang.Object with this.V {
+-              def this(): anonymous class $anon = {
+-                $anon.super.this();
++          private[this] val X: this.V{val id: Int} = {
++            final class $anon extends Object with this.V {
++              def <init>(): anonymous class $anon = {
++                $anon.super.<init>();
+                 ()
+               };
+               private[this] val id: Int = 1;
+@@ -27,23 +27,23 @@
+             };
+             new $anon()
+           };
+-          private <stable> <accessor> def X: java.lang.Object with this.V = $anon.this.X;
+-          final private object ValueProviders extends java.lang.Object with ScalaObject {
+-            def this(): object this.ValueProviders = {
+-              ValueProviders.super.this();
++          <stable> <accessor> private def X: this.V{val id: Int} = $anon.this.X;
++          private object ValueProviders extends scala.AnyRef {
++            def <init>(): this.ValueProviders.type = {
++              ValueProviders.super.<init>();
+               ()
+             };
+             abstract trait ValueProvider[T >: Nothing <: Any] extends scala.AnyRef;
+-            implicit final object ValueProvider extends java.lang.Object with Main.$anon.ValueProviders.ValueProvider[this.V] with ScalaObject {
+-              def this(): object Main.$anon.ValueProviders.ValueProvider = {
+-                ValueProvider.super.this();
++            implicit object ValueProvider extends Object with Main.$anon.ValueProviders.ValueProvider[this.V] {
++              def <init>(): Main.$anon.ValueProviders.ValueProvider.type = {
++                ValueProvider.super.<init>();
+                 ()
+               }
+             }
+           };
+           import $anon.this.ValueProviders._;
+           private def foo[T >: Nothing <: Any](value: T)(implicit evidence$1: this.ValueProviders.ValueProvider[T]): Null = null;
+-          $anon.this.foo[java.lang.Object with this.V]($anon.this.X)($anon.this.ValueProviders.ValueProvider)
++          $anon.this.foo[this.V{val id: Int}]($anon.this.X)()
+         };
+         {
+           new $anon();
+{code}

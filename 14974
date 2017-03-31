@@ -1,0 +1,70 @@
+On version 2.8.0.r20585-b20100119020434 with -Yspecialize, attempting to compile:
+
+{code}
+abstract class Vector[@specialized("Int") A] {
+  def run[@specialized("Int") B](f: A => B): B
+}
+{code}
+
+Throws the exception:
+
+{code}
+Exception in thread "main" java.util.NoSuchElementException: key not found: method run
+	at scala.collection.MapLike$$class.default(MapLike.scala:226)
+	at scala.collection.mutable.HashMap.default(HashMap.scala:21)
+	at scala.collection.MapLike$$class.apply(MapLike.scala:131)
+	at scala.collection.mutable.HashMap.apply(HashMap.scala:21)
+	at scala.tools.nsc.transform.SpecializeTypes$$$$anon$$6.duplicateBody(SpecializeTypes.scala:1086)
+	at scala.tools.nsc.transform.SpecializeTypes$$$$anon$$6.transform(SpecializeTypes.scala:1015)
+	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transformTrees$$1.apply(Trees.scala:1554)
+	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transformTrees$$1.apply(Trees.scala:1554)
+	at scala.collection.immutable.List.loop$$1(List.scala:116)
+	at scala.collection.immutable.List.mapConserve(List.scala:133)
+	at scala.collection.immutable.List.loop$$1(List.scala:120)
+	at scala.collection.immutable.List.mapConserve(List.scala:133)
+	at scala.tools.nsc.ast.Trees$$Transformer.transformTrees(Trees.scala:1554)
+	at scala.tools.nsc.transform.SpecializeTypes$$$$anon$$6$$$$anonfun$$transform$$2.apply(SpecializeTypes.scala:970)
+	at scala.tools.nsc.transform.SpecializeTypes$$$$anon$$6$$$$anonfun$$transform$$2.apply(SpecializeTypes.scala:970)
+	at scala.tools.nsc.ast.Trees$$Transformer.atOwner(Trees.scala:1580)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:37)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:30)
+	at scala.tools.nsc.transform.SpecializeTypes$$$$anon$$6.transform(SpecializeTypes.scala:970)
+	at scala.tools.nsc.ast.Trees$$Transformer.transformTemplate(Trees.scala:1556)
+	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transform$$2.apply(Trees.scala:1446)
+	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transform$$2.apply(Trees.scala:1445)
+	at scala.tools.nsc.ast.Trees$$Transformer.atOwner(Trees.scala:1580)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:37)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:30)
+	at scala.tools.nsc.ast.Trees$$Transformer.transform(Trees.scala:1444)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.transform(TypingTransformers.scala:52)
+	at scala.tools.nsc.transform.SpecializeTypes$$$$anon$$6.transform(SpecializeTypes.scala:1059)
+	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transformStats$$1.apply(Trees.scala:1572)
+	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transformStats$$1.apply(Trees.scala:1570)
+	at scala.collection.immutable.List.loop$$1(List.scala:116)
+	at scala.collection.immutable.List.mapConserve(List.scala:133)
+	at scala.tools.nsc.ast.Trees$$Transformer.transformStats(Trees.scala:1570)
+	at scala.tools.nsc.transform.SpecializeTypes$$$$anon$$6$$$$anonfun$$transform$$1.apply(SpecializeTypes.scala:963)
+	at scala.tools.nsc.transform.SpecializeTypes$$$$anon$$6$$$$anonfun$$transform$$1.apply(SpecializeTypes.scala:961)
+	at scala.tools.nsc.ast.Trees$$Transformer.atOwner(Trees.scala:1580)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:37)
+	at scala.tools.nsc.transform.SpecializeTypes$$$$anon$$6.transform(SpecializeTypes.scala:961)
+	at scala.tools.nsc.transform.SpecializeTypes$$SpecializationTransformer$$$$anonfun$$transform$$4.apply(SpecializeTypes.scala:1302)
+	at scala.tools.nsc.transform.SpecializeTypes$$SpecializationTransformer$$$$anonfun$$transform$$4.apply(SpecializeTypes.scala:1301)
+	at scala.tools.nsc.symtab.SymbolTable.atPhase(SymbolTable.scala:99)
+	at scala.tools.nsc.transform.SpecializeTypes$$SpecializationTransformer.transform(SpecializeTypes.scala:1301)
+	at scala.tools.nsc.ast.Trees$$Transformer.transformUnit(Trees.scala:1573)
+	at scala.tools.nsc.transform.Transform$$Phase.apply(Transform.scala:31)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$applyPhase$$1.apply(Global.scala:281)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$applyPhase$$1.apply(Global.scala:281)
+	at scala.tools.nsc.reporters.Reporter.withSource(Reporter.scala:48)
+	at scala.tools.nsc.Global$$GlobalPhase.applyPhase(Global.scala:281)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:259)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:259)
+	at scala.collection.Iterator$$class.foreach(Iterator.scala:582)
+	at scala.collection.mutable.ListBuffer$$$$anon$$1.foreach(ListBuffer.scala:285)
+	at scala.tools.nsc.Global$$GlobalPhase.run(Global.scala:259)
+	at scala.tools.nsc.Global$$Run.compileSources(Global.scala:749)
+	at scala.tools.nsc.Global$$Run.compile(Global.scala:839)
+	at scala.tools.nsc.Main$$.process(Main.scala:110)
+	at scala.tools.nsc.Main$$.main(Main.scala:124)
+{code}

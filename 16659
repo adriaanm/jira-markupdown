@@ -1,0 +1,52 @@
+h2. Introduction
+The piping methods have proven to be extremely useful in other languages: {{.with}} - Groovy; {{.tap}} - Ruby. It's a known fact that a lot of people get surprised not to meet any similar feature in Scala as well as that because of that a lot of them introduce custom implicit conversions.
+
+h2. Examples
+Let's consider two examples of how the same purpose of outputting the following text can be achieved with and without the proposed feature:
+{noformat}Source: List(1, 2, 3, 4, 5)
+Result: [2,4]{noformat}
+
+h3. Example one: with proposed methods {{tap}} and {{convert}}
+{code}
+Seq(1, 2, 3, 4, 5)
+  .tap(it => println("Source: " + it))
+  .filter(_ % 2 == 0)
+  .convert(it => if (it.nonEmpty) "[" + it.mkString(",") + "]" else "")
+  .tap(it => println("Result: " + it))
+{code}
+Please notice how factored, maintainable and easy on the eye the above code is
+
+h3. Example two: how one has to do it currently
+{code}
+val tmp1 = Seq(1, 2, 3, 4, 5)
+println("Source: " + tmp1)
+val tmp2 = tmp1.filter(_ % 2 == 0)
+val tmp3 = if (tmp2.nonEmpty) "[" + tmp2.mkString(",") + "]" else ""
+println("Result: " + tmp3)
+{code}
+Notice that you have to stop and think 3 times on naming the obviously redundant intermediate variables. Also notice how unreadable, unfactored and harder to manage that code is.
+
+h2. Implementation
+Currently for the first example to work you'll need a following implicit conversion. You can also learn the specification of methods from there:
+{code}
+implicit def wrapAny[Source](source: Source) = new AnyWrapper(source)
+class AnyWrapper[Source](source: Source) {
+  def tap[Result](closure: Source => Result): Source = {
+    closure(source)
+    source
+  }
+  def convert[Result](closure: Source => Result): Result = {
+    closure(source)
+  }
+}
+{code}
+
+h2. The suggestions:
+1. Introduce a method with codename "convert" (or "use" or "pipe" or "pipeTo" as suggested by some) which executes a closure on the object and returns the result of that closure
+2. Introduce a method with codename "tap" (or "effect" as suggested by some) which executes a closure on the object and returns the object itself
+3. Not to inherit the scalaz operator-style "|>" title as it is considered disturbing by many
+4. Discuss details such as names in this thread
+
+
+
+This suggestion originates from the following discussion on StackOverflow: http://stackoverflow.com/questions/8537992/with-alternative-in-scala/8538277

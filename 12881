@@ -1,0 +1,24 @@
+Structural Subtyping is broken for value types.  Here is a simple example:
+
+{code}
+Welcome to Scala version 2.6.0-final.
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala>    type DoublePlus = Any{def +(y: Double) : Double;}  
+defined type alias DoublePlus
+
+scala>   val x:DoublePlus=5
+x: DoublePlus = 5
+
+scala>    println(x+4.0)
+java.lang.NoSuchMethodException: java.lang.Integer.$$plus(double)
+        at java.lang.Class.getMethod(Class.java:1581)
+        at .<init>(<console>:5)
+        at .<clinit>(<console>)
+        at RequestResult$$.<init>(<console>:3)
+        at RequestResult$$.<clinit>(<console>)
+        at RequestResult$$result(<console>)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke...
+{code}

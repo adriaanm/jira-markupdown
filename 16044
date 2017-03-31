@@ -1,0 +1,34 @@
+When people express fear of implicits I think this is the kind of thing they're afraid of.
+
+{code}
+scala.collection.mutable.PriorityQueue
+import scala.collection.mutable.PriorityQueue
+
+scala> object Ord extends Ordering[Int] {        // not implicit
+     |     def compare(x: Int, y: Int) = y.compare(x)
+     | }
+defined module Ord
+
+scala> val pq = new PriorityQueue[Int]()(Ord)
+pq: scala.collection.mutable.PriorityQueue[Int] = PriorityQueue()
+
+scala> pq += (9,8,4,5,6,2,1)
+res0: pq.type = PriorityQueue(1, 5, 2, 9, 6, 8, 4)
+
+scala> val m1 = pq.max
+m1: Int = 1
+
+scala> val m2 = pq.min
+m2: Int = 1
+
+scala> val m3 = pq.min(Ord)
+m3: Int = 9
+
+scala>
+
+scala> implicit val ImplicitOrd = Ord
+ImplicitOrd: Ord.type = Ord$$@63bbad6f
+
+scala> val m4 = pq.min
+m4: Int = 9
+{code}

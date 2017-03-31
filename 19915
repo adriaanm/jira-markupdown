@@ -1,0 +1,60 @@
+Hi,
+
+The following:
+{code:scala}
+scala> object Performance {
+     |   def timed[T](handleTimerResult : Long => Any)(action : => T) : T = ???
+     | }
+defined module Performance
+
+scala> object AdvancedUtils {
+     |   final def timed[T](f: T): (Long, T) = ???
+     | }
+defined module AdvancedUtils
+
+scala> import AdvancedUtils._
+import AdvancedUtils._
+
+scala> import Performance._
+import Performance._
+
+scala> val r = timed("")
+<console>:15: error: type mismatch;
+ found   : String("")
+ required: Long => Any
+       val r = timed("")
+                     ^
+{code}
+
+But the following which have just imports order inverted is working:
+{code:scala}
+scala> object Performance {
+     |   def timed[T](handleTimerResult : Long => Any)(action : => T) : T = ???
+     | }
+defined module Performance
+
+scala> object AdvancedUtils {
+     |   final def timed[T](f: T): (Long, T) = ???
+     | }
+defined module AdvancedUtils
+
+scala> import Performance._
+import Performance._
+
+scala> import AdvancedUtils._
+import AdvancedUtils._
+
+scala> val r = timed("")
+{code}
+
+But in Idea we always get the following no matter what order of the imports are:
+{quote}
+Error:(11, 15) reference to timed is ambiguous;
+it is imported twice in the same scope by
+import Performance._
+and import AdvancedUtils._
+lazy val r = timed("");}
+             ^
+{quote}
+
+For me the compiler of Idea is more accurate.

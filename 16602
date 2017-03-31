@@ -1,0 +1,75 @@
+The Scala compiler is erasing generic type information of fields that are declared with a parameterised type where the type argument is one of Scala's pseudo-primitive types (i.e. Int, Double, etc.)
+
+This is a showstopper for sophisticated reflection libraries that make heavy use of generic type information, e.g. the 'coercion' component in SodaTest (https://github.com/GrahamLea/SodaTest)
+
+This seems to be a partial regression of SI-1395.
+
+Scala script:
+{code:scala}
+class OptionTypes {
+  val optionInt: Option[Int] = Some(1)
+  val optionDouble: Option[Double] = Some(4.5)
+  val optionString: Option[String] = Some("")
+  val listInt: List[Int] = List(1)
+  val listString: List[String] = List("")
+}
+println(classOf[OptionTypes].getDeclaredField("optionInt").getGenericType)
+println(classOf[OptionTypes].getDeclaredField("optionDouble").getGenericType)
+println(classOf[OptionTypes].getDeclaredField("optionString").getGenericType)
+println(classOf[OptionTypes].getDeclaredField("listInt").getGenericType)
+println(classOf[OptionTypes].getDeclaredField("listString").getGenericType)
+{code}
+
+Run against 2.8.1.final:
+{noformat}
+scala> class OptionTypes {
+     |   val optionInt: Option[Int] = Some(1)
+     |   val optionDouble: Option[Double] = Some(4.5)
+     |   val optionString: Option[String] = Some("")
+     |   val listInt: List[Int] = List(1)
+     |   val listString: List[String] = List("")
+     | }
+defined class OptionTypes
+
+scala> println(classOf[OptionTypes].getDeclaredField("optionInt").getGenericType)
+scala.Option<java.lang.Integer>
+
+scala> println(classOf[OptionTypes].getDeclaredField("optionDouble").getGenericType)
+scala.Option<java.lang.Double>
+
+scala> println(classOf[OptionTypes].getDeclaredField("optionString").getGenericType)
+scala.Option<java.lang.String>
+
+scala> println(classOf[OptionTypes].getDeclaredField("listInt").getGenericType)
+scala.collection.immutable.List<java.lang.Integer>
+
+scala> println(classOf[OptionTypes].getDeclaredField("listString").getGenericType)
+scala.collection.immutable.List<java.lang.String>
+{noformat}
+
+Run against 2.9.1-final:
+Note that optionInt, optionDouble and listInt have run time type arguments of 'java.lang.Object'.
+{noformat}
+scala> class OptionTypes {
+     |   val optionInt: Option[Int] = Some(1)
+     |   val optionDouble: Option[Double] = Some(4.5)
+     |   val optionString: Option[String] = Some("")
+     |   val listInt: List[Int] = List(1)
+     |   val listString: List[String] = List("")
+     | }
+defined class OptionTypes
+
+scala> println(classOf[OptionTypes].getDeclaredField("optionInt").getGenericType)
+scala.Option<java.lang.Object>
+
+scala> println(classOf[OptionTypes].getDeclaredField("optionDouble").getGenericType)
+scala.Option<java.lang.Object>
+
+scala> println(classOf[OptionTypes].getDeclaredField("optionString").getGenericType)
+scala.Option<java.lang.String>
+
+scala> println(classOf[OptionTypes].getDeclaredField("listInt").getGenericType)
+scala.collection.immutable.List<java.lang.Object>
+
+scala> println(classOf[OptionTypes].getDeclaredField("listString").getGenericType)
+scala.collection.immutable.List<java.lang.String>{noformat}

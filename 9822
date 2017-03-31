@@ -1,0 +1,56 @@
+What I meant by "too small" is that using structural types or abstract types won't get us that far. Compare this (which compiles):
+{code}
+class Foo {
+  class C1 { val x: C2 }
+  class C2 { val y: C1 }
+}
+{code}
+
+with this (which doesn't compile):
+
+{code}
+class Foo {
+  type T1 = { val x: T2 }
+  type T2 = { val y: T1 }
+}
+{code}
+
+
+I gave my original code another whirl. Here's a simplified sample (compared to what I originally reported) which compiles:
+
+{code}
+package test2
+
+abstract class Component1 {  
+  val comp2: Component2 {
+    val comp1: Component1.this.type
+  }
+  def foo: String = "Hello, I'm Component1"
+}
+
+abstract class Component2 { 
+  val comp1: Component1 {
+    val comp2: Component2.this.type
+  }
+}
+
+class Main {
+  object comp1 extends Component1 {
+    val comp2: Main.this.comp2.type = Main.this.comp2
+  }
+  object comp2 extends Component2 { 
+    val comp1: Main.this.comp1.type = Main.this.comp1
+  }
+}
+{code}
+
+It compiles because we are using nominal types: object comp1 and object comp2. The problem is that I cannot override those objects so I cannot do something like:
+
+{code}
+class SubMain extends Main {
+  override object comp1 extends Component1 {
+    val comp2: SubMain.this.comp2.type = SubMain.this.comp2
+    override def foo: String = "Hello, I'm overriden in SubMain"
+  }
+}
+{code}

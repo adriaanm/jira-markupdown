@@ -1,0 +1,38 @@
+Using shapeless's Coproduct, we get a warning that the match may not be exhaustive:
+
+{code}
+scala> import shapeless._
+import shapeless._
+
+scala> type IntOrString = Int :+: String :+: CNil
+defined type alias IntOrString
+
+scala> val value: IntOrString = Coproduct[IntOrString]("foo")
+value: IntOrString = Inr(Inl(foo))
+
+scala> value match {
+     |   case Inl(i: Int) => println(s"I am an Int: $i")
+     |   case Inr(Inl(s: String)) => println(s"I am a String: $s")
+     | }
+<console>:16: warning: match may not be exhaustive.
+It would fail on the following input: Inr(Inr(_))
+       value match {
+       ^
+I am a String: foo
+{code}
+
+Attempts to provide the last (useless) case now gives an "unreachable code" warning:
+
+{code}
+scala> value match {
+     |   case Inl(i: Int) => println(s"I am an Int: $i")
+     |   case Inr(Inl(s: String)) => println(s"I am a String: $s")
+     |   case Inr(Inr(_: CNil)) => ???
+     | }
+<console>:19: warning: unreachable code
+         case Inr(Inr(_: CNil)) => ???
+                                   ^
+I am a String: foo
+{code}
+
+It would be nice if the information used to provide the "unreachable code" warning negated the "match may not be exhaustive" warning.

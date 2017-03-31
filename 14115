@@ -1,0 +1,21 @@
+The current implementation of Predef.assert is as follows:
+
+{code}
+def assert(assertion: Boolean) {
+  if (!assertion)
+    throw new java.lang.AssertionError("assertion failed")
+}
+{code}
+
+This implementation has two problems.  First, it is not configurable.  There is no way to deactivate or activate assertions on a case-by-case basis (alla java's "-ea" switch).  This means that assertions will impact runtime performance as well as potential stability.  Assertions are meant for debug-time only and should impose no runtime penalty when deactivated.
+
+The related second complaint is that assertion predicates are *always* evaluated (as the parameter is passed by-value).  Even if assertions were configurable, they would still impose a runtime penalty when deactivated due to this evaluation strategy.  The solution here (I believe) is to make the predicate and message call-by-name:
+
+{code}
+def assert(assertion: =>Boolean) {
+  if (enableAssert && !assertion)
+    throw new java.lang.AssertionError("assertion failed")
+}
+{code}
+
+If `enableAssert` is false, then `!assertion` will never evaluate, meaning that `assertion` will never be evaluated, avoiding the performance penalty.  This still isn't as cheap as Java's primitive assertions, but it is I believe the best that Scala can do in a library.

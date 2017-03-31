@@ -1,0 +1,14 @@
+I made the following patch. Thanks.
+
+$ diff -u JavaConversions.scala.orig JavaConversions.scala
+--- JavaConversions.scala.orig  2012-03-19 01:09:26.000000000 +0900
++++ JavaConversions.scala       2012-06-05 15:11:58.000000000 +0900
+@@ -703,7 +703,7 @@
+             def getKey = k
+             def getValue = v
+             def setValue(v1 : B) = self.put(k, v1)
+-            override def hashCode = k.hashCode + v.hashCode
++            override def hashCode = k.hashCode * 41 + v.hashCode
+             override def equals(other: Any) = other match {
+               case e : ju.Map.Entry[_, _] => k == e.getKey && v == e.getValue
+               case _ => false

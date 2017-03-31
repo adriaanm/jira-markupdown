@@ -1,0 +1,25 @@
+Also, from the discussion, whatever the decision about this case, the following should continue to behave as it does currently,
+
+{code}
+scala> trait Assoc[K] { type V ; val value: V }
+defined trait Assoc
+ 
+scala> def mkAssoc[V0](k: String, v: V0): Assoc[k.type] { type V = V0 } =
+     |   new Assoc[k.type] { type V = V0 ; val value = v }
+mkAssoc: [V0](k: String, v: V0)Assoc[k.type]{type V = V0}
+ 
+scala> implicit def nameAssoc = mkAssoc("Name", "Mary")
+nameAssoc: Assoc[String("Name")]{type V = String}
+ 
+scala> implicit def ageAssoc = mkAssoc("Age", 23)
+ageAssoc: Assoc[String("Age")]{type V = Int}
+ 
+scala> def lookup(k: String)(implicit assoc: Assoc[k.type]): assoc.V = assoc.value
+lookup: (k: String)(implicit assoc: Assoc[k.type])assoc.V
+ 
+scala> lookup("Name")
+res0: String = Mary
+ 
+scala> lookup("Age")
+res1: Int = 23
+{code}

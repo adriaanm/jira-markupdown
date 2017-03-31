@@ -1,0 +1,7 @@
+Sure thing. It's ad-hoc to provide {{ordering2partialOrdering}} without also adding {{ordering2Equiv}} and {{partialOrdering2Equiv}}. But if we installed all three, we would hit ambiguity for {{implicitly\[Equiv\[String]]}}. As it stands, we haven't found a satisfactory way to use the implicit scope of type-classes that form an inheritance hierarchy.
+
+What about the analogy with {{List.apply}}? This method is not designed for latter extensibility. If I add a new subtype of {{Seq}}, I won't be surprised that it's not chosen as the default implementation by that factory method. But if I add a new subtype of {{PartialOrdering}}, I would like my implicit instances to be in scope when searching for {{PartialOrdering}}. But it's too late -- only the stdlib authors have the chance to add the requisite implicit. So while there is some analog between the two situations, I don't think it's a strong enough link to justify this addition.
+
+Paul's mention of contra-variance describes the other axis of the conflict between type classes and subtyping -- how to pick the most specific instance when the classified type is part of an inheritance hierarchy: if the type class is contra-variant, {{Order\[Fruit]}} is seen as more specific than {{Order\[Apple]}}.
+
+I've got some more detailed notes on the gory details that I've been meaning to publish.

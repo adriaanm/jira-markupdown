@@ -1,0 +1,57 @@
+The following crashes the compiler:
+{code}
+trait That1[A]
+trait That2[A, R <: That2[A, R]]
+
+trait T[A, This >: Null <: That1[A] with T[A, This]] extends That2[A, This] {
+  self: This =>
+  
+  private var next: This = _
+  def isEmpty = next eq null
+  
+  def length: Int = {
+    def loop(x: This, cnt: Int): Int = if (x.isEmpty) cnt else loop(x.next, cnt + 1)
+    loop(self, 0)
+  }  
+}
+{code}
+with the error message:
+{code}
+Exception in thread "main" java.lang.AssertionError: assertion failed: type error: can't convert from REFERENCE(That1) to REFERENCE(T) in unit sttest.scala
+	at scala.Predef$$.assert(Predef.scala:117)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.adapt(GenICode.scala:1053)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:1037)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.genLoadLabelArguments(GenICode.scala:1100)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:747)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:466)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:412)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:954)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:124)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:81)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:81)
+	at scala.collection.LinearSequenceLike$$class.foreach(LinearSequenceLike.scala:84)
+	at scala.collection.immutable.List.foreach(List.scala:29)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:81)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:146)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:100)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:81)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:81)
+	at scala.collection.LinearSequenceLike$$class.foreach(LinearSequenceLike.scala:84)
+	at scala.collection.immutable.List.foreach(List.scala:29)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:81)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:91)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:77)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.apply(GenICode.scala:73)
+	at scala.tools.nsc.Global$$GlobalPhase.applyPhase(Global.scala:329)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:307)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:307)
+	at scala.collection.Iterator$$class.foreach(Iterator.scala:536)
+	at scala.collection.mutable.ListBuffer$$$$anon$$1.foreach(ListBuffer.scala:282)
+	at scala.tools.nsc.Global$$GlobalPhase.run(Global.scala:307)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.run(GenICode.scala:66)
+	at scala.tools.nsc.Global$$Run.compileSources(Global.scala:799)
+	at scala.tools.nsc.Global$$Run.compile(Global.scala:882)
+	at scala.tools.nsc.Main$$.process(Main.scala:91)
+	at scala.tools.nsc.Main$$.main(Main.scala:105)
+	at scala.tools.nsc.Main.main(Main.scala)
+{code}

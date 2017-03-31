@@ -1,0 +1,31 @@
+Thank you for taking the time to produce a standalone example. I managed to whittle it down a bit further:
+
+{code}
+tail $(find test/files/run -type f | grep t9121)
+==> test/files/run/t9121/A_1.scala <==
+package p1
+object Implicits {
+  class ScalaObservable(val underlying: Any) extends AnyVal {
+    //if remove `@inline` annotation then test will success
+    @inline def scMap[R](f: String): Any = f.toRx
+  }
+
+  implicit class RichFunction1[T1, R](val f: String) extends AnyVal {
+    def toRx: Any = ""
+  }
+}
+
+==> test/files/run/t9121/B_2.scala <==
+import p1.Implicits._
+
+object Test {
+  def main(args: Array[String]): Unit = {
+    new ScalaObservable("").scMap("")
+  }
+}
+
+==> test/files/run/t9121.flags <==
+-optimize
+{code}
+
+The crash manifests when the inliner reconsitutes the symbol/type information from A_1 when separately compiling B_2. It seems we end up with a LOAD_FIELD() ICode instruction that refers to a method symbol, rather than a field symbol. I haven't managed to figure out why this is happening, though.

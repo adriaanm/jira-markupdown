@@ -1,0 +1,45 @@
+Okay thanks for your patience Paul. I had the o.asInstanceOf[Unit] line in mind, but now I understand that since it's not a *numeric* value type, just a value type, the section of the spec does not qualify.
+
+Still, regarding, the lack of documentation of boxing Unit in the spec, let me give this one more try.
+
+{quote}
+/** Type cast; needs to be inlined to work as given */ */
+def asInstanceOf[A]: A = this match {
+case x: A => x
+case _ => if (this eq null) this
+else throw new ClassCastException()
+}
+
+{quote}
+
+I don't understand what inlining has to do with it, but this code does not compile:
+{code}
+
+object Program {
+
+  () match {
+    case x: AnyRef => x
+    case _ => if (() eq null) ()
+              else throw new ClassCastException()
+  }
+}
+{code}
+
+{code}
+$ scalac Program.scala 
+Program.scala:4: error: scrutinee is incompatible with pattern type;
+ found   : AnyRef
+ required: Unit
+    case x: AnyRef => x
+            ^
+Program.scala:5: error: type mismatch;
+ found   : Unit
+ required: ?{val eq(x$1: ?>: Null(null) <: Any): ?}
+Note: primitive types are not implicitly converted to AnyRef.
+You can safely force boxing by casting x.asInstanceOf[AnyRef].
+    case _ => if (() eq null) ()
+                  ^
+two errors found
+{code}
+
+If I understand the pattern matching section correctly, this behavior is fine. However, there's still nothing in the spec to explain why () can be cast explicitly to boxed types. Implicit boxing unboxing in 12.5.1 only mentions JVM primitives, not Unit.

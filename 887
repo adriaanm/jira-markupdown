@@ -1,0 +1,26 @@
+side note: actually I would be great if the following would be allowed in Scala:
+
+{code}
+class Array[A]
+{
+   def projection : RandomAccessSeq [ => A ] = ..
+}
+{code}
+
+because this is what it is.
+
+*Note: Of course [=>] would be limited to [+A]!*
+
+
+If the same would be applied to _List_:
+
+{code}
+class List[+A]
+{
+   def projection : Stream [ => A ] = ..
+}
+{code}
+
+It would fix the issue[1009 http://lampsvn.epfl.ch/trac/scala/ticket/1099] as side-effect.
+
+Of course _List.toStream_ should be left as is for performance reasons!

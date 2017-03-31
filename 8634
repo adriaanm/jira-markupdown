@@ -1,0 +1,29 @@
+Only one failure in {{partest --pos --neg}} after that patch.
+
+{code}
+testing: [...]/files/neg/variances.scala                              [FAILED]
+16,18d15
+< variances.scala:89: error: covariant type T occurs in invariant position in type T of type A
+<     type A = T
+<          ^
+22c19
+< 7 errors found
+---
+> 6 errors found
+{code}
+
+See also:
+
+https://github.com/scala/scala/commit/8a6e20ce
+
+Which introduced the test that now reports two errors rather than one:
+
+{code}
+object TestAlias {
+  class B[-T]
+  trait C[+T] {
+    type A = T
+    def foo: B[A]
+  }
+}
+{code}

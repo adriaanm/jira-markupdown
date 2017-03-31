@@ -1,0 +1,77 @@
+Source code:
+
+{code}
+trait A {
+  type U[_[_],_]
+  type T <: U[T,S] forSome { type T[_] >: S; type S }
+  val x : T
+}
+
+trait B extends A {
+  type T = U[C,C[Int]]
+}
+
+trait C[_]
+{code}
+Compiler version:
+2.7.2.RC2
+
+Result:
+
+{code}
+Exception in thread "main" scala.tools.nsc.symtab.Types$$NoCommonType: lub/glb of incompatible types: [_]C[Int] and C
+	at scala.tools.nsc.symtab.Types$$$$anonfun$$matchingBounds$$1.apply(Types.scala:4236)
+	at scala.tools.nsc.symtab.Types$$$$anonfun$$matchingBounds$$1.apply(Types.scala:4232)
+	at scala.List.map(List.scala:805)
+	at scala.tools.nsc.symtab.Types$$class.matchingBounds(Types.scala:4232)
+	at scala.tools.nsc.symtab.Types$$class.lub0$$1(Types.scala:3961)
+	at scala.tools.nsc.symtab.Types$$class.lub(Types.scala:4034)
+	at scala.tools.nsc.symtab.SymbolTable.lub(SymbolTable.scala:12)
+	at scala.tools.nsc.symtab.Types$$class.lub(Types.scala:3952)
+	at scala.tools.nsc.symtab.SymbolTable.lub(SymbolTable.scala:12)
+	at scala.tools.nsc.symtab.Types$$class.solveOne$$1(Types.scala:3816)
+	at scala.tools.nsc.symtab.Types$$$$anonfun$$solve$$1.apply(Types.scala:3822)
+	at scala.tools.nsc.symtab.Types$$$$anonfun$$solve$$1.apply(Types.scala:3821)
+	at scala.List.foreach(List.scala:834)
+	at scala.tools.nsc.symtab.Types$$class.solve(Types.scala:3821)
+	at scala.tools.nsc.symtab.SymbolTable.solve(SymbolTable.scala:12)
+	at scala.tools.nsc.symtab.Types$$ExistentialType.withTypeVars(Types.scala:1736)
+	at scala.tools.nsc.symtab.Types$$class.gd46$$1(Types.scala:3638)
+	at scala.tools.nsc.symtab.Types$$class.isSubType0(Types.scala:3539)
+	at scala.tools.nsc.symtab.Types$$class.isSubType(Types.scala:3505)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType(SymbolTable.scala:12)
+	at scala.tools.nsc.symtab.Types$$Type.$$less$$colon$$less(Types.scala:489)
+	at scala.tools.nsc.symtab.Types$$TypeBounds.containsType(Types.scala:1007)
+	at scala.tools.nsc.typechecker.RefChecks$$RefCheckTransformer.checkOverride$$1(RefChecks.scala:222)
+	at scala.tools.nsc.typechecker.RefChecks$$RefCheckTransformer.checkAllOverrides(RefChecks.scala:259)
+	at scala.tools.nsc.typechecker.RefChecks$$RefCheckTransformer.transform(RefChecks.scala:797)
+	at scala.tools.nsc.ast.Trees$$Transformer.transformTemplate(Trees.scala:1416)
+	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transform$$2.apply(Trees.scala:1310)
+	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transform$$2.apply(Trees.scala:1310)
+	at scala.tools.nsc.ast.Trees$$Transformer.atOwner(Trees.scala:1438)
+	at scala.tools.nsc.ast.Trees$$Transformer.transform(Trees.scala:1309)
+	at scala.tools.nsc.typechecker.RefChecks$$RefCheckTransformer.transform(RefChecks.scala:882)
+	at scala.tools.nsc.typechecker.RefChecks$$RefCheckTransformer.transformStat(RefChecks.scala:699)
+	at scala.tools.nsc.typechecker.RefChecks$$RefCheckTransformer$$$$anonfun$$1.apply(RefChecks.scala:611)
+	at scala.tools.nsc.typechecker.RefChecks$$RefCheckTransformer$$$$anonfun$$1.apply(RefChecks.scala:611)
+	at scala.List.flatMap(List.scala:1125)
+	at scala.tools.nsc.typechecker.RefChecks$$RefCheckTransformer.transformStats(RefChecks.scala:611)
+	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transform$$1.apply(Trees.scala:1306)
+	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transform$$1.apply(Trees.scala:1306)
+	at scala.tools.nsc.ast.Trees$$Transformer.atOwner(Trees.scala:1438)
+	at scala.tools.nsc.ast.Trees$$Transformer.transform(Trees.scala:1305)
+	at scala.tools.nsc.typechecker.RefChecks$$RefCheckTransformer.transform(RefChecks.scala:882)
+	at scala.tools.nsc.ast.Trees$$Transformer.transformUnit(Trees.scala:1433)
+	at scala.tools.nsc.transform.Transform$$Phase.apply(Transform.scala:30)
+	at scala.tools.nsc.Global$$GlobalPhase.applyPhase(Global.scala:268)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:247)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:247)
+	at scala.Iterator$$class.foreach(Iterator.scala:410)
+	at scala.collection.mutable.ListBuffer$$$$anon$$1.foreach(ListBuffer.scala:266)
+	at scala.tools.nsc.Global$$GlobalPhase.run(Global.scala:247)
+	at scala.tools.nsc.Global$$Run.compileSources(Global.scala:579)
+	at scala.tools.nsc.Global$$Run.compile(Global.scala:663)
+	at scala.tools.nsc.Main$$.process(Main.scala:84)
+	at scala.tools.nsc.Main$$.main(Main.scala:98)
+	at scala.tools.nsc.Main.main(Main.scala)
+{code}

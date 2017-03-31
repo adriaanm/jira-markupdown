@@ -1,0 +1,14 @@
+++: throws an exception when a SeqView is on the RHS:
+
+{code}
+scala> Seq(1,2) ++: Seq(3,4).view
+java.lang.UnsupportedOperationException: TraversableView.Builder.result
+  at scala.collection.TraversableView$NoBuilder.result(TraversableView.scala:27)
+{code}
+
+but single elements work:
+
+{code}
+scala> 2 +: Seq(3,4).view
+res3: scala.collection.SeqView[Int,Seq[_]] = SeqViewA(...)
+{code}

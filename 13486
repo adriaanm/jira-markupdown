@@ -1,0 +1,59 @@
+It seems that the util.matching.Regex.!MatchData API misunderstands what is meant by the underlying java.util.regex.Matcher's groupCount.  This results in many related problems, such as:
+{code}
+scala> "(a)?(b)?c".r.findFirstMatchIn("c") match {
+     |     case Some(m) => m.group(1)
+     |     case _=>
+     | }
+java.lang.StringIndexOutOfBoundsException: String index out of range: -1
+        at java.lang.String.substring(String.java:1762)
+        at java.lang.String.subSequence(String.java:1803)
+        at scala.util.matching.Regex$$MatchData$$class.group(Regex.scala:154)
+        at scala.util.matching.Regex$$Match.group(Regex.scala:192)
+        ...
+
+scala> "a?b".r.findFirstMatchIn("b") match {
+     |     case Some(m) => println(m.subgroups)
+     |     case _=>
+     | }
+java.lang.StringIndexOutOfBoundsException: String index out of range: -1
+        at java.lang.String.substring(String.java:1762)
+        at java.lang.String.subSequence(String.java:1803)
+        at scala.util.matching.Regex$$MatchData$$class.group(Regex.scala:156)
+        at scala.util.matching.Regex$$Match.group(Regex.scala:194)
+        at scala.util.matching.Regex$$MatchData$$$$anonfun$$subgroups$$1.apply(Regex.scala:159)
+        at scala.util.matching.Regex$$MatchData$$$$anonfun$$subgroups$$1.apply(Regex.scala:159)
+        at scala.List.map(List.scala:798)
+        at scala.util.matching.Regex$$MatchData$$class.subgroups(Regex.scala:159)
+        at scala.util.matching.Regex$$Match.subgroups(Regex.scala:194)
+        ...
+{code}
+There are many more ways to get similar results.  The ultimate cause is that groupCount is mistakenly interpreted as being the number of groups in the Match, while it's actually just the number of potentially matching groups in the Pattern, as this code demonstrates:
+{code}
+scala> "(a)|(b)".r.findFirstMatchIn("b") match {
+     |     case Some(m) => println(m.groupCount)
+     |     case _=>
+     | }
+2
+{code}
+This alternation can result in at most one matching subgroup, but groupCount returns 2, which, by design, gives you access to all potentially matching groups in the Pattern.
+
+Three possible solutions:
+
+1. Just fix the exiting code to not throw the demonstrated exceptions, but don't change the APIs.  This means returning *null* when a group without a match is queried and documenting that start and end return *-1* in these same cases, severly breaking the general pattern of using Option to indicate optional results.
+
+2. Change the existing !MatchData API to more appropriately represent potential matches:
+{code}
+def start(i:Int):Option[Int]
+def end(i:Int):Option[Int]
+def before(i:Int):Option[String]
+def after(i:Int):Option[String]
+def group(i:Int):Option[String]
+def group(s:String):Option[String]
+def subgroups:List[Option[String]]
+{code}
+3. Do both.  Fix the existing API as in the first solution, but also add a new set of API methods to Regex's findXXX methods that support Option down at this level, something like Seq.last versus Seq.lastOption.
+
+
+
+This bug is not related to ticket SI-950 (fixed in r14847).  Similar symptoms appear before and after that fix.  
+

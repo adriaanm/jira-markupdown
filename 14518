@@ -1,0 +1,29 @@
+NamespaceBinding defines two methods, getURI and getPrefix.  getURI is correct, but getPrefix looks like it was copied from getURI and incompletely modified.  It has several errors:  It returns the URI, not the prefix, if the input URI matches the URI of the NamespaceBinding, and it delegates to the parent's getURI method instead of getPrefix.  Also the docs are a little odd ("Returns some prefix that is mapped to the prefix").
+
+{code}
+34	  def getURI(_prefix: String): String =
+35	    if (prefix == _prefix) uri else parent.getURI(_prefix)
+36	
+37	  /** Returns some prefix that is mapped to the prefix.
+38	   *
+39	   *  @param _uri
+40	   *  @return
+41	   */
+42	  def getPrefix(_uri: String): String =
+43	    if (_uri == uri) uri else parent.getURI(_uri)
+{code}
+
+Corrected method:
+
+{code}
+/** Returns some prefix that is mapped to the URI.
+ *
+ * @param _uri the input URI
+ * @return the prefix that is mapped to the input URI, or null
+ * if no prefix is mapped to the URI.
+ */
+def getPrefix(_uri: String): String =
+  if (_uri == uri) prefix else parent.getPrefix_uri)
+{code}
+
+

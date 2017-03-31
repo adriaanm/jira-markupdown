@@ -1,0 +1,70 @@
+Reported on scala-internals by Georgi Jojgov.
+
+{code}
+trait T[@specialized(Int) S] {
+  def initialValue: S
+  var value: S = initialValue
+}
+
+final class C[@specialized(Int) S](val initialValue: S) extends T[S]
+
+object Test extends App {
+  new C("hi")
+}
+{code}
+
+Results in a {{ClassCastException: String cannot be cast to Integer}} at run-time.
+
+The bad code is generated in constructors:
+
+{noformat}
+[[syntax trees at end of              constructors]] // Test.scala
+...
+  abstract trait T extends Object {
+    ...
+    def /*T*/$init$(): Unit = {
+      T.this.value_=((T.this.initialValue(): Object));
+      T.this.value$mcI$sp_=(scala.Int.unbox(T.this.value()));
+    }
+  }
+{noformat}
+
+when creating a {{C[String]}}, the unboxing of {{value}} will fail.
+
+
+
+
+As a test case, here's a full example (as reported on the mailing list), it works in 2.11.8
+
+{code}
+trait BaseSp[@specialized(Long, Double) S] {
+  def initialValue: S
+  var value: S = initialValue
+  override def toString = "" + value
+}
+
+trait BaseNotSp[S] {
+  def initialValue: S
+  var value: S = initialValue
+  override def toString = "" + value
+}
+
+final class Bar_Sp_Sp    [@specialized(Long, Double) S](val initialValue: S) extends BaseSp[S]
+final class Bar_NotSp_Sp [                           S](val initialValue: S) extends BaseSp[S]
+final class Bar_Sp_NotSp [@specialized(Long, Double) S](val initialValue: S) extends BaseNotSp[S]
+final class Bar_NotSp_NotSp                         [S](val initialValue: S) extends BaseNotSp[S]
+
+object Test extends App {
+  val a = new Bar_Sp_Sp[Double](Double.MaxValue)    // CCE
+  val b = new Bar_Sp_Sp[Long](Long.MaxValue)        // CCE
+  val c = new Bar_NotSp_Sp[Double](Double.MaxValue) // AbstractMethodError
+  val d = new Bar_NotSp_Sp[Long](Long.MaxValue)     // CCE
+  println((a, b, c, d))
+
+  val e = new Bar_Sp_NotSp[Double](Double.MaxValue)
+  val f = new Bar_Sp_NotSp[Long](Long.MaxValue)
+  val g = new Bar_NotSp_NotSp[Double](Double.MaxValue)
+  val h = new Bar_NotSp_NotSp[Long](Long.MaxValue)
+  println((e, f, g, h))
+}
+{code}

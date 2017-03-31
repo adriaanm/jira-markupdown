@@ -1,0 +1,42 @@
+Not just secondary constructors by any means.  All three of these compile in trunk.
+{code}
+package bip {
+  class Foo() {
+    protected def this(name: String) = this()
+  }
+
+  class Foo2 protected (name: String) { }
+
+  protected class Foo3(name: String) { }
+}
+
+package bop {
+  import bip._
+
+  object P {
+    val foo = new Foo("abc")
+    val foo2 = new Foo2("abc")
+    val foo3 = new Foo3("abc")
+  }
+}
+{code}
+In 2.7.7, that's three errors.
+{code}
+bip.scala:15: error: wrong number of arguments for constructor Foo: ()bip.Foo
+    val foo = new Foo("abc")
+              ^
+bip.scala:16: error: constructor Foo2 cannot be accessed in object P
+    val foo2 = new Foo2("abc")
+               ^
+bip.scala:17: error: class Foo3 cannot be accessed in package bip
+    val foo3 = new Foo3("abc")
+                   ^
+three errors found  
+{code}
+In 2.8.0 and 2.8.1, one error.
+{code}
+bip.scala:17: error: class Foo3 cannot be accessed in package bip
+    val foo3 = new Foo3("abc")
+                   ^
+one error found  
+{code}

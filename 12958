@@ -1,0 +1,27 @@
+The following code:
+
+{code}
+implicit def anyList[T]: List[T] = Nil
+
+implicit def intList: List[Int] = 42::24::Nil
+
+def foo[T](implicit x: T) = x
+
+val s = foo[List[Int]]
+
+println(s)
+{code}
+
+gives the following compilation error:
+
+{code}
+(fragment of Implicits.scala):8: error: ambiguous implicit values:
+ both method anyList of type [T]List[T]
+ and method intList of type => List[Int]
+ match expected type List[Int]
+  val s = foo[List[Int]]
+           ^
+one error found
+{code}
+
+The implicit method `intList` should be chosen over `anyList` because it is more specific.

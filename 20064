@@ -1,0 +1,39 @@
+Related to SI-1430, but here the bug is in erasure instead of the backend.
+
+B.java
+
+{code}
+package p1;
+
+interface A {
+  int i();
+}
+
+public interface B extends A { }
+{code}
+
+Test.scala
+
+{code}
+package p2 {
+  class K
+}
+
+object Test {
+  def t(x: p2.K with p1.B) = x.i()
+  def main(args: Array[String]): Unit = {
+    println(t(new p2.K with p1.B { def i() = 1 }))
+  }
+}
+{code}
+
+Note that {{p1.A}} is package-private. Erasure inserts a cast {{x.asInstanceOf[p1.A].i()}} because the parameter type of {{x}} after erasure is {{p2.K}}.
+
+{noformat}
+$ rm -rf p1 p2 *.class
+$ javac B.java -d .
+$ scalac Test.scala
+$ scala Test
+java.lang.IllegalAccessError: tried to access class p1.A from class Test$
+    at Test$.t(Test.scala:6)
+{noformat}

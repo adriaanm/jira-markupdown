@@ -1,0 +1,17 @@
+I'm afraid that you really are out of heap ... 2GB is only just barely sufficient for running two instance of Eclipse with the Scala plugin and doing any useful work.
+
+However, it should be possible with some changes to you Eclipse vmargs. Try adding,
+
+{code}
+--launcher.XXMaxPermSize
+256m
+-vmargs
+-Xms256m
+-Xmx1024m
+-XX:PermSize=64m
+-Xss1M
+-server
+-XX:+UseConcMarkSweepGC
+{code}
+
+to your main config.ini and the equivalent to your launch configuration for the child Eclipse application (ie. in the vmargs section of the launch configuration dialog).

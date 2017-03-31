@@ -1,0 +1,35 @@
+Code to reproduce:
+{code}
+package test
+
+object ClassNameProblem {
+	def main(args:Array[String]) {
+		println( classOf[scala.swing.Action.Trigger].getName() )
+		println( classOf[scala.swing.Action.Trigger.Wrapper].getEnclosingClass().getName )
+		println( classOf[scala.swing.Action.Trigger.Wrapper].getName() )
+		System.out.flush()
+		println( classOf[scala.swing.Action.Trigger.Wrapper].getSimpleName() )
+	}
+}
+{code}
+
+This leads to the following output (and error):
+{code}
+scala.swing.Action$$Trigger
+scala.swing.Action$$Trigger$$
+scala.swing.Action$$Trigger$$Wrapper
+Exception in thread "main" java.lang.InternalError: Malformed class name
+	at java.lang.Class.getSimpleName(Class.java:1133)
+	at test.ClassNameProblem$$.main(ClassNameProblem.scala:9)
+	at test.ClassNameProblem.main(ClassNameProblem.scala)
+{code}
+
+The problem for `scala.swing.Action.Trigger.Wrapper` seems to be, that there is no "$$" as separator between the name of the enclosing class and its simple name. But this is expected by `java.lang.Class#getSimpleName`, which therefore throws the Exception.
+
+In my understanding, `class.getSimpleName` should never fail. So this seems to be a bug of the Scala compiler.
+
+You might ask, why on Earth one would call this method? Well, JRuby 1.5.1 does for some reason, if you give it e.g. the peer of a `scala.swing.ToggleButton`. So this problem makes Scala Swing somewhat unusable with JRuby.
+
+Scala version: 2.8.0 [[br]]
+Java version: 1.6.0_20 [[br]]
+System: Mac OS

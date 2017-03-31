@@ -1,0 +1,20 @@
+The regression boils down to:
+
+{code}
+scala> class F[_]
+defined class F
+
+scala> val tp = typeOf[Some[F[X]] forSome { type X }]
+warning: there were 1 feature warning(s); re-run with -feature for details
+tp: $r.intp.global.Type = scala.this.Some[F[X]] forSome { type X }
+
+scala> tp.baseType(typeOf[Option[_]].typeSymbol).typeArgs.head
+res10: $r.intp.global.Type = F[X] forSome { type X }
+
+scala> tp.memberType(tp.member(nme.get)).finalResultType
+res11: $r.intp.global.Type = F[X]
+{code}
+
+The last line is what happens now in `resultOfMatchingMethod`.
+
+This is support ticket #3045

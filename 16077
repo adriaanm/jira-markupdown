@@ -1,0 +1,26 @@
+= problem =
+Currently it is not really possible to tell when a class/method was deprecated without checking older releases/the version control system.
+
+= analysis =
+
+It would be nice to have an additional constructor at {{class deprecated}} to tell the users/developers since when the item is deprecated. 
+
+This would enable them to have a better guess when it will be gone (considering the rule of "deprecate in current_version+1, remove in current_version+2").
+
+Additionally, this would make maintenance a bit simpler.
+
+This information could be shown in ScalaDoc, too. A related ticket is SI-4476.
+
+= enhancement recommendation =
+
+The class could look similar to this:
+
+{code}
+@getter @setter @beanGetter @beanSetter
+class deprecated(message: String, since: String) extends annotation.StaticAnnotation {
+  def this(message: String) = this(message, null)
+  def this() = this("", null)
+}
+{code}
+
+It would be thinkable to also add a field "willbeRemovedInVersion: String", but I think that would be a bit too much...

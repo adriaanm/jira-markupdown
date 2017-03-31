@@ -1,0 +1,15 @@
+{code:title="Test.scala"}
+object Test extends App {
+  def primes = sieve(Stream.from(2))
+
+  def sieve(s: Stream[Int]): Stream[Int] = Stream.cons(s.head, sieve(s.tail filter { _ % s.head != 0 }))
+
+  primes.take(4000).force
+}
+{code}
+
+scalac Test.scala
+scala -J-mx512m Test
+=> java.lang.OutOfMemoryError: Java heap space
+
+take(3000) works.

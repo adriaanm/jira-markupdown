@@ -1,0 +1,27 @@
+The following program should be able to be transformed by the CPS plugin, but a compile error is given instead.
+
+{noformat}
+import scala.util.continuations._
+
+object Test {
+
+  def test1(f: => Int @cps[Unit]): Unit @cps[Unit] = {
+    f
+  }
+
+  def main(args: Array[String]): Any = {
+    println(reset(test1(1)))
+  }
+
+}
+{noformat}
+
+{noformat}
+$ ~/opt/scala-2.10.0.dev-1302-g6a33a20/bin/scala -P:continuations:enable unitreturn.scala 
+/p/scala/bugs/unitreturn.scala:8: error: type mismatch;
+ found   : Int @util.continuations.package.cps[Unit]
+ required: Unit @util.continuations.package.cps[Unit]
+    f
+    ^
+one error found
+{noformat}

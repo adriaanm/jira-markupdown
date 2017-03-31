@@ -1,0 +1,15 @@
+If a List with another AnyVal is concatenated, it disappears, but it remains for e.g.:
+
+{code}
+scala> List(1L) ++ List(1) ++ List(1L)
+res4: List[AnyVal{def getClass(): java.lang.Class[_ >: Long with Int <: AnyVal]}] = List(1, 1, 1)
+{code}
+
+Personally, I find this a bit odd. If you then call getClass on it, you get:
+
+{code}
+scala> res4.getClass
+res5: java.lang.Class[_ <: List[AnyVal{def getClass(): java.lang.Class[_ >: Long with Int <: AnyVal]}]] = class scala.collection.immutable.$colon$colon
+{code}
+
+Personally, I think this should just return Class[_ <: List[AnyVal]], but I see what the compiler is doing.

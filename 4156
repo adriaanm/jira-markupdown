@@ -1,0 +1,18 @@
+Since the overload is unnecessary, the test case can be as simple as:
+
+{code}
+package test2
+
+object Main {
+  def main(args: Array[String]) {
+    new A[Int]
+  }
+}
+
+class A[@specialized T] {
+  final def foo(a: T) {}
+}
+{code}
+
+java.lang.VerifyError: class test2.A$$mcI$$sp overrides final method foo.(Ljava/lang/Object;)V
+	at java.lang.ClassLoader.defineClass1(Native Method)

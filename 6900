@@ -1,0 +1,37 @@
+It would be helpful not to attempt running after a failed compilation.
+
+On 2.11.1, the SI-8343 one-liner:
+{noformat}
+$ scala -e "List[Int](??? : _*)"
+java.lang.AssertionError: assertion failed: 
+  transformCaseApply: name = ??? tree = $qmark$qmark$qmark / class scala.reflect.internal.Trees$Ident
+     while compiling: /tmp/scalacmd4711607706675765689.scala
+        during phase: globalPhase=refchecks, enteringPhase=uncurry
+     library version: version 2.11.1
+    compiler version: version 2.11.1
+  reconstructed args: -Xscript Main -d /tmp/scalascript8406427046501234581.tmp
+
+  last tree to typer: type Main
+       tree position: line 1 of /tmp/scalacmd4711607706675765689.scala
+            tree tpe: <notype>
+              symbol: object Main
+   symbol definition: class Main extends AnyRef (a ModuleClassSymbol)
+      symbol package: <empty>
+       symbol owners: object Main
+           call site: <$anon: AnyRef> in package <empty>
+
+== Source file context for tree position ==
+
+     0 List[Int](??? : _*)
+	at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer$$anonfun$2.apply$mcV$sp(RefChecks.scala:1718)
+...
+java.lang.ClassNotFoundException: Main
+	at scala.reflect.internal.util.ScalaClassLoader$class.run(ScalaClassLoader.scala:61)
+	at scala.reflect.internal.util.ScalaClassLoader$URLClassLoader.run(ScalaClassLoader.scala:99)
+	at scala.tools.nsc.CommonRunner$class.run(ObjectRunner.scala:22)
+	at scala.tools.nsc.ObjectRunner$.run(ObjectRunner.scala:39)
+	at scala.tools.nsc.CommonRunner$class.runAndCatch(ObjectRunner.scala:29)
+	at scala.tools.nsc.ObjectRunner$.runAndCatch(ObjectRunner.scala:39)
+	at scala.tools.nsc.ScriptRunner.scala$tools$nsc$ScriptRunner$$runCompiled(ScriptRunner.scala:158)
+...
+{noformat}

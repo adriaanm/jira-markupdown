@@ -1,0 +1,12 @@
+fixed in r22804
+  
+example:
+
+{code}
+    @implicitNotFound(msg="Custom error message that may refer to type parameters ${T} and ${U}")
+    trait Constraint[T, U]
+{code}
+
+whenever an implicit argument of type `Constraint[A, B]` cannot be found, the custom error message will be used, where the type arguments are interpolated in the obvious way
+    
+note: if the msg in the annotation references non-existing type params, a warning is emitted

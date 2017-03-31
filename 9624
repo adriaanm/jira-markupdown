@@ -1,0 +1,10 @@
+Well, I do and I don't. At least I understand the situation. This:
+{code}
+trait Foo { def f: M1 }
+trait Bar { def f: M2 }
+
+object Test {
+  def f1(x: Foo) = x match { case y: Bar => y.f }
+}
+{code}
+The pattern matcher types y as "Bar", not as anything intersecting Foo and Bar, as that would require it to do something more sophisticated to resolve collisions than ignoring them. I am not sure this aspect of the language can be fixed.

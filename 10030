@@ -1,0 +1,25 @@
+To investigate the above, I ran sbt -Dscalac.debug.tvar=1. The output log seems somewhat helpful - the TypeVar loop got some more evidence (search for setInst in the output).
+
+{code}
+[    create] ?_$7                     ( In TraversableOps#expToTravViewExp2[T,C[X] <: Traversable[X] with scala.collection.TraversableLike[X,C[X]]]#t )
+[   setInst] Nothing                  ( In TraversableOps#expToTravViewExp2[T,C[X] <: Traversable[X] with scala.collection.TraversableLike[X,C[X]]]#t, _$7=Nothing )
+[    create] ?T                       ( In TraversableOps#expToTravViewExp2[T,C[X] <: Traversable[X] with scala.collection.TraversableLike[X,C[X]]] )
+[    create] ?C                       ( In TraversableOps#expToTravViewExp2[T,C[X] <: Traversable[X] with scala.collection.TraversableLike[X,C[X]]] )
+[    create] ?C                       ( In TraversableOps#expToTravViewExp2[T,C[X] <: Traversable[X] with scala.collection.TraversableLike[X,C[X]]] )
+[ applyArgs] ?C                       ( In TraversableOps#expToTravViewExp2[T,C[X] <: Traversable[X] with scala.collection.TraversableLike[X,C[X]]], apply args ?T to C )
+[    create] ?C                       ( In TraversableOps#expToTravViewExp2[T,C[X] <: Traversable[X] with scala.collection.TraversableLike[X,C[X]]] )
+[ applyArgs] ?C                       ( In TraversableOps#expToTravViewExp2[T,C[X] <: Traversable[X] with scala.collection.TraversableLike[X,C[X]]], apply args ?T to C )
+{code}
+
+The above loop continues for a while until a call to setInst, where "C=?C" indicates that tv.setInst(tv2) was called with tv.originName = tv2.originName = "C". So maybe tv=tv2, indeed.
+
+{code}
+[    create] ?C                       ( In TraversableOps#expToTravViewExp2[T,C[X] <: Traversable[X] with scala.collection.TraversableLike[X,C[X]]] )
+[ applyArgs] ?C                       ( In TraversableOps#expToTravViewExp2[T,C[X] <: Traversable[X] with scala.collection.TraversableLike[X,C[X]]], apply args ?T to C )
+[    create] ?C                       ( In TraversableOps#expToTravViewExp2[T,C[X] <: Traversable[X] with scala.collection.TraversableLike[X,C[X]]] )
+[ applyArgs] ?C                       ( In TraversableOps#expToTravViewExp2[T,C[X] <: Traversable[X] with scala.collection.TraversableLike[X,C[X]]], apply args ?T to C )
+[   setInst] ?C                       ( In TraversableOps#expToTravViewExp2[T,C[X] <: Traversable[X] with scala.collection.TraversableLike[X,C[X]]], C=?C )
+[error]
+[error]      while compiling: /Users/pgiarrusso/Documents/Research/Sorgenti/linqonsteroids/src/main/scala/ivm/expressiontree/traversableOps.scala
+[error]         during phase: typer
+{code}

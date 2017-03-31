@@ -1,0 +1,18 @@
+I realized that this bug affects package objects in a common use case so I now believe that this bug should be fixed (possibly after 2.8).
+
+It turns out that you get the same error when you create a package object in a file with the same name as the package object if the package object is not in the default package.
+
+For example:
+{code}
+//file: /src/po.scala
+package object po { }
+{code}
+compiles fine, but
+{code}
+//file: /src/bugs/po.scala
+package bugs
+package object po { }
+{code}
+produces the following message: "po is already defined as object po".
+
+I believe it is a common case to place a package object in a file with the same name and so this bug should be fixed.

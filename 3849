@@ -1,0 +1,29 @@
+An example in the interpreter shows that the compiler generates the correct type for inner classes in the outer object:
+
+{code}
+scala> :paste
+// Entering paste mode (ctrl-D to finish)
+
+class Enum {
+  abstract class Value
+  class Val extends Value
+  def Value(): Value = new Val
+}
+
+object Constants extends Enum {
+  val a = Value
+}
+
+// Exiting paste mode, now interpreting.
+
+defined class Enum
+defined module Constants
+
+scala> Constants.a
+res23: Constants.Value = Enum$Val@d5454d
+{code}
+
+While the generated Scaladoc reference the parent class, ignoring the outer object of the inner class:
+{code}
+val a: Enum.Value
+{code}

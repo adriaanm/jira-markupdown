@@ -1,0 +1,15 @@
+my best guess is that the CBN transform messes up the symbol-owner structure of the block passed to nom as the first argument
+
+it's weird that the second argument list is required to trigger this
+
+simplified (attached):
+{code}
+object Test extends App {
+  def nom (guard: => /*<-- must be CBN */Unit) (something: Unit) { }
+
+  nom {
+    val i = 0
+    println(i) // i must be referenced
+  }(/*must be omitted: ()*/)
+}
+{code}

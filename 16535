@@ -1,0 +1,56 @@
+I discovered this issues while annotating some of scala traits with Jackson type annotations (http://jackson.codehaus.org/1.9.0/javadoc/org/codehaus/jackson/annotate/JsonTypeInfo.html).  The issues seems to be that the JsonTypeInfo annotation has two properties that reference inner non-static enumerations. The scala compiler appears to generate valid class files, but cannot load these class to compile other dependent source files.
+
+I've managed to reproduce the issue outside of Jackson:
+
+{noformat}
+$ javac -version
+javac 1.6.0_26
+$ scalac -version
+Scala compiler version 2.9.2.r25928-b20111102031955 -- Copyright 2002-2011, LAMP/EPFL
+
+$ javac TestAnnotation.java 
+$ scalac TestTrait.scala 
+$ scalac TestObject.scala 
+error: error while loading TestTrait, class file './TestTrait.class' is broken
+(Scala class file does not contain Scala annotation)
+TestObject.scala:2: error: illegal inheritance;
+ self-type TestObject.type does not conform to TestTrait's selftype TestTrait
+object TestObject extends TestTrait
+                          ^
+TestObject.scala:2: error: illegal inheritance; superclass TestTrait
+ is not a subclass of the superclass Object
+ of the mixin trait ScalaObject
+object TestObject extends TestTrait
+                  ^
+three errors found
+{noformat}
+
+The source (also attached):
+
+{code:title=TestAnnotation.java|borderStyle=solid}
+import java.lang.annotation.*;
+
+@Retention(RetentionPolicy.RUNTIME)
+public @interface TestAnnotation {
+  public enum TestEnumOne { A, B }
+  public enum TestEnumTwo { C, D }
+
+  public TestEnumOne one();
+  public TestEnumTwo two();
+  public String strVal();
+}
+{code}
+
+{code:title=TestTrait.scala|borderStyle=solid}
+@TestAnnotation(one=TestAnnotation.TestEnumOne.A, two=TestAnnotation.TestEnumTwo.C, strVal="something")
+trait TestTrait
+{code}
+
+{code:title=TestObject.scala|borderStyle=solid}
+object TestObject extends TestTrait
+{code}
+
+Other Observations:
+- Making TestEnumOne and TestEnumTwo static still produces the error
+- Compiling both TestTrait.scala and TestObject.scala together does not produce the error
+- Having only one enum filed in TestAnnotation (i.e. commenting out "public TestEnumTwo two()" in TestAnnotation.java) does not produce the error

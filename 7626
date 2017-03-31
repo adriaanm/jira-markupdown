@@ -1,0 +1,18 @@
+I'm not spun up on this, but here's a comment I had until a few months ago:
+
+{noformat}
+-      /** Mix in members of implementation class mixinClass into class clazz */
+-      def mixinImplClassMembers(impl: Symbol, iface: Symbol) {
+-        assert(
+-          // XXX this should be impl.isImplClass, except that we get impl classes
+-          // coming through under -optimise which do not agree that they are (because
+-          // the IMPLCLASS flag is unset, I believe.) See ticket #4285.
+-          nme.isImplClassName(impl.name) || impl.isImplClass,
+-          "%s (%s) is not a an implementation class, it cannot mix in %s".format(
+-            impl, impl.defaultFlagString, iface)
+-        )
+-        if (!impl.isImplClass) {
+-          debugwarn("!!! " + impl + " has an impl class name, but !isImplClass: " + impl.defaultFlagString + ", mixing i
+-        }
+{noformat}
+I dropped that comment in https://github.com/paulp/scala/commit/e2951867f which is probably something to look at.

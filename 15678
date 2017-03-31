@@ -1,0 +1,23 @@
+The following compiles with scala 2.8.0:
+
+{code}
+package test
+
+class Test {
+
+  def foo: Unit = bar(Array(): _*)
+  
+  def bar(values: AnyRef*): Unit = ()
+}
+{code}
+
+With 2.8.1 RC1, an error is issued:
+
+{code}
+test/Test.scala:5: error: type mismatch;
+ found   : scala.reflect.Manifest[Nothing]
+ required: scala.reflect.ClassManifest[T]
+  def foo: Unit = bar(Array(): _*)
+{code}
+
+bar(Array[AnyRef](): _*) compiles with both versions.

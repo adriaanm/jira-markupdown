@@ -1,0 +1,21 @@
+HashSet does not implement filter directly but defers to the generic builder-based implementation of TraversableLike. That leads to filter _always creating a completely new set_ instead of reusing the old set where possible.
+
+This does not only affect filter, but also methods like intersection (&) that use filter. People have a reasonable expectation that set-specific methods like intersection are as efficient as possible, but for the current implementation this is not the case.
+
+A few examples where this matters:
+
+{code}
+val x=Set(1,2,3,4)
+val y = x.filter(_ => true) 
+/* this builds a completely new set, allocating a zillion temporary objects in the process. And the result does not share anything with the input even though it could share everything */
+val z = x.filterNot(_ => false)
+val w = x.intersect(x)
+
+println(x eq y) // false, should be true
+println(x eq z) // false, should be true
+println(x eq w) // false, should be true
+{code}
+
+A solution for this problem would be to implement filter for HashSet and Set. I attached a patch that does that.
+
+(Sorry for setting this as blocking, but the JIRA user interface on my browser (chrome on windows) did not allow setting it to anything else. Feel free to change this to something more appropriate.)

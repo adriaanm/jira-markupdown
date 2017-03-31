@@ -1,0 +1,20 @@
+When you create a BigDecimal from an Int in the range of [-512, 512] the value is cached. The cached BD is returned when a new BD is attempted to be created with the same numeric value but a different MathContext. I believe the fix would be to simply change the line:
+*if (minCached <= i && i <= maxCached)* 
+to something like
+*if (minCached <= i && i <= maxCached && mc == defaultMathContext)*.
+
+The following can be pasted straight into the REPL to see the behavior:
+
+{code}
+import scala.math.BigDecimal._
+import java.math.{ MathContext, BigDecimal => BigDec }
+//Create two similar BDs
+val a = BigDecimal(12)
+val b = BigDecimal(12, MathContext.DECIMAL128)
+//Not the same! Unexpected
+println(b.mc == MathContext.DECIMAL128)
+//The same! Unexpected
+println(a.mc == b.mc)
+//This should work but instead throws an exception
+println(b / 7)
+{code}

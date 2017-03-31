@@ -1,0 +1,78 @@
+I suspect that you compiled Scalatest with `-nospecialization`.
+
+Looking at the bytecode of NoArg:
+
+{noformat}
+> test:console
+scala> :javap org.scalatest.fixture.NoArg
+Compiled from "NoArg.scala"
+public interface org.scalatest.fixture.NoArg extends scala.DelayedInit,scala.Function0{
+    public abstract void org$scalatest$fixture$NoArg$_setter_$styleName_$eq(int);
+    public abstract scala.Function0 org$scalatest$fixture$NoArg$$theBody();
+    public abstract void org$scalatest$fixture$NoArg$$theBody_$eq(scala.Function0);
+    public abstract void delayedInit(scala.Function0);
+    public abstract void apply();
+    public abstract int styleName();
+}
+{noformat}
+
+I copy/pasted the code into my the test project, compiled, and looked at the bytecode:
+{noformat}
+scala> :javap MyNoArg
+Compiled from "MyActorSpec.scala"
+public interface MyNoArg extends scala.DelayedInit,scala.Function0$mcV$sp{
+    public abstract void MyNoArg$_setter_$styleName_$eq(int);
+    public abstract scala.Function0 MyNoArg$$theBody();
+    public abstract void MyNoArg$$theBody_$eq(scala.Function0);
+    public abstract void delayedInit(scala.Function0);
+    public abstract void apply();
+    public abstract int styleName();
+    public abstract void apply$mcV$sp();
+}
+{noformat}
+
+Here was my test (independent of Akka)
+
+{code}
+object Test {
+  def main(args: Array[String]) {
+    val sys = new Delayed("a")
+    sys.apply()
+  }
+
+  class Delayed(name: String) extends fixture.NoArg { // works with extends MyNoArg
+    override def apply() {
+      super.apply()
+    }
+  }
+}
+
+trait MyNoArg extends DelayedInit with (() => Unit) {
+
+  private var theBody: () => Unit = _
+
+  /**
+   * Saves the body of the constructor, passed as <code>body</code>, for later execution by <code>apply</code>.
+   */
+  final def delayedInit(body: => Unit) {
+    theBody = (() => body)
+  }
+
+  /**
+   * Executes the body of the constructor that was passed to <code>delayedInit</code>.
+   */
+  def apply() { theBody() }
+
+  /**
+   * This method exists to cause a compile-time type error if someone accidentally
+   * tries to mix this trait into a <code>Suite</code>.
+   *
+   * <p>
+   * This trait is intended to be mixed
+   * into classes that are constructed within the body (or as the body) of tests, not mixed into <code>Suite</code>s themselves. For an example,
+   * the the main Scaladoc comment for this trait.
+   * </p>
+   */
+  final val styleName: Int = 0 // So can't mix into Suite
+}
+{code}

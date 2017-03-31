@@ -1,0 +1,145 @@
+Simply define a generic trait with type parameter {{T}} and a class extending that trait with a primitive type.
+The trait should define a method with the generic type {{T}} as the return type and the class should override that method.
+
+The compiler generates bridge methods that lead to macro expansions.
+
+{code}
+import scala.language.experimental.macros
+import scala.reflect.macros._
+
+
+
+trait A[T] {
+  def min[U >: T](implicit ord: Numeric[U]): T = macro A.min[T, U]
+}
+
+
+object A {
+
+  def min[T: c.WeakTypeTag, U >: T: c.WeakTypeTag](c: Context)(ord: c.Expr[Numeric[U]]): c.Expr[T] = {
+    c.universe.reify {
+      ord.splice.zero.asInstanceOf[T]
+    }
+  }
+
+}
+
+
+class B extends A[Int] {
+  override def min[U >: Int](implicit ord: Numeric[U]): Int = macro B.min[U]
+}
+
+
+object B {
+
+  def min[U >: Int: c.WeakTypeTag](c: Context)(ord: c.Expr[Numeric[U]]): c.Expr[Int] = {
+    c.universe.reify {
+      ord.splice.zero.asInstanceOf[Int]
+    }
+  }
+
+}
+
+{code}
+
+Some output:
+
+{code}
+exception when typing override <macro> <bridge> def min(ord: math.Numeric): Object = B.this.min(ord)/class scala.reflect.internal.Trees$DefDef
+macro implementation not found: min (the most common reason for that is that you cannot use macro implementations in the same compilation run that defines them) in file bridge.scala
+scala.reflect.internal.Types$TypeError: macro implementation not found: min (the most common reason for that is that you cannot use macro implementations in the same compilation run that defines them)
+	at scala.tools.nsc.typechecker.Contexts$Context.error(Contexts.scala:403)
+	at scala.tools.nsc.typechecker.ContextErrors$TyperContextErrors$TyperErrorGen$.macroExpansionError(ContextErrors.scala:680)
+	at scala.tools.nsc.typechecker.ContextErrors$TyperContextErrors$TyperErrorGen$.MacroImplementationNotFoundError(ContextErrors.scala:763)
+	at scala.tools.nsc.typechecker.Macros$class.scala$tools$nsc$typechecker$Macros$$macroExpandWithoutRuntime(Macros.scala:804)
+	at scala.tools.nsc.typechecker.Macros$$anonfun$scala$tools$nsc$typechecker$Macros$$macroExpand1$1.apply(Macros.scala:742)
+	at scala.tools.nsc.typechecker.Macros$$anonfun$scala$tools$nsc$typechecker$Macros$$macroExpand1$1.apply(Macros.scala:732)
+	at scala.tools.nsc.Global.withInfoLevel(Global.scala:189)
+	at scala.tools.nsc.typechecker.Macros$class.scala$tools$nsc$typechecker$Macros$$macroExpand1(Macros.scala:732)
+	at scala.tools.nsc.typechecker.Macros$MacroTyper.typecheckRhs(Macros.scala:391)
+...
+
+{code}
+
+
+More output:
+
+{code}
+unrecoverable error
+	at scala.reflect.internal.SymbolTable.abort(SymbolTable.scala:48)
+	at scala.tools.nsc.Global.abort(Global.scala:253)
+	at scala.tools.nsc.transform.Erasure$Eraser.typed1(Erasure.scala:835)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:5458)
+	at scala.tools.nsc.typechecker.Typers$Typer.scala$tools$nsc$typechecker$Typers$Typer$$typedStat$1(Typers.scala:2770)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$55.apply(Typers.scala:2870)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$55.apply(Typers.scala:2870)
+	at scala.collection.immutable.List.loop$1(List.scala:164)
+	at scala.collection.immutable.List.mapConserve(List.scala:180)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:2870)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedTemplate(Typers.scala:1862)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedClassDef(Typers.scala:1726)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:5400)
+	at scala.tools.nsc.transform.Erasure$Eraser.typed1(Erasure.scala:828)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:5458)
+	at scala.tools.nsc.typechecker.Typers$Typer.scala$tools$nsc$typechecker$Typers$Typer$$typedStat$1(Typers.scala:2770)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$55.apply(Typers.scala:2870)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$55.apply(Typers.scala:2870)
+	at scala.collection.immutable.List.loop$1(List.scala:164)
+	at scala.collection.immutable.List.mapConserve(List.scala:180)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:2870)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedPackageDef$1(Typers.scala:5127)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:5404)
+	at scala.tools.nsc.transform.Erasure$Eraser.typed1(Erasure.scala:828)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:5458)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:5509)
+	at scala.tools.nsc.transform.Erasure$ErasureTransformer$$anonfun$transform$2.apply(Erasure.scala:1270)
+	at scala.tools.nsc.transform.Erasure$ErasureTransformer$$anonfun$transform$2.apply(Erasure.scala:1266)
+	at scala.reflect.internal.SymbolTable.atPhase(SymbolTable.scala:201)
+	at scala.reflect.internal.SymbolTable.afterPhase(SymbolTable.scala:210)
+	at scala.tools.nsc.transform.Erasure$ErasureTransformer.transform(Erasure.scala:1266)
+	at scala.tools.nsc.transform.Erasure$ErasureTransformer.transform(Erasure.scala:876)
+	at scala.tools.nsc.ast.Trees$Transformer.transformUnit(Trees.scala:227)
+	at scala.tools.nsc.transform.Transform$Phase.apply(Transform.scala:30)
+	at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:461)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$run$1.apply(Global.scala:428)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$run$1.apply(Global.scala:428)
+	at scala.collection.Iterator$class.foreach(Iterator.scala:727)
+	at scala.collection.AbstractIterator.foreach(Iterator.scala:1156)
+	at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:428)
+	at scala.tools.nsc.Global$Run.compileUnitsInternal(Global.scala:1574)
+	at scala.tools.nsc.Global$Run.compileUnits(Global.scala:1548)
+	at scala.tools.nsc.Global$Run.compileSources(Global.scala:1544)
+	at scala.tools.nsc.Global$Run.compile(Global.scala:1654)
+	at scala.tools.nsc.Driver.doCompile(Driver.scala:33)
+	at scala.tools.nsc.Main$.doCompile(Main.scala:79)
+	at scala.tools.nsc.Driver.process(Driver.scala:54)
+	at scala.tools.nsc.Driver.main(Driver.scala:67)
+	at scala.tools.nsc.Main.main(Main.scala)
+
+error: fatal error: 
+     while compiling: bridge.scala
+        during phase: global=erasure, atPhase=posterasure
+     library version: version 2.10.0-RC2
+    compiler version: version 2.10.0-RC2
+  reconstructed args: 
+
+  last tree to typer: TypeTree(class A$class)
+              symbol: class A$class (flags: abstract <trait> <implclass>)
+   symbol definition: abstract class A$class extends A
+                 tpe: A$class
+       symbol owners: class A$class -> package <empty>
+      context owners: macro method min -> class B -> package <empty>
+
+== Enclosing template or block ==
+
+Apply( // override def min(ord: math.Numeric): Int in class B, tree.tpe=Int
+  B.this."min" // override def min(ord: math.Numeric): Int in class B, tree.tpe=(ord: math.Numeric)Int
+  "ord" // ord: math.Numeric, tree.tpe=math.Numeric
+)
+
+== Expanded type of tree ==
+
+TypeRef(TypeSymbol(abstract class A$class extends A))
+
+unrecoverable error
+{code}

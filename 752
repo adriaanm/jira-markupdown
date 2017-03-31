@@ -1,0 +1,19 @@
+I would have guessed the first brace.
+{code}
+       object Foo { def foo: Int = for (x <- 1 to 10) { "hello" } }
+                                                      ^
+
+scala> object Foo { def foo: Int = for (x <- 1 to 10) { "hello" } }
+<console>:7: error: type mismatch;
+ found   : Unit
+ required: Int
+       object Foo { def foo: Int = for (x <- 1 to 10) { "hello" } }
+                                   ^----------------------------^
+
+scala> def foo: Seq[Int] = for (x <- 1 to 10) yield { "hello" }
+<console>:7: error: type mismatch;
+ found   : scala.collection.immutable.IndexedSeq[String]
+ required: Seq[Int]
+       def foo: Seq[Int] = for (x <- 1 to 10) yield { "hello" }
+                                                    ^---------^
+{code}

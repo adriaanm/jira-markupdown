@@ -1,0 +1,35 @@
+I have a little code kata computing prime factorization for integers which fails with java.lang.StackOverFlowError for larger values. I'm submiting this to be sure this isn't a larger problem where something isn't tail recursive or using trampolines but could. Here is the sample:
+
+{code}
+object primes {
+    object GeneratePrimeFactorsLazy extends (Int => List[Int]) {
+		override def apply(n:Int) = (for (i <- Stream.range(2,n/2); if n % i == 0 ) yield (i)).headOption.map{x => x :: apply(n / x)}.getOrElse(List(n))
+	}
+
+	def main(args:Array[String]) {
+		println(GeneratePrimeFactorsLazy(args(0).toInt))		
+	}
+}
+{code}
+
+The following works with 2.7.7.final:
+{{ 
+>scala primes 623456789
+List(623456789)
+{code}
+With 2.8.RC3 (and RC2):
+{{ 
+>scala primes 623456789
+java.lang.StackOverflowError
+        at scala.collection.immutable.Stream$$Cons.<init>(Stream.scala:550)
+        at scala.collection.immutable.Stream$$.range(Stream.scala:612)
+        at scala.collection.immutable.Stream$$$$anonfun$$range$$1.apply(Stream.scala:612)
+        at scala.collection.immutable.Stream$$$$anonfun$$range$$1.apply(Stream.scala:612)
+        at scala.collection.immutable.Stream$$Cons.tail(Stream.scala:556)
+        at scala.collection.immutable.Stream$$Cons.tail(Stream.scala:550)
+        at scala.collection.immutable.Stream$$StreamWithFilter.map(Stream.scala:222)
+        at scala.collection.immutable.Stream$$StreamWithFilter.map(Stream.scala:222)
+        at scala.collection.immutable.Stream$$StreamWithFilter.map(Stream.scala:222)
+        at scala.collection.immutable.Stream$$StreamWithFilter.map(Stream.scala:222)
+...
+{code}

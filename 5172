@@ -1,0 +1,39 @@
+Replying to [comment:25 sentimental]:
+> case class User(val id: Int, val ts: List[Topic])
+I tried your code and as expected it broke the eclipse build:
+
+{code}
+!MESSAGE Error in JDT Core during reconcile
+!STACK 1
+Java Model Exception: java.lang.ClassCastException
+        at org.eclipse.jdt.internal.core.CompilationUnitProblemFinder.process_aroundBody0(CompilationUnitProblemFinder.java:233)
+        at org.eclipse.jdt.internal.core.CompilationUnitProblemFinder.process_aroundBody1$$advice(CompilationUnitProblemFinder.java:246)
+        at org.eclipse.jdt.internal.core.CompilationUnitProblemFinder.process_aroundBody2(CompilationUnitProblemFinder.java:1)
+        at org.eclipse.jdt.internal.core.CompilationUnitProblemFinder$$AjcClosure3.run(CompilationUnitProblemFinder.java:1)
+{code}
+
+It seems that scala List causes the problem. I tried to change to Seq[Topic] and it worked fine.
+
+I drilled down and I found a minimal test case which exhibits the same problem:
+
+{{ 
+public class Test {
+	public void simpleTest() {
+		scala.collection.immutable.List l = null;
+	}
+}
+{code}
+
+I built the code with javac without problems; eclipse breaks though.
+
+
+I tried my patched scala library file and eclipse manages to build this test code.
+I deduce that this problem was indeed caused by the generic declarations and not another thing, despites the radically different eclipse stack trace.
+
+Here is the git repo which reproduces the problem. You can see that:
+
+1. javac compiles the code with an unpatched scala-library.jar
+2. eclipse builds without errors when using the patched scala library
+
+
+https://github.com/mmikulicic/scala-test-generics

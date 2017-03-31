@@ -1,0 +1,28 @@
+{noformat}
+% tail sandbox/test.scala sandbox/Main.java
+==> sandbox/test.scala <==
+trait T1
+trait T2 extends T1
+
+object O1 {
+    type t = T1 with T2
+}
+
+class C1[w<:W](o: O1.t)
+
+class C2 extends T1 with T2
+
+==> sandbox/Main.java <==
+public class Main {
+
+    public static void main(String[] args) {
+        new C1<>(new C2());
+    }
+}
+
+% scalac-hash v2.11.5 sandbox/test.scala && javac -classpath .:build/quick/classes/library -d . sandbox/Main.java && scala-hash v2.11.5 Main
+java.lang.NoSuchMethodError: C1.<init>(LT1;)V
+	at Main.main(Main.java:4)
+{noformat}
+
+Reported by Matthieu Leclercq in https://groups.google.com/d/msg/scala-internals/YvWhX3hDavk/BU0cuWHrPG0J

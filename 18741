@@ -1,0 +1,19 @@
+When I use this method from Libgdx library: http://tinyurl.com/assetmanager-get with Java signature
+{code}
+public synchronized <T> T get (String fileName)
+{code}
+I'm getting dead code warning when compiled under Scala 2.10.3 with -Ywarn-dead-code option:
+{code}
+dead code following this construct
+[warn]       val asset = assetManager.get(name)
+[warn]                                   ^
+{code}
+(asset is used further in code, and works as expected).
+
+Adding even basic "Any" type information, like
+{code}
+val asset: Any = assetManager.get(name)
+{code}
+silences the warning. 
+
+I asked this on scala-user ( https://groups.google.com/forum/#!topic/scala-user/npN5v00SehU ) and was asked to open bug report here.

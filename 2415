@@ -1,0 +1,28 @@
+Here is a variant of the bug which is still present in 2.8.0.beta1
+
+class A
+
+class B[X <: B[X]]
+
+class B0 extends B[B0]
+
+class F[X]
+
+implicit def ClassOf[T](implicit m : Manifest[T]) : Class[T] =
+    m.erasure.asInstanceOf[Class[T]]
+
+implicit def a = new F[A]()
+
+implicit def b[X <: B[X]](implicit c: Class[X]) = new F[X]()
+
+def f(implicit aa: F[A]) = println(aa)
+
+f
+
+
+scala> <console>:43: error: ambiguous implicit values:
+ both method b in object $$iw of type [X <: B[X]](implicit c: Class[X])F[X]
+ and method a in object $$iw of type => F[A]
+ match expected type F[A]
+       f
+       ^

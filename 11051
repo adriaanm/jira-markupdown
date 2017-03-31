@@ -1,0 +1,21 @@
+Here's the sneaky unreported error the gets out of the typechecker:
+
+{code}
+ qbin/scalac -Xprint:typer sandbox/test.scala [[syntax trees at end of                     typer]] // test.scala
+package <empty> {
+  class Test extends scala.AnyRef {
+    def <init>(): Test = {
+      Test.super.<init>();
+      ()
+    };
+    abstract trait A extends scala.AnyRef {
+      def *(o: Test.this.A): Test.this.A
+    };
+    implicit def doubleToA(d: Double): Test.this.A = scala.this.Predef.???;
+    implicit def listToA(in: List[Test.this.A]): Test.this.A = scala.this.Predef.???;
+    def as: List[Test.this.A] = scala.this.Predef.???;
+    private[this] val result: Test.this.A = Test.this.listToA(Test.this.as.map[Nothing, List[Nothing]](((x: Test.this.A) => 2.0.<$times: error>(x)))(immutable.this.List.canBuildFrom[Nothing]));
+    <stable> <accessor> def result: Test.this.A = Test.this.result
+  }
+}
+{code}

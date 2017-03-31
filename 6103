@@ -1,0 +1,16 @@
+I suspect I know what is happening. Take a look at this code inside {{BufferedSource}}:
+
+{code:scala}
+  def reader() = new InputStreamReader(inputStream, codec.decoder)
+  def bufferedReader() = new BufferedReader(reader(), bufferSize)
+  
+  override val iter = {
+    val reader = bufferedReader()    
+    Iterator continually (codec wrap reader.read()) takeWhile (_ != -1) map (_.toChar)
+  }
+
+  class BufferedLineIterator extends Iterator[String] {
+    val bufReader = BufferedSource.this.bufferedReader()
+{code}
+
+The definition {{reader}} creates a new {{InputStreamReader}} out of {{inputStream}}, which is then used to create a {{BufferedReader}} by {{bufferedReader}}. The latter method is called inside {{iter}} to create an iterator, and it is also called by {{BufferedLineIterator}}. However, I'm guessing {{inputStream}} has already been consumed by either {{InputStreamReader}} or {{BufferedReader}} constructor.

@@ -1,0 +1,28 @@
+{code}
+object Test {
+  trait A { a =>
+    type X
+    val x: a.X
+  }
+  val a = new A {
+    type X = Int
+    val x = 1
+  }
+  def f(arg: A): arg.X = arg.x
+  val x = f(a: A)
+}
+{code}
+
+
+snippet from -Xprint:typer:
+
+{code}
+...
+    private[this] val x: arg.X = Test.this.f((Test.this.a: Test.A));
+    <stable> <accessor> def x: arg.X = Test.this.x
+...
+{code}
+
+arg is not in scope...
+
+I don't know yet how to turn this into a true soundness issue, but it's weird.

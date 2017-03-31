@@ -1,0 +1,62 @@
+Works with {{-Xoldpatmat}}; assigning to Adriaan.
+
+Highlights of the voyage:
+
+{code}
+[[syntax trees at end of              constructors]] // scalatest-bug.scala
+package <empty> {
+  object test extends Object {
+    def <init>(): ... = {
+      test.super.<init>();
+      {
+        case <synthetic> val x1: Null = null;
+        case3(){
+          matchEnd2(scala.runtime.BoxedUnit.UNIT)
+        };
+        matchEnd2(x: scala.runtime.BoxedUnit){
+          ()
+        }
+      };
+      try {
+        ()
+      } finally {
+        case <synthetic> val x1: Null = null;
+        case3(){
+          matchEnd2(scala.runtime.BoxedUnit.UNIT)
+        };
+        matchEnd2(x: scala.runtime.BoxedUnit){
+          ()
+        }
+      };
+      ()
+    }
+  }
+}
+{code}
+
+Bytecode:
+{code}
+private test$();
+  Code:
+   Stack=1, Locals=6, Args_size=1
+   0:	aload_0
+   1:	invokespecial	#16; //Method java/lang/Object."<init>":()V
+   4:	aload_0
+   5:	putstatic	#18; //Field MODULE$:Ltest$;
+   8:	aconst_null
+   9:	astore_1
+   10:	getstatic	#24; //Field scala/runtime/BoxedUnit.UNIT:Lscala/runtime/BoxedUnit;
+   13:	astore_2
+   14:	aconst_null
+   15:	astore	5
+   17:	getstatic	#24; //Field scala/runtime/BoxedUnit.UNIT:Lscala/runtime/BoxedUnit;
+   20:	astore_3
+   21:	goto	33
+   24:	astore	4
+   26:	aconst_null
+   27:	astore	5
+   29:	getstatic	#24; //Field scala/runtime/BoxedUnit.UNIT:Lscala/runtime/BoxedUnit;
+   32:	astore_3
+   33:	aload	4
+   35:	athrow
+{code}

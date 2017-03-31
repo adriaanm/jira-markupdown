@@ -1,0 +1,24 @@
+Two operations I find myself commonly needing are to strip prefixes and suffixes off Strings:
+
+"http://my.url.com".stripPrefix("http://") == "my.url.com"
+
+"RichString.java".stripSuffix(".java") == "RichString"
+
+When I looked, I found no single-method way to do this in Scala, so I added my own. I'd like to see something similar go into RichString.
+
+class RicherString(val self: String) {
+
+  def stripPrefix(prefix: String) = {
+    if (self.startsWith(prefix))
+      self.substring(prefix.length)
+    else
+        self
+  }
+  def stripSuffix(suffix: String) = {
+    if (self.endsWith(suffix))
+      self.substring(0, self.length() - suffix.length)
+    else
+        self
+  }
+}
+

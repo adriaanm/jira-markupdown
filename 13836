@@ -1,0 +1,56 @@
+Tested with Scala 2.7.2rc4 and revision 16415 (latest) from the 2.7.2 branch.
+
+The following example shows the problem. The Java generic signature includes <J> to mean the long primitive, but this is not allowed, so if any reflection based framework calls getGenericParameterTypes (I noticed this with Spring), it will blow up with a GenericSignatureFormatError. It also means that the Scala method can't be called from Java code. Using java.lang.Long in the signature is a possible workaround (as shown).
+
+{code}
+package test
+
+object Generics {
+  def main(args: Array[String]) {
+    val jl = classOf[Foo].getMethod("jl", classOf[Baz[_]])
+    jl.getGenericParameterTypes // works fine
+    
+    val l = classOf[Foo].getMethod("l", classOf[Baz[_]])
+    // By debugger inspection l.signature is (Ltest/Baz<J>;)V
+    l.getGenericParameterTypes // throws GenericSignatureFormatError
+  }
+}
+
+class Baz[T]
+
+class Foo {
+  def l(b: Baz[Long]) { }
+  def jl(b: Baz[java.lang.Long]) { }
+}
+{code}
+
+The stacktrace is:
+
+{code}
+Exception in thread "main" java.lang.reflect.GenericSignatureFormatError
+	at sun.reflect.generics.parser.SignatureParser.error(SignatureParser.java:103)
+	at sun.reflect.generics.parser.SignatureParser.parseFieldTypeSignature(SignatureParser.java:233)
+	at sun.reflect.generics.parser.SignatureParser.parseTypeArgument(SignatureParser.java:319)
+	at sun.reflect.generics.parser.SignatureParser.parseTypeArguments(SignatureParser.java:284)
+	at sun.reflect.generics.parser.SignatureParser.parseSimpleClassTypeSignature(SignatureParser.java:260)
+	at sun.reflect.generics.parser.SignatureParser.parseClassTypeSignatureSuffix(SignatureParser.java:270)
+	at sun.reflect.generics.parser.SignatureParser.parseClassTypeSignature(SignatureParser.java:244)
+	at sun.reflect.generics.parser.SignatureParser.parseFieldTypeSignature(SignatureParser.java:228)
+	at sun.reflect.generics.parser.SignatureParser.parseTypeSignature(SignatureParser.java:359)
+	at sun.reflect.generics.parser.SignatureParser.parseZeroOrMoreTypeSignatures(SignatureParser.java:469)
+	at sun.reflect.generics.parser.SignatureParser.parseFormalParameters(SignatureParser.java:446)
+	at sun.reflect.generics.parser.SignatureParser.parseMethodTypeSignature(SignatureParser.java:436)
+	at sun.reflect.generics.parser.SignatureParser.parseMethodSig(SignatureParser.java:141)
+	at sun.reflect.generics.repository.ConstructorRepository.parse(ConstructorRepository.java:37)
+	at sun.reflect.generics.repository.ConstructorRepository.parse(ConstructorRepository.java:25)
+	at sun.reflect.generics.repository.AbstractRepository.<init>(AbstractRepository.java:56)
+	at sun.reflect.generics.repository.GenericDeclRepository.<init>(GenericDeclRepository.java:30)
+	at sun.reflect.generics.repository.ConstructorRepository.<init>(ConstructorRepository.java:33)
+	at sun.reflect.generics.repository.MethodRepository.<init>(MethodRepository.java:28)
+	at sun.reflect.generics.repository.MethodRepository.make(MethodRepository.java:41)
+	at java.lang.reflect.Method.getGenericInfo(Method.java:94)
+	at java.lang.reflect.Method.getGenericParameterTypes(Method.java:282)
+	at test.Generics$$.main(Generics.scala:10)
+	at test.Generics.main(Generics.scala)
+
+{code}

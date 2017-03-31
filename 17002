@@ -1,0 +1,13 @@
+This relatively small test case blows up during "lambdalift":
+
+{code}
+trait Foo[@specialized(Int) A] {
+  final def bar(a:A):A = bar(a)
+}
+{code}
+
+There are a lot of variants that *do* compile properly. By removing specialized, or final, you can get code that compiles. Of course, this code will just overflow the stack, but the bug seems to affect any recursive final method, not just pointless ones.
+
+I ran into this issue when trying to update https://github.com/non/spire to work with 2.10.0.
+
+I've attached a test source file and the error log.

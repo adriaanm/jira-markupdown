@@ -1,0 +1,92 @@
+On code:
+
+
+{code}
+class J {
+    type tttt[a, b] <: _root_.scala.collection.mutable.Map[a, b]
+
+    def r(a : tttt[String, String]) = {
+        0 match {
+            case a : a.MapTo =>
+        }
+    }
+}
+{code}
+
+The 2.7.1-final compiler crashes with the following stacktrace:
+
+Exception in thread "main" java.lang.AssertionError: assertion failed: a
+	at scala.Predef$$.assert(Predef.scala:92)
+	at scala.tools.nsc.symtab.Symbols$$Symbol.info(Symbols.scala:481)
+	at scala.tools.nsc.symtab.Symbols$$Symbol.tpe(Symbols.scala:472)
+	at scala.tools.nsc.symtab.Symbols$$Symbol.tpeHK(Symbols.scala:626)
+	at scala.tools.nsc.symtab.Types$$Type.memberType(Types.scala:407)
+	at scala.tools.nsc.typechecker.Infer$$Inferencer.checkAccessible(Infer.scala:366)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedIdent$$1(Typers.scala:2884)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:3157)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3228)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedQualifier(Typers.scala:3285)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:3145)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3228)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedType(Typers.scala:3297)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:3077)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3228)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedBind$$1(Typers.scala:2273)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:3007)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3228)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedPattern(Typers.scala:3293)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedCase(Typers.scala:1392)
+	at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$typedCases$$1.apply(Typers.scala:1414)
+	at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$typedCases$$1.apply(Typers.scala:1413)
+	at scala.List$$.loop$$1(List.scala:293)
+	at scala.List$$.mapConserve(List.scala:310)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedCases(Typers.scala:1413)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:3042)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3228)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3276)
+	at scala.tools.nsc.typechecker.Typers$$Typer.computeType(Typers.scala:3318)
+	at scala.tools.nsc.typechecker.Namers$$Namer.methodSig(Namers.scala:692)
+	at scala.tools.nsc.typechecker.Namers$$Namer.typeSig(Namers.scala:814)
+	at scala.tools.nsc.typechecker.Namers$$Namer$$$$anonfun$$typeCompleter$$1.apply(Namers.scala:404)
+	at scala.tools.nsc.typechecker.Namers$$Namer$$$$anonfun$$typeCompleter$$1.apply(Namers.scala:402)
+	at scala.tools.nsc.typechecker.Namers$$$$anon$$1.complete(Namers.scala:988)
+	at scala.tools.nsc.symtab.Symbols$$Symbol.info(Symbols.scala:493)
+	at scala.tools.nsc.symtab.Symbols$$Symbol.initialize(Symbols.scala:607)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:2947)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3228)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3265)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedStat$$1(Typers.scala:1540)
+	at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$19.apply(Typers.scala:1585)
+	at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$19.apply(Typers.scala:1585)
+	at scala.List$$.loop$$1(List.scala:293)
+	at scala.List$$.mapConserve(List.scala:310)
+	at scala.List$$.loop$$1(List.scala:297)
+	at scala.List$$.mapConserve(List.scala:310)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedStats(Typers.scala:1585)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedTemplate(Typers.scala:1165)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedClassDef(Typers.scala:1039)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:2957)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3228)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3265)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedStat$$1(Typers.scala:1540)
+	at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$19.apply(Typers.scala:1585)
+	at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$19.apply(Typers.scala:1585)
+	at scala.List$$.loop$$1(List.scala:293)
+	at scala.List$$.mapConserve(List.scala:310)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedStats(Typers.scala:1585)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:2953)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3228)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3265)
+	at scala.tools.nsc.typechecker.Analyzer$$typerFactory$$$$anon$$2.apply(Analyzer.scala:40)
+	at scala.tools.nsc.Global$$GlobalPhase.applyPhase(Global.scala:257)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:243)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:243)
+	at scala.Iterator$$class.foreach(Iterator.scala:395)
+	at scala.collection.mutable.ListBuffer$$$$anon$$1.foreach(ListBuffer.scala:266)
+	at scala.tools.nsc.Global$$GlobalPhase.run(Global.scala:243)
+	at scala.tools.nsc.Global$$Run.compileSources(Global.scala:555)
+	at scala.tools.nsc.Global$$Run.compile(Global.scala:640)
+	at scala.tools.nsc.Main$$.process(Main.scala:84)
+	at scala.tools.nsc.Main$$.main(Main.scala:98)
+	at scala.tools.nsc.Main.main(Main.scala)
+

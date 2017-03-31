@@ -1,0 +1,15 @@
+I'm in the middle of writing my own mini regex library, and I stumbled upon this issue. Here is the basic code that does not compile:
+
+{noformat}
+val clientRegex= "search for this \d"
+val regexString = s""".*+[2-3]$clientVal""" // only clientVal is relevant here
+    // returns 'invalid escape - use '\\'
+{noformat}
+
+So in my code - no problem, I can use two backslashes (even though that defeats the whole purpose of triple quotes). However, code like this will be in a method that I expose for clients to use. 
+
+Now if a client decides to use my method, and passes some regex string that contains any escape like `\d` - then I'll fail. So my only workaround here is to use the old "some string" + someVal + "more string" syntax - which I hate. 
+
+Or I'll have to parse the user regex and if there is any backslashes in it, then create a string using two backslashes instead.
+
+I've had this come up many times when using Regex in scala. I'm surprised that something like this is sitting on the backlog.

@@ -1,0 +1,37 @@
+Okay, I didn't fix this or anything but I just checked in a rewrite of MessageQueue which adds tracing.  The actor library is too complicated for me to figure out much about it without a serious time investment, but for whatever reason a bunch of different message queues are created depending on how you run it.  The one doing the wrong thing puts its first three messages in three different queues (labelled below as Temp:3, Reactor:1, and Temp:4) and then piles them up in Temp:4.
+{code}
+[Temp:3 size=1] [APPEND 1] first = null, last = null
+[Reactor:1 size=1] [APPEND 1] first = null, last = null
+[Temp:4 size=1] [APPEND 2] first = null, last = null
+[Temp:4 size=2] [APPEND 3] first = 2, last = 2
+[Temp:4 size=3] [APPEND how many?] first = 2, last = 3
+[Temp:4 size=4] [APPEND how many?] first = 2, last = how many?
+[Temp:4 size=5] [APPEND 4] first = 2, last = how many?
+[Temp:4 size=6] [APPEND how many?] first = 2, last = 4
+[Temp:4 size=6] [REMOVE how many?] first = 2, last = how many?
+[Reactor:1 size=2] [APPEND 2] first = 1, last = 1
+[Reactor:1 size=3] [APPEND 3] first = 1, last = 2
+[Reactor:1 size=4] [APPEND how many?] first = 1, last = 3
+[Reactor:1 size=5] [APPEND 4] first = 1, last = how many?
+[Reactor:1 size=6] [APPEND how many?] first = 1, last = 4
+I've got 6 messages in my mailbox.
+[Reactor:1 size=6] [REMOVE how many?] first = 1, last = how many?
+I've got 5 messages in my mailbox.
+[Reactor:1 size=5] [REMOVE how many?] first = 1, last = 4
+I've got 4 messages in my mailbox.
+{code}
+In the REPL there are no "Temp" queues created, but "Start" queues instead.  (The label comes from where in the actor lib the queue is instantiated.) Partial transcript below:
+{code}
+[Start:3 size=1] [APPEND 1] first = null, last = null
+[Reactor:1 size=1] [APPEND 1] first = null, last = null
+[Start:4 size=1] [APPEND 2] first = null, last = null
+[Reactor:1 size=2] [APPEND 2] first = 1, last = 1
+[Start:5 size=1] [APPEND 3] first = null, last = null
+[Reactor:1 size=3] [APPEND 3] first = 1, last = 2
+[Start:6 size=1] [APPEND how many?] first = null, last = null
+[Start:6 size=1] [REMOVE how many?] first = null, last = null
+I've got 3 messages in my mailbox.
+[Start:7 size=1] [APPEND how many?] first = null, last = null
+[Start:7 size=1] [REMOVE how many?] first = null, last = null
+I've got 3 messages in my mailbox.
+{code}

@@ -1,0 +1,67 @@
+I am able to induce a compiler crash with the code attached. I am running on 2.7.3 and last time I tried with the trunk 2.8 compiler I was also able to produce the crash.
+
+{code}
+object Crash {
+  trait UpdateType[A]
+  case class StateUpdate[A](updateType : UpdateType[A], value : A)
+  
+
+  //However this method will cause a crash
+  def crash(updates: List[StateUpdate[_]]) {
+    updates match {
+      case Nil =>
+      case u::us =>
+        val v = u.value
+        ()
+    }
+  }
+}
+{code}
+
+I am including the stack trace in the description so that it will get indexed for searches (not sure if Trac does that for files) even though it will look ugly.
+
+{code}
+Exception in thread "main" java.lang.Error: Unknown type: ?
+	at scala.tools.nsc.Global.abort(Global.scala:153)
+	at scala.tools.nsc.backend.icode.TypeKinds$$class.toTypeKind(TypeKinds.scala:453)
+	at scala.tools.nsc.backend.icode.ICodes.toTypeKind(ICodes.scala:21)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:410)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genStat(GenICode.scala:183)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$genStat$$1.apply(GenICode.scala:146)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$genStat$$1.apply(GenICode.scala:145)
+	at scala.List.foreach(List.scala:834)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.genStat(GenICode.scala:145)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:938)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:447)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:939)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:939)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:447)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:448)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:939)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:114)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:71)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:71)
+	at scala.List.foreach(List.scala:834)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:71)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:136)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:90)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:71)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:71)
+	at scala.List.foreach(List.scala:834)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:71)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:81)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:67)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.apply(GenICode.scala:63)
+	at scala.tools.nsc.Global$$GlobalPhase.applyPhase(Global.scala:267)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:246)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:246)
+	at scala.Iterator$$class.foreach(Iterator.scala:414)
+	at scala.collection.mutable.ListBuffer$$$$anon$$1.foreach(ListBuffer.scala:266)
+	at scala.tools.nsc.Global$$GlobalPhase.run(Global.scala:246)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.run(GenICode.scala:56)
+	at scala.tools.nsc.Global$$Run.compileSources(Global.scala:574)
+	at scala.tools.nsc.Global$$Run.compile(Global.scala:667)
+	at scala.tools.nsc.Main$$.process(Main.scala:73)
+	at scala.tools.nsc.Main$$.main(Main.scala:87)
+	at scala.tools.nsc.Main.main(Main.scala)
+{code}

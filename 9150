@@ -1,0 +1,11 @@
+@Barnabás Králik, I'm not sure I can add something on your proposal. (I hadn't seen Jason Zaugg's latest answer).
+> What do you mean by inference not being predictable?
+
+Take an arbitrary Scala program requiring type/implicit inference to fill in some blanks. Can you *predict* whether Scalac will manage to do such inference? I know nobody who can. There are many other questions whose answer should be predictable and isn't.
+
+For instance, Dunﬁeld and Krishnaswami write, in a type inference paper for a different language (without subtyping):
+"We want to relieve programmers from having to write redundant type annotations, and even more importantly, enable programmers to easily *predict* where type annotations are needed." (Sec. 2.3, Robustness of Typing; the paper lives at http://arxiv.org/pdf/1306.6032.pdf, http://dl.acm.org/citation.cfm?id=2500582). Some theorems in that section state that some simple refactorings keep type inference working. (However, those theorems are hard to prove).
+
+For instance, imagine the statement "if you change the order of implicit parameters in a function declaration, it will still be possible to infer implicit parameters for every call site where it was possible before". If this were a theorem for Scala type inference, this bug would not show up. That's why I titled the bug "Order of implicit arguments matters".
+
+However, that paper contains a 70-page appendix of proofs, and the Scala type system is bigger and more complex, so it's not easy to extend their work to Scala — it would be another research effort. So, I don't have "specific ongoing research in mind", but maybe this research is happening as part of the Dotty project. But I would expect quite some improvements to be possible.

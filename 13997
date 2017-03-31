@@ -1,0 +1,29 @@
+According to SLS 6.19 the production for generators is,
+{code}
+Pattern1 '<-' Expr [Guard]
+{code}
+
+Pattern1 includes type patterns, so the following ought to compile,
+{code}
+val a : Any = "foo"
+for (s : String <- Some(a)) yield s
+{code}
+
+and behave similarly to,
+{code}
+val a : Any = "foo"
+Some(a) match { case Some(s : String) => Some(s) ; case _ => None }
+{code}
+
+However the for comprehension gives the following error at compile time,
+{code}
+scala> val a : Any = "foo"
+a: Any = foo
+
+scala> for(s : String <- Some(a)) yield s
+<console>:6: error: type mismatch;
+ found   : (String) => String
+ required: (Any) => ?
+       for(s : String <- Some(a)) yield s
+           ^
+{code}

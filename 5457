@@ -1,0 +1,9 @@
+(In r24270) I chased a lot of ghosts before finding the real culprit
+for why partest failures have been unfailing.
+
+  Process(Seq("bash", "-c", "exit 42")) !             // 42
+  Process(Seq("bash", "-c", "exit 42")) #> logFile !  // 0
+
+That behavior is not yet fixed, but I altered partest not
+to use #> and fixed the test which should have been failing
+but wasn't.  Closes SI-4227, no review.

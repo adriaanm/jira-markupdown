@@ -1,0 +1,74 @@
+{code}
+Welcome to Scala version 2.6.1.13775.20080122-102049.
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> val a = scala.collection.immutable.Set.empty ++ (for (i <- 0 to 10000) yield i)
+a: scala.collection.immutable.Set[Int] = Set(2363, 4432, 1402, 109, 328, 5170, 7160, 56...
+scala> val b = scala.collection.immutable.Set.empty ++ (for (i <- 0 to 10000) yield i)
+b: scala.collection.immutable.Set[Int] = Set(2363, 4432, 1402, 109, 328, 5170, 7160, 56...
+scala> a -- b
+res0: scala.collection.immutable.Set[Int] = Set()
+
+scala> a -- b
+java.lang.StackOverflowError
+        at scala.collection.immutable.HashSet.undo$$1(HashSet.scala:111)
+        at scala.collection.immutable.HashSet.undo$$1(HashSet.scala:112)
+        at scala.collection.immutable.HashSet.undo$$1(HashSet.scala:112)
+        at scala.collection.immutable.HashSet.undo$$1(HashSet.scala:112)
+        at scala.collection.immutable.HashSet.undo$$1(HashSet.scala:112)
+        at scala.collection.immutable.Ha...
+scala> a -- b
+java.lang.StackOverflowError
+        at scala.collection.immutable.HashSet.undo$$1(HashSet.scala:111)
+        at scala.collection.immutable.HashSet.undo$$1(HashSet.scala:112)
+        at scala.collection.immutable.HashSet.undo$$1(HashSet.scala:112)
+        at scala.collection.immutable.HashSet.undo$$1(HashSet.scala:112)
+        at scala.collection.immutable.HashSet.undo$$1(HashSet.scala:112)
+        at scala.collection.immutable.Ha...
+scala> a -- b
+res3: scala.collection.immutable.Set[Int] = Set()
+
+scala> a -- b
+java.lang.StackOverflowError
+        at scala.collection.immutable.HashSet.undo$$1(HashSet.scala:111)
+        at scala.collection.immutable.HashSet.undo$$1(HashSet.scala:112)
+        at scala.collection.immutable.HashSet.undo$$1(HashSet.scala:112)
+        at scala.collection.immutable.HashSet.undo$$1(HashSet.scala:112)
+        at scala.collection.immutable.HashSet.undo$$1(HashSet.scala:112)
+        at scala.collection.immutable.Ha...
+scala> a -- b
+java.lang.StackOverflowError
+        at scala.collection.immutable.HashSet.undo$$1(HashSet.scala:112)
+        at scala.collection.immutable.HashSet.undo$$1(HashSet.scala:112)
+        at scala.collection.immutable.HashSet.undo$$1(HashSet.scala:112)
+        at scala.collection.immutable.HashSet.undo$$1(HashSet.scala:112)
+        at scala.collection.immutable.HashSet.undo$$1(HashSet.scala:112)
+        at scala.collection.immutable.Ha...
+scala> a -- b
+res6: scala.collection.immutable.Set[Int] = Set()
+
+scala> a -- b
+res7: scala.collection.immutable.Set[Int] = Set()
+
+scala> a -- b
+res8: scala.collection.immutable.Set[Int] = Set()
+
+scala> a -- b
+res9: scala.collection.immutable.Set[Int] = Set()
+
+scala> a -- b
+res10: scala.collection.immutable.Set[Int] = Set()
+
+scala> a -- b
+res11: scala.collection.immutable.Set[Int] = Set()
+
+scala> a -- b
+res12: scala.collection.immutable.Set[Int] = Set()
+{code}
+
+Apologizes for the long dump, but I wanted to show the odd behavior where the exception goes away after repeated tries.
+
+Smaller sizes for the sets do not overflow the stack.
+
+The stack overflow will also happen on the sequence 'a -- b ; b -- a' and 'b -- a ; a -- b'.

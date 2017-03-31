@@ -1,0 +1,10 @@
+I think there is a double mistake here.
+
+1) the fact that reordering imports can change compilation success is a different issue than the original one.
+2) Jason showed that the effect of SI-3346 on my code can be countered by removing sortBy in Implicits.scala, hence there is no need to revert that change.
+
+In support of 1), removing sortBy does not fix compilation failure on the first occurrence (i.e. when int2string is moved after coef2rf). It does fix failure on the second occurence.
+
+Regarding my code, I have found a workaround of my own, but yours may be good too, I have to check it.
+
+Still, I think this bug (the original one, causing failure on the second identical line) is worth fixing (and simple to fix, see https://github.com/scala/scala/pull/3408 about how removing sortBy has no effect on performance). Hence I have created a new pull request https://github.com/scala/scala/pull/3540

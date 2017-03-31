@@ -1,0 +1,17 @@
+I figured out why this fails in my case but not others. I am creating my Scala projects from the command line using a Maven plugin. More generally, this problem occurs for _imported_ Scala project not created from within Eclipse. Perhaps scala.tools.eclipse.Nature#configure doesn't run for an imported project, or the JavaNature is configured later and overwrites the scrub flag? Note that this use case would occur frequently for Lift web applications. (For example: http://liftweb.net/index.php/Hello_Darwin.)
+
+The updated repro instructions for step 2 should be: 
+Create a Scala project using maven:
+
+{code}
+mvn archetype:generate -U                                     \
+ -DarchetypeGroupId=net.liftweb                             \
+ -DarchetypeArtifactId=lift-archetype-blank                 \
+ -DarchetypeVersion=0.9                            \
+ -DremoteRepositories=http://scala-tools.org/repo-releases  \
+ -DgroupId=sandbox.lift.hellodarwin -DartifactId=hellodarwin
+cd hellodarwin
+mvn eclipse:eclipse
+{code}
+Import the project into Eclipse (File | Import | Existing Projects into Workspace... Click Next. Browse for the hellodarwin folder you just created, click Ok, click Finish.)
+

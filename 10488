@@ -1,0 +1,54 @@
+Interested to see where you managed to finesse this!
+
+Reducing the example from your comment and adding an explicit type:
+
+{code}
+trait Thing { type A; var p: A = _ }
+class AA[T](final val x: HasA { type A = T }) {
+  def foo: x.A = ???
+}
+
+class B extends AA[Int](null) {
+  override def foo: B.this.x.A = super.foo
+}
+{code}
+
+Leads to:
+
+{noformat}
+sandbox/test.scala:7: error: type mismatch;
+ found   : B#7645.this.x#14044.A#14051
+    (which expands to)  T#7883
+ required: B#7645.this.x#14044.scala.A#15337
+    (which expands to)  scala#21.this.Int#1760
+  override def foo: B.this.x.A = super.foo
+{noformat}
+
+The `scala.` part looks like a bug in type printing, something must be using the prefix of the normalized type there.
+
+The second symbol for `A` comes from the as-seen-from of the selection `B#7645.this.x` in the type of the overriding method.
+
+{code}
+     // Base class
+    <method> <triedcooking> def foo#14047: AA#7882.this.x#14044.A#14051 = scala#21.this.Predef#1992.$qmark$qmark$qmark#7269
+
+    // Sub class
+    <method> override def foo#15326: B#7645.this.x#14044.A#15337 = B#7645.super.<error: method foo#14047>#25431
+{code}
+
+I guess you've ended up in:
+
+{code}
+  private def equalSymsAndPrefixes(sym1: Symbol, pre1: Type, sym2: Symbol, pre2: Type): Boolean = (
+    if (sym1 == sym2)
+      sym1.hasPackageFlag || sym1.owner.hasPackageFlag || phase.erasedTypes || pre1 =:= pre2
+    else
+      (sym1.name == sym2.name) && isUnifiable(pre1, pre2)
+  )
+{code}
+
+and `isEligibleForPrefixUnification`. I seem to remember pushing those around in a previous excursion out of the trenches.
+
+Okay, git tells me that was in the aborted attempt at SI-8071
+
+https://github.com/scala/scala/pull/3267

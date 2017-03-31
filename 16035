@@ -1,0 +1,52 @@
+=== What steps will reproduce the problem? ===
+{code}
+ ~/code/scratch/array: cat ArrayFactory.java 
+public interface ArrayFactory<T> {
+  T[] create(int count);
+}
+
+ ~/code/scratch/array: cat ScalaArrayFactory.scala 
+class ScalaArrayFactory[T: Manifest] extends ArrayFactory[T] {
+  def create(count: Int) = Array.ofDim[T](count)
+}
+{code}
+
+Joint compilation works, separate compilation fails.
+
+{code}
+ ~/code/scratch/array: scalac -d out ArrayFactory.java ScalaArrayFactory.scala  ~/code/scratch/array: 
+ ~/code/scratch/array: javac -d out ArrayFactory.java && scalac -d out -classpath out ScalaArrayFactory.scala 
+ScalaArrayFactory.scala:2: error: type mismatch;
+ found   : Array[T]
+ required: Array[T with java.lang.Object]
+  def create(count: Int) = Array.ofDim[T](count)
+                                         ^
+one error found
+Scala compiler version 2.8.1.final -- Copyright 2002-2010, LAMP/EPFL
+{code}
+
+Same result (although with an expanded error message) result with a snapshot of 2.9 from a few weeks back.
+{code}
+ ~/code/scratch/array: scalac29 -version
+Scala compiler version 2.9.0.r24423-b20110309020116 -- Copyright 2002-2011, LAMP/EPFL
+ ~/code/scratch/array: javac -d out ArrayFactory.java && scalac29 -d out -classpath out ScalaArrayFactory.scala 
+ScalaArrayFactory.scala:2: error: type mismatch;
+ found   : Array[T]
+ required: Array[T with java.lang.Object]
+Note: T >: T with java.lang.Object, but class Array is invariant in type T.
+You may wish to investigate a wildcard type such as `_ >: T with java.lang.Object`. (SLS 3.2.10)
+  def create(count: Int) = Array.ofDim[T](count)
+                                         ^
+one error found
+ ~/code/scratch/array: scalac29 -d out ArrayFactory.java ScalaArrayFactory.scala 
+ ~/code/scratch/array: 
+
+{code} 
+
+
+=== What is the expected behavior? ===
+
+Consistent behaviour with joint and separate compilation.
+
+=== What versions of the following are you using? ===
+  - Scala: 2.8.1, 2.9.0-SNAPSHOT

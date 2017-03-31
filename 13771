@@ -1,0 +1,34 @@
+Problem reported in
+http://article.gmane.org/gmane.comp.lang.scala.user/8298
+
+
+Here's a tail recursive implementation
+
+{code}
+
+def dropWhile(p: A => Boolean): Iterator[A] = {
+    def loop(): Iterator[A] = {
+        if (hasNext) {
+            val x = next()
+            if (p(x))
+                loop()
+            else
+                Iterator.single(x) append this
+        } else {
+            this
+        }
+    }
+
+    loop()
+}
+
+{code}
+
+Simple test cases
+{code}
+    val i = 10000
+    println((1 to i).elements.dropWhile2( _ < i).next) // 10000
+    println((1 to i).elements.dropWhile2( _ > i).next) // 1
+    println((1 to i).elements.dropWhile2( _ <= i).hasNext) // false
+{code}
+

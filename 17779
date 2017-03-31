@@ -1,0 +1,26 @@
+Given code snippet does not compile when type of value {{v}} declared explicitly . 
+{code}
+class O {
+  class I
+  val x = new O
+  def v: x.I = ???
+}
+
+object Test extends App {
+  val v: o.x.I forSome { val o: O } = (new O).v
+}
+{code}
+{code}
+ex_test.scala:10: error: type mismatch;
+ found   : _1.x.I where val _1: O
+ required: Test.o.x.I[]
+  val v: o.x.I forSome { val o: O } = (new O).v
+                                              ^
+one error found
+{code}
+
+The code compiles with type alias or when type of {{v}} is inferred.
+{code}
+type T = o.x.I forSome { val o: O }
+val v: T = (new O).v
+{code}

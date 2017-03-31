@@ -1,0 +1,70 @@
+{code}
+import scala.reflect.runtime.universe._
+import scala.tools.reflect.Eval
+
+object O {
+  type A = {
+    type B = {
+      type C
+    }
+  }
+}
+
+object Test extends App {
+  val x: O.A = new {
+    type B = O.A#B
+  }
+
+  val y: x.B = new {
+    type C = x.B#C
+  }
+
+  def expr = reify {
+    val b: x.B = y
+  }
+
+  println(expr.eval)
+}
+{code}
+
+During execution (not compilation!):
+{code}
+scala.tools.reflect.ToolBoxError: reflective toolbox has failed:
+
+unresolved free type variables (namely: B defined by <refinement> in reify_renamed_type_basic.scala:6:10). have you forgot to use
+TypeTag annotations for type parameters external to a reifee? if you have troubles tracking free type variables, consider using -Xlog-free-types
+
+        at scala.tools.reflect.ToolBoxFactory$ToolBoxImpl$ToolBoxGlobal.verify(ToolBoxFactory.scala:82)
+        at scala.tools.reflect.ToolBoxFactory$ToolBoxImpl$ToolBoxGlobal.compile(ToolBoxFactory.scala:200)
+        at scala.tools.reflect.ToolBoxFactory$ToolBoxImpl.compile(ToolBoxFactory.scala:415)
+        at scala.tools.reflect.ToolBoxFactory$ToolBoxImpl.eval(ToolBoxFactory.scala:418)
+        at scala.tools.reflect.Eval.eval(package.scala:116)
+        at Test$delayedInit$body.apply(reify_renamed_type_basic.scala:25)
+        at scala.Function0$class.apply$mcV$sp(Function0.scala:40)
+        at scala.runtime.AbstractFunction0.apply$mcV$sp(AbstractFunction0.scala:12)
+        at scala.App$$anonfun$main$1.apply(App.scala:71)
+        at scala.App$$anonfun$main$1.apply(App.scala:71)
+        at scala.collection.immutable.List.foreach(List.scala:309)
+        at scala.collection.generic.TraversableForwarder$class.foreach(TraversableForwarder.scala:32)
+        at scala.collection.mutable.ListBuffer.foreach(ListBuffer.scala:45)
+        at scala.App$class.main(App.scala:71)
+        at Test$.main(reify_renamed_type_basic.scala:12)
+        at Test.main(reify_renamed_type_basic.scala)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+        at java.lang.reflect.Method.invoke(Method.java:597)
+        at scala.tools.nsc.util.ScalaClassLoader$$anonfun$run$1.apply(ScalaClassLoader.scala:71)
+        at scala.tools.nsc.util.ScalaClassLoader$class.asContext(ScalaClassLoader.scala:31)
+        at scala.tools.nsc.util.ScalaClassLoader$URLClassLoader.asContext(ScalaClassLoader.scala:139)
+        at scala.tools.nsc.util.ScalaClassLoader$class.run(ScalaClassLoader.scala:71)
+        at scala.tools.nsc.util.ScalaClassLoader$URLClassLoader.run(ScalaClassLoader.scala:139)
+        at scala.tools.nsc.CommonRunner$class.run(ObjectRunner.scala:28)
+        at scala.tools.nsc.ObjectRunner$.run(ObjectRunner.scala:45)
+        at scala.tools.nsc.CommonRunner$class.runAndCatch(ObjectRunner.scala:35)
+        at scala.tools.nsc.ObjectRunner$.runAndCatch(ObjectRunner.scala:45)
+        at scala.tools.nsc.MainGenericRunner.runTarget$1(MainGenericRunner.scala:74)
+        at scala.tools.nsc.MainGenericRunner.process(MainGenericRunner.scala:96)
+        at scala.tools.nsc.MainGenericRunner$.main(MainGenericRunner.scala:105)
+        at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
+{code}

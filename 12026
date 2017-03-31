@@ -1,0 +1,22 @@
+We're almost there in the current development version (that will be 2.12.0-M5): {{foreachSAM}} is inlined and the strings are directly passed to {{C.$anonfun$testSAM$1}}, the only leftover is that closure is allocated and then immediately discarded:
+
+{noformat}
+  public testSAM([Ljava/lang/String;Ljava/lang/String;)V
+...
+    INVOKEDYNAMIC accept(Ljava/lang/String;)Ljava/util/function/Consumer; [
+      // handle kind 0x6 : INVOKESTATIC
+      java/lang/invoke/LambdaMetafactory.altMetafactory(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;[Ljava/lang/Object;)Ljava/lang/invoke/CallSite;
+      // arguments:
+      (Ljava/lang/Object;)V, 
+      // handle kind 0x6 : INVOKESTATIC
+      C.$anonfun$testSAM$1(Ljava/lang/String;Ljava/lang/String;)V, 
+      (Ljava/lang/String;)V, 
+      3, 
+      1, 
+      Lscala/Serializable;.class, 
+      0
+    ]
+    POP
+...
+{noformat}
+

@@ -1,0 +1,34 @@
+It's just a type inference bug. If you write down as return type exactly what Scalac inferred, everything works. If Scalac infers the type itself, he doesn't like what he did, although it looks the same as the expected type. Misteries of Scala programming.
+
+Minimized:
+{code}
+scala> def g[T1 <: {type MemberT2}]: DepFunction1[T1, ({type Ret[x <: T1] = x#MemberT2})#Ret] =
+     |   new DepFunction1[T1, ({type Ret[x <: T1] = x#MemberT2})#Ret] {
+     |     def apply(a: T1) = f2(a)
+     |   }
+<console>:11: error: type mismatch;
+ found   : a.MemberT2
+ required: a.MemberT2
+           def apply(a: T1) = f2(a)
+                                ^
+{code}
+Workarounded:
+{code}
+scala> def g[T1 <: {type MemberT2}]: DepFunction1[T1, ({type Ret[x <: T1] = x#MemberT2})#Ret] =
+     |   new DepFunction1[T1, ({type Ret[x <: T1] = x#MemberT2})#Ret] {
+     |     def apply(a: T1): a.MemberT2 = f2(a)
+     |   }
+g: [T1 <: AnyRef{type MemberT2}]=> DepFunction1[T1,[x <: T1]x#MemberT2]
+{code}
+Note that I just added an explicit type annotation.
+Backporting this to the original code, I get working code:
+{code}
+scala> def g[T1 <: {type MemberT2 <: {type MemberT3}}]: DepFunction1[T1, ({type Ret[x <: T1] = DepFunction1[x#MemberT2, ({type Ret[y <: x#MemberT2] = y#MemberT3})#Ret]})#Ret] =
+     |   new DepFunction1[T1, ({type Ret[x <: T1] = DepFunction1[x#MemberT2, ({type Ret[y <: x#MemberT2] = y#MemberT3})#Ret]})#Ret] {
+     |     def apply(a: T1): DepFunction1[a.MemberT2, ({type Ret[y <: a.MemberT2] = y#MemberT3})#Ret] =
+     |       new DepFunction1[a.MemberT2, ({type Ret[y <: a.MemberT2] = y#MemberT3})#Ret] {
+     |         def apply(b: a.MemberT2): b.MemberT3 = f(a)(b)
+     |       }
+     |     }
+g: [T1 <: AnyRef{type MemberT2 <: AnyRef{type MemberT3}}]=> DepFunction1[T1,[x <: T1]DepFunction1[x#MemberT2,[y <: x#MemberT2]y#MemberT3]]
+{code}

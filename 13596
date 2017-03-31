@@ -1,0 +1,38 @@
+I attempt to compile the following under 2.7.1:
+
+{code}
+trait Foo
+
+case class Bar[E](input: E)( implicit val foo: Foo ) 
+
+implicit object f extends Foo
+implicit object bar extends Bar(1)
+{code}
+
+I expect the code to compile. Instead, it fails with the error:
+{{ 
+error: illegal cyclic reference involving object bar 
+{code}
+
+The error is resolved if I do any of the following:
+
+1. supply the type parameter for bar
+
+{{ 
+implicit object bar extends Bar[Int](1) 
+{code}
+
+2. Make bar not be implicit:
+
+{{ 
+object bar extends Bar(1) 
+{code}
+
+3. Remove the implicit parameter to Bar:
+
+{{ 
+case class Bar[E](input: E) 
+{code}
+
+I hazard a guess that some interaction of those three things is causing a problem. :)
+

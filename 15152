@@ -1,0 +1,61 @@
+The following crashes the compiler during pickling. Should pickling happen even when the program hasn't type checked?
+
+{code}
+import java.lang.reflect.InvocationHandler
+
+class ExceptionTest {
+ @throws(classOf[InvocationTargetException])
+ def foo { }
+}
+{code}
+pickle.scala:4: error: not found: type InvocationTargetException
+ @throws(classOf[InvocationTargetException])
+                 ^
+scala.tools.nsc.FatalError: bad type: <error>(class scala.tools.nsc.symtab.Types$$ErrorType$$)
+	at scala.tools.nsc.symtab.classfile.Pickler$$Pickle.scala$$tools$$nsc$$symtab$$classfile$$Pickler$$Pickle$$$$putType(Pickler.scala:216)
+	at scala.tools.nsc.symtab.classfile.Pickler$$Pickle.putConstant(Pickler.scala:426)
+	at scala.tools.nsc.symtab.classfile.Pickler$$Pickle.putAnnotArg$$1(Pickler.scala:457)
+	at scala.tools.nsc.symtab.classfile.Pickler$$Pickle$$$$anonfun$$putAnnotationBody$$1.apply(Pickler.scala:474)
+	at scala.tools.nsc.symtab.classfile.Pickler$$Pickle$$$$anonfun$$putAnnotationBody$$1.apply(Pickler.scala:474)
+	at scala.collection.LinearSeqLike$$class.foreach(LinearSeqLike.scala:97)
+	at scala.collection.immutable.List.foreach(List.scala:46)
+	at scala.tools.nsc.symtab.classfile.Pickler$$Pickle.putAnnotationBody(Pickler.scala:474)
+	at scala.tools.nsc.symtab.classfile.Pickler$$Pickle.scala$$tools$$nsc$$symtab$$classfile$$Pickler$$Pickle$$$$putAnnotation(Pickler.scala:441)
+	at scala.tools.nsc.symtab.classfile.Pickler$$Pickle$$$$anonfun$$putSymbol$$2.apply(Pickler.scala:151)
+	at scala.tools.nsc.symtab.classfile.Pickler$$Pickle$$$$anonfun$$putSymbol$$2.apply(Pickler.scala:150)
+	at scala.collection.LinearSeqLike$$class.foreach(LinearSeqLike.scala:97)
+	at scala.collection.immutable.List.foreach(List.scala:46)
+	at scala.tools.nsc.symtab.classfile.Pickler$$Pickle.putSymbol(Pickler.scala:150)
+	at scala.tools.nsc.symtab.classfile.Pickler$$Pickle$$$$anonfun$$putSymbols$$1.apply(Pickler.scala:160)
+	at scala.tools.nsc.symtab.classfile.Pickler$$Pickle$$$$anonfun$$putSymbols$$1.apply(Pickler.scala:160)
+	at scala.collection.LinearSeqLike$$class.foreach(LinearSeqLike.scala:97)
+	at scala.collection.immutable.List.foreach(List.scala:46)
+	at scala.tools.nsc.symtab.classfile.Pickler$$Pickle.putSymbols(Pickler.scala:160)
+	at scala.tools.nsc.symtab.classfile.Pickler$$Pickle.scala$$tools$$nsc$$symtab$$classfile$$Pickler$$Pickle$$$$putType(Pickler.scala:192)
+	at scala.tools.nsc.symtab.classfile.Pickler$$Pickle.putSymbol(Pickler.scala:135)
+	at scala.tools.nsc.symtab.classfile.Pickler$$PicklePhase.add$$1(Pickler.scala:42)
+	at scala.tools.nsc.symtab.classfile.Pickler$$PicklePhase.pickle$$1(Pickler.scala:53)
+	at scala.tools.nsc.symtab.classfile.Pickler$$PicklePhase$$$$anonfun$$pickle$$1$$1.apply(Pickler.scala:49)
+	at scala.tools.nsc.symtab.classfile.Pickler$$PicklePhase$$$$anonfun$$pickle$$1$$1.apply(Pickler.scala:49)
+	at scala.collection.LinearSeqLike$$class.foreach(LinearSeqLike.scala:97)
+	at scala.collection.immutable.List.foreach(List.scala:46)
+	at scala.tools.nsc.symtab.classfile.Pickler$$PicklePhase.pickle$$1(Pickler.scala:49)
+	at scala.tools.nsc.symtab.classfile.Pickler$$PicklePhase.apply(Pickler.scala:59)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$applyPhase$$1.apply(Global.scala:270)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$applyPhase$$1.apply(Global.scala:270)
+	at scala.tools.nsc.reporters.Reporter.withSource(Reporter.scala:49)
+	at scala.tools.nsc.Global$$GlobalPhase.applyPhase(Global.scala:270)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:248)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:248)
+	at scala.collection.Iterator$$class.foreach(Iterator.scala:624)
+	at scala.collection.mutable.ListBuffer$$$$anon$$1.foreach(ListBuffer.scala:285)
+	at scala.tools.nsc.Global$$GlobalPhase.run(Global.scala:248)
+	at scala.tools.nsc.Global$$Run.compileSources(Global.scala:727)
+	at scala.tools.nsc.Global$$Run.compile(Global.scala:813)
+	at scala.tools.nsc.Main$$.process(Main.scala:109)
+	at scala.tools.nsc.Main$$.main(Main.scala:123)
+	at scala.tools.nsc.Main.main(Main.scala)
+error: fatal error: bad type: <error>(class scala.tools.nsc.symtab.Types$$ErrorType$$)
+{code}
+
+{code}

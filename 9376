@@ -1,0 +1,21 @@
+I've been looking at this; you got me, it's a bug.
+{code}
+trait A { def f(): Int }
+trait B1 extends A
+abstract class B2 extends A
+
+class C {
+  (null: A).f()
+  (null: B1).f()
+  (null: B2).f()
+  // 2.9.3
+  //  7: invokeinterface #16,  1           // InterfaceMethod A.f:()I
+  // 16: invokeinterface #16,  1           // InterfaceMethod A.f:()I
+  // 25: invokeinterface #16,  1           // InterfaceMethod A.f:()I
+
+  // 2.10.1
+  //  7: invokeinterface #18,  1           // InterfaceMethod A.f:()I
+  // 16: invokeinterface #21,  1           // InterfaceMethod B1.f:()I
+  // 25: invokeinterface #18,  1           // InterfaceMethod A.f:()I
+}
+{code}

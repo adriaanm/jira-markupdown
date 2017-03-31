@@ -1,0 +1,14 @@
+Even further clarification: what you probably wanted to write was 
+{code}
+val c0a: Array[Class[T] forSome { type T }] = Array(classOf[String])
+{code}
+instead of 
+{code}
+val c0a: Array[Class[_]] = Array(classOf[String])
+{code}
+This places the existential quantifier in the correct location so that 
+{code}
+c0a(0) = classOf[String]
+{code}
+is well-typed.
+{code}

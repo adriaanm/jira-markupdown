@@ -1,0 +1,16 @@
+Minimally:
+{code}
+import annotation.bridge
+
+class A {
+  final def f() = ()
+}
+class B extends A {
+  @bridge override def f() = ()
+}
+
+object Test {
+  // java.lang.VerifyError: class B overrides final method f.()V
+  def main(args: Array[String]) = new B f()
+}
+{code}

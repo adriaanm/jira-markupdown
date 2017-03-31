@@ -1,0 +1,15 @@
+The !SyncChannel implementation is broken. Consider the following program:
+
+{code}
+import scala.concurrent._
+import scala.concurrent.ops._
+
+object Program extends Application {
+  val c = new SyncChannel[unit]
+  par({ c.write(()) }, { Thread.sleep(1000); c.read })
+}
+{code}
+
+The write call will wait forever.
+
+Also, the text on !SyncChannel in !ScalaByExample is inconsistent with the code. The text speaks of three signals, but only two variables are waited on.

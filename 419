@@ -1,0 +1,7 @@
+As I approached the bottom of the bucket of xml bugs, I came to realize that this toString business was standing in the way of my fixing SI-1787.  (The generated Select(value, nme.toString_) would fail because of the same ambiguity.) I am not without sympathy for the viewpoint that toString should be overloadable, but this has sat here unresolved forever, nobody has volunteered any plan for addressing the underlying conflict, and I don't think it's sensible to keep inflicting this bugginess on the world just to make a theoretical point.  We know how to fix it, we have the renaming technology.
+
+Fixed in r17619.
+
+The argument-taking versions of toString are now called buildString.  I couldn't call them addString as in the collections classes because Node and friends all descend from Iterable, so I was going to have to override that, but they have differing semantics because of decoding etc -- so I thought it best to avoid it altogether.
+
+Incidentally, deprecating the methods instead of removing them altogether would mean the problem persists until they are actually removed.  I think we should bite the bullet and just remove them.  It's not like it'll be the only breaking change in 2.8.

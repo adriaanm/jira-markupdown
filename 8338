@@ -1,0 +1,5 @@
+The TIMEOUT.class is located in the scala-actors.jar and Timeout.class is located in the scala-actors-migration.jar. Is this still the problem?
+
+If yes, the TIMEOUT is used in Scala actors so it can not be renamed. The Timeout is part of the actor migration and should be called Timeout so the users could smoothly move to Akka. 
+
+However, Timeout is rarely used through the public interface so we can do all accesses to Timeout through the Timeout object and then rename the Timeout class to something else (e.g. AkkaTimeout). This should not affect the migration much since it would be used through the Timeout object methods.

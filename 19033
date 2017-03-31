@@ -1,0 +1,965 @@
+I have only been able to reproduce this once, but not repeatedly. It may cause the crashes described here: http://stackoverflow.com/questions/22842486/eclipse-scala-ide-slow-and-crashes-caused-by-slick-generated-hcon-hlist
+
+**Expected result**:
+compiles fine
+
+**Actual result**:
+{noformat}
+Not sure it makes sense to report this as this happened exactly once and I haven't been able to reproduce this. If the reason can't be found it may be nice it have it in the system to be found by future people who stumble over this.
+
+**Expected result**:
+compiles fine
+
+**Actual result**:
+> compile
+[info] Compiling 1 Scala source to .../target/scala-2.10/classes...
+[error] 
+[error]      while compiling: .../src/main/scala/slow.scala
+[error]         during phase: erasure
+[error]      library version: version 2.10.4
+[error]     compiler version: version 2.10.4
+[error]   reconstructed args: -bootclasspath /System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Classes/jsfd.jar:/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Classes/classes.jar:/System/Library/Frameworks/JavaVM.framework/Frameworks/JavaRuntimeSupport.framework/Resources/Java/JavaRuntimeSupport.jar:/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Classes/ui.jar:/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Classes/laf.jar:/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Classes/sunrsasign.jar:/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Classes/jsse.jar:/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Classes/jce.jar:/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Classes/charsets.jar:~/.ivy2/cache/org.scala-lang/scala-library/jars/scala-library-2.10.4.jar -classpath .../target/scala-2.10/classes:.../lib/jaybird-2.2.4.jar:~/.ivy2/local/com.typesafe.slick/slick_2.10/2.0.1/jars/slick_2.10.jar:~/.ivy2/cache/org.slf4j/slf4j-api/jars/slf4j-api-1.6.4.jar:~/.ivy2/cache/org.slf4j/slf4j-nop/jars/slf4j-nop-1.6.4.jar:~/.ivy2/cache/com.h2database/h2/jars/h2-1.3.166.jar
+[error] 
+[error]   last tree to typer: TypeTree(trait RelationalDriver)
+[error]               symbol: trait RelationalDriver in package profile (flags: <interface> abstract <trait> <lateinterface>)
+[error]    symbol definition: abstract trait RelationalDriver extends BasicDriver with RelationalProfile
+[error]                  tpe: slick.profile.RelationalDriver
+[error]        symbol owners: trait RelationalDriver -> package profile
+[error]       context owners: value x$375 -> method * -> class Job -> trait Tables -> package manual
+[error] 
+[error] == Enclosing template or block ==
+[error] 
+[error] Block(
+[error]   ValDef( // val x$375: scala.slick.lifted.Column[String]
+[error]     <synthetic> <triedcooking>
+[error]     "x$375"
+[error]     <tpt> // tree.tpe=slick.lifted.Column
+[error]     Apply( // val escalationrequired(): scala.slick.lifted.Column[String] in class Job
+[error]       Job.this."escalationrequired" // val escalationrequired(): scala.slick.lifted.Column[String] in class Job
+[error]       Nil
+[error]     )
+[error]   )
+[error]   Apply( // final def ::[E](elem: E): scala.slick.collection.heterogenous.HCons[E,HList.this.Self] in class HList
+[error]     {
+[error]   <synthetic> val x$374: scala.slick.lifted.Column[Option[String]] = Job.this.warrantydatetype();
+[error]   {
+[error]   <synthetic> val x$373: scala.slick.lifted.Column[Option[java.sql.Date]] = Job.this.activationdate();
+[error]   {
+[error]   <synthetic> val x$372: scala.slick.lifted.Column[Option[String]] = Job.this.warantyinterfacecolourtagcolour();
+[error]   {
+[error]   <synthetic> val x$371: scala.slick.lifted.Column[String] = Job.this.sendcustomerreceiptemail();
+[error]   scala.slick.collection.heterogenous.HNil.::(x$371)
+[error] }.::(x$372)
+[error] }.::(x$373)
+[error] }.::(x$374)
+[error] }."$colon$colon" // final def ::[E](elem: E): scala.slick.collection.heterogenous.HCons[E,HList.this.Self] in class HList
+[error]     "x$375" // val x$375: scala.slick.lifted.Column[String]
+[error]   )
+[error] )
+[error] 
+[error] == Expanded type of tree ==
+[error] 
+[error] TypeRef(
+[error]   TypeSymbol(
+[error]     abstract trait RelationalDriver extends BasicDriver with RelationalProfile
+[error]     
+[error]   )
+[error] )
+[error] 
+[error] uncaught exception during compilation: java.lang.StackOverflowError
+[trace] Stack trace suppressed: run last compile:compile for the full output.
+[error] (compile:compile) java.lang.StackOverflowError
+[error] Total time: 80 s, completed Apr 6, 2014 1:51:01 PM
+{noformat}
+
+**Reproduce code (using Slick 2.0.1 and Scala 2.10.4)**:
+{code}
+package db.manual
+
+object Tables extends {
+	val profile = scala.slick.driver.MySQLDriver
+} with Tables
+
+
+trait Tables {
+	
+	
+  val profile: scala.slick.driver.JdbcProfile
+  import profile.simple._
+  import scala.slick.model.ForeignKeyAction
+  import scala.slick.collection.heterogenous._
+  import scala.slick.collection.heterogenous.syntax._
+  import scala.slick.jdbc.{GetResult => GR}	
+	
+  
+  /** Entity class storing rows of table RaStatus
+   *  @param rastatusid Database column RAStatusID AutoInc, PrimaryKey
+   *  @param authorisationtypeid Database column AuthorisationTypeID 
+   *  @param sbauthorisationstatusid Database column SBAuthorisationStatusID 
+   *  @param brandid Database column BrandID 
+   *  @param rastatusname Database column RAStatusName 
+   *  @param rastatuscode Database column RAStatusCode 
+   *  @param `final` Database column Final 
+   *  @param colour Database column Colour 
+   *  @param subsetonly Database column SubsetOnly 
+   *  @param listorder Database column ListOrder 
+   *  @param status Database column Status 
+   *  @param createddatetime Database column CreatedDateTime 
+   *  @param modifieduserid Database column ModifiedUserID 
+   *  @param modifieddate Database column ModifiedDate  */
+  case class RaStatusRow(rastatusid: Int, authorisationtypeid: Option[Int], sbauthorisationstatusid: Option[Int], brandid: Int, rastatusname: Option[String], rastatuscode: Int, `final`: Option[String], colour: Option[String], subsetonly: Option[String], listorder: Int, status: Option[String], createddatetime: java.sql.Timestamp, modifieduserid: Int, modifieddate: java.sql.Timestamp)
+  /** GetResult implicit for fetching RaStatusRow objects using plain SQL queries */
+  implicit def GetResultRaStatusRow(implicit e0: GR[Int], e1: GR[Option[Int]], e2: GR[Option[String]], e3: GR[java.sql.Timestamp]): GR[RaStatusRow] = GR{
+    prs => import prs._
+    RaStatusRow.tupled((<<[Int], <<?[Int], <<?[Int], <<[Int], <<?[String], <<[Int], <<?[String], <<?[String], <<?[String], <<[Int], <<?[String], <<[java.sql.Timestamp], <<[Int], <<[java.sql.Timestamp]))
+  }
+  /** Table description of table ra_status. Objects of this class serve as prototypes for rows in queries.
+   *  NOTE: The following names collided with Scala keywords and were escaped: final */
+  class RaStatus(tag: Tag) extends Table[RaStatusRow](tag, "ra_status") {
+    def * = (rastatusid, authorisationtypeid, sbauthorisationstatusid, brandid, rastatusname, rastatuscode, `final`, colour, subsetonly, listorder, status, createddatetime, modifieduserid, modifieddate) <> (RaStatusRow.tupled, RaStatusRow.unapply)
+    /** Maps whole row to an option. Useful for outer joins. */
+    def ? = (rastatusid.?, authorisationtypeid, sbauthorisationstatusid, brandid.?, rastatusname, rastatuscode.?, `final`, colour, subsetonly, listorder.?, status, createddatetime.?, modifieduserid.?, modifieddate.?).shaped.<>({r=>import r._; _1.map(_=> RaStatusRow.tupled((_1.get, _2, _3, _4.get, _5, _6.get, _7, _8, _9, _10.get, _11, _12.get, _13.get, _14.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+    
+    /** Database column RAStatusID AutoInc, PrimaryKey */
+    val rastatusid: Column[Int] = column[Int]("RAStatusID", O.AutoInc, O.PrimaryKey)
+    /** Database column AuthorisationTypeID  */
+    val authorisationtypeid: Column[Option[Int]] = column[Option[Int]]("AuthorisationTypeID")
+    /** Database column SBAuthorisationStatusID  */
+    val sbauthorisationstatusid: Column[Option[Int]] = column[Option[Int]]("SBAuthorisationStatusID")
+    /** Database column BrandID  */
+    val brandid: Column[Int] = column[Int]("BrandID")
+    /** Database column RAStatusName  */
+    val rastatusname: Column[Option[String]] = column[Option[String]]("RAStatusName")
+    /** Database column RAStatusCode  */
+    val rastatuscode: Column[Int] = column[Int]("RAStatusCode")
+    /** Database column Final 
+     *  NOTE: The name was escaped because it collided with a Scala keyword. */
+    val `final`: Column[Option[String]] = column[Option[String]]("Final")
+    /** Database column Colour  */
+    val colour: Column[Option[String]] = column[Option[String]]("Colour")
+    /** Database column SubsetOnly  */
+    val subsetonly: Column[Option[String]] = column[Option[String]]("SubsetOnly")
+    /** Database column ListOrder  */
+    val listorder: Column[Int] = column[Int]("ListOrder")
+    /** Database column Status  */
+    val status: Column[Option[String]] = column[Option[String]]("Status")
+    /** Database column CreatedDateTime  */
+    val createddatetime: Column[java.sql.Timestamp] = column[java.sql.Timestamp]("CreatedDateTime")
+    /** Database column ModifiedUserID  */
+    val modifieduserid: Column[Int] = column[Int]("ModifiedUserID")
+    /** Database column ModifiedDate  */
+    val modifieddate: Column[java.sql.Timestamp] = column[java.sql.Timestamp]("ModifiedDate")
+    
+    /** Foreign key referencing AuthorisationTypes (database name authorisation_types_TO_ra_status) */
+    //lazy val authorisationTypesFk = foreignKey("authorisation_types_TO_ra_status", authorisationtypeid, AuthorisationTypes)(r => r.authorisationtypeid, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+    /** Foreign key referencing Brand (database name brand_TO_ra_status) */
+    //lazy val brandFk = foreignKey("brand_TO_ra_status", brandid, Brand)(r => r.brandid, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+    /** Foreign key referencing SbAuthorisationStatuses (database name sb_authorisation_status_TO_ra_status) */
+    //lazy val sbAuthorisationStatusesFk = foreignKey("sb_authorisation_status_TO_ra_status", sbauthorisationstatusid, SbAuthorisationStatuses)(r => r.sbauthorisationstatusid, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+    /** Foreign key referencing User (database name user_TO_ra_status) */
+    //lazy val userFk = foreignKey("user_TO_ra_status", modifieduserid, User)(r => r.userid, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+    
+    /** Index over (rastatuscode) (database name RAStatusCode) */
+    val index1 = index("RAStatusCode", rastatuscode)
+    /** Index over (rastatusname) (database name RAStatusName) */
+    val index2 = index("RAStatusName", rastatusname)
+  }
+  /** Collection-like TableQuery object for table RaStatus */
+  lazy val RaStatus = new TableQuery(tag => new RaStatus(tag))	
+  
+  
+  /** Entity class storing rows of table RaStatusSubset
+   *  @param parentrastatusid Database column ParentRAStatusID 
+   *  @param childrastatusid Database column ChildRAStatusID  */
+  case class RaStatusSubsetRow(parentrastatusid: Int, childrastatusid: Int)
+  /** GetResult implicit for fetching RaStatusSubsetRow objects using plain SQL queries */
+  implicit def GetResultRaStatusSubsetRow(implicit e0: GR[Int]): GR[RaStatusSubsetRow] = GR{
+    prs => import prs._
+    RaStatusSubsetRow.tupled((<<[Int], <<[Int]))
+  }
+  /** Table description of table ra_status_subset. Objects of this class serve as prototypes for rows in queries. */
+  class RaStatusSubset(tag: Tag) extends Table[RaStatusSubsetRow](tag, "ra_status_subset") {
+    def * = (parentrastatusid, childrastatusid) <> (RaStatusSubsetRow.tupled, RaStatusSubsetRow.unapply)
+    /** Maps whole row to an option. Useful for outer joins. */
+    def ? = (parentrastatusid.?, childrastatusid.?).shaped.<>({r=>import r._; _1.map(_=> RaStatusSubsetRow.tupled((_1.get, _2.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+    
+    /** Database column ParentRAStatusID  */
+    val parentrastatusid: Column[Int] = column[Int]("ParentRAStatusID")
+    /** Database column ChildRAStatusID  */
+    val childrastatusid: Column[Int] = column[Int]("ChildRAStatusID")
+    
+    /** Foreign key referencing RaStatus (database name ra_status_TO_ra_status_subset) */
+    lazy val raStatusFk = foreignKey("ra_status_TO_ra_status_subset", parentrastatusid, RaStatus)(r => r.rastatusid, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+    
+    /** Uniqueness Index over (parentrastatusid,childrastatusid) (database name IDX_ra_status_subset_1) */
+    val index1 = index("IDX_ra_status_subset_1", (parentrastatusid, childrastatusid), unique=true)
+  }
+  /** Collection-like TableQuery object for table RaStatusSubset */
+  lazy val RaStatusSubset = new TableQuery(tag => new RaStatusSubset(tag))  
+ 
+  
+  /** Entity class storing rows of table Shipping
+   *  @param shippingid Database column ShippingID AutoInc, PrimaryKey
+   *  @param jobid Database column JobID 
+   *  @param courierid Database column CourierID 
+   *  @param manifestid Database column ManifestID 
+   *  @param branchid Database column BranchID 
+   *  @param consignmentno Database column ConsignmentNo 
+   *  @param packagingtype Database column PackagingType 
+   *  @param consignmentdate Database column ConsignmentDate 
+   *  @param direction Database column Direction 
+   *  @param modifieduserid Database column ModifiedUserID 
+   *  @param modifieddate Database column ModifiedDate Default(None)
+   *  @param deliveryinstructions Database column DeliveryInstructions 
+   *  @param isshipped Database column IsShipped  */
+  case class ShippingRow(shippingid: Int, jobid: Int, courierid: Option[Int], manifestid: Option[Int], branchid: Option[Int], consignmentno: Option[String], packagingtype: Option[String], consignmentdate: Option[java.sql.Timestamp], direction: String, modifieduserid: Option[Int], modifieddate: Option[java.sql.Timestamp] = None, deliveryinstructions: Option[String], isshipped: String)
+  /** GetResult implicit for fetching ShippingRow objects using plain SQL queries */
+  implicit def GetResultShippingRow(implicit e0: GR[Int], e1: GR[Option[Int]], e2: GR[Option[String]], e3: GR[Option[java.sql.Timestamp]], e4: GR[String]): GR[ShippingRow] = GR{
+    prs => import prs._
+    ShippingRow.tupled((<<[Int], <<[Int], <<?[Int], <<?[Int], <<?[Int], <<?[String], <<?[String], <<?[java.sql.Timestamp], <<[String], <<?[Int], <<?[java.sql.Timestamp], <<?[String], <<[String]))
+  }
+  /** Table description of table shipping. Objects of this class serve as prototypes for rows in queries. */
+  class Shipping(tag: Tag) extends Table[ShippingRow](tag, "shipping") {
+    def * = (shippingid, jobid, courierid, manifestid, branchid, consignmentno, packagingtype, consignmentdate, direction, modifieduserid, modifieddate, deliveryinstructions, isshipped) <> (ShippingRow.tupled, ShippingRow.unapply)
+    /** Maps whole row to an option. Useful for outer joins. */
+    def ? = (shippingid.?, jobid.?, courierid, manifestid, branchid, consignmentno, packagingtype, consignmentdate, direction.?, modifieduserid, modifieddate, deliveryinstructions, isshipped.?).shaped.<>({r=>import r._; _1.map(_=> ShippingRow.tupled((_1.get, _2.get, _3, _4, _5, _6, _7, _8, _9.get, _10, _11, _12, _13.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+    
+    /** Database column ShippingID AutoInc, PrimaryKey */
+    val shippingid: Column[Int] = column[Int]("ShippingID", O.AutoInc, O.PrimaryKey)
+    /** Database column JobID  */
+    val jobid: Column[Int] = column[Int]("JobID")
+    /** Database column CourierID  */
+    val courierid: Column[Option[Int]] = column[Option[Int]]("CourierID")
+    /** Database column ManifestID  */
+    val manifestid: Column[Option[Int]] = column[Option[Int]]("ManifestID")
+    /** Database column BranchID  */
+    val branchid: Column[Option[Int]] = column[Option[Int]]("BranchID")
+    /** Database column ConsignmentNo  */
+    val consignmentno: Column[Option[String]] = column[Option[String]]("ConsignmentNo")
+    /** Database column PackagingType  */
+    val packagingtype: Column[Option[String]] = column[Option[String]]("PackagingType")
+    /** Database column ConsignmentDate  */
+    val consignmentdate: Column[Option[java.sql.Timestamp]] = column[Option[java.sql.Timestamp]]("ConsignmentDate")
+    /** Database column Direction  */
+    val direction: Column[String] = column[String]("Direction")
+    /** Database column ModifiedUserID  */
+    val modifieduserid: Column[Option[Int]] = column[Option[Int]]("ModifiedUserID")
+    /** Database column ModifiedDate Default(None) */
+    val modifieddate: Column[Option[java.sql.Timestamp]] = column[Option[java.sql.Timestamp]]("ModifiedDate", O.Default(None))
+    /** Database column DeliveryInstructions  */
+    val deliveryinstructions: Column[Option[String]] = column[Option[String]]("DeliveryInstructions")
+    /** Database column IsShipped  */
+    val isshipped: Column[String] = column[String]("IsShipped")
+    
+    /** Foreign key referencing Courier (database name courier_TO_shipping) */
+    //lazy val courierFk = foreignKey("courier_TO_shipping", courierid, Courier)(r => r.courierid, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+    /** Foreign key referencing Job (database name job_TO_shipping) */
+    //lazy val jobFk = foreignKey("job_TO_shipping", jobid, Job)(r => r.jobid, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+    /** Foreign key referencing Manifest (database name manifest_TO_shipping) */
+    //lazy val manifestFk = foreignKey("manifest_TO_shipping", manifestid, Manifest)(r => r.manifestid, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+  }
+  /** Collection-like TableQuery object for table Shipping */
+  lazy val Shipping = new TableQuery(tag => new Shipping(tag))  
+  
+  
+  /** Entity class storing rows of table PrintHistory
+   *  @param printhistoryid Database column PrintHistoryID AutoInc, PrimaryKey
+   *  @param jobid Database column JobID 
+   *  @param userid Database column UserID 
+   *  @param consolidateddespatch Database column ConsolidatedDespatch  */
+  case class PrintHistoryRow(printhistoryid: Int, jobid: Int, userid: Int, consolidateddespatch: java.sql.Timestamp)
+  /** GetResult implicit for fetching PrintHistoryRow objects using plain SQL queries */
+  implicit def GetResultPrintHistoryRow(implicit e0: GR[Int], e1: GR[java.sql.Timestamp]): GR[PrintHistoryRow] = GR{
+    prs => import prs._
+    PrintHistoryRow.tupled((<<[Int], <<[Int], <<[Int], <<[java.sql.Timestamp]))
+  }
+  /** Table description of table print_history. Objects of this class serve as prototypes for rows in queries. */
+  class PrintHistory(tag: Tag) extends Table[PrintHistoryRow](tag, "print_history") {
+    def * = (printhistoryid, jobid, userid, consolidateddespatch) <> (PrintHistoryRow.tupled, PrintHistoryRow.unapply)
+    /** Maps whole row to an option. Useful for outer joins. */
+    def ? = (printhistoryid.?, jobid.?, userid.?, consolidateddespatch.?).shaped.<>({r=>import r._; _1.map(_=> PrintHistoryRow.tupled((_1.get, _2.get, _3.get, _4.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+    
+    /** Database column PrintHistoryID AutoInc, PrimaryKey */
+    val printhistoryid: Column[Int] = column[Int]("PrintHistoryID", O.AutoInc, O.PrimaryKey)
+    /** Database column JobID  */
+    val jobid: Column[Int] = column[Int]("JobID")
+    /** Database column UserID  */
+    val userid: Column[Int] = column[Int]("UserID")
+    /** Database column ConsolidatedDespatch  */
+    val consolidateddespatch: Column[java.sql.Timestamp] = column[java.sql.Timestamp]("ConsolidatedDespatch")
+  }
+  /** Collection-like TableQuery object for table PrintHistory */
+  lazy val PrintHistory = new TableQuery(tag => new PrintHistory(tag))  
+  
+  
+  /** Row type of table Job */
+  type JobRow = HCons[Int,HCons[Option[Int],HCons[Option[Int],HCons[Option[Int],HCons[Option[Int],HCons[Option[Int],HCons[Option[Int],HCons[Option[Int],HCons[Option[Int],HCons[Option[Int],HCons[Int,HCons[Option[Int],HCons[Option[Int],HCons[Option[Int],HCons[Option[String],HCons[Option[String],HCons[Option[String],HCons[Option[String],HCons[Option[String],HCons[Option[String],HCons[Option[Int],HCons[Option[String],HCons[Option[String],HCons[Option[String],HCons[Option[String],HCons[Option[String],HCons[Option[String],HCons[Option[java.sql.Date],HCons[Option[String],HCons[Option[String],HCons[Option[String],HCons[Option[Int],HCons[Option[String],HCons[Option[Int],HCons[Option[Int],HCons[Option[String],HCons[Option[String],HCons[Option[String],HCons[Option[String],HCons[Option[String],HCons[Option[java.sql.Date],HCons[Option[java.sql.Time],HCons[Option[java.sql.Date],HCons[Option[java.sql.Timestamp],HCons[Option[java.sql.Timestamp],HCons[Option[Boolean],HCons[Option[String],HCons[Option[String],HCons[Option[String],HCons[Option[Int],HCons[Option[String],HCons[Option[String],HCons[Option[Int],HCons[Option[String],HCons[Option[java.sql.Date],HCons[Option[String],HCons[Option[java.sql.Date],HCons[Option[java.sql.Time],HCons[Option[String],HCons[Option[String],HCons[Option[String],HCons[Option[String],HCons[Option[String],HCons[Option[java.sql.Date],HCons[Option[java.sql.Time],HCons[Option[String],HCons[Option[java.sql.Date],HCons[Option[java.sql.Date],HCons[Option[String],HCons[Option[String],HCons[Option[String],HCons[Option[String],HCons[Option[String],HCons[Option[Int],HCons[Option[Int],HCons[Option[scala.math.BigDecimal],HCons[Option[scala.math.BigDecimal],HCons[Option[scala.math.BigDecimal],HCons[Option[scala.math.BigDecimal],HCons[Option[scala.math.BigDecimal],HCons[Option[scala.math.BigDecimal],HCons[Option[scala.math.BigDecimal],HCons[Option[scala.math.BigDecimal],HCons[Option[Int],HCons[Option[java.sql.Date],HCons[Option[String],HCons[Option[Int],HCons[Int,HCons[Int,HCons[java.sql.Timestamp,HCons[Option[String],HCons[Option[String],HCons[Option[String],HCons[Option[Int],HCons[Option[String],HCons[Option[String],HCons[Option[java.sql.Date],HCons[Option[java.sql.Time],HCons[Option[String],HCons[Option[Int],HCons[Option[Int],HCons[Option[String],HCons[Option[String],HCons[Option[String],HCons[Option[String],HCons[Option[String],HCons[Option[String],HCons[Option[String],HCons[Option[String],HCons[Option[String],HCons[Option[Int],HCons[Option[Int],HCons[Option[String],HCons[Option[String],HCons[Option[String],HCons[Option[String],HCons[Option[String],HCons[Option[Int],HCons[Option[Int],HCons[Option[Int],HCons[Option[String],HCons[Option[Int],HCons[Option[java.sql.Date],HCons[Option[Int],HCons[Option[String],HCons[Option[String],HCons[Option[String],HCons[Option[String],HCons[String,HCons[Option[String],HCons[Option[Int],HCons[Option[java.sql.Date],HCons[Boolean,HCons[Option[Int],HCons[String,HCons[scala.math.BigDecimal,HCons[String,HCons[String,HCons[Option[scala.math.BigDecimal],HCons[Option[scala.math.BigDecimal],HCons[Option[Byte],HCons[Option[Byte],HCons[Option[Int],HCons[Option[Int],HCons[Int,HCons[Int,HCons[String,HCons[String,HCons[Option[Int],HCons[String,HCons[String,HCons[String,HCons[Option[Int],HCons[Option[String],HCons[Option[Int],HCons[Option[String],HCons[Option[String],HCons[Option[Int],HCons[String,HCons[Option[Int],HCons[String,HCons[Option[String],HCons[java.sql.Date,HCons[Option[String],HCons[Option[java.sql.Time],HCons[String,HCons[Option[java.sql.Timestamp],HCons[Option[java.sql.Time],HCons[Option[java.sql.Time],HCons[Option[java.sql.Time],HCons[Option[java.sql.Time],HCons[String,HCons[Option[Int],HCons[String,HCons[String,HCons[String,HCons[String,HCons[Option[String],HCons[Option[java.sql.Date],HCons[Option[String],HCons[String,HNil]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]
+  /** Constructor for JobRow providing default values if available in the database schema. */
+  def JobRow(jobid: Int, networkid: Option[Int], clientid: Option[Int], brandid: Option[Int], branchid: Option[Int], serviceproviderid: Option[Int], customerid: Option[Int], productid: Option[Int], manufacturerid: Option[Int], servicetypeid: Option[Int], jobtypeid: Int, statusid: Option[Int], fromjobid: Option[Int], tojobid: Option[Int], replicatejob: Option[String], openjobstatus: Option[String], servicecategory: Option[String], jobcategory: Option[String], networkrefno: Option[String], agentrefno: Option[String], servicecentrejobno: Option[Int], servicebasemanufacturer: Option[String], servicebasemodel: Option[String], servicebaseunittype: Option[String], serialno: Option[String], vestelmodelcode: Option[String], vestelmanufacturedate: Option[String], dateofpurchase: Option[java.sql.Date], guaranteecode: Option[String], customertype: Option[String], conditioncode: Option[String], conditioncodeid: Option[Int], symptomcode: Option[String], symptomcodeid: Option[Int], symptomtypeid: Option[Int], defecttype: Option[String], reportedfault: Option[String], jobsite: Option[String], repairtype: Option[String], notes: Option[String], faultoccurreddate: Option[java.sql.Date], faultoccurredtime: Option[java.sql.Time], repaircompletedate: Option[java.sql.Date], datereturnedtocustomer: Option[java.sql.Timestamp], serviceproviderdespatchdate: Option[java.sql.Timestamp], downloadedtosc: Option[Boolean], itemlocation: Option[String], repairdescription: Option[String], completionstatus: Option[String], completionstatusid: Option[Int], originalretailer: Option[String], oldfirmwareversion: Option[String], policyid: Option[Int], retailerlocation: Option[String], dateofmanufacture: Option[java.sql.Date], policyno: Option[String], etddate: Option[java.sql.Date], etdtime: Option[java.sql.Time], accessories: Option[String], unitcondition: Option[String], insurer: Option[String], repairauthstatus: Option[String], authorisationno: Option[String], datebooked: Option[java.sql.Date], timebooked: Option[java.sql.Time], adjustbookdatereason: Option[String], dateunitreceived: Option[java.sql.Date], closeddate: Option[java.sql.Date], status: Option[String], cancelreason: Option[String], engineercode: Option[String], engineername: Option[String], claimnumber: Option[String], claimtransmitstatus: Option[Int], einvoicestatus: Option[Int], chargeablelabourcost: Option[scala.math.BigDecimal] = None, chargeablelabourvatcost: Option[scala.math.BigDecimal] = None, chargeablepartscost: Option[scala.math.BigDecimal] = None, chargeabledeliverycost: Option[scala.math.BigDecimal] = None, chargeabledeliveryvatcost: Option[scala.math.BigDecimal] = None, chargeablevatcost: Option[scala.math.BigDecimal] = None, chargeablesubtotal: Option[scala.math.BigDecimal] = None, chargeabletotalcost: Option[scala.math.BigDecimal] = None, agentchargeableinvoiceno: Option[Int] = Some(0), agentchargeableinvoicedate: Option[java.sql.Date], productlocation: Option[String], modelid: Option[Int], bookedby: Int, modifieduserid: Int, modifieddate: java.sql.Timestamp, contracttracking: Option[String], samsungwarrantyparts: Option[String], samsungwarrantylabour: Option[String], rmanumber: Option[Int], agentstatus: Option[String], stockcode: Option[String], engineerassigneddate: Option[java.sql.Date], engineerassignedtime: Option[java.sql.Time], warrantynotes: Option[String], warrantyservicetypeid: Option[Int], warrantydefecttypeid: Option[Int], newfirmwareversion: Option[String], claimbillnumber: Option[String], estimatestatus: Option[String], receiptno: Option[String], coladdcompanyname: Option[String], coladdbuildingnamenumber: Option[String], coladdstreet: Option[String], coladdlocalarea: Option[String], coladdtowncity: Option[String], coladdcountyid: Option[Int], coladdcountryid: Option[Int], coladdpostcode: Option[String], coladdemail: Option[String], coladdphone: Option[String], coladdphoneext: Option[String], extendedwarrantyno: Option[String], jobsourceid: Option[Int], jobrating: Option[Int], batchid: Option[Int], ratype: Option[String], rastatusid: Option[Int], collectiondate: Option[java.sql.Date], courierid: Option[Int], samsungsubservicetype: Option[String], samsungrefno: Option[String], consumertype: Option[String], serviceaction: Option[String], wifi: String, imeino: Option[String], mobilephonenetworkid: Option[Int], refreshdate: Option[java.sql.Date], rmasendfail: Boolean = false, inboundfaultcodeid: Option[Int], estimaterequired: String, estimateifover: scala.math.BigDecimal, estimateaccepted: String, estimaterejected: String, warrantylabourcost: Option[scala.math.BigDecimal], warrantydeliverycost: Option[scala.math.BigDecimal], turnaroundplaceholder: Option[Byte], overdueplaceholder: Option[Byte], colourid: Option[Int], jobfaultcodeid: Option[Int], quantity: Int, assignedengineeruserid: Int, chargeable: String, warranty: String, jobsiteid: Option[Int], customerdetailschecked: String, unitdetailschecked: String, warrantydetailschecked: String, satisfactionlevel: Option[Int], popnone: Option[String], poptype: Option[Int], poppath: Option[String], msn: Option[String], servicelevelid: Option[Int], warrantystatus: String, warrantyexceptionid: Option[Int], manufactureruptodate: String, jobexternaldamage: Option[String], claimdate: java.sql.Date, despatchinterfacecolourtagcolour: Option[String], timeunitreceived: Option[java.sql.Time], repairrepair: String, createddate: Option[java.sql.Timestamp] = None, repaircompletetime: Option[java.sql.Time], serviceproviderdespatchtime: Option[java.sql.Time], timereturnedtocustomer: Option[java.sql.Time], closedtime: Option[java.sql.Time], consolidateddespatchstatus: String, manifestid: Option[Int], simcardremoved: String, fmipdisabled: String, warrantyexception: String, escalationrequired: String, warrantydatetype: Option[String], activationdate: Option[java.sql.Date], warantyinterfacecolourtagcolour: Option[String], sendcustomerreceiptemail: String): JobRow = {
+    jobid :: networkid :: clientid :: brandid :: branchid :: serviceproviderid :: customerid :: productid :: manufacturerid :: servicetypeid :: jobtypeid :: statusid :: fromjobid :: tojobid :: replicatejob :: openjobstatus :: servicecategory :: jobcategory :: networkrefno :: agentrefno :: servicecentrejobno :: servicebasemanufacturer :: servicebasemodel :: servicebaseunittype :: serialno :: vestelmodelcode :: vestelmanufacturedate :: dateofpurchase :: guaranteecode :: customertype :: conditioncode :: conditioncodeid :: symptomcode :: symptomcodeid :: symptomtypeid :: defecttype :: reportedfault :: jobsite :: repairtype :: notes :: faultoccurreddate :: faultoccurredtime :: repaircompletedate :: datereturnedtocustomer :: serviceproviderdespatchdate :: downloadedtosc :: itemlocation :: repairdescription :: completionstatus :: completionstatusid :: originalretailer :: oldfirmwareversion :: policyid :: retailerlocation :: dateofmanufacture :: policyno :: etddate :: etdtime :: accessories :: unitcondition :: insurer :: repairauthstatus :: authorisationno :: datebooked :: timebooked :: adjustbookdatereason :: dateunitreceived :: closeddate :: status :: cancelreason :: engineercode :: engineername :: claimnumber :: claimtransmitstatus :: einvoicestatus :: chargeablelabourcost :: chargeablelabourvatcost :: chargeablepartscost :: chargeabledeliverycost :: chargeabledeliveryvatcost :: chargeablevatcost :: chargeablesubtotal :: chargeabletotalcost :: agentchargeableinvoiceno :: agentchargeableinvoicedate :: productlocation :: modelid :: bookedby :: modifieduserid :: modifieddate :: contracttracking :: samsungwarrantyparts :: samsungwarrantylabour :: rmanumber :: agentstatus :: stockcode :: engineerassigneddate :: engineerassignedtime :: warrantynotes :: warrantyservicetypeid :: warrantydefecttypeid :: newfirmwareversion :: claimbillnumber :: estimatestatus :: receiptno :: coladdcompanyname :: coladdbuildingnamenumber :: coladdstreet :: coladdlocalarea :: coladdtowncity :: coladdcountyid :: coladdcountryid :: coladdpostcode :: coladdemail :: coladdphone :: coladdphoneext :: extendedwarrantyno :: jobsourceid :: jobrating :: batchid :: ratype :: rastatusid :: collectiondate :: courierid :: samsungsubservicetype :: samsungrefno :: consumertype :: serviceaction :: wifi :: imeino :: mobilephonenetworkid :: refreshdate :: rmasendfail :: inboundfaultcodeid :: estimaterequired :: estimateifover :: estimateaccepted :: estimaterejected :: warrantylabourcost :: warrantydeliverycost :: turnaroundplaceholder :: overdueplaceholder :: colourid :: jobfaultcodeid :: quantity :: assignedengineeruserid :: chargeable :: warranty :: jobsiteid :: customerdetailschecked :: unitdetailschecked :: warrantydetailschecked :: satisfactionlevel :: popnone :: poptype :: poppath :: msn :: servicelevelid :: warrantystatus :: warrantyexceptionid :: manufactureruptodate :: jobexternaldamage :: claimdate :: despatchinterfacecolourtagcolour :: timeunitreceived :: repairrepair :: createddate :: repaircompletetime :: serviceproviderdespatchtime :: timereturnedtocustomer :: closedtime :: consolidateddespatchstatus :: manifestid :: simcardremoved :: fmipdisabled :: warrantyexception :: escalationrequired :: warrantydatetype :: activationdate :: warantyinterfacecolourtagcolour :: sendcustomerreceiptemail :: HNil
+  }
+  /** GetResult implicit for fetching JobRow objects using plain SQL queries */
+  implicit def GetResultJobRow(implicit e0: GR[Int], e1: GR[Option[Int]], e2: GR[Option[String]], e3: GR[Option[java.sql.Date]], e4: GR[Option[java.sql.Time]], e5: GR[Option[java.sql.Timestamp]], e6: GR[Option[Boolean]], e7: GR[Option[scala.math.BigDecimal]], e8: GR[java.sql.Timestamp], e9: GR[String], e10: GR[Boolean], e11: GR[scala.math.BigDecimal], e12: GR[Option[Byte]], e13: GR[java.sql.Date]): GR[JobRow] = GR{
+    prs => import prs._
+    <<[Int] :: <<?[Int] :: <<?[Int] :: <<?[Int] :: <<?[Int] :: <<?[Int] :: <<?[Int] :: <<?[Int] :: <<?[Int] :: <<?[Int] :: <<[Int] :: <<?[Int] :: <<?[Int] :: <<?[Int] :: <<?[String] :: <<?[String] :: <<?[String] :: <<?[String] :: <<?[String] :: <<?[String] :: <<?[Int] :: <<?[String] :: <<?[String] :: <<?[String] :: <<?[String] :: <<?[String] :: <<?[String] :: <<?[java.sql.Date] :: <<?[String] :: <<?[String] :: <<?[String] :: <<?[Int] :: <<?[String] :: <<?[Int] :: <<?[Int] :: <<?[String] :: <<?[String] :: <<?[String] :: <<?[String] :: <<?[String] :: <<?[java.sql.Date] :: <<?[java.sql.Time] :: <<?[java.sql.Date] :: <<?[java.sql.Timestamp] :: <<?[java.sql.Timestamp] :: <<?[Boolean] :: <<?[String] :: <<?[String] :: <<?[String] :: <<?[Int] :: <<?[String] :: <<?[String] :: <<?[Int] :: <<?[String] :: <<?[java.sql.Date] :: <<?[String] :: <<?[java.sql.Date] :: <<?[java.sql.Time] :: <<?[String] :: <<?[String] :: <<?[String] :: <<?[String] :: <<?[String] :: <<?[java.sql.Date] :: <<?[java.sql.Time] :: <<?[String] :: <<?[java.sql.Date] :: <<?[java.sql.Date] :: <<?[String] :: <<?[String] :: <<?[String] :: <<?[String] :: <<?[String] :: <<?[Int] :: <<?[Int] :: <<?[scala.math.BigDecimal] :: <<?[scala.math.BigDecimal] :: <<?[scala.math.BigDecimal] :: <<?[scala.math.BigDecimal] :: <<?[scala.math.BigDecimal] :: <<?[scala.math.BigDecimal] :: <<?[scala.math.BigDecimal] :: <<?[scala.math.BigDecimal] :: <<?[Int] :: <<?[java.sql.Date] :: <<?[String] :: <<?[Int] :: <<[Int] :: <<[Int] :: <<[java.sql.Timestamp] :: <<?[String] :: <<?[String] :: <<?[String] :: <<?[Int] :: <<?[String] :: <<?[String] :: <<?[java.sql.Date] :: <<?[java.sql.Time] :: <<?[String] :: <<?[Int] :: <<?[Int] :: <<?[String] :: <<?[String] :: <<?[String] :: <<?[String] :: <<?[String] :: <<?[String] :: <<?[String] :: <<?[String] :: <<?[String] :: <<?[Int] :: <<?[Int] :: <<?[String] :: <<?[String] :: <<?[String] :: <<?[String] :: <<?[String] :: <<?[Int] :: <<?[Int] :: <<?[Int] :: <<?[String] :: <<?[Int] :: <<?[java.sql.Date] :: <<?[Int] :: <<?[String] :: <<?[String] :: <<?[String] :: <<?[String] :: <<[String] :: <<?[String] :: <<?[Int] :: <<?[java.sql.Date] :: <<[Boolean] :: <<?[Int] :: <<[String] :: <<[scala.math.BigDecimal] :: <<[String] :: <<[String] :: <<?[scala.math.BigDecimal] :: <<?[scala.math.BigDecimal] :: <<?[Byte] :: <<?[Byte] :: <<?[Int] :: <<?[Int] :: <<[Int] :: <<[Int] :: <<[String] :: <<[String] :: <<?[Int] :: <<[String] :: <<[String] :: <<[String] :: <<?[Int] :: <<?[String] :: <<?[Int] :: <<?[String] :: <<?[String] :: <<?[Int] :: <<[String] :: <<?[Int] :: <<[String] :: <<?[String] :: <<[java.sql.Date] :: <<?[String] :: <<?[java.sql.Time] :: <<[String] :: <<?[java.sql.Timestamp] :: <<?[java.sql.Time] :: <<?[java.sql.Time] :: <<?[java.sql.Time] :: <<?[java.sql.Time] :: <<[String] :: <<?[Int] :: <<[String] :: <<[String] :: <<[String] :: <<[String] :: <<?[String] :: <<?[java.sql.Date] :: <<?[String] :: <<[String] :: HNil
+  }
+  /** Table description of table job. Objects of this class serve as prototypes for rows in queries. */
+  class Job(tag: Tag) extends Table[JobRow](tag, "job") {
+    def * = jobid :: networkid :: clientid :: brandid :: branchid :: serviceproviderid :: customerid :: productid :: manufacturerid :: servicetypeid :: jobtypeid :: statusid :: fromjobid :: tojobid :: replicatejob :: openjobstatus :: servicecategory :: jobcategory :: networkrefno :: agentrefno :: servicecentrejobno :: servicebasemanufacturer :: servicebasemodel :: servicebaseunittype :: serialno :: vestelmodelcode :: vestelmanufacturedate :: dateofpurchase :: guaranteecode :: customertype :: conditioncode :: conditioncodeid :: symptomcode :: symptomcodeid :: symptomtypeid :: defecttype :: reportedfault :: jobsite :: repairtype :: notes :: faultoccurreddate :: faultoccurredtime :: repaircompletedate :: datereturnedtocustomer :: serviceproviderdespatchdate :: downloadedtosc :: itemlocation :: repairdescription :: completionstatus :: completionstatusid :: originalretailer :: oldfirmwareversion :: policyid :: retailerlocation :: dateofmanufacture :: policyno :: etddate :: etdtime :: accessories :: unitcondition :: insurer :: repairauthstatus :: authorisationno :: datebooked :: timebooked :: adjustbookdatereason :: dateunitreceived :: closeddate :: status :: cancelreason :: engineercode :: engineername :: claimnumber :: claimtransmitstatus :: einvoicestatus :: chargeablelabourcost :: chargeablelabourvatcost :: chargeablepartscost :: chargeabledeliverycost :: chargeabledeliveryvatcost :: chargeablevatcost :: chargeablesubtotal :: chargeabletotalcost :: agentchargeableinvoiceno :: agentchargeableinvoicedate :: productlocation :: modelid :: bookedby :: modifieduserid :: modifieddate :: contracttracking :: samsungwarrantyparts :: samsungwarrantylabour :: rmanumber :: agentstatus :: stockcode :: engineerassigneddate :: engineerassignedtime :: warrantynotes :: warrantyservicetypeid :: warrantydefecttypeid :: newfirmwareversion :: claimbillnumber :: estimatestatus :: receiptno :: coladdcompanyname :: coladdbuildingnamenumber :: coladdstreet :: coladdlocalarea :: coladdtowncity :: coladdcountyid :: coladdcountryid :: coladdpostcode :: coladdemail :: coladdphone :: coladdphoneext :: extendedwarrantyno :: jobsourceid :: jobrating :: batchid :: ratype :: rastatusid :: collectiondate :: courierid :: samsungsubservicetype :: samsungrefno :: consumertype :: serviceaction :: wifi :: imeino :: mobilephonenetworkid :: refreshdate :: rmasendfail :: inboundfaultcodeid :: estimaterequired :: estimateifover :: estimateaccepted :: estimaterejected :: warrantylabourcost :: warrantydeliverycost :: turnaroundplaceholder :: overdueplaceholder :: colourid :: jobfaultcodeid :: quantity :: assignedengineeruserid :: chargeable :: warranty :: jobsiteid :: customerdetailschecked :: unitdetailschecked :: warrantydetailschecked :: satisfactionlevel :: popnone :: poptype :: poppath :: msn :: servicelevelid :: warrantystatus :: warrantyexceptionid :: manufactureruptodate :: jobexternaldamage :: claimdate :: despatchinterfacecolourtagcolour :: timeunitreceived :: repairrepair :: createddate :: repaircompletetime :: serviceproviderdespatchtime :: timereturnedtocustomer :: closedtime :: consolidateddespatchstatus :: manifestid :: simcardremoved :: fmipdisabled :: warrantyexception :: escalationrequired :: warrantydatetype :: activationdate :: warantyinterfacecolourtagcolour :: sendcustomerreceiptemail :: HNil
+    
+    /** Database column JobID AutoInc, PrimaryKey */
+    val jobid: Column[Int] = column[Int]("JobID", O.AutoInc, O.PrimaryKey)
+    /** Database column NetworkID  */
+    val networkid: Column[Option[Int]] = column[Option[Int]]("NetworkID")
+    /** Database column ClientID  */
+    val clientid: Column[Option[Int]] = column[Option[Int]]("ClientID")
+    /** Database column BrandID  */
+    val brandid: Column[Option[Int]] = column[Option[Int]]("BrandID")
+    /** Database column BranchID  */
+    val branchid: Column[Option[Int]] = column[Option[Int]]("BranchID")
+    /** Database column ServiceProviderID  */
+    val serviceproviderid: Column[Option[Int]] = column[Option[Int]]("ServiceProviderID")
+    /** Database column CustomerID  */
+    val customerid: Column[Option[Int]] = column[Option[Int]]("CustomerID")
+    /** Database column ProductID  */
+    val productid: Column[Option[Int]] = column[Option[Int]]("ProductID")
+    /** Database column ManufacturerID  */
+    val manufacturerid: Column[Option[Int]] = column[Option[Int]]("ManufacturerID")
+    /** Database column ServiceTypeID  */
+    val servicetypeid: Column[Option[Int]] = column[Option[Int]]("ServiceTypeID")
+    /** Database column JobTypeID  */
+    val jobtypeid: Column[Int] = column[Int]("JobTypeID")
+    /** Database column StatusID  */
+    val statusid: Column[Option[Int]] = column[Option[Int]]("StatusID")
+    /** Database column FromJobId  */
+    val fromjobid: Column[Option[Int]] = column[Option[Int]]("FromJobId")
+    /** Database column ToJobId  */
+    val tojobid: Column[Option[Int]] = column[Option[Int]]("ToJobId")
+    /** Database column ReplicateJob  */
+    val replicatejob: Column[Option[String]] = column[Option[String]]("ReplicateJob")
+    /** Database column OpenJobStatus  */
+    val openjobstatus: Column[Option[String]] = column[Option[String]]("OpenJobStatus")
+    /** Database column ServiceCategory  */
+    val servicecategory: Column[Option[String]] = column[Option[String]]("ServiceCategory")
+    /** Database column JobCategory  */
+    val jobcategory: Column[Option[String]] = column[Option[String]]("JobCategory")
+    /** Database column NetworkRefNo  */
+    val networkrefno: Column[Option[String]] = column[Option[String]]("NetworkRefNo")
+    /** Database column AgentRefNo  */
+    val agentrefno: Column[Option[String]] = column[Option[String]]("AgentRefNo")
+    /** Database column ServiceCentreJobNo  */
+    val servicecentrejobno: Column[Option[Int]] = column[Option[Int]]("ServiceCentreJobNo")
+    /** Database column ServiceBaseManufacturer  */
+    val servicebasemanufacturer: Column[Option[String]] = column[Option[String]]("ServiceBaseManufacturer")
+    /** Database column ServiceBaseModel  */
+    val servicebasemodel: Column[Option[String]] = column[Option[String]]("ServiceBaseModel")
+    /** Database column ServiceBaseUnitType  */
+    val servicebaseunittype: Column[Option[String]] = column[Option[String]]("ServiceBaseUnitType")
+    /** Database column SerialNo  */
+    val serialno: Column[Option[String]] = column[Option[String]]("SerialNo")
+    /** Database column VestelModelCode  */
+    val vestelmodelcode: Column[Option[String]] = column[Option[String]]("VestelModelCode")
+    /** Database column VestelManufactureDate  */
+    val vestelmanufacturedate: Column[Option[String]] = column[Option[String]]("VestelManufactureDate")
+    /** Database column DateOfPurchase  */
+    val dateofpurchase: Column[Option[java.sql.Date]] = column[Option[java.sql.Date]]("DateOfPurchase")
+    /** Database column GuaranteeCode  */
+    val guaranteecode: Column[Option[String]] = column[Option[String]]("GuaranteeCode")
+    /** Database column CustomerType  */
+    val customertype: Column[Option[String]] = column[Option[String]]("CustomerType")
+    /** Database column ConditionCode  */
+    val conditioncode: Column[Option[String]] = column[Option[String]]("ConditionCode")
+    /** Database column ConditionCodeID  */
+    val conditioncodeid: Column[Option[Int]] = column[Option[Int]]("ConditionCodeID")
+    /** Database column SymptomCode  */
+    val symptomcode: Column[Option[String]] = column[Option[String]]("SymptomCode")
+    /** Database column SymptomCodeID  */
+    val symptomcodeid: Column[Option[Int]] = column[Option[Int]]("SymptomCodeID")
+    /** Database column SymptomTypeID  */
+    val symptomtypeid: Column[Option[Int]] = column[Option[Int]]("SymptomTypeID")
+    /** Database column DefectType  */
+    val defecttype: Column[Option[String]] = column[Option[String]]("DefectType")
+    /** Database column ReportedFault  */
+    val reportedfault: Column[Option[String]] = column[Option[String]]("ReportedFault")
+    /** Database column JobSite  */
+    val jobsite: Column[Option[String]] = column[Option[String]]("JobSite")
+    /** Database column RepairType  */
+    val repairtype: Column[Option[String]] = column[Option[String]]("RepairType")
+    /** Database column Notes  */
+    val notes: Column[Option[String]] = column[Option[String]]("Notes")
+    /** Database column FaultOccurredDate  */
+    val faultoccurreddate: Column[Option[java.sql.Date]] = column[Option[java.sql.Date]]("FaultOccurredDate")
+    /** Database column FaultOccurredTime  */
+    val faultoccurredtime: Column[Option[java.sql.Time]] = column[Option[java.sql.Time]]("FaultOccurredTime")
+    /** Database column RepairCompleteDate  */
+    val repaircompletedate: Column[Option[java.sql.Date]] = column[Option[java.sql.Date]]("RepairCompleteDate")
+    /** Database column DateReturnedToCustomer  */
+    val datereturnedtocustomer: Column[Option[java.sql.Timestamp]] = column[Option[java.sql.Timestamp]]("DateReturnedToCustomer")
+    /** Database column ServiceProviderDespatchDate  */
+    val serviceproviderdespatchdate: Column[Option[java.sql.Timestamp]] = column[Option[java.sql.Timestamp]]("ServiceProviderDespatchDate")
+    /** Database column DownloadedToSC  */
+    val downloadedtosc: Column[Option[Boolean]] = column[Option[Boolean]]("DownloadedToSC")
+    /** Database column ItemLocation  */
+    val itemlocation: Column[Option[String]] = column[Option[String]]("ItemLocation")
+    /** Database column RepairDescription  */
+    val repairdescription: Column[Option[String]] = column[Option[String]]("RepairDescription")
+    /** Database column CompletionStatus  */
+    val completionstatus: Column[Option[String]] = column[Option[String]]("CompletionStatus")
+    /** Database column CompletionStatusID  */
+    val completionstatusid: Column[Option[Int]] = column[Option[Int]]("CompletionStatusID")
+    /** Database column OriginalRetailer  */
+    val originalretailer: Column[Option[String]] = column[Option[String]]("OriginalRetailer")
+    /** Database column OldFirmwareVersion  */
+    val oldfirmwareversion: Column[Option[String]] = column[Option[String]]("OldFirmwareVersion")
+    /** Database column PolicyID  */
+    val policyid: Column[Option[Int]] = column[Option[Int]]("PolicyID")
+    /** Database column RetailerLocation  */
+    val retailerlocation: Column[Option[String]] = column[Option[String]]("RetailerLocation")
+    /** Database column DateOfManufacture  */
+    val dateofmanufacture: Column[Option[java.sql.Date]] = column[Option[java.sql.Date]]("DateOfManufacture")
+    /** Database column PolicyNo  */
+    val policyno: Column[Option[String]] = column[Option[String]]("PolicyNo")
+    /** Database column ETDDate  */
+    val etddate: Column[Option[java.sql.Date]] = column[Option[java.sql.Date]]("ETDDate")
+    /** Database column ETDTime  */
+    val etdtime: Column[Option[java.sql.Time]] = column[Option[java.sql.Time]]("ETDTime")
+    /** Database column Accessories  */
+    val accessories: Column[Option[String]] = column[Option[String]]("Accessories")
+    /** Database column UnitCondition  */
+    val unitcondition: Column[Option[String]] = column[Option[String]]("UnitCondition")
+    /** Database column Insurer  */
+    val insurer: Column[Option[String]] = column[Option[String]]("Insurer")
+    /** Database column RepairAuthStatus  */
+    val repairauthstatus: Column[Option[String]] = column[Option[String]]("RepairAuthStatus")
+    /** Database column AuthorisationNo  */
+    val authorisationno: Column[Option[String]] = column[Option[String]]("AuthorisationNo")
+    /** Database column DateBooked  */
+    val datebooked: Column[Option[java.sql.Date]] = column[Option[java.sql.Date]]("DateBooked")
+    /** Database column TimeBooked  */
+    val timebooked: Column[Option[java.sql.Time]] = column[Option[java.sql.Time]]("TimeBooked")
+    /** Database column AdjustBookDateReason  */
+    val adjustbookdatereason: Column[Option[String]] = column[Option[String]]("AdjustBookDateReason")
+    /** Database column DateUnitReceived  */
+    val dateunitreceived: Column[Option[java.sql.Date]] = column[Option[java.sql.Date]]("DateUnitReceived")
+    /** Database column ClosedDate  */
+    val closeddate: Column[Option[java.sql.Date]] = column[Option[java.sql.Date]]("ClosedDate")
+    /** Database column Status  */
+    val status: Column[Option[String]] = column[Option[String]]("Status")
+    /** Database column CancelReason  */
+    val cancelreason: Column[Option[String]] = column[Option[String]]("CancelReason")
+    /** Database column EngineerCode  */
+    val engineercode: Column[Option[String]] = column[Option[String]]("EngineerCode")
+    /** Database column EngineerName  */
+    val engineername: Column[Option[String]] = column[Option[String]]("EngineerName")
+    /** Database column ClaimNumber  */
+    val claimnumber: Column[Option[String]] = column[Option[String]]("ClaimNumber")
+    /** Database column ClaimTransmitStatus  */
+    val claimtransmitstatus: Column[Option[Int]] = column[Option[Int]]("ClaimTransmitStatus")
+    /** Database column eInvoiceStatus  */
+    val einvoicestatus: Column[Option[Int]] = column[Option[Int]]("eInvoiceStatus")
+    /** Database column ChargeableLabourCost Default(None) */
+    val chargeablelabourcost: Column[Option[scala.math.BigDecimal]] = column[Option[scala.math.BigDecimal]]("ChargeableLabourCost", O.Default(None))
+    /** Database column ChargeableLabourVATCost Default(None) */
+    val chargeablelabourvatcost: Column[Option[scala.math.BigDecimal]] = column[Option[scala.math.BigDecimal]]("ChargeableLabourVATCost", O.Default(None))
+    /** Database column ChargeablePartsCost Default(None) */
+    val chargeablepartscost: Column[Option[scala.math.BigDecimal]] = column[Option[scala.math.BigDecimal]]("ChargeablePartsCost", O.Default(None))
+    /** Database column ChargeableDeliveryCost Default(None) */
+    val chargeabledeliverycost: Column[Option[scala.math.BigDecimal]] = column[Option[scala.math.BigDecimal]]("ChargeableDeliveryCost", O.Default(None))
+    /** Database column ChargeableDeliveryVATCost Default(None) */
+    val chargeabledeliveryvatcost: Column[Option[scala.math.BigDecimal]] = column[Option[scala.math.BigDecimal]]("ChargeableDeliveryVATCost", O.Default(None))
+    /** Database column ChargeableVATCost Default(None) */
+    val chargeablevatcost: Column[Option[scala.math.BigDecimal]] = column[Option[scala.math.BigDecimal]]("ChargeableVATCost", O.Default(None))
+    /** Database column ChargeableSubTotal Default(None) */
+    val chargeablesubtotal: Column[Option[scala.math.BigDecimal]] = column[Option[scala.math.BigDecimal]]("ChargeableSubTotal", O.Default(None))
+    /** Database column ChargeableTotalCost Default(None) */
+    val chargeabletotalcost: Column[Option[scala.math.BigDecimal]] = column[Option[scala.math.BigDecimal]]("ChargeableTotalCost", O.Default(None))
+    /** Database column AgentChargeableInvoiceNo Default(Some(0)) */
+    val agentchargeableinvoiceno: Column[Option[Int]] = column[Option[Int]]("AgentChargeableInvoiceNo", O.Default(Some(0)))
+    /** Database column AgentChargeableInvoiceDate  */
+    val agentchargeableinvoicedate: Column[Option[java.sql.Date]] = column[Option[java.sql.Date]]("AgentChargeableInvoiceDate")
+    /** Database column ProductLocation  */
+    val productlocation: Column[Option[String]] = column[Option[String]]("ProductLocation")
+    /** Database column ModelID  */
+    val modelid: Column[Option[Int]] = column[Option[Int]]("ModelID")
+    /** Database column BookedBy  */
+    val bookedby: Column[Int] = column[Int]("BookedBy")
+    /** Database column ModifiedUserID  */
+    val modifieduserid: Column[Int] = column[Int]("ModifiedUserID")
+    /** Database column ModifiedDate  */
+    val modifieddate: Column[java.sql.Timestamp] = column[java.sql.Timestamp]("ModifiedDate")
+    /** Database column ContractTracking  */
+    val contracttracking: Column[Option[String]] = column[Option[String]]("ContractTracking")
+    /** Database column SamsungWarrantyParts  */
+    val samsungwarrantyparts: Column[Option[String]] = column[Option[String]]("SamsungWarrantyParts")
+    /** Database column SamsungWarrantyLabour  */
+    val samsungwarrantylabour: Column[Option[String]] = column[Option[String]]("SamsungWarrantyLabour")
+    /** Database column RMANumber  */
+    val rmanumber: Column[Option[Int]] = column[Option[Int]]("RMANumber")
+    /** Database column AgentStatus  */
+    val agentstatus: Column[Option[String]] = column[Option[String]]("AgentStatus")
+    /** Database column StockCode  */
+    val stockcode: Column[Option[String]] = column[Option[String]]("StockCode")
+    /** Database column EngineerAssignedDate  */
+    val engineerassigneddate: Column[Option[java.sql.Date]] = column[Option[java.sql.Date]]("EngineerAssignedDate")
+    /** Database column EngineerAssignedTime  */
+    val engineerassignedtime: Column[Option[java.sql.Time]] = column[Option[java.sql.Time]]("EngineerAssignedTime")
+    /** Database column WarrantyNotes  */
+    val warrantynotes: Column[Option[String]] = column[Option[String]]("WarrantyNotes")
+    /** Database column WarrantyServiceTypeID  */
+    val warrantyservicetypeid: Column[Option[Int]] = column[Option[Int]]("WarrantyServiceTypeID")
+    /** Database column WarrantyDefectTypeID  */
+    val warrantydefecttypeid: Column[Option[Int]] = column[Option[Int]]("WarrantyDefectTypeID")
+    /** Database column NewFirmwareVersion  */
+    val newfirmwareversion: Column[Option[String]] = column[Option[String]]("NewFirmwareVersion")
+    /** Database column ClaimBillNumber  */
+    val claimbillnumber: Column[Option[String]] = column[Option[String]]("ClaimBillNumber")
+    /** Database column EstimateStatus  */
+    val estimatestatus: Column[Option[String]] = column[Option[String]]("EstimateStatus")
+    /** Database column ReceiptNo  */
+    val receiptno: Column[Option[String]] = column[Option[String]]("ReceiptNo")
+    /** Database column ColAddCompanyName  */
+    val coladdcompanyname: Column[Option[String]] = column[Option[String]]("ColAddCompanyName")
+    /** Database column ColAddBuildingNameNumber  */
+    val coladdbuildingnamenumber: Column[Option[String]] = column[Option[String]]("ColAddBuildingNameNumber")
+    /** Database column ColAddStreet  */
+    val coladdstreet: Column[Option[String]] = column[Option[String]]("ColAddStreet")
+    /** Database column ColAddLocalArea  */
+    val coladdlocalarea: Column[Option[String]] = column[Option[String]]("ColAddLocalArea")
+    /** Database column ColAddTownCity  */
+    val coladdtowncity: Column[Option[String]] = column[Option[String]]("ColAddTownCity")
+    /** Database column ColAddCountyID  */
+    val coladdcountyid: Column[Option[Int]] = column[Option[Int]]("ColAddCountyID")
+    /** Database column ColAddCountryID  */
+    val coladdcountryid: Column[Option[Int]] = column[Option[Int]]("ColAddCountryID")
+    /** Database column ColAddPostcode  */
+    val coladdpostcode: Column[Option[String]] = column[Option[String]]("ColAddPostcode")
+    /** Database column ColAddEmail  */
+    val coladdemail: Column[Option[String]] = column[Option[String]]("ColAddEmail")
+    /** Database column ColAddPhone  */
+    val coladdphone: Column[Option[String]] = column[Option[String]]("ColAddPhone")
+    /** Database column ColAddPhoneExt  */
+    val coladdphoneext: Column[Option[String]] = column[Option[String]]("ColAddPhoneExt")
+    /** Database column ExtendedWarrantyNo  */
+    val extendedwarrantyno: Column[Option[String]] = column[Option[String]]("ExtendedWarrantyNo")
+    /** Database column JobSourceID  */
+    val jobsourceid: Column[Option[Int]] = column[Option[Int]]("JobSourceID")
+    /** Database column JobRating  */
+    val jobrating: Column[Option[Int]] = column[Option[Int]]("JobRating")
+    /** Database column batchID  */
+    val batchid: Column[Option[Int]] = column[Option[Int]]("batchID")
+    /** Database column RAType  */
+    val ratype: Column[Option[String]] = column[Option[String]]("RAType")
+    /** Database column RAStatusID  */
+    val rastatusid: Column[Option[Int]] = column[Option[Int]]("RAStatusID")
+    /** Database column CollectionDate  */
+    val collectiondate: Column[Option[java.sql.Date]] = column[Option[java.sql.Date]]("CollectionDate")
+    /** Database column CourierID  */
+    val courierid: Column[Option[Int]] = column[Option[Int]]("CourierID")
+    /** Database column SamsungSubServiceType  */
+    val samsungsubservicetype: Column[Option[String]] = column[Option[String]]("SamsungSubServiceType")
+    /** Database column SamsungRefNo  */
+    val samsungrefno: Column[Option[String]] = column[Option[String]]("SamsungRefNo")
+    /** Database column ConsumerType  */
+    val consumertype: Column[Option[String]] = column[Option[String]]("ConsumerType")
+    /** Database column ServiceAction  */
+    val serviceaction: Column[Option[String]] = column[Option[String]]("ServiceAction")
+    /** Database column Wifi  */
+    val wifi: Column[String] = column[String]("Wifi")
+    /** Database column ImeiNo  */
+    val imeino: Column[Option[String]] = column[Option[String]]("ImeiNo")
+    /** Database column MobilePhoneNetworkID  */
+    val mobilephonenetworkid: Column[Option[Int]] = column[Option[Int]]("MobilePhoneNetworkID")
+    /** Database column RefreshDate  */
+    val refreshdate: Column[Option[java.sql.Date]] = column[Option[java.sql.Date]]("RefreshDate")
+    /** Database column RMASendFail Default(false) */
+    val rmasendfail: Column[Boolean] = column[Boolean]("RMASendFail", O.Default(false))
+    /** Database column InboundFaultCodeID  */
+    val inboundfaultcodeid: Column[Option[Int]] = column[Option[Int]]("InboundFaultCodeID")
+    /** Database column EstimateRequired  */
+    val estimaterequired: Column[String] = column[String]("EstimateRequired")
+    /** Database column EstimateIfOver  */
+    val estimateifover: Column[scala.math.BigDecimal] = column[scala.math.BigDecimal]("EstimateIfOver")
+    /** Database column EstimateAccepted  */
+    val estimateaccepted: Column[String] = column[String]("EstimateAccepted")
+    /** Database column EstimateRejected  */
+    val estimaterejected: Column[String] = column[String]("EstimateRejected")
+    /** Database column WarrantyLabourCost  */
+    val warrantylabourcost: Column[Option[scala.math.BigDecimal]] = column[Option[scala.math.BigDecimal]]("WarrantyLabourCost")
+    /** Database column WarrantyDeliveryCost  */
+    val warrantydeliverycost: Column[Option[scala.math.BigDecimal]] = column[Option[scala.math.BigDecimal]]("WarrantyDeliveryCost")
+    /** Database column TurnaroundPlaceHolder  */
+    val turnaroundplaceholder: Column[Option[Byte]] = column[Option[Byte]]("TurnaroundPlaceHolder")
+    /** Database column OverduePlaceHolder  */
+    val overdueplaceholder: Column[Option[Byte]] = column[Option[Byte]]("OverduePlaceHolder")
+    /** Database column ColourID  */
+    val colourid: Column[Option[Int]] = column[Option[Int]]("ColourID")
+    /** Database column JobFaultCodeID  */
+    val jobfaultcodeid: Column[Option[Int]] = column[Option[Int]]("JobFaultCodeID")
+    /** Database column Quantity  */
+    val quantity: Column[Int] = column[Int]("Quantity")
+    /** Database column AssignedEngineerUserID  */
+    val assignedengineeruserid: Column[Int] = column[Int]("AssignedEngineerUserID")
+    /** Database column Chargeable  */
+    val chargeable: Column[String] = column[String]("Chargeable")
+    /** Database column Warranty  */
+    val warranty: Column[String] = column[String]("Warranty")
+    /** Database column JobSiteID  */
+    val jobsiteid: Column[Option[Int]] = column[Option[Int]]("JobSiteID")
+    /** Database column CustomerDetailsChecked  */
+    val customerdetailschecked: Column[String] = column[String]("CustomerDetailsChecked")
+    /** Database column UnitDetailsChecked  */
+    val unitdetailschecked: Column[String] = column[String]("UnitDetailsChecked")
+    /** Database column WarrantyDetailsChecked  */
+    val warrantydetailschecked: Column[String] = column[String]("WarrantyDetailsChecked")
+    /** Database column SatisfactionLevel  */
+    val satisfactionlevel: Column[Option[Int]] = column[Option[Int]]("SatisfactionLevel")
+    /** Database column POPNone  */
+    val popnone: Column[Option[String]] = column[Option[String]]("POPNone")
+    /** Database column POPType  */
+    val poptype: Column[Option[Int]] = column[Option[Int]]("POPType")
+    /** Database column POPPath  */
+    val poppath: Column[Option[String]] = column[Option[String]]("POPPath")
+    /** Database column MSN  */
+    val msn: Column[Option[String]] = column[Option[String]]("MSN")
+    /** Database column ServiceLevelID  */
+    val servicelevelid: Column[Option[Int]] = column[Option[Int]]("ServiceLevelID")
+    /** Database column WarrantyStatus  */
+    val warrantystatus: Column[String] = column[String]("WarrantyStatus")
+    /** Database column WarrantyExceptionID  */
+    val warrantyexceptionid: Column[Option[Int]] = column[Option[Int]]("WarrantyExceptionID")
+    /** Database column ManufacturerUpToDate  */
+    val manufactureruptodate: Column[String] = column[String]("ManufacturerUpToDate")
+    /** Database column jobExternalDamage  */
+    val jobexternaldamage: Column[Option[String]] = column[Option[String]]("jobExternalDamage")
+    /** Database column ClaimDate  */
+    val claimdate: Column[java.sql.Date] = column[java.sql.Date]("ClaimDate")
+    /** Database column DespatchInterfaceColourTagColour  */
+    val despatchinterfacecolourtagcolour: Column[Option[String]] = column[Option[String]]("DespatchInterfaceColourTagColour")
+    /** Database column TimeUnitReceived  */
+    val timeunitreceived: Column[Option[java.sql.Time]] = column[Option[java.sql.Time]]("TimeUnitReceived")
+    /** Database column RepairRepair  */
+    val repairrepair: Column[String] = column[String]("RepairRepair")
+    /** Database column CreatedDate Default(None) */
+    val createddate: Column[Option[java.sql.Timestamp]] = column[Option[java.sql.Timestamp]]("CreatedDate", O.Default(None))
+    /** Database column RepairCompleteTime  */
+    val repaircompletetime: Column[Option[java.sql.Time]] = column[Option[java.sql.Time]]("RepairCompleteTime")
+    /** Database column ServiceProviderDespatchTime  */
+    val serviceproviderdespatchtime: Column[Option[java.sql.Time]] = column[Option[java.sql.Time]]("ServiceProviderDespatchTime")
+    /** Database column TimeReturnedToCustomer  */
+    val timereturnedtocustomer: Column[Option[java.sql.Time]] = column[Option[java.sql.Time]]("TimeReturnedToCustomer")
+    /** Database column ClosedTime  */
+    val closedtime: Column[Option[java.sql.Time]] = column[Option[java.sql.Time]]("ClosedTime")
+    /** Database column ConsolidatedDespatchStatus  */
+    val consolidateddespatchstatus: Column[String] = column[String]("ConsolidatedDespatchStatus")
+    /** Database column ManifestID  */
+    val manifestid: Column[Option[Int]] = column[Option[Int]]("ManifestID")
+    /** Database column SimCardRemoved  */
+    val simcardremoved: Column[String] = column[String]("SimCardRemoved")
+    /** Database column FMIPDisabled  */
+    val fmipdisabled: Column[String] = column[String]("FMIPDisabled")
+    /** Database column WarrantyException  */
+    val warrantyexception: Column[String] = column[String]("WarrantyException")
+    /** Database column EscalationRequired  */
+    val escalationrequired: Column[String] = column[String]("EscalationRequired")
+    /** Database column WarrantyDateType  */
+    val warrantydatetype: Column[Option[String]] = column[Option[String]]("WarrantyDateType")
+    /** Database column ActivationDate  */
+    val activationdate: Column[Option[java.sql.Date]] = column[Option[java.sql.Date]]("ActivationDate")
+    /** Database column WarantyInterfaceColourTagColour  */
+    val warantyinterfacecolourtagcolour: Column[Option[String]] = column[Option[String]]("WarantyInterfaceColourTagColour")
+    /** Database column SendCustomerReceiptEmail  */
+    val sendcustomerreceiptemail: Column[String] = column[String]("SendCustomerReceiptEmail")
+    
+    /** Foreign key referencing Branch (database name branch_TO_job) */
+    //lazy val branchFk = foreignKey("branch_TO_job", branchid :: HNil, Branch)(r => r.branchid :: HNil, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+    /** Foreign key referencing Brand (database name brand_TO_job) */
+    //lazy val brandFk = foreignKey("brand_TO_job", brandid :: HNil, Brand)(r => r.brandid :: HNil, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+    /** Foreign key referencing Client (database name client_TO_job) */
+    //lazy val clientFk = foreignKey("client_TO_job", clientid :: HNil, Client)(r => r.clientid :: HNil, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+    /** Foreign key referencing CompletionStatus (database name completion_status_TO_job) */
+    //lazy val completionStatusFk = foreignKey("completion_status_TO_job", completionstatusid :: HNil, CompletionStatus)(r => r.completionstatusid :: HNil, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+    /** Foreign key referencing ConditionCode (database name condition_code_TO_job) */
+    //lazy val conditionCodeFk = foreignKey("condition_code_TO_job", conditioncodeid :: HNil, ConditionCode)(r => r.conditioncodeid :: HNil, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+    /** Foreign key referencing Country (database name country_TO_job) */
+    //lazy val countryFk = foreignKey("country_TO_job", coladdcountryid :: HNil, Country)(r => r.countryid :: HNil, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+    /** Foreign key referencing County (database name county_TO_job) */
+    //lazy val countyFk = foreignKey("county_TO_job", coladdcountyid :: HNil, County)(r => r.countyid :: HNil, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+    /** Foreign key referencing Courier (database name courier_TO_job) */
+    //lazy val courierFk = foreignKey("courier_TO_job", courierid :: HNil, Courier)(r => r.courierid :: HNil, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+    /** Foreign key referencing Customer (database name customer_TO_job) */
+    //lazy val customerFk = foreignKey("customer_TO_job", customerid :: HNil, Customer)(r => r.customerid :: HNil, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+    /** Foreign key referencing JobType (database name job_type_TO_job) */
+    //lazy val jobTypeFk = foreignKey("job_type_TO_job", jobtypeid :: HNil, JobType)(r => r.jobtypeid :: HNil, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+    /** Foreign key referencing Manufacturer (database name manufacturer_TO_job) */
+    //lazy val manufacturerFk = foreignKey("manufacturer_TO_job", manufacturerid :: HNil, Manufacturer)(r => r.manufacturerid :: HNil, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+    /** Foreign key referencing Model (database name model_TO_job) */
+    //lazy val modelFk = foreignKey("model_TO_job", modelid :: HNil, Model)(r => r.modelid :: HNil, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+    /** Foreign key referencing Network (database name network_TO_job) */
+    //lazy val networkFk = foreignKey("network_TO_job", networkid :: HNil, Network)(r => r.networkid :: HNil, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+    /** Foreign key referencing Product (database name product_TO_job) */
+    //lazy val productFk = foreignKey("product_TO_job", productid :: HNil, Product)(r => r.productid :: HNil, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+    /** Foreign key referencing RaStatus (database name ra_status_TO_job) */
+    //lazy val raStatusFk = foreignKey("ra_status_TO_job", rastatusid :: HNil, RaStatus)(r => r.rastatusid :: HNil, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+    /** Foreign key referencing ServiceProvider (database name service_provider_TO_job) */
+    //lazy val serviceProviderFk = foreignKey("service_provider_TO_job", serviceproviderid :: HNil, ServiceProvider)(r => r.serviceproviderid :: HNil, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+    /** Foreign key referencing ServiceType (database name service_type_TO_job) */
+    //lazy val serviceTypeFk = foreignKey("service_type_TO_job", servicetypeid :: HNil, ServiceType)(r => r.servicetypeid :: HNil, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+    /** Foreign key referencing Status (database name status_TO_job) */
+    //lazy val statusFk = foreignKey("status_TO_job", statusid :: HNil, Status)(r => r.statusid :: HNil, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+    /** Foreign key referencing SymptomCode (database name symptom_code_TO_job) */
+    //lazy val symptomCodeFk = foreignKey("symptom_code_TO_job", symptomcodeid :: HNil, SymptomCode)(r => r.symptomcodeid :: HNil, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+    /** Foreign key referencing User (database name user_TO_job) */
+    //lazy val userFk20 = foreignKey("user_TO_job", bookedby :: HNil, User)(r => r.userid :: HNil, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+    /** Foreign key referencing User (database name user_TO_job_ModifiedUser) */
+    //lazy val userFk21 = foreignKey("user_TO_job_ModifiedUser", modifieduserid :: HNil, User)(r => r.userid :: HNil, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+    /** Foreign key referencing WarrantyDefectType (database name warranty_defect_type_TO_job) */
+    //lazy val warrantyDefectTypeFk = foreignKey("warranty_defect_type_TO_job", warrantydefecttypeid :: HNil, WarrantyDefectType)(r => r.warrantydefecttypeid :: HNil, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+    /** Foreign key referencing WarrantyServiceType (database name warranty_service_type_TO_job) */
+    //lazy val warrantyServiceTypeFk = foreignKey("warranty_service_type_TO_job", warrantyservicetypeid :: HNil, WarrantyServiceType)(r => r.warrantyservicetypeid :: HNil, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+    
+    /** Index over (assignedengineeruserid) (database name AssignedEngineerUserID) */
+    val index1 = index("AssignedEngineerUserID", assignedengineeruserid :: HNil)
+    /** Index over (chargeable) (database name Chargeable) */
+    val index2 = index("Chargeable", chargeable :: HNil)
+    /** Index over (consolidateddespatchstatus) (database name ConsolidatedDespatchStatus) */
+    val index3 = index("ConsolidatedDespatchStatus", consolidateddespatchstatus :: HNil)
+    /** Index over (datereturnedtocustomer) (database name DateReturnedToCustomer) */
+    val index4 = index("DateReturnedToCustomer", datereturnedtocustomer :: HNil)
+    /** Index over (etddate) (database name ETDDate) */
+    val index5 = index("ETDDate", etddate :: HNil)
+    /** Index over (servicebaseunittype) (database name IDX_ServiceBaseUnitType) */
+    val index6 = index("IDX_ServiceBaseUnitType", servicebaseunittype :: HNil)
+    /** Index over (guaranteecode) (database name IDX_job_1) */
+    val index7 = index("IDX_job_1", guaranteecode :: HNil)
+    /** Index over (datebooked) (database name IDX_job_2) */
+    val index8 = index("IDX_job_2", datebooked :: HNil)
+    /** Index over (closeddate) (database name IDX_job_3) */
+    val index9 = index("IDX_job_3", closeddate :: HNil)
+    /** Index over (jobsourceid) (database name IDX_job_4) */
+    val index10 = index("IDX_job_4", jobsourceid :: HNil)
+    /** Index over (networkrefno) (database name IDX_job_5) */
+    val index11 = index("IDX_job_5", networkrefno :: HNil)
+    /** Index over (servicecentrejobno) (database name IDX_job_6) */
+    val index12 = index("IDX_job_6", servicecentrejobno :: HNil)
+    /** Index over (openjobstatus) (database name IDX_job_7) */
+    val index13 = index("IDX_job_7", openjobstatus :: HNil)
+    /** Index over (serialno) (database name IDX_job_SerialNo) */
+    val index14 = index("IDX_job_SerialNo", serialno :: HNil)
+    /** Index over (inboundfaultcodeid) (database name InboundFaultCodeID) */
+    val index15 = index("InboundFaultCodeID", inboundfaultcodeid :: HNil)
+    /** Index over (jobfaultcodeid) (database name JobFaultCodeID) */
+    val index16 = index("JobFaultCodeID", jobfaultcodeid :: HNil)
+    /** Index over (manufactureruptodate,manufacturerid,networkrefno) (database name ManUTDManIDNetworkRefNo) */
+    val index17 = index("ManUTDManIDNetworkRefNo", manufactureruptodate :: manufacturerid :: networkrefno :: HNil)
+    /** Index over (manufactureruptodate) (database name ManufacturerUpToDate) */
+    val index18 = index("ManufacturerUpToDate", manufactureruptodate :: HNil)
+    /** Index over (repairauthstatus) (database name RepairAuthStatus) */
+    val index19 = index("RepairAuthStatus", repairauthstatus :: HNil)
+    /** Index over (repaircompletedate) (database name RepairCompleteDate) */
+    val index20 = index("RepairCompleteDate", repaircompletedate :: HNil)
+    /** Index over (serviceaction) (database name ServiceAction) */
+    val index21 = index("ServiceAction", serviceaction :: HNil)
+    /** Index over (servicebasemodel) (database name ServiceBaseModel) */
+    val index22 = index("ServiceBaseModel", servicebasemodel :: HNil)
+    /** Index over (serviceproviderdespatchdate) (database name ServiceProviderDespatchDate) */
+    val index23 = index("ServiceProviderDespatchDate", serviceproviderdespatchdate :: HNil)
+    /** Index over (warranty) (database name Warranty) */
+    val index24 = index("Warranty", warranty :: HNil)
+    /** Index over (warrantystatus) (database name WarrantyStatus) */
+    val index25 = index("WarrantyStatus", warrantystatus :: HNil)
+  }
+  /** Collection-like TableQuery object for table Job */
+  lazy val Job = new TableQuery(tag => new Job(tag))  
+  
+  
+  /** Row type of table Branch */
+  type BranchRow = HCons[Int,HCons[Option[String],HCons[Option[String],HCons[Option[String],HCons[Option[String],HCons[String,HCons[String,HCons[String,HCons[String,HCons[String,HCons[Option[String],HCons[Option[String],HCons[Option[String],HCons[Option[String],HCons[Option[String],HCons[Option[Int],HCons[Option[Int],HCons[Option[String],HCons[Option[String],HCons[Option[String],HCons[Option[Int],HCons[Option[String],HCons[Option[String],HCons[Option[String],HCons[Option[String],HCons[java.sql.Timestamp,HCons[java.sql.Timestamp,HCons[String,HCons[Option[Int],HCons[Option[Int],HCons[String,HCons[Option[Int],HCons[java.sql.Timestamp,HCons[Option[String],HCons[Option[String],HCons[Option[String],HCons[Boolean,HCons[Option[String],HCons[Option[String],HCons[Option[Int],HCons[Option[String],HCons[String,HCons[String,HCons[String,HCons[String,HCons[String,HCons[String,HCons[String,HNil]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]
+  /** Constructor for BranchRow providing default values if available in the database schema. */
+  def BranchRow(branchid: Int, branchname: Option[String], branchacronym: Option[String], branchnumber: Option[String], branchtype: Option[String], despatchtype: String, jobnocheck: String, imeicheck: String, forcejobnocheck: String, forceimeicheck: String, awaitingdespatchlocation: Option[String], buildingnamenumber: Option[String], street: Option[String], localarea: Option[String], towncity: Option[String], countyid: Option[Int], countryid: Option[Int], postalcode: Option[String], contactphone: Option[String], contactphoneext: Option[String], servicemanagertitleid: Option[Int], servicemanagerlastname: Option[String], servicemanager: Option[String], contactemail: Option[String], useaddressprogram: Option[String], createddate: java.sql.Timestamp, enddate: java.sql.Timestamp, serviceappraisalrequired: String, defaultserviceprovider: Option[Int], thirdpartyserviceprovider: Option[Int], status: String, modifieduserid: Option[Int], modifieddate: java.sql.Timestamp, contactfax: Option[String], accountno: Option[String], currentlocationofproduct: Option[String], mobilepreferences: Boolean = false, originalretailerformelement: Option[String] = None, sendrepaircompletetextmessage: Option[String] = None, smsid: Option[Int], openjobsmanagement: Option[String], autopopulatereceiveddate: String, compulsoryloginfornewjobbooking: String, compulsoryloginforjobupdate: String, compulsoryemailreenter: String, displaybookingprocesspage: String, batchdespatchtype: String, consolidateddespatchcolourtagcolour: String): BranchRow = {
+    branchid :: branchname :: branchacronym :: branchnumber :: branchtype :: despatchtype :: jobnocheck :: imeicheck :: forcejobnocheck :: forceimeicheck :: awaitingdespatchlocation :: buildingnamenumber :: street :: localarea :: towncity :: countyid :: countryid :: postalcode :: contactphone :: contactphoneext :: servicemanagertitleid :: servicemanagerlastname :: servicemanager :: contactemail :: useaddressprogram :: createddate :: enddate :: serviceappraisalrequired :: defaultserviceprovider :: thirdpartyserviceprovider :: status :: modifieduserid :: modifieddate :: contactfax :: accountno :: currentlocationofproduct :: mobilepreferences :: originalretailerformelement :: sendrepaircompletetextmessage :: smsid :: openjobsmanagement :: autopopulatereceiveddate :: compulsoryloginfornewjobbooking :: compulsoryloginforjobupdate :: compulsoryemailreenter :: displaybookingprocesspage :: batchdespatchtype :: consolidateddespatchcolourtagcolour :: HNil
+  }
+  /** GetResult implicit for fetching BranchRow objects using plain SQL queries */
+  implicit def GetResultBranchRow(implicit e0: GR[Int], e1: GR[Option[String]], e2: GR[String], e3: GR[Option[Int]], e4: GR[java.sql.Timestamp], e5: GR[Boolean]): GR[BranchRow] = GR{
+    prs => import prs._
+    <<[Int] :: <<?[String] :: <<?[String] :: <<?[String] :: <<?[String] :: <<[String] :: <<[String] :: <<[String] :: <<[String] :: <<[String] :: <<?[String] :: <<?[String] :: <<?[String] :: <<?[String] :: <<?[String] :: <<?[Int] :: <<?[Int] :: <<?[String] :: <<?[String] :: <<?[String] :: <<?[Int] :: <<?[String] :: <<?[String] :: <<?[String] :: <<?[String] :: <<[java.sql.Timestamp] :: <<[java.sql.Timestamp] :: <<[String] :: <<?[Int] :: <<?[Int] :: <<[String] :: <<?[Int] :: <<[java.sql.Timestamp] :: <<?[String] :: <<?[String] :: <<?[String] :: <<[Boolean] :: <<?[String] :: <<?[String] :: <<?[Int] :: <<?[String] :: <<[String] :: <<[String] :: <<[String] :: <<[String] :: <<[String] :: <<[String] :: <<[String] :: HNil
+  }
+  /** Table description of table branch. Objects of this class serve as prototypes for rows in queries. */
+  class Branch(tag: Tag) extends Table[BranchRow](tag, "branch") {
+    def * = branchid :: branchname :: branchacronym :: branchnumber :: branchtype :: despatchtype :: jobnocheck :: imeicheck :: forcejobnocheck :: forceimeicheck :: awaitingdespatchlocation :: buildingnamenumber :: street :: localarea :: towncity :: countyid :: countryid :: postalcode :: contactphone :: contactphoneext :: servicemanagertitleid :: servicemanagerlastname :: servicemanager :: contactemail :: useaddressprogram :: createddate :: enddate :: serviceappraisalrequired :: defaultserviceprovider :: thirdpartyserviceprovider :: status :: modifieduserid :: modifieddate :: contactfax :: accountno :: currentlocationofproduct :: mobilepreferences :: originalretailerformelement :: sendrepaircompletetextmessage :: smsid :: openjobsmanagement :: autopopulatereceiveddate :: compulsoryloginfornewjobbooking :: compulsoryloginforjobupdate :: compulsoryemailreenter :: displaybookingprocesspage :: batchdespatchtype :: consolidateddespatchcolourtagcolour :: HNil
+    
+    /** Database column BranchID AutoInc, PrimaryKey */
+    val branchid: Column[Int] = column[Int]("BranchID", O.AutoInc, O.PrimaryKey)
+    /** Database column BranchName  */
+    val branchname: Column[Option[String]] = column[Option[String]]("BranchName")
+    /** Database column BranchAcronym  */
+    val branchacronym: Column[Option[String]] = column[Option[String]]("BranchAcronym")
+    /** Database column BranchNumber  */
+    val branchnumber: Column[Option[String]] = column[Option[String]]("BranchNumber")
+    /** Database column BranchType  */
+    val branchtype: Column[Option[String]] = column[Option[String]]("BranchType")
+    /** Database column DespatchType  */
+    val despatchtype: Column[String] = column[String]("DespatchType")
+    /** Database column JobNoCheck  */
+    val jobnocheck: Column[String] = column[String]("JobNoCheck")
+    /** Database column IMEICheck  */
+    val imeicheck: Column[String] = column[String]("IMEICheck")
+    /** Database column ForceJobNoCheck  */
+    val forcejobnocheck: Column[String] = column[String]("ForceJobNoCheck")
+    /** Database column ForceIMEICheck  */
+    val forceimeicheck: Column[String] = column[String]("ForceIMEICheck")
+    /** Database column AwaitingDespatchLocation  */
+    val awaitingdespatchlocation: Column[Option[String]] = column[Option[String]]("AwaitingDespatchLocation")
+    /** Database column BuildingNameNumber  */
+    val buildingnamenumber: Column[Option[String]] = column[Option[String]]("BuildingNameNumber")
+    /** Database column Street  */
+    val street: Column[Option[String]] = column[Option[String]]("Street")
+    /** Database column LocalArea  */
+    val localarea: Column[Option[String]] = column[Option[String]]("LocalArea")
+    /** Database column TownCity  */
+    val towncity: Column[Option[String]] = column[Option[String]]("TownCity")
+    /** Database column CountyID  */
+    val countyid: Column[Option[Int]] = column[Option[Int]]("CountyID")
+    /** Database column CountryID  */
+    val countryid: Column[Option[Int]] = column[Option[Int]]("CountryID")
+    /** Database column PostalCode  */
+    val postalcode: Column[Option[String]] = column[Option[String]]("PostalCode")
+    /** Database column ContactPhone  */
+    val contactphone: Column[Option[String]] = column[Option[String]]("ContactPhone")
+    /** Database column ContactPhoneExt  */
+    val contactphoneext: Column[Option[String]] = column[Option[String]]("ContactPhoneExt")
+    /** Database column ServiceManagerTitleID  */
+    val servicemanagertitleid: Column[Option[Int]] = column[Option[Int]]("ServiceManagerTitleID")
+    /** Database column ServiceManagerLastName  */
+    val servicemanagerlastname: Column[Option[String]] = column[Option[String]]("ServiceManagerLastName")
+    /** Database column ServiceManager  */
+    val servicemanager: Column[Option[String]] = column[Option[String]]("ServiceManager")
+    /** Database column ContactEmail  */
+    val contactemail: Column[Option[String]] = column[Option[String]]("ContactEmail")
+    /** Database column UseAddressProgram  */
+    val useaddressprogram: Column[Option[String]] = column[Option[String]]("UseAddressProgram")
+    /** Database column CreatedDate  */
+    val createddate: Column[java.sql.Timestamp] = column[java.sql.Timestamp]("CreatedDate")
+    /** Database column EndDate  */
+    val enddate: Column[java.sql.Timestamp] = column[java.sql.Timestamp]("EndDate")
+    /** Database column ServiceAppraisalRequired  */
+    val serviceappraisalrequired: Column[String] = column[String]("ServiceAppraisalRequired")
+    /** Database column DefaultServiceProvider  */
+    val defaultserviceprovider: Column[Option[Int]] = column[Option[Int]]("DefaultServiceProvider")
+    /** Database column ThirdPartyServiceProvider  */
+    val thirdpartyserviceprovider: Column[Option[Int]] = column[Option[Int]]("ThirdPartyServiceProvider")
+    /** Database column Status  */
+    val status: Column[String] = column[String]("Status")
+    /** Database column ModifiedUserID  */
+    val modifieduserid: Column[Option[Int]] = column[Option[Int]]("ModifiedUserID")
+    /** Database column ModifiedDate  */
+    val modifieddate: Column[java.sql.Timestamp] = column[java.sql.Timestamp]("ModifiedDate")
+    /** Database column ContactFax  */
+    val contactfax: Column[Option[String]] = column[Option[String]]("ContactFax")
+    /** Database column AccountNo  */
+    val accountno: Column[Option[String]] = column[Option[String]]("AccountNo")
+    /** Database column CurrentLocationOfProduct  */
+    val currentlocationofproduct: Column[Option[String]] = column[Option[String]]("CurrentLocationOfProduct")
+    /** Database column MobilePreferences Default(false) */
+    val mobilepreferences: Column[Boolean] = column[Boolean]("MobilePreferences", O.Default(false))
+    /** Database column OriginalRetailerFormElement Default(None) */
+    val originalretailerformelement: Column[Option[String]] = column[Option[String]]("OriginalRetailerFormElement", O.Default(None))
+    /** Database column SendRepairCompleteTextMessage Default(None) */
+    val sendrepaircompletetextmessage: Column[Option[String]] = column[Option[String]]("SendRepairCompleteTextMessage", O.Default(None))
+    /** Database column SMSID  */
+    val smsid: Column[Option[Int]] = column[Option[Int]]("SMSID")
+    /** Database column OpenJobsManagement  */
+    val openjobsmanagement: Column[Option[String]] = column[Option[String]]("OpenJobsManagement")
+    /** Database column AutoPopulateReceivedDate  */
+    val autopopulatereceiveddate: Column[String] = column[String]("AutoPopulateReceivedDate")
+    /** Database column CompulsoryLoginForNewJobBooking  */
+    val compulsoryloginfornewjobbooking: Column[String] = column[String]("CompulsoryLoginForNewJobBooking")
+    /** Database column CompulsoryLoginForJobUpdate  */
+    val compulsoryloginforjobupdate: Column[String] = column[String]("CompulsoryLoginForJobUpdate")
+    /** Database column CompulsoryEmailReEnter  */
+    val compulsoryemailreenter: Column[String] = column[String]("CompulsoryEmailReEnter")
+    /** Database column DisplayBookingProcessPage  */
+    val displaybookingprocesspage: Column[String] = column[String]("DisplayBookingProcessPage")
+    /** Database column BatchDespatchType  */
+    val batchdespatchtype: Column[String] = column[String]("BatchDespatchType")
+    /** Database column ConsolidatedDespatchColourTagColour  */
+    val consolidateddespatchcolourtagcolour: Column[String] = column[String]("ConsolidatedDespatchColourTagColour")
+    
+    /** Foreign key referencing Country (database name country_TO_branch) */
+    //lazy val countryFk = foreignKey("country_TO_branch", countryid :: HNil, Country)(r => r.countryid :: HNil, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+    /** Foreign key referencing County (database name county_TO_branch) */
+    //lazy val countyFk = foreignKey("county_TO_branch", countyid :: HNil, County)(r => r.countyid :: HNil, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+    /** Foreign key referencing ServiceProvider (database name FK_branch_service_provider) */
+    //lazy val serviceProviderFk3 = foreignKey("FK_branch_service_provider", defaultserviceprovider :: HNil, ServiceProvider)(r => r.serviceproviderid :: HNil, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+    /** Foreign key referencing ServiceProvider (database name branch_TO_service_provider) */
+    //lazy val serviceProviderFk4 = foreignKey("branch_TO_service_provider", defaultserviceprovider :: HNil, ServiceProvider)(r => r.serviceproviderid :: HNil, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+    /** Foreign key referencing ServiceProvider (database name branch_TO_service_provider1) */
+    //lazy val serviceProviderFk5 = foreignKey("branch_TO_service_provider1", thirdpartyserviceprovider :: HNil, ServiceProvider)(r => r.serviceproviderid :: HNil, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+    /** Foreign key referencing User (database name user_TO_branch) */
+    //lazy val userFk = foreignKey("user_TO_branch", modifieduserid :: HNil, User)(r => r.userid :: HNil, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+    
+    /** Index over (branchname) (database name BranchName) */
+    val index1 = index("BranchName", branchname :: HNil)
+    /** Index over (serviceappraisalrequired) (database name ServiceAppraisalRequired) */
+    val index2 = index("ServiceAppraisalRequired", serviceappraisalrequired :: HNil)
+  }
+  /** Collection-like TableQuery object for table Branch */
+  lazy val Branch = new TableQuery(tag => new Branch(tag))  
+  
+  
+  /** Entity class storing rows of table County
+   *  @param countyid Database column CountyID AutoInc, PrimaryKey
+   *  @param brandid Database column BrandID 
+   *  @param countryid Database column CountryID 
+   *  @param name Database column Name 
+   *  @param countycode Database column CountyCode 
+   *  @param createddate Database column CreatedDate 
+   *  @param enddate Database column EndDate 
+   *  @param status Database column Status 
+   *  @param modifieduserid Database column ModifiedUserID 
+   *  @param modifieddate Database column ModifiedDate  */
+  case class CountyRow(countyid: Int, brandid: Int, countryid: Int, name: String, countycode: Int, createddate: java.sql.Timestamp, enddate: java.sql.Timestamp, status: String, modifieduserid: Option[Int], modifieddate: java.sql.Timestamp)
+  /** GetResult implicit for fetching CountyRow objects using plain SQL queries */
+  implicit def GetResultCountyRow(implicit e0: GR[Int], e1: GR[String], e2: GR[java.sql.Timestamp], e3: GR[Option[Int]]): GR[CountyRow] = GR{
+    prs => import prs._
+    CountyRow.tupled((<<[Int], <<[Int], <<[Int], <<[String], <<[Int], <<[java.sql.Timestamp], <<[java.sql.Timestamp], <<[String], <<?[Int], <<[java.sql.Timestamp]))
+  }
+  /** Table description of table county. Objects of this class serve as prototypes for rows in queries. */
+  class County(tag: Tag) extends Table[CountyRow](tag, "county") {
+    def * = (countyid, brandid, countryid, name, countycode, createddate, enddate, status, modifieduserid, modifieddate) <> (CountyRow.tupled, CountyRow.unapply)
+    /** Maps whole row to an option. Useful for outer joins. */
+    def ? = (countyid.?, brandid.?, countryid.?, name.?, countycode.?, createddate.?, enddate.?, status.?, modifieduserid, modifieddate.?).shaped.<>({r=>import r._; _1.map(_=> CountyRow.tupled((_1.get, _2.get, _3.get, _4.get, _5.get, _6.get, _7.get, _8.get, _9, _10.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+    
+    /** Database column CountyID AutoInc, PrimaryKey */
+    val countyid: Column[Int] = column[Int]("CountyID", O.AutoInc, O.PrimaryKey)
+    /** Database column BrandID  */
+    val brandid: Column[Int] = column[Int]("BrandID")
+    /** Database column CountryID  */
+    val countryid: Column[Int] = column[Int]("CountryID")
+    /** Database column Name  */
+    val name: Column[String] = column[String]("Name")
+    /** Database column CountyCode  */
+    val countycode: Column[Int] = column[Int]("CountyCode")
+    /** Database column CreatedDate  */
+    val createddate: Column[java.sql.Timestamp] = column[java.sql.Timestamp]("CreatedDate")
+    /** Database column EndDate  */
+    val enddate: Column[java.sql.Timestamp] = column[java.sql.Timestamp]("EndDate")
+    /** Database column Status  */
+    val status: Column[String] = column[String]("Status")
+    /** Database column ModifiedUserID  */
+    val modifieduserid: Column[Option[Int]] = column[Option[Int]]("ModifiedUserID")
+    /** Database column ModifiedDate  */
+    val modifieddate: Column[java.sql.Timestamp] = column[java.sql.Timestamp]("ModifiedDate")
+    
+    /** Foreign key referencing Brand (database name brand_TO_county) */
+    //lazy val brandFk = foreignKey("brand_TO_county", brandid, Brand)(r => r.brandid, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+    /** Foreign key referencing Country (database name country_TO_county) */
+    //lazy val countryFk = foreignKey("country_TO_county", countryid, Country)(r => r.countryid, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+    /** Foreign key referencing User (database name user_TO_county) */
+    //lazy val userFk = foreignKey("user_TO_county", modifieduserid, User)(r => r.userid, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+  }
+  /** Collection-like TableQuery object for table County */
+  lazy val County = new TableQuery(tag => new County(tag))  
+  
+  
+}
+{code}

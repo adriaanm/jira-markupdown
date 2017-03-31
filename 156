@@ -1,0 +1,16 @@
+Does anything block somebody productively championing this (writing a SIP, updating the patch, delivering an impassioned plea to Martin, waiting for Martin to finish _x_ other things so that he has time to consider this class of thing)?
+
+Additional desired syntax, if this is supported in (primary) constructors:
+
+{code}
+class Stuff([[mods]] lazy val a: Int, [[mods]] def b: Int)
+{code}
+
+translating to (modulo named-argument issues):
+
+{code}
+class Stuff(a': => Int, b': => Int) {
+  [[mods]] lazy val a: Int = a'
+  [[mods]] def b: Int = b'
+}
+{code}

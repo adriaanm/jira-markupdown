@@ -1,0 +1,16 @@
+Possibly same as https://lampsvn.epfl.ch/trac/scala/ticket/3609
+{code}
+object Test extends Application {
+  class A
+  class B extends A
+  def foo(x: A, y: B) = print(1)
+  object foo {
+    def apply(x: B, y: B) = print(3)
+    //def apply(x: A, y: A) = print(5)
+  }
+
+  foo(new B, new B)
+}
+{code}
+This code is ok. There is no bug. It prints 3.
+But if we uncomment second apply then it doesn't compile. What is strange, because we have most specific method.

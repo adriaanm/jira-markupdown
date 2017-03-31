@@ -1,0 +1,16 @@
+This is not a bug. The transient field is there, but you need to use javap -p to see it:
+
+{code}
+trait ObjectRegistry { @transient private[this] var _registry = "hi!" } 
+class OR extends ObjectRegistry
+{code}
+
+{code}
+$  javap -p OR
+public class OR implements ObjectRegistry {
+  private transient java.lang.String ObjectRegistry$$_registry;
+  public java.lang.String ObjectRegistry$$_registry();
+  public void ObjectRegistry$$_registry_$eq(java.lang.String);
+  public OR();
+}
+{code}

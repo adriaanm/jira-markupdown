@@ -1,0 +1,46 @@
+This comes down to:
+
+{code}
+      // hashconsing trees (modulo value-equality)
+      private[TreesAndTypesDomain] def uniqueTpForTree(t: Tree): Type =
+        // a new type for every unstable symbol -- only stable value are uniqued
+        // technically, an unreachable value may change between cases
+        // thus, the failure of a case that matches on a mutable value does not exclude the next case succeeding
+        // (and thuuuuus, the latter case must be considered reachable)
+        if (!t.symbol.isStable) t.tpe.narrow
+        else trees find (a => a.correspondsStructure(t)(sameValue)) match {
+          case Some(orig) =>
+            debug.patmat("unique tp for tree: "+ ((orig, orig.tpe)))
+            orig.tpe
+          case _ =>
+            // duplicate, don't mutate old tree (TODO: use a map tree -> type instead?)
+            val treeWithNarrowedType = t.duplicate setType t.tpe.narrow
+            debug.patmat("uniqued: "+ ((t, t.tpe, treeWithNarrowedType.tpe)))
+            trees += treeWithNarrowedType
+            treeWithNarrowedType.tpe
+        }
+{code}
+
+{code}
+      private[TreesAndTypesDomain] def unique(tp: Type, mkFresh: => Const): Const =
+        uniques.get(tp).getOrElse(
+          uniques.find {case (oldTp, oldC) => oldTp =:= tp} match {
+            case Some((_, c)) =>
+              debug.patmat("unique const: "+ ((tp, c)))
+              c
+            case _ =>
+              val fresh = mkFresh
+              debug.patmat("uniqued const: "+ ((tp, fresh)))
+              uniques(tp) = fresh
+              fresh
+          })
+{code}
+
+{noformat}
+uniqued: (O.A,O.LK,O.<refinement>.type)
+checkableType(K with L): K with L
+uniqued const: (O.<refinement>.type,A)
+uniqued: (O.B,O.LK,O.<refinement>.type)
+{noformat}
+
+O.A and O.B, seem to be incorrectly unified in the pattern match analysis because their types narrow to the same type.

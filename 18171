@@ -1,0 +1,47 @@
+There are several methods on List that will compile when called from Java, but fail at runtime with a NoSuchMethodError. For example:
+{code:title=src/SomeScala.scala}
+object SomeScala {
+  def list = List(1, 2, 3) 
+}
+{code}
+{code:title=src-java/Main.java}
+public class Main {
+    public static void main(String[] args) {
+        System.out.println(SomeScala.list().tail());
+        System.out.println(SomeScala.list().par());
+        System.out.println(SomeScala.list().init());
+    }
+}
+{code}
+
+All 3 of those methods will fail at runtime:
+list().tail():
+{noformat}
+Exception in thread "main" java.lang.NoSuchMethodError: scala.collection.immutable.List.tail()Lscala/collection/Traversable;
+	at Main.main(Main.java:3)
+{noformat}
+
+list().par()
+{noformat}
+Exception in thread "main" java.lang.NoSuchMethodError: scala.collection.immutable.List.par()Lscala/collection/parallel/ParIterable;
+	at Main.main(Main.java:4)
+{noformat}
+
+list().init()
+{noformat}
+Exception in thread "main" java.lang.NoSuchMethodError: scala.collection.immutable.List.init()Lscala/collection/Traversable;
+	at Main.main(Main.java:5)
+{noformat}
+
+The runtime type of the list is scala.collection.immutable.$colon$colon. If you were to cast it to that type, then tail() will compile and run:
+
+{code:title=src-java/Main.java}
+public class Main {
+    public static void main(String[] args) {
+        scala.collection.immutable.$colon$colon colon = (scala.collection.immutable.$colon$colon) (Object) SomeScala.list();
+        System.out.println(colon.tail()); //successfully prints List(2, 3)
+    }
+}
+{code}
+
+I found this when unit tests failed when calling tail() and tried out a few other methods to find par() and init(). I assume there are other methods that would fail like this, but I didn't see any pattern. For example, both "init()" and "inits()" show up as methods on "TraversableLike", but "inits()" works.

@@ -1,0 +1,24 @@
+this happens in both 2.7 and 2.8:
+{code}
+Welcome to Scala version 2.7.7.final (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_17).
+
+scala> class C(x: Int) { def foo = x }
+defined class C
+
+scala> new C(0)
+res0: C = C@34f34071
+
+scala> import res0.x
+import res0.x
+{code}
+
+the import succeeds, but it should fail because there is no reason x should be visible outside C.
+at least, I cannot find anything in the spec to justify x's visibility outside C.
+
+I brought this up on the mailing list in this thread:
+http://old.nabble.com/-scala--Visibility-of-class-parameters-td26633887.html
+Martin replied, but I think his reply failed to address my point; my post must not have been sufficiently
+clear. See clarifying replies from Geoff Reedy and myself. This isn't about "import", and it isn't about
+accessibility. It's about visibility, and I'm only using "import" as a way of demonstrating the visibility issue.
+
+Martin hasn't responded further, so I'm asking for review.  (It remains possible that there's something in the spec that addresses this and I just can't find it.) Thanks...

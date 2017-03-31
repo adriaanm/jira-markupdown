@@ -1,0 +1,35 @@
+minimized
+
+{code:scala}
+scalaVersion := "2.11.8"
+{code}
+
+{code:scala}
+package com.example
+
+case class Foo[F[_], A](step: F[Foo.Step[A]])
+
+object Foo {
+  class Step[A]
+  object Done {
+    def unapply[A](a: Step[A]): Boolean = true
+  }
+}
+
+object ClassFormatErrorBug {
+  implicit class AnyOps[A](actual: A) {
+    def mustMatch[B](f: PartialFunction[A, B]): Unit = {
+    }
+  }
+
+  type Id[+A] = A
+
+  def main(args: Array[String]): Unit = {
+    val s = new Foo[Id, String](new Foo.Step[String])
+
+    s.step mustMatch {
+      case Foo.Done() => true
+    }
+  }
+}
+{code}

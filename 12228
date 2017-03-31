@@ -1,0 +1,40 @@
+Steps to reproduce the problem with matching up the `Expr` types:
+
+{code}
+scala> import reflect.macros.blackbox._, language.experimental.macros
+import reflect.macros.blackbox._
+import language.experimental.macros
+
+scala> def impl(c: Context) = c.literalUnit
+warning: there was one deprecation warning; re-run with -deprecation for details
+impl: (c: scala.reflect.macros.blackbox.Context)c.Expr[Unit]
+
+scala> def m(a: => Int) = macro impl
+<console>:18: error: macro implementation has incompatible shape:
+ required: (c: scala.reflect.macros.blackbox.Context)(a: c.Expr[=> Int]): c.Expr[Unit]
+ or      : (c: scala.reflect.macros.blackbox.Context)(a: c.Tree): c.Tree
+ found   : (c: scala.reflect.macros.blackbox.Context): c.Expr[Unit]
+number of parameter sections differ
+       def m(a: => Int) = macro impl
+                                ^
+
+scala> def impl(c: Context)(a: c.Expr[=> Int]): c.Expr[Unit] = c.literalUnit
+<console>:1: error: identifier expected but '=>' found.
+def impl(c: Context)(a: c.Expr[=> Int]): c.Expr[Unit] = c.literalUnit
+                               ^
+
+scala> def impl(c: Context)(a: c.Expr[Int]): c.Expr[Unit] = c.literalUnit
+warning: there was one deprecation warning; re-run with -deprecation for details
+impl: (c: scala.reflect.macros.blackbox.Context)(a: c.Expr[Int])c.Expr[Unit]
+
+scala> def m(a: => Int) = macro impl
+<console>:18: error: macro implementation has incompatible shape:
+ required: (c: scala.reflect.macros.blackbox.Context)(a: c.Expr[=> Int]): c.Expr[Unit]
+ or      : (c: scala.reflect.macros.blackbox.Context)(a: c.Tree): c.Tree
+ found   : (c: scala.reflect.macros.blackbox.Context)(a: c.Expr[Int]): c.Expr[Unit]
+type mismatch for parameter a: c.Expr[=> Int] does not conform to c.Expr[Int]
+       def m(a: => Int) = macro impl
+                                ^
+{code}
+
+The workaround is to use macro implementations from `Tree` => `Tree`, or to avoid using by-name parameters in the macro declaration itself. By-name parameters don't really make a difference: a macro argument is not evaluated eagerly nor lazily, instead the AST is passed to the macro implementation at compile time, and the macro implementation has control over whether and when it is evaluated.

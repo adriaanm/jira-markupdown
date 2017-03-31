@@ -1,0 +1,34 @@
+For completeness, the output of the init target when run on the unzipped src instead of a git repo.
+
+The error text shows up in buildcharacter.properties, so-called because it builds character, of course.
+
+{noformat}
+     [echo]          git date: -
+     [echo] fatal: Not a git repository (or any parent up to mount parent )
+     [echo] Stopping at filesystem boundary (GIT_DISCOVERY_ACROSS_FILESYSTEM not set).
+     [echo] fatal: Not a git repository (or any parent up to mount parent )
+     [echo] Stopping at filesystem boundary (GIT_DISCOVERY_ACROSS_FILESYSTEM not set).
+     [echo]          git hash: fatal: Not a git repository (or any parent up to mount parent )
+     [echo] Stopping at filesystem boundary (GIT_DISCOVERY_ACROSS_FILESYSTEM not set).
+     [echo]     maven version: 2.11.6-SNAPSHOT
+     [echo]      OSGi version: 2.11.6.v-
+     [echo] fatal: Not a git repository (or any parent up to mount parent )
+     [echo] Stopping at filesystem boundary (GIT_DISCOVERY_ACROSS_FILESYSTEM not set).
+     [echo] fatal: Not a git repository (or any parent up to mount parent )
+     [echo] Stopping at filesystem boundary (GIT_DISCOVERY_ACROSS_FILESYSTEM not set).-fatal: Not a git repository (or any parent up to mount parent )
+     [echo] Stopping at filesystem boundary (GIT_DISCOVERY_ACROSS_FILESYSTEM not set).
+     [echo] canonical version: 2.11.6--
+     [echo] fatal: Not a git repository (or any parent up to mount parent )
+     [echo] Stopping at filesystem boundary (GIT_DISCOVERY_ACROSS_FILESYSTEM not set).
+     [echo] fatal: Not a git repository (or any parent up to mount parent )
+     [echo] Stopping at filesystem boundary (GIT_DISCOVERY_ACROSS_FILESYSTEM not set).-fatal: Not a git repository (or any parent up to mount parent )
+     [echo] Stopping at filesystem boundary (GIT_DISCOVERY_ACROSS_FILESYSTEM not set).
+
+{noformat}
+In the stack trace, init fails because of a version field; if the version string is bad, you're done.
+
+The bad string has the form "2.11.5--\nSome git error message." So the git message in the description is actually part of the string.
+
+This PR makes it more robust, but a multiline version string is not correctly added to the jar manifest, so the build eventually fails anyway.
+
+https://github.com/scala/scala/pull/4352

@@ -1,0 +1,9 @@
+I would actually say that it is a bug that implicits are allowed to distinguish on things that are call-by-name at all.  In particular inside the body of a method
+
+{code}
+def foo(arg : => Int) = { ... }
+{code}
+
+It is should not be possible for the programmer to distinguish between something with type Int and something with type => Int, so the implicit mechanism should not be allowed to do this either.
+
+Furthermore, the fact that () => Nothing works is irrelevant because function types are something completely different from call-by-name arguments.  

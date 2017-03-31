@@ -1,0 +1,38 @@
+Tested on Scala 2.8.0.r19367:
+
+An array instance cannot be matched as Array[_] or tested by isInstanceOf[Array[_]), instead, it's WrappedArray
+
+{code}
+import scala.collection.Traversable
+import scala.collection.mutable.WrappedArray
+
+object Main {
+
+  def main(args: Array[String]) {
+    val a: Traversable[_] = Array(1, 2)
+    testArray1(a)
+    testArray2(a)
+  }
+
+  def testArray1(seq: Traversable[_]) = {
+    seq match {
+      case xs: Array[Int] =>
+        println("Array matched")
+      case xs: WrappedArray[_] =>
+        println("WrappedArray macthed")
+      case _ =>
+        println("error on match Array")
+    }
+  }
+
+  def testArray2(seq: Traversable[_]) = {
+    if (seq.isInstanceOf[Array[_]]) {
+      println("Array matched")
+    } else if (seq.isInstanceOf[WrappedArray[_]]) {
+      println("WrappedArray matched")
+    } else {
+      println("error on match Array: " + seq.getClass.getName)
+    }
+  }
+}
+{code}

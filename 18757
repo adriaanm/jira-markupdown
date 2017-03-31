@@ -1,0 +1,33 @@
+This is a regression since 2.10, and specific to separate compilation. I think all included elements (implicit class, value class, package objects, call to to_s comes from a closure) are necessary to reproduce this bug, but there's another bug I encountered while minimizing which I'll open next.
+{code}
+//  a.scala
+package object pkg {
+  implicit class AnyOps(val x: Any) extends AnyVal { def to_s: String = "" + x }
+}
+// b.scala
+package pkg
+
+package object other { }
+package other { class Crash { def f() = List(1) map (_.to_s) } }
+
+object Test {
+  def main(args: Array[String]): Unit = println((new other.Crash).f())
+}
+{code}
+
+Outcomes:
+
+{code}
+% scalac3 a.scala && scalac3 b.scala && scala3 pkg.Test
+java.lang.ClassCastException: pkg.other.package$ cannot be cast to pkg.package$
+	at pkg.other.Crash$$anonfun$f$1.apply(b.scala:4)
+	at pkg.other.Crash$$anonfun$f$1.apply(b.scala:4)
+	at scala.collection.TraversableLike$$anonfun$map$1.apply(TraversableLike.scala:245)
+	at scala.collection.TraversableLike$$anonfun$map$1.apply(TraversableLike.scala:245)
+
+% scalac3 a.scala b.scala && scala3 pkg.Test
+List(1)
+
+% scalac210 a.scala && scalac210 b.scala && scala210 pkg.Test
+List(1)
+{code}

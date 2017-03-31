@@ -1,0 +1,13 @@
+There was no test case checked in, a prerequisite to the fact that this bug is still with us.  res0.invoke(x, Nil: _*) still crashes as of r24610, as does res0.invoke(x, Seq(): _*).
+
+Here is a test case with both crashers for the convenience of the eventual closer.
+{code}
+object Test {
+  def main(args: Array[String]): Unit = {
+    val x = "abc"
+    val m = x.getClass.getMethod("toString")
+    m.invoke(x, Nil: _*)
+    m.invoke(x, Seq(): _*)
+  }
+}
+{code}

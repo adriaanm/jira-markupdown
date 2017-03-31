@@ -1,0 +1,48 @@
+This is fine
+
+{code}
+class VC(val s: String) extends AnyVal
+
+class AImpl {
+ def a : VC = new VC("a")
+}
+
+class X {
+
+  def build(v: String) = new AImpl {
+    private var _a = new VC(v)    
+    override def a : VC = _a
+    def a_=(newA: String) { _a = new VC(newA) }
+  }
+}
+{code}
+
+But this isn't
+
+{code}
+
+class VC(val s: String) extends AnyVal
+
+class AImpl {
+ def a : VC = new VC("a")
+}
+
+class X {
+  def build(v: String) = new AImpl {
+    override var a = new VC(v)
+  }
+}
+{code}
+
+It fails with
+
+{code}
+error: Parameter type in structural refinement may not refer to a user-defined value class
+  def build(v: String) = new AImpl {
+{code}
+
+Instead of
+
+{code}
+ error: method a_= overrides nothing
+{code}

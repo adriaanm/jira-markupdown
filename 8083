@@ -1,0 +1,39 @@
+I should also mention that creating lots of throwaway intermediate Vectors, even with this fix, is always going to be more expensive than using an imperative Builder within the loop. Here's an example that is an order of magnitude faster.
+
+{code}
+object Test extends App {
+  type Upcast = IndexedSeq[String]
+  var i = 0
+  while (i < 100) {
+    var v: Upcast = Vector("")
+    var j = 0
+    val t = System.nanoTime
+    val builder = Vector.newBuilder[String]
+    while (j < 100000) {
+      builder += ""
+      j += 1
+    }
+    v = builder.result
+    println(s"${(System.nanoTime - t).toDouble / 1000 / 1000} / ${v.length}")
+    i += 1
+  }
+}
+{code}
+
+
+{noformat}
+// 2.10.1
+...
+0.372 / 100000
+0.372 / 100000
+0.375 / 100000
+0.374 / 100000
+0.372 / 100000
+0.372 / 100000
+0.37 / 100000
+0.381 / 100000
+0.378 / 100000
+0.378 / 100000
+{noformat}
+
+If you use a suitable persistent data structure like {{List}} that has a free prepend, you can keep things pure. But Vector's append/prepend is more expensive (as a tradeoff to make its indexing faster).

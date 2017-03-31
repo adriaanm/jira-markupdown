@@ -1,0 +1,34 @@
+{{Array[AnyRef]}} definition cannot be used to override a Java interface method containing a vararg parameter. See the brief example below:
+
+{{Foo.java}} definition:
+{code}
+package foo;
+
+public interface Foo {
+  void exec(String name, Object...objects);
+}
+{code}
+
+Then write the following scala source in Eclipse {{FooApp.scala}}
+
+{code}
+package client
+import foo.Foo
+
+object FooApp extends Application {
+  val foo = new Foo {
+    override def exec(name:java.lang.String, objects:Array[AnyRef]) {
+      printf("exec")
+    }
+  }
+}
+{code}
+
+The above code raises two errors in the Problems view, as follows:
+"method exec overrides nothing" and 
+"object creation impossible, since method exec in trait Foo of type 
+(java.lang.String,java.lang.Object*)Unit is not defined."
+
+However, the code compiles perfectly when using the plain {{scalac}} command-line compiler. 
+
+I'm using the beta plugin 2.7.1.r15152-b20080522020257. 

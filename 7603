@@ -1,0 +1,15 @@
+Perhaps related to SI-5789. 
+
+The {{AssertionError}} occurs during the mixin phase. This can be confirmed by running
+{noformat}
+fsc test.scala -optimize -Ystop-after:constructors
+{noformat}
+
+multiple times, no {{AssertionError}} ensues.
+
+In contrast, running 
+{noformat}
+fsc test.scala -optimize -Ystop-after:mixin
+{noformat}
+
+results in {{AssertionError}} every other time.

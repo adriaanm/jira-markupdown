@@ -1,0 +1,9 @@
+Firstly, if you read the specification the first thing that happens during desugaring of pattern matching is that, 
+{code}
+for ( (a,b) <- this )
+{code}
+becomes
+{code}
+for ( (a,b) <- this.filter( case (a,b) => true; case _ => false } )
+{code}
+And if you indeed look at the AST following typechecking, this is indeed the case.  However, sometime during the superaccessors or refchecks phase, {{filter}} is eliminated.  Therefore, this seems to be a bug, but only because something is being too aggressive about optimizing out the call to filter, which is the identity other than being side-effecting.

@@ -1,0 +1,5 @@
+The particular examples I've been using were chosen for ease of understanding, as opposed to motivation.   The motivating cases are loops having multiple exit points, and/or continuation points.  ({{continue}} itself is just the inversion of a regular {{if}} guard, I just included it for completeness).
+
+Another way of looking at it: motivation is more or less the same as the already-existing {{scala.util.control.Breaks}}, but: (a) not requiring {{throw/catch}} under the hood, and (b) all looping constructs remain nicely scoped inside the {{for}} construct.
+
+The times I, personally, find myself wanting {{break}} and/or {{continue}}, are usually numeric or other complex looping algorithms where there are often multiple conditions that might indicate loop halting, and those conditions are best tested at varying points in the code, which makes {{break}}/{{continue}} tests a nice representation; they can be dropped in wherever they are warranted, without breaking up the main flow of the code.   Other use cases include loops involving many varieties of error checking that become relevant at multiple points in the progress of the main looping body.

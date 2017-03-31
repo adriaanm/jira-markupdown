@@ -1,0 +1,18 @@
+LinkedHashMap.keys returns the keys of the map in insertion order, but if that collection is manipulated in any way, it reverts to an unordered Set.
+
+This is somewhat surprising, particularly as keys is Iterable.
+
+{code}
+Welcome to Scala version 2.9.0.1 (OpenJDK 64-Bit Server VM, Java 1.7.0-internal).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> val m = scala.collection.mutable.LinkedHashMap("one" -> 1, "two" -> 2, "three" -> 3, "four" -> 4, "five" -> 5)
+m: scala.collection.mutable.LinkedHashMap[java.lang.String,Int] = Map(one -> 1, two -> 2, three -> 3, four -> 4, five -> 5)
+
+scala> m.keys
+res0: Iterable[java.lang.String] = Set(one, two, three, four, five)
+
+scala> m.keys.drop(0)
+res1: Iterable[java.lang.String] = Set(four, three, two, five, one)
+{code}

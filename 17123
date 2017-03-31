@@ -1,0 +1,24 @@
+The resident compiler fails when used with the `-Yinvalidate` option and sources in the empty package that use an external dependency.
+
+A.scala
+{code:java}
+import scalaz._
+import Scalaz._
+object A {
+  def dummyDependency = true.fold(false, true)
+}
+{code}
+
+B.scala is the same as A.scala but with `object B` (it just needs to be in the empty package and use the dependency).
+
+{code:none}
+$ mkdir build
+$ fsc -d build -Yinvalidate build -classpath build:scalaz-core.jar A.scala B.scala
+$ rm -rf build/A*.class
+$ fsc -d build -Yinvalidate build -classpath build:scalaz-core.jar A.scala
+error while loading Scalaz, class file
+ '.../scalaz-core.jar(scalaz/Scalaz.class)'
+ has location not matching its contents: contains class Scalaz
+{code}
+
+If you repeat the process, but with the sources in 'package example', no error occurs.  I used scalaz 6.0.4, but the specific dependency does not appear to be important.  It just needs to be from an external jar (not the standard library).

@@ -1,0 +1,31 @@
+Consider the following code:
+{code}
+object Test extends Application {
+	class Tr[T]
+	implicit def i_tr = new Tr[Int]
+	implicit def a_tr[A <: String] = new Tr[A]
+	def tr[T](t : T)(implicit tr : Tr[T]) = tr
+	tr(1)
+}
+{code}
+To which the Scala compiler gives the following rather puzzling reply:
+{code}
+Test.scala:6: error: ambiguous implicit values:
+ both method a_tr in object Test of type [A <: String]Test.Tr[A]
+ and method i_tr in object Test of type => Test.Tr[Int]
+ match expected type Test.Tr[Int]
+{code}
+Which is plain wrong as a_tr is not a valid choice for the implicit parameter. Explicitely passing a_tr will also correctly produce "type arguments [Int] do not conform to method a_tr's type parameter bounds [A <: String]".
+
+This problem vanishes once the implicit methods have any parameters. The following fragment works just fine:
+{code}
+object Test extends Application {
+	class Tr[T]
+	implicit def i_tr(dummy:Int) = new Tr[Int]
+	implicit def a_tr[A <: String](dummy:Int) = new Tr[A]
+	def tr[T](t : T)(implicit tr : Int => Tr[T]) = tr(1)
+	tr(1)
+}
+{code}
+
+Removing the type bounds also "fixes" the problem. Apologies if this a known bug or somehow intended behavior.

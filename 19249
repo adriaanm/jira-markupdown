@@ -1,0 +1,19 @@
+If any import statement in the block precedes any dynamic invocation, the compiler reports the following error: {{erroneous or inaccessible type}}.
+
+{code:scala}
+object Test extends App {
+  import language.dynamics
+
+  class D extends Dynamic {
+    def selectDynamic(name: String): String = name
+  }
+
+  def test = {
+    import scala.Some // everything is fine if removed
+    val d = new D
+    println(d.field)
+  }
+
+  test
+}
+{code}

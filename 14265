@@ -1,0 +1,73 @@
+The following fails, but only in one direction.
+It be related to some Tuple2 specific magic since
+it works if you replace Tuple2 by a user defined class (see below).
+
+{code}
+object test {
+
+ case class MyPair[X, Y](val x: X, val y: Y) {
+   def getFirst() : X = x
+   def getSecond() : Y = y
+ }
+
+ implicit def tup2mypair[X, Y, W, Z](t: Tuple2[X, Y])(implicit f: X
+=> W, g: Y => Z)
+ : MyPair[W, Z] =
+   new MyPair[W,Z](((f(t._1)) : W), ((g(t._2)) : Z))
+
+ implicit def mypair2tup[X, Y, W, Z](t: MyPair[X, Y])(implicit f: X
+=> W, g: Y => Z)
+ : Tuple2[W, Z] =
+   new Tuple2[W, Z](((f(t.getFirst())) : W), ((g(t.getSecond())) : Z))
+
+ var x : MyPair[Int, Int] = MyPair[Int, Int](1,2)
+ var y : Tuple2[Int, Int] = Tuple2[Int, Int](1,2)
+
+ x = y
+ y = x
+}
+{code}
+
+This fails to compile with:
+{code}
+$$ scalac ~/test.scala
+/home/mahler/test.scala:22: error: no implicit argument matching
+parameter type (Int) => W was found.
+ y = x
+     ^
+{code}
+I do not understand why this is an error.
+Surely W should bind to Int and and they identity conversion
+should be applied, as happens when you replace Tuple2 by a user defined MyTuple2.
+This works:
+
+{code}
+object test {
+
+ case class MyPair[X, Y](val x: X, val y: Y) {
+   def getFirst() : X = x
+   def getSecond() : Y = y
+ }
+
+ case class MyTuple2[X, Y](val x: X, val y: Y) {
+   def _1 : X = x
+   def _2 : Y = y
+ }
+
+ implicit def tup2mypair[X, Y, W, Z](t: MyTuple2[X, Y])(implicit f: X
+=> W, g: Y => Z)
+ : MyPair[W, Z] =
+   new MyPair[W,Z](((f(t._1)) : W), ((g(t._2)) : Z))
+
+ implicit def mypair2tup[X, Y, W, Z](t: MyPair[X, Y])(implicit f: X
+=> W, g: Y => Z)
+ : MyTuple2[W, Z] =
+   new MyTuple2[W, Z](((f(t.getFirst())) : W), ((g(t.getSecond())) : Z))
+
+ var x : MyPair[Int, Int] = MyPair[Int, Int](1,2)
+ var y : MyTuple2[Int, Int] = MyTuple2[Int, Int](1,2)
+
+ x = y
+ y = x
+}
+{code}

@@ -1,0 +1,21 @@
+It's not a bug in the reifier, it's just the usual flailing with existentials and method-defined classes.
+{code}
+class A {
+  def f = { case class R(id: Int); val lb = new collection.mutable.ListBuffer[R](); lb += R(1) }
+  lazy val res = f
+}
+/***
+scalac3 ./a.scala 
+./a.scala:3: error: type mismatch;
+ found   : lb.type(in lazy value res) where type lb.type(in lazy value res) <: scala.collection.mutable.ListBuffer[R] with Singleton
+ required: (some other)lb.type(in lazy value res) forSome { type (some other)lb.type(in lazy value res) <: scala.collection.mutable.ListBuffer[R] with Singleton; type R <: Product with Serializable{val id: Int; def copy(id: Int): R; def copy$default$1: Int} }
+  lazy val res = f
+                 ^
+./a.scala:3: error: type mismatch;
+ found   : lb.type(in value res) where type lb.type(in value res) <: scala.collection.mutable.ListBuffer[R] with Singleton
+ required: lb.type(in lazy value res) forSome { type lb.type(in lazy value res) <: scala.collection.mutable.ListBuffer[R] with Singleton; type R <: Product with Serializable{val id: Int; def copy(id: Int): R; def copy$default$1: Int} }
+  lazy val res = f
+           ^
+two errors found
+***/
+{code}

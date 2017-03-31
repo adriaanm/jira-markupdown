@@ -1,0 +1,29 @@
+{code}
+abstract class A {
+    type T
+}
+
+def f(a: A, t: a.T) { }
+{code}
+
+fails to compile:
+
+{code}
+(fragment of hello.scala):5: error: illegal dependent method type
+def f(a: A, t: a.T) { }
+{code}
+
+
+Use case is:
+
+{code}
+class PropertyType {
+  type ValueType
+}
+
+class LengthPropertyType {
+  type ValueType = Int
+}
+
+def addProperty(propertyType: PropertyType, value: propertyType.ValueType) { ... }
+{code}

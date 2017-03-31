@@ -1,0 +1,23 @@
+using this code on 2.8 latest gives this
+{code}
+class Foo{@volatile final var x=10};new Foo
+{code}
+
+{code}
+Welcome to Scala version 2.8.0.r18830-b20090930020951 (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_16).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> class Foo{@volatile final var x=10};new Foo
+java.lang.ClassFormatError: Illegal field modifiers in class Foo: 0x52
+	at java.lang.ClassLoader.defineClass1(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:621)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:466)
+	at scala.tools.nsc.interpreter.AbstractFileClassLoader.findClass(AbstractFileClassLoader.scala:31)
+	at java.lang.ClassLoader.loadClass(ClassL...
+scala> 
+
+{code}
+
+I noticed SI-2095
+not sure if they are related.

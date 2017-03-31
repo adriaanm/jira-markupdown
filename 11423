@@ -1,0 +1,17 @@
+You're right, I (or the reporter) should open a thread on the mailing list. That being said, I'll respond to the comments you've made so far.
+
+Regarding it being a design decision, yes, someone deliberately put the NonFatal filters in place, but it's unclear whether they deliberately intended for Futures to swallow fatal exceptions the way they do. I didn't dig it up before making the PR, but I found the the original commit that added the NonFatal qualifiers everywhere (af8416bb7ff4d6816f416cd0671e26e2cdc653d7):
+
+{quote}
+commit af8416bb7ff4d6816f416cd0671e26e2cdc653d7
+Author: Viktor Klang <viktor.klang@gmail.com>
+Date:   Fri Apr 13 18:11:38 2012 +0200
+
+    Adding NonFatal matching as to not catch anything that should terminate the JVM, also adding EX.reportFailure where it makes sense
+{quote}
+
+It seems like the commit description is talking about VirtualMachineErrors, not other types of fatal exceptions. I agree with this concern, and would suggest that the Future should either rethrow them after completing the promise, or avoid catching them at all (and yes, my current PR should be updated with one of those options). For all other Throwables, including the other fatal ones, it looks like the async thread has no reason not to complete the promise with them, thus notifying the caller that there was a failure. The [SIP 14 Exceptions|http://docs.scala-lang.org/sips/completed/futures-promises.html#exceptions] section, and the library documentation of Future, still claim that Future will convey fatal exceptions back to the caller, wrapped in an ExecutionException. That's no longer true as of the af8416 commit.
+
+The current documentation for [blocking|http://www.scala-lang.org/files/archive/nightly/docs/library/index.html#scala.concurrent.package] says that it now only is intended to cover external blocking APIs, and that Await.result should be used directly instead. As applied to third party blocking APIs, it also says that it throws InterruptedException if the blocking is interrupted. Although it's clear to me why blocking would be discouraged within Future computations, I'm not yet aware of where the documentation specifically forbids use of sleeping code from within a Future.
+
+Regarding the extra hunks in my PR, everything that's not related to the NonFatal change is there to update the tests to verify the changes that the PR makes. I'll respond in more detail in the line notes.

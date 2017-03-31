@@ -1,0 +1,13 @@
+A workaround is to declare {{OpTarget}} as covariant.
+
+{noformat}
+% cat sandbox/t7745.scala  | egrep 'class OpTarget|base.op'
+class OpTarget[+TC[_]]
+  // base.op(OpTarget[BaseOps[String]#OpT](23)) // OK in all cases
+  base.op(23)  // In the failing case:
+  //  base.op(23)
+% scalac-hash v2.10.2 sandbox/t7745.scala
+[info] v2.10.2 => /Users/jason/usr/scala-v2.10.2-0-g60d462e
+{noformat}
+
+The bug seems to lie in {{Infer::prototypeArgs}}, which checks if the result type of the implicit apply, `OpTarget[?TC]` (where ?TC is a type variable), is a subtype of the expected type, `OpTarget[[U]List[U]]` or `OpTarget[[U]Op[String,U]]`. The former returns true, the latter false.

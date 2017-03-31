@@ -1,0 +1,53 @@
+=== What steps will reproduce the problem (please be specific and use wikiformatting)? ===
+test/Foo.java
+{code}
+package test;
+
+public abstract class Foo {
+  protected interface Inner {
+    public void hello();
+  }
+}
+{code} 
+
+other/Bar.java
+{code}
+package other;
+
+public class Bar extends test.Foo {
+  void createMeSth(test.Foo.Inner aaa) {
+    aaa.hello();
+  }
+}
+{code}
+
+ohmy/A.scala
+{code}
+package ohmy
+
+class A extends other.Bar
+{code}
+
+
+
+=== What is the expected behavior? ===
+Well, at least the error message seems misleading to me. Not sure if this should compile anyway, judging from the reply to bug SI-3934.
+Java compiles fine.
+Also not forcing the type by compiling only 
+{code}
+scalac test/Foo.java  other/Bar.java
+{code}
+finishes successfully. So I would expect some consistency here.
+
+=== What do you see instead? ===
+{code}
+other/Bar.java:4: error: trait Inner in object Foo cannot be accessed in object test.Foo
+ Access to protected trait Inner not permitted because
+ enclosing class class Bar in package other is not a subclass of 
+ object Foo in package test where target is defined
+  void createMeSth(test.Foo.Inner aaa) {
+                            ^
+one error found
+{code}
+
+btw java files like this are created through protobuf, therefore if possible it would be useful to fix something here.

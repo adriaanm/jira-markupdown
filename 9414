@@ -1,0 +1,21 @@
+Minimized:
+
+{code}
+package com.example
+
+object ClassFormatErrorBug {
+  type Id[A] = A
+
+  def main(args: Array[String]): Unit = {
+    new PF1
+  }
+}
+
+abstract class PF[A, B]{
+  def x[A1 <: A](x1: A1): Any
+}
+class PF1 extends PF[ClassFormatErrorBug.Id[java.lang.String], Any] {
+  def x[A1 <: ClassFormatErrorBug.Id[java.lang.String]](x1: A1): Any = null
+}
+
+{code}

@@ -1,0 +1,13 @@
+XMLEventReader can run out of memory on very long input of this type:
+
+{code}
+<foo>
+  <bar/>
+  <bar/>
+  <!-- millions more <bar/> -->
+</foo>
+{code}
+
+This type of input is typical for a table export with lots of rows.
+
+I've traced this back to XMLEventReader.elem which generates dummy <ignore/> tags. These tags are then collected into the parent node in a NodeBuffer. Eventually, the NodeBuffer exhausts the available heap.

@@ -1,0 +1,24 @@
+I trust you saw what I checked in with the fix for 5488 in 1e648c3862 
+
+Comment found in test/files/run/t5488-fn.scala 
+{code}
+/**  If the return types are specialized on AnyRef as well:
+
+files/run/t5488-fn.scala:18: error: type mismatch;
+ found   : Unit => String
+ required: Unit => B$sp
+    show(new B((x: Unit) => "abc"))
+         ^
+files/run/t5488-fn.scala:24: error: type mismatch;
+ found   : (Int, Object) => String
+ required: (Int, B$sp) => C$sp
+    show(new C((x: Int, y: AnyRef) => "abc"))
+         ^
+files/run/t5488-fn.scala:26: error: type mismatch;
+ found   : (Object, Int) => String
+ required: (A$sp, Int) => C$sp
+    show(new C((x: AnyRef, y: Int) => "abc"))
+         ^
+three errors found
+**/
+{code}

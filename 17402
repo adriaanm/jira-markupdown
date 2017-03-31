@@ -1,0 +1,63 @@
+When feature warnings and deprecation ones are both present, {{:warnings}} only shows deprecation warnings. As an aside, the messages for deprecation/feature warnings, both in the compiler and in the REPL, suggest rerunning with extra options, while in the REPL they should suggest using the {{:warnings}} command.
+
+Let's compare the warnings that {{:warnings}} shows us for the following two lines of code:
+{code}
+implicit def any2optionable(x : AnyRef) = new {def matchInstance[B: Manifest]: Option[B] = null}
+implicit def any2optionable(x : AnyRef) = new {def matchInstance[B]: Option[B] = null}
+{code}
+The first will give deprecation and feature warnings, the second only feature warnings.
+{code}
+$ ./qbin/scala
+Welcome to Scala version 2.10.0-20120828-070538-8ca87e36ba (OpenJDK 64-Bit Server VM, Java 1.6.0_24).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> implicit def any2optionable(x : AnyRef) = new {def matchInstance[B: Manifest]: Option[B] = null}
+warning: there were 2 deprecation warnings; re-run with -deprecation for details
+warning: there were 1 feature warnings; re-run with -feature for details
+any2optionable: (x: AnyRef)Object{def matchInstance[B](implicit evidence$1: Manifest[B]): Option[B]}
+
+scala> :warnings
+<console>:7: warning: type Manifest in object Predef is deprecated: Use scala.reflect.ClassTag (to capture erasures) or scala.reflect.runtime.universe.TypeTag (to capture types) or both instead
+       implicit def any2optionable(x : AnyRef) = new {def matchInstance[B: Manifest]: Option[B] = null}
+                    ^
+<console>:7: warning: type Manifest in object Predef is deprecated: Use scala.reflect.ClassTag (to capture erasures) or scala.reflect.runtime.universe.TypeTag (to capture types) or both instead
+       implicit def any2optionable(x : AnyRef) = new {def matchInstance[B: Manifest]: Option[B] = null}
+                                                                         ^
+
+scala> implicit def any2optionable(x : AnyRef) = new {def matchInstance[B]: Option[B] = null}
+warning: there were 1 feature warnings; re-run with -feature for details
+any2optionable: (x: AnyRef)Object{def matchInstance[B]: Option[B]}
+
+scala> :warnings
+<console>:8: warning: implicit conversion method any2optionable should be enabled
+by making the implicit value language.implicitConversions visible.
+This can be achieved by adding the import clause 'import language.implicitConversions'
+or by setting the compiler option -language:implicitConversions.
+See the Scala docs for value scala.language.implicitConversions for a discussion
+why the feature should be explicitly enabled.
+       implicit def any2optionable(x : AnyRef) = new {def matchInstance[B]: Option[B] = null}
+                    ^
+{code}
+
+Finally, the count of feature warnings seems wrong (two counted, one shown):
+{code}
+scala> implicit def any2optionable(x : AnyRef) = new {def matchInstance[B]: Option[B] = null}
+warning: there were 1 feature warnings; re-run with -feature for details
+any2optionable: (x: AnyRef)Object{def matchInstance[B]: Option[B]}
+
+scala> "".matchInstance
+warning: there were 2 feature warnings; re-run with -feature for details
+res0: Option[Nothing] = null
+
+scala> :warnings
+<console>:9: warning: reflective access of structural type member method matchInstance should be enabled
+by making the implicit value language.reflectiveCalls visible.
+This can be achieved by adding the import clause 'import language.reflectiveCalls'
+or by setting the compiler option -language:reflectiveCalls.
+See the Scala docs for value scala.language.reflectiveCalls for a discussion
+why the feature should be explicitly enabled.
+              "".matchInstance
+                 ^
+{code}
+In the above example, also when using -feature one still gets a single feature warning.

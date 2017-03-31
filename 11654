@@ -1,0 +1,30 @@
+Interesting, under -Xexperimental:
+{code}
+scala> samOf(typeOf[java.io.InputStream])
+res1: $r.intp.global.Symbol = method read
+{code}
+
+and -Ytyper-debug on the example says:
+{code}
+|    |    |-- { super.<init>(url.openStream); () } EXPRmode (site: <init> in B) 
+|    |    |    |-- super.<init>(url.openStream) BYVALmode-EXPRmode (site: <init> in B) 
+|    |    |    |    |-- super EXPRmode-POLYmode-QUALmode (silent: <init> in B) 
+|    |    |    |    |    |-- this EXPRmode (silent: <init> in B) 
+|    |    |    |    |    |    \-> B
+|    |    |    |    |    \-> B.super.type (with underlying type A)
+|    |    |    |    |-- url.openStream : pt=java.io.InputStream BYVALmode-EXPRmode (site: <init> in <empty>) 
+|    |    |    |    |    |-- url EXPRmode-POLYmode-QUALmode (site: <init> in <empty>) 
+|    |    |    |    |    |    \-> url.type (with underlying type java.net.URL)
+|    |    |    |    |    |-- { (() => url.openStream()) } : pt=java.io.InputStream BYVALmode-EXPRmode (site: <init> in <empty>) 
+|    |    |    |    |    |    |-- (() => url.openStream()) : pt=java.io.InputStream BYVALmode-EXPRmode (site: <init> in <empty>) 
+|    |    |    |    |    |    |    |-- { def read$body(): Int = url.openStream(); final class $a... : pt=java.io.InputStream BYVALmode-EXPRmode (site: <init> in <empty>) 
+|    |    |    |    |    |    |    |    |-- def read$body BYVALmode-EXPRmode (site: <init> in <empty>) 
+|    |    |    |    |    |    |    |    |    |-- url.openStream() : pt=Int EXPRmode (site: method read$body in <empty>) 
+|    |    |    |    |    |    |    |    |    |    |-- url.openStream BYVALmode-EXPRmode-FUNmode-POLYmode (silent: method read$body in <empty>) 
+|    |    |    |    |    |    |    |    |    |    |    \-> ()java.io.InputStream
+/Users/adriaan/Desktop/bugs/t9141.scala:2: error: type mismatch;
+ found   : java.io.InputStream
+ required: Int
+class B(url: java.net.URL) extends A(url.openStream)
+                                         ^
+{code}

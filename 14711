@@ -1,0 +1,19 @@
+Assume I have two ant based project, the directorie trees are something like:
+{code}
++lib.a
+  + .scala_dependencies
+  + src
+  + build.xml
+
++lib.b
+  + .scala_dependencies
+  + src
+  + build.xml
+{code}
+Where lib.b depends on lib.a, so, the build.xml of lib.b may contains "<ant antfile="@{lib.a}/build.xml .../>", that is, an ant call on lib.a's build.xml. When start an "ant build" under working directory "lib.b", and then the building process goes into lib.a's build.xml, the working directory will stay under "lib.b", which then will generate all src files under "lib.a/src" as relative paths from "lib.b", for example: "../../lib.a/src/A.scala". It's not satisfaction.
+
+What I suggested is that the rootPath should be based on the location of ".scala_dependencies" instead of "./", the code is something like:
+{code}
+val rootPath = depFilePath.normalize.parent.get
+{code}
+This will solve a lot of pains for ant projects that have dependcencies between them.

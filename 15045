@@ -1,0 +1,39 @@
+According to the new collections document, any Traversable object should support the ++ method.  But the ++ method is deprecated in BufferLike, and the implementation actually appends to the existing buffer rather than create a new collection.
+
+Maybe the intent was to prevent collection implementers from accidentally invoking the ++ method of BufferLike, which would probably be the wrong thing, but the deprecated ++ operator is exposed through the ListBuffer class at least, with the result that invoking ++ on a ListBuffer instance directly generates a deprecation warning and improperly updates the collection, while invoking ++ on any random Traversable instance (which may actually be ListBuffer) is fine and seems to do the right thing.
+
+{code}
+scala> val b = new ListBuffer[Int]
+b: scala.collection.mutable.ListBuffer[Int] = ListBuffer()
+
+scala> b += 1
+res18: b.type = ListBuffer(1)
+
+scala> val c = new ListBuffer[Int]
+c: scala.collection.mutable.ListBuffer[Int] = ListBuffer()
+
+scala> c += 2
+res19: c.type = ListBuffer(2)
+
+scala> b ++ c
+warning: there were deprecation warnings; re-run with -deprecation for details
+res20: scala.collection.mutable.ListBuffer[Int] = ListBuffer(1, 2)
+
+scala> val t: Traversable[Int] = b
+t: Traversable[Int] = ListBuffer(1, 2)
+
+scala> b == t
+res22: Boolean = true
+
+scala> t ++ c
+res23: Traversable[Int] = ListBuffer(1, 2, 2)
+
+scala> b
+res24: scala.collection.mutable.ListBuffer[Int] = ListBuffer(1, 2)
+{code}
+
+Invoking ++ on a collection is the canonical way to create a new collection that contains all of the elements of the left-hand collection followed by all of the elements of the right-hand collection.  It shouldn't generate a warning and/or work differently just because the left-hand collection type happens to be ListBuffer.
+
+Someone's going to say that Buffer implementations are special because ++ has to return a new instance of the collection type on which it is called, which would be ListBuffer in this case, and which would be inefficient because an entirely new mutable ListBuffer would need to be created.  But that's what the method supposed to do.  There are a million and one ways for a developer to use the collections inefficiently.  The ++ method shouldn't do the wrong thing (appending to itself) because the right thing (creating a copy and appending to that) might be inefficient.
+
+I encountered this issue because I actually did create a ListBuffer, then invoke ++ on it, with the expectation that I'd get a new ListBuffer.  Of course I can work around it by sticking a toList in there, but that's the sort of thing that I had to do a lot with the 2.7 collections, and I understand that the 2.8 collections are supposed to have a better, more consistent API.

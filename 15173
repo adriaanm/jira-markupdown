@@ -1,0 +1,384 @@
+compiling the attached two files like this:
+{code}
+mkdir classes1
+mkdir classes2
+~/scala/build/quick/bin/scalac -d classes1 Context.scala
+~/scala/build/quick/bin/scalac -cp classes1 -d classes2 -optimize test.scala
+{code}
+
+makes the compiler crash with the output below. compiling the two files together or without -optimize works fine.
+{code}
+object Test extends java.lang.Object, ScalaObject {
+  // fields:
+  
+  // methods
+  def reset(ctx: Function0 (REFERENCE(scala.Function0))): java.lang.Object {
+  locals: value ctx, variable par10, variable $$inlThis0, variable $$retVal0, variable par20, 
+variable par11, variable $$inlThis1, variable $$retVal1, variable x0, variable $$inlThis2, 
+variable $$retVal2
+  startBlock: 1
+  blocks: [1,6,7,8]
+  
+  1: 
+    6	LOAD_LOCAL value ctx
+    6	CALL_METHOD scala.Function0scala.Function0.apply (dynamic)
+    6	CHECK_CAST REFERENCE(foobar.Context)
+    6	NEW REFERENCE(Test$$$$anonfun$$reset$$1)
+    6	DUP
+    6	CALL_METHOD Test$$$$anonfun$$reset$$1Test$$$$anonfun$$reset$$1.<init> (static-instance)
+    6	STORE_LOCAL variable par10
+    6	STORE_LOCAL variable $$inlThis0
+    6	LOAD_LOCAL variable $$inlThis0
+    6	LOAD_LOCAL variable par10
+    6	NEW REFERENCE(foobar.Context$$$$anonfun$$foreach$$1)
+    6	DUP
+    6	LOAD_LOCAL variable $$inlThis0
+    6	CALL_METHOD foobar.Context$$$$anonfun$$foreach$$1foobar.Context$$$$anonfun$$foreach$$1.<init> (static-instance)
+    6	STORE_LOCAL variable par20
+    6	STORE_LOCAL variable par11
+    6	STORE_LOCAL variable $$inlThis1
+    6	LOAD_LOCAL variable $$inlThis1
+    6	CALL_METHOD foobar.Contextfoobar.Context.fun (dynamic)
+    6	CZJUMP (REFERENCE(java.lang.Object))NE ? 7 : 6
+    
+  6: 
+    6	LOAD_LOCAL variable par11
+    6	LOAD_LOCAL variable $$inlThis1
+    6	CALL_METHOD foobar.Contextfoobar.Context.x (dynamic)
+    6	STORE_LOCAL variable x0
+    6	STORE_LOCAL variable $$inlThis2
+    6	LOAD_LOCAL variable x0
+    6	JUMP 8
+    
+  7: 
+    6	LOAD_LOCAL variable $$inlThis1
+    6	CALL_METHOD foobar.Contextfoobar.Context.fun (dynamic)
+    6	LOAD_LOCAL variable par11
+    6	LOAD_LOCAL variable par20
+    6	CALL_METHOD scala.Function2scala.Function2.apply (dynamic)
+    6	JUMP 8
+    
+  8: 
+    6	RETURN (REFERENCE(java.lang.Object))
+    
+  }
+  Exception handlers: 
+    
+  def test(x: Int (INT)): foobar.Context {
+  locals: value x, variable boxed1
+  startBlock: 1
+  blocks: r1
+  
+  1: 
+    9	NEW REFERENCE(foobar.Context)
+    9	DUP
+    9	NEW REFERENCE(Test$$$$anonfun$$test$$1)
+    9	DUP
+    9	CALL_METHOD Test$$$$anonfun$$test$$1Test$$$$anonfun$$test$$1.<init> (static-instance)
+    9	CONSTANT (Constant(0))
+    9	STORE_LOCAL variable boxed1
+    9	LOAD_LOCAL variable boxed1
+    9	BOX INT
+    9	CALL_METHOD foobar.Contextfoobar.Context.<init> (static-instance)
+    9	RETURN (REFERENCE(foobar.Context))
+    
+  }
+  Exception handlers: 
+    
+  def main(args: Array[java.lang.String] (ARRAY[REFERENCE(java.lang.String)])): java.lang.Object {
+  locals: value args
+  startBlock: 1
+  blocks: r1
+  
+  1: 
+    12	LOAD_MODULE object Predef
+    12	THIS
+    12	NEW REFERENCE(Test$$$$anonfun$$main$$1)
+    12	DUP
+    12	CALL_METHOD Test$$$$anonfun$$main$$1Test$$$$anonfun$$main$$1.<init> (static-instance)
+    12	CALL_METHOD TestTest.reset (dynamic)
+    12	CALL_METHOD scala.Predefscala.Predef.println (dynamic)
+    12	LOAD_FIELD scala.runtime.BoxedUnit.UNIT
+    12	RETURN (REFERENCE(java.lang.Object))
+    
+  }
+  Exception handlers: 
+    
+  def <init>(): object Test {
+  locals: 
+  startBlock: 1
+  blocks: r1
+  
+  1: 
+    3	THIS
+    3	CALL_METHOD java.lang.Objectjava.lang.Object.<init> (super())
+    3	RETURN (UNIT)
+    
+  }
+  Exception handlers: 
+    
+  
+}
+class Test$$$$anonfun$$test$$1 extends scala.runtime.AbstractFunction2 {
+  // fields:
+  
+  // methods
+  def apply(k: Function1 (REFERENCE(scala.Function1)), r: Function1 (REFERENCE(scala.Function1))): Int {
+  locals: value k, value r, variable boxed2
+  startBlock: 1
+  blocks: r1
+  
+  1: 
+    9	LOAD_LOCAL value k
+    9	CONSTANT (Constant(7))
+    9	STORE_LOCAL variable boxed2
+    9	LOAD_LOCAL variable boxed2
+    9	BOX INT
+    9	CALL_METHOD scala.Function1scala.Function1.apply (dynamic)
+    9	UNBOX INT
+    9	RETURN (INT)
+    
+  }
+  Exception handlers: 
+    
+  def apply(v1: java.lang.Object (REFERENCE(java.lang.Object)), v2: java.lang.Object (REFERENCE(java.lang.Object))): java.lang.Object {
+  locals: value v1, value v2, variable boxed3
+  startBlock: 1
+  blocks: r1
+  
+  1: 
+    9	THIS
+    9	LOAD_LOCAL value v1
+    9	CHECK_CAST REFERENCE(scala.Function1)
+    9	LOAD_LOCAL value v2
+    9	CHECK_CAST REFERENCE(scala.Function1)
+    9	CALL_METHOD Test$$$$anonfun$$test$$1Test$$$$anonfun$$test$$1.apply (dynamic)
+    9	STORE_LOCAL variable boxed3
+    9	LOAD_LOCAL variable boxed3
+    9	BOX INT
+    9	RETURN (REFERENCE(java.lang.Object))
+    
+  }
+  Exception handlers: 
+    
+  def <init>(): Test$$$$anonfun$$test$$1 {
+  locals: 
+  startBlock: 1
+  blocks: r1
+  
+  1: 
+    9	THIS
+    9	CALL_METHOD scala.runtime.AbstractFunction2scala.runtime.AbstractFunction2.<init> (super())
+    9	RETURN (UNIT)
+    
+  }
+  Exception handlers: 
+    
+  
+}
+class Test$$$$anonfun$$main$$1$$$$anonfun$$apply$$1 extends scala.runtime.AbstractFunction1 {
+  // fields:
+  
+  // methods
+  def apply(x$$1: Int (INT)): Int {
+  locals: value x$$1
+  startBlock: 1
+  blocks: r1
+  
+  1: 
+    12	CONSTANT (Constant(1))
+    12	LOAD_LOCAL value x$$1
+    12	CALL_PRIMITIVE Arithmetic(ADD,INT)
+    12	RETURN (INT)
+    
+  }
+  Exception handlers: 
+    
+  def apply(v1: java.lang.Object (REFERENCE(java.lang.Object))): java.lang.Object {
+  locals: value v1, variable boxed4
+  startBlock: 1
+  blocks: r1
+  
+  1: 
+    12	THIS
+    12	LOAD_LOCAL value v1
+    12	UNBOX INT
+    12	CALL_METHOD Test$$$$anonfun$$main$$1$$$$anonfun$$apply$$1Test$$$$anonfun$$main$$1$$$$anonfun$$apply$$1.apply (dynamic)
+    12	STORE_LOCAL variable boxed4
+    12	LOAD_LOCAL variable boxed4
+    12	BOX INT
+    12	RETURN (REFERENCE(java.lang.Object))
+    
+  }
+  Exception handlers: 
+    
+  def <init>($$outer: Test$$$$anonfun$$main$$1 (REFERENCE(Test$$$$anonfun$$main$$1))): Test$$$$anonfun$$main$$1$$$$anonfun$$apply$$1 {
+  locals: value $$outer
+  startBlock: 1
+  blocks: r1
+  
+  1: 
+    12	THIS
+    12	CALL_METHOD scala.runtime.AbstractFunction1scala.runtime.AbstractFunction1.<init> (super())
+    12	RETURN (UNIT)
+    
+  }
+  Exception handlers: 
+    
+  
+}
+class Test$$$$anonfun$$main$$1 extends scala.runtime.AbstractFunction0 {
+  // fields:
+  
+  // methods
+  def apply(): foobar.Context {
+  locals: variable loc30, variable loc20, variable par10, variable $$inlThis0, variable 
+$$retVal0, variable x0, variable boxed10, variable $$inlThis1, variable $$retVal1, variable 
+v10, variable boxed40, variable $$inlThis2, variable $$retVal2, variable x$$10, variable 
+$$inlThis3, variable $$retVal3
+  startBlock: 1
+  blocks: [1,4,6,7,8]
+  
+  1: 
+    12	LOAD_MODULE object Test
+    12	CONSTANT (Constant(7))
+    12	STORE_LOCAL variable x0
+    12	STORE_LOCAL variable $$inlThis1
+    12	NEW REFERENCE(foobar.Context)
+    12	DUP
+    12	NEW REFERENCE(Test$$$$anonfun$$test$$1)
+    12	DUP
+    12	CALL_METHOD Test$$$$anonfun$$test$$1Test$$$$anonfun$$test$$1.<init> (static-instance)
+    12	CONSTANT (Constant(0))
+    12	STORE_LOCAL variable boxed10
+    12	LOAD_LOCAL variable boxed10
+    12	BOX INT
+    12	CALL_METHOD foobar.Contextfoobar.Context.<init> (static-instance)
+    12	NEW REFERENCE(Test$$$$anonfun$$main$$1$$$$anonfun$$apply$$1)
+    12	DUP
+    12	THIS
+    12	CALL_METHOD Test$$$$anonfun$$main$$1$$$$anonfun$$apply$$1Test$$$$anonfun$$main$$1$$$$anonfun$$apply$$1.<init> (static-instance)
+    12	STORE_LOCAL variable par10
+    12	STORE_LOCAL variable $$inlThis0
+    12	LOAD_LOCAL variable $$inlThis0
+    12	CALL_METHOD foobar.Contextfoobar.Context.fun (dynamic)
+    12	CZJUMP (REFERENCE(java.lang.Object))NE ? 6 : 4
+    
+  4: 
+    12	CONSTANT (Constant(null))
+    12	STORE_LOCAL variable loc20
+    12	NEW REFERENCE(foobar.Context)
+    12	DUP
+    12	CONSTANT (Constant(null))
+    12	DROP INT
+    12	CONSTANT (Constant(null))
+    12	LOAD_LOCAL variable par10
+    12	LOAD_LOCAL variable $$inlThis0
+    12	CALL_METHOD foobar.Contextfoobar.Context.x (dynamic)
+    12	STORE_LOCAL variable v10
+    12	STORE_LOCAL variable $$inlThis2
+    12	LOAD_LOCAL variable $$inlThis2
+    12	LOAD_LOCAL variable v10
+    12	UNBOX INT
+    12	STORE_LOCAL variable x$$10
+    12	STORE_LOCAL variable $$inlThis3
+    12	CONSTANT (Constant(1))
+    12	LOAD_LOCAL variable x$$10
+    12	CALL_PRIMITIVE Arithmetic(ADD,INT)
+    12	STORE_LOCAL variable boxed40
+    12	LOAD_LOCAL variable boxed40
+    12	BOX INT
+    12	CALL_METHOD foobar.Contextfoobar.Context.<init> (static-instance)
+    12	STORE_LOCAL variable loc20
+    12	LOAD_LOCAL variable loc20
+    12	JUMP 8
+    
+  6: 
+    12	NEW REFERENCE(foobar.Context)
+    12	DUP
+    12	NEW REFERENCE(foobar.Context$$$$anonfun$$map$$2)
+    12	DUP
+    12	LOAD_LOCAL variable $$inlThis0
+    12	LOAD_LOCAL variable par10
+    12	CALL_METHOD foobar.Context$$$$anonfun$$map$$2foobar.Context$$$$anonfun$$map$$2.<init> (static-instance)
+    12	CONSTANT (Constant(null))
+    12	DROP INT
+    12	CONSTANT (Constant(null))
+    12	CALL_METHOD foobar.Contextfoobar.Context.<init> (static-instance)
+    12	JUMP 8
+    
+  7: 
+Exception in thread "main" java.lang.Error: Traversing an open block!: 7
+	at scala.tools.nsc.symtab.SymbolTable.abort(SymbolTable.scala:34)
+	at scala.tools.nsc.backend.icode.BasicBlocks$$BasicBlock.foreach(BasicBlocks.scala:136)
+	at scala.tools.nsc.backend.icode.Printers$$TextPrinter.printBlock(Printers.scala:124)
+	at scala.tools.nsc.backend.icode.Printers$$TextPrinter$$$$anonfun$$printMethod$$2.apply(Printers.scala:93)
+	at scala.tools.nsc.backend.icode.Printers$$TextPrinter$$$$anonfun$$printMethod$$2.apply(Printers.scala:93)
+	at scala.collection.LinearSeqLike$$class.foreach(LinearSeqLike.scala:97)
+	at scala.collection.immutable.List.foreach(List.scala:46)
+	at scala.tools.nsc.backend.icode.Printers$$TextPrinter.printMethod(Printers.scala:93)
+	at scala.tools.nsc.backend.icode.Printers$$TextPrinter$$$$anonfun$$printClass$$2.apply(Printers.scala:71)
+	at scala.tools.nsc.backend.icode.Printers$$TextPrinter$$$$anonfun$$printClass$$2.apply(Printers.scala:71)
+	at scala.collection.LinearSeqLike$$class.foreach(LinearSeqLike.scala:97)
+	at scala.collection.immutable.List.foreach(List.scala:46)
+	at scala.tools.nsc.backend.icode.Printers$$TextPrinter.printClass(Printers.scala:71)
+	at scala.tools.nsc.backend.icode.ICodes$$$$anonfun$$dump$$1.apply(ICodes.scala:72)
+	at scala.tools.nsc.backend.icode.ICodes$$$$anonfun$$dump$$1.apply(ICodes.scala:72)
+	at scala.collection.mutable.HashMap$$$$anon$$2$$$$anonfun$$foreach$$3.apply(HashMap.scala:71)
+	at scala.collection.mutable.HashMap$$$$anon$$2$$$$anonfun$$foreach$$3.apply(HashMap.scala:71)
+	at scala.collection.Iterator$$class.foreach(Iterator.scala:624)
+	at scala.collection.mutable.HashTable$$$$anon$$1.foreach(HashTable.scala:160)
+	at scala.collection.mutable.HashTable$$class.foreachEntry(HashTable.scala:193)
+	at scala.collection.mutable.HashMap.foreachEntry(HashMap.scala:21)
+	at scala.collection.mutable.HashMap$$$$anon$$2.foreach(HashMap.scala:71)
+	at scala.tools.nsc.backend.icode.ICodes.dump(ICodes.scala:72)
+	at scala.tools.nsc.backend.icode.BasicBlocks$$BasicBlock.foreach(BasicBlocks.scala:135)
+	at scala.tools.nsc.backend.opt.Inliners$$Inliner$$$$anonfun$$isSafeToInline$$1$$$$anonfun$$apply$$5.apply(Inliners.scala:448)
+	at scala.tools.nsc.backend.opt.Inliners$$Inliner$$$$anonfun$$isSafeToInline$$1$$$$anonfun$$apply$$5.apply(Inliners.scala:448)
+	at scala.collection.LinearSeqLike$$class.foreach(LinearSeqLike.scala:97)
+	at scala.collection.immutable.List.foreach(List.scala:46)
+	at scala.collection.generic.TraversableForwarder$$class.foreach(TraversableForwarder.scala:45)
+	at scala.collection.mutable.ListBuffer.foreach(ListBuffer.scala:27)
+	at scala.tools.nsc.backend.opt.Inliners$$Inliner$$$$anonfun$$isSafeToInline$$1.apply(Inliners.scala:448)
+	at scala.tools.nsc.backend.opt.Inliners$$Inliner$$$$anonfun$$isSafeToInline$$1.apply(Inliners.scala:448)
+	at scala.util.control.Breaks.breakable(Breaks.scala:36)
+	at scala.tools.nsc.backend.opt.Inliners$$Inliner.isSafeToInline(Inliners.scala:447)
+	at scala.tools.nsc.backend.opt.Inliners$$Inliner$$$$anonfun$$analyzeMethod$$1$$$$anonfun$$apply$$4.apply(Inliners.scala:375)
+	at scala.tools.nsc.backend.opt.Inliners$$Inliner$$$$anonfun$$analyzeMethod$$1$$$$anonfun$$apply$$4.apply(Inliners.scala:313)
+	at scala.collection.IndexedSeqLike$$class.foreach(IndexedSeqLike.scala:87)
+	at scala.collection.mutable.ArrayOps.foreach(ArrayOps.scala:20)
+	at scala.tools.nsc.backend.icode.BasicBlocks$$BasicBlock.foreach(BasicBlocks.scala:138)
+	at scala.tools.nsc.backend.opt.Inliners$$Inliner$$$$anonfun$$analyzeMethod$$1.apply(Inliners.scala:313)
+	at scala.tools.nsc.backend.opt.Inliners$$Inliner$$$$anonfun$$analyzeMethod$$1.apply(Inliners.scala:311)
+	at scala.collection.LinearSeqLike$$class.foreach(LinearSeqLike.scala:97)
+	at scala.collection.immutable.List.foreach(List.scala:46)
+	at scala.tools.nsc.backend.opt.Inliners$$Inliner.analyzeMethod(Inliners.scala:311)
+	at scala.tools.nsc.backend.opt.Inliners$$Inliner$$$$anonfun$$analyzeClass$$2.apply(Inliners.scala:288)
+	at scala.tools.nsc.backend.opt.Inliners$$Inliner$$$$anonfun$$analyzeClass$$2.apply(Inliners.scala:288)
+	at scala.collection.LinearSeqLike$$class.foreach(LinearSeqLike.scala:97)
+	at scala.collection.immutable.List.foreach(List.scala:46)
+	at scala.tools.nsc.backend.opt.Inliners$$Inliner.analyzeClass(Inliners.scala:288)
+	at scala.tools.nsc.backend.opt.Inliners$$InliningPhase.apply(Inliners.scala:51)
+	at scala.tools.nsc.backend.icode.ICodes$$ICodePhase$$$$anonfun$$apply$$1.apply(ICodes.scala:94)
+	at scala.tools.nsc.backend.icode.ICodes$$ICodePhase$$$$anonfun$$apply$$1.apply(ICodes.scala:94)
+	at scala.collection.LinearSeqLike$$class.foreach(LinearSeqLike.scala:97)
+	at scala.collection.immutable.List.foreach(List.scala:46)
+	at scala.collection.generic.TraversableForwarder$$class.foreach(TraversableForwarder.scala:45)
+	at scala.collection.mutable.ListBuffer.foreach(ListBuffer.scala:27)
+	at scala.collection.mutable.LinkedHashSet.foreach(LinkedHashSet.scala:54)
+	at scala.tools.nsc.backend.icode.ICodes$$ICodePhase.apply(ICodes.scala:94)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$applyPhase$$1.apply(Global.scala:270)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$applyPhase$$1.apply(Global.scala:270)
+	at scala.tools.nsc.reporters.Reporter.withSource(Reporter.scala:49)
+	at scala.tools.nsc.Global$$GlobalPhase.applyPhase(Global.scala:270)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:248)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:248)
+	at scala.collection.Iterator$$class.foreach(Iterator.scala:624)
+	at scala.collection.mutable.ListBuffer$$$$anon$$1.foreach(ListBuffer.scala:285)
+	at scala.tools.nsc.Global$$GlobalPhase.run(Global.scala:248)
+	at scala.tools.nsc.Global$$Run.compileSources(Global.scala:727)
+	at scala.tools.nsc.Global$$Run.compile(Global.scala:813)
+	at scala.tools.nsc.Main$$.process(Main.scala:109)
+	at scala.tools.nsc.Main$$.main(Main.scala:123)
+	at scala.tools.nsc.Main.main(Main.scala)
+{code}

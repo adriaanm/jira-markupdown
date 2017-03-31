@@ -1,0 +1,95 @@
+The following code:
+{code}
+package x.y
+
+trait Trait {
+        lazy val v = 1
+}
+
+class OuterClass {
+        object InnerObject extends Trait
+}
+{code}
+produces the following compiler exception (with Scala 2.6.0-rc2):
+{code}
+Exception in thread "main" java.lang.AssertionError: assertion failed: type error: can't convert from REFERENCE(x.y) to REFERENCE(java.lang.Object) in unit t.scala
+        at scala.Predef$$.assert(Predef.scala:96)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.adapt(GenICode.scala:1044)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:1028)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.genLoadQualifier(GenICode.scala:1062)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:833)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.genLoadQualifier(GenICode.scala:1062)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genStat(GenICode.scala:166)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$1.apply(GenICode.scala:142)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$1.apply(GenICode.scala:141)
+        at scala.List.foreach(List.scala:721)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.genStat(GenICode.scala:141)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:947)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$13.apply(GenICode.scala:796)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$13.apply(GenICode.scala:795)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$Context.Try(GenICode.scala:1968)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:794)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genStat(GenICode.scala:179)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$1.apply(GenICode.scala:142)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$1.apply(GenICode.scala:141)
+        at scala.List.foreach(List.scala:721)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.genStat(GenICode.scala:141)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:947)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:435)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genStat(GenICode.scala:179)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$1.apply(GenICode.scala:142)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$1.apply(GenICode.scala:141)
+        at scala.List.foreach(List.scala:721)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.genStat(GenICode.scala:141)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:947)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$13.apply(GenICode.scala:796)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$13.apply(GenICode.scala:795)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$Context.Try(GenICode.scala:1968)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:794)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genStat(GenICode.scala:179)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$1.apply(GenICode.scala:142)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$1.apply(GenICode.scala:141)
+        at scala.List.foreach(List.scala:721)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.genStat(GenICode.scala:141)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:947)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:435)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genStat(GenICode.scala:179)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$1.apply(GenICode.scala:142)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$1.apply(GenICode.scala:141)
+        at scala.List.foreach(List.scala:721)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.genStat(GenICode.scala:141)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:947)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:110)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$0.apply(GenICode.scala:68)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$0.apply(GenICode.scala:68)
+        at scala.List.foreach(List.scala:721)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:68)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:132)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:86)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$0.apply(GenICode.scala:68)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$0.apply(GenICode.scala:68)
+        at scala.List.foreach(List.scala:721)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:68)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:78)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$0.apply(GenICode.scala:68)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$0.apply(GenICode.scala:68)
+        at scala.List.foreach(List.scala:721)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:68)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:78)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:64)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.apply(GenICode.scala:60)
+        at scala.tools.nsc.Global$$GlobalPhase.applyPhase(Global.scala:243)
+        at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$2.apply(Global.scala:232)
+        at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$2.apply(Global.scala:232)
+        at scala.Iterator$$class.foreach(Iterator.scala:375)
+        at scala.collection.mutable.ListBuffer$$$$anon$$0.foreach(ListBuffer.scala:255)
+        at scala.tools.nsc.Global$$GlobalPhase.run(Global.scala:232)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.run(GenICode.scala:53)
+        at scala.tools.nsc.Global$$Run.compileSources(Global.scala:528)
+        at scala.tools.nsc.Global$$Run.compile(Global.scala:609)
+        at scala.tools.nsc.Main$$.process(Main.scala:86)
+        at scala.tools.nsc.Main$$.main(Main.scala:107)
+        at scala.tools.nsc.Main.main(Main.scala)
+{code}
+
+All the elements (lazy val, trait, inner object) seem to be necessary to produce the exception.  The package name must also contain at least one dot.

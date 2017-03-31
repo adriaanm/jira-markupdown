@@ -1,0 +1,160 @@
+{code}
+// Scala code to compare performance of nested int loops
+object MatMul {
+
+
+  def matMulUsingIterators (
+       a : Array[Array[Double]],
+       b : Array[Array[Double]],
+       c : Array[Array[Double]]) : Unit = {
+
+    val b_j = new Array[Double](b.length)
+
+    for (j <- 0 until b(0).length) {
+        for (k <- 0 until b.length) {
+            b_j(k) = b(k)(j)
+        }
+        for (i <- 0 until a.length) {
+            val c_i = c(i)
+            val a_i = a(i)
+            var s = 0.0d;
+            for (k <- 0 until b.length) {
+                s += a_i(k) * b_j(k)
+            }
+            c_i(j) = s
+        }
+    }
+  }
+
+  def matMulUsingRanges (
+       a : Array[Array[Double]],
+       b : Array[Array[Double]],
+       c : Array[Array[Double]]) : Unit = {
+
+    val jRange = 0 until b(0).length // p
+    val kRange = 0 until b.length // n
+    val iRange = 0 until a.length // m
+
+    val b_j = new Array[Double](b.length)
+
+    for (j <- jRange) {
+        for (k <- kRange) {
+            b_j(k) = b(k)(j)
+        }
+        for (i <- iRange) {
+            val c_i = c(i)
+            val a_i = a(i)
+            var s = 0.0d;
+            for (k <- kRange) {
+                s += a_i(k) * b_j(k)
+            }
+            c_i(j) = s
+        }
+    }
+  }
+
+  def matMulUsingLimits (
+       a : Array[Array[Double]],
+       b : Array[Array[Double]],
+       c : Array[Array[Double]]) : Unit = {
+
+    val b_j = new Array[Double](b.length)
+
+    val m = a.length
+    val p = b(0).length
+    val n = b.length
+
+    for (j <- 0 until p) {
+        for (k <- 0 until n) {
+            b_j(k) = b(k)(j)
+        }
+        for (i <- 0 until m) {
+            val c_i = c(i)
+            val a_i = a(i)
+            var s = 0.0d;
+            for (k <- 0 until n) {
+                s += a_i(k) * b_j(k)
+            }
+            c_i(j) = s
+        }
+    }
+  }
+
+  def matMulUsingWhileLoop (
+      a : Array[Array[Double]],
+      b : Array[Array[Double]],
+      c : Array[Array[Double]]) : Unit = {
+
+    val m = a.length
+    val p = b(0).length
+    val n = b.length
+
+    val b_j = new Array[Double](b.length)
+
+    var i = 0; var j = 0; var k = 0
+    while (j < p) {
+        k = 0
+        while (k < n) {
+            b_j(k) = b(k)(j)
+            k += 1
+        }
+        i = 0
+        while (i < m) {
+            val c_i = c(i)
+            val a_i = a(i)
+            var s = 0.0d;
+            k = 0
+            while (k < n) {
+                s += a_i(k) * b_j(k)
+                k += 1
+            }
+            c_i(j) = s
+            i += 1
+        }
+        j += 1
+    }
+  }
+
+  def time[R](block: => R) : (Long, R) = {
+    val start = System.nanoTime()
+    val result : R = block
+    val time = System.nanoTime() - start
+    (time, result)
+  }
+
+  val format = new java.text.DecimalFormat("0,000'ns'");
+  def report[R](label: String, result: (Long, R)) = {
+     println(label + " " + format.format(result._1))
+     }
+
+    private val FACTOR = 5
+    private val M = 80
+    private val N = 70
+    private val P = 60
+
+    def main(args : Array[String]) = {
+      for (trial <- 3 until 0 by -1) {
+      val factor = (if (System.getProperty("factor") != null)
+                      Integer.parseInt(System.getProperty("factor"))
+                    else
+                        FACTOR)
+      val multiplier = if (trial == 1) factor else 1;
+      val m = M * multiplier
+      val n = N * multiplier
+      val p = P * multiplier
+      val a = new Array[Array[Double]](m,n)
+      val b = new Array[Array[Double]](n,p)
+      val c = new Array[Array[Double]](m,p)
+      println("\nMultiply c[" + m + "," + p + "] = a[" + m + "," + n + "] times b[" + n + "," + p + "]\n");
+      val whileTime = time(matMulUsingWhileLoop(a,b,c))
+      val iterTime = time(matMulUsingIterators(a,b,c))
+      report("Iterators  ", iterTime)
+      report("Limits     ", time(matMulUsingLimits(a,b,c)))
+      report("Ranges     ", time(matMulUsingRanges(a,b,c)))
+      report("While Loop ", whileTime)
+      println("MatMul by Iterators is " + iterTime._1 / whileTime._1 + " times as slow as with while loops.")
+      }
+  }
+}
+
+{code}

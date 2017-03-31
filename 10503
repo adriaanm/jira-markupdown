@@ -1,0 +1,13 @@
+Trying to get a closer look as follows:
+
+{code}
+scala> trait Thing { type A }
+     | trait View[AIn] {
+     |   val in: Thing { type A = AIn }
+     |   type Bla = in.A // 
+     | }
+
+scala> typeOf[View[Int]].memberType(typeOf[View[Int]].member(newTypeName("Bla")))
+res1: $r.intp.global.Type = AIn // AHA! should be Int
+
+{code}

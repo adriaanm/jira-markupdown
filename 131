@@ -1,0 +1,34 @@
+The problem comes from the comparison operators together with NaN, eg.
+{code}
+object test extends Application {
+  println(java.lang.Double.isNaN(0.0/0.0))
+  println
+  println(0.0/0.0 == 0.0/0.0)
+  println(0.0/0.0 equals 0.0/0.0)
+  println
+  println(0.0/0.0 <= 0.0/0.0)
+  println(java.lang.Double.compare(0.0/0.0, 0.0/0.0) <= 0)
+}
+{code}
+is translated to:
+{code}
+  scala.this.Predef.println(scala.Boolean.box(java.lang.Double.isNaN(NaN)));
+  scala.this.Predef.println();
+  scala.this.Predef.println(scala.Boolean.box(false));
+  scala.this.Predef.println(
+    scala.Boolean.box(scala.Double.box(NaN).equals(scala.Double.box(NaN))));
+  scala.this.Predef.println();
+  scala.this.Predef.println(scala.Boolean.box(false));
+  scala.this.Predef.println(
+    scala.Boolean.box(java.lang.Double.compare(NaN,NaN).<=(0)));
+{code}
+and produces the following output:
+{code}
+true
+
+false
+true
+
+false
+true
+{code}

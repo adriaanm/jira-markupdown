@@ -1,0 +1,230 @@
+Compiling the following with 2.10.0:
+
+{code}
+import scala.reflect.macros.Universe
+
+object Bug {
+  def f(u: Universe)(x: u.Type, l: List[u.Type]): List[u.Type] = {
+    import u._
+    x match {
+      case TypeRef(_, _, TypeRef(_, _, in :: out :: Nil) :: tail :: Nil) => f(u)(tail, in :: l)
+    }
+  }
+}
+{code}
+
+yields the following error:
+
+{code}
+[error] 
+[error]      while compiling: /Users/rkuhn/comp/akka/akka-macros/src/main/scala/akka/channels/Bug.scala
+[error]         during phase: tailcalls
+[error]      library version: version 2.10.0
+[error]     compiler version: version 2.10.0
+[error]   reconstructed args: -deprecation -feature -d /Users/rkuhn/comp/akka/akka-macros/target/classes -Xlog-reflective-calls -bootclasspath /System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Classes/jsfd.jar:/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Classes/classes.jar:/System/Library/Frameworks/JavaVM.framework/Frameworks/JavaRuntimeSupport.framework/Resources/Java/JavaRuntimeSupport.jar:/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Classes/ui.jar:/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Classes/laf.jar:/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Classes/sunrsasign.jar:/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Classes/jsse.jar:/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Classes/jce.jar:/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Classes/charsets.jar:/Users/rkuhn/.sbt/0.12.1/boot/scala-2.10.0/lib/scala-library.jar -classpath /Users/rkuhn/comp/akka/akka-macros/target/classes:/Users/rkuhn/comp/akka/akka-actor/target/classes:/Users/rkuhn/.ivy2/cache/com.typesafe/config/bundles/config-1.0.0.jar:/Users/rkuhn/.ivy2/cache/org.scala-lang/scala-reflect/jars/scala-reflect-2.10.0.jar -Ywarn-adapted-args -unchecked
+[error] 
+[error]   last tree to typer: Ident(tail)
+[error]               symbol: value tail (flags: <triedcooking>)
+[error]    symbol definition: val tail: u.Type
+[error]        symbol owners: value tail -> method f -> object Bug -> package channels
+[error]       context owners: package <root>
+[error] 
+[error] == Enclosing template or block ==
+[error] 
+[error] Apply( // def _f(x$1: akka.channels.Bug.type,u: scala.reflect.macros.Universe,x: u.Type,l: List[u.Type]): List[u.Type]
+[error]   "_f" // def _f(x$1: akka.channels.Bug.type,u: scala.reflect.macros.Universe,x: u.Type,l: List[u.Type]): List[u.Type], tree.tpe=(x$1: akka.channels.Bug.type, u: scala.reflect.macros.Universe, x: u.Type, l: List[u.Type])List[u.Type]
+[error]   // 4 arguments
+[error]   This("Bug")class Bug extends Object in package channels, tree.tpe=akka.channels.Bug.type
+[error]   "u" // u: scala.reflect.macros.Universe, tree.tpe=scala.reflect.macros.Universe
+[error]   "tail" // val tail: u.Type
+[error]   Block( // tree.tpe=List[u.Type]
+[error]     ValDef( // val x$1: u.Type
+[error]       <synthetic> <triedcooking>
+[error]       "x$1"
+[error]       <tpt> // tree.tpe=u.Type
+[error]       "in" // val in: u.Type, tree.tpe=u.Type
+[error]     )
+[error]     Apply( // def ::[B >: A](x: B): List[B] in class List, tree.tpe=List[u.Type]
+[error]       TypeApply( // def ::[B >: A](x: B): List[B] in class List, tree.tpe=(x: u.Type)List[u.Type]
+[error]         "l"."$colon$colon" // def ::[B >: A](x: B): List[B] in class List, tree.tpe=[B >: u.Type](x: B)List[B]
+[error]         <tpt> // tree.tpe=u.Type
+[error]       )
+[error]       "x$1" // val x$1: u.Type, tree.tpe=u.Type
+[error]     )
+[error]   )
+[error] )
+[error] 
+[error] uncaught exception during compilation: scala.reflect.internal.Types$TypeError
+scala.reflect.internal.Types$TypeError: type mismatch;
+ found   : u.Type
+ required: u.Type
+	at scala.tools.nsc.typechecker.Contexts$Context.issue(Contexts.scala:379)
+	at scala.tools.nsc.typechecker.ContextErrors$ErrorUtils$.issueTypeError(ContextErrors.scala:84)
+	at scala.tools.nsc.typechecker.ContextErrors$ErrorUtils$.issueNormalTypeError(ContextErrors.scala:69)
+	at scala.tools.nsc.typechecker.ContextErrors$TyperContextErrors$TyperErrorGen$.AdaptTypeError(ContextErrors.scala:176)
+	at scala.tools.nsc.typechecker.Typers$Typer.fallBack$1(Typers.scala:1249)
+	at scala.tools.nsc.typechecker.Typers$Typer.adapt(Typers.scala:1254)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:5467)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedArg(Typers.scala:2880)
+	at scala.tools.nsc.typechecker.Typers$Typer.loop$1(Typers.scala:2907)
+	at scala.tools.nsc.typechecker.Typers$Typer.loop$1(Typers.scala:2910)
+	at scala.tools.nsc.typechecker.Typers$Typer.loop$1(Typers.scala:2910)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedArgs(Typers.scala:2913)
+	at scala.tools.nsc.typechecker.Typers$Typer.handleMonomorphicCall$1(Typers.scala:3172)
+	at scala.tools.nsc.typechecker.Typers$Typer.doTypedApply(Typers.scala:3216)
+	at scala.tools.nsc.typechecker.Typers$Typer.normalTypedApply$1(Typers.scala:4477)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedApply$1(Typers.scala:4509)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:5381)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:5458)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:5509)
+	at scala.tools.nsc.transform.TailCalls$TailCallElimination.rewriteTailCall$1(TailCalls.scala:223)
+	at scala.tools.nsc.transform.TailCalls$TailCallElimination.rewriteApply$1(TailCalls.scala:235)
+	at scala.tools.nsc.transform.TailCalls$TailCallElimination.transform(TailCalls.scala:360)
+	at scala.tools.nsc.transform.TailCalls$TailCallElimination.transform(TailCalls.scala:351)
+	at scala.tools.nsc.transform.TailCalls$TailCallElimination.transform(TailCalls.scala:311)
+	at scala.tools.nsc.transform.TailCalls$TailCallElimination.transform(TailCalls.scala:320)
+	at scala.tools.nsc.transform.TailCalls$TailCallElimination.transform(TailCalls.scala:311)
+	at scala.tools.nsc.transform.TailCalls$TailCallElimination.transform(TailCalls.scala:320)
+	at scala.tools.nsc.transform.TailCalls$TailCallElimination.transform(TailCalls.scala:311)
+	at scala.tools.nsc.transform.TailCalls$TailCallElimination.transform(TailCalls.scala:320)
+	at scala.tools.nsc.transform.TailCalls$TailCallElimination.transform(TailCalls.scala:311)
+	at scala.tools.nsc.transform.TailCalls$TailCallElimination.transform(TailCalls.scala:320)
+	at scala.tools.nsc.transform.TailCalls$TailCallElimination.transform(TailCalls.scala:311)
+	at scala.tools.nsc.transform.TailCalls$TailCallElimination.transform(TailCalls.scala:320)
+	at scala.tools.nsc.transform.TailCalls$TailCallElimination.transform(TailCalls.scala:311)
+	at scala.tools.nsc.transform.TailCalls$TailCallElimination.transform(TailCalls.scala:320)
+	at scala.tools.nsc.transform.TailCalls$TailCallElimination.transform(TailCalls.scala:311)
+	at scala.tools.nsc.transform.TailCalls$TailCallElimination.transform(TailCalls.scala:320)
+	at scala.tools.nsc.transform.TailCalls$TailCallElimination.transform(TailCalls.scala:311)
+	at scala.tools.nsc.transform.TailCalls$TailCallElimination.transform(TailCalls.scala:320)
+	at scala.tools.nsc.transform.TailCalls$TailCallElimination.transform(TailCalls.scala:311)
+	at scala.tools.nsc.transform.TailCalls$TailCallElimination.transform(TailCalls.scala:320)
+	at scala.tools.nsc.transform.TailCalls$TailCallElimination.transform(TailCalls.scala:311)
+	at scala.tools.nsc.transform.TailCalls$TailCallElimination.transform(TailCalls.scala:311)
+	at scala.tools.nsc.transform.TailCalls$TailCallElimination.transform(TailCalls.scala:320)
+	at scala.tools.nsc.transform.TailCalls$TailCallElimination.transform(TailCalls.scala:311)
+	at scala.tools.nsc.transform.TailCalls$TailCallElimination.transform(TailCalls.scala:311)
+	at scala.tools.nsc.transform.TailCalls$TailCallElimination.transform(TailCalls.scala:320)
+	at scala.tools.nsc.transform.TailCalls$TailCallElimination.transform(TailCalls.scala:311)
+	at scala.tools.nsc.transform.TailCalls$TailCallElimination.transform(TailCalls.scala:320)
+	at scala.tools.nsc.transform.TailCalls$TailCallElimination.transform(TailCalls.scala:311)
+	at scala.tools.nsc.transform.TailCalls$TailCallElimination.transform(TailCalls.scala:320)
+	at scala.tools.nsc.transform.TailCalls$TailCallElimination.transform(TailCalls.scala:311)
+	at scala.tools.nsc.transform.TailCalls$TailCallElimination.transform(TailCalls.scala:311)
+	at scala.tools.nsc.transform.TailCalls$TailCallElimination.transform(TailCalls.scala:320)
+	at scala.tools.nsc.transform.TailCalls$TailCallElimination.transform(TailCalls.scala:311)
+	at scala.tools.nsc.transform.TailCalls$TailCallElimination$$anonfun$transform$5.apply(TailCalls.scala:306)
+	at scala.tools.nsc.transform.TailCalls$TailCallElimination$$anonfun$transform$5.apply(TailCalls.scala:306)
+	at scala.reflect.internal.Trees$class.deriveLabelDef(Trees.scala:1571)
+	at scala.reflect.internal.SymbolTable.deriveLabelDef(SymbolTable.scala:12)
+	at scala.tools.nsc.transform.TailCalls$TailCallElimination.transform(TailCalls.scala:306)
+	at scala.tools.nsc.transform.TailCalls$TailCallElimination.transform(TailCalls.scala:89)
+	at scala.reflect.api.Trees$Transformer$$anonfun$transformTrees$1.apply(Trees.scala:2836)
+	at scala.reflect.api.Trees$Transformer$$anonfun$transformTrees$1.apply(Trees.scala:2836)
+	at scala.collection.immutable.List.loop$1(List.scala:164)
+	at scala.collection.immutable.List.mapConserve(List.scala:180)
+	at scala.reflect.api.Trees$Transformer.transformTrees(Trees.scala:2836)
+	at scala.tools.nsc.transform.TailCalls$TailCallElimination.transform(TailCalls.scala:300)
+	at scala.tools.nsc.transform.TailCalls$TailCallElimination.transform(TailCalls.scala:301)
+	at scala.tools.nsc.transform.TailCalls$TailCallElimination.transform(TailCalls.scala:179)
+	at scala.tools.nsc.transform.TailCalls$TailCallElimination.transform(TailCalls.scala:265)
+	at scala.tools.nsc.transform.TailCalls$TailCallElimination.transform(TailCalls.scala:89)
+	at scala.reflect.api.Trees$Transformer$$anonfun$transformStats$1.apply(Trees.scala:2863)
+	at scala.reflect.api.Trees$Transformer$$anonfun$transformStats$1.apply(Trees.scala:2861)
+	at scala.collection.immutable.List.loop$1(List.scala:164)
+	at scala.collection.immutable.List.mapConserve(List.scala:180)
+	at scala.reflect.api.Trees$Transformer.transformStats(Trees.scala:2861)
+	at scala.reflect.internal.Trees$class.itransform(Trees.scala:1247)
+	at scala.reflect.internal.SymbolTable.itransform(SymbolTable.scala:12)
+	at scala.reflect.internal.SymbolTable.itransform(SymbolTable.scala:12)
+	at scala.reflect.api.Trees$Transformer.transform(Trees.scala:2833)
+	at scala.tools.nsc.transform.TailCalls$TailCallElimination.transform(TailCalls.scala:369)
+	at scala.tools.nsc.transform.TailCalls$TailCallElimination.transform(TailCalls.scala:89)
+	at scala.reflect.api.Trees$Transformer.transformTemplate(Trees.scala:2840)
+	at scala.reflect.internal.Trees$$anonfun$itransform$4.apply(Trees.scala:1251)
+	at scala.reflect.internal.Trees$$anonfun$itransform$4.apply(Trees.scala:1250)
+	at scala.reflect.api.Trees$Transformer.atOwner(Trees.scala:2872)
+	at scala.reflect.internal.Trees$class.itransform(Trees.scala:1249)
+	at scala.reflect.internal.SymbolTable.itransform(SymbolTable.scala:12)
+	at scala.reflect.internal.SymbolTable.itransform(SymbolTable.scala:12)
+	at scala.reflect.api.Trees$Transformer.transform(Trees.scala:2833)
+	at scala.tools.nsc.transform.TailCalls$TailCallElimination.transform(TailCalls.scala:369)
+	at scala.tools.nsc.transform.TailCalls$TailCallElimination.transform(TailCalls.scala:89)
+	at scala.reflect.api.Trees$Transformer$$anonfun$transformStats$1.apply(Trees.scala:2863)
+	at scala.reflect.api.Trees$Transformer$$anonfun$transformStats$1.apply(Trees.scala:2861)
+	at scala.collection.immutable.List.loop$1(List.scala:164)
+	at scala.collection.immutable.List.mapConserve(List.scala:180)
+	at scala.reflect.api.Trees$Transformer.transformStats(Trees.scala:2861)
+	at scala.reflect.internal.Trees$$anonfun$itransform$7.apply(Trees.scala:1269)
+	at scala.reflect.internal.Trees$$anonfun$itransform$7.apply(Trees.scala:1269)
+	at scala.reflect.api.Trees$Transformer.atOwner(Trees.scala:2872)
+	at scala.reflect.internal.Trees$class.itransform(Trees.scala:1268)
+	at scala.reflect.internal.SymbolTable.itransform(SymbolTable.scala:12)
+	at scala.reflect.internal.SymbolTable.itransform(SymbolTable.scala:12)
+	at scala.reflect.api.Trees$Transformer.transform(Trees.scala:2833)
+	at scala.tools.nsc.transform.TailCalls$TailCallElimination.transform(TailCalls.scala:369)
+	at scala.tools.nsc.transform.TailCalls$TailCallElimination.transform(TailCalls.scala:89)
+	at scala.tools.nsc.ast.Trees$Transformer.transformUnit(Trees.scala:227)
+	at scala.tools.nsc.transform.TailCalls$Phase.apply(TailCalls.scala:34)
+	at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:461)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$run$1.apply(Global.scala:428)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$run$1.apply(Global.scala:428)
+	at scala.collection.Iterator$class.foreach(Iterator.scala:727)
+	at scala.collection.AbstractIterator.foreach(Iterator.scala:1156)
+	at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:428)
+	at scala.tools.nsc.Global$Run.compileUnitsInternal(Global.scala:1574)
+	at scala.tools.nsc.Global$Run.compileUnits(Global.scala:1548)
+	at scala.tools.nsc.Global$Run.compileSources(Global.scala:1544)
+	at scala.tools.nsc.Global$Run.compile(Global.scala:1654)
+	at xsbt.CachedCompiler0.run(CompilerInterface.scala:90)
+	at xsbt.CachedCompiler0.run(CompilerInterface.scala:72)
+	at xsbt.CompilerInterface.run(CompilerInterface.scala:26)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at sbt.compiler.AnalyzingCompiler.call(AnalyzingCompiler.scala:73)
+	at sbt.compiler.AnalyzingCompiler.compile(AnalyzingCompiler.scala:35)
+	at sbt.compiler.AnalyzingCompiler.compile(AnalyzingCompiler.scala:29)
+	at sbt.compiler.AggressiveCompile$$anonfun$4$$anonfun$compileScala$1$1.apply$mcV$sp(AggressiveCompile.scala:71)
+	at sbt.compiler.AggressiveCompile$$anonfun$4$$anonfun$compileScala$1$1.apply(AggressiveCompile.scala:71)
+	at sbt.compiler.AggressiveCompile$$anonfun$4$$anonfun$compileScala$1$1.apply(AggressiveCompile.scala:71)
+	at sbt.compiler.AggressiveCompile.sbt$compiler$AggressiveCompile$$timed(AggressiveCompile.scala:101)
+	at sbt.compiler.AggressiveCompile$$anonfun$4.compileScala$1(AggressiveCompile.scala:70)
+	at sbt.compiler.AggressiveCompile$$anonfun$4.apply(AggressiveCompile.scala:88)
+	at sbt.compiler.AggressiveCompile$$anonfun$4.apply(AggressiveCompile.scala:60)
+	at sbt.inc.IncrementalCompile$$anonfun$doCompile$1.apply(Compile.scala:24)
+	at sbt.inc.IncrementalCompile$$anonfun$doCompile$1.apply(Compile.scala:22)
+	at sbt.inc.Incremental$.cycle(Incremental.scala:40)
+	at sbt.inc.Incremental$.compile(Incremental.scala:25)
+	at sbt.inc.IncrementalCompile$.apply(Compile.scala:20)
+	at sbt.compiler.AggressiveCompile.compile2(AggressiveCompile.scala:96)
+	at sbt.compiler.AggressiveCompile.compile1(AggressiveCompile.scala:44)
+	at sbt.compiler.AggressiveCompile.apply(AggressiveCompile.scala:31)
+	at sbt.Compiler$.apply(Compiler.scala:79)
+	at sbt.Defaults$$anonfun$compileTask$1.apply(Defaults.scala:572)
+	at sbt.Defaults$$anonfun$compileTask$1.apply(Defaults.scala:572)
+	at sbt.Scoped$$anonfun$hf2$1.apply(Structure.scala:578)
+	at sbt.Scoped$$anonfun$hf2$1.apply(Structure.scala:578)
+	at scala.Function1$$anonfun$compose$1.apply(Function1.scala:49)
+	at sbt.Scoped$Reduced$$anonfun$combine$1$$anonfun$apply$12.apply(Structure.scala:311)
+	at sbt.Scoped$Reduced$$anonfun$combine$1$$anonfun$apply$12.apply(Structure.scala:311)
+	at sbt.$tilde$greater$$anonfun$$u2219$1.apply(TypeFunctions.scala:41)
+	at sbt.std.Transform$$anon$5.work(System.scala:71)
+	at sbt.Execute$$anonfun$submit$1$$anonfun$apply$1.apply(Execute.scala:232)
+	at sbt.Execute$$anonfun$submit$1$$anonfun$apply$1.apply(Execute.scala:232)
+	at sbt.ErrorHandling$.wideConvert(ErrorHandling.scala:18)
+	at sbt.Execute.work(Execute.scala:238)
+	at sbt.Execute$$anonfun$submit$1.apply(Execute.scala:232)
+	at sbt.Execute$$anonfun$submit$1.apply(Execute.scala:232)
+	at sbt.ConcurrentRestrictions$$anon$4$$anonfun$1.apply(ConcurrentRestrictions.scala:159)
+	at sbt.CompletionService$$anon$2.call(CompletionService.scala:30)
+	at java.util.concurrent.FutureTask$Sync.innerRun(FutureTask.java:303)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:138)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:439)
+	at java.util.concurrent.FutureTask$Sync.innerRun(FutureTask.java:303)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:138)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.runTask(ThreadPoolExecutor.java:886)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:908)
+	at java.lang.Thread.run(Thread.java:680)
+{code}

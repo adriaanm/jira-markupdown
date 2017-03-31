@@ -1,0 +1,51 @@
+After talking to Jason I got convinced that this is very hairy issue and we won't be able to fix it in 2.11 due to limited time. I'll quote Jason's summary:
+
+{quote}
+trait Foo[A] {
+def minBy[B](b: B): A = ???
+}
+class Bar extends Foo[Int]
+
+// no bridge, just a trait forwarder
+// signature matches generic signature exactly, accepts an Object, not an Int
+//
+scala> classOf[Bar].getDeclaredMethods.filter(_.getName == "minBy")
+res7: Array[java.lang.reflect.Method] = Array(public java.lang.Object Bar.minBy(java.lang.Object))
+
+//
+// But we emit a Java generic signature based on the member type of `minBy` in `Bar`
+//
+scala> res7.head.toGenericString
+res8: String = public <B> int Bar.minBy(B)
+
+Which is invalid, as `int` doesn't erase to `Object`, so you get LinkageErrors if you call this from Java, or AspectJ crashes.
+
+The logic to control the pre- and post-erasure signatures of the forwarder method is in Mixin::cloneBeforeErasure.
+
+I see two choice here:
+
+1. Weaken the Java generic signature of the method to reflect the reality of the erased signature
+2. Emit a bridge method to match the generic signature, and give the mixin method a more precise signature.
+
+Pros/ConsThe problems with 1.
+
+Cons of #1:
+
+ - If we do this naively, we break source compatibility with Java code. See, for example,  test/files/run/t3452e in by branch [1]. I thought we could find a middle ground that would weaken the java generic signature iff the current approach violates the invariant that the generic sig must erase to the erased sig.
+
+Pros of #1:
+
+ - Simpler to implement
+ - Avoid further bytecode bloat with bridges
+
+Cons of #2
+  - Adding more bridges creates opportunities for additional "double definition after erasure" errors in previously legal code. I *think* I hit such a corner case when I tried to implement this, or I might have been foiled by...
+  - Spreading the logic to generate bridges between Erasure and Mixin makes it really hard to implement this approach with certainty about correctness
+  - more bridges means more bytecode.
+
+SI-3452 also highlights the same problem in a different context: static forwarder methods also have the wrong generic signatures. This one is actually much easier to fix, as we can freely change the erased signature to match the precise generic signature.
+
+[1] https://github.com/retronym/scala/compare/ticket/3452-rebased
+{quote}
+
+I think generating additional bridges is the way to go but we'll have to be careful about breaking existing code. I'm guessing we would need to introduce the logic behind a switch and try it out on various projects to asses how likely it is we are breaking existing code. This is 2.12 material.

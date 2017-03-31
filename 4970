@@ -1,0 +1,32 @@
+I tried similar code, but it failed on 2.9.1 and 2.10.0-M3:
+
+{code}
+scala> val a: String = ""
+a: String = ""
+
+scala> case class Marked(a: String)
+defined class Marked
+
+scala> implicit def foo(b: String): Marked = Marked(b)
+warning: there were 1 feature warnings; re-run with -feature for details
+foo: (b: String)Marked
+
+scala> def ctx(c: Marked) = c
+ctx: (c: Marked)Marked
+
+scala> ctx(a)
+res0: Marked = Marked()
+
+scala> implicit def bar(b: a.type): Marked = null
+warning: there were 1 feature warnings; re-run with -feature for details
+bar: (b: a.type)Marked
+
+scala> ctx(a) //This is expected to return null because the implicit conversion bar should be applied; conversions however are not applied in the right order.
+res1: Marked = Marked()
+
+scala> ctx(bar(a)) //This expansion should be considered (and make the code ambiguous) or applied (because it is more specific).
+res2: Marked = null
+
+scala> ctx(a: a.type)
+res3: Marked = null
+{code}

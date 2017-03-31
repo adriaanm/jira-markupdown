@@ -1,0 +1,30 @@
+The following snippet doesn't compile, but should.
+
+{code:scala}
+sealed trait Outer {
+  type Inner
+}
+
+case object HasInts extends Outer {
+  override type Inner = Int
+}
+
+def id(outer: Outer): outer.Inner =
+  outer match {
+    case HasInts => 0
+  }
+{code}
+
+So long as the case's #Inner is final (in this case it is because HasInts is final), that should be proof that outer.Inner == the case's #Inner.
+
+I'd expect the above code to work in the same way, and for the same results, as the below code which compiles successfully.
+{code:scala}
+    sealed trait Outer[Inner]
+
+    case object HasInts extends Outer[Int]
+
+    def id[I](outer: Outer[I]): I =
+      outer match {
+        case HasInts => 0
+      }
+{code}

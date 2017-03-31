@@ -1,0 +1,37 @@
+In the following code, the default argument to Bar is object Bar instead of object Main.
+
+However, scalac requires that both Main and Bar conform to the parameter type.
+
+I'd expect Main.this to be in scope, even though the expression is evaluated by Bar$.
+
+Reproduce Code
+{code}
+package trythis
+
+//object Main { // type mismatch
+object Main extends Function0[Int] {
+
+  class Bar(x: Function0[Int] = this) {
+    override def toString = "X "+ x.toString +"="+ x()
+  }
+  object Bar extends Function0[Int] {
+    def apply() = 21
+    override def toString = "My Bar module"
+  }
+  def main(args: Array[String]): Unit = {
+    println(new Bar())
+  }
+  override def toString = "My Main"
+  def apply() = 17
+}
+{code}
+
+Expected result
+{code}
+X My Main=17
+{code}
+
+Actual Result
+{code}
+X My Bar module=21
+{code}

@@ -1,0 +1,19 @@
+When starting REPL having set 
+
+*C:\>set JAVA_OPTS=-Djline.WindowsTerminal.directConsole=false*
+
+jline still uses direct console mode. 
+
+My fix was to make a small change to scala.tools.jline.WindowsTerminal such that the absence of \\ *-Djline.WindowsTerminal.directConsole* is the equivalent of \\ *-Djline.WindowsTerminal.directConsole=true* rather than it being \\ *-Djline.WindowsTerminal.directConsole=false* \\ and then to honor the setting less conditionally in the code. 
+
+Interestingly the version of jline in sbt does not seem to have this problem. 
+
+See lines marked "******** NS ********" in attached source file 
+ 
+
+
+
+
+
+
+

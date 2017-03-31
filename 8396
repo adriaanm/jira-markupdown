@@ -1,0 +1,46 @@
+{{-Yshow-syms}} is pretty revealing.
+
+{code}
+class M(val t: Int) extends AnyVal {
+   def lazyString = {
+      object X
+      class Y
+
+      () => {X; new Y}
+   }
+}
+
+
+[[symbol layout at end of typer]]
+F class M#7016 [+final]
+*     method lazyString#7392
+*         class Y#12575
+*             constructor Y#12578
+*             value <local Y>#12579
+*         object X#12574
+*             constructor X#12576
+*             value <local X>#12577
+*         object X#12573
+*         value $anonfun#12580 (<synthetic>)
+
+class M#7016 (final)
+      method lazyString#7392
+          object X#12574
+              constructor X#12576
+              value <local X>#12577
+  object M#7393 (<synthetic>)
+  object M#7394 (<synthetic>)
+      constructor M#13922
+*     method extension$lazyString#13933 (final)
+O         class Y#12575 [Owner was method lazyString#7392, now method extension$lazyString#13933]
+              constructor Y#12578
+              value <local Y>#12579
+O         object X#12573 [Owner was method lazyString#7392, now method extension$lazyString#13933]
+O         value $anonfun#12580 [Owner was method lazyString#7392, now method extension$lazyString#13933] (<synthetic>)
+{code}
+
+Here's the naive fix (same as I tried for the lazy vals).
+
+https://github.com/retronym/scala/compare/ticket/6359-2
+
+But like last time (https://issues.scala-lang.org/browse/SI-6358?focusedCommentId=60029&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-60029), it might only be skin deep.

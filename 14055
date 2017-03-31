@@ -1,0 +1,19 @@
+{code}
+  ~/newbug> cat A1.scala 
+@org.junit.runners.Suite.SuiteClasses(Array(classOf[A2]))
+class A1
+
+  ~/newbug> cat A2.scala 
+@org.junit.runners.Suite.SuiteClasses(Array())
+class A2
+
+  ~/newbug> mkdir classes
+  ~/newbug> scalac -classpath junit-4.5.jar -d classes A2.scala 
+  ~/newbug> scalac -classpath classes:junit-4.5.jar -d classes A1.scala 
+error: error while loading A2, class file 'classes/A2.class' is broken
+(class org.junit.runners.Suite$$SuiteClasses not found.)
+one error found
+{code}
+
+this is with the stock JUnit 4.5 jar. attachment has everything need to reproduce the bug, including a Makefile
+

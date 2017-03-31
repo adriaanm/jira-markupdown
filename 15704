@@ -1,0 +1,21 @@
+Running scaladoc on the following source:
+{code}
+import scala.util.parsing.combinator._
+object Test extends RegexParsers with PackratParsers
+{code}
+
+fails with:
+{code}
+Test.scala:2: error: object creation impossible, since:
+type _$$4 in trait PackratParsers with bounds >: Nothing <: Any is not defined
+type _$$4 in trait PackratParsers with bounds >: Nothing <: Any is not defined
+...
+object Test extends RegexParsers with PackratParsers
+       ^
+model contains 2 documentable templates
+one error found
+{code}
+
+Note that `scalac` accepts this source.
+
+Scala 2.8.1.RC1, 2.8.1.RC2, and trunk all give the above error.  There is no error using scaladoc from 2.8.0.

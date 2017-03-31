@@ -1,0 +1,66 @@
+=== What steps will reproduce the problem (please be specific and use wikiformatting)? ===
+{code}
+build file with scaladoc
+
+/**
+ * Subclass of <code>org.jmock.Expectations</code> that provides <code>withArg</code>
+ * alternatives to the <code>with</code> methods defined in its superclass.
+ *
+ * <p>
+ * <code>JMockCycle</code>'s <code>expecting</code> method of passes an instance of this class
+ * to the function passed into <code>expectations</code>. Because <code>JMockExpectations</code>
+ * extends <code>org.jmock.Expectations</code>, all of the <code>Expectations</code> methods are
+ * available to be invoked on instances of this class, in addition to
+ * several overloaded <code>withArg</code> methods defined in this class. These <code>withArg</code> methods simply
+ * invoke corresponding <code>with</code> methods on <code>this</code>. Because <code>with</code> is
+ * a keyword in Scala, to invoke these directly you must surround them in back ticks, like this:
+ * </p>
+ *
+ * <pre>
+ * oneOf (mockCollaborator).documentAdded(`with`("Document"))
+ * </pre>
+ *
+ * <p>
+ * By importing the members of the <code>JMockExpectations</code> object passed to
+ * a <code>JMockCycle</code>'s <code>executing</code> method, you can
+ * instead call <code>withArg</code> with no back ticks needed:
+ * </p>
+ *
+ * <pre>
+ * oneOf (mockCollaborator).documentAdded(withArg("Document"))
+ * </pre>
+ *
+ * @author Bill Venners
+ */
+
+class JMockExpectations
+
+{code} 
+
+
+
+=== What is the expected behavior? ===
+
+fully qualified name:
+
+org.hamcrest.Matcher
+
+=== What do you see instead? ===
+
+Matcher
+
+=== Additional information ===
+(for instance, a link to a relevant mailing list discussion)
+
+In JMockSugar. some of the methods take a Matcher, but it just says
+Matcher. Well that's a org.hamcrest.Matcher, not a
+org.scalatest.Matcher, and there's no way to tell from the
+documentation
+
+=== What versions of the following are you using? ===
+  - Scala: Scala code runner version 2.8.1.final -- Copyright 2002-2010, LAMP/EPFL
+  - Java: java version "1.6.0_18"
+OpenJDK Runtime Environment (IcedTea6 1.8.7) (fedora-50.1.8.7.fc13-i386)
+OpenJDK Server VM (build 14.0-b16, mixed mode)
+
+  - Operating system: Linux localhost.localdomain 2.6.34.8-68.fc13.i686.PAE SI-1 SMP Thu Feb 17 14:54:10 UTC 2011 i686 i686 i386 GNU/Linux

@@ -1,0 +1,59 @@
+Merging SI-7535 as a duplicate.
+
+Code that provokes {{LinkageError}}
+
+{code}
+trait Def {
+  type Element >: Null
+  trait Motor {
+    type Element = Def.this.Element
+  }
+}
+
+trait Def2 extends Def {
+  trait Element
+  trait Motor extends super.Motor {
+    def foo(parent: Element): Any
+    foo(null)
+  }
+}
+
+trait Def3 extends Def2 {
+  trait Element // or extends super.Element2, same result.
+  new super.Motor {
+    def foo(e:Element): Any = null
+  }
+}
+
+new Def3 {} // java.lang.AbstractMethodError: Main$$anon$3$Def3$$anon$2.foo(LMain$$anon$3$Def2$Element;)Ljava/lang/Object
+{code}
+
+Suggested:
+
+{code}
+trait Def {
+  type Element >: Null
+  trait Motor {
+    type Element = Def.this.Element
+  }
+}
+
+trait Def2 extends Def {
+  type Element >: Null <: Element2 
+  trait Element2
+  trait Motor extends super.Motor {
+    def foo(parent: Element): Any
+    foo(null)
+  }
+}
+
+trait Def3 extends Def2 {
+  type Element >: Null <: Element3
+  trait Element3 extends super.Element2
+  new super.Motor {
+    def foo(e:Element): Any = null
+  }
+}
+
+new Def3 {}
+{code}

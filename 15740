@@ -1,0 +1,42 @@
+Given the following source files:
+
+{{src/pack/Queue.java}}
+
+{code}
+package pack;
+public interface Queue { }
+{code}
+
+
+{{src/pack/BlockingQueue.java}}
+
+{code}
+package pack;
+import java.util.Queue;
+public interface BlockingQueue<E> extends Queue<E> { }
+{code}
+
+{{src/pack/Test.scala}}
+
+{code}
+package pack
+trait Test {
+  val b: BlockingQueue[Nothing]
+}
+{code}
+
+feeding the three files into scalac gives the following error:
+
+{code}
+lamppc11:main luc$$ mkdir out
+lamppc11:main luc$$ ~/scala/git/target/pack/bin/scalac src/pack/*.java src/pack/Test.scala 
+src/pack/BlockingQueue.java:5: error: pack.Queue does not take type parameters
+public interface BlockingQueue<E> extends Queue<E> {
+                                          ^
+one error found
+{code}
+
+
+In the supertype of `BlockingQueue`, `Queue` should resolve to `java.lang.Queue`, not to `pack.Queue`.
+
+Compiling the java files first and feeding only the scala file to scalac works.

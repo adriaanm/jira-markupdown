@@ -1,0 +1,51 @@
+h1. Description
+
+{{someBigArray.search(element)}} is slow because {{ArrayOps}} is not a {{IndexedSeq}} (but a {{IndexedSeqOptimized}}), so that {{collection.Searching}} does not use binary search.
+
+h1. Reproducing Code
+
+Running attached file [^slow.scala], searching on an {{Array}} with 1000000 elements is 10000x slower than searching on a {{WrappedArray}}.
+
+{code}
+searchArray: 3116.342782 ms
+searchWrappedArray: 0.273139 ms
+{code}
+
+h1. Cause
+
+The object {{Searching}} is implemented as follows:
+
+{code:scala}
+object Searching {
+  class SearchImpl[A, Repr](val coll: SeqLike[A, Repr]) {
+    final def search[B >: A](elem: B)(implicit ord: Ordering[B]): SearchResult =
+      coll match {
+        case _: IndexedSeq[A] => binarySearch(elem, 0, coll.length)(ord)
+        case _ => linearSearch(coll.view, elem, 0)(ord)
+      }
+    ...
+  }
+
+  implicit def search[Repr, A](coll: Repr)
+  (implicit fr: IsSeqLike[Repr]): SearchImpl[fr.A, Repr] = new SearchImpl(fr.conversion(coll))
+}
+{code}
+
+In the implicit method {{search}}, {{Array}} is converted to {{ArrayOps}} by {{IsSeqLike}}:
+
+{code:scala}
+import scala.collection.generic.IsSeqLike
+implicitly[IsSeqLike[Array[Int]]].conversion(Array(1)).getClass
+ // class scala.collection.mutable.ArrayOps$ofInt
+{code}
+
+{{ArrayOps}} is a {{IndexedSeqOptimized}} but not a {{IndexedSeq}} since methods like {{IndexedSeq#filter}} and others must returns a {{IndexedSeq}}; therefore, binary search is not used.
+
+h1. Resolution
+
+Rewriting from {{case _: IndexedSeq\[A]}} to {{case _: IndexedSeqLike\[A, _]}} fixes this. Try attached file [^fast.scala].
+
+{code}
+searchArray: 0.170193 ms
+searchWrappedArray: 0.267205 ms
+{code}

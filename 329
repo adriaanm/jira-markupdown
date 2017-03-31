@@ -1,0 +1,20 @@
+This ticket has a different profile since the Array rewrite.  You can see below that it's fine with Array[Int] being of type Sized, yet if T <: Sized it's not a T.  The crash is gone though.
+
+{code}
+scala> type Sized = { def size: Int }
+defined type alias Sized
+
+scala> def g[T <: Sized](p: T) = println(p.size)
+g: [T <: Sized](p: T)Unit
+
+scala> g(Array(1,2))
+<console>:7: error: inferred type arguments [Array[Int]] do not conform to method g's type parameter bounds [T <: Sized]
+       g(Array(1,2))
+       ^
+
+scala> def g(p: Sized) = println(p.size)
+g: (p: Sized)Unit
+
+scala> g(Array(1,2))
+2
+{code}

@@ -1,0 +1,19 @@
+That's interesting.  I saw similar behavior using !BuildManagerTest (a way to test the new build manager), but didn't know if it was a problem in practice.  The issue I saw could be reproduced as follows.  Given two sources A.scala, B.scala:
+
+{code}
+object A {
+ def y = B.x
+}
+object B {
+ def x = 3
+}
+{code}
+
+ 1. delete {{def x = 3}}
+ 1. should see a compile error because A.scala still references it
+ 1. add {{def x = 3}} back
+ 1. A.scala isn't recompiled in !BuildManagerTest, so it might be that the error marker is still there.  
+
+Note that I don't know if this is an issue with the build manager or if it should be handled by build clients, since a file that hasn't successfully compiled should be included in the sources to recompile until it succeeds.
+
+-Mark

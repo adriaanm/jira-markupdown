@@ -1,0 +1,7 @@
+In the case where `T` *is* specialized:
+I think the issue can be solved when by generating the normalized method `m$mIIc$sp` of `m`.
+Instead of throwing an exception in the implementation of `m$mIIc$sp`, the implementation of `m` should be copied so that all occurrences of expressions of type `T` are cast to `Int`. Generally, it would mean that all expressions of type equal to the lower bound of some specialized type parameter are cast to the specialized type of that type parameter.
+This is still type-safe because the method `m` above can only be called if `W = Int >: T`, therefore, it's only callable with such a `W` if the enclosing class is instantiated at `T = Int`. Otherwise, the cast in the normalized method would be invalid, but the method itself wouldn't be callable anyway.
+This would require modifying the `Duplicators` to provide them with a `castMap` which essentially says for which types certain expressions of that type have to be cast, and then insert a cast at these locations.
+
+Iulian, can you comment on this? Do you agree?

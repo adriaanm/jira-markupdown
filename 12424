@@ -1,0 +1,32 @@
+The linked ticket shows the fix on 2.11.9.
+
+Many repros have proved sensitive to REPL because of toString effects. Recently ameliorated was the only puzzler with *bleep* in the title, http://scalapuzzlers.com/#pzzlr-025
+
+Instead of using the paste command, you can paste at the prompt and then run silent, run deep:
+{code}
+scala> m1.merged(m2) {
+     |   case ((k, v1), (_, v2)) => (k, v1 ++ v2)
+     | }
+res0: scala.collection.immutable.HashMap[String,Seq[Int]] = Map(0 -> List(0, 1))
+
+scala> :silent
+
+scala> :replay
+Replaying: import scala.collection.immutable.HashMap
+
+Replaying: val m1 = HashMap[String, Seq[Int]]().updated("0", Seq(0))
+
+Replaying: val m2 = HashMap[String, Seq[Int]]().updated("0", Seq(1))
+
+Replaying: m1.merged(m2) {
+  case ((k, v1), (_, v2)) => (k, v1 ++ v2)
+}
+scala.MatchError: (null,null) (of class scala.Tuple2)
+  at $anonfun$1.apply(<console>:15)
+  at $anonfun$1.apply(<console>:15)
+  at scala.collection.immutable.HashMap$$anon$2$$anon$3.apply(HashMap.scala:150)
+  at scala.collection.immutable.HashMap$HashMap1.updated0(HashMap.scala:200)
+  at scala.collection.immutable.HashMap$HashMap1.merge0(HashMap.scala:225)
+  at scala.collection.immutable.HashMap.merged(HashMap.scala:117)
+  ... 40 elided
+{code}

@@ -1,0 +1,30 @@
+If you have a base trait with 2 type parameters:
+
+Scala:
+
+{code}
+trait Func1[T1, R] {
+  def apply(v1: T1): R = null.asInstanceOf[R]
+}
+
+
+class Func1ReturnString[T] extends Func1[T, String]
+{code}
+
+Java:
+
+{code}
+public class Test {
+    public static void main(String[] args) {
+	Func1ReturnString<Integer> b = new Func1ReturnString<Integer>() {};
+	b.apply(0);
+    }
+}
+{code}
+
+At runtime:
+
+{code}
+Exception in thread "main" java.lang.NoSuchMethodError: Func1ReturnString.apply(Ljava/lang/Object;)Ljava/lang/String;
+	at Test.main(Test.java:7)
+{code}

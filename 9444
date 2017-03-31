@@ -1,0 +1,15 @@
+Workaround, courtesy of Jeff Olson:
+
+{code}
+  def getFieldValue(im: InstanceMirror, term: MethodSymbol): Any = {
+    val rawValue = im.reflectMethod(term)()
+    val tpe = term.returnType
+    val symbol = tpe.typeSymbol.asClass
+    if (symbol.isDerivedValueClass) {
+      val ctor = tpe.declaration(nme.CONSTRUCTOR).asMethod
+      val ctorMirror = mirror.reflectClass(symbol).reflectConstructor(ctor)
+      ctorMirror(rawValue)
+    }
+    else rawValue
+  }
+{code}

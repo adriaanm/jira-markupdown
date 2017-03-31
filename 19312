@@ -1,0 +1,15 @@
+The Iterator drop method (defined in Iterator.scala) generates nested anonymous classes.   When drop is used in a loop, this causes linear traversal to become quadratic, and will also eventually cause a stack overflow if invoked sufficiently many times.
+
+I wrote up a description and analysis of the problem here:
+http://erikerlandson.github.io/blog/2014/09/03/matryoshka-class-construction-from-the-scala-iterator-drop-method/
+
+Recommend the implementation be changed from calling 'slice' to something more like:
+
+def drop(n: Int): Iterator[A] = {
+  var j = 0
+  while (j < n) {
+    this.next
+    j += 1
+  }
+  this
+}

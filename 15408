@@ -1,0 +1,36 @@
+Double definition error (RC3 and r22171):
+{code}
+scala> object Bug {
+     |   List[Option[Int]]() match {
+     |     case None :: bb :: cc => ()
+     |     case x => throw new Exception(x.filter(_.isDefined).mkString)
+     |   }
+     | }
+<console>:8: error: double definition:
+method apply:(v1: java.lang.Object)java.lang.Object and
+method apply:(v1: java.lang.Object)java.lang.Object at line 8
+have same type
+           case x => throw new Exception(x.filter(_.isDefined).mkString)
+                                                    ^
+{code}
+
+Pulling the `x.filter ...` out, not throwing the exception, removing the first case, or not using an anonymous function will make it go away.
+
+In 2.7.7 this crashes the compiler.  It does in RC3 and r22171 as well if there is only one `::`.   It could be two separate issues.
+
+{code}
+scala> object Bug {
+     |   List[Option[Int]]() match {
+     |     case None :: bb => ()
+     |     case x => throw new Exception(x.filter(_.isDefined).mkString)
+     |   }
+     | }
+Exception in thread "main" java.util.NoSuchElementException: key not found: anonymous class $$anonfun$$1
+        at scala.collection.MapLike$$class.default(MapLike.scala:223)
+        at scala.collection.mutable.LinkedHashMap.default(LinkedHashMap.scala:48)
+        at scala.collection.MapLike$$class.apply(MapLike.scala:134)
+        at scala.collection.mutable.LinkedHashMap.apply(LinkedHashMap.scala:48)
+        at scala.tools.nsc.transform.LambdaLift$$LambdaLifter.addLifted$$1(LambdaLift.scala:456)
+        at scala.tools.nsc.transform.LambdaLift$$LambdaLifter$$$$anonfun$$3.apply(LambdaLift.scala:456)
+        at scala.tools.nsc.transform.LambdaLift$$LambdaLifter$$$$anonfun$$3.apply(LambdaLift.scala:456)
+{code}

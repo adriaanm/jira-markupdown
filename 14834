@@ -1,0 +1,51 @@
+Test case presented below looks crazy being a result of long incremental and multihours reducing of real multimodules projects.
+
+{code}
+$$ scala -version                                                             
+Scala code runner version 2.8.0.r20172-b20091216213211 -- Copyright 2002-2010, LAMP/EPFL                          
+
+$$ cat Test.scala                                                      
+package p1 {                                                                                               
+
+  class C1
+
+  trait T1 {
+    def t1f1[A](p : C1)(code : C1 => A) : A = code(p)
+    // without 'protected' compiles fine             
+    protected def t1f2(p1 : C1, p2 : String = "") : C1 = new C1
+  }                                                            
+
+  trait T2[Par] extends T1 {
+    def t2f1[A](p1 : C1, p2 : C1 => A)(code : (C1, Par) => A) : A = {
+      val o = 1.asInstanceOf[Par]                                    
+      code(p1, o)                                                    
+    }                                                                
+  }                                                                  
+
+}
+
+// being in the same package compiles fine
+package p2 {                              
+  import p1._                             
+
+  trait T3 extends T2[String] {
+    // without this method compiles fine
+    def t3f1(p : C1) : C1 = t2f1(p : C1, t1f2(_)) { (p, _) => t1f2(p) }
+  }
+
+  trait T4 extends T3 { // Test.scala:29
+    def t4f1(p : C1) : C1 = t1f1(p) { x =>
+      t1f2(x)
+      //x
+    }
+  }
+}
+
+$$ scalac Test.scala
+Test.scala:29: error: in trait T4, multiple overloaded alternatives of method protected$$t1f2 define default arguments.
+The members with defaults are defined in trait T4 and trait T3.
+  trait T4 extends T3 { // Test.scala:29
+        ^
+one error found
+
+{code}

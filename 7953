@@ -1,0 +1,47 @@
+Can't elaborate on this transcript.  Something in your environment probably leads to it never happening, otherwise you'd have been driven as nuts as I have been.
+{noformat}
+% ./build/pack/bin/scala -version
+Scala code runner version 2.11.0-20120730-173724-8a2df611d2 -- Copyright 2002-2011, LAMP/EPFL
+% ./build/pack/bin/scalac src/compiler/scala/reflect/makro/runtime/FrontEnds.scala
+src/compiler/scala/reflect/makro/runtime/FrontEnds.scala:44: error: object nsc is not a member of package tools
+    case reporter: tools.nsc.reporters.AbstractReporter => reporter.displayPrompt()
+                         ^
+src/compiler/scala/reflect/makro/runtime/FrontEnds.scala:44: error: value displayPrompt is not a member of scala.tools.nsc.reporters.Reporter
+    case reporter: tools.nsc.reporters.AbstractReporter => reporter.displayPrompt()
+                                                                    ^
+two errors found
+{noformat}
+Some debugging.
+{noformat}
+[log typer] qual = tools:<root>.this.tools.type
+Symbol=package tools
+symbol-info = <root>.this.tools.type
+scope-id = 1329670080
+members = List()
+name = nsc
+found = <none>
+owner = trait FrontEnds
+warning: issue error: object nsc is not a member of package <root>.this.tools
+src/compiler/scala/reflect/makro/runtime/FrontEnds.scala:44: error: object nsc is not a member of package <root>.this.tools
+    case reporter: tools.nsc.reporters.AbstractReporter => reporter.displayPrompt()
+                         ^
+[log typer] set error: tools.nsc
+{noformat}
+The first time "tools" appears in the debug output is when the scala.tools.reflect package object is loaded.
+{noformat}
+
+[log typer(->parser)] [class] >> scala.tools.reflect.package
+[log typer(->parser)] [class] << scala.tools.reflect.package
+[log typer(->parser)] ClassfileLoader setting package.associatedFile = /scratch/trunk5/build/pack/lib/scala-compiler.jar(scala/tools/reflect/package.class)
+[log typer(->parser)] [class] >> scala.tools.reflect.FrontEnds
+[log typer(->parser)] [class] << scala.tools.reflect.FrontEnds
+[log typer(->parser)] ClassfileLoader setting FrontEnds.associatedFile = /scratch/trunk5/build/pack/lib/scala-compiler.jar(scala/tools/reflect/FrontEnds.class)
+[log typer] [class] >> scala.tools.nsc.package
+[log typer] [class] << scala.tools.nsc.package
+[log typer] ClassfileLoader setting package.associatedFile = /scratch/trunk5/build/pack/lib/scala-compiler.jar(scala/tools/nsc/package.class)
+[log typer] [class] >> scala.tools.nsc.Global
+[log typer] [class] << scala.tools.nsc.Global
+[log typer] ClassfileLoader setting Global.associatedFile = /scratch/trunk5/build/pack/lib/scala-compiler.jar(scala/tools/nsc/Global.class)
+[log typer] [class] >> scala.tools.nsc.symtab.package
+[log typer] [class] << scala.tools.nsc.symtab.package
+{noformat}

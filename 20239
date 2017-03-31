@@ -1,0 +1,28 @@
+Minimal example to reproduce:
+{code:scala}
+import scala.reflect.runtime.universe._
+import scala.reflect.runtime.currentMirror
+import scala.tools.reflect.ToolBox
+
+object Test {
+
+  def main(args: Array[String]) {
+    val tb = currentMirror.mkToolBox()
+    
+    val id1 = tb.typecheck(q"def id(x: Int) = x").asInstanceOf[DefDef]
+    val x1 = id1.symbol.asMethod.paramLists.head.head
+    val x2 = id1.vparamss.head.head.symbol
+    println(x1 == x2) // true
+    
+    val id2 = tb.typecheck(q"def id[A](x: A) = x").asInstanceOf[DefDef]
+    val x3 = id2.symbol.asMethod.paramLists.head.head
+    val x4 = id2.vparamss.head.head.symbol
+    println(x3 == x4) // false
+    val A1 = id2.symbol.asMethod.typeParams.head
+    val A2 = id2.tparams.head.symbol
+    println(A1 == A2) // false
+  }
+}
+{code}
+
+The same behavior can be observed when typechecking in macro context.

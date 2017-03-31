@@ -1,0 +1,50 @@
+All with 2.6.1-final:
+
+The following code will fail to compile:
+
+{code}
+class Ref1(val r : Int)
+
+object Test extends Application {
+  val r1 = new Ref1
+}
+{code}
+{code}
+test1.scala:4: error: wrong number of arguments for constructor Ref1: (Int)Ref1
+  val r1 = new Ref1
+           ^
+one error found
+{code}
+
+However, the following code lets you construct a new Ref2 if the type T
+is not specified:
+
+{code}
+class Ref2[T](val r : T)
+
+object Test extends Application {
+  val r2 = new Ref2
+}
+{code}
+
+the T ends up appearing to be a Unit in this case:
+
+{code}
+scala> class Ref2[T](val r : T)
+defined class Ref2
+
+scala> new Ref2
+res20: Ref2[Unit] = Ref2@147bc1e
+{code}
+
+Granted, specifying a type for T does result in a compile error:
+
+{code}
+scala> new Ref2[Int]
+<console>:6: error: wrong number of arguments for constructor Ref2: (Int)Ref2[Int]
+       new Ref2[Int]
+{code}
+
+However, not specifying a type leads to non-obvious behavior, it seems
+that an argument for the constructor should always be required, regardless
+of the type.

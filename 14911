@@ -1,0 +1,29 @@
+Here is an example program illustrating the issue:
+{code}
+object Main {
+  def succ = { x: Int => x + 1 }
+  def Succ = { x: Int => x + 1 }
+
+  def main(args: Array[String]): Unit = {
+    println(succ(20) + Succ(20))
+  }
+}
+{code}
+
+When compiling it, the Scala compiler tries to produce two classes for the anonymous functions bound to {{succ}} and {{Succ}}. Unfortunately, as the name of these two classes differ only in the case of a single letter, the second classfile to be generated overwrites the first on case-insensitive filesystems (e.g. HFS+ on MacOS). This causes a {{NoClassDefFoundError}} at execution. Here is a shell session illustrating the issue:
+
+{code}
+[paine case_in_class_names]% mkdir classes
+[paine case_in_class_names]% scalac -d classes classnames.scala 
+[paine case_in_class_names]% ll classes
+total 24
+-rw-r--r--  1 michelschinz  staff   834 16 jan 19:22 Main$$$$anonfun$$Succ$$1.class
+-rw-r--r--  1 michelschinz  staff  1200 16 jan 19:22 Main$$.class
+-rw-r--r--  1 michelschinz  staff   883 16 jan 19:22 Main.class
+[paine case_in_class_names]% scala -cp classes Main
+java.lang.NoClassDefFoundError: Main$$$$anonfun$$succ$$1 (wrong name: Main$$$$anonfun$$Succ$$1)
+	at java.lang.ClassLoader.defineClass1(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:698)
+	at java.security.SecureClassLoader.defineClass(SecureClassLoader.java:124)
+...
+{code}

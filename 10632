@@ -1,0 +1,11 @@
+{code}
+scala> trait Family[+Base] { type Family = Base }
+<console>:7: error: covariant type Base occurs in invariant position in type Base of type Family
+       trait Family[+Base] { type Family = Base }
+                                  ^
+
+scala> trait Family[+Base] { type Family = (Base @annotation.unchecked.uncheckedVariance) }
+defined trait Family
+{code}
+
+Isn't this enough? We could disable the new check behind -Xsource:2.10 (I did that already for a few similarly strengthened checks.)

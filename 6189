@@ -1,0 +1,9 @@
+After some investigation, I found a solution based on adding jni support to jansi for the following calls: {{ReadConsoleInputW}}, {{WriteConsoleW}}, {{GetConsoleOutputCP}}, {{SetConsoleOutputCP}}. I have an open [pull request|https://github.com/fusesource/jansi-native/pull/1] to the jansi maintainer. 
+
+* {{ReadConsoleInputW}} is needed to read the ALT + combinations and it also provides support for right click pastes of non ascii characters. This also allows detecting CTRL-LEFT, CTRL-RIGHT. 
+* {{WriteConsoleW}} is needed because {{System.out.println}} or {{java.io.Console}} seem to be broken when double bytes chars are written - this is the extra garbage we see after the unicode chars (☆��)
+* {{GetConsoleOutputCP}}, {{SetConsoleOutputCP}} are needed to switch the code page to 65001 and back - which is done if the user is on Windows and {{file.encoding}} is set to {{UTF-8}}.
+
+The changes to jline are mostly in {{AnsiWindowsTerminal}} but changes to {{scala.tools.nsc.interpreter.ILoop}} would be required as well to overwrite {{Console.out}}.
+
+If you want to test it, I can make available a modified version of {{jline.jar}} and you would have to recompile scala from [my github fork|https://github.com/huynhjl/scala-full].

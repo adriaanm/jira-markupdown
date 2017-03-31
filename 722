@@ -1,0 +1,9 @@
+A perhaps more intention revealing version of the workaround:
+
+{code}
+scala> object Typed { def unapply[A](a: A) = Some(a) }
+defined module Typed
+
+scala> for { Typed(a: Int) <- List(1, "2") } yield a
+res1: List[Int] = List(1)
+{code}

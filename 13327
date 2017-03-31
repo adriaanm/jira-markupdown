@@ -1,0 +1,76 @@
+
+
+This is both a report of a defect in the specification and a
+minor enhancement request for the implementation.
+
+GADT-style dependent case analysis works for objects:
+
+{code}
+scala> trait T[X]
+defined trait T
+
+scala> object O extends T[int]
+defined module O
+
+scala> def f[X] : T[X] => X = { case O => 42 }
+f: [X](T[X]) => X
+{code}
+
+O is syntactically a stable identifier pattern (8.1.4), but
+dependent case analysis isn't defined for them in section 8.3 of
+the specification. Their treatment seems straightforwardly
+analogous to the treatment of constructor patterns, though: {
+case O => 42 } just gets translated to { case _ : O.type => 42 }.
+This description is currently missing from the specification.
+
+Moreover, it seems that with the current implementation, the
+above rule only works for objects, not for other stable
+identifiers.
+
+{code}
+scala> val V = new T[int] {}
+V: java.lang.Object with T[int] = $$anon$$1@23194cf5
+
+scala> def g[X] : T[X] => X = { case V => 42 }
+<console>:6: error: type mismatch;
+ found   : Int(42)
+ required: X
+       def g[X] : T[X] => X = { case V => 42 }
+{code}
+
+Still, manual translation to a type pattern works all right:
+
+{code}
+scala> def g[X] : T[X] => X = { case _ : V.type => 42 }
+g: [X](T[X]) => X
+
+scala> g(V)
+res1: int = 42
+{code}
+
+This seems inconsistent. I very much think all stable identifiers
+should be treated uniformly. My immediate motivation for this is
+that it makes writing a typecase somewhat neater. Given:
+
+{code}
+val IntC = classOf[Int]
+val StringC = classOf[String]
+{code}
+
+Currently one has to write:
+
+{code}
+def g[X] : Class[X] => X = { 
+   case _ : IntC.type => 42
+   case _ : StringC.type => "forty-two" 
+}
+{code}
+
+Instead of the prettier:
+
+{code}
+def g[X] : Class[X] => X = { 
+   case IntC => 42
+   case StringC => "forty-two" 
+}
+{code}

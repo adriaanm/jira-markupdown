@@ -1,0 +1,24 @@
+Nothing to do with pattern matching. Here's a match free version that demonstrates the problem:
+
+{code}
+trait Syntax {
+  object Foo
+}
+
+trait Evaluation {
+  val syntax: Syntax
+  
+  def equalInTrait = this.syntax.Foo == this.syntax.Foo
+}
+
+object EvalTest extends Evaluation with Application {
+  object syntax extends Syntax 
+
+  def equalInObject = this.syntax.Foo == this.syntax.Foo
+  
+  println(equalInTrait)
+  println(equalInObject)
+}
+{code}
+
+This prints false, then true. Or in other words when evaluated inside the trait, syntax.Foo != syntax.Foo. This is slightly bizarre, so it's not surprising the poor pattern matcher got confused...

@@ -1,0 +1,7 @@
+*On bug SI-2764*
+
+The creator of the bug said that the attached Scala file (which is the same as the example that I used in my comment) produces a compilation error but the code runs (so it compiles). I believe that he was seeing a bogus message (not reported in the Problems View). The message must be bogus since the he said that the code runs. If we get a compilation error we cannot run the code.
+
+Then when you tried to minimize the dependencies of the example code you found the real bug with the code that you wrote in your first comment. In this comment the annotation, enum and Scala class are defined (and hence compiled) in the same project so the compiler bug get triggered (Eclipse here correctly reports the compilation error which is result of the bug since it does not know that the compiler has a bug). In this case you cannot run the code and hence the compilation error in valid (although the result of a compiler bug).
+
+I expect the code that uses the JPA annotations not to produce any errors because as rytz said in a later comment of SI-2764 "it works when compiling against the compiled java files" which is the case with JPA since the annotation and the enum are compiled in the JPA jar. Also when we compile from the command line we do not get any compiler messages.

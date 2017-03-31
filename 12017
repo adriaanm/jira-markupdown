@@ -1,0 +1,9 @@
+The relevant section of the [YouTube video|https://www.youtube.com/watch?v=ndkT5qHZHI0] begins at 18:55, with Martin's remark about underscores in particular at 19:19 ("put underscores in there, or whatever"). It seems like a passing remark to me, not like an edict that settles everything.
+
+I see in your PR that what the existing code uses is `java.lang.Character.isUnicodeIdentifierPart` ([Javadoc|http://docs.oracle.com/javase/7/docs/api/java/lang/Character.html#isUnicodeIdentifierPart(char)]).
+
+There is a well established tradition, dating back to C if not longer, of considering underscore to be a sort of honorary alphanumeric character (and isUnicodeIdentifierPart follows this tradition, which is why the existing implementation accepts underscores). In this vein, SLS 1.1 has "First, an identifier can start with a letter which can be followed by an arbitrary sequence of letters and digits. This may be followed by underscore ‘_‘ characters and another string composed of either letters and digits or of operator characters".
+
+So I think you can still argue it's better to bring the SIP-11 wording ("identifier consisting only of alphanumeric characters") in line with the implementation or with SLS 1.1. Especially since bringing the implementation in line with the existing SIP-11 wording would break existing code and (IMO) violate long-standing expectations and traditions about allowing _ in the middle of identifiers.
+
+We'll discuss at the Scala team meeting on Monday.

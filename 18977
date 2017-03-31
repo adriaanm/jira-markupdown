@@ -1,0 +1,36 @@
+{noformat}
+% cat sandbox/test.scala
+class C {
+  /**
+   *  @usecase def zipWithIndex: $NotFound
+   *
+   */
+  def zipWithIndex: Int = ???
+}
+
+% `scalac-hash -h aedec19~1`/bin/scaladoc sandbox/test.scala 2>&1 | grep found
+sandbox/test.scala:23: warning: not found: type $Coll
+three warnings found
+
+% `scalac-hash -h aedec19`/bin/scaladoc sandbox/test.scala 2>&1 | grep found
+sandbox/test.scala:23: error: not found: type $Coll
+two warnings found
+one error found
+
+% git show aedec19
+commit aedec19808a7a3d383f839d2ee2c2ec4265fb9c6
+Author: Paul Phillips <paulp@improving.org>
+Date:   Mon Jan 14 23:31:30 2013 -0800
+
+    Granted scaladoc its own Global.
+
+    An incremental step on the road to disentangling
+    scaladoc from the compiler sources. This pushes the
+    elements in typer outward so scaladoc can subclass
+    Global like everyone else.
+
+{noformat}
+
+As seen in scala-io.
+
+/cc [~grek]

@@ -1,0 +1,18 @@
+If you want to keep both, perhaps cached should just call the (older) getOrElseUpdate.
+
+If you want to keep them separate (with separate implementations), "cached" should also be added to the mutable.SynchronizedMap mixin trait (otherwise there is a synchronization bug).
+
+  def cached(key: A, op: => B) = get(key) match {
+    case Some(v) => v
+    case None => val v = op; update(key, v); v
+  }
+
+  def getOrElseUpdate(key: A, default: => B): B =
+    get(key) match {
+      case Some(v) => v
+      case None => val d = default; this(key) = d; d
+    }
+
+- Regards
+
+David

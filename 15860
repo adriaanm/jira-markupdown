@@ -1,0 +1,34 @@
+> What steps will reproduce the problem (please be specific and use > wikiformatting)?
+
+Calling .getGenericReturnType or .getGenericParameterTypes on that specific method object fails with a jl.reflect.GenericSignatureFormatError
+
+It is possible that the Scala compiler produces invalid classfiles for other cases as well, but I only had problems with this method for now.
+
+{code}
+  classOf[List[_]].getMethods.find(_.getName == "orElse").get.getGenericReturnType
+{code}
+
+
+
+> What is the expected behavior?
+a return value of type jl.reflect.Type
+
+
+
+> What do you see instead?
+a java.lang.reflect.GenericSignatureFormatError
+
+
+
+> What versions of the following are you using?
+> Scala:
+I was using Scala 2.8.1
+
+> Java:
+$$ java -version
+java version "1.6.0_20"
+OpenJDK Runtime Environment (IcedTea6 1.9.2) (6b20-1.9.2-0ubuntu1)
+OpenJDK Client VM (build 19.0-b09, mixed mode, sharing)
+
+Operating system: 
+Ubuntu Linux 10.10

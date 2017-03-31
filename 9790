@@ -1,0 +1,34 @@
+Along the same lines:
+
+{code}
+import scala.reflect.macros.Context
+import language.experimental.macros
+
+object Macros {
+  def impl(c: Context)(name: c.Expr[String])(value: c.Expr[Any]) = {
+    import c.universe._
+    reify(println(s"${name.splice} = ${value.splice}"))
+  }
+}
+{code}
+
+{code}
+import scala.language.dynamics
+
+class C extends Dynamic {
+  def updateDynamic(name: String)(value: Any) = macro Macros.impl
+}
+
+object Test extends App {
+  val c = new C
+  c.foo = 2
+}
+{code}
+
+{code}
+16:54 ~/Projects/Kepler_7617/sandbox (ticket/7617)$ ss
+Test.scala:9: error: macros cannot be partially applied
+  c.foo = 2
+  ^
+one error found
+{code}

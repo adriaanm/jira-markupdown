@@ -1,0 +1,41 @@
+Running {{ant test}} fails shortly into the test with output
+{code}
+test.osgi:
+     [echo] Running OSGi JUnit tests. Output in .../scala/build/osgi
+     [echo] Test pass 1 of 2 using Apache Felix 4.4.0
+     [echo] Test pass 2 of 2 using Eclipse Equinox 3.7.1
+[stopwatch] [test.osgi.timer: 29.421 sec]
+
+test.sbt:
+      [get] Getting: http://dl.bintray.com/typesafe/ivy-releases/org.scala-sbt/interface/0.12.4/jars/interface.jar
+      [get] To: ...scala/build/sbt-interface/0.12.4/lib/interface.jar
+      [get] Error getting http://dl.bintray.com/typesafe/ivy-releases/org.scala-sbt/interface/0.12.4/jars/interface.jar to .../scala/build/sbt-interface/0.12.4/lib/interface.jar
+
+BUILD FAILED
+.../scala/build.xml:1509: java.net.ConnectException: Connection refused
+	at java.net.PlainSocketImpl.socketConnect(Native Method)
+	at java.net.AbstractPlainSocketImpl.doConnect(AbstractPlainSocketImpl.java:350)
+	at java.net.AbstractPlainSocketImpl.connectToAddress(AbstractPlainSocketImpl.java:206)
+	at java.net.AbstractPlainSocketImpl.connect(AbstractPlainSocketImpl.java:188)
+	at java.net.SocksSocketImpl.connect(SocksSocketImpl.java:392)
+	at java.net.Socket.connect(Socket.java:589)
+	at java.net.Socket.connect(Socket.java:538)
+	at sun.net.NetworkClient.doConnect(NetworkClient.java:180)
+	at sun.net.www.http.HttpClient.openServer(HttpClient.java:432)
+	at sun.net.www.http.HttpClient.openServer(HttpClient.java:527)
+	at sun.net.www.http.HttpClient.<init>(HttpClient.java:211)
+	at sun.net.www.http.HttpClient.New(HttpClient.java:308)
+	at sun.net.www.http.HttpClient.New(HttpClient.java:326)
+	at sun.net.www.protocol.http.HttpURLConnection.getNewHttpClient(HttpURLConnection.java:1168)
+	at sun.net.www.protocol.http.HttpURLConnection.plainConnect0(HttpURLConnection.java:1104)
+	at sun.net.www.protocol.http.HttpURLConnection.plainConnect(HttpURLConnection.java:998)
+	at sun.net.www.protocol.http.HttpURLConnection.connect(HttpURLConnection.java:932)
+	at org.apache.tools.ant.taskdefs.Get$GetThread.openConnection(Get.java:712)
+	at org.apache.tools.ant.taskdefs.Get$GetThread.get(Get.java:626)
+	at org.apache.tools.ant.taskdefs.Get$GetThread.run(Get.java:616)
+
+{code}
+
+Correlated with the error is an attempt to connect to TCP port 80 of the address of {{dl.bintray.com}}, which is unreachable in the environment.
+
+({{/pull-binary-libs.sh}} succeeded in downloading its libraries via the proxy server.)

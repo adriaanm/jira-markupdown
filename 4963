@@ -1,0 +1,44 @@
+Ok, thanks for the clarification. I've switched this to a Documentation bug.
+
+It's too bad TraversableOnce isn't intended to work this way - it's much easier to describe control flow with the {{foreach}} method than with {{next}} and {{hasNext}} from {{Iterator}}. Compare the hypothetical {{TraversableOnce}} version of a restarting iterator:
+
+{code}
+def restarting[T](getTrav: () => TraversableOnce[T]) = new TraversableOnce[T] {
+  def foreach[U](f: T => U): Unit = {                                          
+    try {                                                                      
+      for (item <- getTrav())                                                  
+        f(item)                                                                
+    } catch {                                                                  
+      case e: java.io.IOException => this.foreach(f)                           
+    }                                                                          
+  }                                                                            
+}
+{code}
+
+with the {{Iterator}} implementation:
+
+{code}
+def restarting[T](getIter: () => Iterator[T]) = new Iterator[T] {
+  var iter = getIter()
+  def hasNext = {
+    try {
+      iter.hasNext
+    } catch {
+      case e: IOException => {
+        this.iter = getIter()
+        this.hasNext
+      }
+    }
+  }
+  def next = {
+    try {
+      iter.next
+    } catch {
+      case e: IOException => {
+        this.iter = getIter()
+        this.next
+      }
+    }
+  }
+}
+{code}

@@ -1,0 +1,22 @@
+{code:scala}
+package s
+
+trait Q { def foo(): Traversable[Int] }
+
+        object p1 extends Q { def foo(): Vector[Int] = Vector() }
+package object p2 extends Q { def foo(): Vector[Int] = Vector() }
+
+object Test {
+  def main(args: Array[String]): Unit = {
+    p1.foo(): Vector[Int] // works
+    p2.foo(): Vector[Int] // fails
+
+    // a.scala:11: error: type mismatch;
+    //  found   : Traversable[Int]
+    //  required: Vector[Int]
+    //     p2.foo(): Vector[Int] // fails
+    //           ^
+    // one error found
+  }
+}
+{code}

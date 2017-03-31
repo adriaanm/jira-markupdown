@@ -1,0 +1,22 @@
+Attached is an already-simplified version of the framework used in my previous post. I use it to figure out what causing the compiler error. This framework is about marshalling and unmarshalling. The attached file contains 2 packges 'binding' and 'json':
+
+binding:
+  F.java (interface, stands for Marhsaller Finder)
+  Af.java (an abstract implmentation of F)
+  M.java  (marshaller)
+  Mc.java (marshalling context)
+  Mc.Sc (inner class within Mc, stands for Sub-context)
+
+json:
+  M.java (marshaller specific for json marshalling)
+  Mc.java (marshalling context specific for json marshalling)
+
+
+With the following code in scala, scala compiler gives me the illegal cyclic reference error:
+
+  import json._
+  val mc = new Mc
+
+However, if I change the inner class Mc.Sc to be static nested class, the error is gone.
+
+Rice

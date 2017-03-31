@@ -1,0 +1,29 @@
+There seem to be two problems going on here.  Iulian, can you have a look at problem SI-2:
+
+If I change the result type of newInner to Outer[X].Inner (to get around problem SI-1: we don't detect we need to generate a javasig when the result type refers to an instantiation of a generic inner class(??)), I get (compiling with -Ydebug -verbose):
+
+{{
+Java sig of method newInner is ()LOuter<LX;>.Inner;
+add generic sig method newInner:()<empty>.this.Outer[<empty>.this.X]#Inner ==> ()LOuter<LX;>.Inner; @ 24
+...
+add generic sig class OuterImpl:<empty>.this.Outer[<empty>.this.X] with scala.this.ScalaObject{<method> def this(<param> x: <empty>.this.X): <empty>.this.OuterImpl; <method> def newInner(): <empty>.this.Outer[<empty>.this.X]#Inner} ==> LOuter<LX;>;Lscala/ScalaObject; @ 26
+[wrote classes/OuterImpl.class]
+{code}
+
+javap says
+{code}
+lampmac6:tmp adriaan$$ javap -classpath classes -v -s OuterImpl
+Compiled from "x.scala"
+...
+const SI-23 = Method	SI-20.SI-22;	//  Outer$$Inner."<init>":(LOuter;)V
+const SI-24 = Asciz	()LOuter<LX;>.Inner;;
+const SI-25 = Asciz	Signature;
+const SI-26 = Asciz	LOuter<LX;>;Lscala/ScalaObject;;
+
+...
+
+public Outer$$Inner newInner();
+  Signature: ()LOuter$$Inner;
+{code}
+
+Note that the signature does not use the (expected?) const SI-24. It's clearly computed as you can see in the log, but somehow the method does not get the javasig attribute thingy (I don't really know how this works in bytecode)

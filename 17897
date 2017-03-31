@@ -1,0 +1,34 @@
+Under Scala 2.10.0 (and scala-2.10.1-20130120-002536-18a906bb9a) a java.lang.NoSuchMethod runtime excpetion occurs with the test code below.
+No runtime exception under Scala 2.9.
+
+Test code:
+{code}
+class A
+class B extends A
+
+class Crash(b1: Seq[B], b2: Seq[B]) {
+  def this(a: Seq[A]) = this(a.collect{ case b: B => b}, a.collect{ case b: B => b})
+}
+
+object Main extends App {
+
+  // runtime exception with either constructor
+  val c1 = new Crash(Seq(new B, new B))
+  val c2 = new Crash(Seq(new B), Seq(new B))
+
+}
+{code}
+
+Exception:
+
+java.lang.NoSuchMethodError: A.<init>(I)V
+ at Scala10$delayedInit$body.apply(scala10_2.scala:29)
+ at scala.Function0$class.apply$mcV$sp(Function0.scala:40)
+ at scala.runtime.AbstractFunction0.apply$mcV$sp(AbstractFunction0.scala:12)
+ at scala.App$$anonfun$main$1.apply(App.scala:71)
+ at scala.App$$anonfun$main$1.apply(App.scala:71)
+ at scala.collection.immutable.List.foreach(List.scala:309)
+ at scala.collection.generic.TraversableForwarder$class.foreach(TraversableForwarder.scala:32)
+ at scala.App$class.main(App.scala:71)
+ at Scala10$.main(scala10_2.scala:21)
+ at Scala10.main(scala10_2.scala)

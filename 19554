@@ -1,0 +1,97 @@
+{code}
+object Test {
+  def main(args: Array[String]): Unit = {
+    test()
+  }
+  def test() {
+    new Stream().withFilter.next.next.next.next.next.next.next.next
+  }
+  class Stream() {
+    println("new Stream()")
+    val data = Array.ofDim[Byte](64 * 1024 * 1024)
+    lazy val next = new Stream
+    @inline
+    final def withFilter = new StreamWithFilter(this)
+  }
+
+  final class StreamWithFilter(var s: Stream) {
+    lazy val filtered = { val result = s.next; s = null; result}  
+    def next: Stream = filtered.next
+  }
+}
+{code}
+
+{noformat}
+% qscalac sandbox/test.scala && echo ':javap -c Test$#test' | qscala && qscala -nc Test
+Welcome to Scala version 2.12.0-20150204-161502-f894c55ef3 (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_25).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> :javap -c Test$#test
+  public void test();
+    Code:
+       0: new           #22                 // class Test$Stream
+       3: dup
+       4: invokespecial #23                 // Method Test$Stream."<init>":()V
+       7: invokevirtual #27                 // Method Test$Stream.withFilter:()LTest$StreamWithFilter;
+      10: invokevirtual #33                 // Method Test$StreamWithFilter.next:()LTest$Stream;
+      13: invokevirtual #34                 // Method Test$Stream.next:()LTest$Stream;
+      16: invokevirtual #34                 // Method Test$Stream.next:()LTest$Stream;
+      19: invokevirtual #34                 // Method Test$Stream.next:()LTest$Stream;
+      22: invokevirtual #34                 // Method Test$Stream.next:()LTest$Stream;
+      25: invokevirtual #34                 // Method Test$Stream.next:()LTest$Stream;
+      28: invokevirtual #34                 // Method Test$Stream.next:()LTest$Stream;
+      31: invokevirtual #34                 // Method Test$Stream.next:()LTest$Stream;
+      34: pop
+      35: return
+}
+
+scala> :quit
+new Stream()
+new Stream()
+new Stream()
+new Stream()
+new Stream()
+new Stream()
+new Stream()
+new Stream()
+new Stream()
+new Stream()
+
+% qscalac -optimize -Yinline-warnings -Xfatal-warnings sandbox/test.scala && echo ':javap -c Test$#test' | qscala && qscala -nc Test
+Welcome to Scala version 2.12.0-20150204-161502-f894c55ef3 (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_25).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> :javap -c Test$#test
+  public void test();
+    Code:
+       0: new           #22                 // class Test$Stream
+       3: dup
+       4: invokespecial #23                 // Method Test$Stream."<init>":()V
+       7: astore_1
+       8: new           #25                 // class Test$StreamWithFilter
+      11: dup
+      12: aload_1
+      13: invokespecial #28                 // Method Test$StreamWithFilter."<init>":(LTest$Stream;)V
+      16: invokevirtual #32                 // Method Test$StreamWithFilter.filtered:()LTest$Stream;
+      19: invokevirtual #35                 // Method Test$Stream.next:()LTest$Stream;
+      22: invokevirtual #35                 // Method Test$Stream.next:()LTest$Stream;
+      25: invokevirtual #35                 // Method Test$Stream.next:()LTest$Stream;
+      28: invokevirtual #35                 // Method Test$Stream.next:()LTest$Stream;
+      31: invokevirtual #35                 // Method Test$Stream.next:()LTest$Stream;
+      34: invokevirtual #35                 // Method Test$Stream.next:()LTest$Stream;
+      37: invokevirtual #35                 // Method Test$Stream.next:()LTest$Stream;
+      40: invokevirtual #35                 // Method Test$Stream.next:()LTest$Stream;
+      43: pop
+      44: return
+}
+
+scala> :quit
+new Stream()
+new Stream()
+new Stream()
+java.lang.OutOfMemoryError: Java heap space
+    at scala.reflect.ManifestFactory$$anon$6.newArray(Manifest.scala:93)
+    at scala.reflect.ManifestFactory$$anon$6.newArray(Manifest.scala:91)
+{noformat}

@@ -1,0 +1,24 @@
+I'd like to have Iterator.flatten in the same way that we have Iterable.flatten:
+{code}
+scala> val x = List(Some(1), None, Some(2))
+x: List[Option[Int]] = List(Some(1), None, Some(2))
+
+scala> x.flatten
+res2: List[Int] = List(1, 2)
+
+scala> x.iterator.flatten
+<console>:7: error: value flatten is not a member of Iterator[Option[Int]]
+       x.iterator.flatten
+{code}
+
+Maybe I'm missing something, but it seems like this could follow pretty much the same approach as the Iterable.flatten implementation:
+{code}
+scala> def flatten[A,B](iter: Iterator[A])(implicit asTraversableOnce: (A) => TraversableOnce[B]): Iterator[B] = for (x <- iter; y <- x.toIterator) yield y
+flatten: [A,B](iter: Iterator[A])(implicit asTraversableOnce: (A) => TraversableOnce[B])Iterator[B]
+
+scala> flatten(x.iterator)
+res4: Iterator[Int] = non-empty iterator
+
+scala> flatten(x.iterator).toList
+res5: List[Int] = List(1, 2)
+{code}

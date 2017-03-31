@@ -1,0 +1,13 @@
+I don't know why the types are printed the same, but the types aren't the same.  This is true:
+{code}
+scala> x(List(List(), (1,2)).head) <:< typeOf[Product]
+res5: Boolean = true
+{code}
+because the type on the lhs is actually Product with an empty refinement, i.e. Product { }.
+{code}
+scala> x(List(List(), (1,2)).head).parents
+res6: List[reflect.runtime.universe.Type] = List(Product, Object)
+
+scala> typeOf[Product].parents
+res7: List[reflect.runtime.universe.Type] = List(Any, Equals)
+{code}

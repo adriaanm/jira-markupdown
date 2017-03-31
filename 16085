@@ -1,0 +1,32 @@
+=== What steps will reproduce the problem? ===
+Try linking to anything other than a class with ScalaDoc.
+
+=== What is the expected behavior? ===
+Links should be able to point to classes, objects(!), methods.
+Choosing the right method in case of overloading should be supported.
+
+=== What do you see instead? ===
+It doesn't work, there is neither a specification in case anyone plans to implement it.
+
+=== Additional information ===
+Having thought about this, afaiu we can't follow Java's path of using "." for static methods/fields and "#" for instance methods/fields because of path-dependant types.
+
+A thinkable worst-case could be something like this:
+{code}
+package Foo
+
+class Foo {
+  class Bar
+  def Bar = 0
+}
+{code}
+
+{code}
+package Foo.Bar
+
+class Bar
+object Bar
+{code}
+Now add package objects on top of that.
+
+It would be possible to use things like {{foo(Int,String)}} for overload resolution of methods, comparable to Java.

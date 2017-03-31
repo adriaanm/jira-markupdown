@@ -1,0 +1,16 @@
+As far as I can see this happens because BatchImageBuilder.cleanOutputFolders takes a copyBack parameter and at the end of the method, it does:
+
+{code}
+if (copyBack)
+  copyExtraResourcesBack(sourceLocation, true);
+{code}
+
+ScalaJavaBuilderAspect does:
+
+{code}
+  void around() : cleanOutputFolders() && cflow(build()) {
+    // Just suppress the behaviour
+  }
+{code}
+
+We need a way to get back that copy back part of the method, I would guess.

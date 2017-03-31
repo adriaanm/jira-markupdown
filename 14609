@@ -1,0 +1,306 @@
+Works in 2.7.6, but not in 2.8. Somehow null is returned from Global.typerPhase.
+
+The following code in ClassfileParser is called during the initialisation of the val firstPhase. It in turn triggers a call to Global.typerPhase, which ends up with a null value.
+
+{code}
+if (settings.debug.value && settings.verbose.value)
+              println("" + sym + "; signature = " + sig + " type = " + newType)
+{code}
+
+
+Full error:
+{code}
+~/code/scala/BugPartialApply> cat Apply1.scala 
+trait Apply
+
+~/code/scala/BugPartialApply> scalac -verbose -Ylog:all -Ydebug Apply1.scala
+[Classpath = /System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Classes/classes.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Classes/ui.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Classes/laf.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Classes/jsse.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Classes/jce.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Classes/charsets.jar:/Users/jason/code/scala/build/quick/classes/library:/System/Library/Java/Extensions/AppleScriptEngine.jar:/System/Library/Java/Extensions/CoreAudio.jar:/System/Library/Java/Extensions/dns_sd.jar:/System/Library/Java/Extensions/j3daudio.jar:/System/Library/Java/Extensions/j3dcore.jar:/System/Library/Java/Extensions/j3dutils.jar:/System/Library/Java/Extensions/jai_codec.jar:/System/Library/Java/Extensions/jai_core.jar:/System/Library/Java/Extensions/mlibwrapper_jai.jar:/System/Library/Java/Extensions/MRJToolkit.jar:/System/Library/Java/Extensions/QTJava.zip:/System/Library/Java/Extensions/vecmath.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Home/lib/ext/apple_provider.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Home/lib/ext/dnsns.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Home/lib/ext/localedata.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Home/lib/ext/sunjce_provider.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Home/lib/ext/sunpkcs11.jar:.]
+[loaded directory path /System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Classes/classes.jar:::/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Classes/ui.jar:::/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Classes/laf.jar:::/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Classes/jsse.jar:::/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Classes/jce.jar:::/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Classes/charsets.jar:::/Users/jason/code/scala/build/quick/classes/library:::/System/Library/Java/Extensions/AppleScriptEngine.jar:::/System/Library/Java/Extensions/CoreAudio.jar:::/System/Library/Java/Extensions/dns_sd.jar:::/System/Library/Java/Extensions/j3daudio.jar:::/System/Library/Java/Extensions/j3dcore.jar:::/System/Library/Java/Extensions/j3dutils.jar:::/System/Library/Java/Extensions/jai_codec.jar:::/System/Library/Java/Extensions/jai_core.jar:::/System/Library/Java/Extensions/mlibwrapper_jai.jar:::/System/Library/Java/Extensions/MRJToolkit.jar:::/System/Library/Java/Extensions/QTJava.zip:::/System/Library/Java/Extensions/vecmath.jar:::/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Home/lib/ext/apple_provider.jar:::/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Home/lib/ext/dnsns.jar:::/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Home/lib/ext/localedata.jar:::/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Home/lib/ext/sunjce_provider.jar:::/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Home/lib/ext/sunpkcs11.jar:::.::: in 745ms]
+[loaded directory path /System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Classes/classes.jar(java/)::: in 1ms]
+[loaded directory path /System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Classes/classes.jar(java/lang/)::: in 21ms]
+[log parser] unpickle class package and package object scala
+[log parser] unpickled class package:<?>, package object scala:<?>
+[loaded class file /Users/jason/code/scala/build/quick/classes/library/scala/package.class in 95ms]
+[loaded directory path /Users/jason/code/scala/build/quick/classes/library/scala::: in 284ms]
+[loaded directory path /Users/jason/code/scala/build/quick/classes/library/scala/runtime::: in 23ms]
+raw type class Class -> lang.this.Class
+[loaded directory path /System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Classes/classes.jar(java/io/)::: in 13ms]
+[loaded directory path /System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Classes/classes.jar(java/lang/reflect/)::: in 1ms]
+raw type class Serializable -> io.this.Serializable
+raw type class GenericDeclaration -> reflect.this.GenericDeclaration
+raw type class Type -> reflect.this.Type
+raw type class AnnotatedElement -> reflect.this.AnnotatedElement
+class Class; signature = <T:Ljava.lang.Object;>Ljava.lang.Object;Ljava.io.Serializable;Ljava.lang.reflect.GenericDeclaration;Ljava.lang.reflect.Type;Ljava.lang.reflect.AnnotatedElement; type = [<deferred> <param> T]lang.this.Object with io.this.Serializable with reflect.this.GenericDeclaration with reflect.this.Type with reflect.this.AnnotatedElement{}
+raw type class String -> lang.this.String
+raw type class String -> lang.this.String
+raw type class Class -> lang.this.Class[?0] forSome { <deferred> <mixedin/existential> type ?0 }
+raw type class String -> lang.this.String
+method forName; signature = (Ljava.lang.String;)Ljava.lang.Class<*>; type = (<param> <synthetic> x$$1: lang.this.String)lang.this.Class[?0] forSome { <deferred> <mixedin/existential> type ?0 }
+raw type class String -> lang.this.String
+raw type class ClassLoader -> lang.this.ClassLoader
+raw type class Class -> lang.this.Class[?0] forSome { <deferred> <mixedin/existential> type ?0 }
+raw type class String -> lang.this.String
+raw type class ClassLoader -> lang.this.ClassLoader
+method forName; signature = (Ljava.lang.String;ZLjava.lang.ClassLoader;)Ljava.lang.Class<*>; type = (<param> <synthetic> x$$1: lang.this.String,<param> <synthetic> x$$2: scala.this.Boolean,<param> <synthetic> x$$3: lang.this.ClassLoader)lang.this.Class[?0] forSome { <deferred> <mixedin/existential> type ?0 }
+method newInstance; signature = ()TT; type = ()T
+raw type class Class -> lang.this.Class[?0] forSome { <deferred> <mixedin/existential> type ?0 }
+method isAssignableFrom; signature = (Ljava.lang.Class<*>;)Z type = (<param> <synthetic> x$$1: lang.this.Class[?0] forSome { <deferred> <mixedin/existential> type ?0 })scala.this.Boolean
+raw type class String -> lang.this.String
+raw type class ClassLoader -> lang.this.ClassLoader
+raw type class ClassLoader -> lang.this.ClassLoader
+raw type class TypeVariable -> reflect.this.TypeVariable
+[log parser] unpickle class Array and object Array
+[log parser] unpickled class Array:<?>, object Array:<?>
+[loaded class file /Users/jason/code/scala/build/quick/classes/library/scala/Array.class in 9ms]
+raw type class GenericDeclaration -> reflect.this.GenericDeclaration
+raw type class GenericDeclaration -> reflect.this.GenericDeclaration
+raw type class Type -> reflect.this.Type
+trait TypeVariable; signature = <D::Ljava.lang.reflect.GenericDeclaration;>Ljava.lang.Object;Ljava.lang.reflect.Type; type = [<deferred> <param> D <: reflect.this.GenericDeclaration]lang.this.Object with reflect.this.Type{}
+raw type class Type -> reflect.this.Type
+raw type class GenericDeclaration -> reflect.this.GenericDeclaration
+method getGenericDeclaration; signature = ()TD; type = ()D
+raw type class String -> lang.this.String
+[loaded class file /System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Classes/classes.jar(java/lang/reflect/TypeVariable.class) in 7ms]
+method getTypeParameters; signature = ()[Ljava.lang.reflect.TypeVariable<Ljava.lang.Class<TT;>;>; type = ()scala.this.Array[reflect.this.TypeVariable[lang.this.Class[T]]]
+raw type class Class -> lang.this.Class[?0] forSome { <deferred> <mixedin/existential> type ?0 }
+method getSuperclass; signature = ()Ljava.lang.Class<-TT;>; type = ()lang.this.Class[?0] forSome { <deferred> <mixedin/existential> type ?0 >: T }
+raw type class Type -> reflect.this.Type
+raw type class Package -> lang.this.Package
+raw type class Class -> lang.this.Class[?0] forSome { <deferred> <mixedin/existential> type ?0 }
+raw type class Type -> reflect.this.Type
+raw type class Class -> lang.this.Class[?0] forSome { <deferred> <mixedin/existential> type ?0 }
+method getComponentType; signature = ()Ljava.lang.Class<*>; type = ()lang.this.Class[?0] forSome { <deferred> <mixedin/existential> type ?0 }
+raw type class Method -> reflect.this.Method
+raw type class Constructor -> reflect.this.Constructor
+raw type class AccessibleObject -> reflect.this.AccessibleObject
+raw type class GenericDeclaration -> reflect.this.GenericDeclaration
+raw type class Member -> reflect.this.Member
+class Constructor; signature = <T:Ljava.lang.Object;>Ljava.lang.reflect.AccessibleObject;Ljava.lang.reflect.GenericDeclaration;Ljava.lang.reflect.Member; type = [<deferred> <param> T]reflect.this.AccessibleObject with reflect.this.GenericDeclaration with reflect.this.Member{}
+raw type class Class -> lang.this.Class[?0] forSome { <deferred> <mixedin/existential> type ?0 }
+raw type class Class -> lang.this.Class[?0] forSome { <deferred> <mixedin/existential> type ?0 }
+raw type class Class -> lang.this.Class[?0] forSome { <deferred> <mixedin/existential> type ?0 }
+raw type class String -> lang.this.String
+raw type class Class -> lang.this.Class[?0] forSome { <deferred> <mixedin/existential> type ?0 }
+raw type class Class -> lang.this.Class[?0] forSome { <deferred> <mixedin/existential> type ?0 }
+raw type class String -> lang.this.String
+constructor Constructor; signature = (Ljava.lang.Class<TT;>;[Ljava.lang.Class;[Ljava.lang.Class;IILjava.lang.String;[B[B)V type = (<param> <synthetic> x$$1: lang.this.Class[T],<param> <synthetic> x$$2: scala.this.Array[lang.this.Class[?0] forSome { <deferred> <mixedin/existential> type ?0 }],<param> <synthetic> x$$3: scala.this.Array[lang.this.Class[?0] forSome { <deferred> <mixedin/existential> type ?0 }],<param> <synthetic> x$$4: scala.this.Int,<param> <synthetic> x$$5: scala.this.Int,<param> <synthetic> x$$6: lang.this.String,<param> <synthetic> x$$7: scala.this.Array[scala.this.Byte],<param> <synthetic> x$$8: scala.this.Array[scala.this.Byte])reflect.this.Constructor[T]
+raw type class Constructor -> reflect.this.Constructor[?0] forSome { <deferred> <mixedin/existential> type ?0 }
+method copy; signature = ()Ljava.lang.reflect.Constructor<TT;>; type = ()reflect.this.Constructor[T]
+raw type class Class -> lang.this.Class[?0] forSome { <deferred> <mixedin/existential> type ?0 }
+method getDeclaringClass; signature = ()Ljava.lang.Class<TT;>; type = ()lang.this.Class[T]
+raw type class String -> lang.this.String
+raw type trait TypeVariable -> reflect.this.TypeVariable[?0] forSome { <deferred> <mixedin/existential> type ?0 <: reflect.this.GenericDeclaration }
+method getTypeParameters; signature = ()[Ljava.lang.reflect.TypeVariable<Ljava.lang.reflect.Constructor<TT;>;>; type = ()scala.this.Array[reflect.this.TypeVariable[reflect.this.Constructor[T]]]
+raw type class Class -> lang.this.Class[?0] forSome { <deferred> <mixedin/existential> type ?0 }
+method getParameterTypes; signature = ()[Ljava.lang.Class<*>; type = ()scala.this.Array[lang.this.Class[?0] forSome { <deferred> <mixedin/existential> type ?0 }]
+raw type class Type -> reflect.this.Type
+raw type class Class -> lang.this.Class[?0] forSome { <deferred> <mixedin/existential> type ?0 }
+method getExceptionTypes; signature = ()[Ljava.lang.Class<*>; type = ()scala.this.Array[lang.this.Class[?0] forSome { <deferred> <mixedin/existential> type ?0 }]
+raw type class Type -> reflect.this.Type
+raw type class String -> lang.this.String
+raw type class String -> lang.this.String
+method newInstance; signature = ([Ljava.lang.Object;)TT; type = (<param> <synthetic> x$$1: scala.this.Array[lang.this.Object])T
+[loaded directory path /System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Classes/classes.jar(sun/):::/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Classes/ui.jar(sun/):::/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Classes/jsse.jar(sun/):::/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Classes/charsets.jar(sun/):::/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Home/lib/ext/dnsns.jar(sun/):::/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Home/lib/ext/localedata.jar(sun/):::/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Home/lib/ext/sunpkcs11.jar(sun/)::: in 5ms]
+[loaded directory path /System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Classes/classes.jar(sun/reflect/)::: in 7ms]
+raw type class ConstructorAccessor -> reflect.this.ConstructorAccessor
+raw type class ConstructorAccessor -> reflect.this.ConstructorAccessor
+raw type class String -> lang.this.String
+raw type class Class -> lang.this.Class[?0] forSome { <deferred> <mixedin/existential> type ?0 }
+[loaded directory path /System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Classes/classes.jar(java/lang/annotation/)::: in 0ms]
+raw type class Annotation -> annotation.this.Annotation
+raw type class Annotation -> annotation.this.Annotation
+raw type class Annotation -> annotation.this.Annotation
+method getAnnotation; signature = <T::Ljava.lang.annotation.Annotation;>(Ljava.lang.Class<TT;>;)TT; type = [<deferred> <param> T <: annotation.this.Annotation](<param> <synthetic> x$$1: lang.this.Class[T])T
+raw type class Annotation -> annotation.this.Annotation
+raw type class Annotation -> annotation.this.Annotation
+[loaded class file /System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Classes/classes.jar(java/lang/reflect/Constructor.class) in 52ms]
+method getEnclosingConstructor; signature = ()Ljava.lang.reflect.Constructor<*>; type = ()reflect.this.Constructor[?0] forSome { <deferred> <mixedin/existential> type ?0 }
+raw type class Class -> lang.this.Class[?0] forSome { <deferred> <mixedin/existential> type ?0 }
+method getDeclaringClass; signature = ()Ljava.lang.Class<*>; type = ()lang.this.Class[?0] forSome { <deferred> <mixedin/existential> type ?0 }
+raw type class Class -> lang.this.Class[?0] forSome { <deferred> <mixedin/existential> type ?0 }
+method getEnclosingClass; signature = ()Ljava.lang.Class<*>; type = ()lang.this.Class[?0] forSome { <deferred> <mixedin/existential> type ?0 }
+raw type class String -> lang.this.String
+raw type class String -> lang.this.String
+raw type class Class -> lang.this.Class[?0] forSome { <deferred> <mixedin/existential> type ?0 }
+raw type class Field -> reflect.this.Field
+raw type class Method -> reflect.this.Method
+raw type class Constructor -> reflect.this.Constructor[?0] forSome { <deferred> <mixedin/existential> type ?0 }
+raw type class String -> lang.this.String
+raw type class Field -> reflect.this.Field
+raw type class String -> lang.this.String
+raw type class Class -> lang.this.Class[?0] forSome { <deferred> <mixedin/existential> type ?0 }
+raw type class Method -> reflect.this.Method
+raw type class Class -> lang.this.Class[?0] forSome { <deferred> <mixedin/existential> type ?0 }
+raw type class Constructor -> reflect.this.Constructor[?0] forSome { <deferred> <mixedin/existential> type ?0 }
+raw type class Class -> lang.this.Class[?0] forSome { <deferred> <mixedin/existential> type ?0 }
+method getConstructor; signature = ([Ljava.lang.Class;)Ljava.lang.reflect.Constructor<TT;>; type = (<param> <synthetic> x$$1: scala.this.Array[lang.this.Class[?0] forSome { <deferred> <mixedin/existential> type ?0 }])reflect.this.Constructor[T]
+raw type class Class -> lang.this.Class[?0] forSome { <deferred> <mixedin/existential> type ?0 }
+raw type class Field -> reflect.this.Field
+raw type class Method -> reflect.this.Method
+raw type class Constructor -> reflect.this.Constructor[?0] forSome { <deferred> <mixedin/existential> type ?0 }
+raw type class String -> lang.this.String
+raw type class Field -> reflect.this.Field
+raw type class String -> lang.this.String
+raw type class Class -> lang.this.Class[?0] forSome { <deferred> <mixedin/existential> type ?0 }
+raw type class Method -> reflect.this.Method
+raw type class Class -> lang.this.Class[?0] forSome { <deferred> <mixedin/existential> type ?0 }
+raw type class Constructor -> reflect.this.Constructor[?0] forSome { <deferred> <mixedin/existential> type ?0 }
+raw type class Class -> lang.this.Class[?0] forSome { <deferred> <mixedin/existential> type ?0 }
+method getDeclaredConstructor; signature = ([Ljava.lang.Class;)Ljava.lang.reflect.Constructor<TT;>; type = (<param> <synthetic> x$$1: scala.this.Array[lang.this.Class[?0] forSome { <deferred> <mixedin/existential> type ?0 }])reflect.this.Constructor[T]
+raw type class String -> lang.this.String
+raw type class InputStream -> io.this.InputStream
+raw type class String -> lang.this.String
+[loaded directory path /System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Classes/classes.jar(java/net/)::: in 5ms]
+raw type class URL -> net.this.URL
+[loaded directory path /System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Classes/classes.jar(java/security/)::: in 6ms]
+raw type class ProtectionDomain -> security.this.ProtectionDomain
+raw type class ProtectionDomain -> security.this.ProtectionDomain
+raw type class String -> lang.this.String
+raw type class Class -> lang.this.Class[?0] forSome { <deferred> <mixedin/existential> type ?0 }
+raw type class ConstantPool -> reflect.this.ConstantPool
+[log parser] computing common owner of types List(T, lang.this.Object)
+method getEnumConstants; signature = ()[TT; type = ()scala.this.Array[T with lang.this.Object{}]
+[loaded directory path /System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Classes/classes.jar(java/util/)::: in 15ms]
+raw type class Map -> util.this.Map
+raw type class String -> lang.this.String
+trait Map; signature = <K:Ljava.lang.Object;V:Ljava.lang.Object;>Ljava.lang.Object; type = [<deferred> <param> K,<deferred> <param> V]lang.this.Object{}
+method get; signature = (Ljava.lang.Object;)TV; type = (<param> <synthetic> x$$1: scala.this.Any)V
+method put; signature = (TK;TV;)TV; type = (<param> <synthetic> x$$1: K,<param> <synthetic> x$$2: V)V
+method remove; signature = (Ljava.lang.Object;)TV; type = (<param> <synthetic> x$$1: scala.this.Any)V
+raw type trait Map -> util.this.Map[?0,?1] forSome { <deferred> <mixedin/existential> type ?0; <deferred> <mixedin/existential> type ?1 }
+method putAll; signature = (Ljava.util.Map<+TK;+TV;>;)V type = (<param> <synthetic> x$$1: util.this.Map[?0,?1] forSome { <deferred> <mixedin/existential> type ?0 <: K; <deferred> <mixedin/existential> type ?1 <: V })scala.this.Unit
+raw type class Set -> util.this.Set
+trait Set; signature = <E:Ljava.lang.Object;>Ljava.lang.Object;Ljava.util.Collection<TE;>; type = [<deferred> <param> E]lang.this.Object with util.this.Collection[E]{}
+raw type class Iterator -> util.this.Iterator
+trait Iterator; signature = <E:Ljava.lang.Object;>Ljava.lang.Object; type = [<deferred> <param> E]lang.this.Object{}
+method next; signature = ()TE; type = ()E
+[loaded class file /System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Classes/classes.jar(java/util/Iterator.class) in 1ms]
+method iterator; signature = ()Ljava.util.Iterator<TE;>; type = ()util.this.Iterator[E]
+[log parser] computing common owner of types List(T, lang.this.Object)
+[log parser] computing common owner of types List(T, lang.this.Object)
+method toArray; signature = <T:Ljava.lang.Object;>([TT;)[TT; type = [<deferred> <param> T](<param> <synthetic> x$$1: scala.this.Array[T with lang.this.Object{}])scala.this.Array[T with lang.this.Object{}]
+method add; signature = (TE;)Z type = (<param> <synthetic> x$$1: E)scala.this.Boolean
+raw type class Collection -> util.this.Collection
+trait Collection; signature = <E:Ljava.lang.Object;>Ljava.lang.Object;Ljava.lang.Iterable<TE;>; type = [<deferred> <param> E]lang.this.Object with lang.this.Iterable[E]{}
+raw type trait Iterator -> util.this.Iterator[?0] forSome { <deferred> <mixedin/existential> type ?0 }
+method iterator; signature = ()Ljava.util.Iterator<TE;>; type = ()util.this.Iterator[E]
+[log parser] computing common owner of types List(T, lang.this.Object)
+[log parser] computing common owner of types List(T, lang.this.Object)
+method toArray; signature = <T:Ljava.lang.Object;>([TT;)[TT; type = [<deferred> <param> T](<param> <synthetic> x$$1: scala.this.Array[T with lang.this.Object{}])scala.this.Array[T with lang.this.Object{}]
+method add; signature = (TE;)Z type = (<param> <synthetic> x$$1: E)scala.this.Boolean
+raw type trait Collection -> util.this.Collection[?0] forSome { <deferred> <mixedin/existential> type ?0 }
+method containsAll; signature = (Ljava.util.Collection<*>;)Z type = (<param> <synthetic> x$$1: util.this.Collection[?0] forSome { <deferred> <mixedin/existential> type ?0 })scala.this.Boolean
+raw type trait Collection -> util.this.Collection[?0] forSome { <deferred> <mixedin/existential> type ?0 }
+method addAll; signature = (Ljava.util.Collection<+TE;>;)Z type = (<param> <synthetic> x$$1: util.this.Collection[?0] forSome { <deferred> <mixedin/existential> type ?0 <: E })scala.this.Boolean
+raw type trait Collection -> util.this.Collection[?0] forSome { <deferred> <mixedin/existential> type ?0 }
+method removeAll; signature = (Ljava.util.Collection<*>;)Z type = (<param> <synthetic> x$$1: util.this.Collection[?0] forSome { <deferred> <mixedin/existential> type ?0 })scala.this.Boolean
+raw type trait Collection -> util.this.Collection[?0] forSome { <deferred> <mixedin/existential> type ?0 }
+method retainAll; signature = (Ljava.util.Collection<*>;)Z type = (<param> <synthetic> x$$1: util.this.Collection[?0] forSome { <deferred> <mixedin/existential> type ?0 })scala.this.Boolean
+[loaded class file /System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Classes/classes.jar(java/util/Collection.class) in 13ms]
+method containsAll; signature = (Ljava.util.Collection<*>;)Z type = (<param> <synthetic> x$$1: util.this.Collection[?0] forSome { <deferred> <mixedin/existential> type ?0 })scala.this.Boolean
+raw type trait Collection -> util.this.Collection[?0] forSome { <deferred> <mixedin/existential> type ?0 }
+method addAll; signature = (Ljava.util.Collection<+TE;>;)Z type = (<param> <synthetic> x$$1: util.this.Collection[?0] forSome { <deferred> <mixedin/existential> type ?0 <: E })scala.this.Boolean
+raw type trait Collection -> util.this.Collection[?0] forSome { <deferred> <mixedin/existential> type ?0 }
+method retainAll; signature = (Ljava.util.Collection<*>;)Z type = (<param> <synthetic> x$$1: util.this.Collection[?0] forSome { <deferred> <mixedin/existential> type ?0 })scala.this.Boolean
+raw type trait Collection -> util.this.Collection[?0] forSome { <deferred> <mixedin/existential> type ?0 }
+method removeAll; signature = (Ljava.util.Collection<*>;)Z type = (<param> <synthetic> x$$1: util.this.Collection[?0] forSome { <deferred> <mixedin/existential> type ?0 })scala.this.Boolean
+[loaded class file /System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Classes/classes.jar(java/util/Set.class) in 41ms]
+method keySet; signature = ()Ljava.util.Set<TK;>; type = ()util.this.Set[K]
+raw type trait Collection -> util.this.Collection[?0] forSome { <deferred> <mixedin/existential> type ?0 }
+method values; signature = ()Ljava.util.Collection<TV;>; type = ()util.this.Collection[V]
+raw type trait Set -> util.this.Set[?0] forSome { <deferred> <mixedin/existential> type ?0 }
+Exception in thread "main" java.lang.AssertionError: assertion failed
+	at scala.Predef$$.assert(Predef.scala:111)
+	at scala.tools.nsc.symtab.SymbolTable.phase_$$eq(SymbolTable.scala:71)
+	at scala.tools.nsc.symtab.SymbolTable.atPhase(SymbolTable.scala:104)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser$$innerClasses$$.innerSymbol$$1(ClassfileParser.scala:1028)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser$$innerClasses$$.classSymbol(ClassfileParser.scala:1041)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser.classNameToSymbol(ClassfileParser.scala:395)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser.sig2type$$1(ClassfileParser.scala:642)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser.processClassType$$1(ClassfileParser.scala:621)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser.sig2type$$1(ClassfileParser.scala:644)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser.sig2type$$1(ClassfileParser.scala:674)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser.scala$$tools$$nsc$$symtab$$classfile$$ClassfileParser$$$$sigToType(ClassfileParser.scala:720)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser.parseAttribute$$1(ClassfileParser.scala:750)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser$$$$anonfun$$parseAttributes$$1.apply(ClassfileParser.scala:891)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser$$$$anonfun$$parseAttributes$$1.apply(ClassfileParser.scala:891)
+	at scala.collection.immutable.Range$$ByOne$$class.foreach(Range.scala:149)
+	at scala.collection.immutable.Range$$$$anon$$2.foreach(Range.scala:140)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser.parseAttributes(ClassfileParser.scala:891)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser.parseMethod(ClassfileParser.scala:536)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser$$$$anonfun$$parseClass$$2.apply(ClassfileParser.scala:458)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser$$$$anonfun$$parseClass$$2.apply(ClassfileParser.scala:458)
+	at scala.collection.immutable.Range$$ByOne$$class.foreach(Range.scala:149)
+	at scala.collection.immutable.Range$$$$anon$$2.foreach(Range.scala:140)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser.parseClass(ClassfileParser.scala:458)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser.parse(ClassfileParser.scala:97)
+	at scala.tools.nsc.symtab.SymbolLoaders$$ClassfileLoader$$$$anonfun$$doComplete$$4.apply(SymbolLoaders.scala:293)
+	at scala.tools.nsc.symtab.SymbolLoaders$$ClassfileLoader$$$$anonfun$$doComplete$$4.apply(SymbolLoaders.scala:293)
+	at scala.tools.nsc.symtab.SymbolLoaders.completeClassfile(SymbolLoaders.scala:280)
+	at scala.tools.nsc.symtab.SymbolLoaders$$ClassfileLoader.doComplete(SymbolLoaders.scala:292)
+	at scala.tools.nsc.symtab.SymbolLoaders$$SymbolLoader.complete(SymbolLoaders.scala:55)
+	at scala.tools.nsc.symtab.SymbolLoaders$$SymbolLoader.load(SymbolLoaders.scala:75)
+	at scala.tools.nsc.symtab.Symbols$$Symbol.typeParams(Symbols.scala:905)
+	at scala.tools.nsc.symtab.Types$$TypeMap.mapOver(Types.scala:2497)
+	at scala.tools.nsc.symtab.Types$$IsDependentCollector$$.traverse(Types.scala:3226)
+	at scala.tools.nsc.symtab.Types$$TypeCollector.collect(Types.scala:2693)
+	at scala.tools.nsc.symtab.Types$$Type.isDependent(Types.scala:232)
+	at scala.tools.nsc.symtab.Types$$MethodType.safeToString(Types.scala:1726)
+	at scala.tools.nsc.symtab.Types$$Type.toString(Types.scala:840)
+	at java.lang.String.valueOf(String.java:2615)
+	at scala.collection.mutable.StringBuilder.append(StringBuilder.scala:252)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser.parseAttribute$$1(ClassfileParser.scala:753)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser$$$$anonfun$$parseAttributes$$1.apply(ClassfileParser.scala:891)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser$$$$anonfun$$parseAttributes$$1.apply(ClassfileParser.scala:891)
+	at scala.collection.immutable.Range$$ByOne$$class.foreach(Range.scala:149)
+	at scala.collection.immutable.Range$$$$anon$$2.foreach(Range.scala:140)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser.parseAttributes(ClassfileParser.scala:891)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser.parseMethod(ClassfileParser.scala:536)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser$$$$anonfun$$parseClass$$2.apply(ClassfileParser.scala:458)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser$$$$anonfun$$parseClass$$2.apply(ClassfileParser.scala:458)
+	at scala.collection.immutable.Range$$ByOne$$class.foreach(Range.scala:149)
+	at scala.collection.immutable.Range$$$$anon$$2.foreach(Range.scala:140)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser.parseClass(ClassfileParser.scala:458)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser.parse(ClassfileParser.scala:97)
+	at scala.tools.nsc.symtab.SymbolLoaders$$ClassfileLoader$$$$anonfun$$doComplete$$4.apply(SymbolLoaders.scala:293)
+	at scala.tools.nsc.symtab.SymbolLoaders$$ClassfileLoader$$$$anonfun$$doComplete$$4.apply(SymbolLoaders.scala:293)
+	at scala.tools.nsc.symtab.SymbolLoaders.completeClassfile(SymbolLoaders.scala:280)
+	at scala.tools.nsc.symtab.SymbolLoaders$$ClassfileLoader.doComplete(SymbolLoaders.scala:292)
+	at scala.tools.nsc.symtab.SymbolLoaders$$SymbolLoader.complete(SymbolLoaders.scala:55)
+	at scala.tools.nsc.symtab.SymbolLoaders$$SymbolLoader.load(SymbolLoaders.scala:75)
+	at scala.tools.nsc.symtab.Symbols$$Symbol.typeParams(Symbols.scala:905)
+	at scala.tools.nsc.symtab.Types$$TypeMap.mapOver(Types.scala:2497)
+	at scala.tools.nsc.symtab.Types$$deAlias$$.apply(Types.scala:2375)
+	at scala.tools.nsc.symtab.Types$$class.existentialAbstraction(Types.scala:2304)
+	at scala.tools.nsc.symtab.SymbolTable.existentialAbstraction(SymbolTable.scala:13)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser.processClassType$$1(ClassfileParser.scala:626)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser.sig2type$$1(ClassfileParser.scala:644)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser.sig2type$$1(ClassfileParser.scala:674)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser.scala$$tools$$nsc$$symtab$$classfile$$ClassfileParser$$$$sigToType(ClassfileParser.scala:720)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser.parseAttribute$$1(ClassfileParser.scala:750)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser$$$$anonfun$$parseAttributes$$1.apply(ClassfileParser.scala:891)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser$$$$anonfun$$parseAttributes$$1.apply(ClassfileParser.scala:891)
+	at scala.collection.immutable.Range$$ByOne$$class.foreach(Range.scala:149)
+	at scala.collection.immutable.Range$$$$anon$$2.foreach(Range.scala:140)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser.parseAttributes(ClassfileParser.scala:891)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser.parseMethod(ClassfileParser.scala:536)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser$$$$anonfun$$parseClass$$2.apply(ClassfileParser.scala:458)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser$$$$anonfun$$parseClass$$2.apply(ClassfileParser.scala:458)
+	at scala.collection.immutable.Range$$ByOne$$class.foreach(Range.scala:149)
+	at scala.collection.immutable.Range$$$$anon$$2.foreach(Range.scala:140)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser.parseClass(ClassfileParser.scala:458)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser.parse(ClassfileParser.scala:97)
+	at scala.tools.nsc.symtab.SymbolLoaders$$ClassfileLoader$$$$anonfun$$doComplete$$4.apply(SymbolLoaders.scala:293)
+	at scala.tools.nsc.symtab.SymbolLoaders$$ClassfileLoader$$$$anonfun$$doComplete$$4.apply(SymbolLoaders.scala:293)
+	at scala.tools.nsc.symtab.SymbolLoaders.completeClassfile(SymbolLoaders.scala:280)
+	at scala.tools.nsc.symtab.SymbolLoaders$$ClassfileLoader.doComplete(SymbolLoaders.scala:292)
+	at scala.tools.nsc.symtab.SymbolLoaders$$SymbolLoader.complete(SymbolLoaders.scala:55)
+	at scala.tools.nsc.symtab.Symbols$$Symbol.info(Symbols.scala:747)
+	at scala.tools.nsc.symtab.Definitions$$definitions$$.newMethod(Definitions.scala:493)
+	at scala.tools.nsc.symtab.Definitions$$definitions$$.scala$$tools$$nsc$$symtab$$Definitions$$definitions$$$$newMethod(Definitions.scala:498)
+	at scala.tools.nsc.symtab.Definitions$$definitions$$.init(Definitions.scala:748)
+	at scala.tools.nsc.Global$$Run.<init>(Global.scala:679)
+	at scala.tools.nsc.Main$$.process(Main.scala:90)
+	at scala.tools.nsc.Main$$.main(Main.scala:105)
+	at scala.tools.nsc.Main.main(Main.scala)
+{code}

@@ -1,0 +1,66 @@
+Please, see below - it is stripped test case. Without spawning all compiles fine.
+
+{code}
+$$ java -version
+java version "1.6.0_15"
+Java(TM) SE Runtime Environment (build 1.6.0_15-b03)
+Java HotSpot(TM) 64-Bit Server VM (build 14.1-b02, mixed mode)
+
+$$ cat oops.scala                                        
+object oops {                                                                     
+
+  def f : Unit = scala.concurrent.ops.spawn {
+    val dataSocket  = new java.net.ServerSocket(123).accept
+    dataSocket.getInputStream                              
+  }                                                        
+
+}
+
+$$ scalac -version
+Scala compiler version 2.8.0.r18567-b20090825001215 -- Copyright 2002-2009, LAMP/EPFL
+
+$$ scalac oops.scala                                         
+Exception in thread "main" java.lang.Error: symbol value dataSocket$$1 does not exist in oops.f
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:920)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.genLoadArguments(GenICode.scala:1111)                                         
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:682)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:952)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:947)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:422)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genStat(GenICode.scala:185)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$genStat$$1.apply(GenICode.scala:148)                                  
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$genStat$$1.apply(GenICode.scala:147)                                  
+        at scala.collection.generic.LinearSequenceTemplate$$class.foreach(LinearSequenceTemplate.scala:82)                                  
+        at scala.collection.immutable.List.foreach(List.scala:27)                                                                          
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.genStat(GenICode.scala:147)                                                   
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:946)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:116)                                                       
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:73)                                       
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:73)                                       
+        at scala.collection.generic.LinearSequenceTemplate$$class.foreach(LinearSequenceTemplate.scala:82)                                  
+        at scala.collection.immutable.List.foreach(List.scala:27)                                                                          
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:73)                                                        
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:138)                                                       
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:92)                                                        
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:73)                                       
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:73)                                       
+        at scala.collection.generic.LinearSequenceTemplate$$class.foreach(LinearSequenceTemplate.scala:82)
+        at scala.collection.immutable.List.foreach(List.scala:27)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:73)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:83)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:69)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.apply(GenICode.scala:65)
+        at scala.tools.nsc.Global$$GlobalPhase.applyPhase(Global.scala:329)
+        at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:307)
+        at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:307)
+        at scala.collection.Iterator$$class.foreach(Iterator.scala:503)
+        at scala.collection.mutable.ListBuffer$$$$anon$$1.foreach(ListBuffer.scala:280)
+        at scala.tools.nsc.Global$$GlobalPhase.run(Global.scala:307)
+        at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.run(GenICode.scala:58)
+        at scala.tools.nsc.Global$$Run.compileSources(Global.scala:805)
+        at scala.tools.nsc.Global$$Run.compile(Global.scala:888)
+        at scala.tools.nsc.Main$$.process(Main.scala:91)
+        at scala.tools.nsc.Main$$.main(Main.scala:105)
+        at scala.tools.nsc.Main.main(Main.scala)
+
+{code}

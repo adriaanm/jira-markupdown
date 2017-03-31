@@ -1,0 +1,20 @@
+Replying to [comment:6 makarius]:
+> The discussion of {{range}} above touches general library design issues.  I was first looking for a way to get the next entry after a given one, or enumerate an interval between two entries.  I was then surprised to see the full {{range}} operation that does the job together with {{toStream}}.  Later I became more ambitious and started using {{range}} more agressively to tune my application, which is here BTW: http://isabelle.in.tum.de/repos/isabelle/file/a4a465dc89d9/src/Pure/PIDE/markup_tree.scala#l59
+> 
+> From a user's point of view, I would say plain enumeration of ranges would be fine as a start ...
+
+You can get an {{iterator}} for the {{SerotedSet}}, on which you can apply {{dropWhile}} and {{takeWhile}}, which would result in the same effect. For instance:
+
+{code}
+import scala.collection.immutable.SortedSet
+
+def SortedSetRangeIterator[A](set: SortedSet[A], from: A, until: A)(implicit ord: Ordering[A]) = {
+  import ord._
+  set.iterator.dropWhile(_ < from).takeWhile(_ < until)
+}
+{code}
+
+Testing this I noticed that {{TreeSet}}'s {{range}} is broken. All {{range}} methods in Scala take an inclusive lower bound and exclusive upper bound, which is not happening here.
+
+I wonder if I should open a new ticket, or leave this to be fixed here, which we'll have to touch {{range}} extensively anyway.
+

@@ -1,0 +1,32 @@
+This logic is incorrect in the pattern matcher:
+
+{code}
+        case sym: RefinementClassSymbol =>
+          val parentSubtypes = tp.parents.flatMap(parent => enumerateSubtypes(parent, grouped))
+          if (parentSubtypes exists (_.nonEmpty)) {
+            // If any of the parents is enumerable, then the refinement type is enumerable.
+            // We must only include subtypes of the parents that conform to `tp`.
+            // See neg/virtpatmat_exhaust_compound.scala for an example.
+            parentSubtypes map (_.filter(_ <:< tp))
+          }
+          else Nil
+{code}
+
+It is saying: if the scrutinee type is a refined type, then the domain includes the types of the sealed children of its parents, given that they conform to the scrutinee type. However, none of {{Bicycle.type}}, {{Bus}}, or {{Car}} conform to the refinement of {{Vehicle}}, so they are discarded.
+
+Instead, we should only filter out sealed children for which we statically know there could not be a value of a third type the conforms both to the scrutinee type and to the sealed class. We have some machinery for this in {{CheckabilityChecker}} and {{matchesPattern}}, but I don't think it would be straightforward to plug this all together and to make it smart enough to deal with type members.
+
+As a workaround, I would suggest avoiding pattern matching on refinement types, and instead go for:
+
+{code}
+class Test {
+  def refuel[P <: Petrol.type](vehicle: Vehicle {type A = P} ): Vehicle = (vehicle: Vehicle) match {
+    case Car(_) => Car(100)
+    case Bus(_) => Bus(100)
+    case Bicycle => throw new IllegalStateException("cannot get here")
+  }
+}
+
+{code}
+
+Incidentally, I have recently fixed a bug (fix due in Scala 2.12.0-M4) that results in incorrect pattern matcher analysis in some cases when sibling child case classes use the same name for parameters. I would recommend using distinct names in the meantime.

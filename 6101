@@ -1,0 +1,68 @@
+I am not very good with mathematics, so somebody is going to have to make sure I haven't made an obvious (or non-obvious) mistake in my reasoning here.
+
+Consider the finite sequence of integers s[0], s[1], s[2], ..., s[n-1] where s[i] = s[0] + ip for all i in [0, n-1] with p being the step value.
+
+The sum of this sequence is:
+
+{code}
+SUM = s[0] + s[1]       + s[2]        + ... + s[n-1]
+    = s[0] + (s[0] + p) + (s[0] + 2p) + ... + (s[0] + (n-1)p)
+{code}
+
+If we double SUM, we get:
+
+{code}
+2SUM =   s[0]            + (s[0] + p)      + (s[0] + 2p)     + ... + (s[0] + (n-1)p)
+       + (s[0] + (n-1)p) + (s[0] + (n-2)p) + (s[0] + (n-3)p) + ... + s[0] 
+     ---------------------------------------------------------------------------------
+     = (2s[0] + (n-1)p) + (2s[0] + (n-1)p) + (2s[0] + (n-1)p) + ... + (2s[0] + (n-1)p)
+     = n(2s[0] + (n-1)p)
+{code}
+
+And therefore, we have:
+{code}
+SUM = 2SUM/2 = (n(2s[0] + (n-1)p)) / 2
+{code}
+
+
+So I went ahead and implemented the code:
+{code}
+import scala.util.Random
+
+object Sum {
+  def sum(range: Range): Long = {
+    if (range.isEmpty)
+      0
+    else {
+      val n = range.length
+      (n * (2*range.first + (n-1)*range.step)) / 2
+    }
+  }
+
+  def test(n:Int): Option[(String, Int, Int, Int)] = {
+    val r = new Random(System.currentTimeMillis)
+
+    for (_ <- 0 until n) {
+      val start = r.nextInt(2000) - 1000
+      val end = r.nextInt(4000) - 1000
+      val step = (r.nextInt(10) + 1) * (if (end < start) -1 else 1)
+      val rangee = new Range(start, end, step)
+      val rangei = new Range.Inclusive(start, end, step)
+
+      if (Sum.sum(rangee) != rangee.foldLeft(0L)(_+_))
+        return Some(("Exclusive", start, end, step))
+
+      if (Sum.sum(rangei) != rangei.foldLeft(0L)(_+_))
+        return Some(("Inclusive", start, end, step))
+    }
+    None
+  }
+}
+{code}
+
+The test code seems to work properly.  I have not done extensive testing with ScalaCheck however, so there may be problems that I have not sniffed out.
+
+I hope this helps a little.
+
+
+Vincent.

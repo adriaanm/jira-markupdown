@@ -1,0 +1,68 @@
+Reviewing the relevant code, I conclude that there must be two instance of {{Nil$}} (the "module class" of the module {{Nil}}) around.
+
+Perhaps something is subverting the private access of the constructor of this class via reflection? I can reproduce that stack trace with:
+
+{code}
+object Test {
+  def main(args: Array[String]): Unit = {
+    val OrigNil = Nil
+
+    val constructor = Nil.getClass.getDeclaredConstructors.head
+    constructor.setAccessible(true)
+    val l1 = "" :: Nil
+    val OtherNil = constructor.newInstance().asInstanceOf[List[Nothing]]
+    val l2 = "" :: OtherNil
+    try {
+      l1.map(x => x) // "head of empty list" @ map(List.scala:277)
+    } catch {
+      case x: Throwable => x.printStackTrace()
+    }
+    val NewNil = Nil
+
+    println(Nil eq NewNil)  // true
+    println(Nil eq OrigNil) // false
+  }
+}
+{code}
+
+Under normal circumstances, the constructor of {{Nil$}} is called in the static initializer of that class. It assigns the result to the field {{Nil$.MODULE$}}. The JVM guarantees that static initialization is protected by a lock on the class, so there should be no chance of a race condition creating multiple instances of {{Nil}}.
+
+Here's the relevant parts of the bytecode:
+
+{code}
+  public static final scala.collection.immutable.Nil$ MODULE$;
+    descriptor: Lscala/collection/immutable/Nil$;
+    flags: ACC_PUBLIC, ACC_STATIC, ACC_FINAL
+
+  public static {};
+    descriptor: ()V
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: new           #2                  // class scala/collection/immutable/Nil$
+         3: invokespecial #17                 // Method "<init>":()V
+         6: return
+
+...
+  private scala.collection.immutable.Nil$();
+    descriptor: ()V
+    flags: ACC_PRIVATE
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #89                 // Method scala/collection/immutable/List."<init>":()V
+         4: aload_0
+         5: putstatic     #83                 // Field MODULE$:Lscala/collection/immutable/Nil$;
+         8: return
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       9     0  this   Lscala/collection/immutable/Nil$;
+      LineNumberTable:
+        line 417: 0
+{code}
+
+Does your test environment include anything that might use reflection (perhaps mocking, serialization) ?
+
+You could set a breakpoint in the constructor of {{Nil$}} to try to track this down further.
+
+I'm going to mark this ticket as "incomplete" for now as there isn't enough info here for us to reproduce, but please reopen or comment if you have further questions or insights.

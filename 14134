@@ -1,0 +1,30 @@
+The following error occurs when attempting to access a value in the scala.swing.Key enumeration:
+
+{code}
+scala> val x = scala.swing.Key.F
+java.lang.AssertionError: assertion failed
+        at scala.Predef$$.assert(Predef.scala:87)
+        at scala.Enumeration$$Val.<init>(Enumeration.scala:220)
+        at scala.Enumeration.Value(Enumeration.scala:160)
+        at scala.swing.Key$$.<init>(Key.scala:84)
+        at scala.swing.Key$$.<clinit>(Key.scala)
+        at .<init>(<console>:4)
+        at .<clinit>(<console>)
+        at RequestResult$$.<init>(<console>:3)
+        at RequestResult$$.<cli...
+{code}
+
+I believe the problem is that two of the values in the enumeration has the same ordinal:
+
+{code}
+val Separater = Value(VK_SEPARATER)
+val Separator = Value(VK_SEPARATOR)
+{code}
+
+VK_SEPARATOR is defined in java.awt.event.KeyEvent as:
+
+{code}
+public static final int VK_SEPARATOR = VK_SEPARATER;
+{code}
+
+Probably the easiest solution is to just remove the Separater value since it's only included in KeyEvent for backwards compatibility, which is most likely not a concern for the scala.swing API yet.

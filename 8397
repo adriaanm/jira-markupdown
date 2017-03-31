@@ -1,0 +1,5 @@
+If everything fails we need to disable lazy vals and objects in extension methods. But it would be exceeedingly ugly.
+
+The root cause in both is that the generation of an extension method moves a tree from one context to another. It does this correctly, but if certain things are not in the tree they do not get the changes done and when they resurface in refchecks its too late. 
+
+Another, slightly less ugly patch would be to treat lazy val acessors and objects specially in the code that creates extension methods.

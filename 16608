@@ -1,0 +1,27 @@
+The following code snipet : https://gist.github.com/1427587
+does not compile.
+
+{code}
+import java.util.Date
+
+trait TDate 
+
+trait TT[A1,T1]
+
+trait TTFactory[F,G] {
+  def create(f: F) : TT[F,G]
+  def sample: F
+}
+
+object Impls {
+
+  // If the c1 is declared before c2, it compiles fine
+  // or if the implicit's result type is specified explicitly
+  implicit def c2(s: Date)/* : TT[Date, TDate] */ = c1.create(s)  
+
+  implicit val c1 = new TTFactory[Date,TDate] {
+    def create(v: Date): TT[Date,TDate] = sys.error("")
+    def sample = new Date
+  }
+}
+{code}

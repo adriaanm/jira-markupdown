@@ -1,0 +1,57 @@
+{code}
+~/code/scala ./build/pack/bin/scala -Xexperimental 
+Welcome to Scala version 2.10.0-20120324-225627-a532ba0600 (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_29).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> class Meter(val m: Double) extends AnyVal
+defined class Meter
+
+scala> val km = new Meter(1000d)
+km: Meter = Meter@408f4000
+
+scala> object A { ((m: Meter) => m.m)(km) }
+defined module A
+
+scala> :javap -v A
+Compiled from "<console>"
+public final class A$ extends java.lang.Object
+  SourceFile: "<console>"
+  Scala: length = 0x
+   
+  ...
+
+public A$();
+  Code:
+   Stack=5, Locals=1, Args_size=1
+   0:	aload_0
+   1:	invokespecial	#16; //Method java/lang/Object."<init>":()V
+   4:	aload_0
+   5:	putstatic	#18; //Field MODULE$:LA$;
+   8:	new	#20; //class A$$anonfun$1
+   11:	dup
+   12:	invokespecial	#21; //Method A$$anonfun$1."<init>":()V
+   15:	new	#23; //class Meter
+   18:	dup
+   19:	getstatic	#28; //Field .MODULE$:L;
+   22:	invokevirtual	#32; //Method .km:()D
+   25:	invokespecial	#35; //Method Meter."<init>":(D)V
+   28:	invokeinterface	#41,  2; //InterfaceMethod scala/Function1.apply:(Ljava/lang/Object;)Ljava/lang/Object;
+   33:	pop
+   34:	return
+  LineNumberTable: 
+   line 9: 0
+
+
+}
+{code}
+
+From the SIP-15 comments:
+
+{quote}
+retronym: Is this just a restriction of the reference implementation, or a more fundamental limitation?
+
+odersky: I don't know for sure, but would hope it's just the current implementation. Somebody needs to sort out the interactions with specialization. I won't have the time to do it, though.
+{quote}
+
+I've started poking around in https://github.com/scala/scala/blob/master/src/compiler/scala/tools/nsc/transform/SpecializeTypes.scala#L295, so far I've managed to trigger use of the specialized constructor (but only as far as to hit a CCE.

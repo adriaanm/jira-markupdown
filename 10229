@@ -1,0 +1,8 @@
+{code}
+  class LazyCell[V](var compute: () =>V) {
+    lazy val value = { val temp = compute; compute = null.asInstanceOf[V]; temp }
+  }
+  def getOrElseUpdate(k: K, fresh: =>V): V = {
+    val proposedCell = new LazyCell(() => fresh)
+   ...
+{code}

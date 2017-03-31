@@ -1,0 +1,18 @@
+I think it should be incorrect by definition, that the following code fails to compile with the contravariant R, but succeeds with an invariant R.
+{code}
+trait MatrixAdder[-R] { def addTo(m: R) }
+trait Matrix[+Repr <: Matrix[Repr]] {
+  def foo[R >: Repr](implicit ma1: MatrixAdder[R]) {}
+}
+trait SparseMatrix extends Matrix[SparseMatrix] { }
+
+object Test {
+  implicit def adderImplicit[R <: Matrix[R]] = new MatrixAdder[R] {
+    def addTo(m: R) = { }
+  }
+
+  val m1 = new SparseMatrix { }
+  m1.foo // crasher
+}
+{code}
+There are a ton of open and closed tickets on contravariance and implicits.  Suffice to say that there are problems, and there is not yet universal agreement on how to fix them or who might do the fixing.

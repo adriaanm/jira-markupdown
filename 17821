@@ -1,0 +1,29 @@
+The throwException method doesn't exist on sun.misc.Unsafe on Android,
+but good news, it can be emulated in Java without any performance loss.
+
+From jsr116y: http://gee.cs.oswego.edu/cgi-bin/viewcvs.cgi/jsr166/src/jsr166e/ForkJoinTask.java?view=markup
+{code:java}
+    /**
+     * A version of "sneaky throw" to relay exceptions
+     */
+    static void rethrow(final Throwable ex) {
+        if (ex != null) {
+            if (ex instanceof Error)
+                throw (Error)ex;
+            if (ex instanceof RuntimeException)
+                throw (RuntimeException)ex;
+            ForkJoinTask.<RuntimeException>uncheckedThrow(ex);
+        }
+    }
+
+    /**
+     * The sneaky part of sneaky throw, relying on generics
+     * limitations to evade compiler complaints about rethrowing
+     * unchecked exceptions
+     */
+    @SuppressWarnings("unchecked") static <T extends Throwable>
+        void uncheckedThrow(Throwable t) throws T {
+        if (t != null)
+            throw (T)t; // rely on vacuous cast
+    }
+{code}

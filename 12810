@@ -1,0 +1,19 @@
+{code}
+class Test[ListType <: (List[T] forSome {type T})] { 
+  new Test[ListType] 
+}
+{code}
+
+causes the following compiler errors:
+
+{code}
+existbug.scala:1: error: type arguments [ListType] do not conform to class Test's type parameter bounds [ListType <: List[T] forSome { type T }]
+class Test[ListType <: (List[T] forSome {type T})] { new Test[ListType] }
+                                                   ^
+existbug.scala:1: error: type arguments [ListType] do not conform to class Test's type parameter bounds [ListType <: List[T] forSome { type T }]
+class Test[ListType <: (List[T] forSome {type T})] { new Test[ListType] }
+                                                         ^
+two errors found
+{code}
+
+I expected silent compilation.  ([http://article.gmane.org/gmane.comp.lang.scala/7251 Reported] by Mark Harrah)

@@ -1,0 +1,38 @@
+Pretty-fying somewhat the ICode (right after inliner) for the above:
+
+{noformat}
+  def problematic(r: collection.immutable.Range (REF(class Range))): Unit {
+  locals: value r, variable loc41, variable loc31, variable loc21
+  startBlock: 1
+  blocks: [1,4,5,6,7]
+  
+  1: 
+     	NEW REF(class Some)
+     	DUP(REF(class Some))
+     	(r.validateRangeBoundaries(null) == 0) ? JUMP 4 : JUMP 7
+    
+  7: 
+     	loc21 = r.start
+     	loc31 = r.terminalElement
+     	loc41 = r.step
+    
+  5: 
+     	(loc21 == loc31) ? JUMP 4 : JUMP 6
+    
+  4: 
+     	LOAD_FIELD scala.runtime.BoxedUnit.UNIT
+     	CALL_METHOD scala.Some.<init> (static-instance)
+     	DROP REF(class Some)
+     	RETURN(UNIT)
+    
+  6: 
+     	CONSTANT(null)
+     	LOAD_LOCAL(variable loc21)
+     	BOX INT
+     	CALL_METHOD scala.Function1.apply (dynamic)
+     	DROP INT
+        loc21 = loc21 + loc41
+     	JUMP 5
+    
+  }
+{noformat}

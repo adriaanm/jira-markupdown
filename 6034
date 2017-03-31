@@ -1,0 +1,53 @@
+I was unable to duplicate Ismael Juma's finding that this is fixed in 2.9.0-1.  I created an sbt project with build.properties like:
+
+{code}
+project.scratch=true
+project.name=test
+sbt.version=0.7.7
+project.version=1.0
+build.scala.versions=2.9.0-1
+project.initialize=false
+{code}
+
+The build/Project.scala looked like:
+
+{code}
+import sbt._
+
+class Project(info: ProjectInfo) extends DefaultProject(info) {
+  val clouderaRepo = "cloudera release" at "https://repository.cloudera.com/content/repositories/releases"
+  val cdhVer = "0.20.2-cdh3u0"
+  val hadoopCore = "org.apache.hadoop" % "hadoop-core" % cdhVer % "provided"
+}
+{code}
+
+The project contained exactly one source file:
+
+{code}
+import org.apache.hadoop._
+import org.apache.hadoop.io._
+import org.apache.hadoop.conf._
+import org.apache.hadoop.mapreduce._
+
+object MyJob {
+  def main(args:Array[String]) {
+    val job = new Job(new Configuration())
+    job.setMapperClass(classOf[MyMapper])
+  }
+}
+
+class MyMapper extends Mapper[LongWritable,Text,Text,Text] {
+  override def map(key: LongWritable, value: Text, context: Mapper[LongWritable,Text,Text,Text]#Context) {
+  }
+}
+{code}
+
+Compiling resulted in the following error message
+{code}
+[error] ....MyJob.scala:9: type mismatch;
+[error]  found   : java.lang.Class[MyMapper](classOf[MyMapper])
+[error]  required: java.lang.Class[_ <: org.apache.hadoop.mapreduce.Mapper]
+[error]     job.setMapperClass(classOf[MyMapper])
+[error]                               ^
+[error] one error found
+{code}

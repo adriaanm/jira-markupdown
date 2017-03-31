@@ -1,0 +1,14 @@
+The following file breaks down the instrumenter:
+
+{code}object MyTest {
+  for (x <- xs) yield x*x
+}
+{code}
+
+it spits out the following:
+
+{code}
+object MyTest {
+  for (import scala.runtime.WorksheetSupport._; def main(args: Array[String])=$execute{;$skip(41); val res$0 = x <- xs) yield x*x;System.out.println("""res0: <error> = """ + $show(res$0))}
+}
+{code}

@@ -1,0 +1,11 @@
+Well, at least this is easy to reproduce.  Who can deduce this one.
+{code}
+% ./partest files/run/t3829.scala |& grep "files/run/t3829"
+testing: [...]/files/run/t3829.scala                                  [  OK  ]
+
+% JAVA_OPTS="-verbose" ./partest files/run/t3829.scala  |& grep "files/run/t3829"
+testing: [...]/files/run/t3829.scala                                  [FAILED]
+{code}
+It is indeed failing; one can witness it throw an assertion error, and then it is reported as a success.
+
+This is likely tied to either sys.process, my shotgun blasts into partest, or both.

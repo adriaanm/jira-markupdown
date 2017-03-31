@@ -1,0 +1,16 @@
+This code works on Scala 2.9.2 and 2.10.0-M2, and causes Error from 2.10.0-M3 to 2.10.0-RC1 .
+
+{code}
+import scala.util.continuations._
+
+object ExistentialContinuation {
+  def foo[A: Manifest]: (Option[A], Array[A]) @suspendable =
+    shiftUnit(None, Array.empty)
+
+  def bad(m: Manifest[_]) {
+    reset {
+      val (a, b) = foo(m)
+    }
+  }
+}
+{code}

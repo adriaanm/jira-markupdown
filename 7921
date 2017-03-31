@@ -1,0 +1,30 @@
+this should not warn:
+
+{code}
+trait A
+trait B
+trait C
+trait AB extends B with A
+
+object Test extends App {
+  def foo(x: Any) = x match {
+    case _ : C  => println("C")
+    case _ : AB => println("AB")
+    case _ : B  => println("B")
+    case _ : A  => println("A")
+  }
+
+  foo(new A {})
+  foo(new B {})
+  foo(new AB{})
+  foo(new C {})
+}
+{code}
+
+prints:
+{code}
+A
+B
+AB
+C
+{code}

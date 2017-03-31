@@ -1,0 +1,21 @@
+This is edge-use-case, but:
+{code}
+scala> def m(a:Int,bs: =>Int*) = 7
+<console>:1: error: ')' expected but identifier found.
+       def m(a:Int,bs: =>Int*) = 7
+                            ^
+
+scala> def n(is: (=>Int)*) = 7
+<console>:1: error: no by-name parameter type allowed here
+       def n(is: (=>Int)*) = 7
+                  ^
+
+scala> def q(is: =>(Int *)) = 5  // not my intention
+<console>:1: error: no * parameter type allowed here
+       def q(is: =>(Int *)) = 5
+
+{code}
+Am I the only one who experiences a cognitive hiccup every time I have to disambiguate "named parameter" and "by-name parameter?"  Internally (to myself), I've started calling (denoting) params that have call-by-name semantics "eval params" because of the loose notion that they are evaluated on reference.  ("Deferred params" conveys the idea that evaluation is deferred, but people get confused about deferred to when, especially under partial application, and deferred doesn't suggest multiple evaluation.  I hope Paul reads this and has a better word for it -- besides "evil params", of course.)
+
+I haven't thought closely about this, except my terminology hangup, but the Seq[=>T] view might be a reason to ignore the use case.
+

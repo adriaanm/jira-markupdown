@@ -1,0 +1,20 @@
+I just hit this writing lens boilerplate.
+
+{code}
+val input = Lens[Network, List[InputNode]](
+(n: Network) => n.input,
+(n: Network, ns: List[InputNode]) => n.copy(input = ns))
+{code}
+
+This produces these errors and warnings:
+
+{code}
+[ERROR] <elided>: error: not found: value ns
+[INFO]       ((n: Network, ns: List[InputNode]) => n.copy(input = ns)))
+[INFO]                                                            ^
+[WARNING] <elided>: warning: type-checking the invocation of method copy checks if the named argument expression 'input = ...' is a valid assignment
+[ERROR] in the current scope. The resulting type inference error (see above) can be fixed by providing an explicit type in the local definition for input.
+[INFO]       ((n: Network, ns: List[InputNode]) => n.copy(input = ns)))
+{code}
+
+If I rename the val to e.g. inputL, it all compiles fine. Looks like the compiler is getting confused about the precedence of deciding if a=b is an assignment to a named parameter or an assignment to be evaluated.

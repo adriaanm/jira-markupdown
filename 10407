@@ -1,0 +1,24 @@
+The problem is that the compiler first tries named/default arguments to correct the arity mismatch in:
+
+{code}
+foo((u: Unit) => ma).apply()
+{code}
+
+We need one argument, but an empty argument list is provided.
+
+This doesn't pan out, and it then falls back to autotupling which reinterprets the empty argument list as a `Tuple0`, better know as `()`.
+
+But, the names/default transform leaves a trace on the tree by way of the side-effect of changing the owner of the symbol representing the closure to the symbol of a temporary val `qual$1` emitted in the transform:
+
+{code}
+{
+  val qual$1: Any => Any @uncheckedBounds = T.this.foo(((u: Any) => ma));
+  qual$1.apply
+}
+{code}
+
+That temporary val is part of the rigmarole needed to maintain the correct evaluation order in `first.foo(x = second, y = third)`.
+
+We should restructure the `tryNamesDefaults` to avoid the destructive `changeOwner` until we're sure that the names/defaults approach will work out.
+
+I'm sure that we've got another instance of this bug reported, but I can't find it right now.

@@ -1,0 +1,40 @@
+regresssion introduced by recent cps changes: https://github.com/scala/scala/commit/b9ac439608eac6fd31082b14bac90064b42521dc
+
+the following code (stripped down from the akka library) no longer compiles:
+{code}
+class ExecutionContext
+
+implicit def defaultExecutionContext = new ExecutionContext
+
+class Future[+T] {
+  final def map[A](f: T => A): Future[A] = new Future[A]
+  final def flatMap[A](f: T => Future[A]): Future[A] = new Future[A]
+}
+
+object Future {
+
+  def sequence[A, M[_] <: Traversable[_]](in: M[Future[A]])(implicit cbf: CanBuildFrom[M[Future[A]], A, M[A]], executor: ExecutionContext): Future[M[A]] = new Future[M[A]]
+    
+  def flow[A](body: => A @cps[Future[Any]])(implicit executor: ExecutionContext): Future[A] = new Future[A]
+
+}
+
+class PromiseStream[A] {
+  
+  final def +=(elem: A): this.type = this
+
+  final def ++=(elem: Traversable[A]): this.type = this
+  
+  final def <<(elem: Future[A]): PromiseStream[A] @cps[Future[Any]] =
+    shift { cont: (PromiseStream[A] => Future[Any]) => elem map (a => cont(this += a)) }
+
+  final def <<(elem1: Future[A], elem2: Future[A], elems: Future[A]*): PromiseStream[A] @cps[Future[Any]] =
+    shift { cont: (PromiseStream[A] => Future[Any]) => Future.flow(this << elem1) flatMap cont }
+
+  final def <<<(elems: Traversable[A]): PromiseStream[A] @cps[Future[Any]] =
+    shift { cont: (PromiseStream[A] => Future[Any]) => cont(this ++= elems) }
+
+  final def <<<(elems: Future[Traversable[A]]): PromiseStream[A] @cps[Future[Any]] =
+    shift { cont: (PromiseStream[A] => Future[Any]) ⇒ elems map (as => cont(this ++= as)) }
+}
+{code}

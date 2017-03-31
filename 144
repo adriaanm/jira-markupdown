@@ -1,0 +1,53 @@
+Replying to [comment:1 phaller]:
+> Fixed in rev 13350.
+
+Either I'm doing something wrong, or this hasn't been fixed: the following client/server pair results in a client process that remains active until forcefully terminated, even despite the exit call. Tested with 2.6.1-RC1:
+
+/* CLIENT */
+import scala.actors.Actor._
+import scala.actors.Debug
+import scala.actors.remote.Node
+import scala.actors.remote.TcpService._
+import scala.actors.remote.RemoteActor._
+
+import java.io.File
+
+//import Configuration._
+
+object RemoteClient extends Application {
+    Debug.level = 9
+    actor {
+        val engine = select(Node(SERVER, PORT), SERVICE)
+        engine ! Load(new File("invoice001.xml"))
+        exit
+    }
+}
+
+/* SERVER */
+import scala.actors.Actor
+import scala.actors.Actor._
+import scala.actors.remote.RemoteActor._
+import scala.actors.Debug
+
+import java.io.File
+
+//import Configuration._
+
+object RemoteServer extends Application {
+    var files = Set[File]()
+
+    Debug.level = 9
+
+    actor {
+        alive(PORT)
+        register(SERVICE, self)
+
+        loop {
+            react {
+                case Load(file) =>
+                    files += file
+                    sender ! LoadResponse("File received: " + file.getPath)
+            }
+        }
+    }
+}

@@ -1,0 +1,38 @@
+Here's a cut down version that only depends on spray:
+
+{code}
+package test
+
+import spray.json.JsonFormat
+
+trait IntervalParameters[T]
+
+object IntervalParameters {
+  implicit def IntervalParametersFormat[T: JsonFormat]: spray.json.RootJsonFormat[IntervalParameters[T]] = ???
+}
+import IntervalParameters.IntervalParametersFormat
+import spray.json.DefaultJsonProtocol._
+
+class TestDataService {
+  def v1TypedRequest[U](message: Any)(fn: Any)(implicit evidence$1: JsonFormat[U]) = 0
+}
+
+object TestDataService {
+  def dataFromStreamsResponse[U](response: Any)(implicit evidence$1: JsonFormat[U]) = 0
+}
+
+object Test {
+  implicitly[spray.json.JsonFormat[IntervalParameters[Long]]]
+  (null: TestDataService).v1TypedRequest(null)(null)
+  TestDataService.dataFromStreamsResponse(null)
+}
+
+class TestVariousTypes {
+  val service: TestDataService = null
+  val message = streamRequest[IntervalParameters[Long]]
+  service.v1TypedRequest(message)(null)
+  def streamRequest[U: JsonFormat]: Any = ???
+}
+{code}
+
+This crashes in 2.10.4. Using 2.11, or even 2.10.4 with -Ydivergence211.

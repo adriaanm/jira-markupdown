@@ -1,0 +1,77 @@
+The idea behind DelayedInit is great. It has one advantage over suggested PostConstructor. It calls each superclass constructor body on the way to leaf subclass. For example we can design a safe object that doesn't break execution when constructor (one of in hierarchy) throws an exception. Instead it encapsulates a state that can be queried before using it. 
+
+{code:scala}
+trait Worker {
+	def use(): Unit
+}
+
+trait SafeWorker extends DelayedInit with Worker{
+	private[this] var ok = true
+	override final def delayedInit(body: ⇒ Unit): Unit = {
+		if (ok) try body catch {case e: Throwable ⇒ ok = false}
+	}
+	def isOk: Boolean = ok
+	def use(): Unit = if (isOk) println(s"Working...") else println(s"Oops...")
+}
+
+class MediaSafeWorker extends SafeWorker {
+	throw new Exception
+}
+
+class MySafeWorker extends MediaSafeWorker { () }
+
+class UnsafeWorker extends Worker{
+	throw new Exception
+	def use(): Unit = println(s"Working...")
+}
+{code}
+
+Running this code prints: "Oops..."
+{code:scala}
+	val safeObj = new MySafeWorker
+	safeObj.use()
+{code}
+
+But running this code breaks execution with exception.
+{code:scala}
+	val unsafeObj = new UnsafeWorker
+	unsafeObj.use()
+{code}
+
+(i) SUGGESTED OPTION
+
+DelayedInit trait needs some improvements.
+#  It skips empty constructor body as mentioned in this thread. It would be great if it will pass to delayedInit method even empty body. 
+#  @Erik Westra suggested [brilliant idea|https://issues.scala-lang.org/browse/SI-4330?focusedCommentId=60542&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-60542] to detect class of currently executing constructor body. And it would be great to have delayedInit method version with extra argument for explicit current body class. 
+{code:scala}
+def delayedInit (body: => Unit, bodyClass: Class[_])
+{code}
+. Or even version with argument for explicit mark indicating leaf class body.
+{code:scala}
+def delayedInit (body: => Unit, bodyClass: Class[_], isLeafClass: Boolean)
+{code}
+  Or add def onCreate() when object construction is complete.
+
+Current workaround is to use the solution suggested by @Erik Westra for detection of leaf class. And slightly raw solution to make asynchronous delayed cancellable invokation of onCreate method in base superclass and in the end of each body of delayedInit method.
+
+{code:scala}
+trait Obj extends DelayedInit {
+	postOnCreate()
+	override final def delayedInit(body: ⇒ Unit): Unit = {
+		cancelPostOnCreate()// pseudocode
+		body
+		if ((body _).getClass.getDeclaringClass == getClass) onCreate()
+		else postOnCreate()
+	}
+	def postOnCreate(): Unit = post(id= "onCreate", delay=10 ms, onCreate())// pseudocode
+	def onCreate(): Unit
+}
+{code}
+
+If the body of leaf class is empty onCreate will be called 10 milliseconds after instance is constructed. Not cool but at least.
+
+(!) NOTE for Android developers. 
+Seems better add this line in Proguard config to avoid java.lang.NoClassDefFoundError:
+{code:java}
+-keep class scala.DelayedInit
+{code}

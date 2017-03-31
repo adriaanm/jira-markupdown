@@ -1,0 +1,47 @@
+{code}
+import scala.util.continuations._
+object BadContinuation {
+  private def continuationizedString: String @suspendable = ", "
+
+  private def continuationizedUnit(s: String): Unit @suspendable = {
+  }
+
+  private def good() {
+    reset {
+      val s = continuationizedString
+      continuationizedUnit(
+        new StringBuilder ++=
+        "Hello" ++= s ++= "World!" toString)
+    }
+  }
+
+  private def bad() {
+    reset {
+      continuationizedUnit(
+        new StringBuilder ++=
+        "Hello" ++= continuationizedString ++= "World!" toString)
+    }
+  }
+
+  final def main(args: Array[String]) {
+    good()
+    bad()
+  }
+}
+{code}
+
+I compile the file with {{-P:continuations:enable}} and run it. I got a {{ClassCastException}}:
+{code}
+java.lang.ClassCastException: java.lang.String cannot be cast to scala.collection.TraversableOnce
+	at BadContinuation$$anonfun$bad$1$$anonfun$apply$2.apply(BadContinuation.scala:21)
+	at BadContinuation$$anonfun$bad$1$$anonfun$apply$2.apply(BadContinuation.scala:21)
+	at scala.util.continuations.ControlContext.flatMap(ControlContext.scala:61)
+	at BadContinuation$$anonfun$bad$1.apply(BadContinuation.scala:21)
+	at BadContinuation$$anonfun$bad$1.apply(BadContinuation.scala:19)
+	at scala.util.continuations.package$.reset(package.scala:20)
+	at BadContinuation$.bad(BadContinuation.scala:18)
+	at BadContinuation$.main(BadContinuation.scala:27)
+	at BadContinuation.main(BadContinuation.scala)
+{code}
+
+Although not perfect, continuations in 2.10.0-M2 is much more usable than 2.9.x and 2.8.x. I can delete many {{shiftUnit}} now. Continuation is a killer feature for Scala language. Thank you!

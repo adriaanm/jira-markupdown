@@ -1,0 +1,31 @@
+Simple Test Case:
+
+{code}
+package test.annotation
+
+import javax.xml.bind.annotation._
+import javax.xml.bind.annotation.XmlElement._
+import scala.reflect.BeanInfo
+
+@XmlRootElement(name = "item")
+@XmlType /* this annotation is needed for Spring's Jaxb2Marshaller.supports method */
+@BeanInfo
+class test {
+
+}
+{code}
+
+eric@Erics-MacBook-Pro:~$ scalac -deprecation test.scala
+eric@Erics-MacBook-Pro:~$
+
+
+https://github.com/scala/scala/blob/master/src/library/scala/reflect/package.scala
+
+
+  @deprecated("Use `@scala.beans.BeanInfo` instead", "2.10.0")
+  type BeanInfo = scala.beans.BeanInfo
+
+
+Does the type get replaced before the deprecation is checked?
+
+

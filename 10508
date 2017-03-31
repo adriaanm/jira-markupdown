@@ -1,0 +1,6 @@
+I've been stepping through the ASF in my repl snippet above. It's pretty crazy. The first time around nothing changes, but the normalizeAliases in existential type that wraps up the ASF does another ASF via     
+{code}
+override def betaReduce = transform(sym.info.resultType) 
+{code}
+
+this method is pretty broken, since it ends up doing an ASF on a type (AIn) from a different owner (the refinement that defines A, whose info we're transforming). ASF assumes the clazz defines the symbol of the type we're asking it to relativize, so things go off the rails.

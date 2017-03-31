@@ -1,0 +1,98 @@
+I believe that without the "luxury" of stripping types and starting again, you'll need to change:
+
+{code}
+      case TreeSplice(ReifiedTree(universe, mirror, symtab, rtree, tpe, rtpe, concrete)) =>
+        if (reifyDebug) println("entering inlineable splice: " + tree)
+        val inlinees = symtab.syms filter (_.isLocalToReifee)
+        inlinees foreach (inlinee => symtab.symAliases(inlinee) foreach (alias => inlineableBindings(alias) = symtab.symBinding(inlinee)))
+        val symtab1 = symtab -- inlinees
+        if (reifyDebug) println("trimmed %s inlineable free defs from its symbol table: %s".format(inlinees.length, inlinees map (inlinee => symtab.symName(inlinee)) mkString(", ")))
+        withinSplice { super.transform(TreeSplice(ReifiedTree(universe, mirror, symtab1, rtree, tpe, rtpe, concrete))) }
+{code}
+
+.. to substitute the "$u" from the outer universe for the splicee's universe.
+
+Debug brain dump:
+
+Slick expands:
+
+{code}
+query#15744.map#15757(((x$1#15957: Coffee#7531) => x$1#15957.name#8072)#15956).filter(((x$2#28373: String#7136) => x$2#28373.==#5721(""))#28372)
+{code}
+
+This runs through:
+{code}
+ QueryableMacros.filter:90
+   QueryableMacros._helper:78
+     QueryableMacros._reifyTree():58
+{code}
+
+Which calls `reifyTree` in the reflection API with:
+
+{noformat}
+       mirror = {scala.reflect.internal.Trees$EmptyTree$@3498}"<empty>"
+       tree = {scala.reflect.internal.Trees$Apply@3727}"QueryOps#7847.query#15960[String#7136]({\n  val $u#16000: scala#23.reflect#2606.runtime#2792.package#13974.universe#14081.type = package#13974.this.universe#14081;\n  val $m#16001: $u#16000.Mirror#16006 = package#13974.this.universe#14081.runtimeMirror#1...
+       universe = {scala.reflect.internal.Trees$Select@3726}"package#13974.this.universe#14081"
+{noformat}
+
+The method involved in the slick Macro:
+{code}
+  def filter[T:c.WeakTypeTag]
+    (c: scala.reflect.macros.Context)
+    (projection: c.Expr[T => Boolean]): c.Expr[scala.slick.direct.Queryable[T]] = _helper[c.type,T]( c )( "filter", projection )
+  def _apply( queryable:Tree, method: String, args:Tree* ) = removeDoubleReify(
+    Apply( Select( queryTree(queryable), newTermName( method )), args.toList )
+  )
+  def _reifyTree[T]( tree:Tree ) = context.Expr[ru.Expr[T]](
+      context.reifyTree( context.universe.treeBuild.mkRuntimeUniverseRef, EmptyTree, context.typeCheck(
+        tree
+      ).asInstanceOf[Tree]))
+{code}
+
+Note the similarity to `test/files/run/macro-reify-nested-a/Impls_Macros_1.scala`
+
+The reifiee:
+
+{code}
+QueryOps#7847.query#15960[String#7136]({
+  val $u#16000: scala#23.reflect#2606.runtime#2792.package#13974.universe#14081.type = package#13974.this.universe#14081;
+  val $m#16001: $u#16000.Mirror#16006 = package#13974.this.universe#14081.runtimeMirror#16011(this.getClass#2985().getClassLoader#18969());
+  $u#16000.Expr#11087.apply#11089[scala#23.slick#2638.direct#7645.BaseQueryable#7690[String#7136]]($m#16001, {
+    final class $treecreator1#19428 extends TreeCreator#8237 {
+      def <init>#19429(): $treecreator1#19428 = {
+        $treecreator1#19428.super.<init>#19424();
+        ()
+      };
+      def apply#19430[U#19431 <: scala#23.reflect#2606.api#2798.Universe#8159 with Singleton#5702]($m$untyped#19434: scala#23.reflect#2606.api#2798.Mirror#8252[U#19432]): U#19431#Tree#9949 = {
+        val $u#19444: U#19432 = $m$untyped#19434.universe#19413;
+        val $m#19445: $u#19444.Mirror#12975 = $m$untyped#19434.asInstanceOf#5714[$u#19444.Mirror#12975];
+        val free$query1#19446: $u#19444.FreeTermSymbol#9516 = $u#19444.build#12680.newFreeTerm#12699("query", query#15744, $u#19444.build#12680.FlagsRepr#12773.apply#12775(17592190238720L), "defined by test in Test.scala:7:9");
+        $u#19444.build#12680.setTypeSignature#12708[$u#19444.FreeTermSymbol#9516](free$query1#19446, $u#19444.TypeRef#9703.apply#9706($u#19444.ThisType#9653.apply#9656($m#19445.staticPackage#19422("scala.slick.direct").asModule#9491.moduleClass#9489), $m#19445.staticClass#19418("scala.slick.direct.Queryable"), scala#22.collection#2627.immutable#5681.List#14910.apply#19532[$u#19444.Type#9600]($m#19445.staticClass#19418("Coffee").asType#9434.toTypeConstructor#9429)));
+        $u#19444.Apply#10440.apply#10443($u#19444.Select#10477.apply#10480($u#19444.Apply#10440.apply#10443($u#19444.Select#10477.apply#10480($u#19444.build#12680.Ident#12721($m#19445.staticModule#19420("scala.slick.direct.QueryOps")), $u#19444.TermName#9933.apply#9936("query")), scala#22.collection#2627.immutable#5681.List#14910.apply#19532[$u#19444.Ident#10164]($u#19444.build#12680.Ident#12721(free$query1#19446))), $u#19444.TermName#9933.apply#9936("map")), scala#22.collection#2627.immutable#5681.List#14910.apply#19532[$u#19444.Function#10293]($u#19444.Function#10298.apply#10301(scala#22.collection#2627.immutable#5681.List#14910.apply#19532[$u#19444.ValDef#10065]($u#19444.ValDef#10118.apply#10121($u#19444.Modifiers#10973.apply#10977($u#19444.build#12680.FlagsRepr#12773.apply#12775(2105344L), $u#19444.TypeName#9940.apply#9943(""), immutable#5682.this.Nil#14130), $u#19444.TermName#9933.apply#9936("x$1"), $u#19444.TypeTree#10605.apply#10608(), $u#19444.EmptyTree#9997)), $u#19444.Select#10477.apply#10480($u#19444.Ident#10485.apply#10488($u#19444.TermName#9933.apply#9936("x$1")), $u#19444.TermName#9933.apply#9936("name")))))
+      }
+    };
+    new $treecreator1#19428()
+  })($u#16000.TypeTag#11206.apply#11238[scala#23.slick#2638.direct#7645.BaseQueryable#7690[String#7136]]($m#16001, {
+    final class $typecreator2#28318 extends TypeCreator#8531 {
+      def <init>#28319(): $typecreator2#28318 = {
+        $typecreator2#28318.super.<init>#28314();
+        ()
+      };
+      def apply#28320[U#28321 <: scala#23.reflect#2606.api#2798.Universe#8159 with Singleton#5702]($m$untyped#28324: scala#23.reflect#2606.api#2798.Mirror#8252[U#28322]): U#28321#Type#9600 = {
+        val $u#28333: U#28322 = $m$untyped#28324.universe#19413;
+        val $m#28334: $u#28333.Mirror#12975 = $m$untyped#28324.asInstanceOf#5714[$u#28333.Mirror#12975];
+        $u#28333.TypeRef#9703.apply#9706($u#28333.ThisType#9653.apply#9656($m#28334.staticPackage#19422("scala.slick.direct").asModule#9491.moduleClass#9489), $m#28334.staticClass#19418("scala.slick.direct.BaseQueryable"), scala#22.collection#2627.immutable#5681.List#14910.apply#19532[$u#28333.Type#9600]($u#28333.TypeRef#9703.apply#9706($u#28333.SingleType#9665.apply#9668($u#28333.ThisType#9653.apply#9656($m#28334.staticPackage#19422("scala").asModule#9491.moduleClass#9489), $m#28334.staticModule#19420("scala.Predef")), $u#28333.build#12680.selectType#12683($m#28334.staticModule#19420("scala.Predef").asModule#9491.moduleClass#9489, "String"), immutable#5682.this.Nil#14130)))
+      }
+    };
+    new $typecreator2#28318()
+  }))
+}.splice#11078).filter#15969(((x$2#28373: String#7136) => x$2#28373.==#5721(""))#28372)
+{code}
+
+Which is reified into `rtree`
+
+{code}
+rtree = $u.Apply($u.Select($u.Apply($u.Select($u.build.Ident($m.staticModule("scala.slick.direct.QueryOps")), $u.TermName("query")), scala.collection.immutable.List.apply($u#19444.Apply#10440.apply#10443($u#19444.Select#10477.apply#10480($u#19444.Apply#10440.apply#10443($u#19444.Select#10477.apply#10480($u#19444.build#12680.Ident#12721($m#19445.staticModule#19420("scala.slick.direct.QueryOps")), $u#19444.TermName#9933.apply#9936("query")), scala#22.collection#2627.immutable#5681.List#14910.apply#19532($u#19444.build#12680.Ident#12721(free$query1#19446))), $u#19444.TermName#9933.apply#9936("map")), scala#22.collection#2627.immutable#5681.List#14910.apply#19532($u#19444.Function#10298.apply#10301(scala#22.collection#2627.immutable#5681.List#14910.apply#19532($u#19444.ValDef#10118.apply#10121($u#19444.Modifiers#10973.apply#10977($u#19444.build#12680.FlagsRepr#12773.apply#12775(2105344L), $u#19444.TypeName#9940.apply#9943(""), immutable#5682.this.Nil#14130), $u#19444.TermName#9933.apply#9936("x$1"), $u#19444.TypeTree#10605.apply#10608(), $u#19444.EmptyTree#9997)), $u#19444.Select#10477.apply#10480($u#19444.Ident#10485.apply#10488($u#19444.TermName#9933.apply#9936("x$1")), $u#19444.TermName#9933.apply#9936("name"))))))), $u.TermName("filter")), scala.collection.immutable.List.apply($u.Function(scala.collection.immutable.List.apply($u.ValDef($u.Modifiers($u.build.FlagsRepr(2105344L), $u.TypeName(""), scala.collection.immutable.List.apply()), $u.TermName("x$2"), $u.TypeTree(), $u.EmptyTree)), $u.Apply($u.Select($u.Ident($u.TermName("x$2")), $u.TermName("$eq$eq")), scala.collection.immutable.List.apply($u.Literal($u.Constant("")))))))
+{code}
+
+Before, the `resetAllAttrs` made the references to `$u#19444` bind to the outer `$u.

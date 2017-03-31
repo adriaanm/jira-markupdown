@@ -1,0 +1,12 @@
+After compiling the Colladoc application with latest compiler version (built from trunk with some minor changes from colladoc branch) as well as with 2.8.0 RC4, exception is thrown when trying to run the application:
+{code}
+java.lang.ClassFormatError: Duplicate method name&signature in class
+file scala/tools/colladoc/model/mapper/User
+        at java.lang.ClassLoader.defineClass1(Native Method)
+        at java.lang.ClassLoader.defineClassCond(ClassLoader.java:632)
+        at java.lang.ClassLoader.defineClass(ClassLoader.java:616)
+        ...
+{code}
+When trying to reproduce this behaviour, I have found that it is not possible to build the application with 2.8.0 RC3, but it works with 2.8.0 RC2.
+
+After comparing classfiles produced by the 2.8.0 RC2, 2.8.0 RC4 and the latest trunk version, I found it strange that the classfile produced by the latter two is twice as big and number of methods in the resulting class has nearly tripled. All classfiles are attached.

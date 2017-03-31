@@ -1,0 +1,34 @@
+I can't follow what you are saying.
+
+What should be disallowed? I think the code makes perfect sense, and the type checker is able to handle it correctly. Only it crashes at run-time.
+
+
+{code}
+scala> val o = new {
+     |   def f(x: Object) = new {
+     |     def g(y: x.type) = 0
+     |   }
+     | }
+o: Object{def f(x: Object): Object{def g(y: x.type): Int}} = $anon$1@7471c619
+
+scala> val s = ""
+s: String = ""
+
+scala> val o1 = o.f(s)
+warning: there were 1 feature warnings; re-run with -feature for details
+o1: Object{def g(y: s.type): Int} = $anon$1$$anon$2@2a11890d
+
+scala> o1.g("huh")
+<console>:11: error: type mismatch;
+ found   : String("huh")
+ required: s.type
+              o1.g("huh")
+                   ^
+
+scala> o1.g(s)
+warning: there were 1 feature warnings; re-run with -feature for details
+java.lang.NoSuchMethodException: $anon$1$$anon$2.g(java.lang.String)
+	at java.lang.Class.getMethod(Class.java:1605)
+	at .reflMethod$Method1(<console>:11)
+        [...]
+{code}

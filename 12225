@@ -1,0 +1,27 @@
+Seems to be fixed in the Ammonite REPL?
+
+{{
+haoyi-mbp:blog haoyi$ ~/amm
+Loading...
+Welcome to the Ammonite Repl 0.5.6
+(Scala 2.11.7 Java 1.8.0_25)
+@ import scala.concurrent.Future
+import scala.concurrent.Future
+@ import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.ExecutionContext.Implicits.global
+@ val f = Future { 4 / 0 }
+f: Future[Int] = scala.concurrent.impl.Promise$DefaultPromise@7a17ffee
+@ for (exc <- f.failed) println(exc)
+java.lang.ArithmeticException: / by zero
+
+@ val f = Future { 4 / 2 }
+f: Future[Int] = scala.concurrent.impl.Promise$DefaultPromise@24347d8b
+@ val f = Future { 4 / 0 }
+f: Future[Int] = scala.concurrent.impl.Promise$DefaultPromise@6d810e94
+@ for (exc <- f.failed) println(exc)
+java.lang.ArithmeticException: / by zero
+
+@ val f = Future { 4 / 0 }
+f: Future[Int] = scala.concurrent.impl.Promise$DefaultPromise@142dbf1a
+@
+}}

@@ -1,0 +1,92 @@
+{code}
+    public String getSimpleName() {
+	if (isArray())
+	    return getComponentType().getSimpleName()+"[]";
+
+	String simpleName = getSimpleBinaryName();
+	if (simpleName == null) { // top level class
+	    simpleName = getName();
+	    return simpleName.substring(simpleName.lastIndexOf(".")+1); // strip the package name
+	}
+	// According to JLS3 "Binary Compatibility" (13.1) the binary
+	// name of non-package classes (not top level) is the binary
+	// name of the immediately enclosing class followed by a '$' followed by:
+	// (for nested and inner classes): the simple name.
+	// (for local classes): 1 or more digits followed by the simple name.
+	// (for anonymous classes): 1 or more digits.
+
+	// Since getSimpleBinaryName() will strip the binary name of
+	// the immediatly enclosing class, we are now looking at a
+	// string that matches the regular expression "\$[0-9]*"
+	// followed by a simple name (considering the simple of an
+	// anonymous class to be the empty string).
+
+	// Remove leading "\$[0-9]*" from the name
+	int length = simpleName.length();
+	if (length < 1 || simpleName.charAt(0) != '$')
+	    throw new InternalError("Malformed class name");
+	int index = 1;
+	while (index < length && isAsciiDigit(simpleName.charAt(index)))
+	    index++;
+	// Eventually, this is the empty string iff this is an anonymous class
+	return simpleName.substring(index);
+    }
+{code}
+
+classOf[A].getEnclosingClass().getName => "Test$"
+classOf[A].getName => "Test$A$1"
+
+Well, according to the source code of getSimpleName, A should be flattened into Test$$A$1. What's even more interesting, the correct name indeed appears after LambdaLift, but then gets messed by Flatten:
+
+{code}
+C:\Projects\Kepler\sandbox>scalac -Xprint:lambdalift,flatten t5425.scala
+[[syntax trees at end of lambdalift]]// Scala source: t5425.scala
+package <empty> {
+  final object Test extends Object with App with ScalaObject {
+    def <init>(): object Test = {
+      Test.super.<init>();
+      Test.this.$asInstanceOf[App$class]()./*App$class*/$init$();
+      ()
+    };
+    {
+      scala.this.Predef.println(classOf[Test$$A$1].getSimpleName())
+    };
+    class A$1 extends Object with ScalaObject {
+      def <init>(): Test#A$1 = {
+        A$1.super.<init>();
+        ()
+      }
+    }
+  }
+}
+
+[[syntax trees at end of flatten]]// Scala source: t5256c.scala
+package <empty> {
+  final object Test extends Object with App with ScalaObject {
+    def <init>(): object Test = {
+      Test.super.<init>();
+      Test.this.$asInstanceOf[App$class]()./*App$class*/$init$();
+      Test.this.delayedInit(new Test$delayedInit$body(Test.this));
+      ()
+    }
+  };
+  class Test$A$1 extends Object with ScalaObject {
+    def <init>(): Test$A$1 = {
+      Test$A$1.super.<init>();
+      ()
+    }
+  };
+  final <synthetic> class Test$delayedInit$body extends scala.runtime.AbstractFunction0 with ScalaObject {
+    final def apply(): Object = {
+      {
+        scala.this.Predef.println(classOf[Test$A$1].getSimpleName())
+      };
+      scala.runtime.BoxedUnit.UNIT
+    };
+    def <init>($outer: object Test): Test$delayedInit$body = {
+      Test$delayedInit$body.super.<init>();
+      ()
+    }
+  }
+}
+{code}

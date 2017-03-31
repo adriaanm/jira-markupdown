@@ -1,0 +1,27 @@
+An F-bound isn't necessary to exercise this.  In 2.11.0-M8:
+
+{code:Java}
+public final class It<T extends String>
+{
+  private final T _it;
+  public It(T it){_it = it;}
+
+  public static It<?> instance() {
+    return new It<String>("42");
+  }
+
+  public static It<? extends String> instance2() {
+    return instance();
+  }
+
+  public T it(){return _it;}
+}
+{code}
+
+{code}
+scala> It.instance.it
+res1: Any = 42
+
+scala> It.instance2.it
+res2: String = 42
+{code}

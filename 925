@@ -1,0 +1,29 @@
+I have stumbled on this problem. I am working on a computer algebra project, and I intended to do pattern matching on MathML expressions. Here is my code:
+{code}
+import scala.xml.Elem
+
+def f(expr: Elem) = expr match {
+    case <apply><plus/><apply><plus/>{x: Elem}{y: Elem}</apply>{z: Elem}</apply> => <apply><plus/>{x}<apply><plus/>{y}{z}</apply></apply>
+    case <apply><plus/><apply><minus/>{x: Elem}{y: Elem}</apply>{z: Elem}</apply> => <apply><minus/>{x}<apply><minus/>{y}{z}</apply></apply>
+
+    case <apply><plus/>{x: Elem}<apply><plus/>{y: Elem}{z: Elem}</apply></apply> if (x == y) => <apply><plus/><apply><times/><cn>2</cn>{x}</apply>{z}</apply>
+    case <apply><plus/>{x: Elem}<apply><minus/>{y: Elem}{z: Elem}</apply></apply> if (x == y) => <apply><minus/><apply><times/><cn>2</cn>{x}</apply>{z}</apply>
+
+    case <apply><plus/>{x: Elem}{y: Elem}</apply> if (x == y) => <apply><times/><cn>2</cn>{x}</apply>
+
+    case <apply><minus/><apply><plus/>{x: Elem}{y: Elem}</apply>{z: Elem}</apply> => <apply><plus/>{x}<apply><minus/>{y}{z}</apply></apply>
+    case <apply><minus/><apply><minus/>{x: Elem}{y: Elem}</apply>{z: Elem}</apply> => <apply><minus/>{x}<apply><plus/>{y}{z}</apply></apply>
+
+    case <apply><minus/>{x: Elem}<apply><plus/>{y: Elem}{z: Elem}</apply></apply> if (x == y) => <apply><minus/>{z}</apply>
+    case <apply><minus/>{x: Elem}<apply><minus/>{y: Elem}{z: Elem}</apply></apply> if (x == y) => z
+
+    case <apply><minus/>{x: Elem}{y: Elem}</apply> if (x == y) => <cn>0</cn>
+
+    case x => x
+  }
+{code}
+I get the same error:
+{code}
+java.lang.Error: ch.epfl.lamp.fjbg.JCode$$OffsetTooBigException: offset too big to fit in 16 bits: 33190
+{code}
+This is more or less the minimal set of case statements that triggers the error. If I remove one or two arbitrary ones, it compiles again. Of course I need many more to achieve what I intend, so this defect is very blocking to me.

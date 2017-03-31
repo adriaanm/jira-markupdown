@@ -1,0 +1,93 @@
+The following code crashes the compiler if I add `extends AnyVal` (uncomment the first line).
+
+{code:scala}
+// case class Mu2[F[_, _], A](value: F[Mu2[F, A], A]) extends AnyVal
+case class Mu2[F[_, _], A](value: F[Mu2[F, A], A])
+abstract class GF[M, A]
+case class U[M]() extends GF[M, Unit]
+type G[A] = Mu2[GF, A]
+val u: G[Unit] = Mu2(U())
+{code}
+
+Compiler output in 2.11.8:
+
+{code}
+> last compile:compileIncremental
+[debug] 
+[debug] Initial source changes: 
+[debug] 	removed:Set()
+[debug] 	added: Set(/home/alex/Workspace/si-9768/src/main/scala/test.scala)
+[debug] 	modified: Set()
+[debug] Removed products: Set()
+[debug] External API changes: API Changes: Set()
+[debug] Modified binary dependencies: Set()
+[debug] Initial directly invalidated sources: Set(/home/alex/Workspace/si-9768/src/main/scala/test.scala)
+[debug] 
+[debug] Sources indirectly invalidated by:
+[debug] 	product: Set()
+[debug] 	binary dep: Set()
+[debug] 	external source: Set()
+[debug] All initially invalidated sources: Set(/home/alex/Workspace/si-9768/src/main/scala/test.scala)
+[debug] Recompiling all 1 sources: invalidated sources (1) exceeded 50.0% of all sources
+[info] Compiling 1 Scala source to /home/alex/Workspace/si-9768/target/scala-2.11/classes...
+[debug] Getting compiler-interface from component compiler for Scala 2.11.8
+[debug] Getting compiler-interface from component compiler for Scala 2.11.8
+[debug] Running cached compiler dc65973, interfacing (CompilerInterface) with Scala compiler version 2.11.8
+[debug] Calling Scala compiler with arguments  (CompilerInterface):
+[debug] 	-bootclasspath
+[debug] 	/usr/lib/jvm/java-8-oracle/jre/lib/resources.jar:/usr/lib/jvm/java-8-oracle/jre/lib/rt.jar:/usr/lib/jvm/java-8-oracle/jre/lib/sunrsasign.jar:/usr/lib/jvm/java-8-oracle/jre/lib/jsse.jar:/usr/lib/jvm/java-8-oracle/jre/lib/jce.jar:/usr/lib/jvm/java-8-oracle/jre/lib/charsets.jar:/usr/lib/jvm/java-8-oracle/jre/lib/jfr.jar:/usr/lib/jvm/java-8-oracle/jre/classes:/home/alex/.ivy2/cache/org.scala-lang/scala-library/jars/scala-library-2.11.8.jar
+[debug] 	-classpath
+[debug] 	/home/alex/Workspace/si-9768/target/scala-2.11/classes
+java.lang.StackOverflowError
+	at scala.reflect.internal.Symbols$Symbol.loop$2(Symbols.scala:1274)
+	at scala.reflect.internal.Symbols$Symbol.fullName(Symbols.scala:1286)
+	at scala.reflect.internal.Symbols$Symbol.javaBinaryNameString(Symbols.scala:1260)
+	at scala.reflect.internal.Symbols$Symbol.javaBinaryName(Symbols.scala:1259)
+	at scala.tools.nsc.transform.Erasure$$anonfun$javaSig$1$$anonfun$fullNameInSig$1$1.apply(Erasure.scala:254)
+	at scala.tools.nsc.transform.Erasure$$anonfun$javaSig$1$$anonfun$fullNameInSig$1$1.apply(Erasure.scala:254)
+	at scala.reflect.internal.SymbolTable.enteringPhase(SymbolTable.scala:235)
+	at scala.tools.nsc.transform.Erasure$$anonfun$javaSig$1.fullNameInSig$1(Erasure.scala:254)
+	at scala.tools.nsc.transform.Erasure$$anonfun$javaSig$1.classSig$1(Erasure.scala:285)
+	at scala.tools.nsc.transform.Erasure$$anonfun$javaSig$1.scala$tools$nsc$transform$Erasure$$anonfun$$jsig$1(Erasure.scala:329)
+	at scala.tools.nsc.transform.Erasure$$anonfun$javaSig$1.scala$tools$nsc$transform$Erasure$$anonfun$$jsig$1(Erasure.scala:325)
+	at scala.tools.nsc.transform.Erasure$$anonfun$javaSig$1.scala$tools$nsc$transform$Erasure$$anonfun$$boxedSig$1(Erasure.scala:236)
+	at scala.tools.nsc.transform.Erasure$$anonfun$javaSig$1.scala$tools$nsc$transform$Erasure$$anonfun$$argSig$1(Erasure.scala:274)
+	at scala.tools.nsc.transform.Erasure$$anonfun$javaSig$1$$anonfun$classSig$1$1.apply(Erasure.scala:288)
+	at scala.tools.nsc.transform.Erasure$$anonfun$javaSig$1$$anonfun$classSig$1$1.apply(Erasure.scala:288)
+	at scala.collection.immutable.List.map(List.scala:273)
+	at scala.tools.nsc.transform.Erasure$$anonfun$javaSig$1.classSig$1(Erasure.scala:288)
+	at scala.tools.nsc.transform.Erasure$$anonfun$javaSig$1.scala$tools$nsc$transform$Erasure$$anonfun$$jsig$1(Erasure.scala:329)
+	at scala.tools.nsc.transform.Erasure$$anonfun$javaSig$1.scala$tools$nsc$transform$Erasure$$anonfun$$jsig$1(Erasure.scala:325)
+	at scala.tools.nsc.transform.Erasure$$anonfun$javaSig$1.scala$tools$nsc$transform$Erasure$$anonfun$$boxedSig$1(Erasure.scala:236)
+	at scala.tools.nsc.transform.Erasure$$anonfun$javaSig$1.scala$tools$nsc$transform$Erasure$$anonfun$$argSig$1(Erasure.scala:274)
+	at scala.tools.nsc.transform.Erasure$$anonfun$javaSig$1$$anonfun$classSig$1$1.apply(Erasure.scala:288)
+	at scala.tools.nsc.transform.Erasure$$anonfun$javaSig$1$$anonfun$classSig$1$1.apply(Erasure.scala:288)
+	at scala.collection.immutable.List.map(List.scala:273)
+        ...
+{code}
+
+Compiler output in 2.11.6 in REPL:
+{code}
+java.lang.StackOverflowError
+	at scala.reflect.internal.Symbols$TypeSymbol.isExistentiallyBound(Symbols.scala:3017)
+	at scala.tools.nsc.transform.Erasure$NeedsSigCollector$.traverse(Erasure.scala:55)
+	at scala.reflect.internal.tpe.TypeMaps$TypeCollector.collect(TypeMaps.scala:312)
+	at scala.tools.nsc.transform.Erasure.needsJavaSig(Erasure.scala:74)
+	at scala.tools.nsc.transform.Erasure$$anonfun$javaSig$1.classSig$1(Erasure.scala:278)
+	at scala.tools.nsc.transform.Erasure$$anonfun$javaSig$1.scala$tools$nsc$transform$Erasure$$anonfun$$jsig$1(Erasure.scala:327)
+	at scala.tools.nsc.transform.Erasure$$anonfun$javaSig$1.scala$tools$nsc$transform$Erasure$$anonfun$$jsig$1(Erasure.scala:323)
+	at scala.tools.nsc.transform.Erasure$$anonfun$javaSig$1.scala$tools$nsc$transform$Erasure$$anonfun$$boxedSig$1(Erasure.scala:234)
+	at scala.tools.nsc.transform.Erasure$$anonfun$javaSig$1.scala$tools$nsc$transform$Erasure$$anonfun$$argSig$1(Erasure.scala:272)
+	at scala.tools.nsc.transform.Erasure$$anonfun$javaSig$1$$anonfun$classSig$1$1.apply(Erasure.scala:286)
+	at scala.tools.nsc.transform.Erasure$$anonfun$javaSig$1$$anonfun$classSig$1$1.apply(Erasure.scala:286)
+	at scala.collection.immutable.List.map(List.scala:273)
+	at scala.tools.nsc.transform.Erasure$$anonfun$javaSig$1.classSig$1(Erasure.scala:286)
+	at scala.tools.nsc.transform.Erasure$$anonfun$javaSig$1.scala$tools$nsc$transform$Erasure$$anonfun$$jsig$1(Erasure.scala:327)
+	at scala.tools.nsc.transform.Erasure$$anonfun$javaSig$1.scala$tools$nsc$transform$Erasure$$anonfun$$jsig$1(Erasure.scala:323)
+	at scala.tools.nsc.transform.Erasure$$anonfun$javaSig$1.scala$tools$nsc$transform$Erasure$$anonfun$$boxedSig$1(Erasure.scala:234)
+	at scala.tools.nsc.transform.Erasure$$anonfun$javaSig$1.scala$tools$nsc$transform$Erasure$$anonfun$$argSig$1(Erasure.scala:272)
+	at scala.tools.nsc.transform.Erasure$$anonfun$javaSig$1$$anonfun$classSig$1$1.apply(Erasure.scala:286)
+	at scala.tools.nsc.transform.Erasure$$anonfun$javaSig$1$$anonfun$classSig$1$1.apply(Erasure.scala:286)
+	at scala.collection.immutable.List.map(List.scala:273)
+	...
+{code}

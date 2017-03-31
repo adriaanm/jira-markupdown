@@ -1,0 +1,37 @@
+Reopening due to the mentioned thread and copying the example here:
+
+I see the following spurious warning frequently, which drowns out useful unchecked warnings:
+
+{code:lang=java}
+sealed trait A[T]
+final class B[T] extends A[T]
+
+object ParsedAxis {
+   def x(a: A[Int]) =
+      a match {
+         case b: B[Int] => 3
+      }
+}
+{code}
+
+{code}
+A.scala:7: non-variable type argument Int in type pattern B[Int] is unchecked since it is eliminated by erasure
+         case b: B[Int] => 3
+                 ^
+{code}
+
+In this case, the warning can be resolved by using a type variable:
+
+{code}
+         case b: B[i] => 3
+{code}
+
+but this is less useful when reading the code and isn't possible when `B[Int]` is inside a type alias like `type BI = B[Int]`.  Similarly, `Int @unchecked` can be used, but it is less safe than the type variable approach, where the compiler still knows that `i=Int` is the only possibility.  In fact, if another type argument is used, the compiler complains:
+
+{code}
+pattern type is incompatible with expected type;
+  found   : B[String]
+  required: A[Int]
+         case b: B[String] => 3
+                 ^
+{code}

@@ -1,0 +1,20 @@
+Code in "Test.java":
+{code}
+object Test {
+  @throws(classOf[Exception])
+  def f() = {}
+}
+{code}
+Compiler output:
+{code}
+> scalac -Ygenerics Test.scala
+Test.scala:2: error: type mismatch;
+ found   : java.lang.Class[Exception]
+ required: java.lang.Class
+        @throws(classOf[Exception])
+                       ^
+one error found
+{code}
+Compiler version: Scala compiler version 2.6.0-RC2 -- (c) 2002-2007 LAMP/EPFL
+
+(I turned on -Ygenerics because without it, I got an error trying to use "java.util.List[String]".)

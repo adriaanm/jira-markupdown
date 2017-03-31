@@ -1,0 +1,37 @@
+cat scaladoc.scala 
+{code}
+trait Test {
+  def sth {
+    /** Some comment here */
+    object Maybe {
+      def nothing() = ()
+    }
+  }
+}
+{code}
+
+scaladoc scaladoc.scala -Xprint:parser
+{code}
+[[syntax trees at end of parser]]// Scala source: scaladoc.scala
+package <empty> {
+  abstract trait Test extends scala.ScalaObject {
+    def $init$() = {
+      ()
+    };
+    def sth: scala.Unit = {
+      object Maybe extends scala.ScalaObject {
+        def <init>() = {
+          super.<init>();
+          ()
+        };
+        /** Some comment here */
+        def nothing() = ()
+      };
+      ()
+    }
+  }
+}
+{code}
+
+If you have just a nested object inside a trait, things work ok. This currently breaks range positions (run scaladoc with -Yrangepos) as the comment gets a correct position from the parser but it is pushed inside the object that does not contain it.
+Whoever fixes should add a test with -Yrangepos flag.

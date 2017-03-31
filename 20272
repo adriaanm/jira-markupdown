@@ -1,0 +1,30 @@
+{code}
+Welcome to Scala 2.12.0 (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_102).
+Type in expressions for evaluation. Or try :help.
+
+scala> trait InvariantContainer[T0] {
+     |   type T = T0
+     | }
+defined trait InvariantContainer
+
+scala> type OptionalContainer[Container <: InvariantContainer[_]] = InvariantContainer[Option[Container#T]]
+defined type alias OptionalContainer
+
+scala> def expand(x: OptionalContainer[InvariantContainer[Int]]): InvariantContainer[Option[InvariantContainer[Int]#T]] = x
+<console>:13: error: type mismatch;
+ found   : OptionalContainer[InvariantContainer[Int]]
+    (which expands to)  InvariantContainer[Option[_$1]]
+ required: InvariantContainer[Option[Int]]
+       def expand(x: OptionalContainer[InvariantContainer[Int]]): InvariantContainer[Option[InvariantContainer[Int]#T]] = x
+                                                                                                                          ^
+
+scala> def expand(x: OptionalContainer[InvariantContainer[Int]]): InvariantContainer[Option[Int]] = x
+<console>:13: error: type mismatch;
+ found   : OptionalContainer[InvariantContainer[Int]]
+    (which expands to)  InvariantContainer[Option[_$1]]
+ required: InvariantContainer[Option[Int]]
+       def expand(x: OptionalContainer[InvariantContainer[Int]]): InvariantContainer[Option[Int]] = x
+                                                                                                    ^
+
+{code}
+I expect that scalac does not error here, because {{T}} is a concrete type, which should be expanded immediately.

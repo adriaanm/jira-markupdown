@@ -1,0 +1,16 @@
+Someone changed dropWhile (I don't think it was me) in the boxed arrays to return an array projection and forgot to update the Array class to return a projection rather than an array!
+
+Code:
+
+{code}
+object Test {
+  def main(args : Array[String]) : Unit = {
+    val z : Array[Byte] = new Array[Byte](0)
+    Console.println("hello world" + " " + z.getClass)
+    Console.println("hello world" + " " + z.dropWhile(_ == 0x00).getClass)
+    ()
+  }
+}
+{code}
+
+Just change dropWhile/takeWhile in Array.scala to return array projections rather than arrays and I think everything will be OK.

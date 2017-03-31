@@ -1,0 +1,48 @@
+Steps to reproduce: 
+
+1. Get latest Eclipse plugin (r24190 upwards). 
+2. Clean build Scala project. 
+3. Load Types.scala into editor, add a space and re-build (not clean).
+
+What you should see: Error in Scala compiler
+{code}
+java.lang.AssertionError: assertion failed: object annotationArgRewriter$$2 value annotationArgRewriter$$1 false
+	at scala.Predef$$.assert(Predef.scala:99)
+	at scala.tools.nsc.symtab.Types$$adaptToNewRunMap$$.adaptToNewRun(Types.scala:3816)
+	at scala.tools.nsc.symtab.Types$$adaptToNewRunMap$$.apply(Types.scala:3880)
+	at scala.tools.nsc.symtab.Types$$adaptToNewRunMap$$.apply(Types.scala:3891)
+	at scala.tools.nsc.symtab.Symbols$$Symbol.adaptToNewRun$$1(Symbols.scala:813)
+	at scala.tools.nsc.symtab.Symbols$$Symbol.adaptInfos(Symbols.scala:817)
+	at scala.tools.nsc.symtab.Symbols$$Symbol.adaptInfos(Symbols.scala:809)
+	at scala.tools.nsc.symtab.Symbols$$Symbol.adaptInfos(Symbols.scala:809)
+	at scala.tools.nsc.symtab.Symbols$$Symbol.adaptInfos(Symbols.scala:809)
+	at scala.tools.nsc.symtab.Symbols$$Symbol.adaptInfos(Symbols.scala:809)
+	at scala.tools.nsc.symtab.Symbols$$Symbol.rawInfo(Symbols.scala:775)
+	at scala.tools.nsc.symtab.Symbols$$Symbol.info(Symbols.scala:728)
+	at scala.tools.nsc.symtab.Symbols$$Symbol.tpe(Symbols.scala:690)
+	at scala.tools.nsc.dependencies.Changes$$$$anonfun$$changeSet$$4$$$$anonfun$$2.apply(Changes.scala:197)
+	at scala.tools.nsc.dependencies.Changes$$$$anonfun$$changeSet$$4$$$$anonfun$$2.apply(Changes.scala:197)
+	at scala.tools.nsc.symtab.Symbols$$Symbol.filter(Symbols.scala:1047)
+	at scala.tools.nsc.symtab.Symbols$$Symbol.suchThat(Symbols.scala:1052)
+	at scala.tools.nsc.dependencies.Changes$$$$anonfun$$changeSet$$4.apply(Changes.scala:197)
+	at scala.tools.nsc.dependencies.Changes$$$$anonfun$$changeSet$$4.apply(Changes.scala:183)
+	at scala.collection.Iterator$$class.foreach(Iterator.scala:646)
+	at scala.collection.Iterator$$$$anon$$21.foreach(Iterator.scala:376)
+	at scala.tools.nsc.dependencies.Changes.changeSet(Changes.scala:183)
+	at scala.tools.nsc.interactive.RefinedBuildManager$$$$anonfun$$update0$$1$$1$$$$anonfun$$apply$$5.apply(RefinedBuildManager.scala:153)
+	at scala.tools.nsc.interactive.RefinedBuildManager$$$$anonfun$$update0$$1$$1$$$$anonfun$$apply$$5.apply(RefinedBuildManager.scala:148)
+	at scala.collection.LinearSeqOptimized$$class.foreach(LinearSeqOptimized.scala:61)
+	at scala.collection.immutable.List.foreach(List.scala:45)
+	at scala.tools.nsc.interactive.RefinedBuildManager$$$$anonfun$$update0$$1$$1.apply(RefinedBuildManager.scala:148)
+	at scala.tools.nsc.interactive.RefinedBuildManager$$$$anonfun$$update0$$1$$1.apply(RefinedBuildManager.scala:142)
+	at scala.collection.mutable.HashSet.foreach(HashSet.scala:75)
+	at scala.tools.nsc.interactive.RefinedBuildManager.update0$$1(RefinedBuildManager.scala:142)
+	at scala.tools.nsc.interactive.RefinedBuildManager.update(RefinedBuildManager.scala:182)
+	at scala.tools.nsc.interactive.RefinedBuildManager.update(RefinedBuildManager.scala:92)
+	at scala.tools.eclipse.EclipseBuildManager.build(EclipseBuildManager.scala:136)
+	at scala.tools.eclipse.ScalaProject.build(ScalaProject.scala:444)
+	at scala.tools.eclipse.ScalaBuilder.build(ScalaBuilder.scala:79)
+{code}
+
+
+What seems to go wrong is that the adaptation of a nested module object yields NoSymbol. 

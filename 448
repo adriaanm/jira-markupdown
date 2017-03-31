@@ -1,0 +1,7 @@
+I fixed the problem in r14264 (2.7.0 branch) and r14265 (trunk) as follows: first, `link`/`unlink` may only be called on `self`. This is enforced at run-time using an `assert`. Second, when calling `self.link(other)`, then the update of the links in `other` is protected by the lock of `other`.
+
+This ensures the following properties:
+
+  * Concurrent updates are not lost
+  * Two concurrent `link` calls cannot deadlock
+  * The links on the two sides are updated atomically

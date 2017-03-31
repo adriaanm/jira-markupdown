@@ -1,0 +1,40 @@
+There is nothing wrong with this error message, it is indeed the correct error message that you should receive. It was correctly closed and labeled "Not a Bug" by Paul. So, it probably should've remained closed.
+
+I think there are multiple points of confusion here, so let me try to elaborate.
+
+In the first case you present, (without the {{val}}) the error message is to be expected, because, in fact, two things are wrong when it appears you thought that there was only one error. In addition to {{id}} not being a member of {{Person}}, \+= is a method which takes only one parameter-- a tuple. While it might appear that you've indeed used a tuple, this is in fact interpreted as an invocation of \+= with multiple parameters, and of course there is only one variant of \+=, and it has a single parameter. So you get an error.
+
+In the second case, you've removed the one error (you've made {{id}} a field of {{Person}}), which enables the compiler to attempt to resolve the other error for you. That is, upon finding that you've passed multiple arguments to \+=, the compiler first attempts to typecheck both arguments (which is now successful since {{id}} is a field), and at the very last step, it attempts to "auto-tuple" your multiple arguments into a single tuple argument. In this case, the transformation is successful and your code compiles. This auto-tupling is indeed expected behavior.
+
+I think the issue here also relates to the documentation for {{ParHashMap}} (and other {{HashMap}} variants), which in the 2.9.2 API docs says only:
+{code}
+def +=(kv: (K, V)): ParHashMap.this.type
+{code}
+
+Applying your example to the API comments, you could write:
+
+{code}
+val pair = (person.get.id, person.get)
+users += pair // you don't need parentheses in this case because it's clear that there's a single parameter here
+{code}
+
+Which is the same as:
+{code}
+users += ((person.get.id, person.get)) 
+{code}
+
+In the case where {{id}} wasn't a {{val}}, you'd get the error you expected. In the other case, this would compile without issue.
+
+The way it relates to the docs is that if there was a usage example, you probably would not have had to encounter any auto-tupling.
+
+I can clarify the API documentation to add usage examples to illustrate the following two recommended ways to use the {{+=}} on {{HashMaps}}:
+{code}
+users += ((person.get.id, person.get))
+users += (person.get.id -> person.get)
+{code}
+
+Here, the second example is a shorthand for tuples, e.g. {{val pair = person.get.id -> person.get}} is the same as writing {{val pair = (person.get.id, person.get)}}.
+
+Hope this helps to clear up any confusion.
+
+Anyway, since this isn't a bug, I'm closing this ticket.

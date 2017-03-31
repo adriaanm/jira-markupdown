@@ -1,0 +1,11 @@
+As alluded by Jason's okay<>fail/unzipHK<>unzipHKRet, it looks like unzip1's return type is driving inference:
+
+defining (note the existentials in the return type)
+{code}
+  def unzip1[A, B, C[_]](ps: Rep[C[(A, B)]]): (Rep[C[_]], Rep[C[_]])
+{code}
+
+results in the inferred:
+{code}
+    def doUnzip1[T1 >: Nothing <: Any, T2 >: Nothing <: Any](ps: HK.this.Rep[List[(T1, T2)]]): (HK.this.Rep[List[_]], HK.this.Rep[List[_]]) = HK.this.unzip1[T1, T2, List](ps)
+{code}

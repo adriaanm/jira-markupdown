@@ -1,0 +1,7 @@
+(In r22767) Since r22186 scripts wait for all non-daemon threads to exit
+before the script will exit (not doing so was the cause of several
+other bugs involving early script termination) but this means we
+must be careful not to introduce unnecessary non-daemon threads
+in the script infrastructure.  Two such sources (now fixed) were
+the shutdown hook which deletes temporary files and the stream
+consumers used by Process.  Closes SI-3678, review by harrah.

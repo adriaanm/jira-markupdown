@@ -1,0 +1,21 @@
+When appending large lists an StackOverflowError occurs. I think the code of append() is tail recursive. Nevertheless I see:
+{code}
+scala> import scala.collection.mutable.LinkedList
+import scala.collection.mutable.LinkedList
+
+scala> val llist = new LinkedList(0, null)
+llist: scala.collection.mutable.LinkedList[Int] = LinkedList(0)
+
+scala> for (i <- 1 until 100000) llist.append(new LinkedList(i, null))
+java.lang.StackOverflowError
+        at scala.collection.mutable.SingleLinkedList.append(SingleLinkedList.sca
+la:33)
+        at scala.collection.mutable.SingleLinkedList.append(SingleLinkedList.sca
+la:33)
+        at scala.collection.mutable.SingleLinkedList.append(SingleLinkedList.sca
+la:33)
+        at scala.collection.mutable.SingleLinkedList.append(SingleLinkedList.sca
+la:33)
+        at scala.collection.mutable.SingleLin...
+scala>
+{code}

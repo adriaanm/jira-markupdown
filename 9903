@@ -1,0 +1,20 @@
+They are related, but what's at issue here is that we don't mangle package-private or object-private members at all, which means they are not private. In SI-7475 it is attempting to do the right thing by mangling the private member, but the implementation has bugs -- whereas here we are not even trying to do the right thing.
+{code}
+package s {
+  object o {
+    trait A {
+      private[this] val m1 = 1
+      private       val m2 = 2
+      private[A]    val m3 = 3
+      private[o]    val m4 = 4
+      private[s]    val m5 = 5
+    }
+    // Here is what that produces:
+    // public abstract int s$o$A$$m1();
+    // public abstract int s$o$A$$m2();
+    // public abstract int s$o$A$$m3();
+    // public abstract int m4();
+    // public abstract int m5();
+  }
+}
+{code}

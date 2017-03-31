@@ -1,0 +1,37 @@
+The public constructors of the classes mentioned in the SI can be used to generate internally inconsistent HashSet instances. That alone is a pretty good case for why they should be private:
+
+{code}
+HashSet1:
+
+scala> val s = new HashSet.HashSet1("x",1)
+s: scala.collection.immutable.HashSet.HashSet1[java.lang.String] = Set(x)
+
+scala> s.contains("x")
+res12: Boolean = false
+
+HashTrieSet:
+
+scala> val s = new HashSet.HashTrieSet(2, Array(HashSet(1), HashSet(2)), 2)
+s: scala.collection.immutable.HashSet.HashTrieSet[Int] = Set(1, 2)
+
+scala> for(e<-s) println(s.contains(e))
+false
+false
+
+HashMap1:
+
+scala> val m = new HashMap.HashMap1("x", 0, "a", null)
+m: scala.collection.immutable.HashMap.HashMap1[java.lang.String,java.lang.String] = Map(x -> a)
+
+scala> m.get("x")
+res17: Option[java.lang.String] = None
+
+HashTrieMap:
+
+scala> val m = new HashMap.HashTrieMap[String, String](2,Array(HashMap("a"->"b"), HashMap("c"->"d")),2)
+m: scala.collection.immutable.HashMap.HashTrieMap[String,String] = Map(a -> b, c -> d)
+
+scala> for(k<-m.keys) println(m.get(k))
+None
+None
+{code}

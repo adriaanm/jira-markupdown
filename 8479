@@ -1,0 +1,49 @@
+The language is that the parser preserves the escapes in an interpolated string, so that the interpolator can do whatever it wants.
+
+Clarifying the previous comment:
+{code}
+scala> implicit class `literally the string`(val sc: StringContext) {
+     | def lit(args: Any*): String = {
+     |   sc.checkLengths(args)
+     |   sc.standardInterpolator(identity, args)
+     | }}
+defined class literally$u0020the$u0020string
+
+scala> val a = "42" ; s"""a=\"$a\";"""
+a: String = 42
+res4: String = a="42";
+
+scala> val a = "42" ; lit"""a=\"$a\";"""
+a: String = 42
+res5: String = a=\"42\";
+{code}
+
+Clarifying a previous suggestion to use octal escapes, they are deprecated somewhat:
+{code}
+scala> implicit class `strictly ess`(val sc: StringContext) {
+     | def S(args: Any*): String = {
+     |   sc.checkLengths(args)
+     |   sc.standardInterpolator(StringContext.processEscapes, args)
+     | }}
+defined class strictly$u0020ess
+
+scala> val a = "42" ; s"\042$a\042"
+a: String = 42
+res0: String = "42"
+
+scala> val a = "42" ; S"\042$a\042"
+scala.StringContext$InvalidEscapeException: invalid escape character at index 0 in "\042"
+  at scala.StringContext$.treatEscapes0(StringContext.scala:208)
+  at scala.StringContext$.processEscapes(StringContext.scala:189)
+  at strictly$u0020ess$$anonfun$S$1.apply(<console>:10)
+  at strictly$u0020ess$$anonfun$S$1.apply(<console>:10)
+  at scala.StringContext.standardInterpolator(StringContext.scala:121)
+  at strictly$u0020ess.S(<console>:10)
+  ... 32 elided
+
+scala> :se +deprecation
+
+scala> val a = "42" ; f"\042$a\042"
+<console>:11: warning: Octal escape literals are deprecated, use \u0022 instead.
+{code}
+And of course as noted previously, that advice is only good for triple-quotes.  There's a comment in the code to upgrade the advice to dollar-quote when that is merged someday.

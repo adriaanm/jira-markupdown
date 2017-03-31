@@ -1,0 +1,44 @@
+Declaring and using a lazy val inside a try inside an object init block throws:
+{code}
+error: symbol variable bitmap$0 does not exist in A.<init>
+{code}
+
+Code:
+{code}
+object A {
+
+  // error: symbol variable bitmap$0 does not exist in A.<init>
+  try {
+    lazy val x = 3
+    x
+  } finally {}
+
+  // Ok
+  //try {
+  //  lazy val x = 3
+  //} finally {}
+
+  // Ok
+  //val _ = {
+  //  lazy val x = 3
+  //  x
+  //}
+
+  // Ok
+  //try {
+  //  val x = 3
+  //  x
+  //} finally {}
+
+  // Ok
+  //def f {
+  //  try {
+  //    lazy val x = 3
+  //    x
+  //  } finally {}
+  //}
+
+}
+{code}
+
+Full stderr dump from compiler attached.

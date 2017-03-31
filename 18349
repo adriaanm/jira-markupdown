@@ -1,0 +1,21 @@
+{code}
+package com.middlewareman
+
+trait Component
+
+case class Event(component: Component)
+
+class Owner {
+
+  object Timestamp extends Component {
+    val state = System.currentTimeMillis()
+    def unapply(name: Timestamp.type) = Some(name.state)
+  }
+
+  val handler: PartialFunction[Event, Unit] = {
+    case Event(Timestamp(time)) => println(time)
+  }
+
+}
+{code}
+I have not tried compiling outside Eclipse.

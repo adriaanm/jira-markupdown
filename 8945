@@ -1,0 +1,26 @@
+This looks related to http://thread.gmane.org/gmane.comp.lang.scala/28233/focus=28250:
+
+{code}
+scala> class X { object Y }
+defined class X
+
+scala> val x = new X
+x: X = X <at> 4c769a3
+
+scala> type XY = x.Y.type forSome { val x: X }
+warning: there were 2 feature warnings; re-run with -feature for details
+defined type alias XY
+
+scala> val y1 = x.Y
+y1: x.Y.type = X$Y$@14eee870
+
+scala> val y2: XY = x.Y
+y2: XY = X$Y$@14eee870
+
+scala> val y2: (x.Y.type forSome { val x: X }) = x.Y
+<console>:9: error: type mismatch;
+ found   : x.Y.type
+ required: x.Y.type forSome { val x: => X }
+       val y2: (x.Y.type forSome { val x: X }) = x.Y
+                                                   ^
+{code}

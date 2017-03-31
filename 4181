@@ -1,0 +1,12 @@
+As you indicate, it is called a type pattern because you match on a type.  Here, A names a value, not a type.  This is fundamental and I'm pretty sure this alone is sufficient to close this.
+
+You are possibly asking for `x: A` to mean "match if `t` is of type A or is the value A", but you couldn't do anything with `x` since `value A` and type A do not necessarily have a common ancestor other than `AnyRef`.  If they did, you'd just do a type match on that common ancestor.
+
+If you want `case x: A =>` to mean `case A =>` when there is no type, define:
+{code}
+sealed class A {
+  ...
+{code}
+object A extends A
+{code}
+and use a type pattern on A.

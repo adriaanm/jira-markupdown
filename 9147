@@ -1,0 +1,7 @@
+IIUC, with the change you propose, Scalac would desugar context bounds into implicits at the *end* of the list.
+
+This change *might* cause regressions when the opposite order is better, so it's not obvious it is an improvement. But I know no concrete instance, so there might be some non-obvious reason this regression is impossible.
+
+In fact, context bounds are always desugared to implicit params with a single type parameter ({{TypeConstructor[T]}}, rather than {{TypeConstructor[T, U]}}), so I can't exclude that they are easier to infer and they can be moved at the end. But I see no good argument there.
+
+Failing that, I don't see how this can be easily improved.

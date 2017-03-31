@@ -1,0 +1,20 @@
+See: https://groups.google.com/forum/#!topic/scala-language/0B678ZjZQAw
+
+I am using 2.11.7
+
+It's a bit hard to boil down since I am seeing it when depending on Hadoop code which has a very deep dependency graph.
+
+I'm instantiating GenericOptionsParser:
+https://hadoop.apache.org/docs/r1.0.4/api/org/apache/hadoop/util/GenericOptionsParser.html
+and Configuration:
+https://hadoop.apache.org/docs/r2.6.4/api/org/apache/hadoop/conf/Configuration.html
+
+and it is complaining about:
+
+07:09:29 warning: Class org.apache.commons.logging.Log not found - continuing with a stub.
+07:09:29 one warning found
+
+which will be added to the runtime classpath, but is indeed not on the compile time classpath.
+
+Jason replicated a test case:
+https://gist.github.com/retronym/64fe18c74eac9d49092e

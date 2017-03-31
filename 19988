@@ -1,0 +1,31 @@
+I learned today that pattern-matching gives type-equality witnesses in implicit scope. I started playing around with it and found this problem:
+
+{code}
+sealed trait Caster[A, B]
+case object CastTo extends Caster[Unit, Unit]
+case class Ignored[A, B]() extends Caster[A, B]
+
+def cast[A, B]: A =:= B =
+  (Ignored(): Caster[A, B]) match {
+    case CastTo | _ => implicitly[B =:= Unit]
+  }
+
+cast[String, Int]: String =:= Int
+{code}
+
+Can be more specific:
+
+{code}
+sealed trait Caster[A]
+case object CastTo extends Caster[Option[Int]]
+case class Ignored[A]() extends Caster[A]
+
+def cast[A]: A =:= Option[Int] =
+  (Ignored(): Caster[A]) match {
+    case CastTo | _ => implicitly[A =:= Option[Int]]
+  }
+
+cast[String]: String =:= Option[Int]
+{code}
+
+Just seems like "or" patterns break things.

@@ -1,0 +1,23 @@
+{code}
+scala> 1L to 10L contains 3
+res7: Boolean = false
+
+scala> (1L to 10L).toList contains 3
+res8: Boolean = true
+{code}
+Why would that be, you might ask? Here is why:
+
+* Variance: Even though NumericRange is invariant, it inherits contains from covariant Seq and thereby must suffer its signature.  Inability to abstract across variance strikes again.
+
+* Since a NumericRange is implemented in terms of some unknown T, the only ways to implement contains are to iterate over every element calling == or to transform an "Any" into a T.  Iteration will give the right answer:
+{code}
+scala> 1L to 10L exists (_ == 3)
+res0: Boolean = true         
+{code}
+but when one pictures doing this to see if 1L to Int.MaxValue.toLong contains Int.MaxValue / 2, we appreciate the many orders of magnitude speed reduction we potentially pay for correctness.  Which takes us to:
+
+* Leaky primitive abstraction: casting a numeric primitive to another numeric primitive always succeeds.  Casting between boxed types will always fail.  Calling a method taking Any boxes the parameter.  And this is why we can't find 3 in a range containing 3L: the cast from java.lang.Integer to java.lang.Long fails.
+
+There are a number of possible ways out, none very appealing.  My plan right now is to type match the contains argument and widen to Long or Double if it's a primitive, then call the (not yet existing) fromLong or fromDouble method on Numeric which (will) have the each-Numeric-specific knowledge of how to create a T.
+
+One might be tempted to simply overload contains in NumericRange with the primitives, which is easy and will mostly work -- and then still fail if the static type of the argument is Any.  No point in being sort of right.  We have to deal with the Any argument so we may as well go straight there.

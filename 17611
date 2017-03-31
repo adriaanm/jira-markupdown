@@ -1,0 +1,29 @@
+Trying to take a slice of a PagedSeq that starts on a page that hasn't been computed yet throws a NullPointerException. For example, the following works as expected:
+
+{code}
+scala> import scala.collection.immutable.PagedSeq
+import scala.collection.immutable.PagedSeq
+
+scala> PagedSeq.fromStrings(List.fill(5000)("a")).slice(4095, 4096)
+res0: scala.collection.immutable.PagedSeq[Char] = PagedSeq(a)
+{code}
+
+But if we start one character later in the sequence (at the beginning of the second page), we get the following:
+
+{code}
+scala> PagedSeq.fromStrings(List.fill(5000)("a")).slice(4096, 4097)
+java.lang.NullPointerException
+        at scala.collection.immutable.PagedSeq.slice(PagedSeq.scala:189)
+        at .<init>(<console>:9)
+        at .<clinit>(<console>)
+        ...
+{code}
+
+The error does not occur if you force the second page to be computed (by calling toString or length, for example) before calling slice:
+
+{code}
+scala> val s = PagedSeq.fromStrings(List.fill(5000)("a"))
+s: scala.collection.immutable.PagedSeq[Char] = PagedSeq(a, a, a,  ...
+scala> s.slice(4096, 4097)
+res2: scala.collection.immutable.PagedSeq[Char] = PagedSeq(a)
+{code}

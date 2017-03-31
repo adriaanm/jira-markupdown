@@ -1,0 +1,50 @@
+Create the three files:
+
+{code}
+// library/Library.scala
+package library
+object Library {
+  @inline def pleaseInlineMe() = 0
+  object Nested {
+    @inline def pleaseInlineMe() = 0
+  }
+}
+{code}
+
+{code}
+// Application.scala
+object Application {
+  def main(arguments: Array[String]): Unit = {
+    // No warning here
+    println(library.Library.pleaseInlineMe())
+
+    // Could not inline required method pleaseInlineMe because bytecode unavailable.
+    println(library.Library.Nested.pleaseInlineMe())
+  }
+}
+{code}
+
+{code}
+// build.sbt
+lazy val library = Project("library", file("library"))
+
+lazy val application = Project("application", file(".")).dependsOn(library)
+
+scalacOptions += "-Yinline-warnings"
+
+scalacOptions += "-optimise"
+{code}
+
+I expect both methods are inlined, but the one in the nested object isn't.
+{code}
+$ sbt compile
+[info] Loading global plugins from C:\Users\user\.sbt\0.13\plugins
+[info] Set current project to application (in build file:/D:/cygwin/home/user/Documents/inline-nested-object/)
+[info] Compiling 1 Scala source to D:\cygwin\home\user\Documents\inline-nested-object\library\target\scala-2.10\classes...
+[info] Compiling 1 Scala source to D:\cygwin\home\user\Documents\inline-nested-object\target\scala-2.10\classes...
+[warn] D:\cygwin\home\user\Documents\inline-nested-object\Application.scala:8: Could not inline required method pleaseInlineMe because bytecode unavailable.
+[warn]     println(library.Library.Nested.pleaseInlineMe())
+[warn]                                                  ^
+[warn] one warning found
+[success] Total time: 4 s, completed 2014-4-22 16:13:10
+{code}

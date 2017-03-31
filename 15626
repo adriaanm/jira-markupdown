@@ -1,0 +1,76 @@
+Loading this file in the interpreter 
+{code}
+/* File named HelloWorld.scala */
+class HelloWorld 
+{
+
+	def bla(args: String) 
+	{
+		var x = new HelloWorld
+		println(x.sumInts(10,20))
+	}
+	
+	def sumInts(a: Int, b: Int): Int = 
+		if (a > b) 0 else a+sumInts(a+1,b)
+		
+}
+{code}
+
+Gives me the following error
+{code}
+C:\Keep\Development\scala>scala
+Welcome to Scala version 2.8.0.final (Java HotSpot(TM) Client VM, Java 1.6.0_20)
+.
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> :load HelloWorld.scala
+Loading HelloWorld.scala...
+defined class HelloWorld
+<console>:12: error: value sumInts is not a member of HelloWorld
+                println(x.sumInts(10,20))
+                          ^
+
+scala>
+{code}
+
+But, if I compile the same file I don't get an error.
+
+If I change the code to
+{code}
+class HelloWorld {
+
+	def bla(args: String) {
+		var x = new HelloWorld
+		println(x.sumInts(10,20))
+	}
+	
+	def sumInts(a: Int, b: Int): Int = 
+		if (a > b) 0 else a+sumInts(a+1,b)
+		
+}
+
+
+{code}
+
+The interpreter is happy
+{code}
+C:\Keep\Development\scala>scala
+Welcome to Scala version 2.8.0.final (Java HotSpot(TM) Client VM, Java 1.6.0_20)
+.
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> :load HelloWorld
+That file does not exist
+
+scala> :load HelloWorld.scala
+Loading HelloWorld.scala...
+defined class HelloWorld
+
+scala>
+{code}
+
+It seems all the examples of class declarations have the initial curly bracket at the end of the declaration, but I haven't read yet that the location of the initial curly bracket is that important.
+
+Is this a feature or a bug?

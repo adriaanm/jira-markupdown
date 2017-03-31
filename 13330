@@ -1,0 +1,36 @@
+Following patch duplicates Iterable.partition into RandomAccessSeq, changing the return type to be a tuple of RandomAccessSeqs, as a convenience to users wanting to partition a RandomAccessSeq into two entities that retain O(1) element access.
+
+
+{code}
+--- RandomAccessSeq.scala       (revision 14761)
++++ RandomAccessSeq.scala       (working copy)
+@@ -171,7 +171,24 @@
+     override def replaced = replaced0
+     override def stringPrefix = RandomAccessSeq.this.stringPrefix + "P"
+   }
+-
++
++  /** Partitions this RandomAccessSeq into two RandomAccessSeqs according to a
++   *  predicate.
++   *
++   *  @param p the predicate on which to partition
++   *  @return  a pair of RandomAccessSeqs: the iterable that satisfy the predicate
++   *           <code>p</code> and the iterable that do not.
++   *           The relative order of the elements in the resulting iterables
++   *           is the same as in the original iterable.
++   */
++  override def partition(p: A => Boolean): (RandomAccessSeq[A], RandomAccessSeq[A]) = {
++    val matched = new scala.collection.mutable.ArrayBuffer[A]
++    val failed = new scala.collection.mutable.ArrayBuffer[A]
++    val elems = elements
++    while (elems.hasNext) { val x = elems.next; if (p(x)) matched += x else failed += x }
++    (matched, failed)
++  }
++
+   override def ++[B >: A](that: Iterable[B]): RandomAccessSeq[B] = that match {
+     case that: RandomAccessSeq[b] =>
+       val ret = new Array[B](length + that.length)
+{code}
+
+
+Perhaps this code should just call the version in Iterable, but cast the return values to RandomAccessSeq?

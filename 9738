@@ -1,0 +1,20 @@
+{{this.next}} and {{other.next}} are distinct instances of {{T2 <: Link[_, _]}}. The compiler is doing the right thing by *not* unifying the existentials.
+
+Here's a smaller example of the same:
+
+{code}
+scala> case class Box[A](var a: A)
+defined class Box
+
+scala> type T = Box[_]
+defined type alias T
+
+scala> def foo(t1: T, t2: T) = t1.a = t2.a
+<console>:10: error: type mismatch;
+ found   : (some other)_$1(in type T)
+ required: _$1(in type T)
+       def foo(t1: T, t2: T) = t1.a = t2.a
+                                         ^
+{code}
+
+Could you please address followup discussions to [scala-language]? You might also be interested into the implementation of similar structures within the library shapeless, https://github.com/milessabin/shapeless/blob/shapeless-1.2.3/core/src/main/scala/shapeless/hlist.scala#L24

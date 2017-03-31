@@ -1,0 +1,35 @@
+This won't compile:
+{code}
+object A {
+  class G extends H
+  class H
+  class U extends G
+
+  def foo(h: G) = 55
+  def foo[T](h: T) = 66
+
+  def main(args: Array[String]) {
+    val x = foo(new U)
+    println("x = " + x)
+    Array("", "")
+  }
+}
+{code}
+but it's ok:
+{code}
+object A {
+  class G extends H
+  class H
+  class U extends G
+
+  def foo(h: G) = 55
+  def foo[T](h: T) = 66
+
+  def main(args: Array[String]) {
+    val x = foo(new U)
+    println("x = " + x)
+    val a = Array("", "")
+  }
+}
+{code}
+In both cases expected type is undefined. So I can't see defference.

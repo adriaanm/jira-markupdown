@@ -1,0 +1,19 @@
+Replying to [comment:15 moors]:
+>   If a public class has a method or constructor with default access, then this method or constructor is not accessible to or inherited by a subclass declared outside this package.
+
+This is a pretty good mess we have going.  I wanted to throw in a reference to SI-2568 here: the behavior, the fact that martin says it's theoretically wrong, and the fact that it's presently wontfix.  And also make an observation which has been weighing on me for a while: protected[pkg] is to some extent broken by design, because it creates in subclasses an access boundary which they cannot even reference.  For instance:
+
+{code}
+object B {
+  class A {
+    protected[B] def foo() = 5
+  }
+}
+
+class C extends B.A {
+  override def foo() = 10
+}
+{code}
+There is no way to perform the override in C without making the method completely public.  You want to be able to say "override and leave the access as it is" but the syntax doesn't exist: protected[B] is disallowed since B does not enclose.
+
+If I have a point in the context of this ticket it is: there are a barrel of corner cases on the usage of scoped access modifiers, but if we're going to make one thing work properly it should be private[pkg] and it should have exactly the same semantics as java's invisible package-private modifier.  This has the big payoff in usefulness, in what people would reasonably expect to work, and most importantly in interoperability.  Of course it also assumes we deal with java package-private correctly.

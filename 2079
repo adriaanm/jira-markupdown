@@ -1,0 +1,51 @@
+Indeed, I knew SI-1642 had resurfaced but have been avoiding it.  Here is a patch I have lying around which when I wrote it many weeks ago addressed the specific breakdowns I'd seen, but I knew it wasn't right and got tired of attacking it from this angle (I really want to write a proper generic signature validator.) So no guarantees about what if anything this patch does:
+
+{code}
+diff --git a/src/compiler/scala/tools/nsc/transform/Erasure.scala b/src/compiler/scala/tools/nsc/transform/Erasure.scala
+index 8cfa61b..254ae2c 100644
+--- a/src/compiler/scala/tools/nsc/transform/Erasure.scala
++++ b/src/compiler/scala/tools/nsc/transform/Erasure.scala
+@@ -174,20 +174,25 @@ abstract class Erasure extends AddInterfaces with typechecker.Analyzer with ast.
+         case ExistentialType(tparams, tpe) =>
+           jsig2(toplevel, tparams, tpe)
+         case TypeRef(pre, sym, args) =>
++          def typeParameterToString(s: Symbol, useErasure: Boolean) = {
++            val bounds = s.info.bounds
++            def hi = if (useErasure) erasure(bounds.hi) else bounds.hi
++            def lo = if (useErasure) erasure(bounds.lo) else bounds.lo
++            if (!(AnyRefClass.tpe <:< bounds.hi)) "+"+jsig(hi)
++            else if (!(bounds.lo <:< NullClass.tpe)) "-"+jsig(lo)
++            else "*"
++          }
+           def argSig(tp: Type) =
+-            if (tparams contains tp.typeSymbol) {
+-              val bounds = tp.typeSymbol.info.bounds
+-              if (!(AnyRefClass.tpe <:< bounds.hi)) "+"+jsig(bounds.hi)
+-              else if (!(bounds.lo <:< NullClass.tpe)) "-"+jsig(bounds.lo)
+-              else "*"
+-            } else if (tp.typeSymbol == UnitClass) {
++            if (tparams contains tp.typeSymbol)
++              typeParameterToString(tp.typeSymbol, false)
++            else if (tp.typeSymbol == UnitClass)
+               jsig(ObjectClass.tpe)
+-            } else {
++            else
+               boxedClass get tp.typeSymbol match {
+                 case Some(boxed) => jsig(boxed.tpe)
+                 case None => jsig(tp)
+               }
+-            }
++
+           def classSig: String = 
+             "L"+atPhase(currentRun.icodePhase)(sym.fullNameString).replace('.', '/')
+           def classSigSuffix: String = 
+@@ -195,7 +200,7 @@ abstract class Erasure extends AddInterfaces with typechecker.Analyzer with ast.
+           if (sym == ArrayClass)
+             ARRAY_TAG.toString+(args map jsig).mkString
+           else if (sym.isTypeParameterOrSkolem)
+-            TVAR_TAG.toString+sym.name+";"
++            typeParameterToString(sym, true)
+           else if (sym == AnyClass || sym == AnyValClass || sym == SingletonClass) 
+             jsig(ObjectClass.tpe)
+           else if (sym == UnitClass) 
+{code}

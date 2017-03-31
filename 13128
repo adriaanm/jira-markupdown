@@ -1,0 +1,24 @@
+See [http://www.nabble.com/Newbie-question-about-existentials-td15083731.html#a15083731 this thread] for details.
+
+Consider the following:
+{code}
+class Type[T]
+val TInt = new Type[int]()
+
+type Ret = (Type[T], T => String) forSome { type T; }
+
+val r1 : Ret = (TInt, {(x : int) => x.toString()})
+
+// the following both fail, why?
+// val r: Ret = if (true) r1 else r1
+// val r: Ret = if (true) r1: Ret else r1: Ret
+
+// the following works, why?
+val r: Ret = if (true) r1: Ret with Ret else r1: Ret with Ret 
+{code}
+
+What is the type "Ret with Ret" necessary, and what does it even mean? Here is my original guess:
+
+  ...I don't see why it should work either. The type "Ret with Ret" seems patently absurd to me. Unless it's needed to trick the compiler into instantiating Ret twice with different skolemizations?? Seems bizarre...
+
+This seems very strange. If it's not a bug, I would love to know the real explanation.

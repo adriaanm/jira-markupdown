@@ -1,0 +1,7 @@
+(In r22509) closes SI-2416. this is a big one... typedAppliedTypeTree performed type application (beta-reduction) without checking whether that application was well-kinded
+
+this patch introduces a new subclass of TypeTree: TypeTreeWithDeferredRefCheck, which tracks the type args and type params of a type application when it was beta-reduced during typing without checking that the application was well-kinded -- that check must wait until refchecks, but was never performed since the application had been beta-reduced away
+
+caveat discovered while working on the fix: adapt turned all trees for which _.isType holds into TypeTree's
+
+review by odersky

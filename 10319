@@ -1,0 +1,38 @@
+Changing `Number` to a non-case class works:
+
+{code}
+object Test extends App {
+  class Number(i: Int)
+ 
+  object UnliftNumber {
+    def unapply(t: Any): Option[Number] = t match {
+      case i: Int => Some(new Number(i))
+      case _ => None
+    }
+  }
+ 
+  def eval(expr: Any): Option[Number] = expr match {
+    case UnliftNumber(n) => Some(n)
+    case _ => None
+  }
+ 
+  println(eval(1))
+}
+{code}
+
+This code seems culpable:
+
+{code}
+    /** If this is a case class, the case field accessors (which may be an empty list.)
+     *  Otherwise, if there are any product selectors, that list.
+     *  Otherwise, a list containing only the type itself.
+     */
+    def typesOfSelectorsOrSelf(tp: Type): List[Type] = (
+      if (tp.typeSymbol.isCase)
+        typesOfCaseAccessors(tp)
+      else typesOfSelectors(tp) match {
+        case Nil => tp :: Nil
+        case tps => tps
+      }
+    )
+{code}

@@ -1,0 +1,9 @@
+{{TypeFlowAnalysis}} does not define any {{consumedTypes}} or {{producedTypes}} for ICode instructions. The closest it does is using one of them, in just one place, as shown next:
+
+{noformat}
+        case cm @ CALL_METHOD(_, _) =>
+          stack pop cm.consumed
+          cm.producedTypes foreach (stack push _)
+{noformat}
+
+I don't see why {{TypeFlowAnalysis}} should be touched at all.

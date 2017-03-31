@@ -1,0 +1,164 @@
+Trying to compile the attached class always causes the compiler to crash with a FatalError. You'll need to include the J2EE classes in the classpath (e.g. this [GlassFish jar|http://repo1.maven.org/maven2/org/glassfish/main/extras/glassfish-embedded-web/3.1.2.2/glassfish-embedded-web-3.1.2.2.jar] has everything).
+
+For completeness, here's the complete error:
+{noformat}
+% scalac -cp glassfish-embedded-web-3.1.2.2.jar TestBeanManager.scala
+error: trying to do lub/glb of typevar ?T
+unhandled exception while transforming TestBeanManager.scala
+error: uncaught exception during compilation: scala.reflect.internal.FatalError
+error: scala.reflect.internal.FatalError: 
+     while compiling: TestBeanManager.scala
+        during phase: refchecks
+     library version: version 2.10.2
+    compiler version: version 2.10.2
+  reconstructed args: -classpath glassfish-embedded-web-3.1.2.2.jar
+
+  last tree to typer: This(class TestBeanManager)
+              symbol: class TestBeanManager (flags: )
+   symbol definition: class TestBeanManager extends BeanManager
+                 tpe: TestBeanManager.this.type
+       symbol owners: class TestBeanManager -> package <empty>
+      context owners: method resolveObserverMethods -> class TestBeanManager -> package <empty>
+
+== Enclosing template or block ==
+
+Apply( // override def resolveObserverMethods[T](x1: T,x2: java.lang.annotation.Annotation*): java.util.Set[javax.enterprise.inject.spi.ObserverMethod[_ >: T]] in class TestBeanManager
+  TestBeanManager.this."resolveObserverMethods" // override def resolveObserverMethods[T](x1: T,x2: java.lang.annotation.Annotation*): java.util.Set[javax.enterprise.inject.spi.ObserverMethod[_ >: T]] in class TestBeanManager, tree.tpe=[T](x1: T, x2: java.lang.annotation.Annotation*)java.util.Set[javax.enterprise.inject.spi.ObserverMethod[_ >: T]]
+  // 2 arguments
+  "x1" // x1: T
+  Typed(
+    Apply(
+      TypeApply(
+        scala.this."Predef"."wrapRefArray"
+        <tpt> // tree.tpe=java.lang.annotation.Annotation
+      )
+      "x2" // x2: <repeated...>[java.lang.annotation.Annotation]
+    )
+    "_*"
+  )
+)
+
+== Expanded type of tree ==
+
+ThisType(class TestBeanManager)
+
+trying to do lub/glb of typevar ?T
+	at scala.reflect.internal.SymbolTable.abort(SymbolTable.scala:49)
+	at scala.tools.nsc.Global.abort(Global.scala:254)
+	at scala.reflect.internal.Types$class.stripType$1(Types.scala:6707)
+	at scala.reflect.internal.Types$$anonfun$62.apply(Types.scala:6710)
+	at scala.reflect.internal.Types$$anonfun$62.apply(Types.scala:6710)
+	at scala.collection.immutable.List.loop$1(List.scala:170)
+	at scala.collection.immutable.List.mapConserve(List.scala:186)
+	at scala.reflect.internal.Types$class.stripExistentialsAndTypeVars(Types.scala:6710)
+	at scala.reflect.internal.Types$class.lub1$1(Types.scala:6821)
+	at scala.reflect.internal.Types$class.lub0$1(Types.scala:6815)
+	at scala.reflect.internal.Types$class.scala$reflect$internal$Types$$lub(Types.scala:6910)
+	at scala.reflect.internal.Types$class.lub(Types.scala:6784)
+	at scala.reflect.internal.SymbolTable.lub(SymbolTable.scala:13)
+	at scala.reflect.internal.Types$class.solveOne$1(Types.scala:6480)
+	at scala.reflect.internal.Types$$anonfun$solve$1.apply(Types.scala:6490)
+	at scala.reflect.internal.Types$$anonfun$solve$1.apply(Types.scala:6490)
+	at scala.reflect.internal.util.Collections$class.foreach3(Collections.scala:160)
+	at scala.reflect.internal.SymbolTable.foreach3(SymbolTable.scala:13)
+	at scala.reflect.internal.Types$class.solve(Types.scala:6490)
+	at scala.reflect.internal.SymbolTable.solve(SymbolTable.scala:13)
+	at scala.reflect.internal.Types$ExistentialType.withTypeVars(Types.scala:2842)
+	at scala.reflect.internal.Types$class.thirdTry$1(Types.scala:6136)
+	at scala.reflect.internal.Types$class.secondTry$1(Types.scala:6095)
+	at scala.reflect.internal.Types$class.firstTry$1(Types.scala:6071)
+	at scala.reflect.internal.Types$class.isSubType2(Types.scala:6214)
+	at scala.reflect.internal.Types$class.isSubType(Types.scala:5823)
+	at scala.reflect.internal.SymbolTable.isSubType(SymbolTable.scala:13)
+	at scala.reflect.internal.Types$class.secondTry$1(Types.scala:6090)
+	at scala.reflect.internal.Types$class.firstTry$1(Types.scala:6071)
+	at scala.reflect.internal.Types$class.isSubType2(Types.scala:6214)
+	at scala.reflect.internal.Types$class.isSubType(Types.scala:5823)
+	at scala.reflect.internal.SymbolTable.isSubType(SymbolTable.scala:13)
+	at scala.reflect.internal.Types$class.isSubArg$1(Types.scala:6012)
+	at scala.reflect.internal.Types$$anonfun$isSubArgs$2.apply(Types.scala:6014)
+	at scala.reflect.internal.Types$$anonfun$isSubArgs$2.apply(Types.scala:6014)
+	at scala.reflect.internal.util.Collections$class.corresponds3(Collections.scala:23)
+	at scala.reflect.internal.SymbolTable.corresponds3(SymbolTable.scala:13)
+	at scala.reflect.internal.Types$class.isSubArgs(Types.scala:6014)
+	at scala.reflect.internal.SymbolTable.isSubArgs(SymbolTable.scala:13)
+	at scala.reflect.internal.Types$class.firstTry$1(Types.scala:6047)
+	at scala.reflect.internal.Types$class.isSubType2(Types.scala:6214)
+	at scala.reflect.internal.Types$class.isSubType(Types.scala:5823)
+	at scala.reflect.internal.SymbolTable.isSubType(SymbolTable.scala:13)
+	at scala.reflect.internal.Types$class.isSubType(Types.scala:5781)
+	at scala.reflect.internal.SymbolTable.isSubType(SymbolTable.scala:13)
+	at scala.reflect.internal.Types$class.isWeakSubType(Types.scala:6761)
+	at scala.reflect.internal.SymbolTable.isWeakSubType(SymbolTable.scala:13)
+	at scala.reflect.internal.Types$Type.weak_$less$colon$less(Types.scala:914)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.scala$tools$nsc$typechecker$Infer$Inferencer$$isCompatible(Infer.scala:425)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.isWeaklyCompatible(Infer.scala:432)
+	at scala.tools.nsc.typechecker.Infer$Inferencer$$anonfun$isConservativelyCompatible$1.apply(Infer.scala:453)
+	at scala.tools.nsc.typechecker.Infer$Inferencer$$anonfun$isConservativelyCompatible$1.apply(Infer.scala:453)
+	at scala.tools.nsc.typechecker.Contexts$Context.withImplicitsDisabled(Contexts.scala:220)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.isConservativelyCompatible(Infer.scala:453)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.protoTypeArgs(Infer.scala:560)
+	at scala.tools.nsc.typechecker.Typers$Typer.handlePolymorphicCall$1(Typers.scala:3383)
+	at scala.tools.nsc.typechecker.Typers$Typer.doTypedApply(Typers.scala:3413)
+	at scala.tools.nsc.typechecker.Typers$Typer.normalTypedApply$1(Typers.scala:4589)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedApply$1(Typers.scala:4621)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:5526)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:5604)
+	at scala.tools.nsc.typechecker.Typers$Typer.transformedOrTyped(Typers.scala:5807)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedDefDef(Typers.scala:2255)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:5531)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:5604)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:5666)
+	at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer.scala$tools$nsc$typechecker$RefChecks$RefCheckTransformer$$varargBridge$1(RefChecks.scala:173)
+	at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer$$anonfun$addVarargBridges$2.apply(RefChecks.scala:197)
+	at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer$$anonfun$addVarargBridges$2.apply(RefChecks.scala:184)
+	at scala.reflect.internal.Scopes$Scope.foreach(Scopes.scala:315)
+	at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer.addVarargBridges(RefChecks.scala:184)
+	at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer.transform(RefChecks.scala:1721)
+	at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer.transform(RefChecks.scala:96)
+	at scala.reflect.api.Trees$Transformer.transformTemplate(Trees.scala:2904)
+	at scala.reflect.internal.Trees$$anonfun$itransform$4.apply(Trees.scala:1280)
+	at scala.reflect.internal.Trees$$anonfun$itransform$4.apply(Trees.scala:1279)
+	at scala.reflect.api.Trees$Transformer.atOwner(Trees.scala:2936)
+	at scala.reflect.internal.Trees$class.itransform(Trees.scala:1278)
+	at scala.reflect.internal.SymbolTable.itransform(SymbolTable.scala:13)
+	at scala.reflect.internal.SymbolTable.itransform(SymbolTable.scala:13)
+	at scala.reflect.api.Trees$Transformer.transform(Trees.scala:2897)
+	at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer.transform(RefChecks.scala:1800)
+	at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer.transformStat(RefChecks.scala:1347)
+	at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer$$anonfun$transformStats$1.apply(RefChecks.scala:1266)
+	at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer$$anonfun$transformStats$1.apply(RefChecks.scala:1266)
+	at scala.collection.TraversableLike$$anonfun$flatMap$1.apply(TraversableLike.scala:251)
+	at scala.collection.TraversableLike$$anonfun$flatMap$1.apply(TraversableLike.scala:251)
+	at scala.collection.immutable.List.foreach(List.scala:318)
+	at scala.collection.TraversableLike$class.flatMap(TraversableLike.scala:251)
+	at scala.collection.AbstractTraversable.flatMap(Traversable.scala:105)
+	at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer.transformStats(RefChecks.scala:1266)
+	at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer.transformStats(RefChecks.scala:96)
+	at scala.reflect.internal.Trees$$anonfun$itransform$7.apply(Trees.scala:1298)
+	at scala.reflect.internal.Trees$$anonfun$itransform$7.apply(Trees.scala:1298)
+	at scala.reflect.api.Trees$Transformer.atOwner(Trees.scala:2936)
+	at scala.reflect.internal.Trees$class.itransform(Trees.scala:1297)
+	at scala.reflect.internal.SymbolTable.itransform(SymbolTable.scala:13)
+	at scala.reflect.internal.SymbolTable.itransform(SymbolTable.scala:13)
+	at scala.reflect.api.Trees$Transformer.transform(Trees.scala:2897)
+	at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer.transform(RefChecks.scala:1800)
+	at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer.transform(RefChecks.scala:96)
+	at scala.tools.nsc.ast.Trees$Transformer.transformUnit(Trees.scala:227)
+	at scala.tools.nsc.transform.Transform$Phase.apply(Transform.scala:30)
+	at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:464)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$run$1.apply(Global.scala:431)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$run$1.apply(Global.scala:431)
+	at scala.collection.Iterator$class.foreach(Iterator.scala:727)
+	at scala.collection.AbstractIterator.foreach(Iterator.scala:1157)
+	at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:431)
+	at scala.tools.nsc.Global$Run.compileUnitsInternal(Global.scala:1583)
+	at scala.tools.nsc.Global$Run.compileUnits(Global.scala:1557)
+	at scala.tools.nsc.Global$Run.compileSources(Global.scala:1553)
+	at scala.tools.nsc.Global$Run.compile(Global.scala:1662)
+	at scala.tools.nsc.Driver.doCompile(Driver.scala:33)
+	at scala.tools.nsc.Main$.doCompile(Main.scala:79)
+	at scala.tools.nsc.Driver.process(Driver.scala:54)
+	at scala.tools.nsc.Driver.main(Driver.scala:67)
+	at scala.tools.nsc.Main.main(Main.scala)
+{noformat}

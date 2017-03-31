@@ -1,0 +1,10 @@
+I can only offer a general opinion because there is way too much extraneous material, but do the classes in question conform to the jvm specification or not? If they don't, then adding hacks to scala to work around their non-conformance is not the answer. If they do, then please articulate in a more bytecode-focused way why the error is incorrect.
+
+If you have to mention groovy, you are approaching the problem at too high a layer. Here is what the jvm specification says, emphasis added.
+
+{quote}
+Every CONSTANT_Class_info entry in the constant_pool table which represents a class or interface C that is not a package member must have exactly one corresponding entry in the classes array.
+
+If a class has members that are classes or interfaces, its constant_pool table (and hence its InnerClasses attribute) must refer to each such member, even if that member is not otherwise mentioned by the class. *These rules imply that a nested class or interface member will have InnerClasses information for each enclosing class and for each immediate member.*
+{quote}
+

@@ -1,0 +1,25 @@
+{code}
+import scala.language.reflectiveCalls
+
+trait A {
+  type Foo <: { def bippy: Int }
+
+  def f(x: Any) = x match {
+    case x: Foo with Mutable => x.bippy
+    case _                   => -1
+  }
+}
+
+object Test extends A {
+  trait Foo { def bippy = 5 }
+
+  def main(args: Array[String]): Unit = println(f(new Mutable { }))
+  // java.lang.NoSuchMethodException: Test$$anon$1.bippy()
+}
+{code}
+There's a comment which led me to this discovery; I don't know what was being imagined when this was written, but an intersection of one checkable type and one uncheckable type does not add up to a checkable type. It adds up to an uncheckable type.
+{code}
+// if at least one of the types in an intersection is checkable, use the checkable ones
+// this avoids problems as in run/matchonseq.scala, where the expected type is `Coll with scala.collection.SeqLike`
+// Coll is an abstract type, but SeqLike of course is not
+{code}

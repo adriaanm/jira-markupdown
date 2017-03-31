@@ -1,0 +1,238 @@
+The following three steps will slay the REPL compiler:
+
+(1) Create "Test.scala" containing the line
+
+{code}
+class Test { def indices = Seq().view.map(identity) }
+{code}
+
+(2) Compile it, "scalac Test.scala"
+
+(3) Point the REPL to the compiled classes, "scala -cp .", and enter "new Test()". The result is:
+
+{code}
+scala> new Test()
+exception when typing scala.runtime.ScalaRunTime.replStringOf($line1.$read.$iw.$iw.res0(), 1000)
+exception when typing "res0: Test = ".+(scala.runtime.ScalaRunTime.replStringOf($line1.$read.$iw.$iw.res0(), 1000))
+exception when typing {
+  $read.$iw.$iw;
+  "res0: Test = ".+(scala.runtime.ScalaRunTime.replStringOf($line1.$read.$iw.$iw.res0(), 1000))
+}
+exception when typing private[this] val $print: java.lang.String = {
+  $read.$iw.$iw;
+  "res0: Test = ".+(scala.runtime.ScalaRunTime.replStringOf($line1.$read.$iw.$iw.res0(), 1000))
+}
+exception when typing final object $eval extends java.lang.Object with ScalaObject {
+  def this(): object $line1.$eval = {
+    $eval.super.this();
+    ()
+  };
+  lazy private[this] var $result: Test = _;
+  <stable> <accessor> lazy def $result(): Test = {
+    $eval.this.$result = {
+      $eval.this.$print();
+      $line1.$read.$iw.$iw.res0()
+    };
+    $eval.this.$result
+  };
+  private[this] val $print: java.lang.String = {
+    $read.$iw.$iw;
+    "res0: Test = ".+(scala.runtime.ScalaRunTime.replStringOf($line1.$read.$iw.$iw.res0(), 1000))
+  };
+  <stable> <accessor> def $print(): java.lang.String = $eval.this.$print
+}
+exception when typing package $line1 {
+  final object $eval extends java.lang.Object with ScalaObject {
+    def this(): object $line1.$eval = {
+      $eval.super.this();
+      ()
+    };
+    lazy private[this] var $result: Test = _;
+    <stable> <accessor> lazy def $result(): Test = {
+      $eval.this.$result = {
+        $eval.this.$print();
+        $line1.$read.$iw.$iw.res0()
+      };
+      $eval.this.$result
+    };
+    private[this] val $print: java.lang.String = {
+      $read.$iw.$iw;
+      "res0: Test = ".+(scala.runtime.ScalaRunTime.replStringOf($line1.$read.$iw.$iw.res0(), 1000))
+    };
+    <stable> <accessor> def $print(): java.lang.String = $eval.this.$print
+  }
+}
+java.io.IOException: class file needed by Test is missing.
+reference type _$3 of [A<: <?>]=> scala.collection.generic.CanBuildFrom[scala.collection.SeqView.Coll,A,scala.collection.SeqView[A,Seq[_]]] refers to nonexisting symbol.
+	at scala.reflect.generic.UnPickler$Scan.errorMissingRequirement(UnPickler.scala:839)
+	at scala.tools.nsc.symtab.classfile.UnPickler$CompileScan.errorMissingRequirement(UnPickler.scala:38)
+	at scala.tools.nsc.symtab.classfile.UnPickler$CompileScan.errorMissingRequirement(UnPickler.scala:23)
+	at scala.reflect.generic.UnPickler$Scan$$anonfun$readExtSymbol$1$1$$anonfun$apply$4$$anonfun$apply$5.apply(UnPickler.scala:253)
+	at scala.reflect.generic.UnPickler$Scan$$anonfun$readExtSymbol$1$1$$anonfun$apply$4$$anonfun$apply$5.apply(UnPickler.scala:253)
+	at scala.reflect.generic.Symbols$AbsSymbol.orElse(Symbols.scala:163)
+	at scala.reflect.generic.UnPickler$Scan$$anonfun$readExtSymbol$1$1$$anonfun$apply$4.apply(UnPickler.scala:251)
+	at scala.reflect.generic.UnPickler$Scan$$anonfun$readExtSymbol$1$1$$anonfun$apply$4.apply(UnPickler.scala:251)
+	at scala.reflect.generic.Symbols$AbsSymbol.orElse(Symbols.scala:163)
+	at scala.reflect.generic.UnPickler$Scan$$anonfun$readExtSymbol$1$1.apply(UnPickler.scala:249)
+	at scala.reflect.generic.UnPickler$Scan$$anonfun$readExtSymbol$1$1.apply(UnPickler.scala:249)
+	at scala.reflect.generic.Symbols$AbsSymbol.orElse(Symbols.scala:163)
+	at scala.reflect.generic.UnPickler$Scan.readExtSymbol$1(UnPickler.scala:245)
+	at scala.reflect.generic.UnPickler$Scan.readSymbol(UnPickler.scala:261)
+	at scala.reflect.generic.UnPickler$Scan$$anonfun$readSymbolRef$1.apply(UnPickler.scala:793)
+	at scala.reflect.generic.UnPickler$Scan$$anonfun$readSymbolRef$1.apply(UnPickler.scala:793)
+	at scala.reflect.generic.UnPickler$Scan.at(UnPickler.scala:192)
+	at scala.reflect.generic.UnPickler$Scan.readSymbolRef(UnPickler.scala:793)
+	at scala.reflect.generic.UnPickler$Scan.readType(UnPickler.scala:362)
+	at scala.reflect.generic.UnPickler$Scan$$anonfun$readTypeRef$1.apply(UnPickler.scala:794)
+	at scala.reflect.generic.UnPickler$Scan$$anonfun$readTypeRef$1.apply(UnPickler.scala:794)
+	at scala.reflect.generic.UnPickler$Scan.at(UnPickler.scala:192)
+	at scala.reflect.generic.UnPickler$Scan.readTypeRef(UnPickler.scala:794)
+	at scala.reflect.generic.UnPickler$Scan$$anonfun$4.apply(UnPickler.scala:363)
+	at scala.reflect.generic.UnPickler$Scan$$anonfun$4.apply(UnPickler.scala:363)
+	at scala.reflect.generic.PickleBuffer.until(PickleBuffer.scala:162)
+	at scala.reflect.generic.UnPickler$Scan.readType(UnPickler.scala:363)
+	at scala.reflect.generic.UnPickler$Scan$$anonfun$readTypeRef$1.apply(UnPickler.scala:794)
+	at scala.reflect.generic.UnPickler$Scan$$anonfun$readTypeRef$1.apply(UnPickler.scala:794)
+	at scala.reflect.generic.UnPickler$Scan.at(UnPickler.scala:192)
+	at scala.reflect.generic.UnPickler$Scan.readTypeRef(UnPickler.scala:794)
+	at scala.reflect.generic.UnPickler$Scan.readType(UnPickler.scala:398)
+	at scala.reflect.generic.UnPickler$Scan$$anonfun$readTypeRef$1.apply(UnPickler.scala:794)
+	at scala.reflect.generic.UnPickler$Scan$$anonfun$readTypeRef$1.apply(UnPickler.scala:794)
+	at scala.reflect.generic.UnPickler$Scan.at(UnPickler.scala:192)
+	at scala.reflect.generic.UnPickler$Scan.readTypeRef(UnPickler.scala:794)
+	at scala.reflect.generic.UnPickler$Scan$$anonfun$4.apply(UnPickler.scala:363)
+	at scala.reflect.generic.UnPickler$Scan$$anonfun$4.apply(UnPickler.scala:363)
+	at scala.reflect.generic.PickleBuffer.until(PickleBuffer.scala:162)
+	at scala.reflect.generic.PickleBuffer.until(PickleBuffer.scala:162)
+	at scala.reflect.generic.UnPickler$Scan.readType(UnPickler.scala:363)
+	at scala.reflect.generic.UnPickler$Scan$$anonfun$readTypeRef$1.apply(UnPickler.scala:794)
+	at scala.reflect.generic.UnPickler$Scan$$anonfun$readTypeRef$1.apply(UnPickler.scala:794)
+	at scala.reflect.generic.UnPickler$Scan.at(UnPickler.scala:192)
+	at scala.reflect.generic.UnPickler$Scan.readTypeRef(UnPickler.scala:794)
+	at scala.reflect.generic.UnPickler$Scan.readType(UnPickler.scala:382)
+	at scala.tools.nsc.symtab.classfile.UnPickler$CompileScan$LazyTypeRef$$anonfun$1.apply(UnPickler.scala:53)
+	at scala.tools.nsc.symtab.classfile.UnPickler$CompileScan$LazyTypeRef$$anonfun$1.apply(UnPickler.scala:53)
+	at scala.reflect.generic.UnPickler$Scan.at(UnPickler.scala:192)
+	at scala.tools.nsc.symtab.classfile.UnPickler$CompileScan$LazyTypeRef.complete(UnPickler.scala:53)
+	at scala.tools.nsc.symtab.classfile.UnPickler$CompileScan$LazyTypeRef.load(UnPickler.scala:58)
+	at scala.tools.nsc.symtab.Symbols$Symbol.typeParams(Symbols.scala:910)
+	at scala.tools.nsc.transform.SpecializeTypes.scala$tools$nsc$transform$SpecializeTypes$$normalizeMember(SpecializeTypes.scala:716)
+	at scala.tools.nsc.transform.SpecializeTypes$$anonfun$13.apply(SpecializeTypes.scala:669)
+	at scala.tools.nsc.transform.SpecializeTypes$$anonfun$13.apply(SpecializeTypes.scala:667)
+	at scala.collection.TraversableLike$$anonfun$flatMap$1.apply(TraversableLike.scala:200)
+	at scala.collection.TraversableLike$$anonfun$flatMap$1.apply(TraversableLike.scala:200)
+	at scala.collection.LinearSeqOptimized$class.foreach(LinearSeqOptimized.scala:59)
+	at scala.collection.immutable.List.foreach(List.scala:45)
+	at scala.collection.TraversableLike$class.flatMap(TraversableLike.scala:200)
+	at scala.collection.immutable.List.flatMap(List.scala:45)
+	at scala.tools.nsc.transform.SpecializeTypes.specializeClass(SpecializeTypes.scala:667)
+	at scala.tools.nsc.transform.SpecializeTypes.transformInfo(SpecializeTypes.scala:1065)
+	at scala.tools.nsc.transform.InfoTransform$Phase$$anon$1.transform(InfoTransform.scala:38)
+	at scala.tools.nsc.symtab.Symbols$Symbol.rawInfo(Symbols.scala:794)
+	at scala.tools.nsc.symtab.Symbols$Symbol.info(Symbols.scala:737)
+	at scala.tools.nsc.symtab.Types$TypeRef.baseType(Types.scala:1915)
+	at scala.tools.nsc.symtab.Types$class.firstTry$1(Types.scala:4656)
+	at scala.tools.nsc.symtab.Types$class.scala$tools$nsc$symtab$Types$$isSubType2(Types.scala:4813)
+	at scala.tools.nsc.symtab.Types$$anonfun$isSubType$1.apply$mcZ$sp(Types.scala:4528)
+	at scala.tools.nsc.symtab.Types$undoLog$.undoUnless(Types.scala:143)
+	at scala.tools.nsc.symtab.Types$class.isSubType(Types.scala:4515)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType(SymbolTable.scala:13)
+	at scala.tools.nsc.symtab.Types$Type.$less$colon$less(Types.scala:638)
+	at scala.tools.nsc.transform.Erasure$Eraser.adaptToType(Erasure.scala:640)
+	at scala.tools.nsc.transform.Erasure$Eraser.adapt(Erasure.scala:725)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:4277)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedArg(Typers.scala:2191)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$typedArgs$3.apply(Typers.scala:2204)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$typedArgs$3.apply(Typers.scala:2203)
+	at scala.Tuple3$Zipped$$anonfun$map$1.apply(Tuple3.scala:66)
+	at scala.Tuple3$Zipped$$anonfun$map$1.apply(Tuple3.scala:64)
+	at scala.collection.LinearSeqOptimized$class.foreach(LinearSeqOptimized.scala:59)
+	at scala.collection.immutable.List.foreach(List.scala:45)
+	at scala.Tuple3$Zipped.map(Tuple3.scala:64)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedArgs(Typers.scala:2203)
+	at scala.tools.nsc.typechecker.Typers$Typer.doTypedApply(Typers.scala:2421)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedApply$1(Typers.scala:3368)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:4101)
+	at scala.tools.nsc.transform.Erasure$Eraser.typed1(Erasure.scala:731)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:4268)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedArg(Typers.scala:2191)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$typedArgs$3.apply(Typers.scala:2204)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$typedArgs$3.apply(Typers.scala:2203)
+	at scala.Tuple3$Zipped$$anonfun$map$1.apply(Tuple3.scala:66)
+	at scala.Tuple3$Zipped$$anonfun$map$1.apply(Tuple3.scala:64)
+	at scala.collection.LinearSeqOptimized$class.foreach(LinearSeqOptimized.scala:59)
+	at scala.collection.immutable.List.foreach(List.scala:45)
+	at scala.Tuple3$Zipped.map(Tuple3.scala:64)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedArgs(Typers.scala:2203)
+	at scala.tools.nsc.typechecker.Typers$Typer.doTypedApply(Typers.scala:2421)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedApply$1(Typers.scala:3368)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:4101)
+	at scala.tools.nsc.transform.Erasure$Eraser.typed1(Erasure.scala:731)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:4268)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedBlock(Typers.scala:1920)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:3948)
+	at scala.tools.nsc.transform.Erasure$Eraser.typed1(Erasure.scala:731)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:4268)
+	at scala.tools.nsc.typechecker.Typers$Typer.transformedOrTyped(Typers.scala:4425)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedValDef(Typers.scala:1567)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:3913)
+	at scala.tools.nsc.transform.Erasure$Eraser.typed1(Erasure.scala:731)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:4268)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStat$1(Typers.scala:2100)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$24.apply(Typers.scala:2184)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$24.apply(Typers.scala:2184)
+	at scala.collection.immutable.List.loop$1(List.scala:117)
+	at scala.collection.immutable.List.mapConserve(List.scala:133)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:2184)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedTemplate(Typers.scala:1512)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedClassDef(Typers.scala:1278)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:3907)
+	at scala.tools.nsc.transform.Erasure$Eraser.typed1(Erasure.scala:731)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:4268)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStat$1(Typers.scala:2100)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$24.apply(Typers.scala:2184)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$24.apply(Typers.scala:2184)
+	at scala.collection.immutable.List.loop$1(List.scala:117)
+	at scala.collection.immutable.List.mapConserve(List.scala:133)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:2184)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:3903)
+	at scala.tools.nsc.transform.Erasure$Eraser.typed1(Erasure.scala:731)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:4268)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:4328)
+	at scala.tools.nsc.transform.Erasure$ErasureTransformer$$anonfun$transform$1.apply(Erasure.scala:1182)
+	at scala.tools.nsc.transform.Erasure$ErasureTransformer$$anonfun$transform$1.apply(Erasure.scala:1177)
+	at scala.tools.nsc.symtab.SymbolTable.atPhase(SymbolTable.scala:95)
+	at scala.tools.nsc.transform.Erasure$ErasureTransformer.transform(Erasure.scala:1177)
+	at scala.tools.nsc.ast.Trees$Transformer.transformUnit(Trees.scala:892)
+	at scala.tools.nsc.transform.Transform$Phase.apply(Transform.scala:30)
+	at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:329)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$run$1.apply(Global.scala:297)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$run$1.apply(Global.scala:297)
+	at scala.collection.Iterator$class.foreach(Iterator.scala:652)
+	at scala.collection.mutable.ListBuffer$$anon$1.foreach(ListBuffer.scala:316)
+	at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:297)
+	at scala.tools.nsc.Global$Run.compileSources(Global.scala:953)
+	at scala.tools.nsc.interpreter.IMain$ReadEvalPrint.compileAndSaveRun(IMain.scala:755)
+	at scala.tools.nsc.interpreter.IMain$ReadEvalPrint.compile(IMain.scala:730)
+	at scala.tools.nsc.interpreter.IMain$Request$$anonfun$compile$1.apply$mcZ$sp(IMain.scala:879)
+	at scala.tools.nsc.interpreter.IMain$Request$$anonfun$compile$1.apply(IMain.scala:879)
+	at scala.tools.nsc.interpreter.IMain$Request$$anonfun$compile$1.apply(IMain.scala:879)
+	at scala.tools.nsc.interpreter.IMain.beSilentDuring(IMain.scala:206)
+	at scala.tools.nsc.interpreter.IMain$Request.compile(IMain.scala:878)
+	at scala.tools.nsc.interpreter.IMain.interpret(IMain.scala:575)
+	at scala.tools.nsc.interpreter.IMain.interpret(IMain.scala:542)
+	at scala.tools.nsc.interpreter.ILoop.reallyInterpret$1(ILoop.scala:691)
+	at scala.tools.nsc.interpreter.ILoop.interpretStartingWith(ILoop.scala:742)
+	at scala.tools.nsc.interpreter.ILoop.command(ILoop.scala:648)
+	at scala.tools.nsc.interpreter.ILoop.processLine$1(ILoop.scala:539)
+	at scala.tools.nsc.interpreter.ILoop.loop(ILoop.scala:547)
+	at scala.tools.nsc.interpreter.ILoop.process(ILoop.scala:819)
+	at scala.tools.nsc.MainGenericRunner.runTarget$1(MainGenericRunner.scala:67)
+	at scala.tools.nsc.MainGenericRunner.process(MainGenericRunner.scala:80)
+	at scala.tools.nsc.MainGenericRunner$.main(MainGenericRunner.scala:89)
+	at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
+{code}
+
+The problem goes away if the "view" is removed.
+
+I also observed strange build behavior with SBT but the root problem seems the same (a missing class file).

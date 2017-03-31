@@ -1,0 +1,28 @@
+{code:lang=java}
+import language.dynamics
+
+class X(val i: Int) extends Dynamic {
+   def selectDynamic(name: Int) = i
+}
+
+object F {
+   val x = new X(3)
+   val z = x.y
+}
+{code}
+
+{code}
+F.scala:17: error: type mismatch;
+ found   : String("y")
+ required: Int
+        val z = x.y
+                ^
+{code}
+
+A better error message would indicate that selectDynamic has the wrong signature.  A related situation is when selectDynamic has no arguments, which gives this error message:
+
+{code}
+error: Int does not take parameters
+    val z = x.y
+            ^
+{code}

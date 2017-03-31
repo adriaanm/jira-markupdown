@@ -1,0 +1,23 @@
+Haha, I finaly find the reason !!!
+The implementation of Stream#iterator is wrong which I showed above.
+There is the correct one:
+
+{code}
+class Stream[A] {
+   ...
+  class LazyCell[T](st: => Stream[T]){ lazy val v = st }
+  
+  def iterator: Iterator[A] = new Iterator[A] {
+    var these = new LazyCell(Stream.this)
+    def hasNext: Boolean = !these.v.isEmpty
+    def next: A = 
+        if (hasNext) {
+            val result = these.v.head
+            val tmp = these      //Here...
+            these =new LazyCell(tmp.v.tail); 
+	    result
+        } else Iterator.empty.next
+    override def toList: List[A] = Stream.this.toList
+  }
+}
+{code}

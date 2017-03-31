@@ -1,0 +1,37 @@
+{code}
+    def typesOfSelectors(tp: Type)       =
+      if (isTupleType(tp)) tp.typeArgs
+{code}
+
+{code}
+scala> :power
+scala> :paste
+// Entering paste mode (ctrl-D to finish)
+
+class CC(val i: Int, val s: String)
+object CC extends {
+  type P = (Int, String)
+
+  //def unapply(c: CC): Option[(Int, String)] = Some((c.i, c.s)) // OK
+  def unapply(c: CC): Option[P] = Some((c.i, c.s)) // fails
+}
+
+
+// Exiting paste mode, now interpreting.
+
+defined class CC
+defined object CC
+
+scala> val unapplyTp = typeOf[CC.type].nonPrivateMember(newTermName("unapply")).info.finalResultType
+unapplyTp: $r.intp.global.Type = Option[CC.P]
+
+scala> val tp = typeOfMemberNamedGet(unapplyTp)
+tp: $r.intp.global.Type = CC.P
+
+scala> if (isTupleType(tp)) tp.typeArgs
+res1: Any = List()
+
+scala> tp.dealias.typeArgs
+res2: List[$r.intp.global.Type] = List(Int, String)
+
+{code}

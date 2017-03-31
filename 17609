@@ -1,0 +1,60 @@
+fsc fails with a {{notype}} error every other time (first compilation succeeds, next one fails, next succeeds, next fails, etc.) when referring to a public enum declared inside a Java class.
+
+The error can be reproduced with the following code.  Breaking.java:
+
+{code}
+public class Breaking { public enum Broke { SHARD, CHIP } }
+{code}
+
+Broken.scala:
+
+{code}
+class Broken() { def broken() = Breaking.Broke.CHIP }
+{code}
+
+And to demonstrate the problem:
+
+{code}
+javac Breaking.java; fsc Broken.scala; fsc Broken.scala
+{code}
+
+or {{scalac -Xresident}} with {{Broken.scala}} entered twice.
+
+The 20121101 nightly is still broken.  MC3 worked.  20120918 breaks on the same code, but has a complaint (again, only on the second try; in -Xresident mode) not present in later builds:
+
+{code}
+TypeRef(
+  TypeSymbol(final sealed abstract class Breaking$Broke extends Enum)
+)
+
+how can getCommonSuperclass() do its job if different class symbols get the same bytecode-level internal name: Breaking$Broke
+	at scala.tools.nsc.backend.jvm.GenASM$JBuilder.javaName(GenASM.scala:613)
+	at scala.tools.nsc.backend.jvm.GenASM$JPlainBuilder.genConstant(GenASM.scala:1761)
+	at scala.tools.nsc.backend.jvm.GenASM$JPlainBuilder.scala$tools$nsc$backend$jvm$GenASM$JPlainBuilder$$genInstr$1(GenASM.scala:2469)
+	at scala.tools.nsc.backend.jvm.GenASM$JPlainBuilder$$anonfun$genBlock$1$2.apply(GenASM.scala:2402)
+	at scala.tools.nsc.backend.jvm.GenASM$JPlainBuilder$$anonfun$genBlock$1$2.apply(GenASM.scala:2388)
+	at scala.collection.IndexedSeqOptimized$class.foreach(IndexedSeqOptimized.scala:33)
+	at scala.collection.mutable.ArrayOps$ofRef.foreach(ArrayOps.scala:105)
+	at scala.tools.nsc.backend.icode.BasicBlocks$BasicBlock.foreach(BasicBlocks.scala:197)
+	at scala.tools.nsc.backend.jvm.GenASM$JPlainBuilder.genBlock$1(GenASM.scala:2388)
+	at scala.tools.nsc.backend.jvm.GenASM$JPlainBuilder.genBlocks$1(GenASM.scala:2319)
+	at scala.tools.nsc.backend.jvm.GenASM$JPlainBuilder.genCode(GenASM.scala:2932)
+	at scala.tools.nsc.backend.jvm.GenASM$JPlainBuilder.genMethod(GenASM.scala:1639)
+	at scala.tools.nsc.backend.jvm.GenASM$JPlainBuilder.genClass(GenASM.scala:1474)
+	at scala.tools.nsc.backend.jvm.GenASM$AsmPhase.run(GenASM.scala:182)
+	at scala.tools.nsc.Global$Run.compileUnitsInternal(Global.scala:1572)
+	at scala.tools.nsc.Global$Run.compileUnits(Global.scala:1546)
+	at scala.tools.nsc.Global$Run.compileSources(Global.scala:1542)
+	at scala.tools.nsc.Global$Run.compile(Global.scala:1652)
+	at scala.tools.nsc.Main$$anonfun$resident$1.apply(Main.scala:27)
+	at scala.tools.nsc.Main$$anonfun$resident$1.apply(Main.scala:23)
+	at scala.tools.nsc.EvalLoop$class.inner$1(EvalLoop.scala:19)
+	at scala.tools.nsc.EvalLoop$class.loop(EvalLoop.scala:23)
+	at scala.tools.nsc.Main$.resident(Main.scala:23)
+	at scala.tools.nsc.Main$.doCompile(Main.scala:78)
+	at scala.tools.nsc.Driver.process(Driver.scala:54)
+	at scala.tools.nsc.Driver.main(Driver.scala:67)
+	at scala.tools.nsc.Main.main(Main.scala)
+{code}
+
+Not sure if this is related to the reflection bug on enums ([this one|https://issues.scala-lang.org/browse/SI-6548]), but this one is more serious as it randomly cripples builds if {{fsc}} is used.

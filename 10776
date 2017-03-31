@@ -1,0 +1,35 @@
+Regressed in commit 51b16e421ddd4e6c7e90ba945addf39ffcb4fa41
+Author: Eugene Burmako <xeno.by@gmail.com>
+Date:   Tue Jan 28 11:29:28 2014 +0300
+
+    SI-8192 adds ClassSymbol.isPrimaryConstructor
+
+BTW, finding this commit is easy with git bisect and our own tooling (https://github.com/retronym/libscala, https://github.com/adriaanm/binfu/blob/master/scalac-head):
+
+{code}
+ ~/ $ RUNNER=scalac scala-hash v2.11.0-M8 /Users/adriaan/Desktop/Bugs/t8367.scala 
+ ~/ $ RUNNER=scalac scala-hash v2.11.0-RC1 /Users/adriaan/Desktop/Bugs/t8367.scala 
+/Users/adriaan/Desktop/Bugs/t8367.scala:3: error: self constructor arguments cannot reference unconstructed `this`
+class Throwable(s: String, private var e: Throwable) extends Object with java.io.Serializable {
+                                                             ^
+/Users/adriaan/Desktop/Bugs/t8367.scala:62: error: self constructor arguments cannot reference unconstructed `this`
+class CloneNotSupportedException(s: String) extends Exception(s) {
+                                                    ^
+/Users/adriaan/Desktop/Bugs/t8367.scala:66: error: self constructor arguments cannot reference unconstructed `this`
+class InterruptedException(s: String) extends Exception(s) {
+                                              ^
+three errors found
+
+[ master $%> ] scala/ $ g bisect start
+[ master $%|BISECTING> ] scala/ $ g bisect good v2.11.0-M8
+[ master $%|BISECTING> ] scala/ $ g bisect bad v2.11.0-RC1
+[ (ed4ae1d359...) $%|BISECTING ] scala/ $ g bisect run scalac-head /Users/adriaan/Desktop/Bugs/t8367.scala 
+[...]
+51b16e421ddd4e6c7e90ba945addf39ffcb4fa41 is the first bad commit
+commit 51b16e421ddd4e6c7e90ba945addf39ffcb4fa41
+Author: Eugene Burmako <xeno.by@gmail.com>
+Date:   Tue Jan 28 11:29:28 2014 +0300
+
+    SI-8192 adds ClassSymbol.isPrimaryConstructor
+    
+{code}

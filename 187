@@ -1,0 +1,40 @@
+I guess that stems from the fact that those val declarations are syntactic sugar: internally, there are only type clauses. Here's the relevant fragment of Martin's rationale for existentials (scala-devel mail of June 12 (maybe the current version of that document should be on the wiki?)
+
+1. Syntax:
+----------
+
+There is a new form of type:
+{code}
+Type  ::= Type1 [for_some `{' WhereClause {semi WhereClause}} `}']
+WhereClause ::= type TypeDcl
+             |  val  ValDcl
+             |
+{code}
+Existential types can abstract over types as well as values.
+
+Examples:
+{code}
+class LinkedList[T]
+class Outer { type T; val m: T }
+
+{ class C { ... }; new LinkedList[C] }
+ : LinkedList[C] for_some { type C extends ScalaObject }
+
+{ val x: Outer =
+  if (coinflip) new Outer { type T = Int; val m = 1 }
+  else new Outer { type T = String; val m = 2 }
+ new LinkedList(x.m)
+}
+ : LinkedList[x.T] for_some { val x: Outer }
+{code}
+Note: A value abstraction { val x: T } can be treated as syntactic sugar for
+a type abstraction { type x_type <: T with Singleton }. This requires a new
+predefined type Singleton which can be inherited only from singleton types.
+If the syntactic sugar is expanded out, the last example has type:
+{code}
+LinkedList[x_type # T] for_some { type T <: Outer with Singleton }
+{code}
+It's an open question whether `val' abstractions are worth their
+weight, or whether we should just require that users write and read
+teh desugared version. A point in favor of `val' abstraction is that
+they make error messages easier to read.

@@ -1,0 +1,22 @@
+We are about to cut 2.11.1 to address SI-8549, the regression in the SerialVersionUID annotation.
+
+I actually read recently that Java would look up the base class list for a static serialVersionUID field. But I hadn't verified this.
+
+Seems not to work in this case:
+
+{code}
+scala> import annotation._
+import annotation._
+
+scala> @SerialVersionUID(42) class Foo[@specialized(Int) T] extends Serializable
+defined class Foo
+
+scala> val fooInt = new Foo[Int]().getClass
+fooInt: Class[_ <: Foo[Int]] = class Foo$mcI$sp
+
+scala> java.io.ObjectStreamClass.lookup(fooInt).getSerialVersionUID
+res0: Long = 569518787336291384
+
+scala> java.io.ObjectStreamClass.lookup(new Foo[String]().getClass).getSerialVersionUID
+res1: Long = 42
+{code}

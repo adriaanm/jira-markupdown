@@ -1,0 +1,92 @@
+Original report (Scala IDE): [#1001402|https://scala-ide-portfolio.assembla.com/spaces/scala-ide/tickets/1001402]
+
+Twin issue reported against Eclipse: [#398657|https://bugs.eclipse.org/bugs/show_bug.cgi?id=398657]
+
+Scalac crashes when trying to open a Java class, with annotations, compiled by the Eclipse Java compiler.
+
+The Java code is the following:
+
+{code}
+package ide.issue.session;
+
+import java.util.HashMap;
+
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import org.codehaus.jackson.annotate.JsonTypeInfo;
+
+@JsonIgnoreProperties(ignoreUnknown=true)
+public class JavaClass {
+
+	@JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.PROPERTY, property="@class")
+    protected HashMap<String, Object> content = new HashMap<String, Object>();
+
+    public void foo() {
+		
+    }
+}
+{code}
+
+It depends on {{"org.codehaus.jackson" % "jackson-core-asl" % "1.9.4"}}, also available [here|http://search.maven.org/remotecontent?filepath=org/codehaus/jackson/jackson-core-asl/1.9.4/jackson-core-asl-1.9.4.jar].
+
+I attached a zip with the result of the compilation with the Eclipse Java compiler.
+
+A Scala test class:
+
+{code}
+package ide.issue.security
+
+import ide.issue.session.JavaClass
+
+
+class ScalaTest {
+  def test(){
+    val j= new JavaClass()
+  }
+}
+{code}
+
+The error:
+
+{code}
+$ scalac -classpath ../jackson-core-asl-1.9.4.jar:../t1402.jar ScalaTest.scala 
+error: error while loading JsonTypeInfo$Id, class file '../jackson-core-asl-1.9.4.jar(org/codehaus/jackson/annotate/JsonTypeInfo$Id.class)' is broken
+(class java.lang.UnsupportedOperationException/addChild inapplicable for <none>)
+warning: Caught: java.lang.AssertionError: assertion failed: 
+     while compiling: ScalaTest.scala
+        during phase: typer
+     library version: version 2.10.0
+    compiler version: version 2.10.0
+  reconstructed args: -classpath ../jackson-core-asl-1.9.4.jar:../t1402.jar
+
+  last tree to typer: Ident(JavaClass)
+              symbol: <none> (flags: sealed abstract)
+   symbol definition: <none>
+       symbol owners: 
+      context owners: value j -> method test -> class ScalaTest -> package security
+
+== Enclosing template or block ==
+
+Block(
+  ValDef( // val j: <?>
+    <locked>
+    "j"
+    <tpt>
+    Apply(
+      new JavaClass."<init>"
+      Nil
+    )
+  )
+  ()
+)
+
+org.codehaus.jackson.annotate.JsonTypeInfo$Id while parsing annotations in ../t1402.jar(ide/issue/session/JavaClass.class)
+error: error while loading JavaClass, class file '../t1402.jar(ide/issue/session/JavaClass.class)' is broken
+(class java.lang.RuntimeException/bad constant pool index: 3840 at pos: 710)
+ScalaTest.scala:8: error: ide.issue.session.JavaClass does not have a constructor
+    val j= new JavaClass()
+           ^
+one warning found
+three errors found
+{code}
+
+If the Java class is compiled with javac, scalac is working fine.

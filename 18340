@@ -1,0 +1,59 @@
+{code}
+object Test {
+  object RE extends RuntimeException
+
+  def await0: Unit =
+    if (false) {
+      if (false) await0
+    } else throw RE
+
+  def body = {
+    try {
+      await0
+    } catch {
+      case e: Throwable ⇒
+        new Some((None getOrElse this).getClass)
+        throw e
+    }
+  }
+
+  def main(args: Array[String]) {
+    try { body } catch {
+      case RE => // okay
+    }
+  }
+}
+
+{code}
+
+{noformat}
+JAVA_HOME=$JAVA8_HOME qbin/scala -nc -Yinline -Yinline-handlers  test/inliner-bug.scala
+java.lang.VerifyError: Bad type on operand stack
+Exception Details:
+  Location:
+    Main$.body()V @77: invokespecial
+  Reason:
+    Type top (current frame, stack[1]) is not assignable to reference type
+  Current Frame:
+    bci: @77
+    flags: { }
+    locals: { 'Main$', 'java/lang/Throwable', 'Main$$anonfun$body$1', 'scala/None$' }
+    stack: { top, top, 'java/lang/Class' }
+  Bytecode:
+    0000000: 2a3a 07b2 0012 4cbb 0016 59b2 001b bb00
+    0000010: 1d59 b700 1e4d 4e2d b600 2499 001e a700
+    0000020: 224c bb00 1659 b200 1bbb 001d 59b7 001e
+    0000030: 4d4e 2db6 0024 9a00 0a2d b600 28a7 000d
+    0000040: 2c3a 0519 053a 08b2 002a b600 2eb7 0031
+    0000050: 572b bf
+  Exception Handler Table:
+    bci [0, 7] => handler: 33
+  Stackmap Table:
+    same_locals_1_stack_item_frame(@33,Object[#51])
+    full_frame(@57,{Object[#2],Object[#51],Object[#29],Object[#24]},{Top,Top})
+    full_frame(@64,{Object[#2],Object[#51],Object[#29],Object[#24]},{Top,Top})
+    full_frame(@74,{Object[#2],Object[#51],Object[#29],Object[#24]},{Top,Top,Object[#4]})
+
+	at Main.main(inliner-bug.scala)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method){noformat}
+

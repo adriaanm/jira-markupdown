@@ -1,0 +1,17 @@
+Overloading is picking the most specific first, which is possible because of widening conversions. OK, I guess "first one it happens to find" was tongue-in-cheek.
+
+The expected failure would be
+{code}
+scala> object X { def f(i: Int, j: Int) = i + j ; def f(s: String, t: String) = s + t }
+defined object X
+
+scala> Set(1,2) reduce X.f
+<console>:13: error: ambiguous reference to overloaded definition,
+both method f in object X of type (s: String, t: String)String
+and  method f in object X of type (i: Int, j: Int)Int
+match expected type (?, ?) => ?
+       Set(1,2) reduce X.f
+                         ^
+{code}
+
+

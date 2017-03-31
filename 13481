@@ -1,0 +1,23 @@
+{code}
+class A[+T] {
+    def x[U >: T](s: U) { }
+    def x[U >: T](ss: U*) { }
+}
+
+new A[String]().x("a")
+{code}
+
+Compiler reports:
+
+{code}
+error: ambiguous reference to overloaded definition,
+both method x in class A of type [U >: String](U*)Unit
+and  method x in class A of type [U >: String](U)Unit
+match argument types (java.lang.String)
+new A[String]().x("a")
+                 ^
+{code}
+
+I think first method should be called.
+
+Because of this bug, call to immutable.Stack.push is ambiguous.

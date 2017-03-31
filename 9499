@@ -1,0 +1,27 @@
+Paul's analysis from the mailing list:
+
+{noformat}
+The method descriptor is not the erasure of the generic signature. Surely a scala bug. Notice how the third tail's return type is Traversable<A> in the generic signature but Object in the descriptor. javac issues an ill-fated call to the method it expects to find based on generic return type Traversable<A>.
+
+Exception in thread "main" java.lang.NoSuchMethodError: scala.collection.immutable.List.tail()Lscala/collection/Traversable;
+	at Main.main(Main.java:3)
+
+scala> val tails = classOf[scala.collection.immutable.List[_]].getMethods filter (_.getName == "tail")
+tails: Array[java.lang.reflect.Method] = Array(public scala.collection.LinearSeqOptimized scala.collection.immutable.List.tail(), public scala.collection.immutable.List scala.collection.immutable.List.tail(), public java.lang.Object scala.collection.AbstractTraversable.tail())
+
+scala> tails foreach println
+public scala.collection.LinearSeqOptimized scala.collection.immutable.List.tail()
+public scala.collection.immutable.List scala.collection.immutable.List.tail()
+public java.lang.Object scala.collection.AbstractTraversable.tail()
+
+scala> tails map (_.toGenericString) foreach println
+public scala.collection.LinearSeqOptimized scala.collection.immutable.List.tail()
+public scala.collection.immutable.List scala.collection.immutable.List.tail()
+public scala.collection.Traversable<A> scala.collection.AbstractTraversable.tail()
+
+But as you may have heard, my scala days are numbered so all I can offer is this diagnosis.
+{noformat}
+
+I bisected that (the old fashioned way, as the regression pre dates the archive of builds available to scalac-hash), and landed https://github.com/scala/scala/commit/a0a045f5c0. That was just a library change (introduction of `Abstract{Seq, Iterable, ...}`) so the root problem is a latent bug in the backend (either with erasure or with generic signatures.), most probably SI-3452.
+
+I've been poking around in this space recently to fix some problems with generic sigs and erasure of value classes, so I'll take a look at this one.  

@@ -1,0 +1,42 @@
+...and NoSuchMethodError is the outcome for anyone unlucky enough to call the forwarder.  Here are the methods in scala.reflect.makro.internal.package$ .
+{noformat}
+
+public <T> api.Exprs$Expr<ArrayTag<T>> materializeArrayTag_impl(makro.Context, api.Exprs$Expr<api.Universe>, api.TypeTags$TypeTag<T>);
+public <T> api.Exprs$Expr<ErasureTag<T>> materializeErasureTag_impl(makro.Context, api.Exprs$Expr<api.Universe>, api.TypeTags$TypeTag<T>);
+public <T> api.Exprs$Expr<ClassTag<T>> materializeClassTag_impl(makro.Context, api.Exprs$Expr<api.Universe>, api.TypeTags$TypeTag<T>);
+public <T> api.Exprs$Expr<api.TypeTags$TypeTag<T>> materializeTypeTag_impl(makro.Context, api.Exprs$Expr<api.Universe>, api.TypeTags$TypeTag<T>);
+public <T> api.Exprs$Expr<api.TypeTags$ConcreteTypeTag<T>> materializeConcreteTypeTag_impl(makro.Context, api.Exprs$Expr<api.Universe>, api.TypeTags$TypeTag<T>);
+public makro.internal.Utils context2utils(makro.Context);
+{noformat}
+
+Here are the ones in scala.reflect.makro.internal.package, which should only be forwarders to the above.
+{noformat}
+public static makro.internal.Utils context2utils(makro.Context);
+public static <T> api.Exprs$Expr<api.TypeTags$ConcreteTypeTag<T>> materializeConcreteTypeTag_impl(makro.Context, api.Exprs$Expr<api.Universe>, api.TypeTags$TypeTag<T>);
+public static <T> api.TypeTags$ConcreteTypeTag<T> materializeConcreteTypeTag(api.Universe);
+public static <T> api.Exprs$Expr<api.TypeTags$TypeTag<T>> materializeTypeTag_impl(makro.Context, api.Exprs$Expr<api.Universe>, api.TypeTags$TypeTag<T>);
+public static <T> api.TypeTags$TypeTag<T> materializeTypeTag(api.Universe);
+public static <T> api.Exprs$Expr<ClassTag<T>> materializeClassTag_impl(makro.Context, api.Exprs$Expr<api.Universe>, api.TypeTags$TypeTag<T>);
+public static <T> ClassTag<T> materializeClassTag(api.Universe);
+public static <T> api.Exprs$Expr<ErasureTag<T>> materializeErasureTag_impl(makro.Context, api.Exprs$Expr<api.Universe>, api.TypeTags$TypeTag<T>);
+public static <T> ErasureTag<T> materializeErasureTag(api.Universe);
+public static <T> api.Exprs$Expr<ArrayTag<T>> materializeArrayTag_impl(makro.Context, api.Exprs$Expr<api.Universe>, api.TypeTags$TypeTag<T>);
+public static <T> ArrayTag<T> materializeArrayTag(api.Universe);
+{noformat}
+Notice the addition of:
+{noformat}
+public static <T> api.TypeTags$ConcreteTypeTag<T> materializeConcreteTypeTag(api.Universe);
+public static <T> api.TypeTags$TypeTag<T> materializeTypeTag(api.Universe);
+public static <T> ClassTag<T> materializeClassTag(api.Universe);
+public static <T> ErasureTag<T> materializeErasureTag(api.Universe);
+public static <T> ArrayTag<T> materializeArrayTag(api.Universe);
+{noformat}
+
+Those methods have these implementations ("threatened implementations" I guess.)
+{noformat}
+def materializeArrayTag[T](u: Universe): ArrayTag[T] = macro materializeArrayTag_impl[T]
+def materializeErasureTag[T](u: Universe): ErasureTag[T] = macro materializeErasureTag_impl[T]
+def materializeClassTag[T](u: Universe): ClassTag[T] = macro materializeClassTag_impl[T]
+def materializeTypeTag[T](u: Universe): u.TypeTag[T] = macro materializeTypeTag_impl[T]
+def materializeConcreteTypeTag[T](u: Universe): u.ConcreteTypeTag[T] = macro materializeConcreteTypeTag_impl[T]
+{noformat}

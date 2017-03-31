@@ -1,0 +1,23 @@
+Funny that I didn't immediately see the connection to SI-6925. (I discovered these through completely independent paths.) The funny thing is that in this one I'm pointing out that inferring Wrapped[T] is unsound and it has to infer Wrapped[_ <: T], and in SI-6925 we're calling the inference of Set[_ <: T] instead of Set[T] a regression. But maybe it can infer Set[T] on the invariant type? It's the covariant case for which it must only assume a bound, not a type.
+
+My email to scala-internals was: https://groups.google.com/d/topic/scala-internals/dGQCGQ8dYNs/discussion
+
+Here is a more direct demonstration.
+{code}
+scala> abstract class Covariant[+A](x: A) { def apply(): A = x }
+defined class Covariant
+
+scala> case class Invariant[A](val xs: Array[A]) extends Covariant[A](xs.head)
+defined class Invariant
+
+scala> def f[A](value: Covariant[A]) = value match { case Invariant(xs) => xs }
+f: [A](value: Covariant[A])Array[A]
+
+scala> f(Invariant(Array[Int](1)): Covariant[Any])
+java.lang.ClassCastException: [I cannot be cast to [Ljava.lang.Object;
+	at .<init>(<console>:12)
+	at .<clinit>(<console>)
+	at .<init>(<console>:11)
+	at .<clinit>(<console>)
+	at $print(<console>)
+{code}

@@ -1,0 +1,27 @@
+Replying to [comment:2 blair]:
+> I disagree.  I would rather fix the semantics.
+
+I'm fine with fixing the semantics as long as doing so doesn't block the use case. But fixing the semantics and making a significant number of Java types unusable as a result is a Really Bad Idea.
+ 
+> The HashMap has to be parameterized with a reference type, so
+> in the hash are java.lang.Integer's, but on the way back, I'm
+> pretty sure the null is being passed through to {{unboxToInt}}
+> in scala.runtime.BoxesRunTime:
+> 
+>     public static int unboxToInt(Object i) {
+>         return i == null ? 0 : ((Integer)i).intValue();
+>     }
+> 
+> I tested checking out trunk and changing that 0 to 123 and getting
+> a null returned 123 :)
+
+Sure.
+ 
+> I think in this case you would want to Scala be smart enough not to
+> take the Integer back to a primitive int, especially since it's being
+> compared to a null.
+> 
+> The workaround is to explicitly use java.lang.Integer's, at least for the
+> hash value:
+
+I tried exactly this. It generates a deprecation warning in the compiler.

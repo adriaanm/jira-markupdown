@@ -1,0 +1,23 @@
+Based on the stack trace when the compiler crashes, I think I've stumbled across this same bug again, twice in a fortnight (on different projects). Common factor: me.
+
+Here's a different, more complex (but still not easy to reduce much further) test case:
+
+{code}
+object Test {
+  trait Foo {
+    type Inner
+    type Result = Ordering[Inner] // any invariant type constructor
+    def get: Result
+  }  
+
+  trait Super
+  trait Bar[T] extends Super { type Result = T }
+
+  def wrap[V <: Super](v: V): Foo { type Inner = this.type with v.type } = ???
+  
+  val baz: Bar[_] = ???
+  wrap(baz).get: Ordering[Foo { type Result = this.type }]
+}
+{code}
+
+This version *does* appear to crash every version of the compiler between 2.10.3 and 2.12.0-M1.

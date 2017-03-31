@@ -1,0 +1,22 @@
+At page 106 (in the Iterators chapter), I found another possible issue 
+{code:language=scala}
+    fromArray(xs)
+      .zip(from(0))
+      .filter ( case (x, i) => x > limit )
+      .map ( case (x, i) => i )
+{code}
+
+which fails to compile in Scala 2.11 
+
+I found the solution on how to change the code on the following web resource :
+http://java.dzone.com/articles/scala-pattern-matching-pair
+
+??dwins: scala requires that “case” statements be inside curly braces. 
+The code should look like  this : 
+
+{code:language=scala}
+    fromArray(xs)
+      .zip(from(0))
+      .filter { case (x, i) => x > limit }
+      .map { case (x, i) => i }
+{code}

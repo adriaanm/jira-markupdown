@@ -1,0 +1,70 @@
+Extempore have added a couple of useful methods into the collection classes. Now the method SeqLike.permutations is implements in recursive  way. But I think a non-recursive implementation may have a better performance. Here is my code:
+{code}
+  import collection._
+
+class SeqX[A](self: Seq[A]) {
+  import self._
+  
+/**
+generate all permutations in lexicographical order (some kinds of)
+/*
+  //def permu: Iterator[Repr] = new Iterator[Repr]{ 
+  def permu: Iterator[Seq[A]] = new Iterator[Seq[A]]{ 
+    val (elms,idxs) = rearrange()
+    
+    var _hasNext = self.nonEmpty
+    
+    override def hasNext = _hasNext
+    
+    // override def next: Repr
+    override def next: Seq[A] = {   
+      if(!hasNext) Iterator.empty.next
+      val res = elms.toList
+      //val res = (self.newBuilder ++= elms).result
+      
+      var i = idxs.length - 2
+      while(i >=0 && idxs(i) >= idxs(i+1)) i -= 1
+      if(i < 0) _hasNext = false
+      else {
+        var j = idxs.length - 1
+        while(idxs(j) <= idxs(i)) j -= 1
+        swap(i,j)
+        val len = (idxs.length - i)/2
+        var k = 1
+        while(k <= len) {
+          swap(i+k, idxs.length-k)
+          k += 1
+        }
+      }
+      res
+    }
+    
+    def swap(i :Int, j: Int) {
+      var tmpI = idxs(i)
+      idxs(i) = idxs(j)
+      idxs(j) = tmpI
+      var tmpE = elms(i)
+      elms(i) = elms(j)
+      elms(j) = tmpE
+    }
+    
+    def rearrange(): (mutable.Buffer[A], Array[Int]) = {
+      val m = mutable.HashMap[A,Int]()
+      val (es,is) = self.map{ e => (e,m.getOrElseUpdate(e,m.size)) }.sortBy{ _._2 }.unzip
+      (mutable.ArrayBuffer(es :_*), is.toArray)
+    }
+  }
+}
+
+implicit def seq2x[A](seq: Seq[A]): SeqX[A] = new SeqX(seq)
+{code} 
+
+Similarly, I think it is useful if adding a new method "subsets" to Set, may looks as:
+{code}
+  //generate all subsets of this set
+  def subsets: Iterator[Repr]
+
+  //generate all subsets whose size == n
+  def subsets(n: Int): Iterator[Repr]
+{code}
+

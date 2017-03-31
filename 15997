@@ -1,0 +1,17 @@
+These are particularly bad because they are runtime failures with no obvious way to know what will fail.  Example.
+{code}
+scala> List(1,2,3).view.dropRight(1)
+java.lang.UnsupportedOperationException: SeqView(...).newBuilder
+	at scala.collection.TraversableViewLike$$class.newBuilder(TraversableViewLike.scala:53)
+	at scala.collection.SeqLike$$$$anon$$2.newBuilder(SeqLike.scala:978)
+	at scala.collection.IterableLike$$class.dropRight(IterableLike.scala:176)
+	at scala.collection.SeqLike$$$$anon$$2.dropRight(SeqLike.scala:978)
+	at .<init>(<console>:8)
+	at .<clinit>(<console>)
+	at .<init>(<console>:11)
+	at .<clinit>(<console>)
+	at $$export(<console>)
+{code}
+It would make a lot more sense to me if views implemented an abstract interface (and thus the compiler would tell us what methods aren't covered) than having them override all kinds of inherited implementations, with runtime failure for methods which are missed or otherwise elude the concrete barriers.
+
+(Get it, concrete barriers? That is gold.)

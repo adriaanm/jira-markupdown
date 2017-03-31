@@ -1,0 +1,79 @@
+I get the following compiler crash when compiling ScalaCheck with Scala 2.8.0 Beta1-RC1:
+
+{code}
+   [scalac] java.lang.AssertionError: assertion failed: type error: can't convert from UNIT to REFERENCE(java.lang.Object) in unit Properties.scala
+   [scalac]     at scala.Predef$$.assert(Predef.scala:106)
+   [scalac]     at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.adapt(GenICode.scala:1019)
+   [scalac]     at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:1003)
+   [scalac]     at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:920)
+   [scalac]     at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.genLoadQualifier(GenICode.scala:1038)
+   [scalac]     at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:575)
+   [scalac]     at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:413)
+   [scalac]     at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:920)
+   [scalac]     at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:920)
+   [scalac]     at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:920)
+   [scalac]     at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:466)
+   [scalac]     at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:920)
+   [scalac]     at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:920)
+   [scalac]     at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:920)
+   [scalac]     at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:920)
+   [scalac]     at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:920)
+   [scalac]     at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:920)
+   [scalac]     at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:466)
+   [scalac]     at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:920)
+   [scalac]     at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:125)
+   [scalac]     at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:82)
+   [scalac]     at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:82)
+   [scalac]     at scala.collection.LinearSeqLike$$class.foreach(LinearSeqLike.scala:85)
+   [scalac]     at scala.collection.immutable.List.foreach(List.scala:29)
+   [scalac]     at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:82)
+   [scalac]     at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:147)
+   [scalac]     at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:101)
+   [scalac]     at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:82)
+   [scalac]     at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:82)
+   [scalac]     at scala.collection.LinearSeqLike$$class.foreach(LinearSeqLike.scala:85)
+   [scalac]     at scala.collection.immutable.List.foreach(List.scala:29)
+   [scalac]     at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:82)
+   [scalac]     at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:92)
+   [scalac]     at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:78)
+   [scalac]     at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.apply(GenICode.scala:74)
+   [scalac]     at scala.tools.nsc.Global$$GlobalPhase.applyPhase(Global.scala:322)
+   [scalac]     at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:300)
+   [scalac]     at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:300)
+   [scalac]     at scala.collection.Iterator$$class.foreach(Iterator.scala:534)
+   [scalac]     at scala.collection.mutable.ListBuffer$$$$anon$$1.foreach(ListBuffer.scala:285)
+   [scalac]     at scala.tools.nsc.Global$$GlobalPhase.run(Global.scala:300)
+   [scalac]     at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.run(GenICode.scala:67)
+   [scalac]     at scala.tools.nsc.Global$$Run.compileSources(Global.scala:793)
+   [scalac]     at scala.tools.nsc.Global$$Run.compile(Global.scala:878)
+   [scalac]     at scala.tools.ant.Scalac.executeInternal(Scalac.scala:629)
+   [scalac]     at scala.tools.ant.Scalac.execute(Scalac.scala:573)
+{code}
+
+I have difficulties isolating the error, but if I change the following code in `Properties.scala` from:
+
+{code}
+  def include(ps: Properties) = for((n,p) <- ps.properties) property(n) = p 
+
+  /** Used for specifying properties. Usage:
+   *  <code>property("myProp") = ...</code> */
+  lazy val property = new {
+    def update(propName: String, p: Prop) = props += ((name+"."+propName, p)) 
+  }
+{code}
+
+to (just adding result type specification on `update` method):
+
+{code}
+  def include(ps: Properties) = for((n,p) <- ps.properties) property(n) = p 
+
+  /** Used for specifying properties. Usage:
+   *  <code>property("myProp") = ...</code> */
+  lazy val property = new {
+    def update(propName: String, p: Prop): Unit = props += ((name+"."+propName, p))
+  }
+{code}
+
+then it works. 
+
+This error has occured recently on the Scala trunk, it used to work before.

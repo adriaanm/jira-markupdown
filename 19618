@@ -1,0 +1,27 @@
+The following example is *not* deemed ambiguous by the compiler, nor does it resolve to the most specific one.
+
+{code:Scala}
+class P(val i: Int) { override def toString() = s"$i" }
+class C(j: Int) extends P(j)
+
+trait PrecisionTest {
+
+  implicit val p = new P(1)
+  implicit val c = new C(2)
+}
+
+object Main extends App with PrecisionTest {
+  println(implicitly[P])
+  // prints: 2
+}
+{code}
+
+The spec says: 
+
+{quote}
+If there are several eligible arguments which match the implicit parameter's type, a most specific one will be chosen using the rules of static overloading resolution. If the parameter has a default argument and no implicit argument can be found the default argument is used
+{quote}
+
+As far as I know, c is *not* more specific then p in this case with respect to the usage.
+
+Edit: removed nonsensical example

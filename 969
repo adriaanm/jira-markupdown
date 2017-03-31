@@ -1,0 +1,25 @@
+(In r23026) Fixed long standing annoyance which prevents the same source file
+from being used as both a script and a program.  If a script has
+only a single top level object with a main method, then that is
+the object to which arguments will be passed.  (Contrast with the
+current situation, where a wrapper object is wrapped around it and
+the script will never do anything since there is nothing which can
+reference the object.)
+
+So now you can do this:
+
+% cat script.scala
+object FiddleDeeMain {
+  def main(args: Array[String]): Unit = {
+    println(args mkString " ")
+  }
+}
+% scala -nocompdaemon script.scala a b c
+a b c
+% scala script.scala a b c
+a b c
+% scalac script.scala
+% scala FiddleDeeMain a b c
+a b c
+
+Closes SI-1173, review by community.

@@ -1,0 +1,24 @@
+Forgot the formatting:
+
+{code}
+object Foo {
+ def obj_foo(x : Int) = { () =>  x}
+}
+
+import java.io._;
+
+val out = new ObjectOutputStream(new FileOutputStream("foo"));
+out.writeObject(Foo.obj_foo(3)) // ok in 2.7.1-final, not ok in
+scala-2.7.1.r15559-b20080717010056!
+
+Stack trace:
+java.io.NotSerializableException: Foo$$$$anonfun$$obj_foo$$1
+       at java.io.ObjectOutputStream.writeObject0(ObjectOutputStream.java:1081)
+       at java.io.ObjectOutputStream.writeObject(ObjectOutputStream.java:302)
+       at .<init>(<console>:12)
+       at .<clinit>(<console>)
+       at RequestResult$$.<init>(<console>:3)
+       at RequestResult$$.<clinit>(<console>)
+       at RequestResult$$result(<console>)
+       at sun.reflect.Nat...
+{code}

@@ -1,0 +1,14 @@
+Some of the hoops people jump through to try to do this themselves:
+
+http://stackoverflow.com/questions/21041626/chaining-partialfunctions-with-andthen-in-scala
+
+For what it's worth, I typically provide
+
+{code}
+def composePartial[A, B, C](left: PartialFunction[A, B], right: PartialFunction[B, C]): PartialFunction[A, C] = {
+  def isDefinedAt(a: A): Boolean = left.isDefinedAt(a) && right.isDefinedAt(left(a))
+  def apply(a: A): C = left(right(a))
+}
+{code}
+
+at the call site and just hate myself.

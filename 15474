@@ -1,0 +1,34 @@
+this compiles:
+
+{code}
+class Test extends javax.swing.JFrame {
+    private object Schnuck extends javax.swing.AbstractListModel {
+        def getSize = 0
+        def getElementAt( idx: Int ) : AnyRef = error( "egal" )
+        def gaga : Int = this.getSize
+    }
+}
+{code}
+
+but this:
+
+{code}
+class Test extends javax.swing.JFrame {
+    private object Schnuck extends javax.swing.AbstractListModel {
+        model =>
+        def getSize = 0
+        def getElementAt( idx: Int ) : AnyRef = error( "egal" )
+        def gaga : Int = model.getSize
+   }
+}
+{code}
+
+produces an error:
+
+{code}
+<console>:28: error: object Schnuck cannot be instantiated because it does not conform to its self-type Test.this.Schnuck.type
+       class Test extends javax.swing.JFrame {
+                  ^
+{code}
+
+although i cannot instantiate an object, why can't i assign a self-type here which really just is an alias, and i need it from inner objects (e.g. functions) since "this" changes meaning.

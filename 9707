@@ -1,0 +1,30 @@
+And a safer way to reformulate your code to avoid these problems:
+
+{code}
+trait Def {
+  type Element >: Null
+  trait Motor {
+    type Element = Def.this.Element
+  }
+}
+
+trait Def2 extends Def {
+  type Element >: Null <: Element2 
+  trait Element2
+  trait Motor extends super.Motor {
+    def foo(parent: Element): Any
+    foo(null)
+  }
+}
+
+trait Def3 extends Def2 {
+  type Element >: Null <: Element3
+  trait Element3 extends super.Element2
+  new super.Motor {
+    def foo(e:Element): Any = null
+  }
+}
+
+new Def3 {}
+
+{code}

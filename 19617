@@ -1,0 +1,39 @@
+The typechecker seems to be generating an invalid type that causes the bytecode backend to fail (both GenASM and GenBCode).
+This code is enough to reproduce it:
+
+{code:scala}
+object Repro {
+  import language.dynamics
+
+  trait CanBe[T, T2]
+  trait IsNot[T, U]
+  object IsNot {
+    implicit def tCanBeNotU[T, U]: CanBe[T, IsNot[T, U]] = null
+    implicit def tCannotBeT[T]: CanBe[T, IsNot[T, T]] = null
+    implicit def tCannotBeT2[T]: CanBe[T, IsNot[T, T]] = null
+  }
+  type CantBe[T, T2] = CanBe[T, T IsNot T2]
+
+  implicit class FooExt(val foo: Foo.type) extends AnyVal { def dyn = Foo2Dyn(foo) }
+  implicit class Foo2Dyn(val foo: Foo.type) extends AnyVal with Dynamic {
+    def selectDynamic[T](method: String)(implicit ev: CantBe[T, Nothing]): T = {
+      null.asInstanceOf[T]
+    }
+  }
+  case object Foo
+
+//  val fooStr: String = nonNothingExtract(fooJson \ "foo") //compiler infers nothing hence this can't be called
+//  val moreStrings: String = inferenceWorks
+
+  Foo.dyn.something[String] //compiles
+
+//  Foo.dyn.somethingElse[Nothing] //doesn't compile
+//  Foo.dyn.somethingElse //doesn't compile because nothing is inferred
+
+  def someMethod(s: String): Unit = {}
+
+  someMethod(Foo.dyn.something) //passes typechecker, but generating incorrect type, as its inferring nothing, and thats not valid because of the CantBe.
+                                //taking away CantBe allows it to compile again.
+
+}
+{code}

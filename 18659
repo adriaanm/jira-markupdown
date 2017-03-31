@@ -1,0 +1,56 @@
+When one tries to compile some code with an {{applyDynamicNamed}} method call, that has an invalid number of arguments, a {{StackOverflowError}} occurs:
+
+{code}
+object X {
+  val d = new D
+  d.meth(value1 = 10, value2 = 100) // two arguments here, but only one is allowed
+}
+import language.dynamics
+class D extends Dynamic {
+  def applyDynamicNamed(name: String)(value: (String, Any)) = name
+}
+{code}
+
+Compiled with {{scalac x.scala}}:
+
+{code}
+uncaught exception during compilation: java.lang.StackOverflowError
+error: java.lang.StackOverflowError
+	at scala.tools.nsc.typechecker.AnalyzerPlugins$AnalyzerPlugin$class.isActive(AnalyzerPlugins.scala:31)
+	at scala.tools.selectivecps.CPSAnnotationChecker$plugin$.isActive(CPSAnnotationChecker.scala:122)
+	at scala.tools.nsc.typechecker.AnalyzerPlugins$$anonfun$pluginsPt$1.apply(AnalyzerPlugins.scala:175)
+	at scala.tools.nsc.typechecker.AnalyzerPlugins$$anonfun$pluginsPt$1.apply(AnalyzerPlugins.scala:174)
+	at scala.collection.LinearSeqOptimized$class.foldLeft(LinearSeqOptimized.scala:111)
+	at scala.collection.immutable.List.foldLeft(List.scala:84)
+	at scala.tools.nsc.typechecker.AnalyzerPlugins$class.pluginsPt(AnalyzerPlugins.scala:174)
+	at scala.tools.nsc.Global$$anon$1.pluginsPt(Global.scala:492)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:5607)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$95.apply(Typers.scala:4615)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$95.apply(Typers.scala:4615)
+	at scala.tools.nsc.typechecker.Typers$Typer.silent(Typers.scala:726)
+	at scala.tools.nsc.typechecker.Typers$Typer.normalTypedApply$1(Typers.scala:4615)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedApply$1(Typers.scala:4666)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:5552)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:5630)
+	at scala.tools.nsc.typechecker.Typers$Typer$dyna$$anonfun$typedNamedApply$1.apply(Typers.scala:4060)
+	at scala.tools.nsc.typechecker.Typers$Typer$dyna$$anonfun$typedNamedApply$1.apply(Typers.scala:4060)
+	at scala.tools.nsc.typechecker.Typers$Typer.silent(Typers.scala:744)
+	at scala.tools.nsc.typechecker.Typers$Typer$dyna$.wrapErrors(Typers.scala:4125)
+	at scala.tools.nsc.typechecker.Typers$Typer$dyna$.typedNamedApply(Typers.scala:4060)
+	at scala.tools.nsc.typechecker.Typers$Typer.doTypedApply(Typers.scala:3304)
+	at scala.tools.nsc.typechecker.Typers$Typer.normalTypedApply$1(Typers.scala:4634)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedApply$1(Typers.scala:4666)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:5552)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:5630)
+	at scala.tools.nsc.typechecker.Typers$Typer$dyna$$anonfun$typedNamedApply$1.apply(Typers.scala:4060)
+	at scala.tools.nsc.typechecker.Typers$Typer$dyna$$anonfun$typedNamedApply$1.apply(Typers.scala:4060)
+	at scala.tools.nsc.typechecker.Typers$Typer.silent(Typers.scala:744)
+	at scala.tools.nsc.typechecker.Typers$Typer$dyna$.wrapErrors(Typers.scala:4125)
+	at scala.tools.nsc.typechecker.Typers$Typer$dyna$.typedNamedApply(Typers.scala:4060)
+	at scala.tools.nsc.typechecker.Typers$Typer.doTypedApply(Typers.scala:3304)
+	at scala.tools.nsc.typechecker.Typers$Typer.normalTypedApply$1(Typers.scala:4634)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedApply$1(Typers.scala:4666)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:5552)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:5630)
+<repeat until death>
+{code}

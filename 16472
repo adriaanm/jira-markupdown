@@ -1,0 +1,26 @@
+This one-liner
+
+{code}
+class T { def f[C[X] <: C[X]](l: C[_]) = l.x }
+{code}
+
+makes scalac crash with a StackOverflowError
+
+{code}
+error: java.lang.StackOverflowError
+	at scala.reflect.internal.Symbols$Symbol.isDeferred(Symbols.scala:45)
+	at scala.reflect.internal.Symbols$TypeSymbol.isAliasType(Symbols.scala:2088)
+	at scala.reflect.internal.Types$TypeRef.thisInfo(Types.scala:1769)
+	at scala.reflect.internal.Types$TypeRef.baseClasses(Types.scala:1987)
+	at scala.reflect.internal.Types$SubType.baseClasses(Types.scala:1041)
+	at scala.reflect.internal.Types$TypeRef.baseClasses(Types.scala:1987)
+	at scala.reflect.internal.Types$SubType.baseClasses(Types.scala:1041)
+	at scala.reflect.internal.Types$TypeRef.baseClasses(Types.scala:1987)
+	at scala.reflect.internal.Types$SubType.baseClasses(Types.scala:1041)
+	at scala.reflect.internal.Types$TypeRef.baseClasses(Types.scala:1987)
+	at scala.reflect.internal.Types$SubType.baseClasses(Types.scala:1041)
+	at scala.reflect.internal.Types$TypeRef.baseClasses(Types.scala:1987)
+	at scala.reflect.internal.Types$SubType.baseClasses(Types.scala:1041)
+	at scala.reflect.internal.Types$TypeRef.baseClasses(Types.scala:1987)
+    ...
+{code}

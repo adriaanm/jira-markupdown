@@ -1,0 +1,25 @@
+{code}
+% scala -optimise
+Welcome to Scala version 2.8.0.r21325-b20100403144812 (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_17).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> scala.tools.nsc.io.ZipArchive.fromPath("/local/lib/java/winstone.jar") foreach println
+Exception in thread "main" java.lang.AssertionError: assertion failed
+	at scala.Predef$$.assert(Predef.scala:79)
+	at scala.tools.nsc.transform.Mixin.mixinImplClassMembers$$1(Mixin.scala:231)
+	at scala.tools.nsc.transform.Mixin$$$$anonfun$$addMixedinMembers$$3.apply(Mixin.scala:311)
+	at scala.tools.nsc.transform.Mixin$$$$anonfun$$addMixedinMembers$$3.apply(Mixin.scala:305)
+	at scala.collection.LinearSeqLike$$class.foreach(LinearSeqLike.scala:97)
+	at scala.collection.immutable.List.foreach(List.scala:46)
+
+{code}
+
+See also SI-3032 (which was closed) which is crashing in the same spot.  I found this trying to track down a different very mysterious bug where things just start exhausting the heap, seemingly getting lost somewhere in ZipArchive.  But I think now it may be a manifestation of an -optimise bug.
+
+Abstract types are exercised harder than usual in the ZipArchive code, if you're looking for a culprit.  Also, the line I keep seeing in stack traces after heap exhaustion is here:
+{code}
+  abstract class Entry(name: String, path: String) extends VirtualFile(name, path) {
+    final override def path = "%s(%s)".format(URLZipArchive.this, super.path)
+{code}
+Looks a little heavy on identifier "path", are we maybe mis-optimizing ourselves into an infinite loop?

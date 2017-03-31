@@ -1,0 +1,23 @@
+The old (2.10/2.11) scaladoc used to put type aliases in package objects into "package.html", the new one uses "index.html", thus making it impossible to link correctly to these members when cross-building on 2.11 and 2.12.
+
+See https://travis-ci.org/slick/slick/builds/142174330 for a failure caused by this.
+
+On 2.11, you can link to
+
+{code}
+api/slick/dbio/package.html#DBIO[+R]=slick.dbio.DBIOAction[R,slick.dbio.NoStream,slick.dbio.Effect.All]
+{code}
+
+which gets redirected to
+
+{code}
+api/index.html#slick.dbio.package@DBIO[+R]=slick.dbio.DBIOAction[R,slick.dbio.NoStream,slick.dbio.Effect.All]
+{code}
+
+On 2.11.0-M5 you need
+
+{code}
+api/slick/dbio/index.html#DBIO[+R]=slick.dbio.DBIOAction[R,slick.dbio.NoStream,slick.dbio.Effect.All]
+{code}
+
+There doesn't seem to be a link format that works for both versions.

@@ -1,0 +1,7 @@
+I have production code that looks like this
+{{{
+  aVeryBigCollection forall (e => aVeryBigImmutableMap.keySet(e.someProp))
+}}}
+This used to perform fine under 2.8.x because immutable.Map.keySet returned (correctly, in my opinion) a very cheap, set-like view of the keys of the immutable Map. It was an O(1) operation. Now it is an O\(n\) operation with no workaround to get back to O(1) (at least that I can find). I was also contend that the "principle of least surprise" is for keySet to return a view-like structure.
+
+I suspect that this is a _done deal_ and that there is no way of going back to the old behaviour, so I must request that there is a new method "keysView" or "keySetView" which provides the old functionality. In my experience keySet is *almost always* used in such a view-like manner

@@ -1,0 +1,28 @@
+Code:
+
+{code}
+import java.io.PrintWriter
+import scala.xml.XML
+import scala.xml.dtd.{DocType, PublicID}
+
+object TempTest extends Application
+{
+    val dt = DocType("foo", PublicID("-//Foo Corp//DTD 1.0//EN", "foo.dtd"), Seq())
+    val pw = new PrintWriter(System.out)
+    XML.write(pw, <foo/>, "utf-8", true, dt)
+    pw.flush()
+}
+{code}
+
+generates
+
+{code}
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE foo PublicID(-//Foo Corp//DTD 1.0//EN,foo.dtd)>
+<foo></foo>
+{code}
+
+Note default case class toString is used as public ID.
+
+The same applies to the four- and five-argument forms of XML.saveFull.
+

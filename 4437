@@ -1,0 +1,13 @@
+while it's true that the bug is only triggered when the constructor is private, I think the underlying defect is that we don't take the EnclosingMethod attribute into account when parsing an inner class:
+
+
+{code}
+parsed output from javap:
+final class Tuppel$$1 extends Tuppel
+  Signature: "LTuppel<TA;>;;"
+  EnclosingMethod: "Tuppel::get:()LTuppel;"
+  InnerClass: "Tuppel$$1"
+{code}
+
+`Tuppel::get:()LTuppel;`'s typeparameters need to be brought into scope when `sigToType` is called on `Tuppel$$1`.
+Unfortunately, that requires a significant rewrite of `parseAttributes`, since it currently parses the attributes in order, but it would actually need to look ahead to see whether there is an `EnclosingMethod` attribute when it encounters the `Signature` attribute

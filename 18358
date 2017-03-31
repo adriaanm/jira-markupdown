@@ -1,0 +1,23 @@
+{code}
+class Test {
+  trait Foo[T]
+  object Foo { implicit def foo[T]: Foo[T] = new Foo[T]{} }
+  implicit def conv[T: Foo](s: String): T = ???
+  def foo(c: Int) = ???
+  foo("")
+}
+{code}
+
+{code}
+00:29 ~/Projects/210x/sandbox (2.10.x)$ scalac -Xlog-implicits
+Test.scala:6: conv is not a valid implicit value for String("") => Int because:
+incompatible: (s: String)(implicit evidence$1: Test.this.Foo[T])T does not match expected type String("") => Int
+  foo("")
+      ^
+Test.scala:6: error: type mismatch;
+ found   : String("")
+ required: Int
+  foo("")
+      ^
+one error found
+{code}

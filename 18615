@@ -1,0 +1,28 @@
+Imports have a source name and the name (possibly a rename) to bring into scope.  The algo in REPL to decide what to import is tripped up by the import handler not distinguishing them correctly.  In the sample, normally it would bump the first import to an outer scope (and let normal shadowing effectively eliminate it).  (Open question whether that inefficiency has any benefit; it doesn't try to nuance anything.)
+
+{code}
+apm@mara:~/projects/edge$ scalam
+Welcome to Scala version 2.11.0-M5 (OpenJDK 64-Bit Server VM, Java 1.7.0_25).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> object Foo { def bar = 7 }
+defined object Foo
+
+scala> object Junk { val x = 7 }
+defined object Junk
+
+scala> import Foo.{ bar => baz }
+import Foo.{bar=>baz}
+
+scala> import Junk.{x=>baz}
+import Junk.{x=>baz}
+
+scala> baz
+<console>:12: error: reference to baz is ambiguous;
+it is imported twice in the same scope by
+import Junk.{x=>baz}
+and import Foo.{bar=>baz}
+              baz
+              ^
+{code}

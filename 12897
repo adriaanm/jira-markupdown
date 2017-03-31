@@ -1,0 +1,83 @@
+
+
+{code}
+
+final class Settings {
+    def f[T](a_args: T*): List[T] = Nil
+}
+
+abstract class Factory {
+    type libraryType <: Base
+
+    final def apply(settings: Settings): libraryType = error("bla")
+}
+
+abstract class Base {
+    val settings: Settings
+
+    protected val demands: List[Factory] = Nil
+}
+
+class SA(val settings: Settings) extends Base {
+    override val demands =  List(
+            SD
+        ) :::  settings.f(
+            SC
+        )    
+}
+
+object SC extends Factory {
+    type libraryType = Base
+}
+
+object SD extends Factory {
+    type libraryType = SA
+}
+
+
+{code}
+
+Attempted to compile with nightly builds
+ 2.6.0.13204.20071106-050030 and
+ 2.6.0.13208.20071107-050030
+
+$$ scalac X.scala
+
+
+{code}
+Exception in thread "main" java.lang.AssertionError: assertion failed
+	at scala.Predef$$.assert(Predef.scala:91)
+	at scala.tools.nsc.symtab.classfile.Pickler$$Pickle.scala$$tools$$nsc$$symtab$$classfile$$Pickler$$Pickle$$$$putType(Pickler.scala:165)
+	at scala.tools.nsc.symtab.classfile.Pickler$$Pickle$$$$anonfun$$6.apply(Pickler.scala:181)
+	at scala.tools.nsc.symtab.classfile.Pickler$$Pickle$$$$anonfun$$6.apply(Pickler.scala:181)
+	at scala.List.foreach(List.scala:747)
+	at scala.tools.nsc.symtab.classfile.Pickler$$Pickle.putTypes(Pickler.scala:181)
+	at scala.tools.nsc.symtab.classfile.Pickler$$Pickle.scala$$tools$$nsc$$symtab$$classfile$$Pickler$$Pickle$$$$putType(Pickler.scala:160)
+	at scala.tools.nsc.symtab.classfile.Pickler$$Pickle.scala$$tools$$nsc$$symtab$$classfile$$Pickler$$Pickle$$$$putType(Pickler.scala:172)
+	at scala.tools.nsc.symtab.classfile.Pickler$$Pickle.putSymbol(Pickler.scala:116)
+	at scala.tools.nsc.symtab.classfile.Pickler$$Pickle$$$$anonfun$$4.apply(Pickler.scala:143)
+	at scala.tools.nsc.symtab.classfile.Pickler$$Pickle$$$$anonfun$$4.apply(Pickler.scala:143)
+	at scala.List.foreach(List.scala:747)
+	at scala.tools.nsc.symtab.classfile.Pickler$$Pickle.putSymbols(Pickler.scala:143)
+	at scala.tools.nsc.symtab.classfile.Pickler$$Pickle.scala$$tools$$nsc$$symtab$$classfile$$Pickler$$Pickle$$$$putType(Pickler.scala:168)
+	at scala.tools.nsc.symtab.classfile.Pickler$$Pickle.putSymbol(Pickler.scala:116)
+	at scala.tools.nsc.symtab.classfile.Pickler$$PicklePhase.add$$0(Pickler.scala:36)
+	at scala.tools.nsc.symtab.classfile.Pickler$$PicklePhase.pickle$$0(Pickler.scala:47)
+	at scala.tools.nsc.symtab.classfile.Pickler$$PicklePhase$$$$anonfun$$0.apply(Pickler.scala:43)
+	at scala.tools.nsc.symtab.classfile.Pickler$$PicklePhase$$$$anonfun$$0.apply(Pickler.scala:43)
+	at scala.List.foreach(List.scala:747)
+	at scala.tools.nsc.symtab.classfile.Pickler$$PicklePhase.pickle$$0(Pickler.scala:43)
+	at scala.tools.nsc.symtab.classfile.Pickler$$PicklePhase.apply(Pickler.scala:61)
+	at scala.tools.nsc.Global$$GlobalPhase.applyPhase(Global.scala:243)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$2.apply(Global.scala:231)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$2.apply(Global.scala:231)
+	at scala.Iterator$$class.foreach(Iterator.scala:375)
+	at scala.collection.mutable.ListBuffer$$$$anon$$0.foreach(ListBuffer.scala:255)
+	at scala.tools.nsc.Global$$GlobalPhase.run(Global.scala:231)
+	at scala.tools.nsc.Global$$Run.compileSources(Global.scala:535)
+	at scala.tools.nsc.Global$$Run.compile(Global.scala:619)
+	at scala.tools.nsc.Main$$.process(Main.scala:86)
+	at scala.tools.nsc.Main$$.main(Main.scala:107)
+	at scala.tools.nsc.Main.main(Main.scala)
+{code}
+

@@ -1,0 +1,16 @@
+Another reproduction (crashed in 2.10 and 2.11):
+
+{code}
+trait Matcher[X <: AnyRef] {}
+
+object Problem2 {
+  def allOf[X](x: Matcher[_ >: X], y: Matcher[_ >: X]) = new Matcher[X]() {}
+  def allOf[X](x: Matcher[_ >: X]*) = new Matcher[X]() {}
+}
+
+object ProblemMaker {
+  def equalTo[X](x: X) = new Matcher[X]() {}
+  val b = Problem2.allOf(equalTo("f"), equalTo("g"))
+}
+
+{code}

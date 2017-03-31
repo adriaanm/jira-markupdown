@@ -1,0 +1,35 @@
+Strange, I would have expected unreachability to mean code is not generated at all:
+
+{code}
+$ cat patmat.scala 
+object Test {
+  def foo(l: List[_]) = l match {
+    case Nil => "okay"
+    case _ :: _ => "okay"
+    case ll: List[_] => "dead code"
+  }
+}
+
+$ ../build/quick/bin/scalac patmat.scala -Xprint:cleanup
+patmat.scala:5: warning: unreachable code
+    case ll: List[_] => "dead code"
+                        ^
+
+[[syntax trees at end of                   cleanup]] // patmat.scala
+package <empty> {
+  object Test extends Object {
+    def foo(l: List): String = {
+      case <synthetic> val x1: List = l;
+      ...
+      case11(){
+        if (x1.$isInstanceOf[List]())
+          matchEnd8("dead code")
+        else
+          case12()
+      };
+      ...
+    };
+    ...
+  }
+}
+{code}

@@ -1,0 +1,84 @@
+I'm on the trunk, r18241
+
+here's one version:
+{code}
+println((for{a <- Stream.from(1); b <- 1 to 5; if a > 10} yield a).head)
+{code}
+gives
+{code}
+java.lang.StackOverflowError
+	at scala.runtime.BoxedObjectArray.<init>(BoxedObjectArray.scala:19)
+	at scala.runtime.ScalaRunTime$$.boxArray(ScalaRunTime.scala:128)
+	at scala.Array$$.slowcopy(Array.scala:38)
+	at scala.Array$$.copy(Array.scala:64)
+	at scala.collection.mutable.ResizableArray$$class.copyToArray(ResizableArray.scala:58)
+	at scala.collection.mutable.ArrayBuffer.copyToArray(ArrayBuffer.scala:26)
+	at scala.collection.generic.TraversableTemplate$$class.toArray(TraversableTemplate.scala:690)
+	at scala.collection.mutable.ArrayBuffer.toArray(ArrayBuffer.scala:26)
+	at scala.runtime.BoxedArray$$$$anonfun$$genericBuilder$$1.apply(BoxedArray.scala:41)
+	at scala.runtime.BoxedArray$$$$anonfun$$genericBuilder$$1.apply(BoxedArray.scala:41)
+	at scala.collection.generic.Builder$$$$anon$$1.result(Builder.scala:50)
+	at scala.collection.generic.VectorTemplate$$class.slice(VectorTemplate.scala:133)
+	at scala.runtime.BoxedArray.slice(BoxedArray.scala:24)
+	at scala.collection.generic.VectorTemplate$$class.take(VectorTemplate.scala:140)
+	at scala.runtime.BoxedArray.take(BoxedArray.scala:24)
+	at scala.collection.generic.SequenceViewTemplate$$Filtered$$class.index(SequenceViewTemplate.scala:82)
+	at scala.collection.generic.VectorViewTemplate$$$$anon$$4.index(VectorViewTemplate.scala:75)
+	at scala.collection.generic.SequenceViewTemplate$$Filtered$$class.length(SequenceViewTemplate.scala:84)
+	at scala.collection.generic.VectorViewTemplate$$$$anon$$4.length(VectorViewTemplate.scala:75)
+	at scala.collection.generic.SequenceViewTemplate$$Mapped$$class.length(SequenceViewTemplate.scala:41)
+	at scala.collection.generic.VectorViewTemplate$$$$anon$$2.length(VectorViewTemplate.scala:73)
+	at scala.collection.generic.VectorTemplate$$class.isEmpty(VectorTemplate.scala:57)
+	at scala.collection.generic.VectorViewTemplate$$$$anon$$2.isEmpty(VectorViewTemplate.scala:73)
+	at scala.collection.immutable.Stream.loop$$5(Stream.scala:156)
+	at scala.collection.immutable.Stream.loop$$5(Stream.scala:157)
+	at scala.collection.immutable.Stream.loop$$5(Stream.scala:157)
+	at scala.collection.immutable.Stream.loop$$5(Stream.scala:157)
+	at scala.collection.immutable.Stream.loop$$5(Stream.scala:157)
+	at scala.collection.immutable.Stream.loop$$5(Stream.scala:157)
+	at scala.collection.immutable.Stream.loop$$5(Stream.scala:157)
+	at scala.collection.immutable.Stream.loop$$5(Stream.scala:157)
+and so on ad infinitum
+{code}
+
+and a slight variant that gives a different error:
+{code}
+println((for{a <- Stream.from(1); b <- 1 to a; if a > 10} yield a).head)
+{code}
+runs for a while and eventually gives:
+{code}
+java.lang.OutOfMemoryError: Java heap space
+	at scala.runtime.BoxedAnyArray.<init>(BoxedAnyArray.scala:25)
+	at scala.collection.generic.TraversableTemplate$$class.toArray(TraversableTemplate.scala:689)
+	at scala.collection.mutable.ArrayBuffer.toArray(ArrayBuffer.scala:26)
+	at scala.runtime.BoxedArray$$$$anonfun$$genericBuilder$$1.apply(BoxedArray.scala:41)
+	at scala.runtime.BoxedArray$$$$anonfun$$genericBuilder$$1.apply(BoxedArray.scala:41)
+	at scala.collection.generic.Builder$$$$anon$$1.result(Builder.scala:50)
+	at scala.collection.generic.VectorTemplate$$class.slice(VectorTemplate.scala:133)
+	at scala.runtime.BoxedArray.slice(BoxedArray.scala:24)
+	at scala.collection.generic.VectorTemplate$$class.take(VectorTemplate.scala:140)
+	at scala.runtime.BoxedArray.take(BoxedArray.scala:24)
+	at scala.collection.generic.SequenceViewTemplate$$Filtered$$class.index(SequenceViewTemplate.scala:82)
+	at scala.collection.generic.VectorViewTemplate$$$$anon$$4.index(VectorViewTemplate.scala:75)
+	at scala.collection.generic.SequenceViewTemplate$$Filtered$$class.length(SequenceViewTemplate.scala:84)
+	at scala.collection.generic.VectorViewTemplate$$$$anon$$4.length(VectorViewTemplate.scala:75)
+	at scala.collection.generic.SequenceViewTemplate$$Mapped$$class.length(SequenceViewTemplate.scala:41)
+	at scala.collection.generic.VectorViewTemplate$$$$anon$$2.length(VectorViewTemplate.scala:73)
+	at scala.collection.generic.VectorTemplate$$class.isEmpty(VectorTemplate.scala:57)
+	at scala.collection.generic.VectorViewTemplate$$$$anon$$2.isEmpty(VectorViewTemplate.scala:73)
+	at scala.collection.immutable.Stream.loop$$5(Stream.scala:156)
+	at scala.collection.immutable.Stream.loop$$5(Stream.scala:157)
+	at scala.collection.immutable.Stream.loop$$5(Stream.scala:157)
+	at scala.collection.immutable.Stream.loop$$5(Stream.scala:157)
+	at scala.collection.immutable.Stream.loop$$5(Stream.scala:157)
+	at scala.collection.immutable.Stream.loop$$5(Stream.scala:157)
+	at scala.collection.immutable.Stream.loop$$5(Stream.scala:157)
+	at scala.collection.immutable.Stream.loop$$5(Stream.scala:157)
+	at scala.collection.immutable.Stream.loop$$5(Stream.scala:157)
+	at scala.collection.immutable.Stream.loop$$5(Stream.scala:157)
+	at scala.collection.immutable.Stream.loop$$5(Stream.scala:157)
+	at scala.collection.immutable.Stream.loop$$5(Stream.scala:157)
+	at scala.collection.immutable.Stream.loop$$5(Stream.scala:157)
+	at scala.collection.immutable.Stream.loop$$5(Stream.scala:157)
+{code}
+

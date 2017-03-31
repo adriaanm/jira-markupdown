@@ -1,0 +1,25 @@
+scala.collection.mutable.BitSet has off-by-one errors in |=, &=, ^=, and &~=. These functions all call ensureCapacity with the size of a list as a parameter, instead of the index of their last values. As a result, elems doubles in size every time these functions are used on two BitSets with the same nwords.
+{code}
+
+Welcome to Scala version 2.11.2 (OpenJDK 64-Bit Server VM, Java 1.7.0_65).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> val bitSet = new scala.collection.mutable.BitSet()
+bitSet: scala.collection.mutable.BitSet = BitSet()
+
+scala> bitSet ^= bitSet; bitSet.toBitMask.length
+res0: Int = 2
+
+scala> bitSet ^= bitSet; bitSet.toBitMask.length
+res1: Int = 4
+
+scala> bitSet ^= bitSet; bitSet.toBitMask.length
+res2: Int = 8
+
+scala> bitSet ^= bitSet; bitSet.toBitMask.length
+res3: Int = 16
+
+scala> bitSet ^= bitSet; bitSet.toBitMask.length
+res4: Int = 32
+{code}

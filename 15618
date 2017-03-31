@@ -1,0 +1,13 @@
+Scala 2.8.0 final,
+JDK 1.6.0_20,
+Ubuntu Linux 10.04
+
+{{CompileServer}} uses {{java.io.File.createTempFile}} indirectly.
+
+This {{createTempFile}} method takes 5 seconds on Linux because it uses {{java.security.SecureRandom}} which seems to use {{/dev/random}}.
+
+So the first run of fsc is fail to start because {{CompileClient}} waits just 2 seconds for the spawned server, and in many cases fsc is slower than scalac because of this {{createTempFile}} problem it seems.
+
+VM option {{-Djava.security.egd=file:/dev/urandom}} can be used to avoid this delay. But this makes {{SecureRandom}} a little bit unsecure, which can be used to generate keys for security.
+
+So it would be good to use an alternative to {{java.io.File.createTempFile}}, as the speed of the compiler is important.

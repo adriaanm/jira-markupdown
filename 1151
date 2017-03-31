@@ -1,0 +1,22 @@
+I have diagnosed this bug and "fixed" it.  Fixed is in quotes because the modification I dreamed up broke twelve test cases.  I don't yet know the internals well enough to fix it correctly, so I would like to turn this over to the bug database while I continue trawling it.
+
+The issue is caseFieldAccessors in Symbols.scala.  Callers expect it to return accessors in the same order as the case class parameters, but if any of them are declared private they will be returned out of order, unless the private members are at the end of the list.  For instance if you have case class A(a: Int, private val b: String, c: Int), they will come back a,c,b because accessors to private members are appended to the list and then cherrypicked after the fact.  So when the equals method for case classes is synthesized, the types of the members won't match, and pattern matching is also impacted.
+
+I attempted to use constrParamAccessors (which has the parameters in their original order) to reorient caseFieldAccessors to the correct order.  I make no claims this is even close to the right fix, but it did allow my test cases with private vals to compile and limit access correctly.  It's possible this fix is close to right, and if so the logic that needs adjustment is the use of fullNameString, which should actually use some internal compiler functions I haven't found yet to make that identification.
+
+{code}
+    final def caseFieldAccessors: List[Symbol] = {
+      val allAccessors = info.decls.toList filter (sym => !(sym hasFlag PRIVATE) && sym.hasFlag(CASEACCESSOR))
+      if (allAccessors.forall(sym => !(sym hasFlag CASEACCESSOR)))
+        return allAccessors
+    
+      for (cpa <- constrParamAccessors) yield {
+        allAccessors.find { a =>
+          if (a hasFlag ACCESSOR) a.accessed.id == cpa.id
+          else (a.fullNameString startsWith (cpa.fullNameString + "$$"))
+        } getOrElse (throw new Exception(cpa.fullNameString + " not found in " + allAccessors))
+      }
+    }
+{code}
+
+See also the ticket I just opened with a related but distinct problem, SI-1422.

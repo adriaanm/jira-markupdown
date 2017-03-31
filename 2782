@@ -1,0 +1,24 @@
+Miles, if the change won't break your code, I'll commit it as a quick fix until we get a better solution.
+{code}
+Index: src/compiler/scala/tools/nsc/Global.scala
+===================================================================
+--- src/compiler/scala/tools/nsc/Global.scala	(revision 19699)
++++ src/compiler/scala/tools/nsc/Global.scala	(working copy)
+@@ -230,7 +230,7 @@
+         val depFilePath = Path(x)
+         if (depFilePath.exists) {
+           /** The directory where file lookup should start */
+-          val rootPath = Path("")
++          val rootPath = depFilePath.normalize.parent.get.normalize
+           def toFile(path: String) = AbstractFile.getFile(rootPath resolve Path(path))
+           dependencyAnalysis.loadFrom(AbstractFile.getFile(depFilePath), toFile)
+         }
+@@ -833,7 +833,7 @@
+               dependencyAnalysis.dependenciesFile = AbstractFile.getFile(depFilePath.createFile())
+         
+             /** The directory where file lookup should start */
+-            val rootPath = Path("").normalize
++            val rootPath = depFilePath.normalize.parent.get.normalize
+             def fromFile(file: AbstractFile): String =
+               rootPath.relativize(Path(file.file).normalize).path
+{code}

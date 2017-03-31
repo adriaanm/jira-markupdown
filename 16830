@@ -1,0 +1,15 @@
+You shouldn't be able to cast your way to a VerifyError.
+{code}
+object Test {
+  final val UNIT: AnyRef with Unit = ().asInstanceOf[AnyRef with Unit]
+  
+  def main(args: Array[String]): Unit = {
+    println(UNIT.getClass)
+  }
+}
+{code}
+{noformat}
+% scala Test
+java.lang.VerifyError: (class: Test$, method: main signature: ([Ljava/lang/String;)V) Incompatible object argument for function call
+	at Test.main(a.scala)
+{noformat}

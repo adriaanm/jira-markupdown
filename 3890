@@ -1,0 +1,20 @@
+Another instance of the same problem reported [here|http://stackoverflow.com/questions/9138312],
+
+{code}
+trait Foo[A]
+implicit def fooString: Foo[String] = null
+
+implicit def value[A](implicit foo: Foo[A]) = 5
+
+implicitly[Int] // OK
+{code}
+
+Whereas ...
+
+{code}
+implicit def conversion[A](x: Int)(implicit foo: Foo[A]) = new {
+  def aMethod = 5
+}
+
+1.aMethod       // Error: could not find implicit value for parameter foo: test.Foo[A]
+{code}

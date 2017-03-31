@@ -1,0 +1,11 @@
+It is inherent in the design of implicits that new implicits becoming eligible will break existing code, because the new implicits can introduce ambiguity in formerly working situations. For instance, here is a modified version of your submission in SI-7692 which compiles under current trunk. I assume this will stop compiling, possibly after modifying the implicit locations since I can't remember the specificity rules.
+{code}
+object Test extends App {
+  trait Fundep[T, U]
+  class C { def y = "x" }
+  implicit val FundepStringC = new Fundep[String, C]{}
+  implicit def foo[T, U](x: T)(implicit y: Fundep[T, U]): U = ???
+  implicit def bar[T](x: T)(implicit y: Fundep[T, C]): C = ???
+  println("x".y)
+}
+{code}

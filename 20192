@@ -1,0 +1,21 @@
+Compiler can't find this lazy val:
+https://github.com/kxbmap/configs/blob/e2fb1fedfadaac5b68bb9289bdeaf296cc08986b/core/src/main/scala/configs/macros/Construct.scala#L86
+
+2.11.8 and 2.12.0-M4 compile successfully:
+https://travis-ci.org/kxbmap/configs/builds/159102423
+
+{code}
+[error] C:\Users\kxbmap\src\github.com\kxbmap\configs\core\src\test\scala\configs\DeriveConfigsTest.scala:54: exception during macro expansion:
+[error] java.lang.NoSuchMethodError: configs.macros.MacroBase.configs$macros$Construct$$defaults$1(Lscala/reflect/api/Symbols$ClassSymbolApi;Lscala/runtime/LazyRef;)Lscala/collection/immutable/Map;
+[error]         at configs.macros.Construct$$anonfun$1.$anonfun$applyOrElse$1(Construct.scala:104)
+[error]         at scala.collection.immutable.List.map(List.scala:272)
+[error]         at configs.macros.Construct$$anonfun$1.applyOrElse(Construct.scala:103)
+[error]         at configs.macros.Construct$$anonfun$1.applyOrElse(Construct.scala:100)
+[error]         at scala.collection.TraversableOnce.collectFirst(TraversableOnce.scala:145)
+[error]         at configs.macros.Construct.caseClass(Construct.scala:100)
+[error]         at configs.macros.Construct.forClass$1(Construct.scala:33)
+[error]         at configs.macros.Construct.construct(Construct.scala:37)
+[error]         at configs.macros.ConfigsMacro.derive(ConfigsMacro.scala:28)
+[error]   val caseClass1 = check[CC1]
+[error]                         ^
+{code}

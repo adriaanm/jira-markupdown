@@ -1,0 +1,7 @@
+In an upgrade to 2.8.0, I noticed a bunch of errors where references to inner classes triggered errors -- despite being legal Java, despite not causing problems in an ant build using 2.8.0prebeta1.  Here is a small example, attached as a zip file of a small project (three Java files in a Scala project) demonstrating (I hope) how this goes wrong.
+
+The offending file/line is GHashMap.java, line 104, with the reference to !WrappedKey "not found".  !WrappedKey is defined on line 38 (and F3 will take you there!).  Notice other mentions of !WrappedKey that do not cause problems to be reported.  Qualifying it explicitly did not help, at least for me.
+
+Everything involved is up-to-date as of earlier today, March 2.
+
+This is the most boring code I could find that would exhibit this problem.  It does not seem to be directly referenced from any Scala code in the larger project from which it was extracted.

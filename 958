@@ -1,0 +1,16 @@
+I can reproduce this with
+{code}
+class Foo {
+  override def toString = getClass.getSimpleName
+}
+
+object SimpleName extends Application {
+  val foo = new Foo {}
+  println(foo)
+}
+{code}
+Changing the one line to 
+{code}
+  override def toString = classOf[Foo].getSimpleName
+{code}
+Makes the problem go away.

@@ -1,0 +1,28 @@
+Here's a workaround for the `lazy val` case: make sure lazy vals are defined in a nested class instead of directly in the method. This makes sure that the normal synchronization mechanism is applied. Perhaps that could be a guide for the solution for the `lazy val` case: make sure that the synchronization stuff is generated for lazy vals nested in methods as well (`mkLazyDef` in the Mixin-phase seems to apply only to direct members of classes/traits/objects). 
+
+For the `object` case, even wrapping doesn't work. If the object instance would just be another lazy val, the solution for the lazy val case would solve the object's problem probably, as well. This is probably a bigger change, but perhaps in the long run?
+
+{code}
+object Test {
+  val i = new java.util.concurrent.atomic.AtomicInteger(1)
+  def main(args: Array[String]): Unit = {
+    val waitTime = Integer.parseInt(args(0))
+    val waitTime2 = Integer.parseInt(args(1))
+    class Inner {
+      lazy val Murks = {
+      // or: object Murks {
+        println(i.getAndIncrement+") Initializing "+Thread.currentThread)
+        Thread.sleep(waitTime)
+        "test"
+      }
+      for (i <- 0 to 20) { 
+        new Thread(new Runnable { 
+          def run:Unit = println(Murks+": "+Thread.currentThread)
+        }).start()
+        Thread.sleep(waitTime2) 
+      }
+    }
+    new Inner()
+  }
+}
+{code}

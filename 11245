@@ -1,0 +1,47 @@
+You are correct: the issue I hit in scalac had nothing to do with concurrency.  lchoran had the right insight. 
+
+I just posted the following response on the pull-request:
+
+lchoran: you identified the problem that causes private-inline.scala to fail. It isn't a case of concurrency. It is a case of a remove() (or -=) operation occurring in the closure to a foreach (or iterator). I added asserts to the code and got the following backtrace:
+{noformat}
+Possible compiler crash during test of: test/files/run/private-inline.scala
+java.lang.AssertionError: assertion failed
+	at scala.Predef$.assert(Predef.scala:165)
+	at scala.collection.mutable.HashMap.$minus$eq(HashMap.scala:97)
+	at scala.tools.nsc.backend.jvm.GenASM$AsmPhase$$anonfun$run$3.apply(GenASM.scala:90)
+	at scala.tools.nsc.backend.jvm.GenASM$AsmPhase$$anonfun$run$3.apply(GenASM.scala:87)
+	at scala.collection.TraversableLike$WithFilter$$anonfun$foreach$1.apply(TraversableLike.scala:772)
+	at scala.collection.mutable.HashMap$$anonfun$foreach$1.apply(HashMap.scala:101)
+	at scala.collection.mutable.HashMap$$anonfun$foreach$1.apply(HashMap.scala:101)
+	at scala.collection.mutable.HashTable$class.foreachEntry(HashTable.scala:234)
+	at scala.collection.mutable.HashMap.foreachEntry(HashMap.scala:39)
+	at scala.collection.mutable.HashMap.foreach(HashMap.scala:101)
+	at scala.collection.TraversableLike$WithFilter.foreach(TraversableLike.scala:771)
+	at scala.tools.nsc.backend.jvm.GenASM$AsmPhase.run(GenASM.scala:87)
+	at scala.tools.nsc.Global$Run.compileUnitsInternal(Global.scala:1583)
+	at scala.tools.nsc.Global$Run.compileUnits(Global.scala:1557)
+	at scala.tools.nsc.Global$Run.compileSources(Global.scala:1553)
+	at scala.tools.nsc.Global$Run.compile(Global.scala:1662)
+{noformat}
+
+When I rewrote the foreachEntry method from (simplified):
+{noformat}
+         while (es != null) {
+               f(...)
+               es = es.next
+          }
+{noformat}
+to be:
+{noformat}
+         while (es != null) {
+               val next1 = es.next
+               f(...)
+               val next = es.next
+               es = if (next ne null) next else next1
+          }
+{noformat}
+the private-inline.scala test passes 100% of the time for 100 runs.
+
+The challenge is that one then needs to be aware of this effect of removing nodes causing link fields to change and to write loops with hasNext/next  to similarly read the next value before executing the closure. This doesn't seem to be acceptable (and shows that hasNext/next is not a nice interface in some ways).
+
+The fixed code is also still open to the concurrent issue I mentioned. But it is good to understand why this broke scalac.

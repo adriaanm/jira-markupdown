@@ -1,0 +1,46 @@
+A test class App loses line number specificity when exception is thrown from value class.  Both DelayedInit and AnyVal are required for symptom.
+
+{code}
+object Test2 extends App {
+  implicit class Averrable(val b: Boolean) extends AnyVal {
+    def yes = assert(b)
+    def no = assert(!b)
+  }
+  // normal line number
+  // at gline.Test2$delayedInit$body.apply(gline.scala:19)
+  //throw new RuntimeException
+
+  // line number is start of object Test
+  //at scala.Predef$.assert(Predef.scala:165)
+  //at gline.Test2$Averrable$.yes$extension(gline.scala:16)
+  //at gline.Test2$delayedInit$body.apply(gline.scala:14)
+  false.yes
+
+  // same in new encoding
+  //at gline.Test2$Averrable$.yes$extension(gline.scala:16)
+  //at gline.Test2$.delayedEndpoint$gline$Test2$1(gline.scala:14)
+  //at gline.Test2$delayedInit$body.apply(gline.scala:14)
+}
+{code}
+
+And javap says:
+
+{code}
+  public final void delayedEndpoint$gline$Test2$1();
+    flags: ACC_PUBLIC, ACC_FINAL
+    Code:
+      stack=3, locals=1, args_size=1
+         0: getstatic     #65                 // Field gline/Test2$Averrable$.MODULE$:Lgline/Test2$Averrable$;
+         3: aload_0       
+         4: iconst_0      
+         5: invokevirtual #67                 // Method Averrable:(Z)Z
+         8: invokevirtual #71                 // Method gline/Test2$Averrable$.yes$extension:(Z)V
+        11: return        
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+               0      12     0  this   Lgline/Test2$;
+      LineNumberTable:
+        line 13: 0
+        line 26: 3
+        line 13: 8
+{code}

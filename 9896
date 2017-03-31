@@ -1,0 +1,26 @@
+The terminology is confusing here. "Ambiguous implicits" describes competing, applicable implicits which score equally on the specificity test. Here, we have have an ambiguous binding. This is really an "invalid implicit", as diagnosed by `-Xlog-implicits`
+
+{code}
+qscalac -Xlog-implicits sandbox/test1.scala
+sandbox/test1.scala:9: <string2int: error> is not a valid implicit value for String("abc") => Int because:
+reference to string2int is ambiguous;
+it is imported twice in the same scope by
+import o2._
+and import o1._
+  val x: Int = "abc"
+               ^
+sandbox/test1.scala:9: error: type mismatch;
+ found   : String("abc")
+ required: Int
+  val x: Int = "abc"
+               ^
+one error found
+{code}
+
+{quote}
+Secondarily, it would be nice if this situation were recognized as the non-conflict which it is: the "conflicting" implicits are prefix-insensitive and the identical method implementation.
+{quote}
+
+Given separate compilation, we can only base our decision on the type signature, not on the body of the method.
+
+We should figure out how to emit the useful output of `-Xlog-implicits` when and where it is needed. I've never been able to figure out the right balance here, though.

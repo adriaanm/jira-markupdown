@@ -1,0 +1,48 @@
+{code}
+object O {
+  val o = new {
+    trait A
+    object CA extends Seq[A]
+  }
+  import o._
+
+  val a: Seq[A] = CA
+}
+{code}
+
+Inferred type:
+{code}
+// note the missing supertype for CA
+private[this] val o: AnyRef{type A <: AnyRef; object CA} = {
+{code}
+
+work arounds: 
+{code}
+object O {
+  val o = new Nested
+  class Nested {
+    trait A
+    object CA extends Seq[A]
+  }
+  import o._
+
+  val a: Seq[A] = CA
+}
+
+{code}
+object O {
+  object o {
+    trait A
+    object CA extends Seq[A]
+  }
+...
+{code}
+
+{code}
+object O {
+  val o = new {
+    trait A
+    lazy val CA = new Seq[A] {}
+  }
+...
+{code}

@@ -1,0 +1,29 @@
+In 2.12.x the example in this ticket produces a non-exhaustive match warning,
+{code}
+> scala
+[info] Running scala.tools.nsc.MainGenericRunner -usejavacp                                                                                 
+Welcome to Scala 2.12.0-20160722-172732-9ee8124 (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_102).                                        
+Type in expressions for evaluation. Or try :help.                                                                                           
+                                                                                                                                            
+scala> :paste
+// Entering paste mode (ctrl-D to finish)                                                                                                   
+                                                                                                                                            
+object Test extends App {                                                                                                                   
+  case class L();                                                                                                                           
+  object N extends L();                                                                                                                     
+                                                                                                                                            
+  def empty(xs : L) : Unit = xs match {                                                                                                     
+    case x@N => println(x); println(x);                                                                                                     
+  }                                                                                                                                         
+                                                                                                                                            
+  empty(L())                                                                                                                                
+}                                                                                                                                           
+                                                                                                                                            
+// Exiting paste mode, now interpreting.                                                                                                    
+                                                                                                                                            
+<console>:15: warning: match may not be exhaustive.
+It would fail on the following input: L()
+         def empty(xs : L) : Unit = xs match {
+                                    ^
+defined object Test
+{code}

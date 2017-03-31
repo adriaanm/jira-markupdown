@@ -1,0 +1,35 @@
+The following code produces a set 'values' that contains null when it shouldn't:
+
+{code}
+object Foo {
+
+  case object F1 extends Foo
+  case object F2 extends Foo
+
+  val values = Set(F1,F2)
+
+}
+
+// remove default and no problem
+sealed abstract class Foo private(val bar:Boolean=false) {}
+
+object Bug {
+
+  val foo = Foo.F1 // remove and no problem
+
+  def main(args:Array[String]):Unit = {
+	Foo.values contains Foo.F1      // expect true but is false!
+	println(Foo.values)	        // contains null instead of F1?!
+  }
+}
+
+class Bug {}
+{code}
+
+Appears to be caused by the combination of referencing F1 from another companion object AND the default constructor argument.
+
+scala:2.8.0.RC1
+
+java:1.6.0_16-b01
+
+os:linux

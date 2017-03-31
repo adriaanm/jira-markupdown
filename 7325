@@ -1,0 +1,46 @@
+I now see how many bugs you few core guys are handling, thus apologies for not making my code example concise. Will do in the future.
+
+The unchecked warning is appearing with my prior code, so no need to open a separate bug report.
+
+Thanks for catching the type hole that D[Any] was an allowable input to size. I fixed that below.
+
+{code}
+scala> size(new D[Any](5 : Any))
+error: type mismatch;
+ found   : D[Any]
+ required: DD[D[Int] with D[String]]
+       size(new D[Any](5 : Any))
+            ^
+{code}
+
+Also, I was able to eliminate the unchecked warnings as follows.
+
+{code}
+scala> class D[-A] (v: A) {
+  def get = (v : Any)
+}
+defined class D
+
+scala> class DD[-A >: D[Any]] (v: A) {
+  def get = (v : Any)
+}
+defined class DD
+
+scala> implicit def neg[A](x: A) = new DD[D[A]]( new D[A](x) )
+neg: [A](x: A)DD[D[A]]
+
+scala> def size(t: DD[D[Int] with D[String]]) = t.get match { case x: D[_] =>  
+  x.get match {
+    case x: Int => 1
+    case x: String => 2
+    case x: Double => 3
+  }
+}
+size: (t: DD[D[Int] with D[String]])Int
+{code}
+
+Why can't the compiler reason that the Double case above is unreachable?
+
+Afaik, Scala will prevent any call of size with a D[D[Double]], but at the JVM such can't be prevented due to type erasure. But what if I don't care about interoption at the JVM level of linkage? I want to assume that all callers will respect my higher-level API, where size only inputs D[D[Int] with D[String]].
+
+Is the current policy to make my desired assumption, or if not could there be a compiler flag to do so?

@@ -1,0 +1,92 @@
+After thinking twice， the subsets(n: Int) should be
+{code}
+  /**
+    Iterator of all subsets containing exactly n elements
+  */
+  def subsets(n: Int): Iterator[This] = {
+    //return an empty itr rather than throw an exception
+    if(len < 0 || len > size) Iterator.empty        
+    else new SubsetsItr(self.toIndexedSeq, n)
+  }
+
+{code}
+
+
+A non-recursive implementation of SeqLike.combinations, should be more tested.
+{code}
+trait SeqLike[+A, +Repr] extends IterableLike[A, Repr] { self =>
+  
+  /**
+    generating all combinations of n-elements
+  */
+  def combinations(n: Int): Iterator[Repr] = 
+    if(n < 0 || n > self.size) Iterator.empty
+    else new CombinationsItr(n)
+    
+  private CombinationsItr(n: Int) extends Iterator[Repr]{ 
+    val (elms,cnts,nums) = init()
+    val offs = cnts.scanLeft(0){ _+_ }
+    /*
+       generating all nums such that:
+       (1) nums(0) + .. + nums(length-1) = n
+       (2) 0 <= nums(i) <= cnts(i), where 0 <= i <= cnts.length-1
+    */
+    
+    var _hasNext = true
+    
+    override def hasNext = _hasNext
+    
+    override def next: Repr = {
+      if(!hasNext) Iterator.empty.next
+      
+      val sb = self.newBuilder
+      for(k <- 0 until nums.length; j <- 0 until nums(k)) {
+        sb += elms(offs(k)+j)
+      }
+      val res = sb.result
+      
+      var idx = nums.indexWhere{ _ > 0 }
+      if(idx < 0) {
+        _hasNext = false
+        return res
+      }
+      var sum = 0
+      do {
+        sum += nums(idx)
+        idx += 1
+      } while(idx < nums.length && nums(idx) == cnts(idx))
+      if(idx >= nums.length) {
+        _hasNext = false
+      }
+      else {
+        sum -= 1
+        nums(idx) += 1
+        for(k <- 0 until idx) {
+          nums(k) = sum min cnts(k)
+          sum -= nums(k)
+        }
+      }
+      res
+    }
+    
+    /**
+      rearrange seq to newSeq = a0a0..a0a1..a1...ak..ak where seq.count{ _== aj} = cnts(j) and init nums
+      @return (newSeq,cnts,nums)
+    */
+    def init(): (IndexedSeq[A], Array[Int], Array[Int]) = {
+      val m = mutable.HashMap[A,Int]()
+      val (es,is) = self.map{ e => (e,m.getOrElseUpdate(e,m.size)) }.sortBy{ _._2 }.unzip
+      val cs = new Array[Int](m.size+1)
+      for(i <- is) cs(i) += 1
+      val ns = new Array[Int](cs.length)
+      var r = n
+      for(k <- 0 until ns.length) {
+        ns(k) = r min cs(k)
+        r -= ns(k)
+      }
+      (es.toIndexedSeq, cs, ns)
+    }
+  }
+}
+
+{code}

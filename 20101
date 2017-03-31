@@ -1,0 +1,21 @@
+Using the current HEAD of 2.12.x (af93c7a147156f69cad78cc80a36aeaeb89cbe0c) after the first expression, the REPL is broken - you can't see what you type:
+
+{code}
+Welcome to Scala 2.11.9-20160520-170134-99dad60 (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_74).
+Type in expressions for evaluation. Or try :help.
+
+scala> 1
+res0: Int = 1
+
+scala> res1: Int = 2
+
+scala> res2: Int = 3
+
+scala> res3: Int = 3
+{code}
+
+I've bisected it to https://github.com/scala/scala/commit/99dad60d984d3f72338f3bad4c4fe905090edd51, which is part of https://github.com/scala/scala/pull/4998
+
+Note that that pull request was made against 2.11.x, so it's also broken there (there's no {{2.11.x}} in "Affects Version/s"..)
+
+/cc [~apm]

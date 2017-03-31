@@ -1,0 +1,55 @@
+The following code shows how the error can be generated. The trait needs to be put in a separate file:
+
+File: MixinWithSymbol.scala
+{code} 
+trait MixinWithSymbol {
+  self: MotherClass =>
+  def symbolFromTrait: Symbol = 'traitSymbol
+}
+{code}
+
+File: SymbolApp.scala
+{code}
+class MotherClass extends MixinWithSymbol {
+  val classSymbol = 'classSymbol
+}
+
+object SymbolApp extends App {
+  val symbol = (new MotherClass).symbolFromTrait
+  println(symbol)  // Error!
+}
+
+{code}
+
+Running this code after a clean build in sbt generates the following error:
+
+{code}
+java.lang.IllegalAccessError: tried to access field MotherClass.symbol$1 from class MixinWithSymbol$class
+        at MixinWithSymbol$class.symbolFromTrait(MixinWithSymbol.scala:3)
+        at MotherClass.symbolFromTrait(SymbolApp.scala:1)
+        at SymbolApp$.delayedEndpoint$SymbolApp$1(SymbolApp.scala:6)
+        at SymbolApp$delayedInit$body.apply(SymbolApp.scala:5)
+        at scala.Function0$class.apply$mcV$sp(Function0.scala:40)
+        at scala.runtime.AbstractFunction0.apply$mcV$sp(AbstractFunction0.scala:12)
+        at scala.App$$anonfun$main$1.apply(App.scala:76)
+        at scala.App$$anonfun$main$1.apply(App.scala:76)
+        at scala.collection.immutable.List.foreach(List.scala:381)
+        at scala.collection.generic.TraversableForwarder$class.foreach(TraversableForwarder.scala:35)
+        at scala.App$class.main(App.scala:76)
+        at SymbolApp$.main(SymbolApp.scala:5)
+        at SymbolApp.main(SymbolApp.scala)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+        at java.lang.reflect.Method.invoke(Method.java:606)
+{code}
+
+Other observations: 
+
+- By doing an incremental build, e.g. a small change in the file containing the trait, the error disappears at the next run. After a clean compile, the error turns up again.
+
+- Removing the self type in the trait makes the code work
+
+- Adding an object with a symbol definition in the top of one of the files makes the code work
+
+- Removing the symbol definition from MotherClass makes the code work

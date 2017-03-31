@@ -1,0 +1,34 @@
+Problem is that is is valid syntactically.
+
+{code}
+scala> object a { def unapply(a: Any): Boolean = true }
+defined module a
+
+scala> { val a(): String = ""; 0 }
+res3: Int = 0
+
+scala> cm.universe.reify { val a(): String = "" }
+res18: cm.universe.Expr[Unit] =
+Expr[Unit]({
+  <synthetic> private[this] val x$1 = ("": @unchecked: String) match {
+    case a() => ()
+  };
+  ()
+})
+
+scala> val cm = reflect.runtime.currentMirror
+cm: reflect.runtime.universe.Mirror = JavaMirror with ...
+
+scala> cm.universe.showRaw(res18)
+res19: String =
+Expr[Unit]({
+  <synthetic> private[this] val x$1 = ("": @unchecked: String) match {
+    case a() => ()
+  };
+  ()
+})
+
+scala> cm.universe.showRaw(res18.tree)
+res20: String = Block(List(ValDef(Modifiers(PRIVATE | LOCAL | SYNTHETIC), newTermName("x$1"), TypeTree(), Match(Typed(Annotated(Apply(Select(New(Ident(scala.unchecked)), nme.CONSTRUCTOR), List()), Literal(Constant(""))), Ident(newTypeName("String"))), List(CaseDef(Apply(Select(Select(Select(Select(Ident($line34), newTermName("$read")), newTermName("$iw")), newTermName("$iw")), newTermName("a")), List()), EmptyTree, Literal(Constant(()))))))), Literal(Constant(())))
+
+{code}

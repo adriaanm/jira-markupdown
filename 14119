@@ -1,0 +1,27 @@
+immutable map equality is supposed to treat two immutable maps with the same keys as equal. IntMap does this, but only when the map is non-empty:
+
+{code}
+scala> import scala.collection.immutable._
+import scala.collection.immutable._
+
+scala> IntMap.empty                       
+res0: scala.collection.immutable.IntMap[Nothing] = IntMap()
+
+scala> HashMap.empty                      
+res1: scala.collection.immutable.HashMap[Nothing,Nothing] = Map()
+
+scala> res1 == res0
+res2: Boolean = true
+
+scala> res0 == res1
+res3: Boolean = false
+
+scala> IntMap(1 -> 2)
+res4: scala.collection.immutable.IntMap[Int] = IntMap(1 -> 2)
+
+scala> HashMap(1 -> 2)
+res5: scala.collection.immutable.Map[Int,Int] = Map(1 -> 2)
+
+scala> res4 == res5
+res6: Boolean = true
+{code}

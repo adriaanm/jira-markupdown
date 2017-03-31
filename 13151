@@ -1,0 +1,19 @@
+If you attempt to use Console on an empty file (or you have consumed all of the input already), readBoolean(), and probably several other methods, do not check for the fact that readLine() can return null when there is no more input.  This is another bug found via FindBugs.
+
+{code}
+scala> val reader = new java.io.InputStreamReader(new java.io.FileInputStream("/dev/null"))
+reader: java.io.InputStreamReader = java.io.InputStreamReader@219138
+
+scala> Console.setIn(reader)
+
+scala> Console.readBoolean()
+java.lang.NullPointerException
+        at scala.Console$$.readBoolean(Console.scala:212)
+        at .<init>(<console>:5)
+        at .<clinit>(<console>)
+        at RequestResult$$.<init>(<console>:3)
+        at RequestResult$$.<clinit>(<console>)
+        at RequestResult$$result(<console>)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:...
+{code}

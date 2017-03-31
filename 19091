@@ -1,0 +1,36 @@
+It has to be a bug? Oh well I also must have the record for "Not a Bug", like how home run records can be accompanied by strikeout and walk records.
+{code}
+package bob
+
+// The expected behavior
+object util {
+  import scala.util
+
+  class Random { override def toString = "bob's random "}
+
+  object Test {
+    def main(args: Array[String]): Unit = println(new util.Random)
+  }
+}
+// a.scala:11: error: reference to util is ambiguous;
+// it is both defined in package bob and imported subsequently by
+// import scala.util
+//       println(new util.Random)
+//                   ^
+// one error found
+{code}
+
+This one however compiles, and when run indicates that package util was successfully shadowed.
+{code}
+package bob
+
+package util {
+  import scala.util
+
+  class Random { override def toString = "bob's random "}
+
+  object Test {
+    def main(args: Array[String]): Unit = println(new util.Random)
+  }
+}
+{code}

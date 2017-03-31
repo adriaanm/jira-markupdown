@@ -1,0 +1,21 @@
+{{AnyVal}} is not needed in fact - the problem seems to appear on naked type variables with whatever bound, as shown in the below testcase:
+{code}
+object Min {
+  //Don't work
+  def f[A](a: =>A) = println(a.toString)
+  def f1[A <: AnyVal](a: =>A) = println(a.toString)
+  def f2[A <: AnyRef](a: =>A) = println(a.toString)
+  def f2a[A <: String](a: =>A) = println(a.toString)
+  //Works
+  def f3[A](a: =>Seq[A]) = println(a.toString)
+  def main(args: Array[String]) {
+    f3(Seq(1))
+    f3(Seq())
+    f((1).toString)
+    f((1).##)
+    f1((1).##)
+    f2((1).toString)
+    f2a((1).toString)
+  }
+}
+{code}

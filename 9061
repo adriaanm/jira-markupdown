@@ -1,0 +1,17 @@
+Hi Aleksandar,
+
+ad 1) It was so in the first (or maybe also second) version in the fork. I refactored those code pieces from write/readObjectImpl into those ListSerializationCtrl.write/read/InLoop/AsSeen methods to make the code in write/readObjectImpl shorter and more readable and I hoped giving those pieces names would also make it more understandable (than mutate the vars in the write/readObjectImpl directly). When that happened, having the vars private makes clear that only the methods of LSCtrl can mutate them. Doing that I hoped that the analogy of read vs. write is apparent because both write/readObjectImpl and those write/readInLoop, write/readAsSeen are simple enough to see the mirroring. The goal is readability. If you find the "inlined" version more readable, I've absolutely nothing against it.
+
+ad 2,3) Yes. The idea is that the list is serialized in the loop, and each sub-list contributes just its head and itself, so to say. So technically the serialization stream consists of multiple of single-head unconnected lists (well they don't have tail in the stream so they are not lists). The loop makes sure all of them are in, and during the deserialization the loop connects them again.
+
+This is controlled by the inLoop variable. When the writeObjectImpl sees inLoop = true, it knows someone else manages the loop and that it must serialize its head only, and that it has to set the seen to true, to tell that someone it did so. So the seen is like a response, that the list (not the head) was there and contributed itself and it's head. I don't like the name "seen". I don't know a better name now, but we should find one. The "inLoop" is more critical, it's like a request, and thus the inLoop = true can't escape, that's why I set it to false in finally. For the same reason the "inLoop" is set to false before the head is serialized. Head can be or can contain a list, that one must not enter writeObject with inLoop = true, obviously.
+
+So if after calling writeInLoop the ctrl.seen is false, then it was either Nil or already serialized shared sub-list. There is no need to distinguish the two, in either case the loop must stop.
+
+ad 4) Yes, I tried to make read a clear inverse of write.
+
+I've added 1 :-) test into the gist. It is a "shared" thing, and it deserializes properly.
+
+ad side note) You mean like oos.beginWriteObject(obj): Boolean (false if already there and ID written, true if not and ID generated and definition starts) and oos.endWriteObject()?
+
+Regards...

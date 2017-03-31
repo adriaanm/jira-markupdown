@@ -1,0 +1,127 @@
+Make your `Test` a non-final class to see the difference.
+
+{noformat}
+$ cat badunit.scala 
+
+package badunit
+
+import scala.annotation.{tailrec, switch}
+
+class Test {
+  @tailrec
+  final def example(index: Int): Unit = (index: @switch) match {
+    case 0 => println("I'm even!")
+    case 1 => println("I'm odd!")
+    case _ => example(index - 2)
+  }
+}
+
+class Testy {
+  def example(index: Int): Unit = index match {
+    case 0 => println("I'm even!")
+    case 1 => println("I'm odd!")
+    case _ => example(index - 2)
+  }
+}
+
+$ scalac badunit.scala && echo :javap 'badunit.Test#example' 'badunit.Testy#example' | scala
+Welcome to Scala version 2.11.2 (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_05).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> :javap badunit.Test#example badunit.Testy#example
+  public final void example(int);
+    descriptor: (I)V
+    flags: ACC_PUBLIC, ACC_FINAL
+    Code:
+      stack=2, locals=4, args_size=2
+         0: iload_1       
+         1: istore_3      
+         2: iload_3       
+         3: tableswitch   { // 0 to 1
+                       0: 45
+                       1: 31
+                 default: 24
+            }
+        24: iload_1       
+        25: iconst_2      
+        26: isub          
+        27: istore_1      
+        28: goto          0
+        31: getstatic     #45                 // Field scala/Predef$.MODULE$:Lscala/Predef$;
+        34: ldc           #47                 // String I'm odd!
+        36: invokevirtual #51                 // Method scala/Predef$.println:(Ljava/lang/Object;)V
+        39: getstatic     #57                 // Field scala/runtime/BoxedUnit.UNIT:Lscala/runtime/BoxedUnit;
+        42: goto          56
+        45: getstatic     #45                 // Field scala/Predef$.MODULE$:Lscala/Predef$;
+        48: ldc           #59                 // String I'm even!
+        50: invokevirtual #51                 // Method scala/Predef$.println:(Ljava/lang/Object;)V
+        53: getstatic     #57                 // Field scala/runtime/BoxedUnit.UNIT:Lscala/runtime/BoxedUnit;
+        56: pop           
+        57: return        
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      58     0  this   Lbadunit/Test;
+            0      58     1 index   I
+      LineNumberTable:
+        line 8: 0
+        line 11: 24
+        line 10: 31
+        line 9: 45
+      StackMapTable: number_of_entries = 5
+           frame_type = 0 /* same */
+           frame_type = 253 /* append */
+          offset_delta = 23
+          locals = [ top, int ]
+             frame_type = 6 /* same */
+             frame_type = 13 /* same */
+             frame_type = 74 /* same_locals_1_stack_item */
+            stack = [ class scala/runtime/BoxedUnit ]
+  public void example(int);
+    descriptor: (I)V
+    flags: ACC_PUBLIC
+    Code:
+      stack=3, locals=3, args_size=2
+         0: iload_1       
+         1: istore_2      
+         2: iload_2       
+         3: tableswitch   { // 0 to 1
+                       0: 45
+                       1: 34
+                 default: 24
+            }
+        24: aload_0       
+        25: iload_1       
+        26: iconst_2      
+        27: isub          
+        28: invokevirtual #12                 // Method example:(I)V
+        31: goto          53
+        34: getstatic     #18                 // Field scala/Predef$.MODULE$:Lscala/Predef$;
+        37: ldc           #20                 // String I'm odd!
+        39: invokevirtual #24                 // Method scala/Predef$.println:(Ljava/lang/Object;)V
+        42: goto          53
+        45: getstatic     #18                 // Field scala/Predef$.MODULE$:Lscala/Predef$;
+        48: ldc           #26                 // String I'm even!
+        50: invokevirtual #24                 // Method scala/Predef$.println:(Ljava/lang/Object;)V
+        53: return        
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      54     0  this   Lbadunit/Testy;
+            0      54     1 index   I
+      LineNumberTable:
+        line 16: 0
+        line 19: 24
+        line 18: 34
+        line 17: 45
+        line 16: 53
+      StackMapTable: number_of_entries = 4
+           frame_type = 252 /* append */
+          offset_delta = 24
+          locals = [ int ]
+             frame_type = 9 /* same */
+             frame_type = 10 /* same */
+             frame_type = 7 /* same */
+
+
+
+{noformat}

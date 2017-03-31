@@ -1,0 +1,12 @@
+Reopening: when @tailrec is used on a non-recursive method, the default error message is still used: "it contains a recursive call not in tail position".
+
+From {{TailCalls.scala}}:
+
+{code}
+else if (!isRecursiveCall) {
+  if (receiverIsSuper) failHere("it contains a recursive call targetting a supertype")
+  else failHere(defaultReason)
+}
+{code}
+
+I haven't done any scalac hacking, but I assume this is the spot where you'd want to say "method is non-recursive."

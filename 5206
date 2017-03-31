@@ -1,0 +1,10 @@
+I'm primarily talking about the scaladoc, which offers the signature shown in the ticket.  We can consider the fact that the compiler fakes the bynameness an implementation detail: I don't think it needs to be documented at the user level.  But we can't give it the wrong signature.
+
+By the way, the reason this came up was that it was making fixing the "warn dead code" option very difficult, because:
+{code}
+  f(throw new Exception)
+  g(throw new Exception)
+{code}
+The contents of method f are unreachable if f is by-name, but not g.  So the compiler, believing "synchronized" to be a normal method, would complain about all such blocks.  And I had to add more hacks to hack around the first hack.
+
+That kind of thing makes me believe that synchronized should be implemented as a by-name method, and rather than special casing it where it is now, we special case the closure creation later.

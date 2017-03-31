@@ -1,0 +1,21 @@
+I've edited the example and the errors slightly (to show both of them). Moreover, 2.10.3 gives the same errors:
+
+{code}
+> compile
+[info] Compiling 1 Scala source to /Users/pgiarrusso/Documents/Research/Sorgenti/hoas-with-names/macros/target/scala-2.10/classes...
+[error] /Users/pgiarrusso/Documents/Research/Sorgenti/hoas-with-names/macros/foo.scala:22: macro implementation has wrong shape:
+[error]  required: (c: scala.reflect.macros.Context)(t: c.Expr[X1.v.T]): c.Expr[X1.v.T]
+[error]  found   : (c: scala.reflect.macros.Context{type PrefixType = X1.type})(t: c.Expr[c.prefix.value.v.T]): c.Expr[c.prefix.value.v.T]
+[error] type mismatch for parameter t: c.Expr[X1.v.T] does not conform to c.Expr[c.prefix.value.v.T]
+[error]   def m(t: T): T = macro foo
+[error]                          ^
+[error] /Users/pgiarrusso/Documents/Research/Sorgenti/hoas-with-names/macros/foo.scala:44: macro implementation has wrong shape:
+[error]  required: (c: scala.reflect.macros.Context)(t: c.Expr[X.this.v.T]): c.Expr[X.this.v.T]
+[error]  found   : (c: scala.reflect.macros.Context{type PrefixType = X})(t: c.Expr[c.prefix.value.v.T]): c.Expr[c.prefix.value.v.T]
+[error] type mismatch for parameter t: c.Expr[X.this.v.T] does not conform to c.Expr[c.prefix.value.v.T]
+[error]   def m(t: T): T = macro TestMacros.foo
+[error]                                     ^
+[error] two errors found
+[error] (macros/compile:compile) Compilation failed
+[error] Total time: 1 s, completed Mar 1, 2014 4:01:55 PM
+{code}

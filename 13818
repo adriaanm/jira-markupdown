@@ -1,0 +1,32 @@
+Given this program:
+{code}
+class C[A] {
+  type CC[B] <: C[B]
+  def aio[T]: T = aio[T]
+}
+class D[A] extends C[A] {
+  protected def nv[B](elems: Iterator[B]): CC[B] = {
+    val x = new D[B]
+    x.aio[CC[B]]
+  }
+}
+{code}
+you get the following error:
+{code}
+/home/odersky/scala/test/files/new/hkcasts.scala:8: error: type mismatch;
+ found   : x.CC[B]
+ required: D.this.CC[B]
+    x.aio[CC[B]]
+      ^
+one error found
+{code}
+The reason is found in the following lines in Typers.scala 
+{code}
+//@M TODO -- probably ok
+//@M example why asSeenFrom is necessary: class Foo[a] { def foo[m[x]]: m[a] } (new Foo[Int]).foo[List] : List[Int]
+//@M however, asSeenFrom widens a singleton type, thus cannot use it for those types
+val resultpe = if (resultpe0.isInstanceOf[SingletonType]) resultpe0 else resultpe0.asSeenFrom(prefixType(fun), fun.symbol.owner) 
+{code}
+It interpretes the type parameter in the context of the function's prefix, which is clearly wrong. The line was introduced to fix a problem with higher-kinded type instantiation, but it is 
+the wrong way to solve this problem. So a new way has to be found.
+

@@ -1,0 +1,36 @@
+This is related to my original issue 3089.
+
+After the "-Xmigration" changes, the ++ method and several other methods of ListBuffer (really BufferLike) now obey the Traversable contract.
+
+However I just now discovered some methods that don't obey the Seq contract:
+
+{code}
++:
+++:
+{code}
+
+The points that I made about the other methods still apply:  These methods work as advertised if the object to which they are applied is typed as Seq, even if it is really ListBuffer, therefore they should work correctly (and not give deprecation warnings) if the object is typed as ListBuffer.
+
+{code}
+scala> import scala.collection.mutable.ListBuffer
+import scala.collection.mutable.ListBuffer
+
+scala> new ListBuffer[Int]
+res0: scala.collection.mutable.ListBuffer[Int] = ListBuffer()
+
+scala> 1 +: res0
+warning: there were deprecation warnings; re-run with -deprecation for details
+res1: scala.collection.mutable.ListBuffer[Int] = ListBuffer(1)
+
+scala> res0
+res2: scala.collection.mutable.ListBuffer[Int] = ListBuffer(1)
+
+scala> val s: Seq[Int] = res0
+s: Seq[Int] = ListBuffer(1)
+
+scala> 2 +: s
+res3: Seq[Int] = ListBuffer(2, 1)
+
+scala> res0
+res4: scala.collection.mutable.ListBuffer[Int] = ListBuffer(1)
+{code}

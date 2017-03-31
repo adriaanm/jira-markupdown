@@ -1,0 +1,17 @@
+A bit of more info: this is specific to mutable.IndexedSeq which returns a mutable.IndexedSeqView if `.view` is called. 
+
+For some reason for this line
+
+{code}
+val y: IndexedSeq[String] = collection.mutable.ArrayBuffer(1,2,3).view.map[String, IndexedSeq[String]](_ + "0")
+{code}
+
+this is inferred in typer:
+
+{code}
+ val y: IndexedSeq[String] = scala.collection.mutable.ArrayBuffer.apply[Int](1, 2, 3).view.map[String, IndexedSeq[String]](((x$1: Int) => x$1.+("0")))(mutable.this.IndexedSeq.canBuildFrom[String]);
+{code}
+
+so it is using a CanBuildFrom from IndexedSeq which isn't what usually happens with views where a call like this would fail because of a missing CBF.
+
+<embarassing confession>I don't really understand what's going on in the collections </embarassing confession> but is it possible that mutable.IndexedSeqView is just missing the usual boilerplate for `map` et al.?

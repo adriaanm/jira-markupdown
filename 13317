@@ -1,0 +1,26 @@
+The interpreter rejects multiline comments inside of objects.
+
+
+{code}
+scala> object Fine {
+     | /** no crash here **/
+     | // or here
+     | }
+defined module Fine
+
+
+scala> object Crash {
+     | /** this will crash
+<console>:2: error: '}' expected but eof found.
+       /** this will crash
+                          ^
+
+scala> /** this however
+     |  * seems to be fine
+     |  */
+
+{code}
+
+I get this on 2.7.0-final and 2.7.1.RC1. I'm running MacOSX.
+
+I think Julien reports that all multiline comments (not just inside objects) crash on his Linux distro.

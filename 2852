@@ -1,0 +1,12 @@
+Martin, I think this is because of this case in the erasure type map:
+
+{code}
+        case st: SubType => // map a TypeBounds to a TypeRef (typically)
+          apply(st.supertype)
+{code}
+
+the `BoundedWildcardType` case in `mapOver` in `TypeMap` requires `TypeBounds` to be mapped to `TypeBounds`
+
+We've probably starting hitting this path because of r19769, which fixed SI-2635 
+
+I'm not sure what the erasure of a `BoundedWildcardType` should be, so assigning to you.

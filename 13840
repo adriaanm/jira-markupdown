@@ -1,0 +1,51 @@
+Seems to be a parser bug:
+
+I have an annotation:
+{code}
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Target;
+
+/**
+ * @author ilyas
+ */
+
+@Documented
+@Retention(RetentionPolicy.CLASS)
+@Target({ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE})
+public @interface Nullable {
+    String value() default "";
+}
+{code}
+
+Java class 
+{code}
+public class Test {
+    public void foo(@Nullable final String st) {
+        System.out.println(st);
+    }
+}
+{code}
+
+and Scala object
+{code}
+object ScalaTest {
+  def main(args: Array[String]) {
+    val test = new Test
+    test.foo("help")
+  }
+}
+{code}
+
+Trying to compile all of them together I get:
+
+Information:Compilation completed with 2 errors and 0 warnings
+Information:2 errors
+Information:0 warnings
+/home/ilya/Work/bug/src/Test.java
+    Error:Error:line (5)error: illegal start of type
+public void foo(@Nullable final String st) {
+    Error:Error:line (8)error: identifier expected but `}' found.
+}

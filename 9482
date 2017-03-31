@@ -1,0 +1,41 @@
+The OVERRIDE flag for members of refinements gets set in a delayed fashion:
+
+{code}
+    def typedRefinement(templ: Template) {
+      val stats = templ.body
+      namer.enterSyms(stats)
+
+      // need to delay rest of typedRefinement to avoid cyclic reference errors
+      unit.toCheck += { () =>
+        val stats1 = typedStats(stats, NoSymbol)
+        // this code kicks in only after typer, so `stats` will never be filled in time
+        // as a result, most of compound type trees with non-empty stats will fail to reify
+        // todo. investigate whether something can be done about this
+        val att = templ.attachments.get[CompoundTypeTreeOriginalAttachment].getOrElse(CompoundTypeTreeOriginalAttachment(Nil, Nil))
+        templ.removeAttachment[CompoundTypeTreeOriginalAttachment]
+        templ updateAttachment att.copy(stats = stats1)
+        for (stat <- stats1 if stat.isDef && stat.symbol.isOverridingSymbol)
+          stat.symbol setFlag OVERRIDE
+      }
+    }
+{code}
+
+Couple that with the caching of normalized types within {{TypeRef}}:
+
+{code}
+    final override def normalize: Type = {
+      // arises when argument-dependent types are approximated (see def depoly in implicits)
+      if (pre eq WildcardType) WildcardType
+      else if (phase.erasedTypes) normalizeImpl
+      else {
+        if (normalized eq null)
+          normalized = normalizeImpl
+        normalized
+      }
+    }
+{code}
+
+And you get stuck with the wrong flags in the cached normalized type ref.
+
+Conclusion: caching is hard, let's go shopping...
+

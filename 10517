@@ -1,0 +1,25 @@
+Concretely, with a more liberal coevolveSym, we don't get both expected errors:
+
+{code}
+[ t8177 *$%<> ] scala/ $ qsc /Users/adriaan/git/scala/test/files/neg/t4137.scala  -uniqid -Xprint:typer
+[[syntax trees at end of                     typer]] // t4137.scala
+package <empty>#4 {
+  abstract trait C#7686[T#7687] extends scala#20.AnyRef#2675;
+  abstract trait A#7688[T#7689] extends scala#20.AnyRef#2675 {
+    type EPC#7782[X1#7783] = C#7686[X1#7783];
+    type EPC2#7784[X1#7785] = C#7686[X1#7785]
+  };
+  abstract trait B#7690[T#7691] extends AnyRef#2675 with A#7688[T#7691] {
+    override type EPC#7787 = C#7686[T#7691];
+    override type EPC2#7788[X1#7789 <: String#7202] = C#7686[X1#7789]
+  }
+}
+
+/Users/adriaan/git/scala/test/files/neg/t4137.scala:9: error: overriding type EPC#7782 in trait A#7688, which equals [X1#7783]C#7686[X1#7783];
+ type EPC#7787 has incompatible type
+  override type EPC = C[T]
+                ^
+B#7690.this.type has type EPC2#7788 =(false)= type EPC2#7784
+co-evolve: A#7688.this.type -> B#7690.this.type, type EPC2#7784 : [X1#7785]C#7686[X1#7785] -> type EPC2#7788 : [X1#7789 <: String#7202]C#7686[X1#7789]
+one error found // should be two
+{code}

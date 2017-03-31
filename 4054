@@ -1,0 +1,17 @@
+Sorry, I have to get this straight. :) The SID says that a method is specialized when its type contains *at least* one (not all) specialized naked type parameter. To me that indicates that my second example should have compiled correctly as T is naked.
+
+Things are very confusing IMHO:
+{code}
+  // One non-naked type parameter, works fine
+  def fn1[@specialized T](t : T => Int) : Int = 1
+
+  // Two naked type parameters, works fine
+  def fn2[@specialized T, @specialized U](fn1 : T => Int, fn2 : U => T, t : T, u : U) : Int = 1
+
+  // Two type parameters, one naked, doesn't work
+  def fn3[@specialized T, @specialized U](fn1 : T => Int, fn2 : U => T, u : U) : Int = 1
+
+  // Same as fn3 except T is only specialized for Int, works fine
+  def fn4[@specialized(Int) T, @specialized U](fn1 : T => Int, fn2 : U => T, u : U) : Int = 1
+{code}
+Clearly something is not right here.

@@ -1,0 +1,31 @@
+Compilation of the following scala code generates different errors for line 9 and 10:
+
+{code}
+import collection.parallel.mutable.ParHashMap
+
+class Person(id: String, name: String)
+
+object Sample {
+    def main(args: Array[String]) {
+        val person = Some(new Person("id", "name"))
+        val users =  new ParHashMap[String, Person]()
+        users += (person.get.id, person.get)
+        users += person.get.id -> person.get
+    }
+}
+{code}
+For line 9: {code}users += (person.get.id, person.get){code}:
+{noformat}
+Sample.scala:9: error: too many arguments for method +=: (kv: (String, Person))users.type
+        users += (person.get.id, person.get)
+              ^
+{noformat}
+
+For line 10: {code}users += person.get.id -> person.get{code}:
+{noformat}
+Sample.scala:10: error: value id is not a member of Person
+        users += person.get.id -> person.get
+                            ^
+{noformat}
+
+As for me the second is correct error description, but first is wrong

@@ -1,0 +1,49 @@
+Someone just goosed it on SO: http://stackoverflow.com/q/30698560/1296806
+
+Confirming that `-Yno-load-etc-etc` does work.
+{code}
+apm@mara:~/tmp/ame$ cat s.scala
+
+package p
+
+object Impls {
+  trait ConcreteImpl {
+    type Foo = Int
+    def foo = 1
+  }
+}
+
+trait Base {
+  type Foo
+  def foo: Foo
+}
+apm@mara:~/tmp/ame$ scala
+Welcome to Scala 2.11.8 (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_60).
+Type in expressions for evaluation. Or try :help.
+
+scala> (new p.Base with p.Impls.ConcreteImpl).foo
+res0: Int = 1
+
+scala> import p._, Impls._
+import p._
+import Impls._
+
+scala> (new Base with ConcreteImpl).foo
+java.lang.AbstractMethodError: $anon$1.foo()I
+  ... 32 elided
+
+scala> :replay -Yno-load-impl-class
+Replaying: (new p.Base with p.Impls.ConcreteImpl).foo
+res0: Int = 1
+
+Replaying: import p._, Impls._
+import p._
+import Impls._
+
+
+scala> (new Base with ConcreteImpl).foo
+res1: Int = 1
+
+{code}
+Sorry I forgot to follow up last summer. I guess because:
+bq. Offhand, I can't imagine the difference in the REPL, but we're about to watch a movie... You can try it in Ammonite, however.

@@ -1,0 +1,39 @@
+Including a definition in a for comprehension works if the comprehension is using Option, but the compiler complains about a for comprehension with Either (RightProjection).  
+
+Using for comprehensions makes for very readable code, and flowing though errors via Either seems like it ought to be the right thing to do.  
+
+Example:
+
+{code}
+def opt:Option[Char] = Some('e')
+def f(c:Char):String = "ha"
+def either:Either[Int,Char] = Right('r')
+
+val optComprehensionWithAssignment:Option[Int] =
+  for {
+    c <- opt
+    x = c.toInt
+  } yield x
+
+val eitherComprehensionNoAssignment:Either[Int,String] = 
+  for { 
+    c <- either.right
+  } yield {
+    val s = f(c)
+    s
+  }
+
+val eitherComprehensionWithAssighment:Either[Int,String] = 
+  for { 
+    c <- either.right
+    s = f(c)                // doesn't compile
+  } yield s
+
+
+val workaround:Either[Int,String] = 
+  for { 
+    c <- either.right
+    s <- Right(f(c)).right       // workaround's a bit awkward
+  } yield s
+
+{code}

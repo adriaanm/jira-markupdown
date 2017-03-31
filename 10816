@@ -1,0 +1,46 @@
+{noformat}
+% scalac-hash v2.11.0-M4 -Xprint:patmat test/files/run/t8395.scala 2>&1 | tee sandbox/good.log
+% scalac-hash v2.11.0-M5 -Xprint:patmat test/files/run/t8395.scala 2>&1 | tee sandbox/bad.log
+% diff -U1000 sandbox/{good,bad}.log
+
+--- sandbox/good.log	2014-03-12 11:21:11.000000000 +0100
++++ sandbox/bad.log	2014-03-12 11:21:00.000000000 +0100
+@@ -1,34 +1,126 @@
+ [[syntax trees at end of                    patmat]] // t8395.scala
+ package <empty> {
+   object Test extends scala.AnyRef {
+     def <init>(): Test.type = {
+       Test.super.<init>();
+       ()
+     };
+     def baz(x: Object): Object = {
+       <synthetic> <artifact> private[this] val x$1: (String, String) = {
+         case <synthetic> val x1: Object = (x: Object @unchecked);
+         case5(){
+           if (x1.isInstanceOf[String])
+             {
+               <synthetic> val x2: String = (x1.asInstanceOf[String]: String);
+-              matchEnd4(scala.Tuple2.apply[String, String](x1, x2))
++              matchEnd4(scala.Tuple2.apply[String, String](x2, _s))
+             }
+           else
+             case6()
+         };
+         case6(){
+           matchEnd4(throw new MatchError(x1))
+         };
+         matchEnd4(x: (String, String)){
+           x
+         }
+       };
+       val s: String = x$1._1;
+       val _s: String = x$1._2;
+       x
+     };
+     def main(args: Array[String]): Unit = scala.this.Predef.assert(Test.this.baz("1").==("1"))
+   }
+ }
+ 
++error: symbol value _s does not exist in Test.baz
++error: scala.reflect.internal.FatalError: 
+{noformat}

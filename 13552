@@ -1,0 +1,35 @@
+Compiles just fine but shouldn't:
+
+{code}
+package universal
+
+object Test extends Application {
+  class Query[X] {
+    def toString(c : Column[X]) = ""
+  }
+  class Column[X] {}
+  def foo : Option[(Query[_],Column[_])] = None
+  foo match {
+    case Some((x,y)) => x.toString(y)
+    case None =>
+  }
+}
+{code}
+
+Compare to this equivalent code which compiles with an error (the pair is not matched out):
+
+{code}
+package universal
+
+object Test extends Application {
+  class Query[X] {
+    def toString(c : Column[X]) = ""
+  }
+  class Column[X] {}
+  def foo : Option[(Query[_],Column[_])] = None
+  foo match {
+    case Some(p) => p._1.toString(p._2)
+    case None =>
+  }
+}
+{code}

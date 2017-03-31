@@ -1,0 +1,26 @@
+for example if I have J.java:
+{code}
+class J { static void foo() { } }
+{code}
+and S.scala:
+{code}
+class S { J.foo() }
+{code}
+
+then:
+{code}
+  ~/newbug> javac J.java 
+  ~/newbug> scalac -classpath . S.scala
+{code}
+(no errors)
+
+but:
+{code}
+  ~/newbug> ~/scala/dists/latest/bin/scalac S.scala J.java
+S.scala:1: error: not found: value J
+class S { J.foo() }
+          ^
+one error found
+{code}
+
+this is a real showstopper for the new mixed Scala/Java support in the compiler.

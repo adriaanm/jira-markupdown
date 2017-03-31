@@ -1,0 +1,74 @@
+Consider following Scala code:
+
+{code}
+package test.generic
+
+class C1[A] {
+  def m1(): Unit = System.out.println("m1")
+}
+
+trait T1[A] extends C1[A]
+
+class C2[A] extends T1[A] //defined for connivence 
+{code}
+
+Once compiled, this will produce a broken signature in interface corresponding to T1:
+{code}
+Compiled from "test-generic.scala"
+public interface test.generic.T1
+  SourceFile: "test-generic.scala"
+  ScalaSig: length = 0x3
+   05 00 00 
+  Signature: length = 0x2
+   00 04 
+  RuntimeVisibleAnnotations: length = 0xB
+   00 01 00 06 00 01 00 07 73 00 08 
+  minor version: 0
+  major version: 49
+  Constant pool:
+const #1 = Asciz	SourceFile;
+const #2 = Asciz	test-generic.scala;
+const #3 = Asciz	ScalaSig;
+const #4 = Asciz	<A:Ljava/lang/Object;>Ltest/generic/C1<TA;>;; //!!! interface extends a class, not very nice
+const #5 = Asciz	Signature;
+const #6 = Asciz	Lscala/reflect/ScalaSignature;;
+const #7 = Asciz	bytes;
+const #9 = Asciz	RuntimeVisibleAnnotations;
+const #10 = Asciz	test/generic/T1;
+const #11 = class	#10;	//  test/generic/T1
+const #12 = Asciz	java/lang/Object;
+const #13 = class	#12;	//  java/lang/Object
+
+{
+}
+{code}
+
+As a bonus, define Java code:
+{code}
+
+import test.generic.*;
+
+public class Foo {
+  
+  public static <A> void foo(T1<A> x) {
+    x.m1();
+  }
+  
+  public static void main(String[] args) {
+    T1<Object> x = new C2<Object>();
+    foo(x);
+  }
+  
+}
+{code}
+
+and compile it using javac. Once you run, you get:
+{code}
+Exception in thread "main" java.lang.NoSuchMethodError: test.generic.T1.m1()V
+	at Foo.foo(Foo.java:6)
+	at Foo.main(Foo.java:11)
+{code}
+
+Which means that javac got completely confused by broken signature and created a broken class file itself. Not very good.
+
+The solution would be to skip classes from list of extended things. We should only list traits (if there are any) so we get signature for interface that refers to interfaces only. This solution has been discussed with Martin and he is ok with it.

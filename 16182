@@ -1,0 +1,96 @@
+Code:
+
+{code:java}
+class MyActor extends Actor {
+  def act() {}
+}
+new MyActor start()
+{code}
+
+
+Calling start() in an unsigned applet causes the following Exception:
+
+{code}
+java.lang.ExceptionInInitializerError
+	at scala.actors.Actor$class.makeReaction(Actor.scala:507)
+	at com.viungo.editor.EditorWindow$$anonfun$1$$anon$1.makeReaction(EditorWindow.scala:66)
+	at scala.actors.Reactor$class.dostart(Reactor.scala:222)
+	at com.viungo.editor.EditorWindow$$anonfun$1$$anon$1.scala$actors$Actor$$super$dostart(EditorWindow.scala:66)
+	at scala.actors.Actor$class.dostart(Actor.scala:702)
+	at com.viungo.editor.EditorWindow$$anonfun$1$$anon$1.dostart(EditorWindow.scala:66)
+	at scala.actors.Reactor$class.start(Reactor.scala:230)
+	at com.viungo.editor.EditorWindow$$anonfun$1$$anon$1.scala$actors$Actor$$super$start(EditorWindow.scala:66)
+	at scala.actors.Actor$class.start(Actor.scala:706)
+	at com.viungo.editor.EditorWindow$$anonfun$1$$anon$1.start(EditorWindow.scala:66)
+	at com.viungo.editor.EditorWindow$$anonfun$1.apply$mcV$sp(EditorWindow.scala:66)
+	at com.viungo.pivot.Action$$anon$1.perform(Action.scala:18)
+	at org.apache.pivot.wtk.Button.press(Button.java:415)
+	at org.apache.pivot.wtk.PushButton.press(PushButton.java:70)
+	at org.apache.pivot.wtk.skin.PushButtonSkin.mouseClick(PushButtonSkin.java:77)
+	at org.apache.pivot.wtk.skin.terra.TerraPushButtonSkin.mouseClick(TerraPushButtonSkin.java:586)
+	at org.apache.pivot.wtk.Component$ComponentMouseButtonListenerList.mouseClick(Component.java:483)
+	at org.apache.pivot.wtk.Component.mouseClick(Component.java:2777)
+	at org.apache.pivot.wtk.Container.mouseUp(Container.java:774)
+	at org.apache.pivot.wtk.Container.mouseUp(Container.java:759)
+	at org.apache.pivot.wtk.Container.mouseUp(Container.java:759)
+	at org.apache.pivot.wtk.Container.mouseUp(Container.java:759)
+	at org.apache.pivot.wtk.ApplicationContext$DisplayHost.processMouseEvent(ApplicationContext.java:914)
+	at java.awt.Component.processEvent(Unknown Source)
+	at org.apache.pivot.wtk.ApplicationContext$DisplayHost.processEvent(ApplicationContext.java:709)
+	at java.awt.Component.dispatchEventImpl(Unknown Source)
+	at java.awt.Component.dispatchEvent(Unknown Source)
+	at java.awt.LightweightDispatcher.retargetMouseEvent(Unknown Source)
+	at java.awt.LightweightDispatcher.processMouseEvent(Unknown Source)
+	at java.awt.LightweightDispatcher.dispatchEvent(Unknown Source)
+	at java.awt.Container.dispatchEventImpl(Unknown Source)
+	at java.awt.Component.dispatchEvent(Unknown Source)
+	at java.awt.EventQueue.dispatchEventImpl(Unknown Source)
+	at java.awt.EventQueue.access$000(Unknown Source)
+	at java.awt.EventQueue$1.run(Unknown Source)
+	at java.awt.EventQueue$1.run(Unknown Source)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at java.security.AccessControlContext$1.doIntersectionPrivilege(Unknown Source)
+	at java.security.AccessControlContext$1.doIntersectionPrivilege(Unknown Source)
+	at java.awt.EventQueue$2.run(Unknown Source)
+	at java.awt.EventQueue$2.run(Unknown Source)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at java.security.AccessControlContext$1.doIntersectionPrivilege(Unknown Source)
+	at java.awt.EventQueue.dispatchEvent(Unknown Source)
+	at java.awt.EventDispatchThread.pumpOneEventForFilters(Unknown Source)
+	at java.awt.EventDispatchThread.pumpEventsForFilter(Unknown Source)
+	at java.awt.EventDispatchThread.pumpEventsForHierarchy(Unknown Source)
+	at java.awt.EventDispatchThread.pumpEvents(Unknown Source)
+	at java.awt.EventDispatchThread.pumpEvents(Unknown Source)
+	at java.awt.EventDispatchThread.run(Unknown Source)
+Caused by: java.lang.RuntimeException: Could not initialize intrinsics
+	at scala.concurrent.forkjoin.ForkJoinTask.<clinit>(ForkJoinTask.java:1056)
+	... 50 more
+Caused by: java.security.AccessControlException: access denied (java.lang.RuntimePermission accessClassInPackage.sun.misc)
+	at java.security.AccessControlContext.checkPermission(Unknown Source)
+	at java.security.AccessController.checkPermission(Unknown Source)
+	at java.lang.SecurityManager.checkPermission(Unknown Source)
+	at java.lang.SecurityManager.checkPackageAccess(Unknown Source)
+	at sun.plugin2.applet.Applet2SecurityManager.checkPackageAccess(Unknown Source)
+	at sun.misc.Launcher$AppClassLoader.loadClass(Unknown Source)
+	at java.lang.ClassLoader.loadClass(Unknown Source)
+	at com.sun.jnlp.JNLPPreverifyClassLoader.loadClass0(Unknown Source)
+	at com.sun.jnlp.JNLPPreverifyClassLoader.loadClass(Unknown Source)
+	at sun.plugin2.applet.Plugin2ClassLoader.loadClass0(Unknown Source)
+	at sun.plugin2.applet.Plugin2ClassLoader.loadClass(Unknown Source)
+	at sun.plugin2.applet.Plugin2ClassLoader.loadClass0(Unknown Source)
+	at sun.plugin2.applet.Plugin2ClassLoader.loadClass(Unknown Source)
+	at sun.plugin2.applet.Plugin2ClassLoader.loadClass(Unknown Source)
+	at java.lang.ClassLoader.loadClass(Unknown Source)
+	at scala.concurrent.forkjoin.ForkJoinTask.getUnsafePrivileged(ForkJoinTask.java:1029)
+	at scala.concurrent.forkjoin.ForkJoinTask.access$000(ForkJoinTask.java:111)
+	at scala.concurrent.forkjoin.ForkJoinTask$1.run(ForkJoinTask.java:1019)
+	at scala.concurrent.forkjoin.ForkJoinTask$1.run(ForkJoinTask.java:1017)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at scala.concurrent.forkjoin.ForkJoinTask.getUnsafe(ForkJoinTask.java:1016)
+	at scala.concurrent.forkjoin.ForkJoinTask.<clinit>(ForkJoinTask.java:1048)
+	... 50 more
+{code}
+
+This issue is highly critical for us, because if it cannot be fixed, we will have to drop using actors in the project and fall back to old "Javaish" programming style with threads.
+
+

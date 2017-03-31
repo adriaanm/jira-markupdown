@@ -1,0 +1,18 @@
+Whittled down a little:
+
+{code}
+import language.dynamics
+
+final class NoImplicitForYou private()
+
+class C extends Dynamic {
+  def selectDynamic(method: String)(implicit ev: NoImplicitForYou): Any = ???
+}
+
+object Test2 {
+  // new C().something // error reported
+  println(new C().something) // !!! error not reported, crashes in backend
+
+  // println(new C().selectDynamic("something")) // error reported
+}
+{code}

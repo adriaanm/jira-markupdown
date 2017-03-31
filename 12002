@@ -1,0 +1,12 @@
+Hum, that looks related indeed, and the comment suggests this is Hard (tm). However, IIUC, the linked backstory explains why the _type_ of the Block needs to hide away some members. But I don't think that explains why the actual _class_ itself (its implementation) needs to suddenly turn public members into private ones. It seems to me that there might be a relatively easy fix to that (compared to fixing the _type_ issue).
+
+It is also worth mentioning that if the anonymous class does not have any expected type at all, then the members are kept public. For example rewriting `get()` above as:
+
+{code:scala}
+def get(): AnyRef = {
+  val o = new { ... }
+  o
+}
+{code}
+
+allows all members to be public.

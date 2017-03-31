@@ -1,0 +1,38 @@
+What's the status on this?
+
+This one is annoying for me when trying to use the new "JSON Inception" coming in playframework 2.1 (http://mandubian.com/2012/11/11/JSON-inception/).
+
+Consider this using play 2.1-RC1 and scala 2.10.0-RC1:
+
+{noformat}
+import play.api.libs.json._
+import play.api.libs.functional.syntax._
+
+case class ThisIsOk(id: String)
+
+case class ThisIsNotOk(id: String)
+
+object ThisIsNotOk {
+  val something = 2
+}
+
+case class ThisBecomesOk(id: String)
+
+object ThisBecomesOk extends (String => ThisBecomesOk) {
+  val something = 2
+}
+
+object Test {
+  val compilesFine = Json.format[ThisIsOk]
+
+/*
+Compilation error:
+[error]  found   : ThisIsNotOk.type
+[error]  required: String => ThisIsNotOk
+[error]     val doesNotCompile = Json.format[ThisIsNotOk]
+*/
+  val doesNotCompile = Json.format[ThisIsNotOk]
+
+  val compilesFineButIsAPain = Json.format[ThisBecomesOk]
+}
+{noformat}

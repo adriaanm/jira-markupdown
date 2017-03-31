@@ -1,0 +1,18 @@
+Compiling the following code with the trunk (but not with 2.7.3-final) produces a runtime error:
+{code}
+object Foo extends Foo {
+  def f {}
+}
+class Foo
+
+object test {
+  def main(args: Array[String]) { Foo }
+}
+{code}
+with the stack trace:
+{code}
+java.lang.VerifyError: class Foo$$ overrides final method f.()V
+    at java.lang.ClassLoader.defineClass1(Native Method)
+    at java.lang.ClassLoader.defineClass(ClassLoader.java:621)
+    ..
+{code}

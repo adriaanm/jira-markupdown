@@ -1,0 +1,18 @@
+(extempore in [r26041|https://codereview.scala-lang.org/fisheye/changelog/scala-svn?cs=26041]) Implemented manifest-based class-paths.
+
+If you run a jar directly, like
+
+  scala foo.jar
+
+Then if a Class-Path attribute is present in the jar manifest, the
+classpath will be constructed from that instead of the arguments. Some
+things remain to be determined, like whether it's supposed to replace
+a classpath given on the command line or supplement it, and whether
+the master jar should be on the classpath or only and exactly the jars
+listed in the manifest.
+
+There's a really nice test case, which won't be run of course, but I
+can't stand going any further without tests for these hard to test on
+all platforms things.  The faux .check file shows what I see.
+
+Closes SI-4355, review by harrah.

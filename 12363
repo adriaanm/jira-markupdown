@@ -1,0 +1,37 @@
+The few macros I've produced have all been hand-written and buggy.
+{code}
+scala> def fImpl(c: Context) = { import c.universe._ ; q"{ 17 ; 42 }" }
+fImpl: (c: scala.reflect.macros.blackbox.Context)c.universe.Tree
+
+scala> def f: Int = macro fImpl
+defined term macro f: Int
+
+scala> f
+<console>:17: warning: a pure expression does nothing in statement position; you may be omitting necessary parentheses
+       f
+       ^
+res1: Int = 42
+
+scala> def fImpl(c: Context): c.Tree = { import c.universe, universe._
+     | val g = universe.asInstanceOf[tools.nsc.Global]
+     | import tools.nsc.reporters._
+     | val r = new StoreReporter
+     | val saved = g.reporter
+     | try { g.reporter = r ; c.typecheck(q"{ 17 ; 42 }") } finally g.reporter = saved }
+fImpl: (c: scala.reflect.macros.blackbox.Context)c.Tree
+
+scala> def f: Int = macro fImpl
+defined term macro f: Int
+
+scala> f
+res3: Int = 42
+
+scala> :javap -pv -
+[snip]
+         9: bipush        17
+        11: pop
+        12: bipush        42
+        14: putfield      #26                 // Field res3:I
+        17: return
+
+{code}

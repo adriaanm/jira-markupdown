@@ -1,0 +1,33 @@
+This is limited to inner classes:
+
+{code}
+import java.lang.reflect.Modifier.isFinal
+
+object Test {
+  final case class InnerCase()
+  final class InnerNonCase()
+
+  def main(args: Array[String]) {
+    def checkFinal(clazz: Class[_]) =
+      println(s"${clazz} isFinal = ${isFinal(clazz.getModifiers())}")
+    checkFinal(classOf[InnerCase])
+    checkFinal(classOf[InnerNonCase])
+    checkFinal(classOf[TopLevelCase])
+    checkFinal(classOf[TopLevelNonCase])
+  }
+}
+
+final case class TopLevelCase()
+final case class TopLevelNonCase()
+
+{code}
+
+{noformat}
+qbin/scalac sandbox/t7151.scala && qbin/scala -nc Test
+class Test$InnerCase isFinal = false
+class Test$InnerNonCase isFinal = false
+class TopLevelCase isFinal = true
+class TopLevelNonCase isFinal = true
+{noformat}
+
+It regressed in https://github.com/scala/scala/commit/18efdedfb97de7ca9f6f6ce385194d5a6902769d

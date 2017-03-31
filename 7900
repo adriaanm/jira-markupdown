@@ -1,0 +1,39 @@
+Update - companionSymbol does return something that returns true:
+
+{code}
+scala> object Foo
+defined module Foo
+
+scala> typeOf[Foo.type]
+res0: reflect.runtime.universe.Type = Foo.type
+
+scala> res0.typeSymbol.companionSymbol.isModule
+res1: Boolean = true
+{code}
+
+Unfortunately, this doesn't help much, because the same is also true if we have:
+
+{code}
+scala> :paste
+// Entering paste mode (ctrl-D to finish)
+
+class Foo
+
+object Foo
+
+// Exiting paste mode, now interpreting.
+
+defined class Foo
+defined module Foo
+
+scala> typeOf[Foo]
+res1: reflect.runtime.universe.Type = Foo
+
+scala> res1.typeSymbol.isModule
+res2: Boolean = false
+
+scala> res1.typeSymbol.companionSymbol.isModule
+res3: Boolean = true
+{code}
+
+So this isn't a useful way to tell the difference between a class and its companion object :-(

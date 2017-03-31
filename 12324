@@ -1,0 +1,35 @@
+Ouch! Thanks for the report.
+
+A workaround is to restructure as:
+
+{code}
+  def apply(): Unit = {
+    val self = this
+    self.synchronized {
+      println("i'm synchronized!")
+    }
+  }
+{code}
+
+The compiler looks for method bodies of the shape `def foo(...) = this.synchronized { ... }` and marks with a flag that will result ACC_SYNCHRONIZED in the bytecode. Other usages of `synchronized` (e.g. in my workaround) result in explicit bytecode for monitorenter / monitorexit.
+
+https://github.com/scala/scala/blob/79e7334f93da4717ee846f74e48ab53533e6756d/src/compiler/scala/tools/nsc/transform/UnCurry.scala#L357-L371
+
+Fixing this will involve something like:
+
+{noformat}
+diff --git a/src/compiler/scala/tools/nsc/transform/SpecializeTypes.scala b/src/compiler/scala/tools/nsc/transform/SpecializeTypes.scala
+index 40ab8c0..dd47e62 100644
+--- a/src/compiler/scala/tools/nsc/transform/SpecializeTypes.scala
++++ b/src/compiler/scala/tools/nsc/transform/SpecializeTypes.scala
+@@ -1662,6 +1662,7 @@ abstract class SpecializeTypes extends InfoTransform with TypingTransformers {
+               val tree1 = addBody(ddef, target)
+               (new ChangeOwnerTraverser(target, tree1.symbol))(tree1.rhs)
+               debuglog("changed owners, now: " + tree1)
++              if (target.hasFlag(Flags.SYNCHRONIZED)) ddef.symbol.setFlag(Flags.SYNCHRONIZED)
+               deriveDefDef(tree1)(transform)
+
+             case SpecialOverload(original, env) =>
+{noformat}
+
+I'll flesh this out and submit a patch for 2.11.9 + 2.12.x in the next week.

@@ -1,0 +1,25 @@
+The docs of BigDecimal say the following:
+
+"Within the range of IEEE binary128 numbers, BigDecimal will agree with BigInt for both equality and hash codes (and will agree with primitive types as well)."
+
+In some cases in Scala 2.11 this does not appear to be the case. The following example shows this regressing from 2.10 to 2.11:
+
+2.10
+{code}
+scala> BigDecimal(123.312).hashCode()
+res0: Int  -1903704720
+
+scala> (123.312).##
+res1: Int = -1903704720
+{code}
+
+2.11
+{code}
+scala> BigDecimal(123.312).hashCode()
+res0: Int = 342240935
+
+scala> (123.312).##
+res1: Int = -1903704720
+{code}
+
+It might be that this was simply dropped as a feature of BigDecimal. That would break some applications and it would be good to update the docs at least with a warning.

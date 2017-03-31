@@ -1,0 +1,5 @@
+I'm troubled by the fix to this bug. It makes {{phrase}} and {{NoSuccess}} slower, by introducing a {{lazy val}}, and {{DynamicVariable}} __and__ an {{Option}}. Now, {{phrase}} shouldn't be much of a problem, but normal parsing process will create tons of {{NoSuccess}}, even if the parser succeeds (one for every option that was considered and failed).
+
+Now, I'm all for correctness -- it's easy to make something fast if it doesn't have to work. However, I can't think of any reason why parser should be shared between multiple threads. Why not simply instantiate it on demand? JSON itself could be turned into a class, and the object turned into a factory.
+
+Here's the [pull request|https://github.com/scala/scala/pull/124].

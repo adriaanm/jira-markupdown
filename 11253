@@ -1,0 +1,29 @@
+Maybe it's possible to do the converse and preserve tuple instances across the arrow.
+
+The issue says, If I create a tuple just to deconstruct it, don't bother constructing it.
+
+This would add, if I deconstruct a tuple just to construct it, just reuse the instance, even though it's a different tuple type.
+
+In other words, avoid reboxing the int and the tuple for (x,i):
+
+{code}
+scala> :pa
+// Entering paste mode (ctrl-D to finish)
+
+sealed trait Fruit
+case class Apple(weight: Int = 200) extends Fruit
+case object Orange extends Fruit
+val fruits = Seq[Fruit](Apple(120), Orange, Orange, Apple())
+
+// Exiting paste mode, now interpreting.
+
+defined trait Fruit
+defined class Apple
+defined object Orange
+fruits: Seq[Fruit] = List(Apple(120), Orange, Orange, Apple(200))
+
+scala> fruits.zipWithIndex map { case (x: Apple, i: Int) => (x,i) case _  => (null, -1) }
+res0: Seq[(Apple, Int)] = List((Apple(120),0), (null,-1), (null,-1), (Apple(200),3))
+{code}
+
+Use case from [StackOverflow|http://stackoverflow.com/q/31370395/1296806].

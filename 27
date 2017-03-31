@@ -1,0 +1,8 @@
+The way values are initialized is a bit underspecified: they are evaluated in program order, but nothing is said about default values. The desired behaviour can be achieved by using {{lazy}} values:
+
+{code}
+object Foo {
+  lazy val a = for(l <- b) yield l
+  lazy val b: List[List[Int]] = a
+}
+{code}

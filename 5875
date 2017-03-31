@@ -1,0 +1,27 @@
+@mgarcia
+
+Yes, I believe that:
+{code}
+  final def encode(line: Int, column: Int): Int = {
+    checkInput(line, column)
+    
+    if (line >= LINE_MASK)
+      LINE_MASK << COLUMN_BITS
+    else
+      (line << COLUMN_BITS) | math.min(COLUMN_MASK, column)
+  }
+{code}
+would be correct.
+
+The old cold before r24717 used:
+{code}
+if (column > COLUMN_MASK)
+  column1 = COLUMN_MASK
+    else 
+  column1 = column
+{code}
+and encoded with `column1`.
+
+I think Paul who committed r24717 would be able to quickly confirm whether this was a typo.
+
+I'm attaching a sample test that shows that 2.8.0 to 2.9.RC1 return `1:5` as position of the error while r24777 returns `1:1`

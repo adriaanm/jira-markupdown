@@ -1,0 +1,14 @@
+This pathology can be reduced to
+{code}
+object Main {
+  private def f(body: => Unit): Unit = body
+  def main(args: Array[String]): Unit = println(f(0 to 1000000000 foreach (_ => ())))
+}
+{code}
+The inlining of the Range defeats on-stack replacement - "COMPILE SKIPPED: OSR starts with non-empty stack (not retryable)" - and when you see "COMPILE SKIPPED" a 1000x slowdown starts to look pretty good.
+
+Symptomatic workarounds:
+
+a) @noinline annotation on the private method
+b) scalac -Ydelambdafy:method -optimise
+c) A less sucky Range class, like this one. https://github.com/paulp/scala/blob/5732b9a7/src/library/scala/collection/immutable/IntRange.scala

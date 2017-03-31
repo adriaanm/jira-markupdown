@@ -1,0 +1,31 @@
+Consider the following:
+
+{code}
+object Test {
+  def test(x: => Unit)(y: Unit): String = "done"
+
+  def main(args: Array[String]) {
+    val t = test(println("never seen"))_
+    println(t())
+  }
+}
+{code}
+This produces:
+{code}
+never seen
+done
+{code}
+It should produce just:
+{code}
+done
+{code}
+
+scalac -Xprint:typer shows that the definition of t is compiled as:
+{code}
+val t: (Unit) => String = {
+  <synthetic> val eta$$0$$1: Unit = scala.this.Predef.println("never seen");
+  ((eta$$1$$1: Unit) => Test.this.test(eta$$0$$1)(eta$$1$$1))
+};
+{code}
+This eta-expansion incorrectly ignores that the first parameter of test is call-by-name.
+

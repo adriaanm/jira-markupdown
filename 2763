@@ -1,0 +1,15 @@
+I think this is a bug in the pattern matcher, because of which c's type is not propagated properly
+
+changing the line to
+{code}
+      case Some((c: Class[_ <: Base])) => run(c)
+{code}
+
+results in:
+
+{code}
+/Users/adriaan/git/scala/test/pending/pos/t2635.scala:12: error: not found: type _$$3
+      case Some((c: Class[_ <: Base])) => run(c)
+{code}
+
+this was probably an existing bug that was unmasked by the fix for SI-513

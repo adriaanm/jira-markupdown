@@ -1,0 +1,39 @@
+{{GenTraversableOnce}} is now a universal trait, meaning it now extends {{Any}} rather than {{AnyRef}} can be a parent of a value class.
+
+This has a unintended interaction with structural types:
+
+{code}
+trait T extends Any {
+  def size: Int
+}
+object Test {
+  type Structural = { def size: Int }
+  def foo(x: T): Structural = x
+}
+{code}
+
+{noformat}
+ found   : x.type (with underlying type T)
+ required: Test.Structural
+    (which expands to)  AnyRef{def size: Int}
+  def foo(x: T): Structural = x
+                              ^
+{noformat}
+
+Because of this, your the result of `ev(gto)` is itself adapted with the very same implicit view that it defines. (We need a lint rule for that!)
+
+{code}
+    // -Xprint:typer
+    implicit def hasSize[T](gto: T)(implicit ev: T => scala.collection.GenTraversableOnce[_]): Test.Structural = {
+      val temp: scala.collection.GenTraversableOnce[Any] = ev.apply(gto);
+      Test.this.hasSize[scala.collection.GenTraversableOnce[Any]](temp)(scala.this.Predef.$conforms[scala.collection.GenTraversableOnce[Any]])
+    };
+{code}
+
+Workaround:
+
+{code}
+type Structural = Any { def size: Int }
+{code}
+
+(The "naked" `{def size: Int}` is a shorthand for `AnyRef { def size: Int}`)

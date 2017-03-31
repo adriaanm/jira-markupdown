@@ -1,0 +1,25 @@
+Similar issue:
+
+{code}
+class C[T](var y : T)
+
+object A {
+val a : AnyRef { def f[T[_]](x : T[int]) : T[Any] } = A
+def f[T[+_]](x : T[Int]) : T[Any] = x
+}
+{code}
+
+Scala 2.8.0.r18050-b20090618020144 compiler compiles this without
+errors. But it seems unsound, as we can write:
+
+scala> val c = new C(1)
+c: C[Int] = C@9e7d46
+
+scala> val c1 = A.a.f[C](c)
+c1: C[Any] = C@9e7d46
+
+scala> c1.y = ""
+
+scala> c.y
+java.lang.ClassCastException: java.lang.String cannot be cast to
+java.lang.Integer

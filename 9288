@@ -1,0 +1,7 @@
+One option is to get rid of the warnings entirely from the 2.10.1 and 2.10.x branches and just live with the pain that the underlying issues cause.
+
+Another option is to add some mechanism for suppressing the warnings. That's not going to be forward binary compatible because Settings leaks into the public API via reflect.
+
+A third option is to not guarantee compatibility under -Xfatal-warnings
+
+What's probably not an option is to fix the underlying issues being warned about in an RC. For the first warning we don't even know what the fix is but we know it involves some deeply bad stuff happening in the compiler that's been happening at least since 2.9. It's very likely that fixing it would break compatibility. Fixing the second would absolutely break compatibility.

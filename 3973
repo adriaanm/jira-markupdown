@@ -1,0 +1,18 @@
+Replying to [comment:11 moors]:
+> well, I made it back (some time ago), but all I have to show for myself is a slightly more simplified example and a [ http://github.com/adriaanm/scala/tree/ticket/3486 trace of my meandering]
+> 
+> {code}
+> object Test {
+>   case class A(a: Int) {
+>     object Ex {
+>       def unapply(i: Int): Option[Int] = Some(i)
+>     }
+>   }
+> 
+>   A(42) match {
+>     case x@A(x/*<-- refers to the pattern that includes this comment*/.Ex(42)) =>
+>   }
+> }
+> }}
+
+That was useful enough to fix this one pretty easily; no effect on SI-796 though.

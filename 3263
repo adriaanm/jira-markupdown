@@ -1,0 +1,14 @@
+Reopening now that we're back to the previous partest.  Here is an apparent race condition which hit twice in a single run of ant test-opt on r22010.
+{code}
+  [partest] java.lang.AssertionError: assertion failed
+  [partest] 	at scala.Predef$$.assert(Predef.scala:78)
+  [partest] 	at scala.tools.nsc.io.AbstractFile.fileNamed(AbstractFile.scala:233)
+  [partest] 	at scala.tools.nsc.backend.jvm.GenJVM$$BytecodeGenerator.getFile(GenJVM.scala:1871)
+  [partest] 	at scala.tools.nsc.backend.jvm.GenJVM$$BytecodeGenerator.emitClass(GenJVM.scala:139)
+  [partest] 	at scala.tools.nsc.backend.jvm.GenJVM$$BytecodeGenerator.genClass(GenJVM.scala:262)
+  [partest] 	at scala.tools.nsc.backend.jvm.GenJVM$$JvmPhase.apply(GenJVM.scala:56)
+  [partest] 	at scala.tools.nsc.backend.jvm.GenJVM$$JvmPhase$$$$anonfun$$run$$3.apply(GenJVM.scala:52)
+  [partest] 	at scala.tools.nsc.backend.jvm.GenJVM$$JvmPhase$$$$anonfun$$run$$3.apply(GenJVM.scala:52)
+  [partest] 	at scala.collection.mutable.HashMap$$$$anon$$2$$$$anonfun$$foreach$$3.apply(HashMap.scala:89)
+  [partest] 	at scala.collection.mutable.HashMap$$$$anon$$2$$$$anonfun$$foreach$$3.apply(HashMap.scala:89)
+{code}

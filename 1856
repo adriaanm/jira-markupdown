@@ -1,0 +1,13 @@
+Great! Thank you very muck for such a quick responce!
+Just in case, code to reproduce this bug. Now it is fixed, I confirm it.
+
+import scala.actors._
+import scala.actors.Actor._
+
+object Ticket1948 {
+  def main (args: Array[String]) {
+    val actors = (1 to 1000).toList map { x => actor { loop { react {
+      case x: Array[Int] => reply ("OK"); exit }}}
+    actors foreach { x => x !? new Array[Int] (1000) }
+  }
+}

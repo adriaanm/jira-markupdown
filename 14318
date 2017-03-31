@@ -1,0 +1,64 @@
+Where does the blanks, spaces, come from? I would expect an output like the one from the script (see below).
+
+{code}
+scala> """
+     | foo""".foreach(c => println(c.toInt + " : " + c))
+10 : 
+
+32 :  
+32 :  
+32 :  
+32 :  
+32 :  
+32 :  
+32 :  
+102 : f
+111 : o
+111 : o
+{code}
+{code}
+scala> <b>
+     | foo</b>.text.foreach(c => println(c.toInt + " : " + c))
+10 : 
+
+32 :  
+32 :  
+32 :  
+32 :  
+32 :  
+32 :  
+32 :  
+102 : f
+111 : o
+111 : o
+
+scala> 
+{code}
+
+Here is the output when running the same code from a script:
+{code}
+$$ cat s.scala
+<b>
+foo</b>.text.foreach(c => println(c.toInt + " : " + c))
+
+$$ scala s.scala
+10 : 
+
+102 : f
+111 : o
+111 : o
+$$
+{code}
+{code}
+$$ cat s.scala 
+"""
+foo""".foreach(c => println(c.toInt + " : " + c))
+
+$$ scala s.scala
+10 : 
+
+102 : f
+111 : o
+111 : o
+$$ 
+{code}

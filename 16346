@@ -1,0 +1,25 @@
+This issue is similar to SI-2144, but here, to avoid compile error, one gives the anonymous class some name. Here is the sample code:
+
+{code:title=Bar.scala}
+
+def convert[A] = {
+  class C {
+    def frob(a2: A) = a2
+  }
+  new C
+}
+
+System.out.println(convert[Int].frob(9))
+
+{code}
+
+This compiles, but fails in runtime with:
+
+{code}
+java.lang.NoSuchMethodException: Main$$anon$1$C$1.frob(int)
+	at java.lang.Class.getMethod(Class.java:1622)
+	at Main$$anon$1.reflMethod$Method1(bug.scala:9)
+	at Main$$anon$1.<init>(bug.scala:9)
+	at Main$.main(bug.scala:1)
+	at Main.main(bug.scala)
+{code}

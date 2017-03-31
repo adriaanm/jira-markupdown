@@ -1,0 +1,7 @@
+You're far from the first person to be surprised by this. It's something of an FAQ, most recently at https://groups.google.com/d/msg/scala-user/po68d2V0szM/FGLndOyBAwAJ
+
+In SLS 3.3.1, method types are defined recursively: a method type's result type can be another method type. That's how multiple parameter lists are represented. Then in SLS 6.6 the syntax production for SimpleExpr that handles method calls only handles one parameter list at a time. And a SimpleExpr may be surrounded by any amount of parentheses; its type can still be a method type, so that's why a(b)(c) and (a(b))(c) parse the same.
+
+Or maybe I shouldn't say that's WHY? It's HOW they parse the same.
+
+As for why, I don't recall seeing a definitive answer, but I'll take a stab: I think it's because to keep the language simple and tractable, parsing is kept separate from type checking, so we're not allowed to use the type of {{a}} to help us decide how {{a(b)(c)}} should be parsed. So we're not free to parse it is a single method call because it might actually be two, depending on how many argument lists {{a}} has, which we don't know during parsing.

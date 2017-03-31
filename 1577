@@ -1,0 +1,13 @@
+Also, here is another minimal example I distilled, probably the same bug:
+
+{code}
+  def filteringFunction[V](filter: V => Boolean): List[V] => List[V] = {
+    def include(v: V) = 
+      filter(v)
+    (l: List[V]) => l.filter(include)
+  }
+{code}
+
+This yields the error "undeclared type variable: V"
+
+It looks like the problem occurs when an inner function references a type parameter from an outer scope.

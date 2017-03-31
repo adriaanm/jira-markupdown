@@ -1,0 +1,11 @@
+(In r24296) Made the unification algorithm for specialization stricter when checking if a specialized member symbol conforms to a type application.
+
+In particular, whereas the `strict` unification mode is concerned:
+- when both types are typerefs, unification checks whether they have the same number of type args, then unifies type args
+- when both types are method types, unification checks whether they have the same number of arguments, then unifies argument types and return types
+- when both types are poly types, -- || --
+- when unifying multiple types, strict mode will ensure there aren't any overlapping mappings.
+
+Let's hope this fixes and closes SI-4257.
+
+Review by dragos.

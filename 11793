@@ -1,0 +1,30 @@
+FYI, this seems to happening rather often when trying to release Akka (2.3.x) using 2.11.7.
+
+We are seeing a lot of errors like:
+
+{code:java}
+
+[error] (akka-remote/compile:compile) scala.reflect.internal.FatalError: symbol value x2#84606 does not exist in akka.remote.DefaultFailureDetectorRegistry.isAvailable, which contains locals value r#33196,value x1#84605,value resource#33158.
+[error] Method code: final override def isAvailable(resource: A): scala.Boolean = {
+[error]   case val x1: Option#1804 = DefaultFailureDetectorRegistry.this.resourceToFailureDetector().get().$asInstanceOf[collection#2621.MapLike#5620]().get(resource);
+[error]   case6(){
+[error]     if (x1.$isInstanceOf[Some#1306]())
+[error]       {
+[error]         val r: akka#23.remote#7146.FailureDetector#7694 = x2.x().$asInstanceOf[akka#23.remote#7146.FailureDetector#7694]();
+[error]         matchEnd5(r.isAvailable())
+[error]       }
+[error]     else
+[error]       case7()
+[error]   };
+[error]   case7(){
+[error]     matchEnd5(true)
+[error]   };
+[error]   matchEnd5(x#84609: Boolean#2392){
+[error]     x
+[error]   }
+[error] }
+{code}
+
+It happens repeatedly, most of the time actually, and makes releasing Akka 2.3.x quite troublesome.
+
+To see more instances of this failure you can check out https://github.com/akka/akka/commit/02898f33ccd1803dff44409eaf08819fa545115d and `;++2.11.7; compile`.

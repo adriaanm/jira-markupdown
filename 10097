@@ -1,0 +1,19 @@
+Casts can succeed in cases when there is no subtype relationship.
+
+{code}
+scala> ().asInstanceOf[scala.runtime.BoxedUnit]
+res1: scala.runtime.BoxedUnit = ()
+
+scala> () : scala.runtime.BoxedUnit
+<console>:8: error: type mismatch;
+ found   : Unit
+ required: scala.runtime.BoxedUnit
+              () : scala.runtime.BoxedUnit
+              ^
+
+scala> class Box[A](var a: A)
+defined class Box
+
+scala> (new Box("")).asInstanceOf[Box[Int]].asInstanceOf[Box[String]].a.reverse
+res3: String = ""
+{code}

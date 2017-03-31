@@ -1,0 +1,21 @@
+Standalone repro:
+
+{code}
+  trait B[X]
+
+  class F[X] { 
+    def foo(x: Int) = 3 
+    def bar(x: Int) = 3 
+  }
+  implicit class FooOps[E](b: F[E]) { 
+    def foo[G[_]](f: G[Int]) = 4
+  }
+  implicit class BarOps[E](b: F[E]) { 
+    def bar[G[_]](f: G[E]) = 4
+    def baz[G[_]](f: G[E]) = 4
+  }
+
+  (new F[Int]).foo(null: B[Int]) // ok
+  (new F[Int]).bar(null: B[Int]) // type mismatch
+  (new F[Int]).baz(null: B[Int]) // ok
+{code}

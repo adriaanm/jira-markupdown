@@ -1,0 +1,15 @@
+Replying to [comment:1 rytz]:
+
+
+Oh yes. With that, I could find the real cause (applies to a .NET version). When compiling scala.math.ScalaNumber (a .java file) with ikvmc, 
+
+{code}
+public abstract class ScalaNumber extends java.lang.Number {
+  protected abstract boolean isWhole();
+  public abstract Object underlying();
+}
+{code}
+
+the "protected" for isWhole() resulted in famorassem in the .NET counterpart, which for now was being kept in a different assembly from scala-lib (shouldn't). 
+
+Four peverify errors less. 

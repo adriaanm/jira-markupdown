@@ -1,0 +1,21 @@
+I've just been pounding my head on this one. The only solution I have found was to define the method directly in SadObject. When I try the fourth bullet I get a completely different error, but my method is a bit different:
+
+{code}
+trait SadTrait {
+  def buggyMethod(arg1: String, argWithDefault: String = "default") = ...
+}
+
+class SadClass extends SadTrait {
+  buggyMethod(arg1 = "foo")
+}
+{code}
+
+The error is:
+
+{code}
+error: not found: value arg1
+Error occurred in an application involving default arguments.
+arg1 =
+{code}
+
+Invoking the method without then named arg seems to work.

@@ -1,0 +1,37 @@
+I managed to boil it down to a few lines. The below crashes the compiler for me in the newest edition of the IDE, which I believe is using 2.10.1-RC2. Highly likely it also crashes in SBT. The last reduction before I extracted it from my project entirely did so, under 2.10.1-RC1. Where there are nulls, there was previously other code that I removed during the reduction, so the nulls aren't it. I also changed the names of all classes and most variables to protect the innocent.
+
+Please let me know if this works for you!
+
+{code}
+package scala.crash
+
+class A {
+  class A1 {
+    case class A11(i: Int, j: Int) {
+      lazy val a11: Option[C] = null
+    }
+    
+    class A12(f: (Int, Int)=>A11) extends
+      D((i, j, id, rep) => {
+        for (x <- Some(f(i, j)); s<-x.a11) yield new B.B1(x.i, x.j) {}
+      })
+  }
+}
+
+object B {
+  class B1(val row: Int, val col: Int) 
+    extends C 
+  {
+     val b1: C = null
+  }
+}
+
+trait C {
+}
+
+class D[T](t: (Int, Int, Int, Int)=>Option[T]) {
+}
+{code}
+
+
+

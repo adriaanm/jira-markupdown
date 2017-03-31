@@ -1,0 +1,24 @@
+I just wanted to take some heat off of Try.  AnyVal._ lose their func wrappers.
+{code}
+object Min {
+  def f[A](a: =>A) = println(a.toString)
+  def main(args: Array[String]) {
+    f((1).toString)
+    f((1).##)
+  }
+}
+[[syntax trees at end of                   uncurry]] // simple-byname.scala
+package badbyname {
+  object Min extends Object {
+    def <init>(): badbyname.Min.type = {
+      Min.super.<init>();
+      ()
+    };
+    def f[A >: Nothing <: Any](a: () => A): Unit = scala.this.Predef.println(a.apply().toString());
+    def main(args: Array[String]): Unit = {
+      Min.this.f[String](1.toString());
+      Min.this.f[Int](1.##())
+    }
+  }
+}
+{code}

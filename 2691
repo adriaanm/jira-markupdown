@@ -1,0 +1,23 @@
+You are exactly right - however it does not convey the Boolean "predicate" nature of what is going on. I find that I write an awful lot of code which looks like:
+
+  api.find(k).map(passesSomeTest(_)).getOrElse(true)
+
+or also
+
+  api.find(k).map(passesSomeTest(_)).getOrElse(false)
+
+The intent of the code is not very clear (esp. when it is nested in other closures). Much more readable as:
+
+  api.find(k).notDefinedOr(passesSomeTest(_))
+
+and
+ 
+  api.find(k).isDefinedAnd(passesSomeTest(_))
+
+Just because something is equivalent does not mean that it is more readable. I believe that testing via predicates is a common and special case which warrants bespoke methods such as these to clarify meaning. For example:
+
+  coll.forall(test(_))
+
+is just equivalent to 
+
+  coll.dropWhile(test(_)).isEmpty

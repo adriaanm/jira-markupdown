@@ -1,0 +1,34 @@
+There seems to be a bug in the TextField class:
+
+{code}
+  def verifier_=(v: String => Boolean) { 
+    peer.setInputVerifier(new InputVerifier {
+      def verify(c: JComponent) = v(text)
+      override def shouldYieldFocus(c: JComponent) = 
+        peer.getInputVerifier.shouldYieldFocus(c)
+    }) 
+  }
+{code}
+
+When calling this method, you get:
+
+{code}
+Exception in thread "AWT-EventQueue-0" java.lang.StackOverflowError
+	at javax.swing.ArrayTable.get(ArrayTable.java:126)
+	at javax.swing.JComponent.getClientProperty(JComponent.java:3982)
+	at javax.swing.JComponent.getInputVerifier(JComponent.java:1917)
+	at scala.swing.TextField$$$$anon$$3.shouldYieldFocus(TextField.scala:69)
+	at scala.swing.TextField$$$$anon$$3.shouldYieldFocus(TextField.scala:69)
+...
+{code}
+
+I guess that code should be something like:
+
+{code}
+  def verifier_=(v: String => Boolean) { 
+    peer.setInputVerifier(new InputVerifier {
+      def verify(c: JComponent) = v(text)
+      override def shouldYieldFocus(c: JComponent) = v(text)
+    }) 
+  }
+{code}

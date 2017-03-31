@@ -1,0 +1,16 @@
+The following hangs the compiler:
+{code:scala}
+trait Data { self =>
+  type Type >: self.type
+}
+
+trait Eq[Type <: Data, A <: Type, B <: Type] { ab =>
+  final def lift[F[_ <: Type] <: Data]: Eq[Type, F[A], F[B]] =
+    Eq.lift[A, B, F](ab)
+}
+
+object Eq {
+  def lift[A <: Data, B <: A#Type, F[_ <: A#Type] <: Data](eq: Eq[A#Type, A, B]): Eq[A#Type, F[A], F[B]] = ???
+}
+{code}
+It should be possible to minimize it further.

@@ -1,0 +1,25 @@
+{code}
+scala> class Foo { class Bar }
+defined class Foo
+
+scala> def blah(f: Foo => Foo#Bar) = f(new Foo)
+blah: (f: Foo => Foo#Bar)Foo#Bar
+
+scala> blah(new _.Bar)
+<console>:1: error: unbound wildcard type
+       blah(new _.Bar)
+                ^
+
+scala> blah(x => new x.Bar)
+res0: Foo#Bar = Foo$Bar@68111f9b
+{code}
+
+Quoth the spec:
+
+{quote}
+(6.23) An expression (of syntactic category {{Expr}}) may contain embedded underscore symbols {{_}} at places where identifiers are legal.
+{quote}
+
+Does the identifier used as the root of a path of a type in a constructor not qualify for some reason?
+
+(I know, I'm even rolling my eyes at myself a little for wanting this to work, but a spec is a spec.)

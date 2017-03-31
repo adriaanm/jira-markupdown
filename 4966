@@ -1,0 +1,19 @@
+Maybe it's just a dialectal difference, but to me the sentence:
+{code}
+This trait is composed of those methods which can be implemented
+solely in terms of foreach and which do not need access to a Builder.
+{code}
+strongly suggests that all the methods that *can* be implemented in terms of foreach *have* been (and the last clause implies that no methods that require access to a builder are included in the TraversableOnce interface). But maybe that's just my dialect.
+
+How about the following suggested rewording that hopefully corresponds to the intention more clearly:
+{code}
+This trait exists primarily to eliminate code duplication between
+Iterator and Traversable, and thus implements some of the common
+methods that can be implemented solely in terms of foreach without
+access to a Builder. It also includes a number of abstract methods
+whose implementations are provided by Iterator, Traversable, etc.
+
+Directly subclassing TraversableOnce is not recommended - instead,
+consider creating an Iterator with a next and hasNext method, or
+create an Iterator with one of the methods on the Iterator object.
+{code}

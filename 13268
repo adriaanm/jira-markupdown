@@ -1,0 +1,16 @@
+The nightly compiler (r14472) throws "scala.tools.nsc.!FatalError: no-symbol does not have owner" when compiling the following code:
+
+{code}
+object Bug {
+  def method: Unit = {
+    sealed case class Parent
+    case object Child extends Parent
+    val x: Parent = Child
+    x match {
+      case Child => ()
+    }
+  }
+}
+{code}
+
+Compile log with full trace is attached.

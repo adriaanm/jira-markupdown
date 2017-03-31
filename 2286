@@ -1,0 +1,36 @@
+{code}
+usr$$ ~/usr/scala-2.8.0.r18697/bin/scala ~/Desktop/implicit-cache-error.scala 
+java.lang.Error: no-symbol does not have owner
+	at scala.tools.nsc.symtab.Symbols$$NoSymbol$$.owner(Symbols.scala:1869)
+        ...
+{code}
+
+Oddly, scalac doesn't produce the error, but you can see the reference to an out-of-scope symbol from test.A.B2 with `-uniqid -print`:
+{code}
+def thisSI-11202(): object test$$A$$B1SI-11193 = {
+      test$$A$$B1SI-11193.super.thisSI-3699();
+      test$$A$$B1SI-11193.this.t2_b1SI-11204 = {
+        new test$$A$$B1$$$$anon$$2SI-11206()
+      };
+      test$$ASI-7966.this.requireT1SI-11191(test$$T1SI-7962.T1FromT2SI-11170(test$$A$$B1SI-11193.this.t2_b1SI-11203().$$asInstanceOfSI-6888[test$$T2SI-7964]()).$$asInstanceOfSI-6888[test$$T1SI-7961]());
+      ()
+    }
+    ...
+    
+    def thisSI-11564(): object test$$A$$B2SI-11195 = {
+      test$$A$$B2SI-11195.super.thisSI-3699();
+      test$$A$$B2SI-11195.this.t2_b2SI-11566 = {
+        new test$$A$$B2$$$$anon$$3SI-11568()
+      };
+      test$$ASI-7966.this.requireT1SI-11191(test$$T1SI-7962.T1FromT2SI-11170(test$$A$$B1SI-11193.this.t2_b1SI-11203().$$asInstanceOfSI-6888[test$$T2SI-7964]()).$$asInstanceOfSI-6888[test$$T1SI-7961]());
+      ()
+    }
+{code}
+
+Implicits are being cached too aggressively. The patch recently applied for SI-2201 should be reviewed in light of this test case.
+
+Implicits.cacheResult returns T1.T1FromT2(t2_b1) here, which is bogus. Even though T1.T1FromT2 was found outside of the scope of A.B1, this implicit expression should _not_ be cached, as it includes the bound variable t2_b1 from this scope.
+
+SearchResult could be augmented with an attribute `cacheable`. In Implicits.bestImplicits(), if the first search in the local context succeeds, return SearchResult(tree, subst, cacheable = false). This would need to be propagated for SearchResults that themselves depend on implicits.
+
+Implicits.cacheResult would then ensure that only cacheable SearchResult-s are cached.

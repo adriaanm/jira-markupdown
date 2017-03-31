@@ -1,0 +1,46 @@
+When opening 'Symbols.scala' in the Eclipse plugin, I get a continuous stream of errors in my Error log (my machine manages to log around 10/second).
+
+This happens consistently, but it surely depends on some other state, as it was working fine a moment ago. It might be due to a project 'Refresh' Eclipse prompted me to do.
+
+I noticed a similar problem (with much worse consequences) when logging every thrown exception (that time it was something related to wrong positions): I had to manually kill syslogd (for some reason these reach the system log on my Mac OS).
+
+Would it be possible to not log every possible exception? It is a bit much when you get ~30.000 logs of the exact same thing.
+
+{code}
+java.lang.NullPointerException
+	at org.eclipse.jdt.internal.compiler.util.SimpleLookupTable.get(SimpleLookupTable.java:68)
+	at org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment.createParameterizedType(LookupEnvironment.java:859)
+	at org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment.getTypeFromTypeSignature(LookupEnvironment.java:1283)
+	at org.eclipse.jdt.internal.compiler.lookup.BinaryTypeBinding.createMethod(BinaryTypeBinding.java:485)
+	at org.eclipse.jdt.internal.compiler.lookup.BinaryTypeBinding.createMethods(BinaryTypeBinding.java:565)
+	at org.eclipse.jdt.internal.compiler.lookup.BinaryTypeBinding.cachePartsFrom(BinaryTypeBinding.java:333)
+	at org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment.createBinaryTypeFrom(LookupEnvironment.java:719)
+	at org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment.createBinaryTypeFrom(LookupEnvironment.java:699)
+	at org.eclipse.jdt.internal.compiler.Compiler.accept(Compiler.java:294)
+	at org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment.askForType(LookupEnvironment.java:128)
+	at org.eclipse.jdt.internal.compiler.lookup.PackageBinding.getTypeOrPackage(PackageBinding.java:179)
+	at org.eclipse.jdt.internal.compiler.lookup.CompilationUnitScope.findImport(CompilationUnitScope.java:456)
+	at org.eclipse.jdt.internal.compiler.lookup.CompilationUnitScope.findSingleImport(CompilationUnitScope.java:510)
+	at org.eclipse.jdt.internal.compiler.lookup.CompilationUnitScope.faultInImports(CompilationUnitScope.java:359)
+	at org.eclipse.jdt.internal.compiler.lookup.CompilationUnitScope.faultInTypes(CompilationUnitScope.java:435)
+	at org.eclipse.jdt.core.dom.CompilationUnitResolver.resolve(CompilationUnitResolver.java:858)
+	at org.eclipse.jdt.core.dom.CompilationUnitResolver.resolve(CompilationUnitResolver.java:518)
+	at org.eclipse.jdt.core.dom.ASTParser.internalCreateAST(ASTParser.java:880)
+	at org.eclipse.jdt.core.dom.ASTParser.createAST(ASTParser.java:656)
+	at org.eclipse.jdt.internal.ui.javaeditor.ASTProvider$$1.run(ASTProvider.java:540)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:37)
+	at org.eclipse.jdt.internal.ui.javaeditor.ASTProvider.createAST(ASTProvider.java:533)
+	at org.eclipse.jdt.internal.ui.javaeditor.ASTProvider.getAST(ASTProvider.java:474)
+	at org.eclipse.jdt.ui.SharedASTProvider.getAST(SharedASTProvider.java:129)
+	at org.eclipse.jdt.ui.OverrideIndicatorLabelDecorator.getOverrideIndicators(OverrideIndicatorLabelDecorator.java:158)
+	at org.eclipse.jdt.ui.OverrideIndicatorLabelDecorator.computeAdornmentFlags(OverrideIndicatorLabelDecorator.java:133)
+	at org.eclipse.jdt.ui.OverrideIndicatorLabelDecorator.decorate(OverrideIndicatorLabelDecorator.java:269)
+	at org.eclipse.ui.internal.decorators.LightweightDecoratorDefinition.decorate(LightweightDecoratorDefinition.java:269)
+	at org.eclipse.ui.internal.decorators.LightweightDecoratorManager$$LightweightRunnable.run(LightweightDecoratorManager.java:72)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:37)
+	at org.eclipse.ui.internal.decorators.LightweightDecoratorManager.decorate(LightweightDecoratorManager.java:356)
+	at org.eclipse.ui.internal.decorators.LightweightDecoratorManager.getDecorations(LightweightDecoratorManager.java:338)
+	at org.eclipse.ui.internal.decorators.DecorationScheduler$$1.ensureResultCached(DecorationScheduler.java:374)
+	at org.eclipse.ui.internal.decorators.DecorationScheduler$$1.run(DecorationScheduler.java:334)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:55)
+{code}

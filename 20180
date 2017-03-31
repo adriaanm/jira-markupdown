@@ -1,0 +1,9 @@
+The following code snippet compiles just fine on 2.10.4 but causes a {{MatchError}} at runtime because the Iterable {{m.keys}} uses a {{Set}}, which does not have the {{Cons}} operator like lists.
+
+{code}
+val m = Map(0 -> false, 1 -> true)
+m.keys match {
+  case Nil => "oops"
+  case x :: xs => "ok"
+}
+{code}

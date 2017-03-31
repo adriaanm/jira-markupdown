@@ -1,0 +1,26 @@
+This compiles:
+{code}
+object Test1 {
+  object A { def apply[T] = new A }
+   class A { def apply[T] = new A }
+
+  A[Int][String]
+}
+{code}
+This doesn't:
+{code}
+object Test2 {
+  object A { def apply[T: TypeTag] = new A }
+   class A { def apply[T: TypeTag] = new A }
+
+  A[Int][String]
+  // But this does of course: A[Int].apply[String]
+}
+{code}
+There are other, similar examples where applies stop applying due to artifacts of the implementation. Some of them may be difficult to address, but this one we should just call a bug - like it says in the error message, a MethodType doesn't take type parameters.  So "follow it" if that's possible (as it is here) and apply them to the result.
+{noformat}
+./a.scala:45: error: method apply: (implicit evidence$1: reflect.runtime.universe.TypeTag[Int])Test2.A in object A does not take type parameters.
+  A[Int][String]
+        ^
+one error found
+{noformat}

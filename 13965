@@ -1,0 +1,26 @@
+With 2.7.2-final this works ok (Linux):
+
+{code}
+Welcome to Scala version 2.7.2.final (Java HotSpot(TM) Server VM, Java 1.6.0_07).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> scala.io.Source.fromFile("sample_file.txt").getLines.foldLeft("")(_ + _)          
+res0: java.lang.String = 
+���
+
+
+scala>
+{code}
+
+but with 2.7.3.RC1 and exactly the same file, this hangs with 100% processor utilization:
+
+{code}
+Welcome to Scala version 2.7.3.RC1 (Java HotSpot(TM) Server VM, Java 1.6.0_07).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> scala.io.Source.fromFile("sample_file.txt").getLines.foldLeft("")(_ + _)
+{code}
+
+It looks like the hang only occurs if file contains extended characters. Sample file is attached.

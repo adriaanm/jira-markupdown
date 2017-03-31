@@ -1,0 +1,43 @@
+I retract my unfounded optimism.
+
+{noformat}
+quick.lib:
+    [mkdir] Created dir: /localhome/jenkins/a/workspace/scala-checkin-manual/build/quick/classes/library
+    [javac] Compiling 32 source files to /localhome/jenkins/a/workspace/scala-checkin-manual/build/quick/classes/library
+    [javac] Note: /localhome/jenkins/a/workspace/scala-checkin-manual/src/library/scala/collection/concurrent/MainNode.java uses unchecked or unsafe operations.
+    [javac] Note: Recompile with -Xlint:unchecked for details.
+    [javac] Compiling 41 source files to /localhome/jenkins/a/workspace/scala-checkin-manual/build/quick/classes/library
+    [javac] Note: Some input files use unchecked or unsafe operations.
+    [javac] Note: Recompile with -Xlint:unchecked for details.
+[scalacfork] Compiling 719 files to /localhome/jenkins/a/workspace/scala-checkin-manual/build/quick/classes/library
+[scalacfork] /localhome/jenkins/a/workspace/scala-checkin-manual/src/library/scala/collection/TraversableLike.scala:80: error: covariant type Repr occurs in invariant position in type Repr of type Self
+[scalacfork]   protected type Self = Repr
+[scalacfork]                  ^
+[scalacfork] /localhome/jenkins/a/workspace/scala-checkin-manual/src/library/scala/collection/generic/GenericClassTagCompanion.scala:22: error: covariant type CC occurs in invariant position in type CC[_] of type Coll
+[scalacfork]   type Coll = CC[_]
+[scalacfork]        ^
+[scalacfork] /localhome/jenkins/a/workspace/scala-checkin-manual/src/library/scala/collection/generic/GenericCompanion.scala:27: error: covariant type CC occurs in invariant position in type CC[_] of type Coll
+[scalacfork]   type Coll = CC[_]
+[scalacfork]        ^
+[scalacfork] /localhome/jenkins/a/workspace/scala-checkin-manual/src/library/scala/collection/generic/GenericOrderedCompanion.scala:22: error: covariant type CC occurs in invariant position in type CC[_] of type Coll
+[scalacfork]   type Coll = CC[_]
+[scalacfork]        ^
+[scalacfork] /localhome/jenkins/a/workspace/scala-checkin-manual/src/library/scala/collection/immutable/TrieIterator.scala:49: error: covariant type T occurs in invariant position in type ((Iterator[T], Int), Iterator[T]) of type SplitIterators
+[scalacfork]   private type SplitIterators = ((Iterator[T], Int), Iterator[T])
+[scalacfork]                ^
+[scalacfork] /localhome/jenkins/a/workspace/scala-checkin-manual/src/library/scala/collection/mutable/IndexedSeqView.scala:36: error: covariant type Coll occurs in invariant position in type scala.collection.mutable.IndexedSeqView[A,Coll] of type This
+[scalacfork]   private[this] type This = IndexedSeqView[A, Coll]
+[scalacfork]                      ^
+[scalacfork] /localhome/jenkins/a/workspace/scala-checkin-manual/src/library/scala/collection/parallel/ParSeqLike.scala:48: error: covariant type T occurs in invariant position in type scala.collection.parallel.IterableSplitter[T] of type SuperParIterator
+[scalacfork]   type SuperParIterator = IterableSplitter[T]
+[scalacfork]        ^
+{noformat}
+
+{code}
+trait ParSeqLike[+T, +Repr <: ParSeq[T], +Sequential <: Seq[T] with SeqLike[T, Sequential]]
+extends scala.collection.GenSeqLike[T, Repr]
+   with ParIterableLike[T, Repr, Sequential] {
+self =>
+  
+  type SuperParIterator = IterableSplitter[T]
+{code}

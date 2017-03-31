@@ -1,0 +1,27 @@
+{code}
+scala> new java.util.ArrayList[String]().toArray(Array[String]())
+java.lang.ClassCastException: [Ljava.lang.Object;
+	at .<init>(<console>:5)
+	at .<clinit>(<console>)
+	at RequestResult$$.<init>(<console>:3)
+	at RequestResult$$.<clinit>(<console>)
+	at RequestResult$$result(<console>)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingM...
+
+{code}
+
+see http://www.nabble.com/Trouble-with-generics-%28Scala-Java-interaction%29-td16886741.html
+for discussion.
+
+Jorge Ortiz notes that it works if you store the Array in a variable first.
+
+Jamie Webb says, "The BoxedAnyArray should have been unboxed to String, since an
+exact type was known at that point it left the Array factory."
+
+Martin O wrote "I think one once the Manifest stuff works we should consider the idea
+of demanding manifest types for arrays. This would do away with the
+problems we have with array casting (btw, these are known, see SI-160,
+but they are not easily fixed)."
+

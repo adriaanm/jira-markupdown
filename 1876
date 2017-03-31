@@ -1,0 +1,13 @@
+The Scala specification says:
+
+�6.12.4 (simplified)
+``l += r`` can be re-interpreted as ``l = l + r`` only when both
+ 1. ``l``does not define ``+=``directly of through an implicit conversion 
+ 2. ``l`` is a variable of a type containing ``+``.
+
+�4.2 (simplified)
+An implementation of a class containing variable declarations may define these variables using variable definitions, or it may define setter and getter functions directly.
+
+The specification is not completely clear, but can be read to say that both setter and getter must be defined in the same class, not inherited, to be equivalent to a variable and to allow using ``+=``. As such, the behaviour you report follows the specification.
+
+Clearly, this could be improved, but it requires a change of specification. I'll reassign the issue to the Scala community to be reconsidered when we have more time, or by an external contributor.

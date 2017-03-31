@@ -1,0 +1,35 @@
+{code}
+trait C[T]
+case class D[T](c: C[T])
+
+object IntC extends C[Int]
+
+object Test {
+ (null: AnyRef) match { case D(IntC) => }
+}
+{code}
+
+fails to compile with
+
+{noformat}
+Test.scala:10: error: pattern type is incompatible with expected type;
+ found   : IntC.type
+ required: C[Any]
+Note: Int <: Any (and IntC.type <: C[Int]), but trait C is invariant in type T.
+You may wish to define T as +T instead. (SLS 4.5)
+  (null: AnyRef) match { case D(IntC) => }
+                                ^
+one error found
+{noformat}
+
+The error goes away using a hand-crafted {{unapply}} method:
+
+{code}
+object E {
+  def unapply[T](x: D[T]): Option[C[T]] = None
+}
+
+// ...
+
+(null: AnyRef) match { case E(IntC) => }
+{code}

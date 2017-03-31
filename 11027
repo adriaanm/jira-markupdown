@@ -1,0 +1,24 @@
+I'll also note that unlike SI-7886, this bug is also exhibited without case classes (ie with extractors)
+
+{code}
+object Test {
+  sealed trait Node[+A]
+
+  // case class L[C,D](f: C => D) extends Node[C => D]
+
+  class L[C, D](val f: C => D) extends Node[C => D]
+  object L {
+    def unapply[C, D](x$0: Test.L[C,D]): Option[C => D] = ???
+  }
+
+  def test[A,B](n: Node[A => B]): A => B = n match {
+    case l: L[c,d] => l.f
+  }
+
+  def main(args: Array[String]) {
+    println {
+      test(new L[Int,Int](identity) with Node[Nothing]: Node[Int => String])(3): String
+    }
+  }
+}
+{code}

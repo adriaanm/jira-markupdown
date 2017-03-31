@@ -1,0 +1,15 @@
+indeed. i agree with the conclusion of SI-2296 that a compile time error would be sufficient, as you can work around it:
+
+{code}
+    private class Schnuck extends javax.swing.AbstractListModel {
+        model =>
+        val observer : PartialFunction[ Any, Unit ] = {
+            case "Test" => fireAdded( 0, 1 )
+        }
+        def getSize = 0
+        def getElementAt( idx: Int ) : AnyRef = "egal"
+        private def fireAdded( i0: Int, i1: Int ) {
+           fireIntervalAdded( model, i0, i1 )
+        }
+    }
+{code}

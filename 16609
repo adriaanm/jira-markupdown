@@ -1,0 +1,505 @@
+{code}
+import scala.tools.nsc.reporters._
+import scala.tools.nsc.Settings
+import reflect.runtime.Mirror.ToolBox
+
+object Test extends App {
+  val code = scala.reflect.Code.lift{
+    def x = 2
+    println(x)
+  };
+
+  val settings = new Settings
+  settings.debug.value = true
+  settings.Xshowtrees.value = true
+  settings.Xprint.value = List("typer")
+  settings.printtypes.value = true
+  settings.Ytyperdebug.value = true
+
+  val reporter = new ConsoleReporter(settings)
+  val toolbox = new ToolBox(reporter)
+  val ttree = toolbox.typeCheck(code.tree)
+  val evaluated = toolbox.runExpr(ttree)
+  println("evaluated = " + evaluated)
+}
+{code}
+
+{code}
+generated: __wrapper$1
+java.lang.VerifyError: (class: __wrapper$1$, method: wrapper signature: ()V) Illegal local variable number
+  at java.lang.Class.forName0(Native Method)
+  at java.lang.Class.forName(Class.java:247)
+  at scala.reflect.runtime.ToolBoxes$ToolBox$ToolBoxGlobal.runExpr(ToolBoxes.scala:93)
+  at scala.reflect.runtime.ToolBoxes$ToolBox.runExpr(ToolBoxes.scala:162)
+  at scala.reflect.runtime.ToolBoxes$ToolBox.runExpr(ToolBoxes.scala:165)
+  at Test$delayedInit$body.apply(t5230.scala:21)
+  at scala.Function0$class.apply$mcV$sp(Function0.scala:34)
+  at scala.runtime.AbstractFunction0.apply$mcV$sp(AbstractFunction0.scala:12)
+  at scala.App$$anonfun$main$1.apply(App.scala:61)
+  at scala.App$$anonfun$main$1.apply(App.scala:61)
+  at scala.collection.LinearSeqOptimized$class.foreach(LinearSeqOptimized.scala:59)
+  at scala.collection.immutable.List.foreach(List.scala:77)
+  at scala.collection.generic.TraversableForwarder$class.foreach(TraversableForwarder.scala:31)
+  at scala.collection.mutable.ListBuffer.foreach(ListBuffer.scala:42)
+  at scala.App$class.main(App.scala:61)
+  at Test$.main(t5230.scala:5)
+  at Test.main(t5230.scala)
+  at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+  at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+  at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+  at java.lang.reflect.Method.invoke(Method.java:597)
+  at scala.tools.nsc.util.ScalaClassLoader$$anonfun$run$1.apply(ScalaClassLoader.scala:90)
+  at scala.tools.nsc.util.ScalaClassLoader$class.asContext(ScalaClassLoader.scala:38)
+  at scala.tools.nsc.util.ScalaClassLoader$URLClassLoader.asContext(ScalaClassLoader.scala:159)
+  at scala.tools.nsc.util.ScalaClassLoader$class.run(ScalaClassLoader.scala:90)
+  at scala.tools.nsc.util.ScalaClassLoader$URLClassLoader.run(ScalaClassLoader.scala:159)
+  at scala.tools.nsc.CommonRunner$class.run(ObjectRunner.scala:28)
+  at scala.tools.nsc.ObjectRunner$.run(ObjectRunner.scala:45)
+  at scala.tools.nsc.CommonRunner$class.runAndCatch(ObjectRunner.scala:35)
+  at scala.tools.nsc.ObjectRunner$.runAndCatch(ObjectRunner.scala:45)
+  at scala.tools.nsc.MainGenericRunner.runTarget$1(MainGenericRunner.scala:70)
+  at scala.tools.nsc.MainGenericRunner.process(MainGenericRunner.scala:92)
+  at scala.tools.nsc.MainGenericRunner$.main(MainGenericRunner.scala:101)
+  at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
+{code}
+
+{code}
+    typing {
+      def x: scala.this.Int = 2{<null>};
+      scala.Predef.println{<null>}(x{<null>}){<null>}
+    }{<null>}: pt = ?: undetparams=, implicitsEnabled=false, silent=true, context.owner=package class <root>
+        typing <method> def x: scala.this.Int = 2{<null>}: pt = ?: undetparams=, implicitsEnabled=false, silent=true, context.owner=package class <root>
+            typing 2{<null>}: pt = scala.this.Int: undetparams=, implicitsEnabled=false, silent=true, context.owner=method x
+            typed 2{scala.this.Int(2)}: scala.this.Int(2)
+            adapted 2{scala.this.Int(2)}: scala.this.Int to scala.this.Int, 
+        typed <method> def x: scala.this.Int = 2{scala.this.Int(2)}: <notype>
+        adapted <method> def x: scala.this.Int = 2{scala.this.Int(2)}: <notype> to ?, 
+        typing scala.Predef.println{<null>}(x{<null>}){<null>}: pt = ?: undetparams=, implicitsEnabled=false, silent=true, context.owner=package class <root>
+            typing scala.Predef.println{<null>}: pt = ?: undetparams=, implicitsEnabled=false, silent=true, context.owner=package class <root>
+                typing scala.Predef{<null>}: pt = ?: undetparams=, implicitsEnabled=false, silent=true, context.owner=package class <root>
+                    typing scala: pt = ?: undetparams=, implicitsEnabled=false, silent=true, context.owner=package class <root>
+                    typed scala: package <root>.this.scala
+                    adapted scala: package <root>.this.scala to ?, 
+                typed package <root>.this.scala.Predef{object scala.this.Predef}: object scala.this.Predef
+                adapted package <root>.this.scala.Predef{object scala.this.Predef}: object scala.this.Predef to ?, 
+            typed package <root>.this.scala.Predef.println{(<param> x: scala.this.Any)scala.this.Unit <and> ()scala.this.Unit}: (<param> x: scala.this.Any)scala.this.Unit <and> ()scala.this.Unit
+            adapted package <root>.this.scala.Predef.println{(<param> x: scala.this.Any)scala.this.Unit <and> ()scala.this.Unit}: (<param> x: scala.this.Any)scala.this.Unit <and> ()scala.this.Unit to ?, 
+            typing x{<null>}: pt = scala.this.Any: undetparams=, implicitsEnabled=false, silent=true, context.owner=package class <root>
+            typed x{=> scala.this.Int}: => scala.this.Int
+            adapted x{scala.this.Int}: scala.this.Int to scala.this.Any, 
+        typed package <root>.this.scala.Predef.println{(<param> x: scala.this.Any)scala.this.Unit}(x{scala.this.Int}){scala.this.Unit}: scala.this.Unit
+        adapted package <root>.this.scala.Predef.println{(<param> x: scala.this.Any)scala.this.Unit}(x{scala.this.Int}){scala.this.Unit}: scala.this.Unit to ?, 
+    typed {
+      <method> def x: scala.this.Int = 2{scala.this.Int(2)};
+      package <root>.this.scala.Predef.println{(<param> x: scala.this.Any)scala.this.Unit}(x{scala.this.Int}){scala.this.Unit}
+    }{scala.this.Unit}: scala.this.Unit
+    adapted {
+      <method> def x: scala.this.Int = 2{scala.this.Int(2)};
+      package <root>.this.scala.Predef.println{(<param> x: scala.this.Any)scala.this.Unit}(x{scala.this.Int}){scala.this.Unit}
+    }{scala.this.Unit}: scala.this.Unit to ?, 
+wrapped: package <empty>{<null>} {
+  final <module> object __wrapper$1 extends lang.this.Object {
+    def <init>() = {
+      super{<null>}.<init>{<null>}(){<null>};
+      (){<null>}
+    }{<null>};
+    <method> <static> def wrapper(): scala.this.Unit = {
+      def x: scala.this.Int = 2{<null>};
+      package <root>.this.scala.Predef.println{<null>}(x{<null>}){<null>}
+    }{<null>}
+  }
+}
+[running phase namer on NoSourceFile]
+[running phase packageobjects on NoSourceFile]
+[running phase typer on NoSourceFile]
+    typing package <empty>{<null>}: pt = ?: undetparams=, implicitsEnabled=true, silent=false, context.owner=package class <root>
+        typing <empty>{<null>}: pt = ?: undetparams=, implicitsEnabled=true, silent=false, context.owner=package class <root>
+        typed <empty>{<root>.this.<empty>.type}: <root>.this.<empty>.type with underlying package <root>.this.<empty>
+        adapted <empty>{<root>.this.<empty>.type}: package <root>.this.<empty> to ?, 
+        typing object __wrapper$1: pt = ?: undetparams=, implicitsEnabled=true, silent=false, context.owner=package class <empty>
+    typing {
+      (){<null>}
+    }{<null>}: pt = ?: undetparams=, implicitsEnabled=true, silent=false, context.owner=package class <empty>
+        typing (){<null>}: pt = ?: undetparams=, implicitsEnabled=true, silent=false, context.owner=package class <empty>
+        typed (){scala.this.Unit}: scala.this.Unit
+        adapted (){scala.this.Unit}: scala.this.Unit to ?, 
+    typed {
+      (){scala.this.Unit}
+    }{scala.this.Unit}: scala.this.Unit
+    adapted {
+      (){scala.this.Unit}
+    }{scala.this.Unit}: scala.this.Unit to ?, 
+            typing {
+              (){<null>}
+            }{<null>}: pt = ?: undetparams=, implicitsEnabled=true, silent=false, context.owner=package class <empty>
+                typing (){<null>}: pt = ?: undetparams=, implicitsEnabled=true, silent=false, context.owner=package class <empty>
+                typed (){scala.this.Unit}: scala.this.Unit
+                adapted (){scala.this.Unit}: scala.this.Unit to ?, 
+            typed {
+              (){scala.this.Unit}
+            }{scala.this.Unit}: scala.this.Unit
+            adapted {
+              (){scala.this.Unit}
+            }{scala.this.Unit}: scala.this.Unit to ?, 
+            typing <method> def this() = {
+              super{<null>}.<init>{<null>}(){<null>};
+              (){<null>}
+            }{<null>}: pt = ?: undetparams=, implicitsEnabled=true, silent=false, context.owner=module class __wrapper$1
+                typing {
+                  super{<null>}.<init>{<null>}(){<null>};
+                  (){<null>}
+                }{<null>}: pt = ?: undetparams=, implicitsEnabled=true, silent=false, context.owner=constructor __wrapper$1
+                    typing super{<null>}.<init>{<null>}(){<null>}: pt = ?: undetparams=, implicitsEnabled=true, silent=false, context.owner=constructor __wrapper$1
+                        typing super{<null>}.<init>{<null>}: pt = ?: undetparams=, implicitsEnabled=true, silent=true, context.owner=constructor __wrapper$1
+                            typing super{<null>}: pt = ?: undetparams=, implicitsEnabled=true, silent=true, context.owner=constructor __wrapper$1
+                                typing this{<null>}: pt = ?: undetparams=, implicitsEnabled=true, silent=true, context.owner=constructor __wrapper$1
+                                typed this{<empty>.this.__wrapper$1.type}: <empty>.this.__wrapper$1.type with underlying object <empty>.this.__wrapper$1
+                                adapted this{<empty>.this.__wrapper$1.type}: object <empty>.this.__wrapper$1 to ?, 
+                            typed __wrapper$1.super{__wrapper$1.super.type}: __wrapper$1.super.type with underlying lang.this.Object
+                            adapted __wrapper$1.super{__wrapper$1.super.type}: lang.this.Object to ?, 
+                        typed __wrapper$1.super{__wrapper$1.super.type}.this{()lang.this.Object}: ()lang.this.Object
+                        adapted __wrapper$1.super{__wrapper$1.super.type}.this{()lang.this.Object}: ()lang.this.Object to ?, 
+                    typed __wrapper$1.super{__wrapper$1.super.type}.this{()lang.this.Object}(){lang.this.Object}: lang.this.Object
+                    adapted __wrapper$1.super{__wrapper$1.super.type}.this{()lang.this.Object}(){lang.this.Object}: lang.this.Object to ?, 
+                    typing (){<null>}: pt = ?: undetparams=, implicitsEnabled=true, silent=false, context.owner=constructor __wrapper$1
+                    typed (){scala.this.Unit}: scala.this.Unit
+                    adapted (){scala.this.Unit}: scala.this.Unit to ?, 
+                typed {
+                  __wrapper$1.super{__wrapper$1.super.type}.this{()lang.this.Object}(){lang.this.Object};
+                  (){scala.this.Unit}
+                }{scala.this.Unit}: scala.this.Unit
+                adapted {
+                  __wrapper$1.super{__wrapper$1.super.type}.this{()lang.this.Object}(){lang.this.Object};
+                  (){scala.this.Unit}
+                }{scala.this.Unit}: scala.this.Unit to ?, 
+            typed <method> def this(): object <empty>.this.__wrapper$1 = {
+              __wrapper$1.super{__wrapper$1.super.type}.this{()lang.this.Object}(){lang.this.Object};
+              (){scala.this.Unit}
+            }{scala.this.Unit}: <notype>
+            adapted <method> def this(): object <empty>.this.__wrapper$1 = {
+              __wrapper$1.super{__wrapper$1.super.type}.this{()lang.this.Object}(){lang.this.Object};
+              (){scala.this.Unit}
+            }{scala.this.Unit}: <notype> to ?, 
+            typing <method> <static> def wrapper(): scala.this.Unit = {
+              def x: scala.this.Int = 2{<null>};
+              package <root>.this.scala.Predef.println{<null>}(x{<null>}){<null>}
+            }{<null>}: pt = ?: undetparams=, implicitsEnabled=true, silent=false, context.owner=module class __wrapper$1
+                typing {
+                  def x: scala.this.Int = 2{<null>};
+                  package <root>.this.scala.Predef.println{<null>}(x{<null>}){<null>}
+                }{<null>}: pt = scala.this.Unit: undetparams=, implicitsEnabled=true, silent=false, context.owner=method wrapper
+                    typing <method> def x: scala.this.Int = 2{<null>}: pt = ?: undetparams=, implicitsEnabled=true, silent=false, context.owner=method wrapper
+                        typing 2{<null>}: pt = scala.this.Int: undetparams=, implicitsEnabled=true, silent=false, context.owner=method x
+                        typed 2{scala.this.Int(2)}: scala.this.Int(2)
+                        adapted 2{scala.this.Int(2)}: scala.this.Int to scala.this.Int, 
+                    typed <method> def x: scala.this.Int = 2{scala.this.Int(2)}: <notype>
+                    adapted <method> def x: scala.this.Int = 2{scala.this.Int(2)}: <notype> to ?, 
+                    typing package <root>.this.scala.Predef.println{<null>}(x{<null>}){<null>}: pt = scala.this.Unit: undetparams=, implicitsEnabled=true, silent=false, context.owner=method wrapper
+                        typing package <root>.this.scala.Predef.println{<null>}: pt = ?: undetparams=, implicitsEnabled=true, silent=true, context.owner=method wrapper
+                            typing package <root>.this.scala.Predef{<null>}: pt = ?: undetparams=, implicitsEnabled=true, silent=true, context.owner=method wrapper
+                            typed package <root>.this.scala.Predef{object scala.this.Predef}: object scala.this.Predef
+                            adapted package <root>.this.scala.Predef{object scala.this.Predef}: object scala.this.Predef to ?, 
+                        typed package <root>.this.scala.Predef.println{(<param> x: scala.this.Any)scala.this.Unit <and> ()scala.this.Unit}: (<param> x: scala.this.Any)scala.this.Unit <and> ()scala.this.Unit
+                        adapted package <root>.this.scala.Predef.println{(<param> x: scala.this.Any)scala.this.Unit <and> ()scala.this.Unit}: (<param> x: scala.this.Any)scala.this.Unit <and> ()scala.this.Unit to ?, 
+                        typing x{<null>}: pt = scala.this.Any: undetparams=, implicitsEnabled=true, silent=true, context.owner=method wrapper
+                        typed x{=> scala.this.Int}: => scala.this.Int
+                        adapted x{scala.this.Int}: scala.this.Int to scala.this.Any, 
+                    typed package <root>.this.scala.Predef.println{(<param> x: scala.this.Any)scala.this.Unit}(x{scala.this.Int}){scala.this.Unit}: scala.this.Unit
+                    adapted package <root>.this.scala.Predef.println{(<param> x: scala.this.Any)scala.this.Unit}(x{scala.this.Int}){scala.this.Unit}: scala.this.Unit to scala.this.Unit, 
+                typed {
+                  <method> def x: scala.this.Int = 2{scala.this.Int(2)};
+                  package <root>.this.scala.Predef.println{(<param> x: scala.this.Any)scala.this.Unit}(x{scala.this.Int}){scala.this.Unit}
+                }{scala.this.Unit}: scala.this.Unit
+                adapted {
+                  <method> def x: scala.this.Int = 2{scala.this.Int(2)};
+                  package <root>.this.scala.Predef.println{(<param> x: scala.this.Any)scala.this.Unit}(x{scala.this.Int}){scala.this.Unit}
+                }{scala.this.Unit}: scala.this.Unit to scala.this.Unit, 
+            typed <method> <static> def wrapper(): scala.this.Unit = {
+              <method> def x: scala.this.Int = 2{scala.this.Int(2)};
+              package <root>.this.scala.Predef.println{(<param> x: scala.this.Any)scala.this.Unit}(x{scala.this.Int}){scala.this.Unit}
+            }{scala.this.Unit}: <notype>
+            adapted <method> <static> def wrapper(): scala.this.Unit = {
+              <method> def x: scala.this.Int = 2{scala.this.Int(2)};
+              package <root>.this.scala.Predef.println{(<param> x: scala.this.Any)scala.this.Unit}(x{scala.this.Int}){scala.this.Unit}
+            }{scala.this.Unit}: <notype> to ?, 
+        typed object __wrapper$1: <notype>
+        adapted final <module> object __wrapper$1 extends lang.this.Object {
+          <method> def this(): object <empty>.this.__wrapper$1 = {
+            __wrapper$1.super{__wrapper$1.super.type}.this{()lang.this.Object}(){lang.this.Object};
+            (){scala.this.Unit}
+          }{scala.this.Unit};
+          <method> <static> def wrapper(): scala.this.Unit = {
+            <method> def x: scala.this.Int = 2{scala.this.Int(2)};
+            package <root>.this.scala.Predef.println{(<param> x: scala.this.Any)scala.this.Unit}(x{scala.this.Int}){scala.this.Unit}
+          }{scala.this.Unit}
+        }: <notype> to ?, 
+    typed package <empty>{<root>.this.<empty>.type}: <notype>
+    adapted package <empty>{<root>.this.<empty>.type} {
+      final <module> object __wrapper$1 extends lang.this.Object {
+        <method> def this(): object <empty>.this.__wrapper$1 = {
+          __wrapper$1.super{__wrapper$1.super.type}.this{()lang.this.Object}(){lang.this.Object};
+          (){scala.this.Unit}
+        }{scala.this.Unit};
+        <method> <static> def wrapper(): scala.this.Unit = {
+          <method> def x: scala.this.Int = 2{scala.this.Int(2)};
+          package <root>.this.scala.Predef.println{(<param> x: scala.this.Any)scala.this.Unit}(x{scala.this.Int}){scala.this.Unit}
+        }{scala.this.Unit}
+      }
+    }: <notype> to ?, 
+[[syntax trees at end of typer]]// Scala source: NoSourceFile
+PackageDef(
+  Ident("<empty>") // sym=package <empty>, sym.owner=package class <root>, sym.tpe=package <root>.this.<empty>, tpe=<root>.this.<empty>.type, tpe.sym=package <empty>, tpe.sym.owner=package class <root>
+,
+
+  ModuleDef(
+  Modifiers(final <module>, , Map())
+  __wrapper$1
+    Template( // sym=value <local __wrapper$1>, sym.owner=module class __wrapper$1, sym.tpe=<notype>, tpe=object <empty>.this.__wrapper$1, tpe.sym=module class __wrapper$1, tpe.sym.owner=package class <empty>
+      List(class Object), // parents
+      ValDef( // sym=<none>, sym.tpe=<notype>, tpe=<notype>, tpe.sym=<none>
+        0, // flags=, annots=List()
+        "_",
+        TypeTree(), // sym=<none>, tpe=<notype>, tpe.sym=<none>,
+        EmptyTree
+      ),
+      List( // body
+        DefDef( // sym=constructor __wrapper$1, isPrimaryConstructor, sym.owner=module class __wrapper$1, sym.tpe=()object <empty>.this.__wrapper$1, tpe=<notype>, tpe.sym=<none>
+          thod>, // flags=<method>, annots=List()
+          "<init>",
+          List(), // no type parameter
+          List(List()), // no parameter
+          object <empty>.this.__wrapper$1,
+          Block( // sym=null, tpe=scala.this.Unit, tpe.sym=class Unit, tpe.sym.owner=package class scala
+            List( // 1 statement(s)
+              Apply( // sym=constructor Object, tpe=lang.this.Object, tpe.sym=class Object, tpe.sym.owner=package class lang
+                Select( // sym=constructor Object, isPrimaryConstructor, sym.owner=class Object, sym.tpe=()lang.this.Object, tpe=()lang.this.Object, tpe.sym=<none>
+                  Super("") // sym=module class __wrapper$1, tpe=__wrapper$1.super.type, tpe.sym=module class __wrapper$1, tpe.sym.owner=package class <empty>
+                    This(""), // sym=module class __wrapper$1, sym.owner=package class <empty>, sym.tpe=object <empty>.this.__wrapper$1, tpe=<empty>.this.__wrapper$1.type, tpe.sym=module __wrapper$1, tpe.sym.owner=package class <empty>, tpe.decls=List(constructor __wrapper$1: ()object <empty>.this.__wrapper$1, , method wrapper: ()scala.this.Unit, )
+                  "<init>"),
+                Nil // no argument
+              )
+            ),
+            Literal(Constant(()))
+          )
+        ),
+        DefDef( // sym=method wrapper, sym.owner=module class __wrapper$1, sym.tpe=()scala.this.Unit, tpe=<notype>, tpe.sym=<none>
+          thod> <static>, // flags=<method> <static>, annots=List()
+          "wrapper",
+          List(), // no type parameter
+          List(List()), // no parameter
+          scala.this.Unit,
+          Block( // sym=null, tpe=scala.this.Unit, tpe.sym=class Unit, tpe.sym.owner=package class scala
+            List( // 1 statement(s)
+              DefDef( // sym=method x, sym.owner=method wrapper, sym.tpe==> scala.this.Int, tpe=<notype>, tpe.sym=<none>
+                thod>, // flags=<method>, annots=List()
+                "x",
+                List(), // no type parameter
+                List(
+                ),
+                scala.this.Int,
+                Literal(Constant(2))
+              )
+            ),
+            Apply( // sym=method println, tpe=scala.this.Unit, tpe.sym=class Unit, tpe.sym.owner=package class scala
+              Select( // sym=method println, sym.owner=module class Predef, sym.tpe=(<param> x: scala.this.Any)scala.this.Unit, tpe=(<param> x: scala.this.Any)scala.this.Unit, tpe.sym=<none>
+                Select( // sym=module Predef, sym.owner=package class scala, sym.tpe=object scala.this.Predef, tpe=object scala.this.Predef, tpe.sym=module class Predef, tpe.sym.owner=package class scala
+                  TypeTree(), // sym=package class scala, tpe=package <root>.this.scala, tpe.sym=package class scala, tpe.sym.owner=package class <root>,
+                  "Predef"),
+                "println"),
+              List( // 1 arguments(s)
+                Ident("x") // sym=method x, sym.owner=method wrapper, sym.tpe==> scala.this.Int, tpe=scala.this.Int, tpe.sym=class Int, tpe.sym.owner=package class scala
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+)
+
+
+[running phase superaccessors on NoSourceFile]
+[running phase pickler on NoSourceFile]
+[running phase refchecks on NoSourceFile]
+[running phase selectiveanf on NoSourceFile]
+[running phase liftcode on NoSourceFile]
+[running phase selectivecps on NoSourceFile]
+[running phase uncurry on NoSourceFile]
+[running phase tailcalls on NoSourceFile]
+[running phase specialize on NoSourceFile]
+[running phase explicitouter on NoSourceFile]
+[running phase erasure on NoSourceFile]
+    typing package <empty>{<null>}: pt = ?: undetparams=, implicitsEnabled=false, silent=true, context.owner=package class <root>
+        typing <empty>{<null>}: pt = ?: undetparams=, implicitsEnabled=false, silent=true, context.owner=package class <root>
+        typed <empty>{package <root>#<empty>}: package <root>#<empty>
+        adapted <empty>{package <root>#<empty>}: package <root>#<empty> to ?, 
+        typing class __wrapper$1: pt = ?: undetparams=, implicitsEnabled=false, silent=true, context.owner=package class <empty>
+            typing {
+              (){<null>}
+            }{<null>}: pt = ?: undetparams=, implicitsEnabled=false, silent=true, context.owner=package class <empty>
+                typing (){<null>}: pt = ?: undetparams=, implicitsEnabled=false, silent=true, context.owner=package class <empty>
+                typed (){<root>#scala#Unit}: <root>#scala#Unit
+                adapted (){<root>#scala#Unit}: <root>#scala#Unit to ?, 
+            typed {
+              (){<root>#scala#Unit}
+            }{<root>#scala#Unit}: <root>#scala#Unit
+            adapted {
+              (){<root>#scala#Unit}
+            }{<root>#scala#Unit}: <root>#scala#Unit to ?, 
+            typing <method> def this(): object <root>#<empty>#__wrapper$1 = {
+              __wrapper$1.super{<null>}.this{<null>}(){<null>};
+              (){<null>}
+            }{<null>}: pt = ?: undetparams=, implicitsEnabled=false, silent=true, context.owner=module class __wrapper$1
+                typing {
+                  __wrapper$1.super{<null>}.this{<null>}(){<null>};
+                  (){<null>}
+                }{<null>}: pt = ?: undetparams=, implicitsEnabled=false, silent=true, context.owner=constructor __wrapper$1
+                    typing __wrapper$1.super{<null>}.this{<null>}(){<null>}: pt = ?: undetparams=, implicitsEnabled=false, silent=true, context.owner=constructor __wrapper$1
+                        typing __wrapper$1.super{<null>}.this{<null>}: pt = ?: undetparams=, implicitsEnabled=false, silent=true, context.owner=constructor __wrapper$1
+                            typing __wrapper$1.super{<null>}: pt = ?: undetparams=, implicitsEnabled=false, silent=true, context.owner=constructor __wrapper$1
+                                typing this{<null>}: pt = ?: undetparams=, implicitsEnabled=false, silent=true, context.owner=constructor __wrapper$1
+                                typed this{object <root>#<empty>#__wrapper$1}: object <root>#<empty>#__wrapper$1
+                                adapted this{object <root>#<empty>#__wrapper$1}: object <root>#<empty>#__wrapper$1 to ?, 
+                            typed __wrapper$1.super{<root>#java#lang#Object}: <root>#java#lang#Object
+                            adapted __wrapper$1.super{<root>#java#lang#Object}: <root>#java#lang#Object to ?, 
+                        typed __wrapper$1.super{<root>#java#lang#Object}.this{()<root>#java#lang#Object}: ()<root>#java#lang#Object
+                        adapted __wrapper$1.super{<root>#java#lang#Object}.this{()<root>#java#lang#Object}: ()<root>#java#lang#Object to ?, 
+                    typed __wrapper$1.super{<root>#java#lang#Object}.this{()<root>#java#lang#Object}(){<root>#java#lang#Object}: <root>#java#lang#Object
+                    adapted __wrapper$1.super{<root>#java#lang#Object}.this{()<root>#java#lang#Object}(){<root>#java#lang#Object}: <root>#java#lang#Object to ?, 
+                    typing (){<null>}: pt = ?: undetparams=, implicitsEnabled=false, silent=true, context.owner=constructor __wrapper$1
+                    typed (){<root>#scala#Unit}: <root>#scala#Unit
+                    adapted (){<root>#scala#Unit}: <root>#scala#Unit to ?, 
+                typed {
+                  __wrapper$1.super{<root>#java#lang#Object}.this{()<root>#java#lang#Object}(){<root>#java#lang#Object};
+                  (){<root>#scala#Unit}
+                }{<root>#scala#Unit}: <root>#scala#Unit
+                adapted {
+                  __wrapper$1.super{<root>#java#lang#Object}.this{()<root>#java#lang#Object}(){<root>#java#lang#Object};
+                  (){<root>#scala#Unit}
+                }{<root>#scala#Unit}: <root>#scala#Unit to ?, 
+            typed <method> def this(): object <root>#<empty>#__wrapper$1 = {
+              __wrapper$1.super{<root>#java#lang#Object}.this{()<root>#java#lang#Object}(){<root>#java#lang#Object};
+              (){<root>#scala#Unit}
+            }{<root>#scala#Unit}: <notype>
+            adapted <method> def this(): object <root>#<empty>#__wrapper$1 = {
+              __wrapper$1.super{<root>#java#lang#Object}.this{()<root>#java#lang#Object}(){<root>#java#lang#Object};
+              (){<root>#scala#Unit}
+            }{<root>#scala#Unit}: <notype> to ?, 
+            typing <method> <static> def wrapper(): <root>#scala#Unit = {
+              <method> def x(): <root>#scala#Int = 2{<null>};
+              package <root>#scala.Predef.println{<null>}(x{<null>}(){<null>}){<null>}
+            }{<null>}: pt = ?: undetparams=, implicitsEnabled=false, silent=true, context.owner=module class __wrapper$1
+                typing {
+                  <method> def x(): <root>#scala#Int = 2{<null>};
+                  package <root>#scala.Predef.println{<null>}(x{<null>}(){<null>}){<null>}
+                }{<null>}: pt = <root>#scala#Unit: undetparams=, implicitsEnabled=false, silent=true, context.owner=method wrapper
+                    typing <method> def x(): <root>#scala#Int = 2{<null>}: pt = ?: undetparams=, implicitsEnabled=false, silent=true, context.owner=method wrapper
+                        typing 2{<null>}: pt = <root>#scala#Int: undetparams=, implicitsEnabled=false, silent=true, context.owner=method x
+                        typed 2{scala.this.Int(2)}: scala.this.Int(2)
+                        adapted 2{scala.this.Int(2)}: scala.this.Int to <root>#scala#Int, 
+                    typed <method> def x(): <root>#scala#Int = 2{scala.this.Int(2)}: <notype>
+                    adapted <method> def x(): <root>#scala#Int = 2{scala.this.Int(2)}: <notype> to ?, 
+                    typing package <root>#scala.Predef.println{<null>}(x{<null>}(){<null>}){<null>}: pt = <root>#scala#Unit: undetparams=, implicitsEnabled=false, silent=true, context.owner=method wrapper
+                        typing package <root>#scala.Predef.println{<null>}: pt = ?: undetparams=, implicitsEnabled=false, silent=true, context.owner=method wrapper
+                            typing package <root>#scala.Predef{<null>}: pt = ?: undetparams=, implicitsEnabled=false, silent=true, context.owner=method wrapper
+                            typed package <root>#scala.Predef{object <root>#scala#Predef}: object <root>#scala#Predef
+                            adapted package <root>#scala.Predef{object <root>#scala#Predef}: object <root>#scala#Predef to ?, 
+                        typed package <root>#scala.Predef.println{(<param> x: <root>#java#lang#Object)<root>#scala#Unit}: (<param> x: <root>#java#lang#Object)<root>#scala#Unit
+                        adapted package <root>#scala.Predef.println{(<param> x: <root>#java#lang#Object)<root>#scala#Unit}: (<param> x: <root>#java#lang#Object)<root>#scala#Unit to ?, 
+                        typing x{<null>}(){<null>}: pt = <root>#java#lang#Object: undetparams=, implicitsEnabled=false, silent=true, context.owner=method wrapper
+                            typing x{<null>}: pt = ?: undetparams=, implicitsEnabled=false, silent=true, context.owner=method wrapper
+                            typed x{()<root>#scala#Int}: ()<root>#scala#Int
+                            adapted x{()<root>#scala#Int}: ()<root>#scala#Int to ?, 
+                        typed x{()<root>#scala#Int}(){<root>#scala#Int}: <root>#scala#Int
+                        adapted x{()<root>#scala#Int}(){<root>#scala#Int}: <root>#scala#Int to <root>#java#lang#Object, 
+                    typed package <root>#scala.Predef.println{(<param> x: <root>#java#lang#Object)<root>#scala#Unit}(scala.Int.box{(<param> x: <root>#scala#Int)<root>#java#lang#Integer}(x{()<root>#scala#Int}(){<root>#scala#Int}){<root>#java#lang#Object}){<root>#scala#Unit}: <root>#scala#Unit
+                    adapted package <root>#scala.Predef.println{(<param> x: <root>#java#lang#Object)<root>#scala#Unit}(scala.Int.box{(<param> x: <root>#scala#Int)<root>#java#lang#Integer}(x{()<root>#scala#Int}(){<root>#scala#Int}){<root>#java#lang#Object}){<root>#scala#Unit}: <root>#scala#Unit to <root>#scala#Unit, 
+                typed {
+                  <method> def x(): <root>#scala#Int = 2{scala.this.Int(2)};
+                  package <root>#scala.Predef.println{(<param> x: <root>#java#lang#Object)<root>#scala#Unit}(scala.Int.box{(<param> x: <root>#scala#Int)<root>#java#lang#Integer}(x{()<root>#scala#Int}(){<root>#scala#Int}){<root>#java#lang#Object}){<root>#scala#Unit}
+                }{<root>#scala#Unit}: <root>#scala#Unit
+                adapted {
+                  <method> def x(): <root>#scala#Int = 2{scala.this.Int(2)};
+                  package <root>#scala.Predef.println{(<param> x: <root>#java#lang#Object)<root>#scala#Unit}(scala.Int.box{(<param> x: <root>#scala#Int)<root>#java#lang#Integer}(x{()<root>#scala#Int}(){<root>#scala#Int}){<root>#java#lang#Object}){<root>#scala#Unit}
+                }{<root>#scala#Unit}: <root>#scala#Unit to <root>#scala#Unit, 
+            typed <method> <static> def wrapper(): <root>#scala#Unit = {
+              <method> def x(): <root>#scala#Int = 2{scala.this.Int(2)};
+              package <root>#scala.Predef.println{(<param> x: <root>#java#lang#Object)<root>#scala#Unit}(scala.Int.box{(<param> x: <root>#scala#Int)<root>#java#lang#Integer}(x{()<root>#scala#Int}(){<root>#scala#Int}){<root>#java#lang#Object}){<root>#scala#Unit}
+            }{<root>#scala#Unit}: <notype>
+            adapted <method> <static> def wrapper(): <root>#scala#Unit = {
+              <method> def x(): <root>#scala#Int = 2{scala.this.Int(2)};
+              package <root>#scala.Predef.println{(<param> x: <root>#java#lang#Object)<root>#scala#Unit}(scala.Int.box{(<param> x: <root>#scala#Int)<root>#java#lang#Integer}(x{()<root>#scala#Int}(){<root>#scala#Int}){<root>#java#lang#Object}){<root>#scala#Unit}
+            }{<root>#scala#Unit}: <notype> to ?, 
+        typed class __wrapper$1: <notype>
+        adapted final <module> object __wrapper$1 extends <root>#java#lang#Object {
+          <method> def this(): object <root>#<empty>#__wrapper$1 = {
+            __wrapper$1.super{<root>#java#lang#Object}.this{()<root>#java#lang#Object}(){<root>#java#lang#Object};
+            (){<root>#scala#Unit}
+          }{<root>#scala#Unit};
+          <method> <static> def wrapper(): <root>#scala#Unit = {
+            <method> def x(): <root>#scala#Int = 2{scala.this.Int(2)};
+            package <root>#scala.Predef.println{(<param> x: <root>#java#lang#Object)<root>#scala#Unit}(scala.Int.box{(<param> x: <root>#scala#Int)<root>#java#lang#Integer}(x{()<root>#scala#Int}(){<root>#scala#Int}){<root>#java#lang#Object}){<root>#scala#Unit}
+          }{<root>#scala#Unit}
+        }: <notype> to ?, 
+    typed package <empty>{package <root>#<empty>}: <notype>
+    adapted package <empty>{package <root>#<empty>} {
+      final <module> object __wrapper$1 extends <root>#java#lang#Object {
+        <method> def this(): object <root>#<empty>#__wrapper$1 = {
+          __wrapper$1.super{<root>#java#lang#Object}.this{()<root>#java#lang#Object}(){<root>#java#lang#Object};
+          (){<root>#scala#Unit}
+        }{<root>#scala#Unit};
+        <method> <static> def wrapper(): <root>#scala#Unit = {
+          <method> def x(): <root>#scala#Int = 2{scala.this.Int(2)};
+          package <root>#scala.Predef.println{(<param> x: <root>#java#lang#Object)<root>#scala#Unit}(scala.Int.box{(<param> x: <root>#scala#Int)<root>#java#lang#Integer}(x{()<root>#scala#Int}(){<root>#scala#Int}){<root>#java#lang#Object}){<root>#scala#Unit}
+        }{<root>#scala#Unit}
+      }
+    }: <notype> to ?, 
+[running phase lazyvals on NoSourceFile]
+[running phase lambdalift on NoSourceFile]
+[running phase constructors on NoSourceFile]
+[running phase flatten on NoSourceFile]
+[running phase mixin on NoSourceFile]
+[running phase cleanup on NoSourceFile]
+[running phase icode on NoSourceFile]
+[running phase inliner on NoSourceFile]
+[running phase inlineExceptionHandlers on NoSourceFile]
+[running phase closelim on NoSourceFile]
+[running phase dce on NoSourceFile]
+[running phase jvm on icode]
+generated: __wrapper$1
+java.lang.VerifyError: (class: __wrapper$1$, method: wrapper signature: ()V) Illegal local variable number
+  at java.lang.Class.forName0(Native Method)
+  at java.lang.Class.forName(Class.java:247)
+  at scala.reflect.runtime.ToolBoxes$ToolBox$ToolBoxGlobal.runExpr(ToolBoxes.scala:93)
+  at scala.reflect.runtime.ToolBoxes$ToolBox.runExpr(ToolBoxes.scala:162)
+  at scala.reflect.runtime.ToolBoxes$ToolBox.runExpr(ToolBoxes.scala:165)
+  at Test$delayedInit$body.apply(t5230.scala:21)
+  at scala.Function0$class.apply$mcV$sp(Function0.scala:34)
+  at scala.runtime.AbstractFunction0.apply$mcV$sp(AbstractFunction0.scala:12)
+  at scala.App$$anonfun$main$1.apply(App.scala:61)
+  at scala.App$$anonfun$main$1.apply(App.scala:61)
+  at scala.collection.LinearSeqOptimized$class.foreach(LinearSeqOptimized.scala:59)
+  at scala.collection.immutable.List.foreach(List.scala:77)
+  at scala.collection.generic.TraversableForwarder$class.foreach(TraversableForwarder.scala:31)
+  at scala.collection.mutable.ListBuffer.foreach(ListBuffer.scala:42)
+  at scala.App$class.main(App.scala:61)
+  at Test$.main(t5230.scala:5)
+  at Test.main(t5230.scala)
+  at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+  at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+  at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+  at java.lang.reflect.Method.invoke(Method.java:597)
+  at scala.tools.nsc.util.ScalaClassLoader$$anonfun$run$1.apply(ScalaClassLoader.scala:90)
+  at scala.tools.nsc.util.ScalaClassLoader$class.asContext(ScalaClassLoader.scala:38)
+  at scala.tools.nsc.util.ScalaClassLoader$URLClassLoader.asContext(ScalaClassLoader.scala:159)
+  at scala.tools.nsc.util.ScalaClassLoader$class.run(ScalaClassLoader.scala:90)
+  at scala.tools.nsc.util.ScalaClassLoader$URLClassLoader.run(ScalaClassLoader.scala:159)
+  at scala.tools.nsc.CommonRunner$class.run(ObjectRunner.scala:28)
+  at scala.tools.nsc.ObjectRunner$.run(ObjectRunner.scala:45)
+  at scala.tools.nsc.CommonRunner$class.runAndCatch(ObjectRunner.scala:35)
+  at scala.tools.nsc.ObjectRunner$.runAndCatch(ObjectRunner.scala:45)
+  at scala.tools.nsc.MainGenericRunner.runTarget$1(MainGenericRunner.scala:70)
+  at scala.tools.nsc.MainGenericRunner.process(MainGenericRunner.scala:92)
+  at scala.tools.nsc.MainGenericRunner$.main(MainGenericRunner.scala:101)
+  at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
+{code}

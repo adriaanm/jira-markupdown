@@ -1,0 +1,30 @@
+two more examples that crash the compiler in different places, probably all due to this bug. the first one is actually SI-5231:
+
+{code}
+object T {
+  def m = new ConfigBuilder()
+  implicit def build( cb: ConfigBuilder ) : Config = null
+}
+
+class Config(x: Int)
+
+class ConfigBuilder private ()  { }
+{code}
+
+
+Second one, crash in Symbols.info
+
+{code}
+
+object Config {
+  def apply() : ConfigBuilder = new ConfigBuilder()
+  implicit def build( cb: ConfigBuilder ) : Config = cb.build
+}
+
+final class Config private[Client]( val clientID: Int )
+
+final class ConfigBuilder {
+  var clientID: Int = 0
+  def build : Config = new Config( clientID )
+}
+{code}

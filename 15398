@@ -1,0 +1,13 @@
+in Source.scala we see:
+{code}
+  /** convenience method, returns given line (not including newline)
+   *  from Source.
+   *
+   *  @param line the line index, first line is 1
+   *  @return     the character string of the specified line.
+   *
+   */
+  def getLine(line: Int): String = getLines() drop (line - 1) next
+{code}
+
+yikes! being 1-indexed is just plain wrong, and anyway the entire method is redundant, and naive use of it is likely to have horrible performance (since it makes a new Iterator each time). I suggest this method be deprecated for 2.8.

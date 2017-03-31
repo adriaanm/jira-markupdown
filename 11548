@@ -1,0 +1,40 @@
+The sbt from version 0.13.7 uses scala compiler to parse the whole file. The problem is, that if you split the file statement by statement and send to the compiler - all will be OK. If you send whole file - you will receive the compilation error.
+See:
+https://github.com/sbt/sbt/issues/1606
+
+The test from repl:
+
+{code:scala}
+scala> :pa
+// Entering paste mode (ctrl-D to finish)
+
+object A {
+
+val a = <a/>
+
+val b = <c/><d/>
+}
+
+// Exiting paste mode, now interpreting.
+
+defined object A
+{code}
+
+And:
+
+{code:scala}
+scala> :pa
+// Entering paste mode (ctrl-D to finish)
+
+object A {
+
+val a = <a/><c/>
+
+val b = <b/>
+}
+
+// Exiting paste mode, now interpreting.
+
+<console>:5: error: ';' expected but 'val' found.
+val b = <b/>
+{code}

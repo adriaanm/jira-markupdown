@@ -1,0 +1,31 @@
+Since https://github.com/scala/scala/pull/2954 we omit null checks when generating {{SomeModule == x}}. This is incorrect, a module dereference may return null.
+
+{code}
+class C {
+  println(s"O is $O")
+  val r = O == ("hi": AnyRef)
+}
+object O extends C
+
+object Test {
+  def main(args: Array[String]): Unit = {
+    println((new C).r)
+  }
+}
+{code}
+
+runs as
+
+{noformat}
+O is null
+java.lang.NullPointerException
+	at C.<init>(Test.scala:10)
+	at O$.<init>(Test.scala:12)
+	at O$.<clinit>(Test.scala)
+	at C.<init>(Test.scala:9)
+	at Test$.main(Test.scala:16)
+	at Test.main(Test.scala)
+{noformat}
+
+Related to https://github.com/scala/scala-dev/issues/8#issuecomment-142548225
+

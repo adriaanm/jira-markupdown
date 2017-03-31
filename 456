@@ -1,0 +1,16 @@
+Note that the test case is incorrect, due to bug SI-746. 
+
+A correct test case for this is 
+
+{code}
+import scala.concurrent._
+import scala.concurrent.ops._
+
+object Program {
+  def main(args : Array[String]) = {
+    val c = new SyncChannel[unit]
+    par({ c.write(()) }, { Thread.sleep(1000); c.read })
+  }
+}
+{code}
+

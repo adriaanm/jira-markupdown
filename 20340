@@ -1,0 +1,20 @@
+{code:scala}
+import java.util.{ Set => JavaSet }
+import java.util.Collections._
+ 
+object Main extends App {
+  def test(set: JavaSet[String]) = ()
+ 
+  test(emptySet()) //fine
+  test(emptySet) //error
+}
+{code}
+results in 
+{code}
+[error] /tmp/rendererNY3yfXqcvn/src/main/scala/test.scala:12: polymorphic expression cannot be instantiated to expected type;
+[error]  found   : [T]()java.util.Set[T]
+[error]  required: java.util.Set[String]
+[error]   test(emptySet) //error
+[error]        ^
+{code}
+But according to http://scala-lang.org/files/archive/spec/2.11/06-expressions.html#method-conversions, eta-expansion should not be applied here as the expected type is not a function type.

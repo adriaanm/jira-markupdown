@@ -1,0 +1,16 @@
+I can no longer profile scalac with yourkit (and it really needs some profiling!) because they obfuscate their jars, and the obfuscation algorithm generates packages and classes with the same name, as seen here:
+{code}
+com/yourkit/d.class
+com/yourkit/d/a$$1.class_
+com/yourkit/d/a.class_
+com/yourkit/d/b.class_
+com/yourkit/d/c$$a.class_
+com/yourkit/d/c$$b.class_
+com/yourkit/d/c.class_
+{code}
+scala refuses to deal with this:
+{code}
+error: package yourkit contains object and package with same name: d
+one of them needs to be removed from classpath
+{code}
+I haven't looked enormously hard for a workaround yet, so maybe there is one; but this seems likely to be an ongoing issue.  If such naming is legal on the JVM (and given that this is what yourkit ships, it must be) then it needs to be usable from scala or the promise of java compatibility takes another left to the jaw.

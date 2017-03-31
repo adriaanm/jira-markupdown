@@ -1,0 +1,21 @@
+AFAIU, List.++ always reconstructs list from scratch, even if second operand is already list. So, List.++ should be:
+
+{code}
+def ++[B >: A](that: Iterable[B]) = that match {
+  case list: List[B] => this ::: list
+  case _ =>
+    val buf = new ListBuffer[B]
+    this copyToBuffer buf
+    that copyToBuffer buf
+    buf.toList
+}
+
+// special case to avoid instanceOf if that is known to be List
+def ++[B >: A](that: List[B]) = that ::: this
+{code}
+
+or even better
+
+{code}
+def ++[B >: A](that: Iterable[B]) = this ::: that.toList
+{code}

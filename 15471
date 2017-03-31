@@ -1,0 +1,35 @@
+{code}
+object Test extends Application {
+  class A
+  class B extends A
+  def foo(x: A, y: B) = print(1)
+  val foo = new {
+    //def apply(x: B, y: A) = print(3)
+    def apply = (x: B, z: B) => print(4)
+  }
+
+  foo(new B, new B)
+}
+{code}
+This code prints 1.
+If we remove comment, then it will print 4.
+Moreover following code prints 3 (which is most strange thing):
+{code}
+object Test extends Application {
+  class A
+  class B extends A
+  def foo(x: A, y: B) = print(1)
+  val foo = new {
+    def apply(x: B, y: A) = print(3)
+    def apply = new {
+      def apply = (x: B, z: B) => print(4)
+    }
+  }
+
+  foo(new B, new B)
+}
+{code}
+
+So in three same situations compiler works different.
+There is nothing about it in specification. Also I think anyway this is a bug.
+Please comment what's right.

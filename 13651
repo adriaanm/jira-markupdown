@@ -1,0 +1,20 @@
+in the following transcript, note how compilation succeeds if javac is used first,
+but it fails if both files are passed to scalac.
+
+{code}
+  ~/newbug> cat J.java 
+interface J { int j = 200 ; }
+  ~/newbug> cat S.scala 
+object S { J.j }
+  ~/newbug> javac J.java 
+  ~/newbug> ~/scala/dists/latest/bin/scalac S.scala                      
+  ~/newbug> rm *.class
+  ~/newbug> ~/scala/dists/latest/bin/scalac J.java S.scala
+S.scala:1: error: not found: value J
+object S { J.j }
+           ^
+one error found
+{code}
+
+I'm on r15724.
+

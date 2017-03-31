@@ -1,0 +1,78 @@
+{noformat}
+git diff
+diff --git a/src/main/scala/scala/tools/partest/nest/DirectCompiler.
+index c63feb9..adc249e 100644
+--- a/src/main/scala/scala/tools/partest/nest/DirectCompiler.scala
++++ b/src/main/scala/scala/tools/partest/nest/DirectCompiler.scala
+@@ -116,7 +116,7 @@ class DirectCompiler(val runner: Runner) {
+       }
+
+     try     { execCompile() }
+-    catch   { case t: Throwable => reporter.error(null, t.getMessag
++    catch   runner.crashHandler
+     finally { logWriter.close() }
+   }
+ }
+diff --git a/src/main/scala/scala/tools/partest/nest/Runner.scala b/
+index 258bfb0..0edfa73 100644
+--- a/src/main/scala/scala/tools/partest/nest/Runner.scala
++++ b/src/main/scala/scala/tools/partest/nest/Runner.scala
+@@ -83,7 +83,7 @@ class Runner(val testFile: File, val suiteRunner:
+     if (!isPartestTerse)
+       System.err.println(stackTraceString(t))
+   }
+-  protected def crashHandler: PartialFunction[Throwable, TestState]
++  def crashHandler: PartialFunction[Throwable, TestState] = {
+     case t: InterruptedException =>
+       genTimeout()
+     case t: Throwable =>
+
+% sbt
+
+sbt> set publishTo := Some(Resolver.file("file",  new File(Path.userHome.absolutePath+"/.m2/repository")))
+sbt> publish
+
+
+% cd /code/scala
+
+% git diff
+diff --git a/versions.properties b/versions.properties
+index 865ce3e..baf0733 100644
+--- a/versions.properties
++++ b/versions.properties
+@@ -2,6 +2,6 @@ starr.version=2.11.0-M5
+
+ # the below is used for depending on dependencies like partest
+ scala.binary.version=2.11.0-M5
+-partest.version.number=1.0-RC5
++partest.version.number=1.0-SNAPSHOT
+ scala-xml.version.number=1.0-RC4
+ scala-parser-combinators.version.number=1.0-RC2
+
+% rm build/pack/partest.properties  # regenerate classpath file
+
+% pt --verbose test/files/neg/t7494-right-after-before
+
+# partest /Users/jason/code/scala/test/files/neg/t7494-right-after-before
+% scalac t7494-right-after-before/ThePlugin.scala
+% scalac t7494-right-after-before/sample_2.scala
+scala.UninitializedFieldError: Uninitialized field: PluginComponent.scala: 19
+	at scala.tools.nsc.plugins.PluginComponent.internal(PluginComponent.scala:19)
+	at scala.tools.nsc.PhaseAssembly$$anonfun$scala$tools$nsc$PhaseAssembly$$graphToDotFile$1.apply(PhaseAssembly.scala:279)
+	at scala.tools.nsc.PhaseAssembly$$anonfun$scala$tools$nsc$PhaseAssembly$$graphToDotFile$1.apply(PhaseAssembly.scala:277)
+	at scala.collection.mutable.HashSet.foreach(HashSet.scala:78)
+	at scala.tools.nsc.PhaseAssembly$class.scala$tools$nsc$PhaseAssembly$$graphToDotFile(PhaseAssembly.scala:277)
+	at scala.tools.nsc.PhaseAssembly$DependencyGraph.dump(PhaseAssembly.scala:192)
+	at scala.tools.nsc.PhaseAssembly$DependencyGraph$$anonfun$validateAndEnforceHardlinks$1.apply(PhaseAssembly.scala:137)
+	at scala.tools.nsc.PhaseAssembly$DependencyGraph$$anonfun$validateAndEnforceHardlinks$1.apply(PhaseAssembly.scala:135)
+	at scala.collection.mutable.HashSet.foreach(HashSet.scala:78)
+	at scala.tools.nsc.PhaseAssembly$DependencyGraph.validateAndEnforceHardlinks(PhaseAssembly.scala:135)
+	at scala.tools.nsc.PhaseAssembly$class.computePhaseAssembly(PhaseAssembly.scala:215)
+	at scala.tools.nsc.Global.computePhaseAssembly(Global.scala:37)
+	at scala.tools.nsc.Global.computePhaseDescriptors(Global.scala:731)
+	at scala.tools.nsc.Global.phaseDescriptors$lzycompute(Global.scala:735)
+	at scala.tools.nsc.Global.phaseDescriptors(Global.scala:735)
+	at scala.tools.nsc.Global$Run.<init>(Global.scala:1271)
+	at scala.tools.partest.nest.DirectCompiler.execCompile$1(DirectCompiler.scala:109)
+{noformat}
+

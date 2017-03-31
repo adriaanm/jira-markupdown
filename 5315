@@ -1,0 +1,14 @@
+The expression you give is valid: there's an implicit conversion to Integer.
+
+But the bug is indeed there, because this one should not compile.
+{code}
+scala> def foo: Int = null: Int
+foo: Int
+
+scala> foo
+java.lang.NullPointerException
+	at scala.Predef$$.Integer2int(Predef.scala:299)
+	at .foo(<console>:5)
+	at .<init>(<console>:7)
+	at .<clinit>(<console>)  
+{code}

@@ -1,0 +1,19 @@
+Isolated:
+
+{code}
+trait Equalizer[T]
+trait Gen[A]
+
+class Broken {
+  implicit def const[T](x: T): Gen[T] = ???
+  implicit def convertToEqualizer[T](left: T): Equalizer[T] = ???
+
+  def in(a: Any) = ()
+  in {
+    import scala.Left
+    "" == ""
+  }
+}
+{code}
+
+Paul pointed out in another ticket that the fact the `AnyRef#==` overloads, rather the overrides `Any#==` is pretty suspicious. You would not be allowed to compile real classes with those signatures as they collapse into an overriding relationship after erasure.

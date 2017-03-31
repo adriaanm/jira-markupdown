@@ -1,0 +1,68 @@
+Starting an actor in an unsigned applet causes the following Exception:
+
+java.lang.ExceptionInInitializerError
+	at scala.actors.Actor$class.makeReaction(Actor.scala:507)
+	at com.viungo.simulation.SimulationActor.makeReaction(SimulationActor.scala:17)
+	at scala.actors.Reactor$class.dostart(Reactor.scala:222)
+	at com.viungo.simulation.SimulationActor.scala$actors$Actor$$super$dostart(SimulationActor.scala:17)
+	at scala.actors.Actor$class.dostart(Actor.scala:702)
+	at com.viungo.simulation.SimulationActor.dostart(SimulationActor.scala:17)
+	at scala.actors.Reactor$class.start(Reactor.scala:230)
+	at com.viungo.simulation.SimulationActor.scala$actors$Actor$$super$start(SimulationActor.scala:17)
+	at scala.actors.Actor$class.start(Actor.scala:706)
+	at com.viungo.simulation.SimulationActor.start(SimulationActor.scala:17)
+	at com.viungo.simulation.Simulation.<init>(Simulation.scala:22)
+	at com.viungo.editor.EditorWindow.liftedTree1$1(EditorWindow.scala:23)
+	at com.viungo.editor.EditorWindow.<init>(EditorWindow.scala:23)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(Unknown Source)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(Unknown Source)
+	at java.lang.reflect.Constructor.newInstance(Unknown Source)
+	at java.lang.Class.newInstance0(Unknown Source)
+	at java.lang.Class.newInstance(Unknown Source)
+	at org.apache.pivot.beans.BXMLSerializer.newTypedObject(BXMLSerializer.java:1544)
+	at org.apache.pivot.beans.BXMLSerializer.processStartElement(BXMLSerializer.java:755)
+	at org.apache.pivot.beans.BXMLSerializer.readObject(BXMLSerializer.java:435)
+	at org.apache.pivot.beans.BXMLSerializer.readObject(BXMLSerializer.java:614)
+	at org.apache.pivot.beans.BXMLSerializer.readObject(BXMLSerializer.java:568)
+	at org.apache.pivot.beans.BXMLSerializer.readObject(BXMLSerializer.java:534)
+	at com.viungo.editor.CircuitEditor$$anon$1.execute(CircuitEditor.scala:19)
+	at com.viungo.editor.CircuitEditor$$anon$1.execute(CircuitEditor.scala:17)
+	at org.apache.pivot.util.concurrent.Task$ExecuteCallback.run(Task.java:42)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Unknown Source)
+	at java.util.concurrent.FutureTask$Sync.innerRun(Unknown Source)
+	at java.util.concurrent.FutureTask.run(Unknown Source)
+	at java.lang.Thread.run(Unknown Source)
+Caused by: java.lang.RuntimeException: Could not initialize intrinsics
+	at scala.concurrent.forkjoin.ForkJoinTask.<clinit>(ForkJoinTask.java:1056)
+	... 32 more
+Caused by: java.security.AccessControlException: access denied (java.lang.RuntimePermission accessClassInPackage.sun.misc)
+	at java.security.AccessControlContext.checkPermission(Unknown Source)
+	at java.security.AccessController.checkPermission(Unknown Source)
+	at java.lang.SecurityManager.checkPermission(Unknown Source)
+	at java.lang.SecurityManager.checkPackageAccess(Unknown Source)
+	at sun.plugin2.applet.Applet2SecurityManager.checkPackageAccess(Unknown Source)
+	at sun.misc.Launcher$AppClassLoader.loadClass(Unknown Source)
+	at java.lang.ClassLoader.loadClass(Unknown Source)
+	at com.sun.jnlp.JNLPPreverifyClassLoader.loadClass0(Unknown Source)
+	at com.sun.jnlp.JNLPPreverifyClassLoader.loadClass(Unknown Source)
+	at sun.plugin2.applet.Plugin2ClassLoader.loadClass0(Unknown Source)
+	at sun.plugin2.applet.Plugin2ClassLoader.loadClass(Unknown Source)
+	at sun.plugin2.applet.Plugin2ClassLoader.loadClass0(Unknown Source)
+	at sun.plugin2.applet.Plugin2ClassLoader.loadClass(Unknown Source)
+	at sun.plugin2.applet.Plugin2ClassLoader.loadClass(Unknown Source)
+	at java.lang.ClassLoader.loadClass(Unknown Source)
+	at scala.concurrent.forkjoin.ForkJoinTask.getUnsafePrivileged(ForkJoinTask.java:1029)
+	at scala.concurrent.forkjoin.ForkJoinTask.access$000(ForkJoinTask.java:111)
+	at scala.concurrent.forkjoin.ForkJoinTask$1.run(ForkJoinTask.java:1019)
+	at scala.concurrent.forkjoin.ForkJoinTask$1.run(ForkJoinTask.java:1017)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at scala.concurrent.forkjoin.ForkJoinTask.getUnsafe(ForkJoinTask.java:1016)
+	at scala.concurrent.forkjoin.ForkJoinTask.<clinit>(ForkJoinTask.java:1048)
+
+
+As far as I know, this might be related to usage of "wrong parts of the reflection API". Unsigned applets allow reflection, but not on sun.* or java.* class private members.
+
+This issue is highly critical for us, because if it cannot be fixed, we will have to drop using actors in the project and fall back to old "Javaish" programming style with threads.
+
+

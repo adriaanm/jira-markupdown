@@ -1,0 +1,22 @@
+I implemented this, and now I'm not sure we can. Your given example definitely won't do what you want. It compiles to this:
+
+{code}
+public class C {
+  public <E2 extends java/lang/Exception> void foo() throws E2;
+  public void bar();
+  public C();
+}
+{code}
+
+Here's what java thinks about that:
+
+{code}
+% javac -cp /scala/trunk/build/pack/lib/'*':out -Xprint C
+error: cannot access E2
+  class file for E2 not found
+  Consult the following stack trace for details.
+  com.sun.tools.javac.code.Symbol$CompletionFailure: class file for E2 not found
+1 error
+{code}
+
+java doesn't always allow for generics.

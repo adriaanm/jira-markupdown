@@ -1,0 +1,17 @@
+If a method is not accessible, hyperlinking won't work. The type-checker won't assign the right symbol to the corresponding tree, even when there's no ambiguity.
+
+{code}
+package a {
+  object A {
+    protected[a] def foo() = ???
+  }
+}
+
+package b {
+  class B {
+    a.A.foo() // method foo in object A cannot be accessed in object a.A 
+  }
+}
+{code}
+
+'foo' is assigned an error symbol.

@@ -1,0 +1,220 @@
+When I try to use Scala's {{scala.concurrent.Future}} on Google App Engine, it fails because access to {{sun.misc.Unsafe}} is blocked by App Engine's security manager. This is reproducible using the App Engine Java SDK without uploading anything to Google, or needing a Google account:
+
+{noformat}
+HTTP ERROR 500
+
+Problem accessing /test. Reason:
+
+    INTERNAL_SERVER_ERROR
+
+Caused by:
+
+java.lang.ExceptionInInitializerError
+	at scala.concurrent.impl.AbstractPromise.<clinit>(AbstractPromise.java:26)
+	at scala.concurrent.impl.Future$PromiseCompletingRunnable.<init>(Future.scala:20)
+	at scala.concurrent.impl.Future$.apply(Future.scala:30)
+	at scala.concurrent.Future$.apply(Future.scala:492)
+	at zappenginefutures.TestServlet.doGet(TestServlet.scala:20)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:617)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:717)
+	at org.mortbay.jetty.servlet.ServletHolder.handle(ServletHolder.java:511)
+	at org.mortbay.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1166)
+	at com.google.appengine.api.socket.dev.DevSocketFilter.doFilter(DevSocketFilter.java:74)
+	at org.mortbay.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1157)
+	at com.google.appengine.tools.development.ResponseRewriterFilter.doFilter(ResponseRewriterFilter.java:123)
+	at org.mortbay.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1157)
+	at com.google.appengine.tools.development.HeaderVerificationFilter.doFilter(HeaderVerificationFilter.java:34)
+	at org.mortbay.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1157)
+	at com.google.appengine.api.blobstore.dev.ServeBlobFilter.doFilter(ServeBlobFilter.java:63)
+	at org.mortbay.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1157)
+	at com.google.apphosting.utils.servlet.TransactionCleanupFilter.doFilter(TransactionCleanupFilter.java:43)
+	at org.mortbay.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1157)
+	at com.google.appengine.tools.development.StaticFileFilter.doFilter(StaticFileFilter.java:125)
+	at org.mortbay.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1157)
+	at com.google.appengine.tools.development.DevAppServerModulesFilter.doDirectRequest(DevAppServerModulesFilter.java:366)
+	at com.google.appengine.tools.development.DevAppServerModulesFilter.doDirectModuleRequest(DevAppServerModulesFilter.java:349)
+	at com.google.appengine.tools.development.DevAppServerModulesFilter.doFilter(DevAppServerModulesFilter.java:116)
+	at org.mortbay.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1157)
+	at org.mortbay.jetty.servlet.ServletHandler.handle(ServletHandler.java:388)
+	at org.mortbay.jetty.security.SecurityHandler.handle(SecurityHandler.java:216)
+	at org.mortbay.jetty.servlet.SessionHandler.handle(SessionHandler.java:182)
+	at org.mortbay.jetty.handler.ContextHandler.handle(ContextHandler.java:765)
+	at org.mortbay.jetty.webapp.WebAppContext.handle(WebAppContext.java:418)
+	at com.google.appengine.tools.development.DevAppEngineWebAppContext.handle(DevAppEngineWebAppContext.java:97)
+	at org.mortbay.jetty.handler.HandlerWrapper.handle(HandlerWrapper.java:152)
+	at com.google.appengine.tools.development.JettyContainerService$ApiProxyHandler.handle(JettyContainerService.java:487)
+	at org.mortbay.jetty.handler.HandlerWrapper.handle(HandlerWrapper.java:152)
+	at org.mortbay.jetty.Server.handle(Server.java:326)
+	at org.mortbay.jetty.HttpConnection.handleRequest(HttpConnection.java:542)
+	at org.mortbay.jetty.HttpConnection$RequestHandler.headerComplete(HttpConnection.java:923)
+	at org.mortbay.jetty.HttpParser.parseNext(HttpParser.java:547)
+	at org.mortbay.jetty.HttpParser.parseAvailable(HttpParser.java:212)
+	at org.mortbay.jetty.HttpConnection.handle(HttpConnection.java:404)
+	at org.mortbay.io.nio.SelectChannelEndPoint.run(SelectChannelEndPoint.java:409)
+	at org.mortbay.thread.QueuedThreadPool$PoolThread.run(QueuedThreadPool.java:582)
+Caused by: java.lang.ExceptionInInitializerError
+	at scala.concurrent.util.Unsafe.<clinit>(Unsafe.java:32)
+	at scala.concurrent.impl.AbstractPromise.<clinit>(AbstractPromise.java:24)
+	... 41 more
+Caused by: java.security.AccessControlException: access denied ("java.lang.RuntimePermission" "accessClassInPackage.sun.misc")
+	at java.security.AccessControlContext.checkPermission(Unknown Source)
+	at java.security.AccessController.checkPermission(Unknown Source)
+	at java.lang.SecurityManager.checkPermission(Unknown Source)
+	at com.google.appengine.tools.development.DevAppServerFactory$CustomSecurityManager.checkPermission(DevAppServerFactory.java:431)
+	at java.lang.SecurityManager.checkPackageAccess(Unknown Source)
+	at java.lang.ClassLoader$1.run(Unknown Source)
+	at java.lang.ClassLoader$1.run(Unknown Source)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at java.lang.ClassLoader.checkPackageAccess(Unknown Source)
+	at scala.concurrent.util.Unsafe.<clinit>(Unsafe.java:22)
+	... 42 more
+
+Caused by:
+
+java.lang.ExceptionInInitializerError
+	at scala.concurrent.util.Unsafe.<clinit>(Unsafe.java:32)
+	at scala.concurrent.impl.AbstractPromise.<clinit>(AbstractPromise.java:24)
+	at scala.concurrent.impl.Future$PromiseCompletingRunnable.<init>(Future.scala:20)
+	at scala.concurrent.impl.Future$.apply(Future.scala:30)
+	at scala.concurrent.Future$.apply(Future.scala:492)
+	at zappenginefutures.TestServlet.doGet(TestServlet.scala:20)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:617)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:717)
+	at org.mortbay.jetty.servlet.ServletHolder.handle(ServletHolder.java:511)
+	at org.mortbay.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1166)
+	at com.google.appengine.api.socket.dev.DevSocketFilter.doFilter(DevSocketFilter.java:74)
+	at org.mortbay.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1157)
+	at com.google.appengine.tools.development.ResponseRewriterFilter.doFilter(ResponseRewriterFilter.java:123)
+	at org.mortbay.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1157)
+	at com.google.appengine.tools.development.HeaderVerificationFilter.doFilter(HeaderVerificationFilter.java:34)
+	at org.mortbay.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1157)
+	at com.google.appengine.api.blobstore.dev.ServeBlobFilter.doFilter(ServeBlobFilter.java:63)
+	at org.mortbay.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1157)
+	at com.google.apphosting.utils.servlet.TransactionCleanupFilter.doFilter(TransactionCleanupFilter.java:43)
+	at org.mortbay.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1157)
+	at com.google.appengine.tools.development.StaticFileFilter.doFilter(StaticFileFilter.java:125)
+	at org.mortbay.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1157)
+	at com.google.appengine.tools.development.DevAppServerModulesFilter.doDirectRequest(DevAppServerModulesFilter.java:366)
+	at com.google.appengine.tools.development.DevAppServerModulesFilter.doDirectModuleRequest(DevAppServerModulesFilter.java:349)
+	at com.google.appengine.tools.development.DevAppServerModulesFilter.doFilter(DevAppServerModulesFilter.java:116)
+	at org.mortbay.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1157)
+	at org.mortbay.jetty.servlet.ServletHandler.handle(ServletHandler.java:388)
+	at org.mortbay.jetty.security.SecurityHandler.handle(SecurityHandler.java:216)
+	at org.mortbay.jetty.servlet.SessionHandler.handle(SessionHandler.java:182)
+	at org.mortbay.jetty.handler.ContextHandler.handle(ContextHandler.java:765)
+	at org.mortbay.jetty.webapp.WebAppContext.handle(WebAppContext.java:418)
+	at com.google.appengine.tools.development.DevAppEngineWebAppContext.handle(DevAppEngineWebAppContext.java:97)
+	at org.mortbay.jetty.handler.HandlerWrapper.handle(HandlerWrapper.java:152)
+	at com.google.appengine.tools.development.JettyContainerService$ApiProxyHandler.handle(JettyContainerService.java:487)
+	at org.mortbay.jetty.handler.HandlerWrapper.handle(HandlerWrapper.java:152)
+	at org.mortbay.jetty.Server.handle(Server.java:326)
+	at org.mortbay.jetty.HttpConnection.handleRequest(HttpConnection.java:542)
+	at org.mortbay.jetty.HttpConnection$RequestHandler.headerComplete(HttpConnection.java:923)
+	at org.mortbay.jetty.HttpParser.parseNext(HttpParser.java:547)
+	at org.mortbay.jetty.HttpParser.parseAvailable(HttpParser.java:212)
+	at org.mortbay.jetty.HttpConnection.handle(HttpConnection.java:404)
+	at org.mortbay.io.nio.SelectChannelEndPoint.run(SelectChannelEndPoint.java:409)
+	at org.mortbay.thread.QueuedThreadPool$PoolThread.run(QueuedThreadPool.java:582)
+Caused by: java.security.AccessControlException: access denied ("java.lang.RuntimePermission" "accessClassInPackage.sun.misc")
+	at java.security.AccessControlContext.checkPermission(Unknown Source)
+	at java.security.AccessController.checkPermission(Unknown Source)
+	at java.lang.SecurityManager.checkPermission(Unknown Source)
+	at com.google.appengine.tools.development.DevAppServerFactory$CustomSecurityManager.checkPermission(DevAppServerFactory.java:431)
+	at java.lang.SecurityManager.checkPackageAccess(Unknown Source)
+	at java.lang.ClassLoader$1.run(Unknown Source)
+	at java.lang.ClassLoader$1.run(Unknown Source)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at java.lang.ClassLoader.checkPackageAccess(Unknown Source)
+	at scala.concurrent.util.Unsafe.<clinit>(Unsafe.java:22)
+	... 42 more
+
+Caused by:
+
+java.security.AccessControlException: access denied ("java.lang.RuntimePermission" "accessClassInPackage.sun.misc")
+	at java.security.AccessControlContext.checkPermission(Unknown Source)
+	at java.security.AccessController.checkPermission(Unknown Source)
+	at java.lang.SecurityManager.checkPermission(Unknown Source)
+	at com.google.appengine.tools.development.DevAppServerFactory$CustomSecurityManager.checkPermission(DevAppServerFactory.java:431)
+	at java.lang.SecurityManager.checkPackageAccess(Unknown Source)
+	at java.lang.ClassLoader$1.run(Unknown Source)
+	at java.lang.ClassLoader$1.run(Unknown Source)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at java.lang.ClassLoader.checkPackageAccess(Unknown Source)
+	at scala.concurrent.util.Unsafe.<clinit>(Unsafe.java:22)
+	at scala.concurrent.impl.AbstractPromise.<clinit>(AbstractPromise.java:24)
+	at scala.concurrent.impl.Future$PromiseCompletingRunnable.<init>(Future.scala:20)
+	at scala.concurrent.impl.Future$.apply(Future.scala:30)
+	at scala.concurrent.Future$.apply(Future.scala:492)
+	at zappenginefutures.TestServlet.doGet(TestServlet.scala:20)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:617)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:717)
+	at org.mortbay.jetty.servlet.ServletHolder.handle(ServletHolder.java:511)
+	at org.mortbay.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1166)
+	at com.google.appengine.api.socket.dev.DevSocketFilter.doFilter(DevSocketFilter.java:74)
+	at org.mortbay.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1157)
+	at com.google.appengine.tools.development.ResponseRewriterFilter.doFilter(ResponseRewriterFilter.java:123)
+	at org.mortbay.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1157)
+	at com.google.appengine.tools.development.HeaderVerificationFilter.doFilter(HeaderVerificationFilter.java:34)
+	at org.mortbay.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1157)
+	at com.google.appengine.api.blobstore.dev.ServeBlobFilter.doFilter(ServeBlobFilter.java:63)
+	at org.mortbay.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1157)
+	at com.google.apphosting.utils.servlet.TransactionCleanupFilter.doFilter(TransactionCleanupFilter.java:43)
+	at org.mortbay.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1157)
+	at com.google.appengine.tools.development.StaticFileFilter.doFilter(StaticFileFilter.java:125)
+	at org.mortbay.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1157)
+	at com.google.appengine.tools.development.DevAppServerModulesFilter.doDirectRequest(DevAppServerModulesFilter.java:366)
+	at com.google.appengine.tools.development.DevAppServerModulesFilter.doDirectModuleRequest(DevAppServerModulesFilter.java:349)
+	at com.google.appengine.tools.development.DevAppServerModulesFilter.doFilter(DevAppServerModulesFilter.java:116)
+	at org.mortbay.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1157)
+	at org.mortbay.jetty.servlet.ServletHandler.handle(ServletHandler.java:388)
+	at org.mortbay.jetty.security.SecurityHandler.handle(SecurityHandler.java:216)
+	at org.mortbay.jetty.servlet.SessionHandler.handle(SessionHandler.java:182)
+	at org.mortbay.jetty.handler.ContextHandler.handle(ContextHandler.java:765)
+	at org.mortbay.jetty.webapp.WebAppContext.handle(WebAppContext.java:418)
+	at com.google.appengine.tools.development.DevAppEngineWebAppContext.handle(DevAppEngineWebAppContext.java:97)
+	at org.mortbay.jetty.handler.HandlerWrapper.handle(HandlerWrapper.java:152)
+	at com.google.appengine.tools.development.JettyContainerService$ApiProxyHandler.handle(JettyContainerService.java:487)
+	at org.mortbay.jetty.handler.HandlerWrapper.handle(HandlerWrapper.java:152)
+	at org.mortbay.jetty.Server.handle(Server.java:326)
+	at org.mortbay.jetty.HttpConnection.handleRequest(HttpConnection.java:542)
+	at org.mortbay.jetty.HttpConnection$RequestHandler.headerComplete(HttpConnection.java:923)
+	at org.mortbay.jetty.HttpParser.parseNext(HttpParser.java:547)
+	at org.mortbay.jetty.HttpParser.parseAvailable(HttpParser.java:212)
+	at org.mortbay.jetty.HttpConnection.handle(HttpConnection.java:404)
+	at org.mortbay.io.nio.SelectChannelEndPoint.run(SelectChannelEndPoint.java:409)
+	at org.mortbay.thread.QueuedThreadPool$PoolThread.run(QueuedThreadPool.java:582)
+{noformat}
+
+The basic code I'm using to reproduce this is below, my actual code was somewhat more complicated and involved blocking HTTP access in my threads:
+
+{noformat}
+package zappenginefutures
+
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
+
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
+
+import com.google.appengine.api.ThreadManager
+
+import javax.servlet.http.HttpServlet
+import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.HttpServletResponse
+
+class TestServlet extends HttpServlet {
+  override def doGet(req: HttpServletRequest, resp: HttpServletResponse) {
+    implicit val executionContext = ExecutionContext.fromExecutorService(
+      Executors.newFixedThreadPool(4, ThreadManager.currentRequestThreadFactory))
+
+    val f = Future {
+      Thread.sleep(1000L)
+    }
+
+    executionContext.shutdown()
+    executionContext.awaitTermination(10, TimeUnit.SECONDS)
+    
+    resp.getWriter.println("OK")
+  }
+}
+{noformat}

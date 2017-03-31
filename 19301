@@ -1,0 +1,457 @@
+I tripped the following assertion in the compiler. I'll comment with repro instructions.
+
+{code}
+service.v1TypedRequest(message)(((events: Seq[Seq[Event[Long, T]]]) => fn(events.head.head.value)))
+	at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer.transform(SuperAccessors.scala:329)
+	at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer.transform(SuperAccessors.scala:43)
+	at scala.reflect.internal.Trees$class.itransform(Trees.scala:1238)
+	at scala.reflect.internal.SymbolTable.itransform(SymbolTable.scala:13)
+	at scala.reflect.internal.SymbolTable.itransform(SymbolTable.scala:13)
+	at scala.reflect.api.Trees$Transformer.transform(Trees.scala:2897)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:48)
+	at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer.transform(SuperAccessors.scala:338)
+	at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer.transform(SuperAccessors.scala:333)
+	at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer$$anonfun$transformArgs$1.apply(SuperAccessors.scala:84)
+	at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer$$anonfun$transformArgs$1.apply(SuperAccessors.scala:81)
+	at scala.reflect.internal.TreeInfo$$anonfun$mapMethodParamsAndArgs$1.apply(TreeInfo.scala:119)
+	at scala.reflect.internal.TreeInfo$$anonfun$mapMethodParamsAndArgs$1.apply(TreeInfo.scala:119)
+	at scala.reflect.internal.util.Collections$class.foreach2(Collections.scala:150)
+	at scala.reflect.internal.SymbolTable.foreach2(SymbolTable.scala:13)
+	at scala.reflect.internal.TreeInfo.foreachMethodParamAndArg(TreeInfo.scala:134)
+	at scala.reflect.internal.TreeInfo.mapMethodParamsAndArgs(TreeInfo.scala:119)
+	at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer.transformArgs(SuperAccessors.scala:81)
+	at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer.transform(SuperAccessors.scala:330)
+	at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer.transform(SuperAccessors.scala:43)
+	at scala.reflect.internal.Trees$class.itransform(Trees.scala:1238)
+	at scala.reflect.internal.SymbolTable.itransform(SymbolTable.scala:13)
+	at scala.reflect.internal.SymbolTable.itransform(SymbolTable.scala:13)
+	at scala.reflect.api.Trees$Transformer.transform(Trees.scala:2897)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:48)
+	at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer.transform(SuperAccessors.scala:338)
+	at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer.transform(SuperAccessors.scala:43)
+	at scala.reflect.internal.Trees$$anonfun$itransform$2.apply(Trees.scala:1235)
+	at scala.reflect.internal.Trees$$anonfun$itransform$2.apply(Trees.scala:1233)
+	at scala.reflect.api.Trees$Transformer.atOwner(Trees.scala:2936)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:34)
+	at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer.atOwner(SuperAccessors.scala:362)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:28)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:19)
+	at scala.reflect.internal.Trees$class.itransform(Trees.scala:1232)
+	at scala.reflect.internal.SymbolTable.itransform(SymbolTable.scala:13)
+	at scala.reflect.internal.SymbolTable.itransform(SymbolTable.scala:13)
+	at scala.reflect.api.Trees$Transformer.transform(Trees.scala:2897)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:48)
+	at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer.transform(SuperAccessors.scala:338)
+	at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer.transform(SuperAccessors.scala:43)
+	at scala.reflect.api.Trees$Transformer$$anonfun$transformTrees$1.apply(Trees.scala:2900)
+	at scala.reflect.api.Trees$Transformer$$anonfun$transformTrees$1.apply(Trees.scala:2900)
+	at scala.collection.immutable.List.loop$1(List.scala:170)
+	at scala.collection.immutable.List.mapConserve(List.scala:186)
+	at scala.reflect.api.Trees$Transformer.transformTrees(Trees.scala:2900)
+	at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer$$anonfun$6.apply(SuperAccessors.scala:198)
+	at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer$$anonfun$6.apply(SuperAccessors.scala:198)
+	at scala.reflect.api.Trees$Transformer.atOwner(Trees.scala:2936)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:34)
+	at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer.atOwner(SuperAccessors.scala:362)
+	at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer.transformTemplate$1(SuperAccessors.scala:198)
+	at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer.transform(SuperAccessors.scala:203)
+	at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer.transform(SuperAccessors.scala:43)
+	at scala.reflect.api.Trees$Transformer.transformTemplate(Trees.scala:2904)
+	at scala.reflect.internal.Trees$$anonfun$itransform$4.apply(Trees.scala:1280)
+	at scala.reflect.internal.Trees$$anonfun$itransform$4.apply(Trees.scala:1279)
+	at scala.reflect.api.Trees$Transformer.atOwner(Trees.scala:2936)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:34)
+	at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer.atOwner(SuperAccessors.scala:362)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:28)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:19)
+	at scala.reflect.internal.Trees$class.itransform(Trees.scala:1278)
+	at scala.reflect.internal.SymbolTable.itransform(SymbolTable.scala:13)
+	at scala.reflect.internal.SymbolTable.itransform(SymbolTable.scala:13)
+	at scala.reflect.api.Trees$Transformer.transform(Trees.scala:2897)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:48)
+	at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer.transformClassDef$1(SuperAccessors.scala:180)
+	at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer.transform(SuperAccessors.scala:182)
+	at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer.transform(SuperAccessors.scala:43)
+	at scala.reflect.api.Trees$Transformer$$anonfun$transformStats$1.apply(Trees.scala:2927)
+	at scala.reflect.api.Trees$Transformer$$anonfun$transformStats$1.apply(Trees.scala:2925)
+	at scala.collection.immutable.List.loop$1(List.scala:170)
+	at scala.collection.immutable.List.mapConserve(List.scala:186)
+	at scala.reflect.api.Trees$Transformer.transformStats(Trees.scala:2925)
+	at scala.reflect.internal.Trees$$anonfun$itransform$7.apply(Trees.scala:1298)
+	at scala.reflect.internal.Trees$$anonfun$itransform$7.apply(Trees.scala:1298)
+	at scala.reflect.api.Trees$Transformer.atOwner(Trees.scala:2936)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:34)
+	at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer.atOwner(SuperAccessors.scala:362)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:28)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:19)
+	at scala.reflect.internal.Trees$class.itransform(Trees.scala:1297)
+	at scala.reflect.internal.SymbolTable.itransform(SymbolTable.scala:13)
+	at scala.reflect.internal.SymbolTable.itransform(SymbolTable.scala:13)
+	at scala.reflect.api.Trees$Transformer.transform(Trees.scala:2897)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.scala$tools$nsc$transform$TypingTransformers$TypingTransformer$$super$transform(TypingTransformers.scala:44)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer$$anonfun$transform$2.apply(TypingTransformers.scala:46)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer$$anonfun$transform$2.apply(TypingTransformers.scala:46)
+	at scala.reflect.api.Trees$Transformer.atOwner(Trees.scala:2936)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:34)
+	at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer.atOwner(SuperAccessors.scala:362)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:46)
+	at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer.transform(SuperAccessors.scala:338)
+	at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer.transform(SuperAccessors.scala:43)
+	at scala.tools.nsc.ast.Trees$Transformer.transformUnit(Trees.scala:227)
+	at scala.tools.nsc.transform.Transform$Phase.apply(Transform.scala:30)
+	at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:464)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$run$1.apply(Global.scala:431)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$run$1.apply(Global.scala:431)
+	at scala.collection.Iterator$class.foreach(Iterator.scala:727)
+	at scala.collection.AbstractIterator.foreach(Iterator.scala:1157)
+	at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:431)
+	at scala.tools.nsc.Global$Run.compileUnitsInternal(Global.scala:1583)
+	at scala.tools.nsc.Global$Run.compileUnits(Global.scala:1557)
+	at scala.tools.nsc.Global$Run.compileSources(Global.scala:1553)
+	at scala.tools.nsc.Global$Run.compile(Global.scala:1662)
+	at xsbt.CachedCompiler0.run(CompilerInterface.scala:123)
+	at xsbt.CachedCompiler0.run(CompilerInterface.scala:99)
+	at xsbt.CompilerInterface.run(CompilerInterface.scala:27)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:606)
+	at sbt.compiler.AnalyzingCompiler.call(AnalyzingCompiler.scala:102)
+	at sbt.compiler.AnalyzingCompiler.compile(AnalyzingCompiler.scala:48)
+	at sbt.compiler.AnalyzingCompiler.compile(AnalyzingCompiler.scala:41)
+	at sbt.compiler.AggressiveCompile$$anonfun$3$$anonfun$compileScala$1$1.apply$mcV$sp(AggressiveCompile.scala:98)
+	at sbt.compiler.AggressiveCompile$$anonfun$3$$anonfun$compileScala$1$1.apply(AggressiveCompile.scala:98)
+	at sbt.compiler.AggressiveCompile$$anonfun$3$$anonfun$compileScala$1$1.apply(AggressiveCompile.scala:98)
+	at sbt.compiler.AggressiveCompile.sbt$compiler$AggressiveCompile$$timed(AggressiveCompile.scala:159)
+	at sbt.compiler.AggressiveCompile$$anonfun$3.compileScala$1(AggressiveCompile.scala:97)
+	at sbt.compiler.AggressiveCompile$$anonfun$3.apply(AggressiveCompile.scala:142)
+	at sbt.compiler.AggressiveCompile$$anonfun$3.apply(AggressiveCompile.scala:86)
+	at sbt.inc.IncrementalCompile$$anonfun$doCompile$1.apply(Compile.scala:38)
+	at sbt.inc.IncrementalCompile$$anonfun$doCompile$1.apply(Compile.scala:36)
+	at sbt.inc.Incremental$.cycle(Incremental.scala:73)
+	at sbt.inc.Incremental$$anonfun$1.apply(Incremental.scala:33)
+	at sbt.inc.Incremental$$anonfun$1.apply(Incremental.scala:32)
+	at sbt.inc.Incremental$.manageClassfiles(Incremental.scala:41)
+	at sbt.inc.Incremental$.compile(Incremental.scala:32)
+	at sbt.inc.IncrementalCompile$.apply(Compile.scala:26)
+	at sbt.compiler.AggressiveCompile.compile2(AggressiveCompile.scala:150)
+	at sbt.compiler.AggressiveCompile.compile1(AggressiveCompile.scala:70)
+	at sbt.compiler.AggressiveCompile.apply(AggressiveCompile.scala:45)
+	at sbt.Compiler$.apply(Compiler.scala:70)
+	at sbt.Defaults$.sbt$Defaults$$compileTaskImpl(Defaults.scala:736)
+	at sbt.Defaults$$anonfun$compileTask$1.apply(Defaults.scala:730)
+	at sbt.Defaults$$anonfun$compileTask$1.apply(Defaults.scala:730)
+	at scala.Function1$$anonfun$compose$1.apply(Function1.scala:47)
+	at sbt.$tilde$greater$$anonfun$$u2219$1.apply(TypeFunctions.scala:42)
+	at sbt.std.Transform$$anon$4.work(System.scala:64)
+	at sbt.Execute$$anonfun$submit$1$$anonfun$apply$1.apply(Execute.scala:237)
+	at sbt.Execute$$anonfun$submit$1$$anonfun$apply$1.apply(Execute.scala:237)
+	at sbt.ErrorHandling$.wideConvert(ErrorHandling.scala:18)
+	at sbt.Execute.work(Execute.scala:244)
+	at sbt.Execute$$anonfun$submit$1.apply(Execute.scala:237)
+	at sbt.Execute$$anonfun$submit$1.apply(Execute.scala:237)
+	at sbt.ConcurrentRestrictions$$anon$4$$anonfun$1.apply(ConcurrentRestrictions.scala:160)
+	at sbt.CompletionService$$anon$2.call(CompletionService.scala:30)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:262)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:471)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:262)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:615)
+	at java.lang.Thread.run(Thread.java:744)
+{code}
+
+{code}
+TRANSFORM: null
+TREE: service.v1TypedRequest(message)(((events: Seq[Seq[Event[Long, T]]]) => fn(events.head.head.value)))
+TREE: {
+  val service: nest.sparkle.time.protocol.ServiceWithCassandra = new ServiceWithCassandra(store, system);
+  val message: <error> = TestVariousTypes.this.streamRequest[nest.sparkle.time.protocol.RawParameters[Long]]("Raw", RawParameters.apply[Long](RawParameters.apply$default$1[Long]), SelectString.apply(columnPath));
+  service.v1TypedRequest(message)(((events: Seq[Seq[Event[Long, T]]]) => fn(events.head.head.value)))
+}
+TRANSFORM: /home/lee/sparkle/sparkle-tests/src/it/scala/nest/sparkle/time/protocol/TestVariousTypes.scala
+TREE: ((store: nest.sparkle.store.Store, system: akka.actor.ActorSystem) => {
+  val service: nest.sparkle.time.protocol.ServiceWithCassandra = new ServiceWithCassandra(store, system);
+  val message: <error> = TestVariousTypes.this.streamRequest[nest.sparkle.time.protocol.RawParameters[Long]]("Raw", RawParameters.apply[Long](RawParameters.apply$default$1[Long]), SelectString.apply(columnPath));
+  service.v1TypedRequest(message)(((events: Seq[Seq[Event[Long, T]]]) => fn(events.head.head.value)))
+})
+TRANSFORM: null
+TREE: TestVariousTypes.this.withLoadedFile[Nothing]("explicitTypes.csv")(((store: nest.sparkle.store.Store, system: akka.actor.ActorSystem) => {
+  val service: nest.sparkle.time.protocol.ServiceWithCassandra = new ServiceWithCassandra(store, system);
+  val message: <error> = TestVariousTypes.this.streamRequest[nest.sparkle.time.protocol.RawParameters[Long]]("Raw", RawParameters.apply[Long](RawParameters.apply$default$1[Long]), SelectString.apply(columnPath));
+  service.v1TypedRequest(message)(((events: Seq[Seq[Event[Long, T]]]) => fn(events.head.head.value)))
+}))
+TREE: {
+  val columnPath: String = scala.StringContext.apply("explicitTypes/", "").s(columnName);
+  TestVariousTypes.this.withLoadedFile[Nothing]("explicitTypes.csv")(((store: nest.sparkle.store.Store, system: akka.actor.ActorSystem) => {
+    val service: nest.sparkle.time.protocol.ServiceWithCassandra = new ServiceWithCassandra(store, system);
+    val message: <error> = TestVariousTypes.this.streamRequest[nest.sparkle.time.protocol.RawParameters[Long]]("Raw", RawParameters.apply[Long](RawParameters.apply$default$1[Long]), SelectString.apply(columnPath));
+    service.v1TypedRequest(message)(((events: Seq[Seq[Event[Long, T]]]) => fn(events.head.head.value)))
+  }))
+}
+TRANSFORM: /home/lee/sparkle/sparkle-tests/src/it/scala/nest/sparkle/time/protocol/TestVariousTypes.scala
+TREE: def testExplicitType[T >: Nothing <: Any](columnName: String)(fn: T => Unit)(implicit evidence$1: spray.json.JsonFormat[T]): Unit = {
+  val columnPath: String = scala.StringContext.apply("explicitTypes/", "").s(columnName);
+  TestVariousTypes.this.withLoadedFile[Nothing]("explicitTypes.csv")(((store: nest.sparkle.store.Store, system: akka.actor.ActorSystem) => {
+    val service: nest.sparkle.time.protocol.ServiceWithCassandra = new ServiceWithCassandra(store, system);
+    val message: <error> = TestVariousTypes.this.streamRequest[nest.sparkle.time.protocol.RawParameters[Long]]("Raw", RawParameters.apply[Long](RawParameters.apply$default$1[Long]), SelectString.apply(columnPath));
+    service.v1TypedRequest(message)(((events: Seq[Seq[Event[Long, T]]]) => fn(events.head.head.value)))
+  }))
+}
+TRANSFORM: /home/lee/sparkle/sparkle-tests/src/it/scala/nest/sparkle/time/protocol/TestVariousTypes.scala
+TREE: org.scalatest.FunSuite with org.scalatest.Matchers with nest.sparkle.store.cassandra.CassandraTestConfig with nest.sparkle.time.protocol.StreamRequestor {
+  def <init>(): nest.sparkle.time.protocol.TestVariousTypes = {
+    TestVariousTypes.super.<init>();
+    ()
+  };
+  def testExplicitType[T >: Nothing <: Any](columnName: String)(fn: T => Unit)(implicit evidence$1: spray.json.JsonFormat[T]): Unit = {
+    val columnPath: String = scala.StringContext.apply("explicitTypes/", "").s(columnName);
+    TestVariousTypes.this.withLoadedFile[Nothing]("explicitTypes.csv")(((store: nest.sparkle.store.Store, system: akka.actor.ActorSystem) => {
+      val service: nest.sparkle.time.protocol.ServiceWithCassandra = new ServiceWithCassandra(store, system);
+      val message: <error> = TestVariousTypes.this.streamRequest[nest.sparkle.time.protocol.RawParameters[Long]]("Raw", RawParameters.apply[Long](RawParameters.apply$default$1[Long]), SelectString.apply(columnPath));
+      service.v1TypedRequest(message)(((events: Seq[Seq[Event[Long, T]]]) => fn(events.head.head.value)))
+    }))
+  };
+  TestVariousTypes.this.test("deliver boolean value over protocol request")(TestVariousTypes.this.testExplicitType[Boolean]("boo")(((firstValue: Boolean) => TestVariousTypes.this.convertToAnyShouldWrapper[Boolean](firstValue).shouldBe(true))));
+  TestVariousTypes.this.test("deliver int value over protocol request")(TestVariousTypes.this.testExplicitType[Int]("int")(((firstValue: Int) => TestVariousTypes.this.convertToAnyShouldWrapper[Int](firstValue).shouldBe(2))));
+  TestVariousTypes.this.test("deliver long value over protocol request")(TestVariousTypes.this.testExplicitType[Long]("lon")(((firstValue: Long) => TestVariousTypes.this.convertToAnyShouldWrapper[Long](firstValue).shouldBe(3))));
+  TestVariousTypes.this.test("deliver double value over protocol request")(TestVariousTypes.this.testExplicitType[Double]("dou")(((firstValue: Double) => TestVariousTypes.this.convertToAnyShouldWrapper[Double](firstValue).shouldBe(4))));
+  TestVariousTypes.this.test("deliver string value over protocol request")(TestVariousTypes.this.testExplicitType[String]("str")(((firstValue: String) => TestVariousTypes.this.convertToStringShouldWrapper(firstValue).shouldBe("st"))));
+  TestVariousTypes.this.test("deliver json value over protocol request")({
+    import spray.json._;
+    TestVariousTypes.this.testExplicitType[spray.json.JsValue]("jso")(((firstValue: spray.json.JsValue) => {
+      val expected: spray.json.JsValue = spray.json.`package`.pimpString("{ \"js\": 9 }").asJson;
+      TestVariousTypes.this.convertToAnyShouldWrapper[spray.json.JsValue](firstValue).shouldBe(expected)
+    }))
+  })
+}
+TRANSFORM: /home/lee/sparkle/sparkle-tests/src/it/scala/nest/sparkle/time/protocol/TestVariousTypes.scala
+TREE: class TestVariousTypes extends org.scalatest.FunSuite with org.scalatest.Matchers with nest.sparkle.store.cassandra.CassandraTestConfig with nest.sparkle.time.protocol.StreamRequestor {
+  def <init>(): nest.sparkle.time.protocol.TestVariousTypes = {
+    TestVariousTypes.super.<init>();
+    ()
+  };
+  def testExplicitType[T >: Nothing <: Any](columnName: String)(fn: T => Unit)(implicit evidence$1: spray.json.JsonFormat[T]): Unit = {
+    val columnPath: String = scala.StringContext.apply("explicitTypes/", "").s(columnName);
+    TestVariousTypes.this.withLoadedFile[Nothing]("explicitTypes.csv")(((store: nest.sparkle.store.Store, system: akka.actor.ActorSystem) => {
+      val service: nest.sparkle.time.protocol.ServiceWithCassandra = new ServiceWithCassandra(store, system);
+      val message: <error> = TestVariousTypes.this.streamRequest[nest.sparkle.time.protocol.RawParameters[Long]]("Raw", RawParameters.apply[Long](RawParameters.apply$default$1[Long]), SelectString.apply(columnPath));
+      service.v1TypedRequest(message)(((events: Seq[Seq[Event[Long, T]]]) => fn(events.head.head.value)))
+    }))
+  };
+  TestVariousTypes.this.test("deliver boolean value over protocol request")(TestVariousTypes.this.testExplicitType[Boolean]("boo")(((firstValue: Boolean) => TestVariousTypes.this.convertToAnyShouldWrapper[Boolean](firstValue).shouldBe(true))));
+  TestVariousTypes.this.test("deliver int value over protocol request")(TestVariousTypes.this.testExplicitType[Int]("int")(((firstValue: Int) => TestVariousTypes.this.convertToAnyShouldWrapper[Int](firstValue).shouldBe(2))));
+  TestVariousTypes.this.test("deliver long value over protocol request")(TestVariousTypes.this.testExplicitType[Long]("lon")(((firstValue: Long) => TestVariousTypes.this.convertToAnyShouldWrapper[Long](firstValue).shouldBe(3))));
+  TestVariousTypes.this.test("deliver double value over protocol request")(TestVariousTypes.this.testExplicitType[Double]("dou")(((firstValue: Double) => TestVariousTypes.this.convertToAnyShouldWrapper[Double](firstValue).shouldBe(4))));
+  TestVariousTypes.this.test("deliver string value over protocol request")(TestVariousTypes.this.testExplicitType[String]("str")(((firstValue: String) => TestVariousTypes.this.convertToStringShouldWrapper(firstValue).shouldBe("st"))));
+  TestVariousTypes.this.test("deliver json value over protocol request")({
+    import spray.json._;
+    TestVariousTypes.this.testExplicitType[spray.json.JsValue]("jso")(((firstValue: spray.json.JsValue) => {
+      val expected: spray.json.JsValue = spray.json.`package`.pimpString("{ \"js\": 9 }").asJson;
+      TestVariousTypes.this.convertToAnyShouldWrapper[spray.json.JsValue](firstValue).shouldBe(expected)
+    }))
+  })
+}
+TRANSFORM: null
+TREE: package nest.sparkle.time.protocol {
+  import org.scalatest.FunSuite;
+  import org.scalatest.Matchers;
+  import nest.sparkle.store.cassandra.CassandraTestConfig;
+  import nest.sparkle.store.Event;
+  import nest.sparkle.time.protocol.TransformParametersJson.RawParametersFormat;
+  import spray.json.DefaultJsonProtocol._;
+  import spray.json.JsonFormat;
+  import spray.json.JsValue;
+  class TestVariousTypes extends org.scalatest.FunSuite with org.scalatest.Matchers with nest.sparkle.store.cassandra.CassandraTestConfig with nest.sparkle.time.protocol.StreamRequestor {
+    def <init>(): nest.sparkle.time.protocol.TestVariousTypes = {
+      TestVariousTypes.super.<init>();
+      ()
+    };
+    def testExplicitType[T >: Nothing <: Any](columnName: String)(fn: T => Unit)(implicit evidence$1: spray.json.JsonFormat[T]): Unit = {
+      val columnPath: String = scala.StringContext.apply("explicitTypes/", "").s(columnName);
+      TestVariousTypes.this.withLoadedFile[Nothing]("explicitTypes.csv")(((store: nest.sparkle.store.Store, system: akka.actor.ActorSystem) => {
+        val service: nest.sparkle.time.protocol.ServiceWithCassandra = new ServiceWithCassandra(store, system);
+        val message: <error> = TestVariousTypes.this.streamRequest[nest.sparkle.time.protocol.RawParameters[Long]]("Raw", RawParameters.apply[Long](RawParameters.apply$default$1[Long]), SelectString.apply(columnPath));
+        service.v1TypedRequest(message)(((events: Seq[Seq[Event[Long, T]]]) => fn(events.head.head.value)))
+      }))
+    };
+    TestVariousTypes.this.test("deliver boolean value over protocol request")(TestVariousTypes.this.testExplicitType[Boolean]("boo")(((firstValue: Boolean) => TestVariousTypes.this.convertToAnyShouldWrapper[Boolean](firstValue).shouldBe(true))));
+    TestVariousTypes.this.test("deliver int value over protocol request")(TestVariousTypes.this.testExplicitType[Int]("int")(((firstValue: Int) => TestVariousTypes.this.convertToAnyShouldWrapper[Int](firstValue).shouldBe(2))));
+    TestVariousTypes.this.test("deliver long value over protocol request")(TestVariousTypes.this.testExplicitType[Long]("lon")(((firstValue: Long) => TestVariousTypes.this.convertToAnyShouldWrapper[Long](firstValue).shouldBe(3))));
+    TestVariousTypes.this.test("deliver double value over protocol request")(TestVariousTypes.this.testExplicitType[Double]("dou")(((firstValue: Double) => TestVariousTypes.this.convertToAnyShouldWrapper[Double](firstValue).shouldBe(4))));
+    TestVariousTypes.this.test("deliver string value over protocol request")(TestVariousTypes.this.testExplicitType[String]("str")(((firstValue: String) => TestVariousTypes.this.convertToStringShouldWrapper(firstValue).shouldBe("st"))));
+    TestVariousTypes.this.test("deliver json value over protocol request")({
+      import spray.json._;
+      TestVariousTypes.this.testExplicitType[spray.json.JsValue]("jso")(((firstValue: spray.json.JsValue) => {
+        val expected: spray.json.JsValue = spray.json.`package`.pimpString("{ \"js\": 9 }").asJson;
+        TestVariousTypes.this.convertToAnyShouldWrapper[spray.json.JsValue](firstValue).shouldBe(expected)
+      }))
+    })
+  }
+}
+
+[error] uncaught exception during compilation: java.lang.AssertionError
+[trace] Stack trace suppressed: run last sparkle-tests/it:compile for the full output.
+[error] (sparkle-tests/it:compile) java.lang.AssertionError: assertion failed: 
+[error]      while compiling: /home/lee/sparkle/sparkle-tests/src/it/scala/nest/sparkle/time/protocol/TestVariousTypes.scala
+[error]         during phase: superaccessors
+[error]      library version: version 2.10.4
+[error]     compiler version: version 2.10.4
+[error]   reconstructed args: -classpath /home/lee/sparkle/sparkle-tests/target/scala-2.10/it-classes:/home/lee/sparkle/sparkle-tests/target/scala-2.10/classes:/home/lee/sparkle/sparkle/target/scala-2.10/classes:/home/lee/sparkle/util/target/scala-2.10/classes:/home/lee/sparkle/test-kit/target/scala-2.10/classes:/home/lee/.ivy2/cache/com.typesafe/scalalogging-slf4j_2.10/jars/scalalogging-slf4j_2.10-1.1.0.jar:/home/lee/.ivy2/cache/org.scala-lang/scala-reflect/jars/scala-reflect-2.10.4.jar:/home/lee/.ivy2/cache/org.slf4j/slf4j-api/jars/slf4j-api-1.7.7.jar:/home/lee/.ivy2/cache/nl.grons/metrics-scala_2.10/jars/metrics-scala_2.10-3.2.0_a2.3.jar:/home/lee/.ivy2/cache/com.codahale.metrics/metrics-core/bundles/metrics-core-3.0.2.jar:/home/lee/.ivy2/cache/com.codahale.metrics/metrics-healthchecks/bundles/metrics-healthchecks-3.0.2.jar:/home/lee/.ivy2/cache/com.typesafe.akka/akka-actor_2.10/jars/akka-actor_2.10-2.3.2.jar:/home/lee/.ivy2/cache/com.typesafe/config/bundles/config-1.2.1.jar:/home/lee/.ivy2/cache/com.datastax.cassandra/cassandra-driver-core/bundles/cassandra-driver-core-2.0.0.jar:/home/lee/.ivy2/cache/io.netty/netty/bundles/netty-3.9.0.Final.jar:/home/lee/.ivy2/cache/com.google.guava/guava/bundles/guava-16.0.1.jar:/home/lee/.ivy2/cache/org.xerial.snappy/snappy-java/bundles/snappy-java-1.0.5.jar:/home/lee/.ivy2/cache/net.jpountz.lz4/lz4/jars/lz4-1.2.0.jar:/home/lee/.ivy2/cache/com.typesafe.akka/akka-remote_2.10/jars/akka-remote_2.10-2.3.0.jar:/home/lee/.ivy2/cache/com.google.protobuf/protobuf-java/bundles/protobuf-java-2.5.0.jar:/home/lee/.ivy2/cache/org.uncommons.maths/uncommons-maths/jars/uncommons-maths-1.2.2a.jar:/home/lee/.ivy2/cache/com.typesafe.akka/akka-slf4j_2.10/jars/akka-slf4j_2.10-2.3.0.jar:/home/lee/.ivy2/cache/io.spray/spray-json_2.10/jars/spray-json_2.10-1.2.5.jar:/home/lee/.ivy2/cache/io.spray/spray-client/bundles/spray-client-1.3.1.jar:/home/lee/.ivy2/cache/io.spray/spray-can/bundles/spray-can-1.3.1.jar:/home/lee/.ivy2/cache/io.spray/spray-io/bundles/spray-io-1.3.1.jar:/home/lee/.ivy2/cache/io.spray/spray-util/bundles/spray-util-1.3.1.jar:/home/lee/.ivy2/cache/io.spray/spray-http/bundles/spray-http-1.3.1.jar:/home/lee/.ivy2/cache/org.parboiled/parboiled-scala_2.10/bundles/parboiled-scala_2.10-1.1.6.jar:/home/lee/.ivy2/cache/org.parboiled/parboiled-core/bundles/parboiled-core-1.1.6.jar:/home/lee/.ivy2/cache/io.spray/spray-httpx/bundles/spray-httpx-1.3.1.jar:/home/lee/.ivy2/cache/org.jvnet.mimepull/mimepull/jars/mimepull-1.9.4.jar:/home/lee/.ivy2/cache/io.spray/spray-routing/bundles/spray-routing-1.3.1.jar:/home/lee/.ivy2/cache/com.chuusai/shapeless_2.10/jars/shapeless_2.10-1.2.4.jar:/home/lee/.ivy2/cache/io.spray/spray-caching/bundles/spray-caching-1.3.1.jar:/home/lee/.ivy2/cache/com.googlecode.concurrentlinkedhashmap/concurrentlinkedhashmap-lru/jars/concurrentlinkedhashmap-lru-1.4.jar:/home/lee/.ivy2/cache/ch.qos.logback/logback-classic/jars/logback-classic-1.1.2.jar:/home/lee/.ivy2/cache/ch.qos.logback/logback-core/jars/logback-core-1.1.2.jar:/home/lee/.ivy2/cache/com.netflix.rxjava/rxjava-core/jars/rxjava-core-0.20.0-RC3.jar:/home/lee/.ivy2/cache/com.netflix.rxjava/rxjava-scala/jars/rxjava-scala-0.20.0-RC3.jar:/home/lee/.ivy2/cache/org.spire-math/spire_2.10/jars/spire_2.10-0.7.4.jar:/home/lee/.ivy2/cache/org.spire-math/spire-macros_2.10/jars/spire-macros_2.10-0.7.4.jar:/home/lee/.ivy2/cache/org.scalamacros/quasiquotes_2.10/jars/quasiquotes_2.10-2.0.0.jar:/home/lee/.ivy2/cache/com.github.nscala-time/nscala-time_2.10/jars/nscala-time_2.10-1.0.0.jar:/home/lee/.ivy2/cache/joda-time/joda-time/jars/joda-time-2.3.jar:/home/lee/.ivy2/cache/org.joda/joda-convert/jars/joda-convert-1.2.jar:/home/lee/.ivy2/cache/org.clapper/argot_2.10/jars/argot_2.10-1.0.1.jar:/home/lee/.ivy2/cache/org.clapper/grizzled-scala_2.10/jars/grizzled-scala_2.10-1.1.2.jar:/home/lee/.ivy2/cache/jline/jline/jars/jline-2.6.jar:/home/lee/.ivy2/cache/net.databinder/unfiltered-netty-websockets_2.10/jars/unfiltered-netty-websockets_2.10-0.8.0.jar:/home/lee/.ivy2/cache/net.databinder/unfiltered-netty-server_2.10/jars/unfiltered-netty-server_2.
+[error] 
+[error]   last tree to typer: Ident(x)
+[error]               symbol: value x (flags: <param> <synthetic>)
+[error]    symbol definition: x: String
+[error]                  tpe: String
+[error]        symbol owners: value x
+[error]       context owners: value message -> value $anonfun -> method testExplicitType -> class TestVariousTypes -> package protocol
+[error] 
+[error] == Enclosing template or block ==
+[error] 
+[error] DefDef( // def testExplicitType[T](columnName: String)(fn: T => Unit)(implicit evidence$1: spray.json.JsonFormat[T]): Unit in class TestVariousTypes
+[error]   <method> <triedcooking>
+[error]   "testExplicitType"
+[error]   TypeDef( // T
+[error]     <deferred> <param>
+[error]     "T"
+[error]     []
+[error]     <tpt> // tree.tpe=
+[error]   )
+[error]   // 3 parameter lists
+[error]   ValDef( // columnName: String
+[error]     <param> <triedcooking>
+[error]     "columnName"
+[error]     <tpt> // tree.tpe=String
+[error]     <empty>
+[error]   )
+[error]   ValDef( // fn: T => Unit
+[error]     <param>
+[error]     "fn"
+[error]     <tpt> // tree.tpe=T => Unit
+[error]     <empty>
+[error]   )
+[error]   ValDef( // implicit evidence$1: spray.json.JsonFormat[T]
+[error]     implicit <param> <synthetic>
+[error]     "evidence$1"
+[error]     <tpt> // tree.tpe=spray.json.JsonFormat[T]
+[error]     <empty>
+[error]   )
+[error]   <tpt> // tree.tpe=Unit
+[error]   Block( // tree.tpe=Nothing
+[error]     ValDef( // val columnPath: String
+[error]       <triedcooking>
+[error]       "columnPath"
+[error]       <tpt> // tree.tpe=String
+[error]       Apply( // def s(args: Any*): String in class StringContext, tree.tpe=String
+[error]         scala.StringContext.apply("explicitTypes/", "")."s" // def s(args: Any*): String in class StringContext, tree.tpe=(args: Any*)String
+[error]         "columnName" // columnName: String, tree.tpe=String
+[error]       )
+[error]     )
+[error]     Apply( // def withLoadedFile[T](resourcePath: String)(fn: (nest.sparkle.store.Store, akka.actor.ActorSystem) => T): T in trait CassandraTestConfig, tree.tpe=Nothing
+[error]       Apply( // def withLoadedFile[T](resourcePath: String)(fn: (nest.sparkle.store.Store, akka.actor.ActorSystem) => T): T in trait CassandraTestConfig, tree.tpe=(fn: (nest.sparkle.store.Store, akka.actor.ActorSystem) => Nothing)Nothing
+[error]         TypeApply( // def withLoadedFile[T](resourcePath: String)(fn: (nest.sparkle.store.Store, akka.actor.ActorSystem) => T): T in trait CassandraTestConfig, tree.tpe=(resourcePath: String)(fn: (nest.sparkle.store.Store, akka.actor.ActorSystem) => Nothing)Nothing
+[error]           TestVariousTypes.this."withLoadedFile" // def withLoadedFile[T](resourcePath: String)(fn: (nest.sparkle.store.Store, akka.actor.ActorSystem) => T): T in trait CassandraTestConfig, tree.tpe=[T](resourcePath: String)(fn: (nest.sparkle.store.Store, akka.actor.ActorSystem) => T)T
+[error]           <tpt> // tree.tpe=Nothing
+[error]         )
+[error]         "explicitTypes.csv"
+[error]       )
+[error]       Function( // val $anonfun: <notype>, tree.tpe=(nest.sparkle.store.Store, akka.actor.ActorSystem) => <error>
+[error]         // 2 parameters
+[error]         ValDef( // store: nest.sparkle.store.Store
+[error]           <param> <triedcooking>
+[error]           "store"
+[error]           <tpt> // tree.tpe=nest.sparkle.store.Store
+[error]           <empty>
+[error]         )
+[error]         ValDef( // system: akka.actor.ActorSystem
+[error]           <param> <triedcooking>
+[error]           "system"
+[error]           <tpt> // tree.tpe=akka.actor.ActorSystem
+[error]           <empty>
+[error]         )
+[error]         Block( // tree.tpe=<error>
+[error]           // 2 statements
+[error]           ValDef( // val service: nest.sparkle.time.protocol.ServiceWithCassandra
+[error]             <triedcooking>
+[error]             "service"
+[error]             <tpt> // tree.tpe=nest.sparkle.time.protocol.ServiceWithCassandra
+[error]             Apply( // def <init>(store: nest.sparkle.store.Store,actorSystem: akka.actor.ActorSystem): nest.sparkle.time.protocol.ServiceWithCassandra in class ServiceWithCassandra, tree.tpe=nest.sparkle.time.protocol.ServiceWithCassandra
+[error]               new ServiceWithCassandra."<init>" // def <init>(store: nest.sparkle.store.Store,actorSystem: akka.actor.ActorSystem): nest.sparkle.time.protocol.ServiceWithCassandra in class ServiceWithCassandra, tree.tpe=(store: nest.sparkle.store.Store, actorSystem: akka.actor.ActorSystem)nest.sparkle.time.protocol.ServiceWithCassandra
+[error]               // 2 arguments
+[error]               "store" // store: nest.sparkle.store.Store, tree.tpe=nest.sparkle.store.Store
+[error]               "system" // system: akka.actor.ActorSystem, tree.tpe=akka.actor.ActorSystem
+[error]             )
+[error]           )
+[error]           ValDef( // val message: <error>
+[error]             <triedcooking>
+[error]             "message"
+[error]             <tpt> // tree.tpe=<error>
+[error]             Apply( // def streamRequest[U](transform: String,params: U,selector: nest.sparkle.time.protocol.TestSelector)(implicit evidence$3: spray.json.JsonFormat[U]): nest.sparkle.time.protocol.StreamRequestMessage in trait StreamRequestor, tree.tpe=<error>
+[error]               TypeApply( // def streamRequest[U](transform: String,params: U,selector: nest.sparkle.time.protocol.TestSelector)(implicit evidence$3: spray.json.JsonFormat[U]): nest.sparkle.time.protocol.StreamRequestMessage in trait StreamRequestor, tree.tpe=(transform: String, params: nest.sparkle.time.protocol.RawParameters[Long], selector: nest.sparkle.time.protocol.TestSelector)(implicit evidence$3: spray.json.JsonFormat[nest.sparkle.time.protocol.RawParameters[Long]])nest.sparkle.time.protocol.StreamRequestMessage
+[error]                 TestVariousTypes.this."streamRequest" // def streamRequest[U](transform: String,params: U,selector: nest.sparkle.time.protocol.TestSelector)(implicit evidence$3: spray.json.JsonFormat[U]): nest.sparkle.time.protocol.StreamRequestMessage in trait StreamRequestor, tree.tpe=[U](transform: String, params: U, selector: nest.sparkle.time.protocol.TestSelector)(implicit evidence$3: spray.json.JsonFormat[U])nest.sparkle.time.protocol.StreamRequestMessage
+[error]                 <tpt> // tree.tpe=nest.sparkle.time.protocol.RawParameters[Long]
+[error]               )
+[error]               // 3 arguments
+[error]               "Raw"
+[error]               Apply( // case def apply[T](ranges: Option[Seq[nest.sparkle.time.protocol.RangeInterval[T]]]): nest.sparkle.time.protocol.RawParameters[T] in object RawParameters, tree.tpe=nest.sparkle.time.protocol.RawParameters[Long]
+[error]                 TypeApply( // case def apply[T](ranges: Option[Seq[nest.sparkle.time.protocol.RangeInterval[T]]]): nest.sparkle.time.protocol.RawParameters[T] in object RawParameters, tree.tpe=(ranges: Option[Seq[nest.sparkle.time.protocol.RangeInterval[Long]]])nest.sparkle.time.protocol.RawParameters[Long]
+[error]                   "RawParameters"."apply" // case def apply[T](ranges: Option[Seq[nest.sparkle.time.protocol.RangeInterval[T]]]): nest.sparkle.time.protocol.RawParameters[T] in object RawParameters, tree.tpe=[T](ranges: Option[Seq[nest.sparkle.time.protocol.RangeInterval[T]]])nest.sparkle.time.protocol.RawParameters[T]
+[error]                   <tpt> // tree.tpe=Long
+[error]                 )
+[error]                 TypeApply( // def apply$default$1[T]: None.type @scala.annotation.unchecked.uncheckedVariance in object RawParameters, tree.tpe=None.type
+[error]                   "RawParameters"."apply$default$1" // def apply$default$1[T]: None.type @scala.annotation.unchecked.uncheckedVariance in object RawParameters, tree.tpe=[T]=> None.type
+[error]                   <tpt> // tree.tpe=Long
+[error]                 )
+[error]               )
+[error]               Apply( // case def apply(columnPath: String): nest.sparkle.time.protocol.SelectString in object SelectString, tree.tpe=nest.sparkle.time.protocol.SelectString
+[error]                 "SelectString"."apply" // case def apply(columnPath: String): nest.sparkle.time.protocol.SelectString in object SelectString, tree.tpe=(columnPath: String)nest.sparkle.time.protocol.SelectString
+[error]                 "columnPath" // val columnPath: String, tree.tpe=String
+[error]               )
+[error]             )
+[error]           )
+[error]           Apply( // def v1TypedRequest[U](message: nest.sparkle.time.protocol.StreamRequestMessage)(fn: Seq[Seq[nest.sparkle.store.Event[Long,U]]] => Unit)(implicit evidence$1: spray.json.JsonFormat[U]): Unit in trait TestDataService, tree.tpe=<error>
+[error]             Apply( // def v1TypedRequest[U](message: nest.sparkle.time.protocol.StreamRequestMessage)(fn: Seq[Seq[nest.sparkle.store.Event[Long,U]]] => Unit)(implicit evidence$1: spray.json.JsonFormat[U]): Unit in trait TestDataService
+[error]               "service"."v1TypedRequest" // def v1TypedRequest[U](message: nest.sparkle.time.protocol.StreamRequestMessage)(fn: Seq[Seq[nest.sparkle.store.Event[Long,U]]] => Unit)(implicit evidence$1: spray.json.JsonFormat[U]): Unit in trait TestDataService, tree.tpe=[U](message: nest.sparkle.time.protocol.StreamRequestMessage)(fn: Seq[Seq[nest.sparkle.store.Event[Long,U]]] => Unit)(implicit evidence$1: spray.json.JsonFormat[U])Unit
+[error]               "message" // val message: <error>, tree.tpe=<error>
+[error]             )
+[error]             Function(
+[error]               ValDef(
+[error]                 <param>
+[error]                 "events"
+[error]                 AppliedTypeTree(
+[error]                   "Seq"
+[error]                   AppliedTypeTree(
+[error]                     "Seq"
+[error]                     AppliedTypeTree(
+[error]                       "Event"
+[error]                       // 2 arguments
+[error]                       "Long"
+[error]                       "T"
+[error]                     )
+[error]                   )
+[error]                 )
+[error]                 <empty>
+[error]               )
+[error]               Apply(
+[error]                 "fn"
+[error]                 "events"."head"."head"."value"
+[error]               )
+[error]             )
+[error]           )
+[error]         )
+[error]       )
+[error]     )
+[error]   )
+[error] )
+[error] 
+[error] == Expanded type of tree ==
+[error] 
+[error] TypeRef(
+[error]   TypeSymbol(
+[error]     final class String extends Serializable with Comparable[String] with CharSequence
+[error]     
+[error]   )
+[error] )
+[error] 
+[error] service.v1TypedRequest(message)(((events: Seq[Seq[Event[Long, T]]]) => fn(events.head.head.value)))
+
+{code}

@@ -1,0 +1,43 @@
+They yield {{SortedSet}}s.
+The fix is to add an implicit `canBuildFrom` to their companion objects.
+
+{code}
+scala> import collection._
+import collection._
+
+scala> val a = mutable.TreeSet[Int]()
+a: scala.collection.mutable.TreeSet[Int] = TreeSet()
+
+scala> val b = mutable.TreeSet[Int]()
+b: scala.collection.mutable.TreeSet[Int] = TreeSet()
+
+scala> for {
+     |   x <- a
+     |   y <- b
+     | } yield (x, y)
+res0: scala.collection.mutable.SortedSet[(Int, Int)] = TreeSet()
+
+scala> val a = immutable.TreeSet[Int]()
+a: scala.collection.immutable.TreeSet[Int] = TreeSet()
+
+scala> val b = immutable.TreeSet[Int]()
+b: scala.collection.immutable.TreeSet[Int] = TreeSet()
+
+scala> for {
+     |   x <- a
+     |   y <- b
+     | } yield (x, y)
+res1: scala.collection.immutable.SortedSet[(Int, Int)] = TreeSet()
+
+scala> val a = mutable.HashSet[Int]()
+a: scala.collection.mutable.HashSet[Int] = Set()
+
+scala> val b = mutable.HashSet[Int]()
+b: scala.collection.mutable.HashSet[Int] = Set()
+
+scala> for {
+     |   x <- a
+     |   y <- b
+     | } yield (x, y)
+res2: scala.collection.mutable.HashSet[(Int, Int)] = Set()
+{code}

@@ -1,0 +1,42 @@
+{noformat}
+tail sandbox/{macro,client}.scala
+==> sandbox/macro.scala <==
+import scala.reflect.macros.Context
+import scala.language.experimental.macros
+
+object Macro {
+  def apply(aDotB: Any): Any = macro impl
+  def impl(c: Context)(aDotB: c.Tree): c.Tree = {
+    import c.universe._
+    q"${aDotB.symbol}"
+  }
+}
+
+==> sandbox/client.scala <==
+object Client {
+  def local = {
+    object A { object B }
+    Macro.apply(A.B)
+  }
+}
+topic/opt-scope ~/code/scala for i in macro; client; do scalac-hash v2.11.1 sandbox/$i.scala; done
+bash: syntax error near unexpected token `client'
+topic/opt-scope ~/code/scala for i in macro client; do scalac-hash v2.11.1 sandbox/$i.scala; done
+[warn] v2.11.1 failed, using closest available
+warning: there were 1 deprecation warning(s); re-run with -deprecation for details
+one warning found
+[warn] v2.11.1 failed, using closest available
+error: Unknown type: (A$module$1: runtime.VolatileObjectRef)Client$A$2.type, (A$module$1: runtime.VolatileObjectRef)Client$A$2.type [class scala.reflect.internal.Types$MethodType, class scala.reflect.internal.Types$MethodType] TypeRef? false
+error: scala.reflect.internal.FatalError:
+{noformat}
+
+Original report was a specific instance of this problem experienced with `reify`.
+
+{code}
+object Test {
+  import reflect.runtime.universe._
+
+  def local: Any = { object A { object B }; A.B; reify { A.B; }; () }
+}
+
+{code}

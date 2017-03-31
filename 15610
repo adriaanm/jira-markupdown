@@ -1,0 +1,21 @@
+this should compile:
+
+{code}
+object Test {
+  type Point = Map[Symbol, String]
+  type Points = IndexedSeq[Point]
+
+  def makePoints2: Points = IndexedSeq[Point]()
+  val spoints2 = util.Random.shuffle(makePoints2)
+}
+{code}
+
+instead it gives an error (which itself is buggy):
+{code}
+error: type mismatch;
+ found   : Test.Points
+ required: ?CC[ ?T ]
+Note that implicit conversions are not applicable because they are ambiguous:
+{code}
+
+(type variables should not occur in error messages)

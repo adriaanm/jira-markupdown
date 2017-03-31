@@ -1,0 +1,38 @@
+Problem here seems to be that `MatchError.getMessage` is throwing itself again:
+
+{noformat}
+Welcome to Scala version 2.10.3 (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_65).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> :paste
+// Entering paste mode (ctrl-D to finish)
+
+trait X {
+  override def toString = this match{
+    case Z(z) => z.toString
+  }
+}
+case class Y(y: Int) extends X
+case class Z(z: Int) extends X
+
+try { 
+  Y(0).toString
+} catch {
+  case e: Exception =>
+    try {
+      e.getMessage
+    } catch {
+      case t: Exception => "Exception.getMessage threw the following exception: " + t.getClass
+    }
+}
+
+// Exiting paste mode, now interpreting.
+
+defined trait X
+defined class Y
+defined class Z
+res0: String = Exception.getMessage threw the following exception: class scala.MatchError
+{noformat}
+
+Anything that attempts to report anything about this error will itself throw an exception when it tries to call `getMessage`, and since `getMessage` is rethrowing the exception, this will defeat every single layer of error reporting.

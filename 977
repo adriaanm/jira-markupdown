@@ -1,0 +1,26 @@
+Yet another response to Sean's comment:[[BR]]
+Sean maintains that "toArray" method is only important for compatibility with Java.[[BR]]
+If that is so, then why collection constructors in the Scala library only take arrays (varargs) as an argument? I want to write a function-style code, and the only way I can do this is often by using toArray, for example:
+{code}
+    /** Day => Column Name => Index */
+    def table: LHMap[Either[DateTime, String], LHMap[String, Double]]
+
+    /** The sum for each column of the table. */
+    lazy val sum: Map[String, Double] = {
+      val table = this.table
+      if (table.isEmpty) Map() else Map (
+        table.values.next.keys.map (name => (name, table.elements.filter(_._1.isLeft).foldLeft(0.0)(_ + _._2(name))))
+          .toList.toArray :_*)
+    }
+{code}
+Yes, I can do also
+{code}
+    /** The sum for each column of the table. */
+    lazy val sum: Map[String, Double] = {
+      val table = this.table
+      if (table.isEmpty) Map() else new scala.collection.immutable.HashMap ++ (
+        table.values.next.keys.map (name => (name, table.elements.filter(_._1.isLeft).foldLeft(0.0)(_ + _._2(name))))
+      )
+    }
+{code}
+but I find it counter-intuitive. Immutable structures are cheaper to create than to update, I would have preferred to have a reasonable Map constructor rather than using "++". But the point of this is that it is very wrong to think that any method, like the "toArray", can be used "only for Java compatibility". There's no telling for what it might be used, and in any case however it is used it should be implemented optimally.

@@ -1,0 +1,20 @@
+I'm using r16383.
+{code}
+  ~/newbug> cat J.java
+class J { static {
+	scala.List<?> x = null;
+} }
+  ~/newbug> javac -classpath /usr/local/scala-2.7.2.RC3/lib/scala-library.jar J.java
+  ~/newbug> javac -classpath ~/scala/dists/scala-2.7.2.r16383-b20081027131631/lib/scala-library.jar J.java
+J.java:2: cannot access scala.List
+bad class file: /Users/tisue/scala/dists/scala-2.7.2.r16383-b20081027131631/lib/scala-library.jar(scala/List.class)
+undeclared type variable: B
+Please remove or make sure it appears in the correct subdirectory of the classpath.
+	scala.List<?> x = null;
+             ^
+1 error
+{code}
+
+perhaps this is related to SI-1186, I don't know.
+
+

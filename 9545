@@ -1,0 +1,21 @@
+I've also just run into this, again.
+
+{code}
+import scala.language.dynamics
+
+class ArtifactGroup(org: String, pre: String, rev: String) extends scala.Dynamic {
+  def selectDynamic(name: String) = s"$org:$pre-$name:$rev"
+}
+
+object Test {
+  object scalaz extends ArtifactGroup("org.scalaz", "scalaz", "7.2.4")
+
+  /* ok   */ def f = Seq(scalaz.core, scalaz.effect)
+  /* ok   */ def g = Seq(f: _*)
+  /* fail */ def h = Seq(Seq(scalaz.core, scalaz.effect): _*)
+
+  // a.scala:12: error: applyDynamic does not support passing a vararg parameter
+  //   def h = Seq(Seq(scalaz.core, scalaz.effect): _*)
+  //                          ^
+}
+{code}

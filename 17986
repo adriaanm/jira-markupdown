@@ -1,0 +1,35 @@
+The implementation of {{JMapWrapper.get()}} contains a race between {{underlying.get()}} and {{underlying.containsKey()}} that can cause the method to return {{Some(null)}} when no such mapping exists. It's not clear that this can be fixed. 
+
+----
+
+{code:title=how to reproduce|borderStyle=solid}
+import scala.collection.convert.Wrappers.JMapWrapper
+import java.util.Collections
+
+object MapTest extends App {
+
+  val m = new JMapWrapper(Collections.synchronizedMap(new java.util.HashMap[String, String]))
+
+  new Thread {
+    override def run {
+      while (true) {
+        m += ("foo" -> "bar")
+        m -= "foo"
+      }
+    }
+  }.start()
+
+  new Thread {
+    override def run {
+      while (true) {
+        m.get("foo") match {
+          case None =>
+          case Some("bar") =>
+          case Some(a) => println("Got unexpected value " + a)
+        }
+      }
+    }
+  }.start()
+
+}
+{code}

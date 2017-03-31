@@ -1,0 +1,40 @@
+This is with r25381, which looked good until I tried using it.  It's cruising along and then the optimizer just spews a bunch of state, no clear indication of the problem given.  Whee.
+
+[Edit: painstakingly minimized.]
+
+{code}
+class Crashy {
+  def g(): Option[Any] = None
+  
+  def crashy() = {
+    for (_ <- g()) {
+      (null: Any) match {
+        case Some(_) => 5
+        case None    => sys.error("")
+      }
+    }
+  }
+}
+{code}
+
+{noformat}
+scalac3 -optimise a.scala 
+def crashy(): Unit {
+locals: variable par11, variable $inlThis1, variable v11, variable boxed11, variable $inlThis2, variable $retVal1, variable _1, variable temp11, variable eqEqTemp$11, variable $inlThis3, variable $retVal2
+startBlock: 1
+blocks: [1,4,5,10,11,13,14,15,16,17]
+
+1: 
+  7	THIS(Crashy)
+  7	CALL_METHOD Crashy.g (dynamic)
+  7	NEW REF(anonymous class Crashy$$anonfun$crashy$1)
+  7	DUP(REF(anonymous class Crashy$$anonfun$crashy$1))
+  7	THIS(Crashy)
+  7	CALL_METHOD Crashy$$anonfun$crashy$1.<init> (static-instance)
+  7	STORE_LOCAL(variable par11)
+  7	STORE_LOCAL(variable $inlThis1)
+  7	LOAD_LOCAL(variable $inlThis1)
+  7	CALL_METHOD scala.Option.isEmpty (dynamic)
+
+... etc
+{noformat}

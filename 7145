@@ -1,0 +1,26 @@
+That's a simple example of triggering the issue:
+
+{code}
+trait Parent {
+  override def toString = "blubber"
+}
+
+trait Simple extends Parent {
+  def test = toString
+}
+{code}
+
+Scalac generates this bytecode:
+
+{code}
+public static java.lang.String test(Simple);
+  Code:
+   Stack=1, Locals=1, Args_size=1
+   0:	aload_0
+   1:	invokeinterface	#12,  1; //InterfaceMethod Simple.toString:()Ljava/lang/String;
+   6:	areturn
+{code}
+
+where javac would normally generate an `invokevirtual Object.toString`. Using `invokeinterface` in those cases isn't supported by dalvik currently.
+
+It seems that the [last fix|https://github.com/scala/scala/commit/64107de6cba37f796bd7c6b86509cefba312f91d] for this issue didn't solve the problem if the method was overridden in a super-interface.

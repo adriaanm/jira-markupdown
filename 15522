@@ -1,0 +1,21 @@
+{code}
+class A {
+  def foo(x :String) = 1
+}
+
+class B {
+  def foo = (p: Int) => p
+}
+
+class C {
+  def foo(x: Int) = 2
+}
+
+object Test extends Application {
+  implicit def a2b(x: A): B = new B
+  implicit def a2c(x: A): C = new C
+  val a = new A
+  Predef print a.foo(1)
+}
+{code}
+Compiler (trunk version) prints 2.

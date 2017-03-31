@@ -1,0 +1,43 @@
+The following
+{{ 
+Stream.from(1).flatMap(i => if (i < 3000) Stream.empty else List(1))
+{code}
+fails with
+{code}
+java.lang.StackOverflowError
+	at scala.Stream$$class.append(Stream.scala:240)
+	at scala.Stream$$$$anon$$1.append(Stream.scala:33)
+	at scala.Stream$$class.flatMap(Stream.scala:440)
+	at scala.Stream$$cons$$$$anon$$2.flatMap(Stream.scala:45)
+	at scala.Stream$$$$anonfun$$flatMap$$1.apply(Stream.scala:440)
+	at scala.Stream$$$$anonfun$$flatMap$$1.apply(Stream.scala:440)
+	at scala.Stream$$class.append(...
+{code}
+
+(You may have to increase 3000 if your jvm defaults are different than mine).
+
+I hit this when working on large wide-fan-out recursive searches (Project Euler seems good at requiring those...).
+
+The problem is that flatMap will end up recursively evaluating f(head) until it finds a non-empty list (but indirectly: through Stream.flatMap => Stream.append => rest.toStream =>flatMap)
+
+The following change to flatMap fixes it for me:
+{code}
+  override def flatMap[B](f: A => Iterable[B]): Stream[B] = 
+      if (isEmpty) Stream.empty
+      else {
+        var str = this;
+        var itr = f(str.head)
+        while (itr.isEmpty) {
+          str = str.tail; itr = f(str.head)
+        }
+
+        val s: Stream[B] = itr match {
+          case x: Stream[_] => x
+          case y: List[_]   => y.toStream
+          case z            => z.toList.toStream
+        }
+          
+        s append (str.tail flatMap f)
+      }
+
+{code}

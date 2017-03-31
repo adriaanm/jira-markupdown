@@ -1,0 +1,44 @@
+First, a simple reproduction of the bug:
+
+{noformat}
+val promise = Promise[Int]
+List.range(0, 1000).map(i => Future(i)).foldLeft(promise.future)((f1, f2) => f2.flatMap(i => f1))
+promise.success(-1)
+{noformat}
+
+This will throw a crazy exception with 1000 causes, the root being a StackOverflowError.  Note if running this in the repl, or anywhere, you may instead get NoClassDefFoundErrors.  This is because something is trying to handle the initial error deep in the stack (probably shouldn't be), which triggers a class to be loaded, which throws another StackOverflowError, which results in the NoClassDefFoundError.
+
+Here's the implementation of flatMap, which clearly shows the issue:
+
+{noformat}
+def flatMap[S](f: T => Future[S])(implicit executor: ExecutionContext): Future[S] = {
+  val p = Promise[S]()
+
+  onComplete {
+    case f: Failure[_] => p complete f.asInstanceOf[Failure[S]]
+    case Success(v) =>
+      try {
+        f(v).onComplete({
+          case f: Failure[_] => p complete f.asInstanceOf[Failure[S]]
+          case Success(v) => p success v
+        })(internalExecutor)
+      } catch {
+        case NonFatal(t) => p failure t
+      }
+  }(executor)
+
+  p.future
+}
+{noformat}
+
+The internalExecutor executes the onComplete callback in the same thread.  So, when promises returned by flatMap are used as the promise to be returned by another flatMap callback function, and this is done enough times, you get a StackOverflowError.
+
+This is not an uncommon situation in iteratees, which use many many futures and often chain them together in very long chains (for very long streams), and both the Play core developers and Play users have found this to be an issue all over the place.  Currently we fix it with a call like this:
+
+{noformat}
+.flatMap(a => Future.successful(a))
+{noformat}
+
+But I don't think this is the right solution to the problem, and it seems to come up all over the place.
+
+Suggested solution is to use an execution context that doesn't redeem the flatMap promise is the same thread.

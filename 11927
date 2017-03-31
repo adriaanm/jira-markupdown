@@ -1,0 +1,11 @@
+The scrutinee is a CC and the pattern match is a CC. That ought to make it equivalent to a match on the case fields, which does warn. CC should be considered effectively sealed here even with no modifiers! It's a one element ADT.
+{code}
+  val test2: (Int, TB) => Unit = {
+    case (_, B) => ()
+  }
+  // a.scala:14: warning: match may not be exhaustive.
+  // It would fail on the following input: (_, B2)
+  //   val test2: (Int, TB) => Unit = {
+  //                                  ^
+  // one warning found
+{code}

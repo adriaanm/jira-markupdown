@@ -1,0 +1,79 @@
+There is an issue on overloading. I use RC3, REPL, and Netbeans.
+
+I simplified everything and use two methods
+
+{code}
+def foo(x: Double, a: Double*)= println("first")
+def foo(f: Int, a: Double= 1.0)= println("second")
+{code}
+
+======
+Here the REPL session (I re-entered the first foo
+and the end of the session):
+
+{code}
+
+Esser-MacBook:~ friedrichesser$$ scala
+Welcome to Scala version 2.8.0.RC3 (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_20).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> def foo(x: Double, a: Double*)= println("first")
+foo: (x: Double,a: Double*)Unit
+
+scala> def foo(f: Int, a: Double= 1.0)= println("second")
+foo: (f: Int,a: Double)Unit
+
+scala> foo(1.0)
+<console>:7: error: type mismatch;
+ found   : Double(1.0)
+ required: Int
+Error occurred in an application involving default arguments.
+       foo(1.0)
+           ^
+
+scala> foo(1)
+second
+
+scala> foo(1.0,1.0)
+<console>:7: error: type mismatch;
+ found   : Double(1.0)
+ required: Int
+       foo(1.0,1.0)
+
+scala> def foo(x: Double, a: Double*)= println("first")    
+foo: (x: Double,a: Double*)Unit
+
+scala> foo(1.0)
+first
+
+scala> foo(1)
+first
+
+scala>
+{code}
+====
+
+Here is Netbeans (same environment):
+
+{code}
+
+  def foo(x: Double, a: Double*)= println("first")
+  def foo(f: Int, a: Double= 1.0)= println("second")
+
+  def test = {
+    foo(1.0)
+    foo(f=1)
+    foo(1)
+    foo(x=1.0)
+  }
+
+the console output is:
+
+first
+second
+first
+first
+
+{code}
+

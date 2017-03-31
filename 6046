@@ -1,0 +1,20 @@
+By the way, there are two incorrect statements in Rex's email:
+
+"it doesn't override the method, it instead overwrites the java-private-final value of the field in the constructor"
+
+This is not true.
+
+"The JVM as far as I know doesn't have the level of effect tracking
+needed to optimize things _annotated_ as final; there is not any
+restriction on bytecode that actually prevents code from writing
+multiple times to a "final" field (as far as I can tell from the spec)."
+
+Not true again. David Homes, a HotSpot committer, says:
+
+"So the compiler can optimize away re-loading of final fields, even if
+reflection (or Unsafe) is mis-used. (Though compilation of deserialization
+code would have to be handled specially.)"
+
+Check the full explanation here:
+
+http://cs.oswego.edu/pipermail/concurrency-interest/2011-January/007723.html

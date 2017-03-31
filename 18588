@@ -1,0 +1,31 @@
+Summary; scalac is allowing bytecode to be generated that would have failed javac compilation of the equivalent source - see attached files (X.scala, X.java).
+
+This is seen by decompiling the generated .class files that scalac generates from the Scala source (X.scala) with javap, creating equivalent Java source code (X.java), compiling it with javac, and getting a compile error. The issue seems to be that the subclass's function has the same name as the one in the superclass, even though one is static and the other is not. (I am running scalac from version scala-2.10.3.)
+
+It is suspected that this error may have escaped notice because many Java runtimes actually allow this faulty code to run correctly at runtime: the invalid bytecode runs successfully on JRE 1.6.0_27 on RHEL as well as JRE 1.6.0_51 on Mac OS X, but on JRE 1.6.0_65 on Mac OS X it fails with a java.lang.ValueError: class Y overrides final method foo.()Z.
+
+{noformat}
+$ scalac X.scala
+$ scala X
+false
+
+$ javap X Y
+Compiled from "X.scala"
+public class X extends java.lang.Object{
+    public static void main(java.lang.String[]);
+    public static boolean foo();
+    public X();
+}
+
+Compiled from "X.scala"
+public class Y extends X{
+    public boolean foo();
+    public Y();
+}
+
+$ javac X.java
+X.java:13: foo() in Y cannot override foo() in X; overridden method is static
+  public boolean foo() {
+                 ^
+1 error
+{noformat}

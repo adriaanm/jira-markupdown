@@ -1,0 +1,20 @@
+scala> var s:String = null;
+s: String = null
+scala> s.+(s)
+res3: java.lang.String = nullnull
+scala> s.length
+java.lang.NullPointerException
+
+According to the language Spec, �12.3.1, + is a binary operator, and in Scala operators are just methods with an argument, i.e. 
+    s+s is sugar for s.+(s) 
+
+If s above is the Null Pointer, s.+(s) should throw an NPE,
+whereas if it is a String, s.length should *not* throw NPE.
+
+The issue has been discussed in the scala list under the heading 
+"null + null = ??" and the conclusion seems to be that it can't be talked away, but it is a bug in the Spec
+
+What versions of the following are you using?
+Scala: 2.8
+Java: 1.6
+Operating system: Windows 7

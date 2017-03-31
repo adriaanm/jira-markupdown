@@ -1,0 +1,77 @@
+I think the answer to the above is - yes, the `baseClasses` call should go before the `exitingPickler` block.
+
+However, I don't think that this example is easily fixable. Let me illustrate why. From this:
+
+{code}
+trait C1[A] {
+  def head: A = sys.error("")
+}
+
+trait C2[@specialized(Int) A] extends C1[A] {
+  override def head: A = super.head
+}
+
+class C3 extends C2[Int]
+{code}
+
+
+After {{mixin}} I get a super accessor defined twice, once coming from the specialized class and once from a generic one:
+
+{code}
+  class C3 extends Object with C2$mcI$sp {
+    override <superaccessor> <specialized> <artifact> def super$head(): Int = unbox(C2$class.head(C3.this));
+    override <superaccessor> <specialized> <artifact> def super$head$mcI$sp(): Int = unbox(C2$class.head(C3.this));
+    override <specialized> def head(): Int = C2$mcI$sp$class.head(C3.this);
+    override <specialized> def head$mcI$sp(): Int = C2$mcI$sp$class.head$mcI$sp(C3.this);
+    <superaccessor> <artifact> def super$head(): Object = C1$class.head(C3.this);
+    <superaccessor> <specialized> <artifact> def super$head$mcI$sp(): Int = unbox(C1$class.head(C3.this));
+    override <bridge> <specialized> <artifact> def head(): Object = scala.Int.box(C3.this.head());
+    def <init>(): C3 = {
+      C3.super.<init>();
+      C1$class./*C1$class*/$init$(C3.this);
+      C2$class./*C2$class*/$init$(C3.this);
+      C2$mcI$sp$class./*C2$mcI$sp$class*/$init$(C3.this);
+      ()
+    }
+  };
+{code}
+
+
+Now, the problem is (I gather) that the names of super accessors are not properly mangled (I'm not sure where exactly that happens, but I guess a {{makeNotPrivate`}} call is supposed to do this, and it should happen some time during specialization).
+
+Even if I fix that, there is still the fundamental problem that I cannot call {{super.head}} from {{C2$mcI$sp}}:
+
+{code}
+abstract <specialized> trait C2$mcI$sp extends Object with C2[Int] {
+    ...
+    // assuming proper name mangling for a super accessor
+    override <specialized> def head$mcI$sp(): Int = C2$mcI$sp.this.C2$mcI$sp$$super$head$mcI$sp();
+    ...
+  }
+{code}
+
+because that {{super.head}} will call this method:
+
+{code}
+class C3 extends Object with C2$mcI$sp {
+    ...
+    override <superaccessor> <specialized> <artifact> def C2$mcI$sp$$super$head$mcI$sp(): Int = unbox(C2$class.head(C3.this));
+{code}
+
+which in turn calls:
+
+{code}
+abstract trait C2$class extends  {
+  ...
+  <specialized> def head$mcI$sp($this: C2): Int = scala.Int.unbox($this.head());
+{code}
+
+And then you start spinning in a cycle of recursive calls and a stack overflow happens.
+
+
+
+
+
+
+
+

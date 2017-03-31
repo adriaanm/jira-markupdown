@@ -1,0 +1,15 @@
+A similar problem exists for variance annotations:
+
+{code}
+class P[Y](val y : Y)
+
+trait A[T[_[_]]] {
+  def g() : T[P] = error("")
+}
+
+trait C[X[+_]] {
+  def f(x : X[Int]) : X[Any] = x
+}
+{code}
+
+Type application A[C] should be rejected as ill-kinded, because C[P] is ill-kinded.

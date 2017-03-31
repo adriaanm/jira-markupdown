@@ -1,0 +1,20 @@
+again, this is a problem due to using _'s to mean 
+  - omitted higher-order type parameters
+  - existentially quantified type parameters
+naturally, the compiler shouldn't crash, but you probably meant:
+
+{code}
+trait Sequences{	
+  type I[+X] <: Sequence[X]	
+	
+  trait Sequence[+T] extends Iterable[T] {
+    def ++[S >: T] (ss : I[S]) : I[S] = error("...")
+  }	
+}	
+
+class SequenceTest(val seq : Sequences){	
+  def f[T](x: seq.I[T], y: seq.I[T]) = {
+    x ++ y
+  }
+}
+{code}

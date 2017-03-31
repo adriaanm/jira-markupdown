@@ -1,0 +1,18 @@
+(This came up on the mailing list.)
+
+ * Provide `CanBuildFrom` to preserve collection type if only the type of the values is changed during a `map`.
+
+{code}
+val intInt = IntMap(1 -> 2, 3 -> 4)
+
+val intStringMap1: IntMap[String] = intInt.map {case (a, b) => (a, b.toString)}
+println(intStringMap1)
+
+// The standard library doesn't have the IntMap[A] => IntMap[B] CanBuildFrom
+implicit def IntMapCanBuildFrom[A, B]: CanBuildFrom[IntMap[A], (Int, B), IntMap[B]] = new CanBuildFrom[IntMap[A], (Int, B), IntMap[B]] {
+  def apply(from: IntMap[A]): Builder[(Int, B), IntMap[B]] = apply()
+
+  def apply(): Builder[(Int, B), IntMap[B]] = new MapBuilder[Int, B, IntMap[B]](IntMap.empty[B])
+}
+{code}
+

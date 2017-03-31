@@ -1,0 +1,27 @@
+if you try to run a scala object via the Run As -> Scala Application
+menu the eclipse plugin fails to use the correct package name when the
+source path is a multiple level directory such as src/main/scala
+(maven 2 style layout)
+
+when running the menu item on the class test.Hello the following
+exception occurs in the console:
+
+Exception in thread "main" java.lang.NoClassDefFoundError:
+src/main/scala/test/Hello
+
+
+
+steps to reproduce:
+
+
+ 1. create new scala project
+ 2. remove default src/ build path
+ 3. mkdir src/main/scala
+ 4. add src/main/scala build path
+ 5. create new scala application (src/main/scala/test/Hello.scala)
+ 6. on the new object: run as -> scala application
+
+expected result:
+
+plugin should know classname is test.Hello when using deep source path
+and run it in the console

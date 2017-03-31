@@ -1,0 +1,132 @@
+Code:
+
+{code}
+case class Copy(os:java.io.OutputStream) {
+  def <<(source: javax.xml.transform.Source):Copy = {
+    println("copy source")
+    val buff = new Array[Byte](2048)
+    source match {
+//      case ss:javax.xml.transform.stream.StreamSource =>
+      case ss:{def getInputStream:java.io.InputStream} =>
+        println("is copy")
+        var read=0
+        val is = ss.getInputStream
+        println("starting read/write")
+        while({read=is.read(buff); read>0}) {
+          println("copy "+read)
+          os.write(buff,0,read)
+          println("written copy")
+        }
+        println("starting close")
+        is close
+       
+        println("end copy")
+    }
+    this
+  }
+  def <<! {
+    println("close copy")
+    os.close
+  }
+}
+{code}
+
+crash: 
+
+{code}
+java.lang.AssertionError: assertion failed
+	at scala.Predef$$.assert(Predef.scala:87)
+	at scala.tools.nsc.symtab.Types$$class.refinementOfClass(Types.scala:1980)
+	at scala.tools.nsc.symtab.SymbolTable.refinementOfClass(SymbolTable.scala:12)
+	at scala.tools.nsc.symtab.Types$$class.refinedType(Types.scala:1994)
+	at scala.tools.nsc.symtab.SymbolTable.refinedType(SymbolTable.scala:12)
+	at scala.tools.nsc.symtab.Types$$class.refinedType(Types.scala:2009)
+	at scala.tools.nsc.symtab.SymbolTable.refinedType(SymbolTable.scala:12)
+	at scala.tools.nsc.symtab.Types$$class.copyRefinedType(Types.scala:2014)
+	at scala.tools.nsc.symtab.SymbolTable.copyRefinedType(SymbolTable.scala:12)
+	at scala.tools.nsc.typechecker.Infer$$Inferencer.intersect(Infer.scala:1154)
+	at scala.tools.nsc.typechecker.Infer$$Inferencer.inferTypedPattern(Infer.scala:1188)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:3141)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3290)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedBind$$1(Typers.scala:2317)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:3068)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3290)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedPattern(Typers.scala:3355)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedCase(Typers.scala:1403)
+	at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$typedCases$$1.apply(Typers.scala:1425)
+	at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$typedCases$$1.apply(Typers.scala:1424)
+	at scala.List$$.loop$$1(List.scala:293)
+	at scala.List$$.mapConserve(List.scala:310)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedCases(Typers.scala:1424)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:3103)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3290)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3327)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedStat$$1(Typers.scala:1553)
+	at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$19.apply(Typers.scala:1598)
+	at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$19.apply(Typers.scala:1598)
+	at scala.List$$.loop$$1(List.scala:293)
+	at scala.List$$.mapConserve(List.scala:310)
+	at scala.List$$.loop$$1(List.scala:297)
+	at scala.List$$.mapConserve(List.scala:310)
+	at scala.List$$.loop$$1(List.scala:297)
+	at scala.List$$.mapConserve(List.scala:310)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedStats(Typers.scala:1598)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedBlock(Typers.scala:1388)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:3051)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3290)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3338)
+	at scala.tools.nsc.typechecker.Typers$$Typer.transformedOrTyped(Typers.scala:3387)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedDefDef(Typers.scala:1326)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:3027)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3290)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3327)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedStat$$1(Typers.scala:1553)
+	at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$19.apply(Typers.scala:1598)
+	at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$19.apply(Typers.scala:1598)
+	at scala.List$$.loop$$1(List.scala:293)
+	at scala.List$$.mapConserve(List.scala:310)
+	at scala.List$$.loop$$1(List.scala:297)
+	at scala.List$$.mapConserve(List.scala:310)
+	at scala.List$$.loop$$1(List.scala:297)
+	at scala.List$$.mapConserve(List.scala:310)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedStats(Typers.scala:1598)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedTemplate(Typers.scala:1176)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedClassDef(Typers.scala:1050)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:3018)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3290)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3327)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedStat$$1(Typers.scala:1553)
+	at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$19.apply(Typers.scala:1598)
+	at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$19.apply(Typers.scala:1598)
+	at scala.List$$.loop$$1(List.scala:293)
+	at scala.List$$.mapConserve(List.scala:310)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedStats(Typers.scala:1598)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:3014)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3290)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3327)
+	at scala.tools.nsc.typechecker.Analyzer$$typerFactory$$$$anon$$2.apply(Analyzer.scala:40)
+	at scala.tools.nsc.Global$$GlobalPhase.applyPhase(Global.scala:268)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:247)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:247)
+	at scala.Iterator$$class.foreach(Iterator.scala:395)
+	at scala.collection.mutable.ListBuffer$$$$anon$$1.foreach(ListBuffer.scala:266)
+	at scala.tools.nsc.Global$$GlobalPhase.run(Global.scala:247)
+	at scala.tools.nsc.Global$$Run.compileSources(Global.scala:579)
+	at scala.tools.nsc.Global$$Run.compile(Global.scala:663)
+	at scala.tools.eclipse.BuildCompiler.build(BuildCompiler.scala:114)
+	at scala.tools.eclipse.ScalaPlugin$$ProjectImpl$$class.build(ScalaPlugin.scala:392)
+	at scala.tools.eclipse.Driver$$Project.build(Driver.scala:16)
+	at lampion.eclipse.Builder.build(Builder.scala:85)
+	at org.eclipse.core.internal.events.BuildManager$$2.run(BuildManager.java:633)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:37)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:170)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:201)
+	at org.eclipse.core.internal.events.BuildManager$$1.run(BuildManager.java:253)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:37)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:256)
+	at org.eclipse.core.internal.events.BuildManager.basicBuildLoop(BuildManager.java:309)
+	at org.eclipse.core.internal.events.BuildManager.build(BuildManager.java:341)
+	at org.eclipse.core.internal.events.AutoBuildJob.doBuild(AutoBuildJob.java:140)
+	at org.eclipse.core.internal.events.AutoBuildJob.run(AutoBuildJob.java:238)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:55)
+{code}

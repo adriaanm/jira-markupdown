@@ -1,0 +1,105 @@
+{code}
+import java.io._
+
+class Outer extends Serializable {
+
+  // generated accesssor:
+  // public attr()LOuter$attr$ = {
+  //   if (attr$module == null) attr$lzycompute()
+  //   else attr$module
+  // }
+
+  // generated method:
+  // private attr$lzycompute()LOuter$attr$ = {
+  //   this.synchronized {
+  //      if (attr$module == null) attr$module = new Outer$attr$(this)
+  //   }
+  //   attr$module
+  // }
+
+  object attr extends Serializable {
+    println("<attr constructor>")
+    var x = "[initial]"
+    private def readObject(in: java.io.ObjectInputStream): Unit = {
+      in.defaultReadObject
+      println("after read: " + this)
+    }
+
+    // generated method:
+    // private readResolve()Ljava/lang/Object = { this.$outer.attr() }
+
+    override def toString = s"$x -- ${System.identityHashCode(this)}"
+  }
+  override def toString() = attr.toString
+}
+
+object tl extends Serializable {
+  println("<tl constructor>")
+}
+
+object Test {
+  def main(args: Array[String]) = {
+    val outer = new Outer
+    outer.attr.x = "foobar"
+
+    assert(tl eq serializeDeserialize(tl)) // ok, ensured by tl$.readResolve which loads the static module instance field
+
+    // serialize and deserialize the nesed object outer.attr
+    // this behaves correctly
+    //   - start de-serializing the object
+    //   - de-serialize the Outer object and store it in the $outer field
+    //     => the `attr$module` field of the outer object is being assigned
+    //   - the readResolve method of Outer$attr$ class outer$.attr(), the object (already stored in `attr$module`) is returned
+
+    println("attr before:" + outer.attr)
+    val attrSD = serializeDeserialize(outer.attr)
+    println("attr after: " + attrSD)
+    assert(readPrivateField(outer.attr, "$outer") ne readPrivateField(attrSD, "$outer")) // ok
+    println(outer.attr ne attrSD) // ok
+    println()
+
+
+    // serialize and deserialize the outer instance
+    // there's an ordering problem:
+    //   - start de-serializing the outer object
+    //   - start de-serializing the Outer$attr$ object (to be stored in the outer object's attr$module field)
+    //   - finish de-serializing the Outer$attr$ object, call its readResolve
+    //   - readResolve calls `attr()` on the outer object. at this point the `attr$module` field is still null
+    //   - therefore `attr$lzycompute` is invoked and a new module instance is created
+
+    println("before:     " + outer)
+    val outerSD = serializeDeserialize(outer)
+    println("after:      " + outerSD)
+  }
+
+  def serializeDeserialize[T <: AnyRef](obj: T) = {
+    val buffer = new ByteArrayOutputStream
+    val out = new ObjectOutputStream(buffer)
+    out.writeObject(obj)
+    val in = new ObjectInputStream(new ByteArrayInputStream(buffer.toByteArray))
+    in.readObject.asInstanceOf[T]
+  }
+
+  def readPrivateField(o: Object, field: String): Object = {
+    val f = o.getClass().getDeclaredField(field);
+    f.setAccessible(true)
+    f.get(o)
+  }
+}
+{code}
+
+{noformat}
+➜  sandbox git:(jfun) scalac Test.scala && scala Test
+<attr constructor>
+<tl constructor>
+attr before:foobar -- 1349393271
+after read: foobar -- 214126413
+attr after: foobar -- 214126413
+true
+
+before:     foobar -- 1349393271
+after read: foobar -- 396873410
+<attr constructor>
+after:      [initial] -- 1706234378
+
+{noformat}

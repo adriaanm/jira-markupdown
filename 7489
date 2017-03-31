@@ -1,0 +1,102 @@
+With or without optimize, it works as of https://github.com/scala/scala/commit/6296e324485f1d457e561824a3a8ddcafc3a08d8 
+
+Anyway background follows.
+
+{{-Xprint:cleanup}} shows the println argument is a {{Block}} consisting of a {{ValDef}} and two {{LabelDef}}:
+{noformat}
+    def broken(): Unit = scala.this.Predef.println({
+      case <synthetic> val x1: Int = 1;
+      case3(){
+        matchEnd2(scala.Int.box(x1))
+      };
+      matchEnd2(x: Object){
+        x
+      }
+    });
+{noformat}
+
+The "case" labels above are due to {{LabelDef}} (there are no {{CaseDef}} around)
+
+{noformat}
+  Block( // tree.tpe=Object
+    // 2 statements
+    ValDef( // case val x1: Int
+      case <synthetic> <triedcooking>
+      "x1"
+      <tpt> // tree.tpe=Int
+      1
+    )
+    LabelDef( // case def case3(): Object, tree.tpe=Object
+      ()
+      Apply( // case def matchEnd2(x: Object): Object, tree.tpe=Object
+        "matchEnd2" // case def matchEnd2(x: Object): Object, tree.tpe=(x: Object)Object
+        Apply( // def box(x: Int): Integer in object Int, tree.tpe=Object
+          "scala"."Int"."box" // def box(x: Int): Integer in object Int, tree.tpe=(x: Int)Integer
+          "x1" // case val x1: Int, tree.tpe=Int
+        )
+      )
+    )
+    LabelDef( // case def matchEnd2(x: Object): Object, tree.tpe=Object
+      "x" // x: Object, tree.tpe=Object
+      "x" // x: Object, tree.tpe=Object
+    )
+  )
+{noformat}
+
+After {{GenICode}}, the argument travels twice between stack and locals:
+
+{noformat}
+  // methods
+  def broken(): Unit {
+  locals: value x1, value x
+  startBlock: 1
+  blocks: [1,2,3]
+  
+  1: 
+    3	LOAD_MODULE object Predef
+    3	CONSTANT(1)
+    3	STORE_LOCAL(value x1)
+    3	SCOPE_ENTER value x1
+    3	JUMP 2
+    
+  2: 
+    3	LOAD_LOCAL(value x1)
+    3	BOX INT
+    3	STORE_LOCAL(value x)
+    3	JUMP 3
+    
+  3: 
+    3	LOAD_LOCAL(value x)
+    3	SCOPE_EXIT value x1
+    3	CALL_METHOD scala.Predef.println (dynamic)
+    3	RETURN(UNIT)
+    
+  }
+{noformat}
+
+Actually {{-optimize}} manages to unclutter that:
+
+{noformat}
+public void broken();
+  Code:
+   Stack=2, Locals=1, Args_size=1
+   0:   getstatic       #20; //Field scala/Predef$.MODULE$:Lscala/Predef$;
+   3:   iconst_1
+   4:   invokestatic    #27; //Method scala/runtime/BoxesRunTime.boxToInteger:(I)Ljava/lang/Integer;
+   7:   invokevirtual   #31; //Method scala/Predef$.println:(Ljava/lang/Object;)V
+   10:  return
+  LineNumberTable:
+   line 3: 0
+{noformat}
+
+Reaching definitions does most of the simplification (try with {{-Yclosure-elim -Ydead-code}}) but that leaves us with a 
+
+{noformat}
+astore_1
+aload_1
+{noformat}
+
+that {{PeepholeOpt}} can reduce only after {{IMethod.normalize()}} has run, and it's only {{Inliner}} that calls {{IMethod.normalize()}}.  Therefore, we'll have to keep an eye on choppy {{BasicBlock}} (peephole optimizations don't straddle {{BasicBlock}} boundaries). Related: {{collapseJumpOnlyBlocks}} in {{GenASM}}.
+
+There's no optimizer nor backend bug going on here. Any comments, before I close it as "Not-a-Bug" ?
+

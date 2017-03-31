@@ -1,0 +1,10 @@
+To be sure, the issue is that S and T in Fun must be invariant, right? But not in Fun0.
+{code}
+trait Fun[-S, +T] {type Eval = S => T}
+
+trait Fun0[-S, +T] {
+  private[this] type Eval = S => T
+}
+{code}
+I hope this bug is linked in the release notes.
+I proposed the following spec update — https://github.com/scala/scala-dist/pull/131. It seems the issue was not discussed at all.

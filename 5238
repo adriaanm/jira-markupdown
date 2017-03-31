@@ -1,0 +1,34 @@
+test case:
+
+{code}
+object Test extends Application {
+  def inferredType[T : Manifest](v : T) = println(manifest[T])
+
+  trait A
+  trait B
+  inferredType(new A with B)
+
+  val name = new A with B
+  inferredType(name)
+}
+{code}
+
+the relevant fragment (abridged) after typer (with -Ydebug -uniqid):
+(note the type argument to inferredType in the very first line!)
+
+{code}
+    inferredType[anonymous class $$anon$$13406]({
+      final class $$anon$$13406 extends Object with A with B ;
+      new $$anon$$13406.this()
+    })(Manifest.classType[anonymous class $$anon$$13406](classOf[Test$$$$<local Test>$$$$anon]));
+
+    private[this] val name: Object with A with B{} = {
+      final class $$anon$$9257 extends Object with A with B ;
+      new $$anon$$9257.this()
+    };
+    inferredType[Object with A with B{}](name)(Manifest.intersectionType[Object with A with B{}](Manifest.Object, Manifest.classType[A](classOf[Test$$$$A]), Manifest.classType[B](classOf[Test$$$$B])))
+{code}
+
+
+question: is the symbol $$anon$$13406 supposed to be in scope in inferredType's type argument??
+(probably not)

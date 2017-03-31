@@ -1,0 +1,144 @@
+The code below crashes the compiler on both 2.9.0 and 2.10 nightly. The crash goes away if the @specialize annotations are removed. On 2.9.0, but not 2.10, the crash also goes away if an explicit type annotation is given to {{val zeros}}.
+
+{code}
+trait Matrix[@specialized A, Repr[C] <: Matrix[C, Repr]] { // crash goes away if @specialize is removed
+  def duplicate(mb: MatrixBuilder[A, Repr]): Repr[A] = {
+    mb.zeros
+  }
+}
+trait DenseMatrix[@specialized A] extends Matrix[A, DenseMatrix]
+trait DenseMatrixFlt extends DenseMatrix[Float]
+
+trait MatrixBuilder[@specialized A, Repr[C] <: Matrix[C, Repr]] {
+  def zeros: Repr[A]
+}
+object DenseFloatBuilder extends MatrixBuilder[Float, DenseMatrix] {
+  val zeros = new Object with DenseMatrixFlt
+  // Note:
+  // - in 2.9 crash goes away if the explicit type "DenseMatrixFlt" is assigned to "zeros"
+  // - in 2.9 crash goes away if DenseMatrixFlt is a class instead of a trait:
+  //        val zeros = new DenseMatrixFlt
+}
+
+object Test extends App {
+  val m1 = DenseFloatBuilder.zeros // in 2.9 crash goes away if explicit type "DenseMatrixFlt" is assigned to m1
+  val m2 = m1.duplicate(DenseFloatBuilder)
+}
+
+{code}
+
+The nature of the crash appears to differ between 2.9.0 and 2.10. Here's the stack trace I get for the nightly compiler build:
+
+{code}
+error: java.lang.IllegalArgumentException: transpose requires all collections have the same size
+	at scala.collection.generic.GenericTraversableTemplate$class.fail$1(GenericTraversableTemplate.scala:150)
+	at scala.collection.generic.GenericTraversableTemplate$$anonfun$transpose$1.apply(GenericTraversableTemplate.scala:162)
+	at scala.collection.generic.GenericTraversableTemplate$$anonfun$transpose$1.apply(GenericTraversableTemplate.scala:154)
+	at scala.collection.LinearSeqOptimized$class.foreach(LinearSeqOptimized.scala:59)
+	at scala.collection.immutable.List.foreach(List.scala:45)
+	at scala.collection.generic.GenericTraversableTemplate$class.transpose(GenericTraversableTemplate.scala:154)
+	at scala.collection.immutable.List.transpose(List.scala:45)
+	at scala.reflect.internal.Types$class.mergePrefixAndArgs(Types.scala:5595)
+	at scala.reflect.internal.SymbolTable.mergePrefixAndArgs(SymbolTable.scala:12)
+	at scala.reflect.internal.Types$class.lubList(Types.scala:5145)
+	at scala.reflect.internal.Types$class.lub1$1(Types.scala:5332)
+	at scala.reflect.internal.Types$class.lub0$1(Types.scala:5325)
+	at scala.reflect.internal.Types$class.lub(Types.scala:5410)
+	at scala.reflect.internal.SymbolTable.lub(SymbolTable.scala:12)
+	at scala.reflect.internal.Types$$anonfun$54.apply(Types.scala:5604)
+	at scala.reflect.internal.Types$$anonfun$54.apply(Types.scala:5595)
+	at scala.Tuple2$Zipped$$anonfun$map$1.apply(Tuple2.scala:65)
+	at scala.Tuple2$Zipped$$anonfun$map$1.apply(Tuple2.scala:63)
+	at scala.collection.LinearSeqOptimized$class.foreach(LinearSeqOptimized.scala:59)
+	at scala.collection.immutable.List.foreach(List.scala:45)
+	at scala.Tuple2$Zipped.map(Tuple2.scala:63)
+	at scala.reflect.internal.Types$class.mergePrefixAndArgs(Types.scala:5595)
+	at scala.reflect.internal.SymbolTable.mergePrefixAndArgs(SymbolTable.scala:12)
+	at scala.reflect.internal.BaseTypeSeqs$BaseTypeSeq.apply(BaseTypeSeqs.scala:59)
+	at scala.reflect.internal.Types$CompoundType.baseType(Types.scala:1406)
+	at scala.reflect.internal.Types$SimpleTypeProxy$class.baseType(Types.scala:195)
+	at scala.reflect.internal.Types$SingletonType.baseType(Types.scala:1069)
+	at scala.reflect.internal.Types$AsSeenFromMap.base(Types.scala:3473)
+	at scala.reflect.internal.Types$AsSeenFromMap.toPrefix$1(Types.scala:3498)
+	at scala.reflect.internal.Types$AsSeenFromMap.apply(Types.scala:3500)
+	at scala.reflect.internal.Types$AsSeenFromMap.apply(Types.scala:3422)
+	at scala.reflect.internal.Types$TypeMap.mapOver(Types.scala:3144)
+	at scala.reflect.internal.Types$AsSeenFromMap.apply(Types.scala:3555)
+	at scala.reflect.internal.Types$AsSeenFromMap.apply(Types.scala:3422)
+	at scala.reflect.internal.Types$TypeMap$$anonfun$16.apply(Types.scala:3265)
+	at scala.reflect.internal.Types$TypeMap$$anonfun$16.apply(Types.scala:3262)
+	at scala.collection.LinearSeqOptimized$class.exists(LinearSeqOptimized.scala:79)
+	at scala.collection.immutable.List.exists(List.scala:45)
+	at scala.reflect.internal.Types$TypeMap.mapOver(Types.scala:3262)
+	at scala.reflect.internal.Types$TypeMap.mapOver(Types.scala:3164)
+	at scala.reflect.internal.Types$AsSeenFromMap.apply(Types.scala:3555)
+	at scala.reflect.internal.Types$Type.asSeenFrom(Types.scala:565)
+	at scala.reflect.internal.Types$Type.computeMemberType(Types.scala:596)
+	at scala.reflect.internal.Symbols$MethodSymbol.typeAsMemberOf(Symbols.scala:1984)
+	at scala.reflect.internal.Types$Type.memberType(Types.scala:587)
+	at scala.reflect.internal.Types$Type.findMember(Types.scala:942)
+	at scala.reflect.internal.Types$Type.nonLocalMember(Types.scala:539)
+	at scala.tools.nsc.typechecker.Typers$Typer.member(Typers.scala:605)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedSelect$1(Typers.scala:3558)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:4168)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:4274)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedOperator(Typers.scala:4365)
+	at scala.tools.nsc.transform.SpecializeTypes$$anon$5.transform(SpecializeTypes.scala:1304)
+	at scala.reflect.internal.Trees$Transformer.transform(Trees.scala:1426)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:53)
+	at scala.tools.nsc.transform.SpecializeTypes$$anon$5.transform(SpecializeTypes.scala:1468)
+	at scala.reflect.internal.Trees$Transformer$$anonfun$transform$4.apply(Trees.scala:1366)
+	at scala.reflect.internal.Trees$Transformer$$anonfun$transform$4.apply(Trees.scala:1365)
+	at scala.reflect.internal.Trees$Transformer.atOwner(Trees.scala:1487)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:38)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:31)
+	at scala.reflect.internal.Trees$Transformer.transform(Trees.scala:1364)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:53)
+	at scala.tools.nsc.transform.SpecializeTypes$$anon$5.transform(SpecializeTypes.scala:1468)
+	at scala.reflect.internal.Trees$Transformer$$anonfun$transformTrees$1.apply(Trees.scala:1462)
+	at scala.reflect.internal.Trees$Transformer$$anonfun$transformTrees$1.apply(Trees.scala:1462)
+	at scala.collection.immutable.List.loop$1(List.scala:118)
+	at scala.collection.immutable.List.mapConserve(List.scala:134)
+	at scala.reflect.internal.Trees$Transformer.transformTrees(Trees.scala:1462)
+	at scala.tools.nsc.transform.SpecializeTypes$$anon$5$$anonfun$transform$16.apply(SpecializeTypes.scala:1346)
+	at scala.tools.nsc.transform.SpecializeTypes$$anon$5$$anonfun$transform$16.apply(SpecializeTypes.scala:1346)
+	at scala.reflect.internal.Trees$Transformer.atOwner(Trees.scala:1487)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:38)
+	at scala.tools.nsc.transform.SpecializeTypes$$anon$5.transform(SpecializeTypes.scala:1346)
+	at scala.reflect.internal.Trees$Transformer.transformTemplate(Trees.scala:1464)
+	at scala.reflect.internal.Trees$Transformer$$anonfun$transform$2.apply(Trees.scala:1356)
+	at scala.reflect.internal.Trees$Transformer$$anonfun$transform$2.apply(Trees.scala:1355)
+	at scala.reflect.internal.Trees$Transformer.atOwner(Trees.scala:1487)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:38)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:31)
+	at scala.reflect.internal.Trees$Transformer.transform(Trees.scala:1354)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:53)
+	at scala.tools.nsc.transform.SpecializeTypes$$anon$5.transform(SpecializeTypes.scala:1468)
+	at scala.reflect.internal.Trees$Transformer$$anonfun$transformStats$1.apply(Trees.scala:1480)
+	at scala.reflect.internal.Trees$Transformer$$anonfun$transformStats$1.apply(Trees.scala:1478)
+	at scala.collection.immutable.List.loop$1(List.scala:118)
+	at scala.collection.immutable.List.mapConserve(List.scala:134)
+	at scala.reflect.internal.Trees$Transformer.transformStats(Trees.scala:1478)
+	at scala.tools.nsc.transform.SpecializeTypes$$anon$5$$anonfun$transform$15.apply(SpecializeTypes.scala:1333)
+	at scala.tools.nsc.transform.SpecializeTypes$$anon$5$$anonfun$transform$15.apply(SpecializeTypes.scala:1331)
+	at scala.reflect.internal.Trees$Transformer.atOwner(Trees.scala:1487)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:38)
+	at scala.tools.nsc.transform.SpecializeTypes$$anon$5.transform(SpecializeTypes.scala:1331)
+	at scala.tools.nsc.transform.SpecializeTypes$SpecializationTransformer$$anonfun$transform$37.apply(SpecializeTypes.scala:1687)
+	at scala.tools.nsc.transform.SpecializeTypes$SpecializationTransformer$$anonfun$transform$37.apply(SpecializeTypes.scala:1687)
+	at scala.reflect.internal.SymbolTable.atPhase(SymbolTable.scala:92)
+	at scala.tools.nsc.transform.SpecializeTypes$SpecializationTransformer.transform(SpecializeTypes.scala:1687)
+	at scala.tools.nsc.ast.Trees$Transformer.transformUnit(Trees.scala:14)
+	at scala.tools.nsc.transform.Transform$Phase.apply(Transform.scala:30)
+	at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:352)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$run$1.apply(Global.scala:320)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$run$1.apply(Global.scala:320)
+	at scala.collection.Iterator$class.foreach(Iterator.scala:655)
+	at scala.collection.mutable.ListBuffer$$anon$1.foreach(ListBuffer.scala:316)
+	at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:320)
+	at scala.tools.nsc.Global$Run.compileSources(Global.scala:998)
+	at scala.tools.nsc.Global$Run.compile(Global.scala:1086)
+	at scala.tools.nsc.Main$.process(Main.scala:106)
+	at scala.tools.nsc.Main$.main(Main.scala:123)
+	at scala.tools.nsc.Main.main(Main.scala)
+{code}

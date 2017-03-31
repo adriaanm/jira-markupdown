@@ -1,0 +1,47 @@
+Error in the compiler when checking for conformance of self types. Here is the base code
+{code}
+trait Base {
+  type Exp <: ExpWorkerBase
+  trait ExpWorkerBase {
+    self: Exp =>
+  }
+  type Num <: Exp with NumWorkerBase
+  trait NumWorkerBase extends ExpWorkerBase {
+    self: Num =>
+      val value: Int
+  }
+}
+
+trait BaseEval extends Base {
+  type Exp <: ExpWorkerBaseEval
+  trait ExpWorkerBaseEval extends ExpWorkerBase {
+    self: Exp =>
+      def eval: Int
+  }
+  type Num <: Exp with NumWorkerBaseEval
+  trait NumWorkerBaseEval extends NumWorkerBase {
+    self: Num =>
+      def eval = value
+  }
+}
+{code}
+When I now create an object to test the behavior of my BaseEval trait like the one below I get an error (as expected).
+{code}
+object BaseEvalTest extends BaseEval with Application {
+  class Foo extends NumWorkerBaseEval {
+    val value = 42 
+  }
+}
+ERROR MESSAGE:
+trait-3.scala:77: error: illegal inheritance;
+ self-type packT3.BaseEvalTest.Foo does not conform to packT3.BaseEvalTest.NumWorkerBaseEval's selftype packT3.BaseEvalTest.Num
+  class Foo extends NumWorkerBaseEval {
+{code}
+But if I where to use an annonymous class to do the same, I dont get a compile error but a runtime class cast error!
+{code}
+object BaseEvalTest extends BaseEval with Application {
+  val term = new NumWorkerBaseEval { 
+    val value = 42 
+  }
+}
+{code}

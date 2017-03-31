@@ -1,0 +1,15 @@
+The suggested fix is broken. It always drops the first element, as go is always false in the first iteration. The following should implement the request correctly (notice the added !go && ):
+
+{code}
+def dropWhile(p: A => Boolean): Repr = {
+  val b = newBuilder
+  var go = false
+  for (x <- this) {
+    if (!go && !p(x)) go = true
+    if (go) b += x
+  }
+  b.result
+}
+{code}
+
+Notice that this changes the semantics with regard to side effects of predicate p.

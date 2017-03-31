@@ -1,0 +1,138 @@
+I just tried something new, which I think might avoid the need to copy files.
+
+{noformat}
+diff --git a/src/reflect/scala/reflect/io/ZipArchive.scala b/src/reflect/scala/reflect/io/ZipArchive.scala
+index 42e22fd..e0d9024 100644
+--- a/src/reflect/scala/reflect/io/ZipArchive.scala
++++ b/src/reflect/scala/reflect/io/ZipArchive.scala
+@@ -15,6 +15,7 @@ import java.util.jar.Manifest
+ import scala.collection.mutable
+ import scala.collection.convert.WrapAsScala.asScalaIterator
+ import scala.annotation.tailrec
++import scala.sys.BooleanProp
+ 
+ /** An abstraction for zip files and streams.  Everything is written the way
+  *  it is for performance: we come through here a lot on every run.  Be careful
+@@ -123,30 +124,52 @@ final class FileZipArchive(file: JFile) extends ZipArchive(file) {
+   lazy val (root, allDirs) = {
+     val root = new DirEntry("/")
+     val dirs = mutable.HashMap[String, DirEntry]("/" -> root)
+-    val zipFile = try {
++    def openZipFile = try {
++      if (file.getName.contains("math"))
++        println("opening: " + file.getName)
+       new ZipFile(file)
+     } catch {
+       case ioe: IOException => throw new IOException("Error accessing " + file.getPath, ioe)
+     }
++    def closeZipFile(f: ZipFile): Unit = {
++      f.close()
++      if (file.getName.contains("math"))
++        println("closed: " + file.getName)
++    }
++    val zipFile = openZipFile
+ 
+-    val enum    = zipFile.entries()
++    val closeZip = FileZipArchive.closeZip.value
++    try {
+ 
+-    while (enum.hasMoreElements) {
+-      val zipEntry = enum.nextElement
+-      val dir = getDir(dirs, zipEntry)
+-      if (zipEntry.isDirectory) dir
+-      else {
+-        class FileEntry() extends Entry(zipEntry.getName) {
+-          override def getArchive   = zipFile
+-          override def lastModified = zipEntry.getTime()
+-          override def input        = getArchive getInputStream zipEntry
+-          override def sizeOption   = Some(zipEntry.getSize().toInt)
++      val enum = zipFile.entries()
++      while (enum.hasMoreElements) {
++        val zipEntry = enum.nextElement
++        val dir = getDir(dirs, zipEntry)
++        if (zipEntry.isDirectory) dir
++        else {
++          class FileEntry() extends Entry(zipEntry.getName) {
++            override def getArchive: ZipFile = {
++              if (closeZip) openZipFile else zipFile
++            }
++            override def lastModified = zipEntry.getTime()
++            override def input = {
++              val zipFile = getArchive
++              val delegate = zipFile getInputStream zipEntry
++              new FilterInputStream(delegate) {
++                override def close(): Unit = {
++                  delegate.close()
++                  if (closeZip) closeZipFile(zipFile)
++                }
++              }
++            }
++            override def sizeOption = Some(zipEntry.getSize().toInt)
++          }
++          val f = new FileEntry()
++          dir.entries(f.name) = f
+         }
+-        val f = new FileEntry()
+-        dir.entries(f.name) = f
+       }
+-    }
+-    (root, dirs)
++      (root, dirs)
++    } finally if (closeZip) closeZipFile(zipFile)
+   }
+ 
+   def iterator: Iterator[Entry] = root.iterator
+@@ -164,6 +187,9 @@ final class FileZipArchive(file: JFile) extends ZipArchive(file) {
+     case _                 => false
+   }
+ }
++object FileZipArchive {
++  private val closeZip = BooleanProp.keyExists("scala.classpath.closezip")
++}
+ /** ''Note:  This library is considered experimental and should not be used unless you know what you are doing.'' */
+ final class URLZipArchive(val url: URL) extends ZipArchive(null) {
+   def iterator: Iterator[Entry] = {
+
+{noformat}
+
+This was enough to auto-close in a direct "unit test" of this class:
+
+{code}
+⚡ qscala -nc -Dscala.classpath.closezip
+Welcome to Scala 2.12.0-20160127-203009-3f0bf2517e (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_71).
+Type in expressions for evaluation. Or try :help.
+
+scala> val f = new java.io.File("/Users/jason/.ivy2/cache/org.apache.commons/commons-math3/jars/commons-math3-3.0.jar")
+f: java.io.File = /Users/jason/.ivy2/cache/org.apache.commons/commons-math3/jars/commons-math3-3.0.jar
+
+scala> new scala.reflect.io.FileZipArchive(f)
+opening: commons-math3-3.0.jar
+closed: commons-math3-3.0.jar
+res0: scala.reflect.io.FileZipArchive = /Users/jason/.ivy2/cache/org.apache.commons/commons-math3/jars/commons-math3-3.0.jar
+
+scala> res0.allDirs.head._2.toList.head.toByteArray
+opening: commons-math3-3.0.jar
+closed: commons-math3-3.0.jar
+res15: Array[Byte] = Array(-54, -2, -70, -66, 0, 0, 0, 49, 0, 36, 10, 0, 6, 0, 23, 10, 0, 24, 0, 25, 7, 0, 26, 10, 0, 3, 0, 29, 7, 0, 30, 7, 0, 31, 7, 0, 32, 1, 0, 6, 60, 105, 110, 105, 116, 62, 1, 0, 3, 40, 41, 86, 1, 0, 4, 67, 111, 100, 101, 1, 0, 15, 76, 105, 110, 101, 78, 117, 109, 98, 101, 114, 84, 97, 98, 108, 101, 1, 0, 18, 76, 111, 99, 97, 108, 86, 97, 114, 105, 97, 98, 108, 101, 84, 97, 98, 108, 101, 1, 0, 4, 116, 104, 105, 115, 1, 0, 50, 76, 111, 114, 103, 47, 97, 112, 97, 99, 104, 101, 47, 99, 111, 109, 109, 111, 110, 115, 47, 109, 97, 116, 104, 51, 47, 97, 110, 97, 108, 121, 115, 105, 115, 47, 102, 117, 110, 99, 116, 105, 111, 110, 47, 65, 116, 97, 110, 104, 59, 1, 0, 5, 118, 97, 108, 117, 101, 1, 0, 4, 40, 68, 41, 68, 1, 0, 1, 120, 1, 0, 1, 68, 1, 0, 10, 100, 101, 114, 105,...
+scala> :quit
+{code}
+
+I confirmed with {{lsof}} that this the file was closed.
+
+However, when I tried:
+
+{noformat}
+qscala -nc -Dscala.classpath.closezip -classpath ~/.ivy2/cache/org.apache.commons/commons-math3/jars/commons-math3-3.0.jar
+Welcome to Scala 2.12.0-20160127-203009-3f0bf2517e (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_71).
+Type in expressions for evaluation. Or try :help.
+
+scala> opening: commons-math3-3.0.jar
+closed: commons-math3-3.0.jar
+# leave running
+{noformat}
+
+{{lsof}} reported that the file was still open. I took a quick look with {{YourKit}}-s file system probes, but I didn't find any record of closes or opens of that file, which probably means I was using the tool incorrectly.
+
+Hopefully this gives you a starting point.
+
+I think this ticket is a duplicate of SI-5207. I'm going to close that one as a duplicate of this one.

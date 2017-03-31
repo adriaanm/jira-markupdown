@@ -1,0 +1,38 @@
+The constructor for AAA calls a non-final method X. This executes before the constructor of the subclass has been executed, and sees an uninitialized field.
+
+Here's an identical Java program that yields the same results:
+
+{code}
+public class Test {
+	public static class AAA {
+	  private int Y;
+	  public AAA() {
+	     Y = X() + 10;
+	  }
+	  public int X() { return 1; }
+	  public int Y() { return Y; }
+	}
+
+    public static void main(String... args) {
+    	AAA a = new AAA();
+    	System.out.println("" + a.X() + ", " + a.Y());
+    	AAA b = new AAA() {
+    		private int X = 2;
+            @Override public int X() { return X; }
+    	};
+    	System.out.println("" + b.X() + ", " + b.Y());
+    }
+}
+{code}
+
+I'd recommend to set up a nightly build that builds your program with `-Xcheckinit` and then runs your test suite. 
+
+{noformat}
+qscalac -Xcheck-init sandbox/test.scala && qscala Test
+scalac error: bad option: '-Xcheck-init'
+  scalac -help  gives more information
+ticket/8675 ~/code/scala2 qscalac -Xcheckinit sandbox/test.scala && qscala Test
+(1,11)
+scala.UninitializedFieldError: Uninitialized field: test.scala: 11
+	at Test$$anon$1.X(test.scala:11)
+{noformat}

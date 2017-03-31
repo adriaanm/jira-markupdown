@@ -1,0 +1,19 @@
+The compiler crashes on the following code:
+{code}
+  trait A {
+    type T
+  }
+  trait B extends A { self =>
+    class T
+    trait C {
+      type T = self.T
+    }
+    val c: C
+  }
+  val b = new B {
+    val c = new C {}
+  }
+  var y: b.c.T = new b.c.T
+{code}
+
+Compiler output is attached in output.txt.

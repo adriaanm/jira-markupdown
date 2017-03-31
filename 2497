@@ -1,0 +1,15 @@
+I've debugged this.
+
+With Paul's patch in place to change this from a crasher to a warning, we get:
+
+{code}
+sym             = {scala.reflect.internal.Symbols$TermSymbol@4573}"value EAGER"
+sym.owner       = {scala.reflect.internal.Symbols$ModuleClassSymbol@4580}"module class ClientWidget$LoadStyle"
+sym.owner.owner = {scala.reflect.internal.Symbols$PackageClassSymbol@4582}"package ui"
+sym.owner.owner.info.decl(this.global.newTermName("ClientWidget")).info.decls.toList(1).moduleClass
+                = {scala.reflect.internal.Symbols$ModuleClassSymbol@5792}"module class LoadStyle"
+{code}
+
+I think the root bug is the existence of {{module class ClientWidget$LoadStyle}}.
+
+I haven't managed yet to distill the essence of Stefan's test case to something independent from those JARs.

@@ -1,0 +1,11 @@
+You gravely need to read about erasure.  You've apparently been ignoring a message like this:
+{code}
+warning: there were unchecked warnings; re-run with -unchecked for details
+{code}
+If you did what it says you would see this:
+{code}
+<console>:14: warning: abstract type Value.this.Self in type pattern Value.this.Self is unchecked since it is eliminated by erasure
+               case that: Self =>
+                          ^
+{code}
+When you write "case that: Self =>" you are not testing against Self but the erasure of Self, which in this case is the erasure of its upper bound.  All structural types erase to Object, so you could equivalently be writing "if (true)".

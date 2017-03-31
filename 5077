@@ -1,0 +1,23 @@
+this gets really nasty also with method invocations which do perfect inference until you introduce higher-kinded type arguments.
+
+in the attached file you can see that for the first-order case this works:
+
+{code}
+def test( implicit sys: KSys, c: KCtx ) {
+   val p = Factory.test( "Test" )
+}
+{code}
+
+in the second-order case, the implicits are not found. if i add them explicitly, the compiler complains:
+
+{code}
+<console>:38: error: no type parameters for method test: (implicit sys: Sys[A,B],implicit c: A)Proc[A,B] exist so that it can be applied to arguments (KSys, KCtx)
+ --- because ---
+argument expression's type is not compatible with formal parameter type;
+ found   : KSys
+ required: Sys[?A,?B]
+          val p = Factory.test( "Test" )( sys, c )
+                              ^
+{code}
+
+so i need to annotate all types. this is a real show stopper for a larger generified library.

@@ -1,0 +1,59 @@
+This version of the test at SI-8521 fails to find ScriptEngine under sbt.
+
+Created directly, the compiler fails to initialize.
+
+{code}
+import javax.script._
+import scala.tools.nsc.interpreter._
+
+object Main extends App {
+
+  val ngine = new ScriptEngineManager().getEngineByName("scala").asInstanceOf[ScriptEngine with Compilable]
+  val iMain = ngine.asInstanceOf[Scripted].intp
+
+  //val ngine = new Scripted.Factory().getScriptEngine.asInstanceOf[ScriptEngine with Compilable]
+  //val iMain = ngine.asInstanceOf[Scripted].intp
+
+  class Foo
+  iMain.settings.embeddedDefaults[Foo]
+
+  println(Thread.currentThread().getContextClassLoader)
+  ngine.compile("val x = 1")
+  println(Thread.currentThread().getContextClassLoader)
+}
+{code}
+{noformat}
+[info] Running checkcl.Main 
+[error] (run-main-0) scala.reflect.internal.FatalError: class StringContext does not have a member f
+scala.reflect.internal.FatalError: class StringContext does not have a member f
+	at scala.reflect.internal.Definitions$DefinitionsClass.fatalMissingSymbol(Definitions.scala:1239)
+	at scala.reflect.internal.Definitions$DefinitionsClass.$anonfun$getMember$1(Definitions.scala:1262)
+	at scala.reflect.internal.Definitions$DefinitionsClass.getMember(Definitions.scala:1257)
+	at scala.reflect.internal.Definitions$DefinitionsClass.getMemberMethod(Definitions.scala:1291)
+	at scala.reflect.internal.Definitions$DefinitionsClass$RunDefinitions.StringContext_f$lzycompute(Definitions.scala:1478)
+	at scala.reflect.internal.Definitions$DefinitionsClass$RunDefinitions.StringContext_f(Definitions.scala:1478)
+	at scala.tools.reflect.FastTrack.$anonfun$fastTrackCache$1(FastTrack.scala:53)
+	at scala.reflect.internal.SymbolTable$perRunCaches$$anon$1.apply(SymbolTable.scala:395)
+	at scala.tools.reflect.FastTrack.contains(FastTrack.scala:20)
+	at scala.tools.nsc.typechecker.Namers$Namer.methodSig(Namers.scala:1294)
+[snip]
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:5555)
+	at scala.tools.nsc.typechecker.Analyzer$typerFactory$$anon$3.apply(Analyzer.scala:102)
+	at scala.tools.nsc.Global$GlobalPhase.$anonfun$applyPhase$1(Global.scala:402)
+	at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:395)
+	at scala.tools.nsc.typechecker.Analyzer$typerFactory$$anon$3.$anonfun$run$1(Analyzer.scala:94)
+	at scala.tools.nsc.typechecker.Analyzer$typerFactory$$anon$3.$anonfun$run$1$adapted(Analyzer.scala:93)
+	at scala.collection.AbstractIterator.foreach(Iterator.scala:932)
+	at scala.tools.nsc.typechecker.Analyzer$typerFactory$$anon$3.run(Analyzer.scala:93)
+	at scala.tools.nsc.Global$Run.compileUnitsInternal(Global.scala:1404)
+	at scala.tools.nsc.Global$Run.compileUnits(Global.scala:1389)
+	at scala.tools.nsc.Global$Run.compileSources(Global.scala:1384)
+	at scala.tools.nsc.interpreter.IMain._initialize(IMain.scala:129)
+	at scala.tools.nsc.interpreter.IMain.initializeSynchronous(IMain.scala:149)
+	at scala.tools.nsc.interpreter.Scripted.<init>(Scripted.scala:74)
+	at scala.tools.nsc.interpreter.Scripted$.apply(Scripted.scala:309)
+	at scala.tools.nsc.interpreter.Scripted$Factory.getScriptEngine(Scripted.scala:302)
+
+{noformat}
+
+

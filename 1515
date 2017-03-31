@@ -1,0 +1,5 @@
+I think you need to synchronize on the {{Timer}} creation, to avoid a possible race where multiple {{Timer}} threads are created.
+
+An alternative option might be to initialise the {{Timer}} as a daemon thread and just never cancel it. You can do this by using the Timer's other form of constructor.
+
+This would mean the Timer thread lives forever, but that's already a possibility anyway. It will currently live forever if the {{Actor}} object is initialised, but the {{Scheduler}} is never started - admittedly an unusual situation!

@@ -1,0 +1,10 @@
+I just did that thing where you stare at two identical pieces of test code, identical except that one issues "inferred existential type" at the first line.
+{code}
+      val ref = new SimpleSpec with Reference with Property {
+        type ThisCommandLine = SpecCommandLine
+        protected def creator(args: List[String]): ThisCommandLine = new SpecCommandLine(args) 
+        //def referenceSpec: Reference = this    // perniciously, the type is required
+        def referenceSpec = this                 // not even used, could be ??? here
+        override def propMapper = new PropertyMapper(this)
+      }
+{code}

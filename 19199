@@ -1,0 +1,24 @@
+The build hasn't been working out of the box for a while, apparently because Maven artifacts have moved.
+
+To reproduce, you'll need to clear your Maven local repository:
+
+mv ~/.m2 ~/.m2_backup
+git clone https://github.com/scala/scala.git test-scala
+cd test-scala
+git checkout 2.11.x
+./pull-binary-libs.sh
+ant build
+
+Pull-binary works, but ant quickly yields errors (log attached), apparently it fails to downloads many artifacts (including scala-library) and gets some redirection HTML instead, which it stores in ~/.m2 !
+
+For instance, `less /Users/ochafik/.m2/repository/org/scala-lang/scala-compiler/2.11.1/scala-compiler-2.11.1.jar` gives me:
+
+<html>
+<head><title>301 Moved Permanently</title></head>
+<body bgcolor="white">
+<center><h1>301 Moved Permanently</h1></center>
+<hr><center>nginx/1.4.1</center>
+</body>
+</html>
+
+This effectively prevents any fresh Scala build.

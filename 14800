@@ -1,0 +1,54 @@
+Scala 2.8 Only.
+
+If package object is defined in one file, then used in another file, the compiler generates errors when using types from the package object. Example:
+{code}
+package object tt {
+    type Foo = Function4[Double, Double, Double, Double, Double]
+}
+{code}
+{code}
+object Main {
+    def main(args: Array[String]) {
+        import tt._
+        def d: Foo = (a, b, c, d) => 5d
+
+        println(d(1, 2, 3, 4))
+    }
+}
+{code}
+
+If package object is defined in the same file, then the error appears when the package object is defined after the import statement:
+{code}
+object Main {
+    def main(args: Array[String]) {
+        import tt._
+        def d: Foo = (a, b, c, d) => 5d
+
+        println(d(1, 2, 3, 4))
+    }
+}
+
+package object tt {
+    type Foo = Function4[Double, Double, Double, Double, Double]
+}
+{code}
+
+Everything works when the package object is defined before the import statement in the same file it is used (code compiles and runs):
+{code}
+package object tt {
+    type Foo = Function4[Double, Double, Double, Double, Double]
+}
+
+object Main {
+    def main(args: Array[String]) {
+        import tt._
+        def d: Foo = (a, b, c, d) => 5d
+
+        println(d(1, 2, 3, 4))
+    }
+}
+{code}
+
+The code also works when the package object is defined in a separate jar.
+
+Test on: scala-2.8.0.r19928

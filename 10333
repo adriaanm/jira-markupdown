@@ -1,0 +1,23 @@
+Here's a smaller, closely related case:
+
+{code}
+trait E1[T] {
+  def f(that: T) = ()
+}
+
+class E2[R, C] extends E1[E2[R, C]]
+
+object MyApp {
+  implicit def int2string(value: Int): String = ???
+  implicit def coef2rf[D, R, C](value: D)(implicit ev: D => C): E1[E2[R, C]] = ???
+
+  def test: Unit = {
+
+    val y: E2[E1[String], String] = ???
+    val i: Int = 0
+    i.f(y)
+    i.f(y) // chokes on the second occurence only (!)
+    ()
+  }
+}
+{code}

@@ -1,0 +1,32 @@
+This is a very minor issue.
+
+If we define the following in the REPL
+{code}
+object Foo { val `1 ?` = () }
+{code}
+and we type:
+{code}
+Foo.<tab>
+{code}
+then "1 ?" is suggested as an option.
+If we type:
+{code}
+Foo.1<tab>
+{code}
+then this autocompletes to
+{code}
+Foo.1 ?
+{code}
+which isn't valid, so ought to complete to
+{code}
+Foo.`1 ?`
+{code}
+Interestingly,
+{code}
+Foo.`<tab>
+{code}
+will suggest all members of Foo correctly, though (for example),
+{code}
+Foo.`c<tab>
+{code}
+appears to search the global namespace, offering suggestions such as classOf, clone, com and collection.

@@ -1,0 +1,24 @@
+This behaves well with {{2.10.0-20120619-072829-f1684e9edf}}
+{code}
+scala> List(Array(0), Array(0L)).map(x => x)bad option: '-nc'
+
+res0: List[Array[_ >: Long with Int <: AnyVal]] = List(Array(0), Array(0))
+{code}
+
+
+With 2.10.0-M3 I saw: 
+
+{code}
+~/code/scala ~/usr/scala-2.10.0-M3/bin/scala -nocompdaemon
+Welcome to Scala version 2.10.0-M3 (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_31).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> List(Array(0), Array(0L)).map(x => x)
+java.lang.AbstractMethodError
+	at scala.collection.TraversableLike$$anonfun$map$1.apply(TraversableLike.scala:241)
+	at scala.collection.TraversableLike$$anonfun$map$1.apply(TraversableLike.scala:241)
+	at scala.collection.LinearSeqOptimized$class.foreach(LinearSeqOptimized.scala:59)
+	at scala.collection.immutable.List.foreach(List.scala:77)
+	at scala.collection.TraversableLike$class.map(TraversableLike.scala:241)
+{code}

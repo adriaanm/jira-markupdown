@@ -1,0 +1,26 @@
+I was testing the 2.7.x branch in preparation for 2.7.4-rc1 and found the following regression from 2.7.3:
+
+test/Foo.java
+{code}
+package test;
+
+import scala.RandomAccessSeq.Mutable;
+
+class Foo {
+}
+{code}
+
+{code}
+javac -cp ~/Download/scala/scala-2.7.3.r17472/lib/scala-library.jar test/Foo.java
+test/Foo.java:3: cannot access scala.RandomAccessSeq.Mutable
+bad class file: scala/RandomAccessSeq$$Mutable.class(scala:RandomAccessSeq$$Mutable.class)
+undeclared type variable: A
+Please remove or make sure it appears in the correct subdirectory of the classpath.
+import scala.RandomAccessSeq.Mutable;
+{code}
+
+With 2.7.3:
+
+{code}
+javac -cp /opt/scala-2.7.3.final/lib/scala-library.jar test/Foo.java
+{code}

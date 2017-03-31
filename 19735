@@ -1,0 +1,49 @@
+MyAnnotation.java:
+{code}
+package annot;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface MyAnnotation {
+    Class<?> cls();
+}
+{code}
+
+Foo.scala:
+{code}
+class C
+
+trait Foo {
+  @annot.MyAnnotation(cls = classOf[C])
+  def function: Any = ???
+}
+{code}
+
+Test.scala:
+{code}
+class Foo1 extends Foo
+
+class Foo2 extends Foo
+{code}
+
+Compiling as follows
+{code}
+javac -d . MyAnnotation.java  ; scalac -d . -cp . Foo.scala  ; scalac -d . -cp . Test.scala
+{code}
+
+fails with
+{code}
+error: missing or invalid dependency detected while loading class file 'C.class'.
+Could not access type AnyRef in package scala,
+because it (or its dependencies) are missing. Check your build definition for
+missing or conflicting dependencies. (Re-run with `-Ylog-classpath` to see the problematic classpath.)
+A full rebuild may help if 'C.class' was compiled against an incompatible version of scala.
+one error found
+{code}
+
+No failure if there's only one subclass of Foo...

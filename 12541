@@ -1,0 +1,35 @@
+In case this could be an incentive to fix this issue, the test case compile just fine in java:
+{code:java}
+class Test {
+  static class Foo<A> {
+    Foo<A> compose(Foo<A> a) {
+       return new Foo<>();
+    }
+    Bar<A> compose(Bar<A> b) {
+      return new Bar<>();
+    }
+  }
+
+  static class Bar<A> {
+    Bar<A> compose(Foo<A> a) {
+      return new Bar<>();
+    }
+
+    Bar<A> compose(Bar<A> b) {
+      return new Bar<>();
+    }
+  }
+
+  static <A> Bar<A> barA() {
+    return new Bar<>();
+  }
+
+  public static void main(String[] args) {
+    Foo<String> fooS = new Foo<>();
+
+    // Compile just fine:
+    fooS.compose(barA());
+  }
+}
+{code}
+This kind of limitations means that the scala user-experience (of java 8 libraries in particular) can be inferior to the java user-experience. Resolving regressions vs Java 8 should, imo, be given major priority (at least from a marketing pov ;-)).

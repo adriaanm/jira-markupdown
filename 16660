@@ -1,0 +1,30 @@
+Java:
+{code}
+synchronized boolean f() { return false; }
+// produces
+synchronized int f();
+   0:	iconst_0
+   1:	ireturn
+{code}
+Scala:
+{code}
+def f(): Boolean = synchronized { false }
+// produces
+public boolean f();
+   0:	aload_0
+   1:	dup
+   2:	astore_1
+   3:	monitorenter
+   4:	iconst_0
+   5:	invokestatic	#21; //Method scala/runtime/BoxesRunTime.boxToBoolean:(Z)Ljava/lang/Boolean;
+   8:	astore_2
+   9:	aload_1
+   10:	monitorexit
+   11:	aload_2
+   12:	invokestatic	#25; //Method scala/runtime/BoxesRunTime.unboxToBoolean:(Ljava/lang/Object;)Z
+   15:	ireturn
+   16:	aload_1
+   17:	monitorexit
+   18:	athrow
+{code}
+I don't know if hand-rolling the monitor is slower than marking the method synchronized, although I think it's a good bet that it is.  I do know that boxing and unboxing the boolean to get it in and out of synchronized is slower than not doing so.

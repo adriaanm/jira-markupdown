@@ -1,0 +1,29 @@
+I assume that I can compile with the latest nightly using
+{noformat}
+sbt> ++2.11.0-SNAPSHOT
+sbt> compile
+{noformat}
+Looks that is is using `2.11.0-20140213.015456-546`. Still similar errors:
+{noformat}
+...
+[info] downloading http://repo1.maven.org/maven2/org/scala-lang/scala-reflect/2.10.0/scala-reflect-2.10.0.jar ...
+[info]  [SUCCESSFUL ] org.scala-lang#scala-reflect;2.10.0!scala-reflect.jar (6573ms)
+[info] downloading https://oss.sonatype.org/content/repositories/snapshots/org/scala-lang/scala-reflect/2.11.0-SNAPSHOT/scala-reflect-2.11.0-20140213.015456-546.jar ...
+[info]  [SUCCESSFUL ] org.scala-lang#scala-reflect;2.11.0-SNAPSHOT!scala-reflect.jar (9448ms)
+[info] Done updating.
+[info] 'compiler-interface' not yet compiled for Scala 2.11.0-20140212-225812-2240464dea. Compiling...
+[info]   Compilation completed in 11.462 s
+[error] D:\scalafx.hg\scalafx\src\main\scala\scalafx\scene\control\TableColumn.scala:100: type mismatch;
+[error]  found   : javafx.event.EventType[javafx.scene.control.TableColumn.CellEditEvent[_, _]]
+[error]  required: javafx.event.EventType[javafx.scene.control.TableColumn.CellEditEvent[S, T]]
+[error] Note: javafx.scene.control.TableColumn.CellEditEvent[_, _] >: javafx.scene.control.TableColumn.CellEditEvent[S, T], but Java-defined class EventType is invariant in type T.
+[error] You may wish to investigate a wildcard type such as `_ >: javafx.scene.control.TableColumn.CellEditEvent[S, T]`. (SLS 3.2.10)
+[error]       this(new jfxsc.TableColumn.CellEditEvent(table, pos, eventType, newValue))
+[error]                                                            ^
+[error] D:\scalafx.hg\scalafx\src\main\scala\scalafx\scene\web\WebEvent.scala:69: type mismatch;
+[error]  found   : scalafx.event.EventType[javafx.scene.web.WebEvent[_]]
+[error]  required: javafx.event.EventType[javafx.scene.web.WebEvent[T]]
+[error]   def this(source: Any, eventType: EventType[jfxsw.WebEvent[_]], data: T) = this(new jfxsw.WebEvent(source, eventType, data))
+[error]                                                                                                             ^
+[error] two errors found
+{noformat}

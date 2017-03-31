@@ -1,0 +1,49 @@
+I have the following code:
+
+{code}
+class Vector (val x: Double, val y: Double, val z: Double) {
+  def *(f: Double) = new Vector(x * f, y * f, z * f)
+  def +(v: Vector) = new Vector(x + v.x, y + v.y, z + v.z)
+}
+
+object Scope1 {
+  def interpolate(t: Double, a: Double, b: Double): Double = a * (1.0 - t) + b * t
+}
+
+object Scope2 {
+  def interpolate(t: Double, a: Vector, b: Vector): Vector = a * (1.0 - t) + b * t
+}
+
+class Example {
+  import Scope1._
+  import Scope2._
+
+  def main(args: Array[String]) {
+    val v = interpolate(0.3, 2.5, 4.5)
+  }
+}
+{code}
+
+When I compile this with Scala 2.8.0.RC6, I get an unexpected error message:
+
+Example.scala:21: error: reference to interpolate is ambiguous;
+it is imported twice in the same scope by
+import Scope2._
+and import Scope1._
+                val v = interpolate(0.3, 2.5, 4.5)
+                        ^
+one error found
+
+Why does the compiler think the reference is ambiguous? The two interpolate methods have different signatures and it should be clear which one I want to apply. Note that if I put them both in class Example, without importing them, it works without a problem:
+
+{code}
+// No problem
+class Example {
+  def interpolate(t: Double, a: Double, b: Double): Double = a * (1.0 - t) + b * t
+  def interpolate(t: Double, a: Vector, b: Vector): Vector = a * (1.0 - t) + b * t
+
+  def main(args: Array[String]) {
+    val v = interpolate(0.3, 2.5, 4.5)
+  }
+}
+{code}

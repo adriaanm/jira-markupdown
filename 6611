@@ -1,0 +1,20 @@
+Is this issue being worked on? I just hit this issue while trying to inline collection operations. I have another example where specialization doesn't work with inlining:
+{code}
+class SimpleCol[A](x: A) {
+  @inline
+  final def filter(p: A => Boolean): SimpleCol[A] = if (p(x)) this else null
+  def isEmpty: Boolean = ???
+}
+
+class A(xs: SimpleCol[A], val a: Int) {
+  @inline
+  final def filter(p: A => Boolean): A =
+    if (!xs.filter(p).isEmpty) this else
+    if (p(this)) this
+    else null
+
+  def foo() = filter(x => x.a > 0)
+}
+{code}
+
+I you compile it with `-no-specialization` then everything will get inlined into `foo` and closure will get eliminated. Otherwise the `p(this)` will remain (it's specialized apply) not inlined and the whole closure allocation is not eliminated.

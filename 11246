@@ -1,0 +1,30 @@
+Here's another case out in the wild:
+
+Original issue: https://github.com/lihaoyi/upickle-pprint/issues/108
+
+Minimal Repro:
+
+{{
+haoyi-mbp:test haoyi$ cat build.sbt
+scalaVersion := "2.11.7"
+
+haoyi-mbp:test haoyi$ cat Main.scala
+object Main{
+  abstract class TakesWriter()(implicit i: Int)
+  class Something extends TakesWriter()({
+    lazy val derive$macro$1 = (() => derive$macro$2)
+    lazy val derive$macro$2 = 2
+    1
+  })
+}
+
+haoyi-mbp:test haoyi$ sbt ~run
+<sbt spam>
+
+[info] Compiling 1 Scala source to /Users/haoyi/Dropbox (Personal)/Workspace/test/target/scala-2.11/classes...
+[error] /Users/haoyi/Dropbox (Personal)/Workspace/test/Main.scala:4: Implementation restriction: access of value derive$macro$2$1 from <$anon: Function0>, would require illegal premature access to the unconstructed `this` of class Something in object Main
+[error]     lazy val derive$macro$1 = (() => derive$macro$2)
+[error]                                      ^
+[error] one error found
+[error] (compile:compile) Compilation failed
+}}

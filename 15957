@@ -1,0 +1,22 @@
+= problem =
+Summary:
+Given Scala's focus on reducing unnecessary boilerplate code, what are effective implementation options, besides the suffixes of ":: Nil" or "List()", to eliminate having to add any suffix to the statement "val ints = 1 :: 2 :: 3" such that this statement compiles to the equivalent of "val ints = 1 :: 2 :: 3 :: Nil"?
+
+Details:
+In the PIS2 (Programming in Scala, 2nd Edition" in footnote 4 at the bottom of page 87, there is a statement as follows, directly quoting "The reason you need Nil at the end is that :: is defined on the class List. If you try to just say 1 :: 2 :: 3, it won't compile because 3 is an Int, which doesn't have a :: method".
+
+Given the high degree of focus Scala implementors have on reducing unnecessary boilerplate, adding either suggested suffix feels unnecessary. It seems there ought to be sufficient context for some solution (compiler, compiler plug-in, library) to eliminate this requirement.
+
+= analysis =
+I am a complete Scala newbie. I have completely read PIS2 and have begun reading it a second time. I just came across this particular issue and then thought, "It's a shame that so much boilerplate noise has been eliminated, and still there are things like this necessary". That was quickly followed by several possible solutions as library changes jumping into my mind. However, I am such a newbie, I was not confident in any of the resulting tangents (ex: extend RichInt to include :: (placing itself in the list), extend Any to include ::, find some means to extend some trait that was in common with all Literals such that it provided a default ::, have the compiler scan backwards from the last statement token across all the cons and ensure that the resulting List is of a common base type for all of the elements.
+
+I still think there may be merit to the idea. I am just not sure of all the different implications to attempting to implement it.
+
+= enhancement recommendation =
+Somehow add a mechanism so that val ints = 1 :: 2 :: 3 to work with the final ":: Nil" to be assumed/added by the compiler, or via some library extension to RichInt.
+
+And to ensure the solution extends to at least all literals. And if possible, extends to any type to be placed in a list.
+
+I am looking forward to the education I will receive as a result of being told how this idea does and does not work.
+
+Thank you!

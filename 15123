@@ -1,0 +1,19 @@
+It's hard to imagine this is what's intended for equals:
+{code}
+    override def equals(other: Any): Boolean = 
+      other match {
+        case that: Enumeration#Value => compare(that) == 0
+        case _ => false
+      } 
+{code}
+{code}
+scala> object Dist1 extends Enumeration { val Mile, Foot, Inch = Value }
+defined module Dist1
+
+scala> object Dist2 extends Enumeration { val Kilometer, Millimeter, Parsec = Value }
+defined module Dist2
+
+scala> Dist1.Mile == Dist2.Kilometer
+res0: Boolean = true
+
+{code}

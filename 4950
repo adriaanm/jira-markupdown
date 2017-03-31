@@ -1,0 +1,41 @@
+It can be reduced even further:
+{code}
+package types
+
+sealed trait Document {
+  sealed trait FieldBase
+  sealed trait StaticFieldBase extends FieldBase with StaticDocument
+  sealed trait DynamicFieldBase extends FieldBase with DynamicDocument
+}
+
+sealed trait StaticDocument extends Document {
+  sealed abstract class AbstractField extends FieldBase
+}
+
+sealed trait DynamicDocument extends Document {
+  sealed abstract class AbstractField extends FieldBase
+}
+
+class Collection extends StaticDocument
+{code}
+
+This variant still triggers the bug:
+{code}
+...
+sealed trait Document {
+  sealed trait FieldBase
+  sealed trait StaticFieldBase extends FieldBase // with StaticDocument
+  sealed trait DynamicFieldBase extends FieldBase with DynamicDocument
+}
+...
+{code}
+While this does not:
+{code}
+...
+sealed trait Document {
+  sealed trait FieldBase
+  sealed trait StaticFieldBase extends FieldBase with StaticDocument
+  sealed trait DynamicFieldBase extends FieldBase // with DynamicDocument
+}
+...
+{code}

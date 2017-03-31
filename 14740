@@ -1,0 +1,29 @@
+I created a function like this:
+
+{code}
+def doit(implicit f: => Int) = i * 2
+{code}
+
+Of course in my actual program "doit" actually does something and only evaluates f occasionally.
+
+The f parameter is implicit because I want callers to be able to use an implicit default value when they know that f will never actually be evaluated:
+
+{code}
+implicit val default = 0
+{code}
+
+Unfortunately there seems to be no way to create a val, var, or def in such a way that Scala will choose it as the implicit argument to doit.  I tried the following:
+
+{code}
+implicit def default = 0
+implicit val default = { () => 0 }
+implicit val default: => Int = 0
+{code}
+
+Of course the third one doesn't even compile.
+
+If the compiler allows the creation of an implicit by-name parameter, then it should be willing to select an implicit argument for it.  If not, then it should be illegal to create the implicit by-name parameter in the first place.
+
+
+
+

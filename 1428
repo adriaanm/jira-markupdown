@@ -1,0 +1,88 @@
+Did some aditional testing and I think the issue may be caused by the compiler, and the incomplete override of methods from the abstract class. 
+
+Both syntax are accepted in the compiler (both pluggin and stand-alone), but one format makes the Plugin run into stack overflows. I think there is some but in the compiler with regards of these structures. It may be a bug
+
+Problem 1)
+
+In file vcc/DialogTest.scala in the trouble block, if this line is present:
+
+
+{code}
+    val columns=List(("col1",classOf[String]), "col2",classOf[java.lang.Integer]))
+{code}
+
+I get:
+
+error in presentation normal compile 
+java.lang.StackOverflowError
+
+However if this is the line:
+{code}
+    val columns=List[(String,java.lang.Class[_])](("col1",classOf[String]),("col2",classOf[java.lang.Integer]))
+{code}
+The code loads perfectly
+
+Problem 2) 
+
+This line in vcc/DialogTest.scala will case errors when I open the code:
+{code}
+   def apply(col:Int,obj:(String,Integer))= col match { case 0=> obj._1; case 1=> obj._2}
+ }}
+
+The following error occurs:
+
+An error has occurred. See error log for more details.
+scala.tools.eclipse.javaelements.ScalaAnonymousClassElement cannot be cast to org.eclipse.jdt.core.IField
+
+Change it to: 
+{code}
+    def apply(col:Int,obj:(String,Integer)):java.lang.Object= col match { case 0=> obj._1; case 1=> obj._2}
+{code}
+No problem happens...
+
+
+Case 3)
+
+Also, having focused on these lines, I create a smaller single file, and then the behavior is a little different:
+{code}
+package vcc
+
+abstract class TableModelRowProjection[T] {
+
+  val columns:List[(String,java.lang.Class[_])]
+  def size = columns.size
+  def setter:PartialFunction[(Int,T,Any),Unit]
+  def getColumnClass(col:Int):java.lang.Class[_]=columns(col)._2
+  def getColumnName(col:Int):String=columns(col)._1
+  def isEditable(col:Int,obj:T)=if(setter!=null)setter.isDefinedAt(col,null.asInstanceOf[T],null) else false
+  def apply(col:Int,obj:T):java.lang.Object
+  def set(col:Int,obj:T,value:Any):Unit=if(setter!=null && setter.isDefinedAt(col,obj,value)) setter(col,obj,value)
+}
+
+
+object DialogTest extends Application {
+  
+  var proj=new TableModelRowProjection[(String,Integer)] {
+    //val columns=List[(String,java.lang.Class[_])](("col1",classOf[String]),("col2",classOf[java.lang.Integer]))
+    val columns=List(("col1",classOf[String]),("col2",classOf[java.lang.Integer]))
+    def setter=null
+    //def setter={ case (0,o,v) => println("You set "+o+" field 0 to "+v) }
+    def apply(col:Int,obj:(String,Integer)):java.lang.Object= col match { case 0=> obj._1; case 1=> obj._2}
+    //def apply(col:Int,obj:(String,Integer))= col match { case 0=> obj._1; case 1=> obj._2}
+  }
+}
+
+{code}
+
+
+If I use this code a do a "Clean" to rebuild, when I open the vcc/DialogTest.scala, I get no syntax highlight and Stackoverflow on the .log
+
+If change the definitions, save, close and open. I get proper syntax highlight. In a single file the apply function being fully typed does not seem to change the end result. 
+
+Now with the good code a swap the columns definition, and save. Now I have "illegal cyclical reference"	when I let the mouse hover over the columns variable.
+
+Swap again and save, all looks nice, but when I close and open. I get no syntax highlighting and no tips. 
+
+Comment both and uncomment the fully typed and save, and all in nice. Including on a close and open.
+
+The apply function seems to be ok. When it's all in one file. No matter what format I use.

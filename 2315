@@ -1,0 +1,15 @@
+Smaller test case that seems to indicate it's not directly caused by higher-kinded stuff, but rather by type inference for anonymous classes...
+
+{code}
+trait Bind {
+  def bind[B]: B
+}
+
+object Test {
+  val bind /*: Bind --> no crash*/ = new Bind {
+    def bind[B]: Nothing /*: B --> no crash*/ = error("omitted")
+  }
+
+  bind.bind[Nothing]
+}
+{code}

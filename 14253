@@ -1,0 +1,17 @@
+{code}
+scala> import scala.collection.immutable.TreeSet
+import scala.collection.immutable.TreeSet
+
+scala> TreeSet(1 to 10 :_*)
+res0: scala.collection.immutable.SortedSet[Int] = Set(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+
+scala> TreeSet(2 to 9 :_*)(x => new Ordered[Int]{ def compare(y : Int) = -(x.compare(y)) })         
+res2: scala.collection.immutable.SortedSet[Int] = Set(9, 8, 7, 6, 5, 4, 3, 2)
+
+scala> res2.subsetOf(res0)
+res3: Boolean = false
+{code}
+
+Bug exists in both 2.7.x and 2.8. I discovered it when poking through the 2.8 code but produced the actual test case on 2.7.4. 
+
+I'll fix this and submit a test case at the same time. This ticket is just for the record. 

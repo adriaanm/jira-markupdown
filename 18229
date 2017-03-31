@@ -1,0 +1,90 @@
+Given the following untyped swap macro:
+
+{code}
+package macros
+
+import language.experimental.macros
+import scala.reflect.macros.Macro
+
+object Macros {
+  def swap(a: _, b: _) = macro Impl.swap
+}
+
+trait Impl extends Macro {
+
+  import c.universe._
+  import c.universe.Flag._
+
+  def swap(a: c.Tree, b: c.Tree): c.Tree = {
+    val tmp = TermName(c.freshName("a"))
+    Block(
+      List(
+        ValDef(Modifiers(MUTABLE), tmp, TypeTree(), a),
+        Assign(a, b),
+        Assign(b, Ident(tmp))
+      ),
+      Literal(Constant(()))
+    )
+  }
+}
+{code}
+
+It creates a fresh name for the temporary variable. But this doesn't always work. In the simplest case where a variable of the same name already exists it works fine:
+
+{code}
+import macros.Macros.swap
+
+object Test extends App {
+  var a = 10
+  var a2 = 5
+  println((a, a2))
+  swap(a, a2)
+  println((a, a2))
+}
+
+/*
+output:
+
+performing macro expansion macros.Macros.swap(a, a2) at source-/home/antoras/xxx/s.scala,line-7,offset=104
+{
+  var a1 = a;
+  a = a2;
+  a2 = a1;
+  ()
+}
+Block(List(ValDef(Modifiers(MUTABLE), TermName("a1"), TypeTree(), Ident(TermName("a"))), Assign(Ident(TermName("a")), Ident(TermName("a2"))), Assign(Ident(TermName("a2")), Ident(TermName("a1")))), Literal(Constant(())))
+                                  
+(10,5)
+(5,10)
+*/
+{code}
+
+But if a value is created that has the same name as the generated one in the example above, it doesn't work anymore:
+
+{code}
+import macros.Macros.swap
+
+object Test extends App {
+  var a = 10
+  var a1 = 5
+  println((a, a1))
+  swap(a, a1)
+  println((a, a1))
+}
+
+/*
+output:
+
+performing macro expansion macros.Macros.swap(a, a1) at source-/home/antoras/xxx/s.scala,line-7,offset=104
+{
+  var a1 = a;
+  a = a1;
+  a1 = a1;
+  ()
+}
+Block(List(ValDef(Modifiers(MUTABLE), TermName("a1"), TypeTree(), Ident(TermName("a"))), Assign(Ident(TermName("a")), Ident(TermName("a1"))), Assign(Ident(TermName("a1")), Ident(TermName("a1")))), Literal(Constant(())))
+                                  
+(10,5)
+(10,5)
+*/
+{code}

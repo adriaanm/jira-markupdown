@@ -1,0 +1,51 @@
+The following code will throw an OutOfMemoryException (with heap size below 1GB):
+{code}
+class Engine {
+  
+  var handlers: List[(Int => Unit)] = Nil
+  
+  def registerHandler(f: Int => Unit) = handlers ::= f
+  
+  def setup() {
+    
+    val buffer = new Array[Byte](1000000)
+    
+    for (s <- List("foo")) {
+      buffer(0) = 1
+
+      registerHandler { n =>
+        callback(n)
+      }
+    }
+  }
+  
+  def callback(n: Int) = println(n)
+}
+  
+object Test extends Engine {  
+  def main(args: Array[String]) {
+    
+    println("start")
+    
+    for (i <- 0 until 1000) {
+      println("setup handler " + i)
+      setup()
+    }
+    
+  } 
+}
+{code}
+
+The OOM occurs because the buffer objects cannot be garbage collected. This is unexpected because only closures passed to registerHandler are retained, which have no free variables except (implicitly) the enclosing Engine instance. Certainly, they don't refer to any buffer.
+
+However, closures are implemented as anonymous inner classes, and inner classes refer to their enclosing classes by chasing $outer pointers. Thus, the closures passed to registerHandler do not refer directly to the Engine instance but indirectly through the statically enclosing closure (the one passed to List("foo").map, which does refer to the buffer).
+
+This behavior is particularly troublesome when using continuations, as the nesting of closures is no longer apparent from the program text:
+{code}
+val buffer = new Array[Byte](1000000)
+sleep(100) // cps version
+buffer(0) = 1
+registerHandler { n => ... } // closure will hang on to buffer
+{code}
+
+A possible fix could be to treat this-references as proper free variables. More generally, anonymous classes could use separate outer_k pointers for the k-th enclosing object (called a 'display' in the literature). Of course only the used ones should be kept, so SI-1419 may be related.

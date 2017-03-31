@@ -1,0 +1,63 @@
+There's a handy Guice module called Guice Servlet which lets you bind servlets and filters using IoC.
+
+The issue is it uses a method called 'with' in Java; which obviously clashes with Scala's keyword. However when trying to use some code to work around this invoking `with` as a method name inside a loop, we get compile errors on 2.8.0-beta1.
+
+Strangely - this error only occurs when there is a loop around the use of `with`.
+
+This scala causes the error. Note that any Servlet class could be used...
+
+{code}
+import _root_.com.google.inject.servlet.ServletModule
+import _root_.org.fusesource.scalate.servlet.TemplateEngineServlet
+
+class ScalaModuleTest extends ServletModule {
+  override def configureServlets = {
+    val uris: List[String] = List("*.ssp", "*.scaml")
+    for (u <- uris) {
+      serve(u).`with`(classOf[TemplateEngineServlet])
+    }
+  }
+}
+{code}
+
+removing the loop and using...
+
+{code}
+  override def configureServlets = {
+    serve("*.ssp").`with`(classOf[TemplateEngineServlet])
+  }
+{code}
+
+is fine
+
+
+Here's the error...
+{code}
+[INFO] java.lang.reflect.InvocationTargetException
+[INFO]  at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+[INFO]  at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+[INFO]  at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+[INFO]  at java.lang.reflect.Method.invoke(Method.java:597)
+[INFO]  at org_scala_tools_maven_executions.MainHelper.runMain(MainHelper.java:151)
+[INFO]  at org_scala_tools_maven_executions.MainWithArgsInFile.main(MainWithArgsInFile.java:26)
+[ERROR] Caused by: scala.tools.nsc.symtab.Types$$TypeError: type mismatch;
+[INFO]  found   : <repeated...>[java.lang.String]
+[INFO]  required: Seq[java.lang.String]
+[ERROR]         at scala.tools.nsc.typechecker.Contexts$$Context.error(Contexts.scala:318)
+[ERROR]         at scala.tools.nsc.typechecker.Infer$$Inferencer.error(Infer.scala:273)
+[ERROR]         at scala.tools.nsc.typechecker.Infer$$Inferencer.typeError(Infer.scala:283)
+[ERROR]         at scala.tools.nsc.typechecker.Infer$$Inferencer.typeErrorTree(Infer.scala:292)
+[INFO]  at scala.tools.nsc.typechecker.Typers$$Typer.adapt(Typers.scala:1008)
+[INFO]  at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:3876)
+[INFO]  at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:4087)
+[INFO]  at scala.tools.nsc.typechecker.Typers$$Typer.typedArg(Typers.scala:2172)
+[INFO]  at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$typedArgs$$2.apply(Typers.scala:2182)
+[INFO]  at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$typedArgs$$2.apply(Typers.scala:2181)
+[INFO]  at scala.collection.TraversableLike$$$$anonfun$$map$$1.apply(TraversableLike.scala:238)
+[INFO]  at scala.collection.TraversableLike$$$$anonfun$$map$$1.apply(TraversableLike.scala:238)
+[INFO]  at scala.collection.LinearSeqLike$$class.foreach(LinearSeqLike.scala:97)
+[INFO]  at scala.collection.immutable.List.foreach(List.scala:46)
+[INFO]  at scala.collection.TraversableLike$$class.map(TraversableLike.scala:238)
+[INFO]  at scala.collection.immutable.List.map(List.scala:46)
+[INFO]  at scala.tools.nsc.typechecker.Typers$$Typer.typedArgs(Typers.scala:2181)
+{code}

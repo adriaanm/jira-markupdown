@@ -1,0 +1,63 @@
+Consider following code:
+{code}
+
+package test
+
+abstract class Test[A] {
+  
+  case object Y
+  
+}
+{code}
+
+Before r25326, badsigs.sh would report following errors:
+{code}
+
+mac-grek:badsigs grek$ rm -rf classes/* && scalac -d classes/ Test.scala && ~/scala/badsigs/badsigs.sh `pwd`/classes
+Cleaning up /Users/grek/scala/badsigs/badsigs_working_dir
+Checking /Users/grek/tmp/badsigs/classes:
+Running Main app (will generate Java files and run ecj)
+----------
+1. ERROR in /Users/grek/scala/badsigs/badsigs_working_dir/src/C0.java (at line 0)
+	import test.Test$Y$;
+	^
+Inconsistent classfile encountered: The undefined type parameter A is referenced from within Test$Y$
+----------
+1 problem (1 error)
+
+----------
+1. ERROR in /Users/grek/scala/badsigs/badsigs_working_dir/src/C1.java (at line 0)
+	import test.Test;
+	^
+The class file Test<A> contains a signature '()Ltest/Test<TA;>.Y;' ill-formed at position 18
+----------
+1 problem (1 error)
+
+Found 2 errors
+{code}
+
+By updating compiler to r25326, we get a bit different signatures but still broken:
+{code}
+
+mac-grek:badsigs grek$ rm -rf classes/* && scalac -d classes/ Test.scala && ~/scala/badsigs/badsigs.sh `pwd`/classes
+Cleaning up /Users/grek/scala/badsigs/badsigs_working_dir
+Checking /Users/grek/tmp/badsigs/classes:
+Running Main app (will generate Java files and run ecj)
+----------
+1. ERROR in /Users/grek/scala/badsigs/badsigs_working_dir/src/C0.java (at line 0)
+	import test.Test$Y$;
+	^
+Inconsistent classfile encountered: The undefined type parameter A is referenced from within Test$Y$
+----------
+1 problem (1 error)
+
+----------
+1. ERROR in /Users/grek/scala/badsigs/badsigs_working_dir/src/C1.java (at line 0)
+	import test.Test;
+	^
+The class file Test<A> contains a signature '()Ltest/Test<TA;>.Y$;' ill-formed at position 18
+----------
+1 problem (1 error)
+
+Found 2 errors
+{code}

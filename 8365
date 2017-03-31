@@ -1,0 +1,13 @@
+One more to test (I'll check it tonight if noone beats me to it)
+
+{code}
+scala> class X[T](val i: T) extends AnyVal
+defined class X
+
+scala> (new { def y[T, XT <: X[T]](xt: XT) = xt.i }).y[Int, X[Int]](new X(0))
+java.lang.VerifyError: (class: , method: <init> signature: ()V) Expecting to find object/array on stack
+{code}
+
+UPDATE:
+
+This example work fine. The error I was seeing was from an older milestone, M5.

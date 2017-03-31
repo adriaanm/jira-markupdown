@@ -1,0 +1,19 @@
+HashSet does not implement union. That means that creating the union of two sets is very inefficient. Adding a large set to a small set creates the entire set anew.
+
+{code}
+scala> val a = Set.empty[Int]
+a: scala.collection.immutable.Set[Int] = Set()
+
+scala> val b = Set(1,2,3,4,5)
+b: scala.collection.immutable.Set[Int] = Set(5, 1, 2, 3, 4)
+
+scala> val c = a union b
+c: scala.collection.immutable.Set[Int] = Set(5, 1, 2, 3, 4)
+
+scala> c eq b
+res0: Boolean = false
+{code}
+
+c is a completely new set even though it contains the exact same elements as b and could therefore be eq b.
+
+Clearly this is not good. A set should have the most efficient possible implementation for intersection and union. The implementation of filter for set (SI-6196) allows for a fast intersection. The missing operation union is already implemented in HashSet as merge. So all that needs to be done is to adapt the merge algorithm of HashMap to HashSet.

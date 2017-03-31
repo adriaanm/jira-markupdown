@@ -1,0 +1,36 @@
+Sorry, Travis, but {{Option}} doesn't even come close.
+
+The need for {{NotNull}} is illustrated by the fact that any reference type can be *null*, but trapping *null* values or handling exceptions arising from dereferencing a *null* value - or even having to wrap references in {{Option}} - is a high overhead if there is no benefit whatsoever from having *null* values in the first place. Not only that, but you would (or should) have to write unit tests to verify that passing *null* references around doesn't cause collateral damage.
+
+{{NotNull}} combined with {{-Ynotnull}} was intended to make assignment of *null* to a {{NotNull}}-derived type - as well as casting *null* reference values to such a type - illegal. Consider the following:
+
+{code:scala}
+class SomeCannotPossiblyBeNullType extends NotNull {
+  // ...
+}
+
+def doSomething (x: SomeCannotPossiblyBeNullType) = {
+  // x is guaranteed not to be null, so dereferencing x will not cause an NPE to be thrown.
+  // Also, there is also no need to trap whether x is null, or to wrap x in an Option.
+  // Furthermore, I don't have to write a unit test to verify what happens if x is null. Can't happen.
+  // ...
+}
+
+def willNotWork = {
+  // ...
+  val y: SomeCannotPossiblyBeNullType = null // <- results in a compiler error
+  val z = somePossiblyNullReference // <- results in compiler error
+  // ...
+}
+{code}
+
+What you seem to be suggesting as an alternative is to wrap every single reference to such a class in an {{Option}} - that is, I have to use {{Option \[SomeCannotPossiblyBeNullType\]}} instead of simply {{SomeCannotPossiblyBeNullType}} which makes no sense to me whatsoever.
+
+Ironically, this doesn't even solve the problem since you can initialize an {{Option \[T\]}} will *null* (it's a reference type after all):
+
+{code:scala}
+val x: Option [String] = null
+val s: = x.getOrElse ("x is null") // Whoops! Get an NPE!
+{code}
+
+so even {{Option}} would benefit from extending {{NotNull}}!

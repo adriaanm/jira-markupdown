@@ -1,0 +1,161 @@
+I ran into this bug too.  Here's another simple example implementing
+a java interface with a varargs method, then unable to resolve
+the virtual method:
+{noformat}
+runBug:
+     [java] Exception in thread "main" java.lang.AbstractMethodError: bug.Bugger.whatever(Ljava/lang/String;[Ljava/lang/String;)V
+     [java] 	at bug.BugRunner$.doWhatever(Bugger.scala:16)
+     [java] 	at bug.BugRunner$.main(Bugger.scala:19)
+     [java] 	at bug.BugRunner.main(Bugger.scala)
+     [java] Java Result: 1
+
+
+$ find bug build.xml -type f -print -exec cat '{}' ';'
+bug/Bug.java
+package bug;
+
+
+public interface Bug {
+    public void whatever( String s1, String ... vWhatever );
+}
+
+bug/Bugger.scala
+package bug
+
+import java.util.logging.{Level,Logger}
+
+
+class Bugger extends Bug {
+    private val olog = Logger.getLogger( classOf[Bugger].getName )
+
+    override def whatever( s1:String, vWhatever:String* ) = {
+        olog.log( Level.INFO, "Got args " + s1 + ", and " + vWhatever.length )
+    }
+}
+
+
+object BugRunner {
+  def doWhatever( bug:Bug ) = { bug.whatever( "Boo!" ) }
+
+  def main(vArg:Array[String]) = {
+      doWhatever( new Bugger() )
+  }
+}
+build.xml
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<project 
+     name="bug" 
+     basedir="." 
+     default="compile"
+     xmlns="antlib:org.apache.tools.ant"
+  >
+<property name="logging.properties" value="${user.home}/logging.properties" />
+<property name="scala.home" value="/usr/local/scala" />
+<property name="scala-compiler.jar" value="${scala.home}/lib/scala-compiler.jar"/>
+<property name="scala-library.jar" value="${scala.home}/lib/scala-library.jar"/>
+
+ <property name="build.dir" location="build" />
+ <property name="dist.dir" location="dist" />
+ <property name="project.jar" location="${dist.dir}/bug.jar" />
+
+<path id="project.classpath">
+  <pathelement location="${scala-compiler.jar}"/>
+  <pathelement location="${scala-library.jar}"/>
+   <!--
+  <pathelement location="${share.home}/jar/scala-swing-2.7.3.jar"/>
+    -->
+</path>
+ <path id="runjar.classpath">
+   <path refid="project.classpath" />
+   <pathelement location="${project.jar}"/>
+ </path>
+
+ <target name="prepare">
+   <mkdir dir="${build.dir}" />
+   <mkdir dir="${dist.dir}" />
+ </target>
+
+ <target name="clean"
+         description="Clean the build area"
+      >
+  <delete dir="${build.dir}"/>
+ </target>
+
+<!-- 4. Define scala compiler command. -->
+<target name="init">
+    <property
+      name="scala-library.jar"
+      value="${scala.home}/lib/scala-library.jar"
+    />
+    <path id="build.classpath">
+      <!--
+      <pathelement location="${scala-library.jar}"/>
+      <pathelement location="${your.path}"/>
+       -->
+      <pathelement location="${build.dir}"/>
+    </path>
+    <taskdef resource="scala/tools/ant/antlib.xml">
+      <classpath>
+        <pathelement location="${scala-compiler.jar}"/>
+        <pathelement location="${scala-library.jar}"/>
+      </classpath>
+    </taskdef>
+</target>
+
+
+ <target name="project.classes" depends="prepare,init">
+  <scalac 
+     srcdir="." 
+     destdir="${build.dir}" 
+     force="changed"
+     unchecked="yes"
+     classpathref="project.classpath" 
+    >
+    <include name="**/*.scala"/>
+    <include name="**/*.java"/>
+  </scalac>
+  <javac 
+     srcdir="."
+     destdir="${build.dir}" 
+     debug="true"
+      >
+   <classpath refid="project.classpath" />
+   <include name="**/*.java" />
+  </javac>
+ </target>
+
+ <target name="compile" depends="project.classes"
+         description="Compile the thing"
+         >
+ </target>
+
+ <target name="jarup" depends="compile"
+         description="jar up classes"
+         >
+    <jar id="jarup" 
+         jarfile="${project.jar}"
+         basedir="${build.dir}"
+         index="true"
+	 level="9"
+         >
+       <manifest>
+    	 <attribute name="Main-Class" value="bug.BugRunner"/>
+       </manifest>
+    </jar>
+ </target>
+
+ <target name="runBug" 
+         description="Run the bug demo"
+	 depends="jarup"
+         >
+    <java classname="bug.BugRunner"
+	  fork="true">
+        <classpath refid="runjar.classpath" />
+        <jvmarg value="-Djava.util.logging.config.file=${logging.properties}" />
+    </java>
+ </target>
+
+</project>
+
+{noformat}

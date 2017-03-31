@@ -1,0 +1,17 @@
+The main practical related concept for me right now is HList literals, especially for `HList => R` .  It is easy enough to implicitly convert between HList and TupleN, but it is harder when you want to infer the types for a function.  For sbt 0.9, I want to say:
+{code}
+  (taskA, taskB).map( (valueA, valueB) => ... )
+{code}
+for arbitrary arity.  Underneath, I abstract over arity using HLists but provide conversions from TupleN to HList and FunctionN to `HList => R` for the user-facing interface.  The closest I came required explicitly annotating the arguments:
+{code}
+  (taskA, taskB).map( (valueA: A, valueB: B) => ... )
+{code}
+So, I'd certainly use auto-tupling/hlisting function literals.
+
+Something simpler that would help make directly using HLists more user-friendly would be printing binary type constructors with symbolic names as infix types.  I have a [http://github.com/harrah/scala-starrless/tree/print_infix_types branch] that does this, but the part that detects when the simple name is ambiguous is an ugly hack.
+
+One of the things I was trying out in the HList part [http://apocalisp.wordpress.com/2010/06/08/type-level-programming-in-scala/ here] was seeing what could be the minimal HList representation that you could standardize on in the standard library and what could be left to outside libraries.  The HList in that casehlist branch I linked to before is a decent base for replacing TupleN and if you add a few more members, you can do a bunch more operations in outside type classes.
+
+I think for the same runtime performance as TupleN, you'd need HArrays.  You'd probably want both HLists and HArrays for the same reasons you have both Vector and List.  Just guessing, but I think that compile-time performance would be about the same for things that work on fixed arity, but arbitrary arity would be worse without compiler support because you start using a lot of implicits.  If we didn't have to encode numbers at the type level and were instead native, that would probably help with compilation time.
+
+I'll go read about SYB and get back to you about that.  Note that the part that works now is generating the implicits to/from HLists for case classes in the compiler.  The issue is using them in a library without this diverging implicit issue.

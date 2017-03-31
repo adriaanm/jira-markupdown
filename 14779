@@ -1,0 +1,90 @@
+To reproduce, svn checkout:
+
+https://scalaz.googlecode.com/svn/branches/type-B-cannot-be-instantiated-bug
+
+and compile sources under src/main.
+
+Tested against Scala Beta RC2.
+
+We're using higher kinded inference.
+
+Full compiler error:
+
+{code}
+Information:Compilation completed with 73 errors and 0 warnings
+Information:73 errors
+Information:0 warnings
+Error:Scalac internal error: class java.lang.reflect.InvocationTargetException [sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method), sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39), sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25), java.lang.reflect.Method.invoke(Method.java:597), org.jetbrains.plugins.scala.compiler.rt.ScalacRunner.main(ScalacRunner.java:74)][scala.tools.nsc.symtab.Types$$AsSeenFromMap.throwError$$1(Types.scala:3104), scala.tools.nsc.symtab.Types$$AsSeenFromMap.instParam$$1(Types.scala:3109), scala.tools.nsc.symtab.Types$$AsSeenFromMap.toInstance$$1(Types.scala:3120), scala.tools.nsc.symtab.Types$$AsSeenFromMap.apply(Types.scala:3136), scala.tools.nsc.symtab.Types$$AsSeenFromMap.apply(Types.scala:3009), scala.tools.nsc.symtab.Types$$TypeMap$$$$anonfun$$mapOverArgs$$1.apply(Types.scala:2843), scala.tools.nsc.symtab.Types$$TypeMap$$$$anonfun$$mapOverArgs$$1.apply(Types.scala:2839), scala.tools.nsc.symtab.Types$$class.map2Conserve(Types.scala:4282), scala.tools.nsc.symtab.SymbolTable.map2Conserve(SymbolTable.scala:13), scala.tools.nsc.symtab.Types$$TypeMap.mapOverArgs(Types.scala:2839), scala.tools.nsc.symtab.Types$$TypeMap.mapOver(Types.scala:2763), scala.tools.nsc.symtab.Types$$AsSeenFromMap.apply(Types.scala:3138), scala.tools.nsc.symtab.Types$$AsSeenFromMap.apply(Types.scala:3009), scala.tools.nsc.symtab.Types$$TypeMap.mapOver(Types.scala:2803), scala.tools.nsc.symtab.Types$$AsSeenFromMap.apply(Types.scala:3138), scala.tools.nsc.symtab.Types$$AsSeenFromMap.apply(Types.scala:3009), scala.tools.nsc.symtab.Types$$TypeMap$$$$anonfun$$mapOverArgs$$1.apply(Types.scala:2843), scala.tools.nsc.symtab.Types$$TypeMap$$$$anonfun$$mapOverArgs$$1.apply(Types.scala:2839), scala.tools.nsc.symtab.Types$$class.map2Conserve(Types.scala:4282), scala.tools.nsc.symtab.SymbolTable.map2Conserve(SymbolTable.scala:13), scala.tools.nsc.symtab.Types$$TypeMap.mapOverArgs(Types.scala:2839), scala.tools.nsc.symtab.Types$$TypeMap.mapOver(Types.scala:2763), scala.tools.nsc.symtab.Types$$AsSeenFromMap.apply(Types.scala:3138), scala.tools.nsc.symtab.Types$$AsSeenFromMap.apply(Types.scala:3009), scala.tools.nsc.symtab.Types$$TypeMap.mapOver(Types.scala:2795), scala.tools.nsc.symtab.Types$$AsSeenFromMap.apply(Types.scala:3138), scala.tools.nsc.symtab.Types$$AsSeenFromMap.apply(Types.scala:3009), scala.tools.nsc.symtab.Types$$TypeMap.mapOver(Types.scala:2803), scala.tools.nsc.symtab.Types$$AsSeenFromMap.apply(Types.scala:3138), scala.tools.nsc.symtab.Types$$Type.asSeenFrom(Types.scala:498), scala.tools.nsc.symtab.Types$$Type.memberType(Types.scala:528), scala.tools.nsc.typechecker.Implicits$$ImplicitInfo.tpe(Implicits.scala:99), scala.tools.nsc.typechecker.Implicits$$ImplicitInfo.isCyclicOrErroneous(Implicits.scala:112), scala.tools.nsc.typechecker.Implicits$$ImplicitSearch.tryImplicit$$1(Implicits.scala:533), scala.tools.nsc.typechecker.Implicits$$ImplicitSearch$$$$anonfun$$appInfos$$1$$1.apply(Implicits.scala:546), scala.tools.nsc.typechecker.Implicits$$ImplicitSearch$$$$anonfun$$appInfos$$1$$1.apply(Implicits.scala:543), scala.collection.LinearSeqLike$$class.foreach(LinearSeqLike.scala:88), scala.collection.immutable.List.foreach(List.scala:29), scala.tools.nsc.typechecker.Implicits$$ImplicitSearch.appInfos$$1(Implicits.scala:543), scala.tools.nsc.typechecker.Implicits$$ImplicitSearch$$$$anonfun$$applicableInfos$$1.apply(Implicits.scala:554), scala.tools.nsc.typechecker.Implicits$$ImplicitSearch$$$$anonfun$$applicableInfos$$1.apply(Implicits.scala:554), scala.collection.TraversableLike$$$$anonfun$$map$$1.apply(TraversableLike.scala:159), scala.collection.TraversableLike$$$$anonfun$$map$$1.apply(TraversableLike.scala:159), scala.collection.LinearSeqLike$$class.foreach(LinearSeqLike.scala:88), scala.collection.immutable.List.foreach(List.scala:29), scala.collection.TraversableLike$$class.map(TraversableLike.scala:159), scala.collection.immutable.List.map(List.scala:29), scala.tools.nsc.typechecker.Implicits$$ImplicitSearch.applicableInfos(Implicits.scala:554), scala.tools.nsc.typechecker.Implicits$$ImplicitSearch.searchImplicit(Implicits.scala:575), scala.tools.nsc.typechecker.Implicits$$ImplicitSearch.bestImplicit(Implicits.scala:801), scala.tools.nsc.typechecker.Implicits$$class.inferImplicit(Implicits.scala:57), scala.tools.nsc.Global$$analyzer$$.inferImplicit(Global.scala:325), scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$applyImplicitArgs$$1.apply(Typers.scala:184), scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$applyImplicitArgs$$1.apply(Typers.scala:179), scala.collection.LinearSeqLike$$class.foreach(LinearSeqLike.scala:88), scala.collection.immutable.List.foreach(List.scala:29), scala.tools.nsc.typechecker.Typers$$Typer.applyImplicitArgs(Typers.scala:179), scala.tools.nsc.typechecker.Typers$$Typer.adapt(Typers.scala:822), scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3996), scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:4036), scala.tools.nsc.typechecker.Typers$$Typer.typedStat$$1(Typers.scala:2025), scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$19.apply(Typers.scala:2084), scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$19.apply(Typers.scala:2084), scala.collection.immutable.List.loop$$1(List.scala:109), scala.collection.immutable.List.mapConserve(List.scala:126), scala.tools.nsc.typechecker.Typers$$Typer.typedStats(Typers.scala:2084), scala.tools.nsc.typechecker.Typers$$Typer.typedBlock(Typers.scala:1850), scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:3693), scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3991), scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:4049), scala.tools.nsc.typechecker.Typers$$Typer.transformedOrTyped(Typers.scala:4136), scala.tools.nsc.typechecker.Typers$$Typer.typedDefDef(Typers.scala:1752), scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:3672), scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3991), scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:4036), scala.tools.nsc.typechecker.Typers$$Typer.typedStat$$1(Typers.scala:2025), scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$19.apply(Typers.scala:2084), scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$19.apply(Typers.scala:2084), scala.collection.immutable.List.loop$$1(List.scala:109), scala.collection.immutable.List.mapConserve(List.scala:126), scala.tools.nsc.typechecker.Typers$$Typer.typedStats(Typers.scala:2084), scala.tools.nsc.typechecker.Typers$$Typer.typedTemplate(Typers.scala:1492), scala.tools.nsc.typechecker.Typers$$Typer.typedModuleDef(Typers.scala:1305), scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:3666), scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3991), scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:4036), scala.tools.nsc.typechecker.Typers$$Typer.typedStat$$1(Typers.scala:2025), scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$19.apply(Typers.scala:2084), scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$19.apply(Typers.scala:2084), scala.collection.immutable.List.loop$$1(List.scala:109), scala.collection.immutable.List.mapConserve(List.scala:126), scala.tools.nsc.typechecker.Typers$$Typer.typedStats(Typers.scala:2084), scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:3659), scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3991), scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:4036), scala.tools.nsc.typechecker.Analyzer$$typerFactory$$$$anon$$2.apply(Analyzer.scala:57), scala.tools.nsc.Global$$GlobalPhase.applyPhase(Global.scala:306), scala.tools.nsc.typechecker.Analyzer$$typerFactory$$$$anon$$2$$$$anonfun$$run$$1.apply(Analyzer.scala:51), scala.tools.nsc.typechecker.Analyzer$$typerFactory$$$$anon$$2$$$$anonfun$$run$$1.apply(Analyzer.scala:51), scala.collection.Iterator$$class.foreach(Iterator.scala:552), scala.collection.mutable.ListBuffer$$$$anon$$1.foreach(ListBuffer.scala:285), scala.tools.nsc.typechecker.Analyzer$$typerFactory$$$$anon$$2.run(Analyzer.scala:51), scala.tools.nsc.Global$$Run.compileSources(Global.scala:773), scala.tools.nsc.Global$$Run.compile(Global.scala:863), scala.tools.nsc.Main$$.process(Main.scala:109), scala.tools.nsc.Main$$.main(Main.scala:123), scala.tools.nsc.Main.main(Main.scala), sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method), sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39), sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25), java.lang.reflect.Method.invoke(Method.java:597), org.jetbrains.plugins.scala.compiler.rt.ScalacRunner.main(ScalacRunner.java:74)]
+Error:sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+Error:sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+Error:sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+Error:java.lang.reflect.Method.invoke(Method.java:597)
+Error:org.jetbrains.plugins.scala.compiler.rt.ScalacRunner.main(ScalacRunner.java:74)
+Error:Caused by java.lang.Error: B in trait MAs cannot be instantiated from object scalaz.Scalaz
+Error:scala.tools.nsc.symtab.Types$$AsSeenFromMap.throwError$$1(Types.scala:3104)
+Error:scala.tools.nsc.symtab.Types$$AsSeenFromMap.instParam$$1(Types.scala:3109)
+Error:scala.tools.nsc.symtab.Types$$AsSeenFromMap.toInstance$$1(Types.scala:3120)
+Error:scala.tools.nsc.symtab.Types$$AsSeenFromMap.apply(Types.scala:3136)
+Error:scala.tools.nsc.symtab.Types$$AsSeenFromMap.apply(Types.scala:3009)
+Error:scala.tools.nsc.symtab.Types$$TypeMap$$$$anonfun$$mapOverArgs$$1.apply(Types.scala:2843)
+Error:scala.tools.nsc.symtab.Types$$TypeMap$$$$anonfun$$mapOverArgs$$1.apply(Types.scala:2839)
+Error:scala.tools.nsc.symtab.Types$$class.map2Conserve(Types.scala:4282)
+Error:scala.tools.nsc.symtab.SymbolTable.map2Conserve(SymbolTable.scala:13)
+Error:scala.tools.nsc.symtab.Types$$TypeMap.mapOverArgs(Types.scala:2839)
+Error:scala.tools.nsc.symtab.Types$$TypeMap.mapOver(Types.scala:2763)
+Error:scala.tools.nsc.symtab.Types$$AsSeenFromMap.apply(Types.scala:3138)
+Error:scala.tools.nsc.symtab.Types$$TypeMap.mapOver(Types.scala:2803)
+Error:scala.tools.nsc.symtab.Types$$TypeMap.mapOver(Types.scala:2795)
+Error:scala.tools.nsc.symtab.Types$$Type.asSeenFrom(Types.scala:498)
+Error:scala.tools.nsc.symtab.Types$$Type.memberType(Types.scala:528)
+Error:scala.tools.nsc.typechecker.Implicits$$ImplicitInfo.tpe(Implicits.scala:99)
+Error:scala.tools.nsc.typechecker.Implicits$$ImplicitInfo.isCyclicOrErroneous(Implicits.scala:112)
+Error:scala.tools.nsc.typechecker.Implicits$$ImplicitSearch.tryImplicit$$1(Implicits.scala:533)
+Error:scala.tools.nsc.typechecker.Implicits$$ImplicitSearch$$$$anonfun$$appInfos$$1$$1.apply(Implicits.scala:546)
+Error:scala.tools.nsc.typechecker.Implicits$$ImplicitSearch$$$$anonfun$$appInfos$$1$$1.apply(Implicits.scala:543)
+Error:scala.collection.LinearSeqLike$$class.foreach(LinearSeqLike.scala:88)
+Error:scala.collection.immutable.List.foreach(List.scala:29)
+Error:scala.tools.nsc.typechecker.Implicits$$ImplicitSearch.appInfos$$1(Implicits.scala:543)
+Error:scala.tools.nsc.typechecker.Implicits$$ImplicitSearch$$$$anonfun$$applicableInfos$$1.apply(Implicits.scala:554)
+Error:scala.collection.TraversableLike$$$$anonfun$$map$$1.apply(TraversableLike.scala:159)
+Error:scala.collection.TraversableLike$$class.map(TraversableLike.scala:159)
+Error:scala.collection.immutable.List.map(List.scala:29)
+Error:scala.tools.nsc.typechecker.Implicits$$ImplicitSearch.applicableInfos(Implicits.scala:554)
+Error:scala.tools.nsc.typechecker.Implicits$$ImplicitSearch.searchImplicit(Implicits.scala:575)
+Error:scala.tools.nsc.typechecker.Implicits$$ImplicitSearch.bestImplicit(Implicits.scala:801)
+Error:scala.tools.nsc.typechecker.Implicits$$class.inferImplicit(Implicits.scala:57)
+Error:scala.tools.nsc.Global$$analyzer$$.inferImplicit(Global.scala:325)
+Error:scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$applyImplicitArgs$$1.apply(Typers.scala:184)
+Error:scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$applyImplicitArgs$$1.apply(Typers.scala:179)
+Error:scala.tools.nsc.typechecker.Typers$$Typer.applyImplicitArgs(Typers.scala:179)
+Error:scala.tools.nsc.typechecker.Typers$$Typer.adapt(Typers.scala:822)
+Error:scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3996)
+Error:scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:4036)
+Error:scala.tools.nsc.typechecker.Typers$$Typer.typedStat$$1(Typers.scala:2025)
+Error:scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$19.apply(Typers.scala:2084)
+Error:scala.collection.immutable.List.loop$$1(List.scala:109)
+Error:scala.collection.immutable.List.mapConserve(List.scala:126)
+Error:scala.tools.nsc.typechecker.Typers$$Typer.typedStats(Typers.scala:2084)
+Error:scala.tools.nsc.typechecker.Typers$$Typer.typedBlock(Typers.scala:1850)
+Error:scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:3693)
+Error:scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3991)
+Error:scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:4049)
+Error:scala.tools.nsc.typechecker.Typers$$Typer.transformedOrTyped(Typers.scala:4136)
+Error:scala.tools.nsc.typechecker.Typers$$Typer.typedDefDef(Typers.scala:1752)
+Error:scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:3672)
+Error:scala.tools.nsc.typechecker.Typers$$Typer.typedTemplate(Typers.scala:1492)
+Error:scala.tools.nsc.typechecker.Typers$$Typer.typedModuleDef(Typers.scala:1305)
+Error:scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:3666)
+Error:scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:3659)
+Error:scala.tools.nsc.typechecker.Analyzer$$typerFactory$$$$anon$$2.apply(Analyzer.scala:57)
+Error:scala.tools.nsc.Global$$GlobalPhase.applyPhase(Global.scala:306)
+Error:scala.tools.nsc.typechecker.Analyzer$$typerFactory$$$$anon$$2$$$$anonfun$$run$$1.apply(Analyzer.scala:51)
+Error:scala.collection.Iterator$$class.foreach(Iterator.scala:552)
+Error:scala.collection.mutable.ListBuffer$$$$anon$$1.foreach(ListBuffer.scala:285)
+Error:scala.tools.nsc.typechecker.Analyzer$$typerFactory$$$$anon$$2.run(Analyzer.scala:51)
+Error:scala.tools.nsc.Global$$Run.compileSources(Global.scala:773)
+Error:scala.tools.nsc.Global$$Run.compile(Global.scala:863)
+Error:scala.tools.nsc.Main$$.process(Main.scala:109)
+Error:scala.tools.nsc.Main$$.main(Main.scala:123)
+Error:scala.tools.nsc.Main.main(Main.scala)
+{code}

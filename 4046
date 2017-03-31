@@ -1,0 +1,76 @@
+i don't know if this is related, but i get an Assertion error from tab-completion in the scala-console:
+
+{code}
+Welcome to Scala version 2.8.0.RC2 (Java HotSpot(TM) Client VM, Java 1.6.0_17).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> val url = new java.net.URL( "http://www.sciss.de/index.html" )
+url: java.net.URL = http://www.sciss.de/index.html
+
+scala> val is = url.openStream
+is: java.io.InputStream = sun.net.www.protocol.http.HttpURLConnection$$HttpInputStream@1f784d7
+
+scala> is.<PressTabHere>
+Exception in thread "main" java.lang.AssertionError: assertion failed: class HttpURLConnection: package http
+	at scala.tools.nsc.symtab.classfile.ClassfileParser.parseMethod(ClassfileParser.scala:604)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser$$$$anonfun$$1$$$$anonfun$$apply$$mcV$$sp$$2.apply(ClassfileParser.scala:526)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser$$$$anonfun$$1$$$$anonfun$$apply$$mcV$$sp$$2.apply(ClassfileParser.scala:526)
+	at scala.collection.immutable.Range$$ByOne$$class.foreach(Range.scala:276)
+	at scala.collection.immutable.Range$$$$anon$$2.foreach(Range.scala:259)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser$$$$anonfun$$1.apply$$mcV$$sp(ClassfileParser.scala:526)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser.parseClass(ClassfileParser.scala:543)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser.parse(ClassfileParser.scala:99)
+	at scala.tools.nsc.symtab.SymbolLoaders$$ClassfileLoader.doComplete(SymbolLoaders.scala:248)
+	at scala.tools.nsc.symtab.SymbolLoaders$$SymbolLoader.complete(SymbolLoaders.scala:62)
+	at scala.tools.nsc.symtab.SymbolLoaders$$SymbolLoader.complete(SymbolLoaders.scala:36)
+	at scala.tools.nsc.symtab.Symbols$$Symbol.info(Symbols.scala:744)
+	at scala.tools.nsc.symtab.Types$$TypeRef.thisInfo(Types.scala:1626)
+	at scala.tools.nsc.symtab.Types$$TypeRef.baseClasses(Types.scala:1814)
+	at scala.tools.nsc.symtab.Types$$Type.findMember(Types.scala:817)
+	at scala.tools.nsc.symtab.Types$$Type.nonPrivateMembers(Types.scala:450)
+	at scala.tools.nsc.interpreter.Completion$$CompilerCompletion$$class.members(Completion.scala:83)
+	at scala.tools.nsc.interpreter.Completion$$TypeMemberCompletion.members(Completion.scala:102)
+	at scala.tools.nsc.interpreter.Completion$$CompilerCompletion$$class.memberNames(Completion.scala:88)
+	at scala.tools.nsc.interpreter.Completion$$TypeMemberCompletion.memberNames(Completion.scala:102)
+	at scala.tools.nsc.interpreter.Completion$$TypeMemberCompletion.completions(Completion.scala:125)
+	at scala.tools.nsc.interpreter.CompletionAware$$class.completionsFor(CompletionAware.scala:69)
+	at scala.tools.nsc.interpreter.Completion$$TypeMemberCompletion.completionsFor(Completion.scala:102)
+	at scala.tools.nsc.interpreter.CompletionAware$$$$anonfun$$2.apply(CompletionAware.scala:76)
+	at scala.tools.nsc.interpreter.CompletionAware$$$$anonfun$$2.apply(CompletionAware.scala:76)
+	at scala.Option.map(Option.scala:75)
+	at scala.tools.nsc.interpreter.CompletionAware$$class.completionsFor(CompletionAware.scala:76)
+	at scala.tools.nsc.interpreter.Completion$$ids$$.completionsFor(Completion.scala:162)
+	at scala.tools.nsc.interpreter.Completion$$$$anonfun$$topLevelFor$$1.apply(Completion.scala:242)
+	at scala.tools.nsc.interpreter.Completion$$$$anonfun$$topLevelFor$$1.apply(Completion.scala:242)
+	at scala.collection.TraversableLike$$$$anonfun$$flatMap$$1.apply(TraversableLike.scala:224)
+	at scala.collection.TraversableLike$$$$anonfun$$flatMap$$1.apply(TraversableLike.scala:224)
+	at scala.collection.LinearSeqOptimized$$class.foreach(LinearSeqOptimized.scala:62)
+	at scala.collection.immutable.List.foreach(List.scala:46)
+	at scala.collection.TraversableLike$$class.flatMap(TraversableLike.scala:224)
+	at scala.collection.immutable.List.flatMap(List.scala:46)
+	at scala.tools.nsc.interpreter.Completion.topLevelFor(Completion.scala:242)
+	at scala.tools.nsc.interpreter.Completion$$JLineCompletion$$$$anonfun$$regularCompletion$$1$$1.apply(Completion.scala:330)
+	at scala.tools.nsc.interpreter.Completion$$JLineCompletion$$$$anonfun$$regularCompletion$$1$$1.apply(Completion.scala:330)
+	at scala.tools.nsc.interpreter.Completion$$JLineCompletion.tryCompletion$$1(Completion.scala:303)
+	at scala.tools.nsc.interpreter.Completion$$JLineCompletion.regularCompletion$$1(Completion.scala:330)
+	at scala.tools.nsc.interpreter.Completion$$JLineCompletion$$$$anonfun$$complete$$3.apply(Completion.scala:333)
+	at scala.tools.nsc.interpreter.Completion$$JLineCompletion$$$$anonfun$$complete$$3.apply(Completion.scala:333)
+	at scala.Option.orElse(Option.scala:138)
+	at scala.tools.nsc.interpreter.Completion$$JLineCompletion.complete(Completion.scala:333)
+	at jline.ArgumentCompletor.complete(ArgumentCompletor.java:173)
+	at jline.ConsoleReader.complete(ConsoleReader.java:830)
+	at jline.ConsoleReader.readLine(ConsoleReader.java:519)
+	at jline.ConsoleReader.readLine(ConsoleReader.java:449)
+	at scala.tools.nsc.interpreter.JLineReader.readOneLine(JLineReader.scala:32)
+	at scala.tools.nsc.interpreter.InteractiveReader$$$$anonfun$$readLine$$1.apply(InteractiveReader.scala:23)
+	at scala.tools.nsc.interpreter.InteractiveReader$$$$anonfun$$readLine$$1.apply(InteractiveReader.scala:23)
+	at scala.util.control.Exception$$Catch.apply(Exception.scala:79)
+	at scala.tools.nsc.interpreter.InteractiveReader$$class.readLine(InteractiveReader.scala:23)
+	at scala.tools.nsc.interpreter.JLineReader.readLine(JLineReader.scala:14)
+	at scala.tools.nsc.InterpreterLoop.readOneLine$$1(InterpreterLoop.scala:238)
+	at scala.tools.nsc.InterpreterLoop.repl(InterpreterLoop.scala:256)
+	at scala.tools.nsc.InterpreterLoop.main(InterpreterLoop.scala:555)
+	at scala.tools.nsc.MainGenericRunner$$.main(MainGenericRunner.scala:67)
+	at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
+{code}

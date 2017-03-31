@@ -1,0 +1,25 @@
+I just checked and it does leak into error messages.
+
+{code}
+% git diff
+diff --git a/test/files/pos/t7475f.scala b/test/files/pos/t7475f.scala
+index 45a4000..275d997 100644
+--- a/test/files/pos/t7475f.scala
++++ b/test/files/pos/t7475f.scala
+@@ -6,6 +6,7 @@ class C {
+   private def foo: Any = 0
+   this match {
+     case d: D =>
++      d: String
+       d.foo
+   }
+ }
+
+% qbin/scalac test/files/pos/t7475f.scala
+test/files/pos/t7475f.scala:9: error: type mismatch;
+ found   : C with D
+ required: String
+      d: String
+{code}
+
+But that's less of a WTF than not being able to access the private member of the refined type of a binder, so if we're after a simple change that's okay with me.

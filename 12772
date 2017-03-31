@@ -1,0 +1,26 @@
+In Scala 2.6.0-RC3.
+
+According to this page:
+
+http://java.sun.com/j2se/1.5.0/docs/api/java/io/Serializable.html
+
+A serializable class can declare its own serialVersionUID explicitly by
+declaring a field named "serialVersionUID" that must be static, final,
+and of type long.
+
+However, the @SerialVersionUID annotation does not make them final:
+
+{code}
+$$ cat test.scala
+@SerialVersionUID(-123)
+class A
+
+$$ scalac test.scalc
+
+$$ javap -c A
+Compiled from "test.scala"
+public class A extends java.lang.Object implements scala.ScalaObject{
+public static long serialVersionUID;
+...
+...
+{code}

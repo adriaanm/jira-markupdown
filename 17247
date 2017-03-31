@@ -1,0 +1,55 @@
+M5-virtualized is unable to compile LMS and Delite. Apparently there is a problem with __assign (and maybe others).
+
+The following code:
+{code}
+trait Foo extends EmbeddedControls {
+  
+  trait Var[T]
+  
+  def __assign[T](v:Var[T],x:T):Unit
+  
+  var mydefs: List[Any] = Nil
+  
+  def test {
+    mydefs = Nil	// <- crashes here
+  }
+  
+}
+{code}
+
+Leads to a compiler crash:
+{code}
+
+[error] uncaught exception during compilation: scala.reflect.internal.FatalError
+[error] {file:/Users/tiark/Desktop/tmpstuff/lms-develop/}LMS/compile:compile: scala.reflect.internal.FatalError: 
+[error]      while compiling: /Users/tiark/Desktop/tmpstuff/lms-develop/src/common/SplitEffects.scala
+[error]         during phase: global=erasure, atPhase=posterasure
+[error]      library version: version 2.10.0-M5
+[error]     compiler version: version 2.10.0-M5
+[error]   reconstructed args: -P:continuations:enable -classpath /Users/tiark/Desktop/tmpstuff/lms-develop/target/scala-2.10/classes:/Users/tiark/.ivy2/cache/com.typesafe/config/jars/config-0.4.0.jar:/Users/tiark/.sbt/boot/org.scala-lang.virtualized.scala-2.10.0-M5/lib/scala-compiler.jar:/Users/tiark/.ivy2/cache/org.scala-lang/scala-reflect/jars/scala-reflect-2.10.0-M5.jar -Yvirtualize -bootclasspath /System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Classes/jsfd.jar:/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Classes/classes.jar:/System/Library/Frameworks/JavaVM.framework/Frameworks/JavaRuntimeSupport.framework/Resources/Java/JavaRuntimeSupport.jar:/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Classes/ui.jar:/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Classes/laf.jar:/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Classes/sunrsasign.jar:/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Classes/jsse.jar:/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Classes/jce.jar:/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Classes/charsets.jar:/Users/tiark/.sbt/boot/org.scala-lang.virtualized.scala-2.10.0-M5/lib/scala-library.jar -d /Users/tiark/Desktop/tmpstuff/lms-develop/target/scala-2.10/classes -Xplugin:/Users/tiark/.ivy2/cache/org.scala-lang.plugins/continuations/jars/continuations-2.10.0-M5.jar
+[error] 
+[error]   last tree to typer: TypeTree(class List)
+[error]               symbol: class List in package immutable (flags: sealed abstract)
+[error]    symbol definition: sealed abstract class List extends AbstractSeq with LinearSeq with Product with GenericTraversableTemplate with LinearSeqOptimized
+[error]                  tpe: List
+[error]        symbol owners: class List -> package immutable
+[error]       context owners: method test -> class Foo$class -> package common
+[error] 
+[error] == Enclosing template or block ==
+[error] 
+[error] Apply( // def mydefs(): List in trait Foo, tree.tpe=List
+[error]   Foo$class.this."mydefs" // def mydefs(): List in trait Foo, tree.tpe=()List
+[error]   Nil
+[error] )
+[error] 
+[error] == Expanded type of tree ==
+[error] 
+[error] TypeRef(
+[error]   TypeSymbol(
+[error]     sealed abstract class List extends AbstractSeq with LinearSeq with Product with GenericTraversableTemplate with LinearSeqOptimized
+[error]     
+[error]   )
+[error] )
+[error] 
+[error] unrecoverable error
+{code}

@@ -1,0 +1,14 @@
+Example without any interactions. It incorrectly thinks inherited x is shadowed.
+
+{code}
+object X { implicit def x: Int = 42 }
+
+trait T { implicit def x: Int = 17 }
+
+object Y extends T {
+  import X._
+  def f: Int = implicitly[Int]
+}
+{code}
+
+http://stackoverflow.com/q/40709731/1296806

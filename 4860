@@ -1,0 +1,21 @@
+(In r23174) Work on the pattern matcher.  Inspired by mark harrah submitting
+patches for SI-3887 and SI-3888, but I determined that I could achieve
+the same effect by deleting a bunch of code, so I did.  This left
+only a few lines in TransMatch, so I eliminated it, which led me to
+remember that many places still reference non-existent phase transmatch,
+so those were updated.  Notes:
+
+ * This swaps equality tests on stable identifier patterns.  They
+ have never conformed to the spec (as noted long ago in ticket SI-785)
+ which says "The pattern matches any value v such that r == v" whereas
+ until now the test being performed was v == r.
+
+ * An issue was introduced with specialization in that the implementation
+ of "isTupleType" in Definitions relied upon sym == TupleClass(elems.length).
+ This test is untrue for specialized tuples, causing mysterious behavior
+ because only some tuples are specialized.  There is now "isTupleTypeOrSubtype"
+ although it seems likely the former implementation is unnecessary.
+ The issue is sidestepped if one uses "getProductArgs" to retrieve the element
+ types because it sifts through the base types for the Product symbol.
+
+Closes SI-3887 and SI-3888, review by dmharrah.

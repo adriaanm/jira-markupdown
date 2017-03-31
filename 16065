@@ -1,0 +1,5 @@
+currently scala.collection.immutable.Vector.++ simply inherits its implementation from a supertrait (through the stubs added in r24227), so if you concatenate two vectors, it doesn't take advantage that that both are the same structure, but just treats the second vector like any traversable.
+
+in theory this could be O(log n), not O(n), yes? Tiark seems to confirm it in this comment on SI-3724: "Unfortunately, for implementing a fast concat operation (we hope to do that for 2.8.1 or 2.9) heterogenous Arrays seem to be necessary (we'll be storing Int arrays next to the sub nodes). We might rethink this however, and try to stick to homogeneous Arrays."
+
+I just thought there should be enhancement ticket on this as it would still be nice to have someday.

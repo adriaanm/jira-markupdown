@@ -1,0 +1,49 @@
+Latest trunk.
+
+{code}
+case class Search(tpe: Search.Value)
+object Search
+{
+   object Value
+}
+{code}
+
+gets you 
+{code}
+Search.scala:2: error: illegal cyclic reference involving class Search
+object Search
+       ^
+error: java.lang.Error: no progress in completing object Search:<?>
+	at scala.reflect.internal.SymbolTable.abort(SymbolTable.scala:33)
+	at scala.reflect.internal.Symbols$Symbol.info(Symbols.scala:891)
+	at scala.reflect.internal.Symbols$Symbol.isSerializable(Symbols.scala:456)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedModuleDef(Typers.scala:1388)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:4009)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:4355)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStat$1(Typers.scala:2172)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$24.apply(Typers.scala:2260)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$24.apply(Typers.scala:2260)
+	at scala.collection.immutable.List.loop$1(List.scala:150)
+	at scala.collection.immutable.List.mapConserve(List.scala:166)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:2260)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:4002)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:4355)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:4414)
+	at scala.tools.nsc.typechecker.Analyzer$typerFactory$$anon$3.apply(Analyzer.scala:94)
+	at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:370)
+	at scala.tools.nsc.typechecker.Analyzer$typerFactory$$anon$3$$anonfun$run$1.apply(Analyzer.scala:86)
+	at scala.tools.nsc.typechecker.Analyzer$typerFactory$$anon$3$$anonfun$run$1.apply(Analyzer.scala:86)
+	at scala.collection.Iterator$class.foreach(Iterator.scala:690)
+	at scala.collection.mutable.ListBuffer$$anon$1.foreach(ListBuffer.scala:319)
+	at scala.tools.nsc.typechecker.Analyzer$typerFactory$$anon$3.run(Analyzer.scala:86)
+	at scala.tools.nsc.Global$Run.compileUnits(Global.scala:1031)
+	at scala.tools.nsc.Global$Run.compileSources(Global.scala:1006)
+	at scala.tools.nsc.Global$Run.compile(Global.scala:1119)
+	at scala.tools.nsc.Driver.doCompile(Driver.scala:31)
+	at scala.tools.nsc.Main$.doCompile(Main.scala:81)
+	at scala.tools.nsc.Driver.process(Driver.scala:52)
+	at scala.tools.nsc.Driver.main(Driver.scala:65)
+	at scala.tools.nsc.Main.main(Main.scala)
+{code}
+
+This is a reduced example from sbt, which currently can't be compiled for 2.10. I tried to search for a duplicate in jira but there was nothing obvious so hopefully it isn't one.

@@ -1,0 +1,17 @@
+In case anyone's on the edge of their seat, I have this all fixed and there is good news and bad news.  I lack the time for a full report right now so it'll have to be tomorrow.  As a teaser, there are a number of places in the compiler expecting
+{code}
+  case x: Array[AnyRef] => 
+{code}
+to catch everything but the primitive arrays.  So assuming that shouldn't match, what would we like to replace it with? The problem is that this:
+{code}
+  case x: Array[_] =>
+{code}
+Does not give you an Array[AnyRef] on the right hand side, so you end up with lots of currently unnecessary casts.  It looks like a bug that:
+{code}
+  case x: Array[_ <: AnyRef] =>
+{code}
+doesn't work (it says "not found: type _$$1" or thereabouts.) However this seems to work, although I haven't properly tested.  I can't get it to compile without defining an alias.
+{code}
+  type AnyAnyRef = T forSome { type T <: AnyRef }
+  case x: Array[AnyAnyRef]   => ...
+{code}

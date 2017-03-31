@@ -1,0 +1,20 @@
+Lex's comments on the issue:
+
+Let me try and summarize.  After changing -i as you suggest, and assuming
+-e makes the cut, we would have the following command-line patterns:
+
+scala { scalac-opt }  [ -i { preload file} ]
+scala { scalac-opt }  [ -e expression ] { argument }
+scala { scalac-opt }  [ -howtorun:script ]  scriptfile  { argument }
+scala { scalac-opt }  [ -howtorun:object ]  object  { argument }
+
+
+Cleaning this up, I like the look of the following:
+
+scala { scalac-opt }  [ -interact { preload-file} ]
+scala { scalac-opt }  [ -eval expression ] { argument }
+scala { scalac-opt }  [ -script ]  scriptfile  { argument }
+scala { scalac-opt }  [ -object ]  object  { argument }
+
+We could also allow -i, -e, and -s as short versions of -interact, -eval,
+and -script.

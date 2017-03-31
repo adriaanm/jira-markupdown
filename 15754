@@ -1,0 +1,63 @@
+I have a reduced test case:
+
+Types.scala:
+{code}
+package types
+
+sealed trait Document {
+  type AbstractField <: FieldBase
+  sealed trait FieldBase { self: AbstractField =>
+  }
+  sealed trait StaticFieldBase
+               extends FieldBase
+                  with StaticDocument { self: AbstractField =>
+  }
+  sealed trait DynamicFieldBase
+               extends FieldBase
+                  with DynamicDocument { self: AbstractField =>
+  }
+}
+
+sealed trait StaticDocument extends Document {
+  sealed abstract class AbstractField extends FieldBase
+}
+
+sealed trait DynamicDocument extends Document {
+  sealed abstract class AbstractField extends FieldBase
+}
+
+class Collection extends StaticDocument
+{code}
+
+Bug.scala:
+{code}
+package bug
+
+import types._
+
+class BugCollection extends Collection
+{code}
+
+Types.scala compiles, but Bug.scala not:
+{code}
+$$ scalac Types.scala
+$$ scalac -classpath . Bug.scala
+error: error while loading DynamicDocument, class file needed by DynamicDocument is missing.
+reference type DynamicFieldBase of types.Document refers to nonexisting symbol.
+one error found
+{code}
+
+Running with -Ydebug:
+{code}
+$$ sclac -Ydebug -classpath . Bug.scala
+...
+java.lang.RuntimeException: malformed Scala signature of DynamicDocument at 256; reference type DynamicFieldBase of types.this.Document refers to nonexisting symbol.
+        at scala.reflect.generic.UnPickler$$Scan.errorBadSignature(UnPickler.scala:750)
+        at scala.reflect.generic.UnPickler$$Scan.errorMissingRequirement(UnPickler.scala:753)
+        at scala.tools.nsc.symtab.classfile.UnPickler$$CompileScan.errorMissingRequirement(UnPickler.scala:43)
+        at scala.tools.nsc.symtab.classfile.UnPickler$$CompileScan.errorMissingRequirement(UnPickler.scala:28)
+        at scala.reflect.generic.UnPickler$$Scan.readSymbol(UnPickler.scala:194)
+...
+{code}
+
+I have tested 2.8.0, 2.8.1.RC3 and 2.9.0-SNAPSHOT, all of the versions are affected.

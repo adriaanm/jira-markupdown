@@ -1,0 +1,70 @@
+When a class has an annotation, type hovers do not work for references and method invocations in the code the before the annotation. Also the references of companion objects show the hover of their companion class. Hovering over types (in declarations or in constructor invocations) works correctly.
+
+Example code:
+{code}
+package bugs
+
+import org.junit.Test
+
+class HoverDoesNotApperForClassesWithJavaAnnotations {
+
+  @Test
+  def testNumber() {
+    val holder10: NumberHolder = new NumberHolder(10)
+    assert(10 == holder10.number)
+    
+    val holder32 = NumberHolder(32)
+    assert(32 == holder32.number)
+  }
+  
+  @Test
+  def testNegative() {
+    val holder = new NumberHolder(10)
+    assert(-10 == holder.negative)
+  }
+  
+  @deprecated("")
+  def noNotUseMe = ""
+}
+
+
+/** Holds a number */
+class NumberHolder(val num: Int) {
+  
+  /** The number */
+  def number = num
+  
+  /** Return the negative */
+  def negative = - num
+}
+
+/** I am the object for NumberHolder */ 
+object NumberHolder {
+  def apply(num: Int) = new NumberHolder(num)
+}
+{code}
+
+In the above code:
+ * Hovering over _new NumberHolder(10)_ will show the correct hover
+ * Hovering over _NumberHolder(32)_ will show the hover for the class NumberHolder
+ * Hovering over the _number_ or _negative_ method calls shows nothing
+ * Hovering over the _holder_, _holder10_ and _holder32_ shows nothing
+ * Hovering over any code after the test case (where there are no annotations) will show the correct hover 
+
+
+I've started the Eclipse from the command line and when I hover over the _number_ in the _holder10.number_ expression I get the following message.
+
+{code}
+selectedIdentifier: number
+starting typedTreeAt
+at pos RangePosition(HoverDoesNotApperForClassesWithJavaAnnotations.scala, 202, 202, 208) was found: <unknown tree of class class scala.tools.nsc.ast.Trees$$Annotated>[406:420]
+already attributed
+Unhandled: scala.tools.nsc.ast.Trees$$EmptyTree$$
+selectedIdentifier: number
+starting typedTreeAt
+at pos RangePosition(HoverDoesNotApperForClassesWithJavaAnnotations.scala, 202, 202, 208) was found: <unknown tree of class class scala.tools.nsc.ast.Trees$$Annotated>[406:420]
+already attributed
+Unhandled: scala.tools.nsc.ast.Trees$$EmptyTree$$
+{code}
+
+The "unknown tree of class class scala.tools.nsc.ast.Trees$$Annotated" message helped me identify that this issue is related to annotations.

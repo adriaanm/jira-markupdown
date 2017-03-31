@@ -1,0 +1,88 @@
+{code}
+import scala.language.experimental.macros
+import scala.reflect.macros.Context
+
+object Macros {
+  def tree[T,U](f:Function1[T,U]): Function1[T,U] = macro tree_impl[T,U]
+
+  def tree_impl[T:c.WeakTypeTag,U:c.WeakTypeTag](c: Context)
+      (f:c.Expr[Function1[T,U]]): c.Expr[Function1[T,U]] = {
+    import c.universe._
+
+    f match {
+      case Expr(Function(List(ValDef(_,n,_,_)),b)) =>
+        c.universe.reify(new (T => U) {
+          override def toString = c.literal(b.toString).splice
+          def apply(x: T): U = c.Expr[U](b).splice
+        })
+      case _ => sys.error("Bad function type")
+    }
+  }
+}
+{code}
+
+{code}
+16:46 ~/Projects/Kepler_macrosnippet01/sandbox (topic/macrosnippet01)$ scalac Macros.scala 
+Macros.scala:15: error: Cannot materialize {
+  final class $anon extends Object with T => U {
+    def <init>(): anonymous class $anon = {
+      $anon.super.<init>();
+      ()
+    };
+    override def toString: String = c.literal(b.toString()).splice;
+    def apply(x: T): U = c.Expr[U](b)(evidence$2).splice
+  };
+  new $anon()
+} as {
+  val $u: c.universe.type = c.universe;
+  val $m: $u.Mirror = c.universe.rootMirror;
+  $u.Expr.apply[T => U]($m, {
+    final class $treecreator1 extends TreeCreator {
+      def <init>(): $treecreator1 = {
+        $treecreator1.super.<init>();
+        ()
+      };
+      def apply[U >: Nothing <: scala.reflect.api.Universe with Singleton]($m$untyped: Mirror[U]): U#Tree = {
+        val $u: U = $m$untyped.universe;
+        val $m: $u.Mirror = $m$untyped.asInstanceOf[$u.Mirror];
+        $u.Block(scala.collection.immutable.List.apply($u.ClassDef($u.Modifiers($u.build.flagsFromBits(32L), $u.newTypeName(""), scala.collection.immutable.List.apply()), $u.newTypeName("$anon"), scala.collection.immutable.List.apply(), $u.Template(scala.collection.immutable.List.apply($u.AppliedTypeTree($u.build.Ident($m.staticClass("scala.Function1")), scala.collection.immutable.List.apply($u.build.TypeTree(evidence$1.in($m).tpe), $u.build.TypeTree(evidence$2.in($m).tpe)))), $u.build.emptyValDef, scala.collection.immutable.List.apply($u.DefDef($u.Modifiers($u.build.flagsFromBits(0L), $u.newTypeName(""), scala.collection.immutable.List.apply()), $u.newTermName("<init>"), scala.collection.immutable.List.apply(), scala.collection.immutable.List.apply(scala.collection.immutable.List.apply()), $u.TypeTree(), $u.Block(scala.collection.immutable.List.apply($u.Apply($u.Select($u.Super($u.This($u.newTypeName("")), $u.newTypeName("")), $u.newTermName("<init>")), scala.collection.immutable.List.apply())), $u.Literal($u.Constant(())))), $u.DefDef($u.Modifiers($u.build.flagsFromBits(2L), $u.newTypeName(""), scala.collection.immutable.List.apply()), $u.newTermName("toString"), scala.collection.immutable.List.apply(), scala.collection.immutable.List.apply(), $u.TypeTree(), c.literal(b.toString()).in($m).tree), $u.DefDef($u.Modifiers($u.build.flagsFromBits(0L), $u.newTypeName(""), scala.collection.immutable.List.apply()), $u.newTermName("apply"), scala.collection.immutable.List.apply(), scala.collection.immutable.List.apply(scala.collection.immutable.List.apply($u.ValDef($u.Modifiers($u.build.flagsFromBits(8192L), $u.newTypeName(""), scala.collection.immutable.List.apply()), $u.newTermName("x"), $u.build.TypeTree(evidence$1.in($m).tpe), $u.EmptyTree))), $u.build.TypeTree(evidence$2.in($m).tpe), c.Expr[U](b)(<evidence$2: error>).in($m).tree))))), $u.Apply($u.Select($u.New($u.Ident($u.newTypeName("$anon"))), $u.newTermName("<init>")), scala.collection.immutable.List.apply()))
+      }
+    };
+    new $treecreator1()
+  })($u.WeakTypeTag.apply[T => U]($m, {
+    final class $typecreator2 extends TypeCreator {
+      def <init>() = {
+        super.<init>();
+        ()
+      };
+      def apply[U >: Nothing <: Universe with Singleton]($m$untyped: Mirror[U]): U#Type = {
+        val $u: U = $m$untyped.universe;
+        val $m: $u.Mirror = $m$untyped.asInstanceOf[$u.Mirror];
+        val symdef$$refinement$1 = $u.build.newNestedSymbol($u.build.selectTerm($m.staticModule("Macros").asModule.moduleClass, "tree_impl"), $u.newTypeName("<refinement>"), $u.NoPosition, $u.build.flagsFromBits(0L), true);
+        $u.build.setTypeSignature(symdef$$refinement$1, $u.RefinedType(scala.collection.immutable.List.apply($m.staticClass("java.lang.Object").asType.toTypeConstructor, $u.TypeRef($u.ThisType($m.staticPackage("scala").asModule.moduleClass), $m.staticClass("scala.Function1"), scala.collection.immutable.List.apply(evidence$1.in($m).tpe, evidence$2.in($m).tpe))), $u.newScopeWith(), symdef$$refinement$1));
+        $u.RefinedType(scala.collection.immutable.List.apply($m.staticClass("java.lang.Object").asType.toTypeConstructor, $u.TypeRef($u.ThisType($m.staticPackage("scala").asModule.moduleClass), $m.staticClass("scala.Function1"), scala.collection.immutable.List.apply(evidence$1.in($m).tpe, evidence$2.in($m).tpe))), $u.newScopeWith(), symdef$$refinement$1)
+      }
+    };
+    new $typecreator2()
+  }))
+} because:
+scala.reflect.macros.TypecheckException: type mismatch;
+ found   : c.WeakTypeTag[U(in method tree_impl)]
+    (which expands to)  c.universe.WeakTypeTag[U(in method tree_impl)]
+ required: c.WeakTypeTag[U(in method apply)]
+    (which expands to)  c.universe.WeakTypeTag[U(in method apply)]
+        c.universe.reify(new (T => U) {
+                        ^
+one error found
+{code}
+
+{code}
+scala.reflect.macros.TypecheckException: type mismatch;
+ found   : c.WeakTypeTag[U(in method tree_impl)]
+    (which expands to)  c.universe.WeakTypeTag[U(in method tree_impl)]
+ required: c.WeakTypeTag[U(in method apply)]
+    (which expands to)  c.universe.WeakTypeTag[U(in method apply)]
+        c.universe.reify(new (T => U) {
+                        ^
+one error found
+{code}

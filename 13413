@@ -1,0 +1,25 @@
+Currently java varargs seems not supported:
+
+{code}
+scala> java.util.Arrays.asList("a", "b")
+<console>:5: error: wrong number of arguments for method asList: (Array[T])java.util.List[T]
+       java.util.Arrays.asList("a", "b")
+{code}
+
+Varargs are used frequently in modern Java APIs, for example Wicket 1.4 changed method
+
+{code}
+class MarkupContainer {
+  void add(Component component);
+}
+{code}
+
+to
+
+{code}
+class MarkupContainer {
+  void add(Component... component);
+}
+{code}
+
+This is source compatible change for Java, but this change adds some troubles for Scala.

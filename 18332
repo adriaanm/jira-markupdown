@@ -1,0 +1,27 @@
+{code}
+$ cat Z.scala 
+object Test {
+  class myAnnotation extends scala.annotation.StaticAnnotation
+  def dontForgetTheAnnotation_![@specialized(Int) X](x: X) = {
+    @myAnnotation val y = 3
+  }
+}
+
+$ scalac Z.scala -Xprint:spec
+[[syntax trees at end of                specialize]] // Z.scala
+package <empty> {
+  object Test extends Object {
+    ...
+    def dontForgetTheAnnotation_![@specialized(scala.Int) X >: Nothing <: Any](x: X): Unit = {
+      @Test.myAnnotation val y: Int = 3;
+      ()
+    };
+    <specialized> def dontForgetTheAnnotation_!$mIc$sp(x: Int): Unit = {
+      val y: Int = 3; // @Test.annotation was lost during duplication
+      ()
+    }
+  }
+}
+{code}
+
+This prevents a full fix for SI-7344.

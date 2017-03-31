@@ -1,0 +1,27 @@
+Not a repl artifact.  FWIW.
+{code}
+apm@mara:~/tmp$ scalac isfun.scala && scala isfun.Test
+scala.ScalaReflectionException: object isfun.Test not found.
+	at scala.reflect.internal.Mirrors$RootsBase.staticModule(Mirrors.scala:162)
+	at scala.reflect.internal.Mirrors$RootsBase.staticModule(Mirrors.scala:22)
+	at isfun.Test$$typecreator1$1.apply(isfun.scala:7)
+	at scala.reflect.api.TypeTags$WeakTypeTagImpl.tpe$lzycompute(TypeTags.scala:231)
+	at scala.reflect.api.TypeTags$WeakTypeTagImpl.tpe(TypeTags.scala:231)
+	at scala.reflect.api.TypeTags$class.typeOf(TypeTags.scala:335)
+	at scala.reflect.api.Universe.typeOf(Universe.scala:61)
+	at isfun.Test$.delayedEndpoint$isfun$Test$1(isfun.scala:7)
+	at isfun.Test$delayedInit$body.apply(isfun.scala:4)
+{code}
+Error under -Xrepl-class-based:
+{code}
+scala> st.definitions.isFunctionType(st.typeOf[Function0[_]])
+scala.ScalaReflectionException: class $line19.$read in JavaMirror with primordial classloader with boot classpath [/home/apm/jdk-8/jdk1.8.0/jre/lib/resources.jar:/home/apm/jdk-8/jdk1.8.0/jre/lib/rt.jar:/home/apm/jdk-8/jdk1.8.0/jre/lib/sunrsasign.jar:/home/apm/jdk-8/jdk1.8.0/jre/lib/jsse.jar:/home/apm/jdk-8/jdk1.8.0/jre/lib/jce.jar:/home/apm/jdk-8/jdk1.8.0/jre/lib/charsets.jar:/home/apm/jdk-8/jdk1.8.0/jre/lib/jfr.jar:/home/apm/jdk-8/jdk1.8.0/jre/classes:/home/apm/scala-2.11.1/lib/akka-actor_2.11-2.3.3.jar:/home/apm/scala-2.11.1/lib/config-1.2.1.jar:/home/apm/scala-2.11.1/lib/jline-2.11.jar:/home/apm/scala-2.11.1/lib/scala-actors-2.11.0.jar:/home/apm/scala-2.11.1/lib/scala-actors-migration_2.11-1.1.0.jar:/home/apm/scala-2.11.1/lib/scala-compiler.jar:/home/apm/scala-2.11.1/lib/scala-continuations-library_2.11-1.0.2.jar:/home/apm/scala-2.11.1/lib/scala-continuations-plugin_2.11.1-1.0.2.jar:/home/apm/scala-2.11.1/lib/scala-library.jar:/home/apm/scala-2.11.1/lib/scala-parser-combinators_2.11-1.0.1.jar:/home/apm/scala-2.11.1/lib/scala-reflect.jar:/home/apm/scala-2.11.1/lib/scala-swing_2.11-1.0.1.jar:/home/apm/scala-2.11.1/lib/scala-xml_2.11-1.0.2.jar] not found.
+  at scala.reflect.internal.Mirrors$RootsBase.staticClass(Mirrors.scala:123)
+  at scala.reflect.internal.Mirrors$RootsBase.staticClass(Mirrors.scala:22)
+  at $typecreator1$1.apply(<console>:52)
+  at scala.reflect.api.TypeTags$WeakTypeTagImpl.tpe$lzycompute(TypeTags.scala:231)
+  at scala.reflect.api.TypeTags$WeakTypeTagImpl.tpe(TypeTags.scala:231)
+  at scala.reflect.api.TypeTags$class.typeOf(TypeTags.scala:335)
+  at scala.reflect.api.Universe.typeOf(Universe.scala:61)
+  ... 57 elided
+{code}

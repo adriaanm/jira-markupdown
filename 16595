@@ -1,0 +1,12 @@
+I suggested this for virtpatmat and jason zaugg had the bright idea that we ought to be doing it for method-scoped lazy vals which don't escape.  Given code like:
+{code}
+class A {
+  def f(x: Boolean) = {
+    lazy val y = 5
+    if (x) y * y else 10
+  }
+}
+{code}
+We currently generate some quite heavy bytecode (attached, javap.txt.) Instead we could handle everything locally: no IntRef allocation, no monitors.
+
+I definitely avoid local lazy vals for this reason and it'd be great to be able to use them without feeling sharp pangs of guilt, because sometimes they very nicely simplify logic.

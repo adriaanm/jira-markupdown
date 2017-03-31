@@ -1,0 +1,57 @@
+The secondary problem (spurious errors in subsequent compilation unit) were due to an uncleared error buffer in the context.
+
+Code like:
+
+{code}
+context.condBufferFlush(_.kind != ErrorKinds.Divergent)
+{code}
+
+is surely involved.
+
+But I didn't find a way to trigger that problem without this bug.
+
+For posterity, the reproduction is:
+
+{noformat}
+% git checkout v2.11.0-M1-76-ga2a37ed
+% cat test/files/pos/t6966.scala
+import Ordering.{Byte, comparatorToOrdering}
+trait Format[T]
+trait InputCache[T]
+object CacheIvy {
+	implicit def basicInputCache[I](implicit fmt: Format[I], eqv: Equiv[I]): InputCache[I] = null
+	implicit def arrEquiv[T](implicit t: Equiv[T]): Equiv[Array[T]] = null
+	implicit def hNilCache: InputCache[HNil] = null
+	implicit def ByteArrayFormat: Format[Array[Byte]] = null
+	type :+:[H, T <: HList] = HCons[H,T]
+	implicit def hConsCache[H, T <: HList](implicit head: InputCache[H], tail: InputCache[T]): InputCache[H :+: T] = null
+	hConsCache[Array[Byte], HNil]
+}
+
+sealed trait HList
+sealed trait HNil extends HList
+object HNil extends HNil
+final class HCons[H, T <: HList](head : H, tail : T) extends HList
+
+% ~/code/scala cat test/files/pos/t6966b.scala
+object X  {
+	val (xs, _) = List((1, 2)).unzip
+	xs: List[Int]
+}
+
+% squalac test/files/pos/t6966.scala test/files/pos/t6966b.scala 
+test/files/pos/t6966.scala:11: error: diverging implicit expansion for type Equiv[Array[Byte]]
+starting with method comparatorToOrdering in trait LowPriorityOrderingImplicits
+	hConsCache[Array[Byte], HNil]
+                  ^
+test/files/pos/t6966b.scala:3: error: type mismatch;
+ found   : Any
+ required: List[Int]
+	xs: List[Int]
+        ^
+test/files/pos/t6966b.scala:3: warning: a pure expression does nothing in statement position; you may be omitting necessary parentheses
+	xs: List[Int]
+          ^
+one warning found
+two errors found
+{noformat}

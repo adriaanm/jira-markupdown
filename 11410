@@ -1,0 +1,17 @@
+The jvms does say:
+
+bq. Oracle's Java Virtual Machine implementation does not check the well-formedness of Signature attributes during class loading or linking. Instead, Signature attributes are checked by methods of the Java SE platform class libraries which expose generic signatures of classes, interfaces, constructors, methods, and fields. Examples include getGenericSuperclass in Class and toGenericString in java.lang.reflect.Executable.
+(§4.7.9 in jdk8, and something similar at $4.3.4 in jdk7)
+
+But even java reflection seems fine with it:
+
+{code}
+scala> val c = classOf[Tuple1[String]]
+c: Class[(String,)] = class scala.Tuple1
+
+scala> c.getInterfaces
+res0: Array[Class[_]] = Array(interface scala.Product1, interface scala.Serializable)
+
+scala> c.getGenericInterfaces
+res1: Array[java.lang.reflect.Type] = Array(scala.Product1<T1>, interface scala.Product, interface scala.Serializable)
+{code}

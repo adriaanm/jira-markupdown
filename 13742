@@ -1,0 +1,11 @@
+Defining new refined instances of an abstract case class with equal parameter values, the instances are equal, but their hashCodes are not. This seems against the spec.
+
+scala> abstract case class C(id: String)
+scala> val A1 = new C("A") {}
+scala> val A2 = new C("A") {}
+
+scala> A1 == A2
+res1: Boolean = true
+
+scala> A1.hashCode == A2.hashCode
+res2: Boolean = *false*

@@ -1,0 +1,20 @@
+In the file [^classes.scala], we have written a series of {{case classes}}, bound by some packages and using package objects, as in the example. 
+
+We compiled these classes to Java Bytecode. For each case class 'X', this produces a 'X.class' file, for the instances of the class, and a 'X$.class' file, for the single instance of the companion object. Once we had these 'class' files, we inspected them using the 'javap' command. 
+
+What we have noticed is that the file 'F$.class', which gives the methods in the companion object for the case class 'F', is missing the following methods:
+
+{code:java}
+public final int copy$extension(int, int);
+public final int copy$default$1$extension(int);
+public final java.lang.String productPrefix$extension(int);
+public final int productArity$extension(int);
+public final java.lang.Object productElement$extension(int, int);
+public final scala.collection.Iterator<java.lang.Object> productIterator$extension(int);
+public final boolean canEqual$extension(int, java.lang.Object);
+public final int hashCode$extension(int);
+public final boolean equals$extension(int, java.lang.Object);
+public final java.lang.String toString$extension(int);
+{code}
+
+Since the only difference between packages x and y is the order in which the package object is declared, this is clearly a bug in the bytecode generation phase.

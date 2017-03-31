@@ -1,0 +1,18 @@
+_> I think 6.26.4 case 3 applies. args are typed first with type params taken as constants, then as undefined._
+
+In that case, if I'm understanding this correctly, the order of actions here is:
+
+# The compiler attempts to choose* the appropriate overloaded version of {{math.max}} to eta-expand. The expected type for the argument to {{reduce}} at this point is {{(A1, A1) ⇒ A1}} for {{A1 >: Long}}. The compiler chooses the most specific variant of {{math.max}}, i.e. {{(Int, Int) => Int}}
+# As the second step, the compiler attempts to determine the type argument to {{reduce}} according to 6.26.4, with solution {{A1 == AnyVal}}
+
+If that sequence is correct, would it be accurate to say that the choice of {{(Int, Int) => Int}} in the first step is not influenced by the type bound {{A1 >: Long}}? If so, why does the following example not also fail to compile?
+
+{code:scala}
+def maxT[T >: Long](a: Int, b: Int): T = math.max(a, b)
+{code}
+
+In this second case, it appears as though the compiler either solves the type argument equation, with  result {{T == Long}}, _before_ overload resolution, or that the type bound {{T >: Long}} _is_ taken into account during overload resolution in a way that differs from the {{reduce(math.max)}} case.
+
+I hope I'm just missing something simple here - if so, apologies for the confusion!
+
+??*according to the final "Assume finally that e does not appear as a function..." section in 6.26.3???

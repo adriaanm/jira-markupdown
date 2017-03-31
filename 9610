@@ -1,0 +1,21 @@
+Right, nobody's test cases seem particularly self-contained but yesterday I minimized my way to one which definitely works on 2.10.0 and for which the commit I cited was when it stopped working post-2.10 (but it doesn't work in 2.9 either.) Here is another which fits that description:
+{code}
+class LM {
+  class Node[B1]
+  case class CC(x: LM)
+
+  // crash
+  val g: (CC => Any) = {
+    case CC(tttt) =>
+      // tttt.##
+      new tttt.Node[Any]()
+  }
+}
+{code}
+{noformat}
+% scalac-hash 494ba94518^ z.scala 
+% scalac-hash 494ba94518 z.scala 
+error: symbol value tttt does not exist in LM.<init>
+error: uncaught exception during compilation: scala.reflect.internal.FatalError
+error: scala.reflect.internal.FatalError: 
+{noformat}

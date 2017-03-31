@@ -1,0 +1,32 @@
+See this example:
+
+{code}
+object Test{
+ def t(i:Int):String = null
+ def t[T,U](m:scala.reflect.Code[T=>U]):T=>U = null
+}
+{code}
+
+Method t is overloaded twice, once with a
+scala.reflect.Code parameter. If I try to call the first simple
+version, everything works fine:
+{code}
+scala> Test.t(5)
+res3: String = null
+{code}
+But calling the second method is not possible:
+{code}
+scala> Test.t(3 + (_:Int))
+<console>:6: error: overloaded method value t with alternatives
+[T,U](m: scala.reflect.Code[(T) => U])(T) => U <and> (i: Int)String
+cannot be applied to ((Int) => Int)
+      Test.t(3 + (_:Int))
+{code}
+Removing the first method, solves the problem, but there are many
+occasions where it would be nice, if it was possible to overload such methods.
+
+This did probably never work. I checked it with 2.7.x and 2.8 r18784.
+
+The underlying problem is, that overload resolution was never handled these cases. To make it work Inferencer.isApplicable must treat scala.reflect.Code[T] as just T.
+
+I attached a small patch which fixes this issue.

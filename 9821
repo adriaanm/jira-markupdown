@@ -1,0 +1,17 @@
+Thanks for looking into that. It's true that I missed {{SymbolLoader}} which is not used anywhere in this example.
+
+Now, when it comes to reproduction I think yours is slightly different (too small). If you change {{JavaPlatform}} to look like this:
+{code}
+trait JavaPlatform extends Platform {
+  type PlatformLoaders = loaders2.type 
+
+  object loaders2 extends SymbolLoaders {
+    type LoadersPlatform = JavaPlatform.this.type  
+    
+    val platform: JavaPlatform.this.type = ???    
+  }
+  val loaders: loaders2.type = loaders2
+}
+{code}
+
+then the cyclic error disappears. All we did was an introduction of a dummy object {{loaders2}} but the cycle is still there. If this typecheck then the original code should type check as well.

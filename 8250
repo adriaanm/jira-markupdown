@@ -1,0 +1,69 @@
+While the workaround compiles, it triggers a {{VerifyError}}
+
+{code}
+ RUNNER=scala scala-hash v2.10.0 -nc 
+[info] v2.10.0 => /Users/jason/usr/scala-v2.10.0-0-g18481ce
+Welcome to Scala version 2.10.0-20121205-112020-18481cef9b (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_27).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> import scala.reflect.runtime.universe._
+import scala.reflect.runtime.universe._
+
+scala> 
+
+scala> class A[X](implicit val tt: TypeTag[X]) {println(tt)}
+defined class A
+
+scala> 
+
+scala> object Obj {
+     |   val x = {
+     |     object InVal extends A[String]
+     |     InVal
+     |     5
+     |   }
+     | }
+defined module Obj
+
+scala> Obj
+java.lang.VerifyError: (class: Obj$InVal$2$, method: <init> signature: ()V) Expecting to find object/array on stack
+	at Obj$.InVal$1$lzycompute(<console>:13)
+{code}
+
+With my in-progress patch for SI-6666:
+
+
+{code}
+ticket/6666 ~/code/./build/quick/bin/scalac test/files/run/t6259b.scala
+test/files/run/t6259b.scala:9: error: Implementation restriction: anonymous class $anon requires premature access to object InVal.
+    object InVal extends A[String]
+                         ^
+one error found
+ticket/6666 ~/code/scala2 cat !$
+cat test/files/run/t6259b.scala
+package t6259
+
+import scala.reflect.runtime.universe._
+
+class A[X](implicit val tt: TypeTag[X]) {println(tt)}
+
+object Obj {
+  val x = {
+    object InVal extends A[String]
+    InVal
+    5
+  }
+}
+
+object Test extends App {
+  Obj
+}
+ticket/6666 ~/code/scala2 ./build/quick/bin/scalac test/files/run/t6259b.scala
+test/files/run/t6259b.scala:9: error: Implementation restriction: anonymous class $anon requires premature access to object InVal.
+    object InVal extends A[String]
+                         ^
+one error found
+{code}
+
+We could make this problem go away by allowing {{moduleClassOf[Companion.type]}}.

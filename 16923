@@ -1,0 +1,88 @@
+{code}
+trait X[A] {
+  def x: A
+}
+
+trait XPrint[A] extends X[A] {
+  abstract override def x: A = {
+    val a = super.x
+    println(a)
+    a
+  }
+}
+
+trait F[A, B] { outer =>
+  def apply(xv: X[A]): X[B]
+  
+  def andThen[C](f: F[B, C]): F[A, C] = new F[A, C] {
+    def apply(xv: X[A]): X[C] = f(new XX(xv) with XPrint[B])
+  }
+
+  class XX(xv: X[A]) extends X[B] {
+    def x = outer(xv).x
+  }
+}
+{code}
+
+This fails to compile with the following error:
+
+{noformat}
+Test.scala:18: error: type mismatch;
+ found   : this.XX with XPrint[B]
+ required: X[B]
+
+    def apply(xv: X[A]): X[C] = f(new XX(xv) with XPrint[B])
+                                  ^
+one error found
+{noformat}
+
+I thought a variance issue might be to blame, but changing A to be covariant gives another interesting error:
+
+{code}
+trait X[+A] {
+  def x: A
+}
+
+trait XPrint[+A] extends X[A] {
+  abstract override def x: A = {
+    val a = super.x
+    println(a)
+    a
+  }
+}
+
+trait F[-A, +B] { outer =>
+  def apply(xv: X[A]): X[B]
+  
+  def andThen[C](f: F[B, C]): F[A, C] = new F[A, C] {
+    def apply(xv: X[A]): X[C] = f(new XX(xv) with XPrint[B])
+  }
+
+  class XX(xv: X[A]) extends X[B] {
+    def x = outer(xv).x
+  }
+}
+{code}
+
+gives the following:
+
+{noformat}
+Test.scala:18: error: illegal inheritance;
+ anonymous class $anon inherits different type instances of trait X:
+X[B] and X[C]
+    def apply(xv: X[A]): X[C] = f(new XX(xv) with XPrint[B])
+                                      ^
+one error found
+{noformat}
+
+This is similar to the error I encountered in the original, non-minimized case. In the original case, however, the type parameters were invariant throughout; also, there is a related crasher that I've been unable to reproduce in a minimized case; in the crash, I get the following error, which provides no indication of the original source of the error:
+
+{noformat}
+[info] Compiling 2 Scala sources to /home/workspace/kjn-storage/platform/yggdrasil/target/scala-2.9.1/classes...
+[error] {file:/home/workspace/kjn-storage/platform/}yggdrasil/compile:compile: scala.tools.nsc.symtab.Types$TypeError: type mismatch;
+[error]  found   : com.precog.yggdrasil.Column[Boolean]
+[error]  required: com.precog.yggdrasil.Column[A]
+[error] Total time: 3 s, completed Apr 19, 2012 10:01:17 PM
+{noformat}
+
+In that original error case, the XX class was declared inside of the anonymous F; in the minimized case, moving the XX class inside of the anonymous F eliminates the two errors first noted.

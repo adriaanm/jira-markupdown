@@ -1,0 +1,27 @@
+In scala 2.9.2 Range is an extension of Seq.
+For me Range class is an extension of Set class, I don't understand scala implementation choice.
+Indeed, it is possible to have a range like : Range(1,2,3,2,3,1).
+For me it makes no sense.
+
+For exemple:
+
+{code:title=scala1|borderStyle=solid}
+    scala> Range(1,4) ++ Range(2,4) ++ Range(1,2)
+    res1: scala.collection.immutable.IndexedSeq[Int] = Vector(1, 2, 3, 2, 3, 1)
+{code}
+
+Or
+{code:title=scala1|borderStyle=solid}
+    scala> Range(1,4).union(Range(2,4))
+    res2: scala.collection.immutable.IndexedSeq[Int] = Vector(1, 2, 3, 2, 3)
+{code}
+
+Moreover, union methode or ++ operator do not produce Range object but a IndexedSeq object.
+
+It not what it is inside api doc at use-cases descriptions (http://www.scala-lang.org/api/current/index.html#scala.collection.immutable.Range)
+
+And, it is impossible to convert easily IndexedSeq in Range.
+
+
+Why it is possible to have a Range with values can be duplicated ?
+Why it is impossible to get a Range object with a union ?

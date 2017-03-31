@@ -1,0 +1,20 @@
+{code:Java}
+class Contra[-T]
+trait A
+trait B extends A
+trait C extends B
+def contraLBUB[a >: C <: A](): Contra[a] = null
+def contraLB[a >: C](): Contra[a] = null
+contraLBUB() //inferred Contra[C] instead of Contra[A]
+contraLB() //inferred Contra[C] instead of Contra[Any]
+{code}
+
+According to Language specification (6.26.4 Case 2):
+If several substitutions exist,
+local-type inference will choose for each type variable ai a minimal or maximal type
+Ti of the solution space. A maximal type Ti will be chosen if the type parameter ai
+appears contravariantly (§4.5) in the type T of the expression. A minimal type Ti
+will be chosen in all other situations, i.e. if the variable appears covariantly, nonvariantly
+or not at all in the type T.
+
+What we can see here. Value has Type Contra[a]. So position of a is contravariant. There is no covariant or invariant positions of a => maximal solution should be chosen.

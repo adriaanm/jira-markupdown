@@ -1,0 +1,35 @@
+It is reproducible for me with latest JDK 8:
+{code}
+08:02:51 ~$ java -version
+java version "1.8.0_102"
+Java(TM) SE Runtime Environment (build 1.8.0_102-b14)
+Java HotSpot(TM) 64-Bit Server VM (build 25.102-b14, mixed mode)
+08:02:55 ~$ scala
+Welcome to Scala 2.11.8 (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_102).
+Type in expressions for evaluation. Or try :help.
+
+scala> :paste
+// Entering paste mode (ctrl-D to finish)
+
+import scala.collection.immutable.HashMap
+val m1 = HashMap[String, Seq[Int]]().updated("0", Seq(0))
+val m2 = HashMap[String, Seq[Int]]().updated("0", Seq(1))
+// println(m1)
+// println(m2)
+m1.merged(m2) {
+  case ((k, v1), (_, v2)) => (k, v1 ++ v2)
+}
+
+// Exiting paste mode, now interpreting.
+
+scala.MatchError: (null,null) (of class scala.Tuple2)
+  at $anonfun$1.apply(<console>:18)
+  at $anonfun$1.apply(<console>:18)
+  at scala.collection.immutable.HashMap$$anon$2$$anon$3.apply(HashMap.scala:150)
+  at scala.collection.immutable.HashMap$HashMap1.updated0(HashMap.scala:200)
+  at scala.collection.immutable.HashMap$HashMap1.merge0(HashMap.scala:225)
+  at scala.collection.immutable.HashMap.merged(HashMap.scala:117)
+  ... 37 elided
+
+
+{code}

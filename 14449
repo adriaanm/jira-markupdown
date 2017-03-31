@@ -1,0 +1,50 @@
+Using the following ant script, the scalascript task is used to generate a shell script for executing scala programs.
+
+{code}
+<project name="example" default="go">
+  <property name="scala.home" value="${user.home}/lib/scala"/>
+  <property name="scala.lib.dir" value="${scala.home}/lib"/>
+  <property name="scala.comp.jar" value="${scala.lib.dir}/scala-compiler.jar"/>
+  <property name="scala.lib.jar" value="${scala.lib.dir}/scala-library.jar"/>
+  <property name="build.dir" value="${basedir}/build"/>
+
+  <target name="go">
+    <mkdir dir="${build.dir}"/>
+
+    <!-- Setup sbaz task for ant -->
+    <taskdef resource="scala/tools/ant/antlib.xml">
+      <classpath>
+        <pathelement location="${scala.comp.jar}"/>
+        <pathelement location="${scala.lib.jar}"/>
+      </classpath>
+    </taskdef>
+
+    <!-- Generate bin scripts -->
+    <scalascript
+      file="${build.dir}/myBuggyScript"
+      classpath="$SCALA_HOME/lib/scala-library.jar"
+      class="com.example.Main"
+      javaFlags="-Djava.util.logging.config.file=$SCALA_HOME/meta/logging.properties"
+    />
+  </target>
+</project>
+{code}
+
+I would expect the generated Unix script to contain the TOOL_CLASSPATH value of: 
+{code}
+TOOL_CLASSPATH="$SCALA_HOME/lib/scala-library.jar"
+{code}
+
+I end up with a script having a classpath like the following:
+{code}
+TOOL_CLASSPATH="/home/matlikj/sources/packaging/java/$SCALA_HOME/lib/scala-library.jar"
+{code}
+
+Additionally, the windows batch file reflects the same incorrect path, though the slashes are correct for the Windows platform.
+
+According to the Ant documentation found at http://ant.apache.org/manual/develop.html, the following processing is performed by Ant prior to passing a Path object to a setter method.
+  Ant will tokenize the value specified in the build file, accepting : and ; as path separators. Relative path names will be interpreted as relative to the project's basedir.
+
+This should probably be changed to be a String parameter, and the required processing logic for manipulating that string to support multiple platforms (including decision between $SCALA_HOME and %SCALA_HOME% variable format) should be done within the {{scala.tools.ant.ScalaTool}} class.
+
+I chose the Compiler component when creating this ticket because the source exists in the scala/src/compiler directory.  I wasn't sure if this is the correct categorization.  I am available to implement this fix if it makes sense.  While I have committed code for sbaz, I have not tried touching code outside that space to date.

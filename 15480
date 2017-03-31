@@ -1,0 +1,36 @@
+Running following code produces java.lang.VerifyError. It fails with 2.8.0.RC6 and works with 2.7.7.
+
+{code}
+class Env
+class Dep(arg: AnyRef)(implicit val env: Env)
+class Component(implicit env: Env){
+  def dep = new Dep(Inner()){}
+
+  case class Inner()(implicit env: Env)
+}
+
+object ThisInConstructorProblem{
+  def main(args: Array[String]){
+    val foo = new Component()(new Env)
+    foo.dep
+  }
+}
+{code}
+
+Note that the code works if the implicit env in class Dep is not val:
+
+{code}
+class Dep(arg: AnyRef)(implicit env: Env)
+{code}
+
+The code also works if the instantiated class is not inner class:
+
+{code}
+  def dep = new Dep(Inner())
+{code}
+
+It also works if the Inner class does not take the implicit parameter:
+{code}
+  case class Inner()
+{code}
+

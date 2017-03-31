@@ -1,0 +1,31 @@
+This bug is murdering me, I had to find some kind of workaround.  I think I have in r20993, although this is not confirmed.  I can't trivially reproduce it anymore though.  The cause appears to be pickling based on an inferred type which then ends up inconsistent with someone else's ideas.  Obviously the cause of the bug is still unaddressed.
+
+In r20992 JavaPlatform has 145 pickled entries.  In r20993, the only difference annotating the return type in a not-obviously-connected class, it has 120.  The first 94 entries are the same, and then the bigger one has 25 extra entries, shown here:
+
+{code}
+95,627: VALsym 5: 96(newPhase) 89 300[<deferred> <method>]  97
+96,634: TERMname 8: newPhase
+97,644: METHODtpe 2: 98 113
+98,648: TYPEREFtpe 2: 99 111
+99,652: SINGLEtpe 2: 100 109
+100,656: SINGLEtpe 2: 101 107
+101,660: SINGLEtpe 2: 102 105
+102,664: SINGLEtpe 2: 56 103
+103,668: EXTref 2: 104(genJVM) 62
+104,672: TERMname 6: genJVM
+105,680: EXTref 2: 59(global) 106
+106,684: EXTMODCLASSref 2: 104(genJVM) 62
+107,688: EXTref 2: 108(icodes) 62
+108,692: TERMname 6: icodes
+109,700: EXTref 2: 59(global) 110
+110,704: EXTMODCLASSref 2: 108(icodes) 62
+111,708: EXTref 2: 112(GlobalPhase) 62
+112,712: TYPEname 11: GlobalPhase
+113,725: EXTref 2: 114(p) 115
+114,729: TERMname 1: p
+115,732: EXTref 2: 96(newPhase) 116
+116,736: EXTref 2: 117(GenJVM) 118
+117,740: TYPEname 6: GenJVM
+118,748: EXTMODCLASSref 2: 119(jvm) 2
+119,752: TERMname 3: jvm
+{code}

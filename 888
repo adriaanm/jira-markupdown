@@ -1,0 +1,11 @@
++1 on this issue.
+
+I've encountered another issue with projection+map:  it behaves differently depending on whether the underlying iterable is a List or something else.  Specifically, given something like this:
+
+someIterable.projection.map(_ * x).find(_ == y)
+
+the iterable produced by List.projection always calls map once more than necessary.  For example, if the find matches the first element of the List, the projection will still invoke map on the second element.
+
+The problem is the same as the one articulated by gestalt:  If the mapping function has side effects or (more likely) is simply time-consuming, then using projection is impractical unless the application knows that the iterable is not a List.
+
+Furthermore the "always call the map function once more than necessary" behavior of List.projection.map is counterintuitive and is *never* the behavior that the application expects or wants, even if the application can tolerate it.

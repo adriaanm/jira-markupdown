@@ -1,0 +1,84 @@
+= Problem definition =
+Current _Iterator.++()_ implementation looks as below:
+{code}
+  def ++[B >: A](that: => Iterator[B]): Iterator[B] = new Iterator[B] {
+    // optimize a little bit to prevent n log n behavior.
+    private var cur : Iterator[B] = self 
+    // this was unnecessarily looping forever on x ++ x
+    def hasNext = cur.hasNext || ((cur eq self) && {
+      val it = that
+      it.hasNext && {
+        cur = it
+        true
+      }
+    })
+    def next() = { hasNext; cur.next() }
+  }
+{code}
+----
+There are couple of performance-related problems with it:
+
+ * both _hasNext()_ and _next()_ methods of _Iterator_ object returned from _Iterator.++()_ may delegate to 'that' parameter, i.e. make a new call on it. There can be many such nested calls in case of big number of linked iterators. I observed significant performance degradation because of that;
+ * usual _Iterator_ usage scenario is something like the one below:
+{code}
+while (i.hasNext) {
+  val data = i.next
+  // process data
+}
+{code}
+_Iterator_ object returned from _Iterator.++()_ doesn't take that into consideration and calls _hasNext()_ from _next()_ all the time, i.e. there is a possible case that large number of nested _hasNext()_ calls are performed twice per-iteration;
+
+= Suggested implementation =
+Here is suggested implementation that addresses concerns mentioned above:
+{code}
+    def ++[B >: A](that: => Iterator[B]) : Iterator[B] = {
+
+      case class Node[T](val current: () => Iterator[T]) {
+        var next: Option[Node[T]] = None
+        def append[U >: T](i: => Iterator[U]) : Node[U] = {
+          def doAppend(to: Node[U], from: Option[Node[T]]) : Node[U] = {
+            from match {
+              case None => to
+              case Some(n) => {val node: Node[U] = Node(n.current); to.next = Some(node); doAppend(node, n.next)}
+            }
+          }
+          val result: Node[U] = Node(current)
+          lazy val it = i
+          doAppend(result, next).next = Some(Node(() => it))
+          result
+        }
+      }
+
+      class CombinedIterator[T](var head: Node[T]) extends Iterator[T] {
+
+        var checkNext = true
+
+        def hasNext = {
+          checkNext = false
+          if (head.current().hasNext) true
+          else head.next match {
+            case None => false
+            case Some(x) => {head = x; hasNext}
+          }
+        }
+
+        def next() = {
+          if (checkNext) hasNext
+          checkNext = true
+          head.current().next
+        }
+
+        override def ++[B >: T](that: => Iterator[B]) = {
+          new CombinedIterator(head.append(that))
+        }
+      }      
+
+      val node: Node[B]= Node(() => self)
+      lazy val t = that
+      node.next = Some(Node(() => t))
+      new CombinedIterator(node)
+    }
+{code}
+
+= Harness =
+I attached simple program that uses current and suggested approaches to iterate the same data. New approach performs approximately the same as the current at situation with small number of comprised iterators. However, it outperforms dramatically when number of glued iterators is increased, for example, it shows about 700 times performance boost on my machine in scenario with 150 compound iterators of 150 elements.

@@ -1,0 +1,110 @@
+An !AssertionError occurs when compiling the following code.  Versions 2.7.0-final, 2.6.1-final, and the April 16 nightly build all produce the error.
+
+{code}
+
+
+class Top[A] {
+	type AType = A
+}
+
+trait Node extends NotNull { outer =>
+	type T <: Node
+	def prepend = new Node { type T = outer.type }
+}
+
+class Main[NextType <: Node](value: Node { type T = NextType })
+	extends Top[Node { type T = NextType }] {
+	
+	new Main[AType]( (value: AType).prepend )
+}
+
+
+{code}
+
+
+I meant to put 
+
+{{ type T <: NextType }} instead of {{ type T = NextType }}
+
+in the Main section and with this change, it compiles without an error.
+
+The stack trace using the April 16th nightly build:
+
+{code}
+Exception in thread "main" java.lang.AssertionError: assertion failed: computing closure of Main.this.AType with Singleton:true
+        at scala.Predef$$.assert(Predef.scala:92)
+        at scala.tools.nsc.symtab.Types$$CompoundType.computeClosure$$1(Types.scala:1038)
+        at scala.tools.nsc.symtab.Types$$CompoundType$$$$anonfun$$closure$$1.apply(Types.scala:1062)
+        at scala.tools.nsc.symtab.Types$$CompoundType$$$$anonfun$$closure$$1.apply(Types.scala:1062)
+        at scala.tools.nsc.symtab.Types$$CompoundType.memo(Types.scala:1120)
+        at scala.tools.nsc.symtab.Types$$CompoundType.closure(Types.scala:1062)
+        at scala.tools.nsc.symtab.Types$$Type.closurePos(Types.scala:556)
+        at scala.tools.nsc.symtab.Symbols$$Symbol.isNonBottomSubClass(Symbols.scala:728)
+        at scala.tools.nsc.symtab.Symbols$$Symbol.isSubClass(Symbols.scala:731)
+        at scala.tools.nsc.symtab.Symbols$$Symbol.existentialToString(Symbols.scala:1264)
+        at scala.tools.nsc.typechecker.Infer$$Inferencer$$$$anonfun$$scala$$tools$$nsc$$typechecker$$Infer$$Inferencer$$$$existentialContext$$1.apply(Infer.scala:240)
+        at scala.tools.nsc.typechecker.Infer$$Inferencer$$$$anonfun$$scala$$tools$$nsc$$typechecker$$Infer$$Inferencer$$$$existentialContext$$1.apply(Infer.scala:240)
+        at scala.List.map(List.scala:759)
+        at scala.tools.nsc.typechecker.Infer$$Inferencer.scala$$tools$$nsc$$typechecker$$Infer$$Inferencer$$$$existentialContext(Infer.scala:240)
+        at scala.tools.nsc.typechecker.Infer$$Inferencer$$$$anonfun$$foundReqMsg$$1.apply(Infer.scala:245)
+        at scala.tools.nsc.typechecker.Infer$$Inferencer$$$$anonfun$$foundReqMsg$$1.apply(Infer.scala:246)
+        at scala.tools.nsc.typechecker.Infer$$Inferencer.withDisambiguation(Infer.scala:303)
+        at scala.tools.nsc.typechecker.Infer$$Inferencer.foundReqMsg(Infer.scala:244)
+        at scala.tools.nsc.typechecker.Infer$$Inferencer.typeErrorMsg(Infer.scala:250)
+        at scala.tools.nsc.typechecker.Infer$$Inferencer.typeError(Infer.scala:266)
+        at scala.tools.nsc.typechecker.Infer$$Inferencer.typeErrorTree(Infer.scala:272)
+        at scala.tools.nsc.typechecker.Typers$$Typer.adapt(Typers.scala:813)
+        at scala.tools.nsc.typechecker.Typers$$Typer.adapt(Typers.scala:618)
+        at scala.tools.nsc.typechecker.Typers$$Typer.adapt(Typers.scala:627)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3248)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typedArg(Typers.scala:1591)
+        at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$typedArgs$$2.apply(Typers.scala:1607)
+        at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$typedArgs$$2.apply(Typers.scala:1607)
+        at scala.List$$.map2(List.scala:287)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typedArgs(Typers.scala:1607)
+        at scala.tools.nsc.typechecker.Typers$$Typer.doTypedApply(Typers.scala:1691)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typedApply$$1(Typers.scala:2553)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:3140)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3243)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3280)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typedStat$$1(Typers.scala:1540)
+        at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$19.apply(Typers.scala:1585)
+        at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$19.apply(Typers.scala:1585)
+        at scala.List$$.loop$$1(List.scala:254)
+        at scala.List$$.mapConserve(List.scala:271)
+        at scala.List$$.loop$$1(List.scala:258)
+        at scala.List$$.mapConserve(List.scala:271)
+        at scala.List$$.loop$$1(List.scala:258)
+        at scala.List$$.mapConserve(List.scala:271)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typedStats(Typers.scala:1585)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typedTemplate(Typers.scala:1165)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typedClassDef(Typers.scala:1039)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:2972)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3243)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3280)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typedStat$$1(Typers.scala:1540)
+        at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$19.apply(Typers.scala:1585)
+        at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$19.apply(Typers.scala:1585)
+        at scala.List$$.loop$$1(List.scala:254)
+        at scala.List$$.mapConserve(List.scala:271)
+        at scala.List$$.loop$$1(List.scala:258)
+        at scala.List$$.mapConserve(List.scala:271)
+        at scala.List$$.loop$$1(List.scala:258)
+        at scala.List$$.mapConserve(List.scala:271)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typedStats(Typers.scala:1585)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:2968)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3243)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3280)
+        at scala.tools.nsc.typechecker.Analyzer$$typerFactory$$$$anon$$2.apply(Analyzer.scala:40)
+        at scala.tools.nsc.Global$$GlobalPhase.applyPhase(Global.scala:257)
+        at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:243)
+        at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:243)
+        at scala.Iterator$$class.foreach(Iterator.scala:395)
+        at scala.collection.mutable.ListBuffer$$$$anon$$1.foreach(ListBuffer.scala:266)
+        at scala.tools.nsc.Global$$GlobalPhase.run(Global.scala:243)
+        at scala.tools.nsc.Global$$Run.compileSources(Global.scala:561)
+        at scala.tools.nsc.Global$$Run.compile(Global.scala:646)
+        at scala.tools.nsc.Main$$.process(Main.scala:84)
+        at scala.tools.nsc.Main$$.main(Main.scala:98)
+        at scala.tools.nsc.Main.main(Main.scala
+{code}

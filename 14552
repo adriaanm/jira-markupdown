@@ -1,0 +1,21 @@
+I haven't been able to figure out why this happens, but: Actor.receiveWithin/reactWithin tend to TIMEOUT earlier than asked in some weird conditions (many actors being created/exited). I think it's even worse if the actors that receiveWithin() are thread actor proxies (my app tests tend to break more frequently than the attached testcase).
+
+I've attached a testcase (foo.scala). It does the following: starts a large number of actors that reactWithin and then increment a counter (incrementing a timeout counter on timeout) and a small number of actors that receiveWithin and then increment a counter.  Main thread then prints the number of receives/reacts/timeouts.
+
+Here's what happens on my machine every once in a while:
+{code}
+r1254323803453 started
+r1254323804033 reacts done: 0, receives done: 0, react timeouts: 0, receive timeouts: 0
+r1254323804542 reacts done: 146, receives done: 4, react timeouts: 0, receive timeouts: 0
+r1254323805051 reacts done: 414, receives done: 8, react timeouts: 0, receive timeouts: 0
+r1254323805560 reacts done: 1200, receives done: 16, react timeouts: 0, receive timeouts: 0
+r1254323806074 reacts done: 1500, receives done: 19, react timeouts: 0, receive timeouts: 1
+{code}
+This is clearly a bug, as every receiveWithin/reactWithin must wait for 10s, and there's already been a timeout after less than 3 seconds.
+
+
+To launch the testcase, do the following:
+{code}
+$$ scalac foo.scala
+$$ while scala Foo; do true; done
+{code}

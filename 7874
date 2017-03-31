@@ -1,0 +1,8 @@
+As discussed at [scala-internals/OhGZeyBAGig | https://groups.google.com/d/topic/scala-internals/OhGZeyBAGig/discussion] , verbatim comparison of javap output is inflexible. 
+
+That can be addressed in a manner similar to {{scala.tools.partest.CompilerTest}} :
+- emit classfiles as usual
+- have a {{DirectTest}} subclass parse each classfile using ASM's Tree API
+- have an "acceptor" class provided as part of the test that inspects the trees parsed above.
+  The ASM Tree API does not support a "bytecode query language" nor a DSL to that effect, but still drilling into details of interest should be easier to maintain than verbatim javap output.
+

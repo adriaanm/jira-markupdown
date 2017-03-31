@@ -1,0 +1,13 @@
+Yes, {{matchParent(Spam(3))}} returns {{3}} when defined as 
+
+{code}
+  def matchParent(p:Any) = p match {
+    case f:Foo if f.i == 1 => 1
+    case _:Bar => 2
+    case _:Foo => 3
+  }
+{code}
+
+However when compiled with {{-Ypmat-naive}} it returns {{2}}. 
+
+The other option that comes to mind ({{-Yno-squeeze}}) makes compiled code return {{3}}. 

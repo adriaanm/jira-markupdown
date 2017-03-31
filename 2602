@@ -1,0 +1,7 @@
+This turns out to be a small problem in ResizableArray where it overrides the two parameter copyToArray, but not the three parameter version. Since the default implementation of the two param (in SeqLike) calls the three param, I just made ResizableArray override the three-parameter one.
+
+I feel like there's an argument to be made that the two parameter version should be made final 1) to prevent these kinds of mistakes in the future and 2) to make HotSpot more likely to inline it.
+
+All tests still pass (except one I'm getting out of heap errors on, but that's with and without this patch...)
+
+-- David

@@ -1,0 +1,42 @@
+This compiles fine:
+{code:scala}
+class A {
+  def aaa: Int = 10
+}
+class B extends A {
+  private[this] def aaa: Int = 42
+}
+
+object Test {
+  def main(args: Array[String]): Unit = {
+    val b = new B
+    println(b.aaa)
+  }
+}
+{code}
+But explodes at runtime:
+{code:scala}
+java.lang.IllegalAccessError: tried to access method B.aaa()I from class Test$
+        at Test$.main(superarg3.scala:12)
+        at Test.main(superarg3.scala)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+        at java.lang.reflect.Method.invoke(Method.java:497)
+        at scala.reflect.internal.util.ScalaClassLoader$$anonfun$run$1.apply(ScalaClassLoader.scala:70)
+        at scala.reflect.internal.util.ScalaClassLoader$class.asContext(ScalaClassLoader.scala:31)
+        at scala.reflect.internal.util.ScalaClassLoader$URLClassLoader.asContext(ScalaClassLoader.scala:101)
+        at scala.reflect.internal.util.ScalaClassLoader$class.run(ScalaClassLoader.scala:70)
+        at scala.reflect.internal.util.ScalaClassLoader$URLClassLoader.run(ScalaClassLoader.scala:101)
+        at scala.tools.nsc.CommonRunner$class.run(ObjectRunner.scala:22)
+        at scala.tools.nsc.ObjectRunner$.run(ObjectRunner.scala:39)
+        at scala.tools.nsc.CommonRunner$class.runAndCatch(ObjectRunner.scala:29)
+        at scala.tools.nsc.ObjectRunner$.runAndCatch(ObjectRunner.scala:39)
+        at scala.tools.nsc.MainGenericRunner.runTarget$1(MainGenericRunner.scala:65)
+        at scala.tools.nsc.MainGenericRunner.run$1(MainGenericRunner.scala:87)
+        at scala.tools.nsc.MainGenericRunner.process(MainGenericRunner.scala:98)
+        at scala.tools.nsc.MainGenericRunner$.main(MainGenericRunner.scala:103)
+        at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
+{code}
+
+Note that dotty seems to do the correct thing here (that is, print "10").

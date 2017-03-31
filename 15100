@@ -1,0 +1,38 @@
+this is in 2.7.7 and trunk (2.8.x)
+
+{code}
+scala> scala.xml.XML.saveFull(null, <root/>, "UTF-8", true, null)                                                
+java.lang.NullPointerException
+	at scala.xml.XML$$.saveFull(XML.scala:138)
+	at .<init>(<console>:5)
+	at .<clinit>(<console>)
+	at RequestResult$$.<init>(<console>:3)
+	at RequestResult$$.<clinit>(<console>)
+	at RequestResult$$result(<console>)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at...
+{code}
+
+the NPE reported is caused by `w.close`  -- the correct NPE would be the one caused by !FileOutputStream(null):
+
+{code}
+java.lang.NullPointerException
+	at java.io.FileOutputStream.<init>(FileOutputStream.java:172)
+	at java.io.FileOutputStream.<init>(FileOutputStream.java:131)
+	at .<init>(<console>:6)
+	at .<clinit>(<console>)
+	at RequestResult$$.<init>(<console>:3)
+	at RequestResult$$.<clinit>(<console>)
+	at RequestResult$$result(<console>)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	a...
+{code}
+
+The solution would be to check for null in finally/ultimately:
+
+{code}
+if (w != null) w.close()
+{code}
+
+Closing the writer automatically closes the underlying stream so there is no reason for the additional `fos.close()`

@@ -1,0 +1,17 @@
+I reduced it a bit to this:
+
+{code}
+object Bug3241 {
+  def main(args : Array[String]) : Unit = {
+    recurse(Map(1->1, 2->2, 3->3, 4->4, 5->5))
+  }
+
+  def recurse(map: collection.immutable.Map[Int, Int]): Unit = {
+    if (!map.isEmpty) {
+      val x = map.keys.head // throws NoSuchElementException
+      recurse(map - x)
+    }
+  }
+
+}
+{code}

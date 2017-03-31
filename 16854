@@ -1,0 +1,31 @@
+Probably this has not been caught before because it's not a very Scala-like way of doing things, but IMHO the following code should compile:
+
+{{
+  var varNames = mutable.Set() : mutable.Set[String] // all variable names, for use in generating new names
+  
+  def freshName(old: String) : String = {
+    val numStart = old.lastIndexWhere( c => (c>='0' && c <= '9') )
+    val stem = old.slice( 0, numStart )
+    var num = augmentString(old.slice( numStart, old.size )).toInt
+    
+    var newString = "" : String
+    while(true) {
+      num += 1
+      newString = stem ++ num.toString
+      if(!varNames.contains (newString))
+        return newString
+      assert (num < Int.MaxValue)
+    }
+  }
+}}
+
+The error message I get is
+{{
+   [scalac] /path/to/myfile.scala:18: error: type mismatch;
+   [scalac]  found   : Unit
+   [scalac]  required: String
+   [scalac]     while(true) {
+   [scalac]     ^
+   [scalac] one error found
+}}
+which makes no sense because while(true)... never emits a value. Similarly, I can append assert(false) to the function, but I get the same error (on the assertion, which also never returns a value).

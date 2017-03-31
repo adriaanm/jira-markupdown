@@ -1,0 +1,19 @@
+Replying to [comment:5 extempore]:
+> In fact it makes it harder, because now you have to demultiplex everywhere.
+
+Yes, there is always some trade-off. I will bring it up on the meeting. 
+
+wrt to the bug. We shouldn't produce different bytecode on different compilation order of the files even for a simple case like that:
+A.scala
+{code}
+class A {
+    lazy val a = 12
+}
+{code}
+B.scala
+{code}
+class B extends A {
+    lazy val b = 14
+}
+{code}
+This is just asking for trouble.

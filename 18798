@@ -1,0 +1,17 @@
+{code}
+20:37 ~/Projects/Master/sandbox (master)$ cat Test.scala
+import scala.reflect.runtime.universe._
+
+object Test extends App {
+  def foo(s: Symbol) = ???
+  def foo(ts: TermSymbol) = ???
+}
+20:37 ~/Projects/Master/sandbox (master)$ scalac Test.scala
+Test.scala:5: error: double definition:
+def foo(s: reflect.runtime.universe.Symbol): Nothing at line 4 and
+def foo(ts: reflect.runtime.universe.TermSymbol): Nothing at line 5
+have same type after erasure: (s: scala.reflect.api.Symbols#SymbolApi)Nothing
+  def foo(ts: TermSymbol) = ???
+      ^
+one error found
+{code}

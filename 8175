@@ -1,0 +1,19 @@
+I don't think it's a pattern matching issue:
+
+{code}
+case class Holder[A](a: A)
+class Mapped[A] { def map[T](f: Holder[A] => T): Iterable[T] = ??? }
+
+class A[T]
+object A {
+  def fails(backing: Mapped[A[_]]): Iterable[A[_]]
+    = backing.map(x =>
+         x match {case Holder(k: A[kt]) => (k: A[kt])}
+      )
+  def works(backing: Mapped[A[_]]): Iterable[A[_]]
+    = backing.map(fun)
+
+  def fun[T](x: Holder[T]): A[_] = 
+         x match {case Holder(k: A[kt]) => (k: A[kt])}
+}
+{code}

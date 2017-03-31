@@ -1,0 +1,27 @@
+The compiler currently reports a single error for
+{code}
+abstract class A {
+  def f: Int
+  def g: Int
+
+  val x: Int
+  val y: Int
+}
+
+class C extends A {}
+{code}
+
+{code}
+class C needs to be abstract, since value y in class A of type Int is not defined
+{code}
+
+If the developer iteratively addresses compilation errors, four compilations are required before the developer is sure that all required members are defined.
+
+If the compiler reported
+{code}
+class C needs to be abstract, since method f in class A of type => Int is not defined
+class C needs to be abstract, since method g in class A of type => Int is not defined
+class C needs to be abstract, since value x in class A of type Int is not defined
+class C needs to be abstract, since value y in class A of type Int is not defined
+{code}
+the developer could be sure after a single compilation.

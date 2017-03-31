@@ -1,0 +1,24 @@
+It was reported on IRC that some simple scala source to read and output a file choked a few characters in.  We discovered that although java and other languages correctly determine his locale and that ISO-8859 need be assumed, scala does not, and here is why:
+{code}
+  private val propFilename = "/library.properties"
+  [...]
+  val encodingString: String = {
+    val defaultString = "UTF8" //"ISO-8859-1"
+    props.getProperty("file.encoding", defaultString)
+  }
+{code}
+Both the compiler and library default properties are seeded from files in the jars (compiler.properties and library.properties) which contain only copyright and version information.  Thus the above code is not using UTF8 only when file.encoding is not set in the system properties; it is using UTF8 always.
+
+This is true of some other properties as well, e.g.
+{code}
+  val shellPromptString: String = {
+    val defaultString = "\nscala> "
+    props.getProperty("shell.prompt", defaultString)    
+  }
+{code}
+Conversely, settings which do use system defaults are checking the system properties object directly.
+{code}
+  val scalaHome: String =
+    System.getProperty("scala.home")
+{code}
+As a note of caution, fixing this would change the default scala encoding on most platforms.  On the mac the default file.encoding is MacRoman, and on windows I think it varies.  Some additional logic to smooth all that out is probably appropriate, but what surely ought to be a bug is ignoring someone's intentionally set system settings and consequently failing to read their data, when java does the right thing.

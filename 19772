@@ -1,0 +1,30 @@
+JavaAnnot.java:
+{code}
+public @interface JavaAnnot { }
+{code}
+Test.scala:
+{code}
+class C extends JavaAnnot {
+  def annotationType: Class[_ <: java.lang.annotation.Annotation] = null
+}
+
+object Test extends App {
+  new C
+}
+{code}
+
+There is also a (mostly) spurious warning emitted:
+
+{noformat}
+➜  sandbox git:(t9393) ✗ javac JavaAnnot.java
+➜  sandbox git:(t9393) ✗ scalac Test.scala
+Test.scala:1: warning: Implementation restriction: subclassing Classfile does not
+make your annotation visible at runtime.  If that is what
+you want, you must write the annotation class in Java.
+class C extends JavaAnnot {
+      ^
+one warning found
+➜  sandbox git:(t9393) ✗ scala Test
+java.lang.IncompatibleClassChangeError: class C has interface JavaAnnot as super class
+	at java.lang.ClassLoader.defineClass1(Native Method)
+{noformat}

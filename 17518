@@ -1,0 +1,16 @@
+The following snippet crashes in Typers with a Stackoverflow:
+
+{code}
+object Test {
+  trait Matcher[X] {
+    val	x: X
+    def	foo(): X = { println("foo"); x }
+  }
+  val m = new Matcher {
+    val x = Map():(scala.collection.Map[_, Int] with scala.collection.Map[K,Int] forSome { type K })
+  }
+  m.foo()
+}
+{code}
+
+I discovered this while compiling scalatest. The file that crashes the compiler is: http://scalatest.googlecode.com/svn/branches/cmty2.10/src/test/scala/org/scalatest/matchers/ShouldContainValueSpec.scala

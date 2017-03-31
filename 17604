@@ -1,0 +1,46 @@
+Followup to SI-6562.
+
+Private members will appear as public in the scalap output, and IntelliJ will offer these as autocompletion options.
+
+Test.scala
+
+{code}
+package sandbox
+
+class C {
+  private val x: Any = 1
+  @inline def foo = x
+}
+{code}
+Scalap output:
+
+{code}
+package sandbox
+class C extends java.lang.Object {
+  def this() = { /* compiled code */ }
+  val x : scala.Any = { /* compiled code */ }
+  @scala.inline
+  def foo : scala.Any = { /* compiled code */ }
+}
+{code}
+
+
+Another fun angle on the problem:
+
+{code}
+ticket/6562-3 ~/code/scala cat sandbox/test.scala 
+package sandbox
+
+class C {
+  private val x: Any = 1
+  @inline def foo = x
+}
+ticket/6562-3 ~/code/scala cat sandbox/test_2.scala 
+package sandbox
+
+object Test {
+  new C().sandbox$C$$x
+}
+ticket/6562-3 ~/code/scala /Users/jason/usr/scala-v2.10.0-RC1-15-g2c55424/pack/bin/scalac -classpath . -d . sandbox/test.scala  && /Users/jason/usr/scala-v2.10.0-RC1-15-g2c55424/pack/bin/scalac -classpath . -d . sandbox/test_2.scala 
+ticket/6562-3 ~/code/scala 
+{code}

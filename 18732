@@ -1,0 +1,20 @@
+While the direct route of
+
+{code}
+case class Foo(d: Double) extends AnyVal
+null.asInstanceOf[Foo]
+{code}
+
+was fixed in SI-5866, the issue remains when Generics get involved:
+
+{code}
+scala> case class Foo(d: Double) extends AnyVal
+defined class Foo
+
+scala> def newInst[T] = null.asInstanceOf[T]
+newInst: [T]=> T
+
+scala> newInst[Foo]
+java.lang.NullPointerException
+  ... 32 elided
+{code}

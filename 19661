@@ -1,0 +1,31 @@
+{code}
+sun@sun-cpu:~/workspace/dev/miniboxing-plugin/sandbox(milos/minibox-tuples)$ cat spec-test.scala 
+object TuplesQuickSort {
+
+  private def quicksort[@specialized(Int) T](a:Array[(T, Double)]): Array[(T, Double)] = a
+  def quicksortByKey[@specialized(Int) T](arr: Array[(T, Double)]): Array[(T, Double)] = quicksort[T](arr)
+}
+sun@sun-cpu:~/workspace/dev/miniboxing-plugin/sandbox(milos/minibox-tuples)$ mb-scalac spec-test.scala -Xprint:spec
+[[syntax trees at end of                specialize]] // spec-test.scala
+package <empty> {
+  object TuplesQuickSort extends Object {
+    def <init>(): TuplesQuickSort.type = {
+      TuplesQuickSort.super.<init>();
+      ()
+    };
+    final def quicksort[@specialized(scala.Int) T](a: Array[(T, Double)]): Array[(T, Double)] = a;
+    def quicksortByKey[@specialized(scala.Int) T](arr: Array[(T, Double)]): Array[(T, Double)] = TuplesQuickSort.this.quicksort[T](arr);
+    <specialized> private def quicksort$mIc$sp(a: Array[(Int, Double)]): Array[(Int, Double)] = a;
+    <specialized> def quicksortByKey$mIc$sp(arr: Array[(Int, Double)]): Array[(Int, Double)] = TuplesQuickSort.this.quicksort[Int](arr)
+  }
+}
+{code}
+
+The correct last definition should be:
+{code}
+    <specialized> def quicksortByKey$mIc$sp(arr: Array[(Int, Double)]): Array[(Int, Double)] = TuplesQuickSort.this.quicksort$mcI$sp(arr)
+{code}
+
+Found while adding tuple optimization to the miniboxing plugin: https://github.com/milosstojanovic/miniboxing-plugin/commit/53a1a1a1df271169e2be7baffbd6bdc90ccbdbcd
+
+**Workaround: make the method public.**

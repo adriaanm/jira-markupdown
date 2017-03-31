@@ -1,0 +1,20 @@
+I was told on the mailing list this is a bug so I'll just copy and paste from there (see below). I was using Scala 2.8.0 Final.
+
+---
+
+I was hoping to retrieve the manifest of an array's element type like so:
+
+{code}
+scala> manifest[Array[Double]].typeArguments
+{code}
+This returns an empty list. Looking at the Manifest.arrayManifest method, I see that it is implemented as
+{code}
+override def arrayManifest: Manifest[Array[T]] =
+    Manifest.classType[Array[T]](arrayClass[T](erasure))
+{code}
+This explains why the above retuns Nil but it looks like implementing it as
+{code}
+  override def arrayManifest: Manifest[Array[T]] =
+    Manifest.classType[Array[T]](arrayClass[T](erasure), this)
+{code}
+would solve the problem.

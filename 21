@@ -1,0 +1,16 @@
+Reduced example (thanks to Miron):
+
+{code}
+import scala.collection.jcl.ArrayList
+
+object Bug42 extends Application {
+  var clauses = new ArrayList[Int]
+  def getClause[T]: Option[T] = {
+    for (c <- clauses) c match {
+      case sc: T => return Some(sc)
+      case _ =>
+    }
+    None
+  }
+}
+{code}

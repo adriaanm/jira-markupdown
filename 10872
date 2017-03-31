@@ -1,0 +1,25 @@
+Workaround is to avoid using `super.xxxx` from the specialized subclass.
+
+{code}
+import scala.{ specialized => spec }
+ 
+trait EqProductFoo[@spec(Int) A] {
+  def eqv(x0: A): Boolean = eqvEqProductFoo(x0)
+  protected def eqvEqProductFoo(x0: A) = ???
+}
+ 
+trait OrderProductFoo[@spec(Int) A] extends EqProductFoo[A] {
+  override def eqv(x0: A): Boolean = eqvEqProductFoo(x0)
+}
+ 
+object Bar {
+   def OrderProduct2[@spec(Int) A]: EqProductFoo[A] = {
+    new OrderProductFoo[A] { }
+  }
+  OrderProduct2[Int]
+}
+ 
+object Test extends App {
+  Bar
+}
+{code}

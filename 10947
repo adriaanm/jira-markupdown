@@ -1,0 +1,9 @@
+Reply to your comments under the gist:
+
+I considered that the public API in {{scala-reflect}} are too complex and too dangerous. The public API exposes too many details in compilers. The right way to resolve these problem is to reduce the API, instead of providing more and more {{scala.reflect.internal}} hacks.
+
+For example, there are two types of macros, untyped macro and typed macro. The typed macro accepts typed trees while the untyped macro accepts untyped tree. But what about the tree the macros produce? Should the output trees be typed or untyped?
+In my opinion, I prefer to remove {{resetLocalAttrs}} in the public API. Instead, all trees return from macro must be treated as untyped, and the {{resetLocalAttrs}} should be invoked internally by the compiler after every macro calls.
+
+Furthermore, the public {{scala-reflect}} API should be read-only. A macro writer should never {{setType}} or {{setSymbol}}.
+I think what a macro does is simulating a man typing source code. A man can type expression trees, but he cannot type symbols or types directly, so the macro should only generate plain expression trees, too.

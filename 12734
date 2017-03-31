@@ -1,0 +1,40 @@
+If I load this code in Eclipse (plugin 2.6.3):
+{code}
+package test;
+
+object PairTest {
+  val foo = Tuple2(1, "Foo") :: Tuple2 (2, "Bar") :: Nil
+
+  def main(args : Array[String]) : Unit = {
+        System.out println (for (Pair(i, s) <- foo) yield { i + " " +  s })
+  }
+}
+{code}
+
+I get
+
+{code}
+BAIL: OffsetPosition(PairTest.scala,172) scala.this.Predef.Pair.unapply[Int, java.lang.String](<unapply-selector>) <unapply> ((i @ _), (s @ _)) class scala.tools.nsc.ast.Trees$$UnApply
+BAIL: OffsetPosition(PairTest.scala,172) scala.this.Predef.Pair.unapply[Int, java.lang.String](<unapply-selector>) <unapply> ((i @ _), (s @ _)) class scala.tools.nsc.ast.Trees$$UnApply
+{code}
+
+If I change Pair to Tuple2 or leave it out, I get
+{code}
+Signature of L/PairTest/src/test/PairTest.scala changed, recompile dependent files
++[anonfun::Modifiers(1073741826,,List())[]]
+-[anonfun::Modifiers(1073741826,,List())[]$$anonfun::Modifiers(1073741826,,List())[]]
+{code}
+and everything works.
+
+(I have seen
+{code}
+**** COMPILER CRASH, RESET RESIDENT AND RETRY
+**** COMPILER CRASH, GIVE UP, MAYBE DO CLEAN BUILD
+{code}
+on a clean build of more complex code containing 
+{code}
+  for (Pair(id, Pair(foo, bar)) <- ...) yield {...}
+{code}
+so I think it is a compiler and not a plugin issue)
+
+The code worked with a 2.5.something plugin.

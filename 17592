@@ -1,0 +1,51 @@
+Given these data types:
+{code:lang=java}
+trait Outer {
+  trait Inner[T]
+  def make[T](t: T): Inner[T] = ???
+}
+object Def extends Outer
+{code}
+
+the following shows that inside `reify`, `Def.Inner` is treated as `Outer.this.Inner`, causing a type mismatch.
+
+Macro implementation:
+{code:lang=java}
+import language.experimental.macros
+import scala.reflect.macros._
+
+import Def.Inner
+object Test {
+  def id[T](t: Inner[T]): Inner[T] = macro idImpl[T]
+
+  def idImpl[T: c.WeakTypeTag](c: Context)(t: c.Expr[Inner[T]]): c.Expr[Inner[T]] =
+    c.universe.reify {
+      val v: Def.Inner[T] = t.splice
+      v
+    }
+}
+{code}
+
+Macro usage:
+{code:lang=java}
+object Use {
+  val y = Test.id(Def.make(3))
+}
+{code}
+
+The type mismatch error generated when compiling Use is below.  The mismatch is from the first line of the reify block.
+{code}
+Use.scala:2: error: type mismatch;
+ found   : Def.Inner[Int]
+ required: Outer.this.Inner[Int]
+
+        val y = Test.id(Def.make(3))
+                                ^
+Use.scala:2: error: type mismatch;
+ found   : Outer.this.Inner[Int]
+ required: Def.Inner[Int]
+
+        val y = Test.id(Def.make(3))
+                       ^
+two errors found
+{code}

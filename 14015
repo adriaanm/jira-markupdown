@@ -1,0 +1,24 @@
+Please see SI-1683 for background.  In summary:
+{code}
+class Outer {
+  class Inner { }
+  
+  def go() = {
+    val o1 = new Inner
+    val other = new Outer
+    val o2 = (new other.Inner).asInstanceOf[Any]  // simulating equals method
+    
+    println("o2.isInstanceOf[Inner] == " + o2.isInstanceOf[Inner])
+    println("o2 match { case _: Inner ... == " + (o2 match { case _: Inner => true ; case _ => false }))
+
+    // at present, for the second line to print true it must be expressed as Outer#Inner
+    // println("o2 match { case _: Inner ... == " + (o2 match { case _: Outer#Inner => true ; case _ => false }))
+  }
+}
+
+object Test 
+{
+  def main(args: Array[String]): Unit = new Outer() go
+}
+{code}
+At present this prints true/false.  It needs to print either false/false or true/true.  As indicated in SI-1683 I believe true/true is the better choice.

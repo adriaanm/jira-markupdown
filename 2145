@@ -1,0 +1,43 @@
+this is expected behavior with current trunk. you need to change {{jdbc.scala}}
+
+{code}
+package ru.yandex.misc
+package jdbc
+import logging._
+
+class Z
+{code}
+
+
+Replying to [comment:11 stepancheg]:
+> I have similar problem (relative imports do not work), and simple test case to reproduce it:
+> 
+> {code}
+> [nga@fastshot:~/tmp/hello]% cat logging.scala
+> package ru.yandex.misc.logging
+> class Logger
+> 
+> [nga@fastshot:~/tmp/hello]% cat jdbc.scala
+> package ru.yandex.misc.jdbc
+> import logging._
+> 
+> class Z
+> 
+> [nga@fastshot:~/tmp/hello]% rm **/*.class
+> 
+> [nga@fastshot:~/tmp/hello]% scalac -version
+> Scala compiler version 2.7.5.final -- Copyright 2002-2009, LAMP/EPFL
+> 
+> [nga@fastshot:~/tmp/hello]% scalac jdbc.scala logging.scala 
+> 
+> [nga@fastshot:~/tmp/hello]% rm **/*.class
+> 
+> [nga@fastshot:~/tmp/hello]% ~/devel/left/scala/trunk/bin/scalac -version
+> Scala compiler version 2.8.0.r18478-b20090814070507 -- Copyright 2002-2009, LAMP/EPFL
+> 
+> [nga@fastshot:~/tmp/hello]% ~/devel/left/scala/trunk/bin/scalac *.scala
+> jdbc.scala:2: error: not found: value logging
+> import logging._
+>        ^
+> one error found
+> }}

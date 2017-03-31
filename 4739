@@ -1,0 +1,22 @@
+This has resurfaced again... this time with DSE graph and Scala 2.11.8, as in the following snippet:
+
+{code:java}
+val c = DseCluster.builder
+   .addContactPoint(System.getProperty("cassandra.host", "127.0.0.1"))
+   .withGraphOptions(new GraphOptions().setGraphName("mygraph"))
+   .build
+{code}
+
+yielding the error:
+
+
+{noformat}
+Error:(22, 33) illegal cyclic reference involving class Cluster
+ val cbuilder = new DseCluster.Builder()
+{noformat}
+
+The {{-Ybreak-cycles}} fix is confirmed to work
+
+
+
+

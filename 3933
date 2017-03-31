@@ -1,0 +1,82 @@
+another occasion where i ran into it today. this throws compiler error:
+
+{code}
+val x = (SynthDef("deepsea" ) {
+    val out = "out".kr
+    val pan = "pan".kr
+    val amp = "amp".kr(0.1)
+    val variation = "variation".kr(0.9)
+	val n = Rand(7, 46);
+	var dt = 25.0 + Rand(-1.7, 1.7);
+	dt = dt + LFNoise2.kr(2)* variation * 0.001;
+	val freq = 901 + Rand(0, 65);
+	val t = Impulse.ar(dt.reciprocal)* 100
+	val count = PulseCount.ar(t);
+	val mul = count < n;
+	var u = BPF.ar(mul * t, freq, 0.1);
+	u = BPF.ar(u, freq * (count % LFNoise1.kr(1).madd(9,11) + 1), 0.2);
+	DetectSilence.ar(u, doneAction = 2);
+	Out.ar(out, Pan2.ar(u, pan, amp * 10));
+}).play(s)
+{code}
+
+this does ok:
+
+{code}
+val x = (SynthDef("deepsea" ) {
+    val out = "out".kr
+    val pan = "pan".kr
+    val amp = "amp".kr(0.1)
+    val variation = "variation".kr(0.9)
+	val n = Rand(7, 46);
+	var dt = 25.0 + Rand(-1.7, 1.7);
+	dt = dt + LFNoise2.kr(2)* variation * 0.001;
+	val freq = 901 + Rand(0, 65);
+	val t = Impulse.ar(dt.reciprocal)* 100
+	val count = PulseCount.ar(t);
+	val mul = count < n;
+	var u = BPF.ar(mul * t, freq, 0.1);
+	u = BPF.ar(u, freq * (count % LFNoise1.kr(1).madd(9,11) + 1), 0.2);
+	DetectSilence.ar(u, doneAction = 2);
+	Out.ar(out, Pan2.ar(u, pan, amp * 10));
+}); x.play(s)
+{code}
+
+{code}
+Exception in thread "AWT-EventQueue-0" java.lang.Error: symbol value out$$1 does not exist in line4$$object$$$$iw$$$$iw$$$$iw$$$$iw$$$$iw$$$$iw$$$$iw$$$$iw$$$$iw$$$$iw$$$$iw$$$$iw.<init>
+	at scala.tools.nsc.symtab.SymbolTable.abort(SymbolTable.scala:34)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:844)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.genLoadArguments(GenICode.scala:1031)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:664)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:878)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:870)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.genLoadArguments(GenICode.scala:1031)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:743)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:513)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genStat(GenICode.scala:184)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$genStat$$1.apply(GenICode.scala:156)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$genStat$$1.apply(GenICode.scala:156)
+	at scala.collection.LinearSeqOptimized$$class.foldLeft(LinearSeqOptimized.scala:124)
+	at scala.collection.immutable.List.foldLeft(List.scala:46)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.genStat(GenICode.scala:156)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:869)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genStat(GenICode.scala:173)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$genStat$$1.apply(GenICode.scala:156)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$genStat$$1.apply(GenICode.scala:156)
+	at scala.collection.LinearSeqOptimized$$class.foldLeft(LinearSeqOptimized.scala:124)
+	at scala.collection.immutable.List.foldLeft(List.scala:46)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.genStat(GenICode.scala:156)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:869)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:127)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:82)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:82)
+	at scala.collection.LinearSeqOptimized$$class.foreach(LinearSeqOptimized.scala:62)
+	at scala.collection.immutable.List.foreach(List.scala:46)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:82)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:149)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:101)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala
+   ... (etc)
+{code}
+
+again sorry for not being able to provide an isolated example. the above codes can be executed in the REPL fo scalacollider-swing though ( http://github.com/Sciss/ScalaColliderSwing )

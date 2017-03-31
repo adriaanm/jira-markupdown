@@ -1,0 +1,99 @@
+Time measurer code if you need it: 
+
+{code}
+package ru.ibrae.time;
+
+import java.util.ArrayList;
+
+/**
+ * 19.02.2010
+ * 
+ * @author lex
+ * 
+ */
+public class MeasureTime {
+
+	public static final int DefaultIterationsNum = (int) 1.0E6;
+
+	protected int defaultIterationsNum = DefaultIterationsNum;
+
+	protected ArrayList<ProcessForMeasuring> processes = new ArrayList<ProcessForMeasuring>();
+
+	public MeasureTime(int iterationsNum) {
+		defaultIterationsNum = iterationsNum;
+	}
+
+	public MeasureTime() {
+	}
+
+	public static long measure( int iterationsNum, ProcessForMeasuring process ) {
+		MeasureTime measureTime = new MeasureTime();
+		measureTime.add( process );
+		return measureTime.measure( iterationsNum )r0;
+	}
+
+	public static long measure( ProcessForMeasuring process ) {
+		return measure( DefaultIterationsNum, process );
+	}
+
+	public static void print( int iterationsNum, ProcessForMeasuring process ) {
+		MeasureTime measureTime = new MeasureTime();
+		measureTime.add( process );
+		measureTime.print( iterationsNum );
+	}
+
+	public static void print( ProcessForMeasuring process ) {
+		print( DefaultIterationsNum, process );
+	}
+
+	public void add( ProcessForMeasuring process ) {
+		processes.add( process );
+	}
+
+	public long[] measure() {
+		return measure( defaultIterationsNum );
+	}
+
+	public long[] measure( int iterationsNum ) {
+		int size = processes.size();
+		long[] times1 = new long[ size ];
+		long[] times2 = new long[ size ];
+		for ( int i = 0; i < size; i++ ) {
+			times1[i] = repeate( iterationsNum, i );
+		}
+		for ( int i = size - 1; i >= 0; i-- ) {
+			times2[i] = repeate( iterationsNum, i );
+		}
+		for ( int i = 0; i < times1.length; i++ ) {
+			times1[i] = Math.min( times1[i], times2[i] );
+		}
+		return times1;
+	}
+
+	public void print() {
+		print( defaultIterationsNum );
+	}
+
+	public void print( int iterationsNum ) {
+		long[] times = measure( iterationsNum );
+		int c = 0;
+		for ( long time : times ) {
+			c++;
+			System.out.println( "Process " + c + ": " + time + " ms. over " + iterationsNum
+					+ " iterations." );
+		}
+	}
+
+	private long repeate( int iterationsNum, int i ) {
+		ProcessForMeasuring processForMeasuring = processes.get( i );
+		processForMeasuring.setUp();
+		System.gc();
+		long begin = System.currentTimeMillis();
+		for ( int c = 0; c < iterationsNum; c++ ) {
+			processForMeasuring.proceed();
+		}
+		long time = System.currentTimeMillis() - begin;
+		return time;
+	}
+}
+{code}

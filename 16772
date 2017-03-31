@@ -1,0 +1,33 @@
+I have two (almost sorted) lists of integers and check for equality of these lists as follows:
+  1) Obtain an iterator for both lists. Call one list _left_ and the other _right_.
+  2) Step through _left_ sequentially and try to match the current element of _left_ with the current element of _right_.
+  3) If these two elements are equal, then keep going (i.e. return to Step 2).
+  4) Otherwise, buffer the elements of _right_ that we are skipping over until we find the element of _right_ that is equal to the current element of _left_.
+  5) Prepend the iterator of _right_ with the elements we skipped over to maintain the "almost sorted" property of _right_, and return to Step 2.
+
+(The above procedure is the most efficient in my application because the two input lists are always "almost sorted" and the two lists are very large and expensive to sort.)
+
+This is best understood with concrete code:
+{code}
+    val leftElems: Iterator[Int] = List(2,1,3) iterator
+    var rightElems: Iterator[Int] = List(1,2,3) iterator
+
+    while (leftElems.hasNext && rightElems.hasNext) {
+      val left = leftElems.next
+      var right = rightElems.next
+      var done = left == right
+      val bufferedRightElems = collection.mutable.Queue.empty[Int] // Buffer skipped over integers
+      while (!done && rightElems.hasNext) {
+        bufferedRightElems.enqueue(right)
+        right = rightElems.next
+        done = left == right
+      }
+      assert(done,"Lists do not contain the same elements")
+      // The correct answers skipped over will match future conjected answers (assuming the conjected rewriting is correct) since the ordering of clauses is not strict
+      rightElems = bufferedRightElems.iterator ++ rightElems // This causes stack overflow on next call to hasNext
+      // rightElems = {bufferedRightElems.enqueue(rightElems.toSeq: _*); bufferedRightElems.iterator} // This works
+    }
+{code}
+However, as noted in the comment calling rightElems.hasNext causes a stack overflow error.
+
+There must be a bug in the implementation of (++) for iterators. (I am sorry I cannot offer a fix, but I am currently working towards a deadline.)

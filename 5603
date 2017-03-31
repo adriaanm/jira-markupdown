@@ -1,0 +1,19 @@
+compile-time is good now, but runtime's another story:
+{code}
+  ~> scala/dists/latest/bin/scala -version                             
+Scala code runner version 2.9.0.r24391-b20110306095638 -- Copyright 2002-2011, LAMP/EPFL
+  ~> cat S.scala
+object S { def foo(x: Class[_ <: AnyRef], y: Int) = 99 }
+  ~> scala/dists/latest/bin/scalac S.scala                             
+  ~> cat J.java
+public class J {
+	public static void main(String[] args) {
+		int b = S.foo(String.class, 0);
+		System.out.println(b);
+	}
+}
+  ~> javac -classpath .:scala/dists/latest/lib/scala-library.jar J.java
+  ~> java -classpath .:scala/dists/latest/lib/scala-library.jar J      
+Exception in thread "main" java.lang.NoSuchMethodError: S.foo(Ljava/lang/Class;Ljava/lang/Object;)I
+	at J.main(J.java:3)
+{code}

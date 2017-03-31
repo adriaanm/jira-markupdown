@@ -1,0 +1,40 @@
+This looks similar to SI-4024.  I am very pleased that the compiler is giving itself variance advice.
+{code}
+class A {
+  val clazz = Class.forName("xxx")
+  val ctr = clazz.getConstructor(Nil: _*)
+  
+  // also crashes
+  // val ctr = clazz.getConstructor(List(): _*)
+  //
+  // does not crash
+  // val ctr = clazz.getConstructor(List[Class[_]]: _*)
+}
+{code}
+{code}
+[paulp@leaf bug]$$ scalac29 a.scala 
+exception when traversing A.this.clazz.getConstructor((immutable.this.Nil: _*))
+exception when traversing private[this] val ctr: java.lang.reflect.Constructor[_] = A.this.clazz.getConstructor((immutable.this.Nil: _*))
+exception when traversing java.lang.Object with ScalaObject {
+  def this(): A = {
+    A.super.this();
+    ()
+  };
+  private[this] val clazz: java.lang.Class[_] = java.this.lang.Class.forName("xxx");
+
+...
+Exception in thread "main" scala.tools.nsc.symtab.Types$$TypeError: type mismatch;
+ found   : scala.reflect.Manifest[Nothing]
+ required: scala.reflect.ClassManifest[B]
+Note: Nothing <: B, but trait ClassManifest is invariant in type T.
+You may wish to investigate a wildcard type such as `_ <: B`. (SLS 3.2.10)
+	at scala.tools.nsc.typechecker.Contexts$$Context.error(Contexts.scala:291)
+	at scala.tools.nsc.typechecker.Infer$$Inferencer.error(Infer.scala:205)
+	at scala.tools.nsc.typechecker.Infer$$Inferencer.typeError(Infer.scala:215)
+	at scala.tools.nsc.typechecker.Infer$$Inferencer.typeErrorTree(Infer.scala:230)
+	at scala.tools.nsc.typechecker.Typers$$Typer.adapt(Typers.scala:926)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:4142)
+	at scala.tools.nsc.typechecker.Typers$$Typer.typedArg(Typers.scala:2131)
+	at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$typedArgs$$3.apply(Typers.scala:2144)
+	at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$typedArgs$$3.apply(Typers.scala:2143)
+{code}

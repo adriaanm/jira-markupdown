@@ -1,0 +1,47 @@
+None of the following examples raise a compiler warning:
+
+{code}
+sealed abstract class Base 
+case class Derived extends Base 
+ 
+object Test extends Application 
+{ 
+  def foo(b : Base) = { 
+    b match { 
+      case d : Derived => 10 
+    } 
+  } 
+} 
+{code}
+
+{code}
+sealed case class Base 
+case class Derived extends Base 
+ 
+object Test extends Application 
+{ 
+  def foo(b : Base) = { 
+    b match { 
+      case d : Derived => 10 
+    } 
+  } 
+} 
+{code}
+
+The difference is that in one Base is a abstract class and in the second it is
+concrete.
+
+Even using
+
+{code}
+sealed class Base 
+class Derived extends Base 
+{code}
+
+doesn't generate any warnings.
+
+Suggested to open this bug by Burak:
+
+http://article.gmane.org/gmane.comp.lang.scala.user/3570
+
+

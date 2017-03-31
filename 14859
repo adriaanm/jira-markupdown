@@ -1,0 +1,20 @@
+more info:
+http://thread.gmane.org/gmane.comp.lang.scala.user/21816/focus=21819
+
+
+I am facing a problem with annotations in 2.8. I have a class as :
+
+@BeanInfo case class Book(title: String, @Foo(value = "ISBN") isbn: String)
+
+The problem that I was facing is that the annotation was not being made 
+available on the getter method. However it was on the field level. 
+I made the following change in 2.8 :
+
+@BeanInfo case class Book(title: String, 
+  @Foo(value = "ISBN") @beanGetter isbn: String)
+
+I expected that the annotation will be available on the getter now .. 
+But when I do an introspection and check getDeclaredAnnotations on the read 
+method, I don't get the annotation.
+
+things work perfectly in 2.7.7 without the @beanGetter. 

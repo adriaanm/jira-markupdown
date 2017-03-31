@@ -1,0 +1,59 @@
+{code}
+$ cat uncurry-bug.scala 
+trait Ctx {
+  trait Tree
+}
+
+trait Lst[+A] {
+  def zip[A1 >: A, B](that: Lst[B]): Nothing
+}
+
+object Test {
+
+  /*
+   * Question:
+   *
+   * Is it by design that there is a difference
+   * between the behavior of scalac on the following
+   * two methods, which only differ in the type param:
+   */
+  def foo1(c: Ctx)(l: Lst[c.Tree]) = l zip l
+  def foo2[T](c: Ctx)(l: Lst[c.Tree]) = l zip l
+}
+
+sun@sun-cpu:~/workspace/dev-2.11/scala/sandbox(2.11.x)$ scalac -version
+Scala compiler version 2.11.6-20150224-172222-092690e7bf -- Copyright 2002-2013, LAMP/EPFL
+sun@sun-cpu:~/workspace/dev-2.11/scala/sandbox(2.11.x)$ scalac uncurry-bug.scala -Xprint:uncurry
+[[syntax trees at end of                   uncurry]] // uncurry-bug.scala
+package <empty> {
+  abstract trait Ctx extends Object {
+    def /*Ctx*/$init$(): Unit = {
+      ()
+    };
+    abstract trait Tree extends Object
+  };
+  abstract trait Lst[+A] extends Object {
+    def zip[A1 >: A, B](that: Lst[B]): Nothing
+  };
+  object Test extends Object {
+    def <init>(): Test.type = {
+      Test.super.<init>();
+      ()
+    };
+    def foo1(c: Ctx, l: Lst[Ctx#Tree]): Nothing = {
+      <synthetic> val l$1: Lst[Ctx#Tree] = l.asInstanceOf[Lst[Ctx#Tree]]();
+      l$1.zip[c.Tree, c.Tree](l$1)
+    };
+    def foo2[T](c: Ctx, l: Lst[c.Tree]): Nothing = l.zip[c.Tree, c.Tree](l)
+  }
+}
+{code}
+
+Notice the two signatures after uncurry:
+
+{code}
+def foo1(c: Ctx, l: Lst[Ctx#Tree]): Nothing
+def foo2[T](c: Ctx, l: Lst[c.Tree]): Nothing
+{code}
+
+I would say the 2nd one is incorrect, as it doesn't widen. Or is that a design decision?

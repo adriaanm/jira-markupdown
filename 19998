@@ -1,0 +1,48 @@
+This "bug" came up in a [Stackoverflow question|http://stackoverflow.com/questions/35723617/scala-implicit-conversionstring-to-a-custom-class-and-its-subclass/35724019#35724019].
+When you put a subtype constraint on a type parameter in an implicit conversion, the conversion is also applied when an unrelated type is involved. My guess is that Nothing is involved here somewhere. But when I want to check the type with a TypeTag, the conversion no longer kicks in for the unrelated type, and for the right type I get "error: macro has not been expanded".
+
+{code:scala}
+scala> trait TestBase
+defined trait TestBase
+
+scala> class NotTest
+defined class NotTest
+
+scala> case class Foo()
+defined class Foo
+
+scala> implicit def conv[A <: TestBase](foo: Foo): A = {println(foo); null.asInstanceOf[A] }
+warning: there were 1 feature warning(s); re-run with -feature for details
+conv: [A <: TestBase](foo: Foo)A
+
+scala> val test: NotTest = Foo()
+Foo()
+test: NotTest = null
+
+scala> implicit def conv[A](foo: Foo)(implicit ev: A <:< TestBase): A = {println(foo); null.asInstanceOf[A] }
+warning: there were 1 feature warning(s); re-run with -feature for details
+conv: [A](foo: Foo)(implicit ev: <:<[A,TestBase])A
+
+scala> val test: NotTest = Foo()
+Foo()
+test: NotTest = null
+
+scala> import scala.reflect.runtime.universe._
+import scala.reflect.runtime.universe._
+
+scala> implicit def conv[A <: TestBase](foo: Foo)(implicit ev: TypeTag[A]): A = {println(ev); null.asInstanceOf[A] }
+warning: there were 1 feature warning(s); re-run with -feature for details
+conv: [A <: TestBase](foo: Foo)(implicit ev: reflect.runtime.universe.TypeTag[A])A
+
+scala> val test: NotTest = Foo()
+<console>:18: error: type mismatch;
+ found   : Foo
+ required: NotTest
+       val test: NotTest = Foo()
+                              ^
+
+scala> val test: TestBase = Foo()
+<console>:17: error: macro has not been expanded
+       val test: TestBase = Foo()
+                               ^
+{code}

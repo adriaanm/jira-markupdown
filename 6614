@@ -1,0 +1,36 @@
+For argument's sake, let's say the decision had been made instead to load ICode for {{A$$anonfun$foo$1.apply$mcZL$sp}}. The following shows the implementation {{A$$anonfun$foo$1}} inherits from {{scala.runtime.AbstractFunction1}}:
+
+{noformat}
+Compiled from "AbstractFunction1.scala"
+public abstract class scala.runtime.AbstractFunction1 extends java.lang.Object implements scala.Function1{
+
+ . . . 
+
+public boolean apply$mcZL$sp(java.lang.Object);
+  Code:
+   0:	aload_0
+   1:	aload_1
+   2:	invokestatic	#164; //Method scala/Function1$class.apply$mcZL$sp:(Lscala/Function1;Ljava/lang/Object;)Z
+   5:	ireturn
+{noformat}
+
+Given that it's just a forwarder, for the closure to be eliminated the target method in {{scala.Function1$class}} would also have to be inlined, ie:
+
+{noformat}
+Compiled from "Function1.scala"
+public abstract class scala.Function1$class extends java.lang.Object{
+public static scala.Function1 compose(scala.Function1, scala.Function1);
+
+ . . . 
+
+public static boolean apply$mcZL$sp(scala.Function1, java.lang.Object);
+  Code:
+   0:	aload_0
+   1:	aload_1
+   2:	invokeinterface	#39,  2; //InterfaceMethod scala/Function1.apply:(Ljava/lang/Object;)Ljava/lang/Object;
+   7:	invokestatic	#43; //Method scala/runtime/BoxesRunTime.unboxToBoolean:(Ljava/lang/Object;)Z
+   10:	ireturn
+{noformat}
+
+Alone the resulting code size (if inlining handles forwarding methods as any other) would make the heuristics stop inlining sometime before getting there.
+

@@ -1,0 +1,25 @@
+Replying to [comment:22 willisblackburn]:
+> Replying to [comment:21 extempore]:
+> > What is missing are not ideas, but implementations.
+> 
+> That's good to hear.
+> 
+> What would happen if the compiler silently translated any code of the form
+
+You can try it out if you like, I implemented that a year ago.  It's under -Ypmat-naive.  It's not viable for general usage, but I don't remember every reason.  Here's what the source comment says.
+{code}
+  /** For debugging only.  Desugar a match statement like so:
+   *  val x = scrutinee
+   *  x match {
+   *    case case1 => ...
+   *    case _ => x match {
+   *       case case2 => ...
+   *       case _ => x match ...
+   *    }
+   *  }
+   * 
+   *  This way there are never transitions between nontrivial casedefs.
+   *  Of course many things break: exhaustiveness and unreachable checking
+   *  do not work, no switches will be generated, etc.
+   */
+{code}

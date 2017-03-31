@@ -1,0 +1,15 @@
+Eta-expansion is in the [spec|http://www.scala-lang.org/files/archive/spec/2.11/06-expressions.html#eta-expansion]. Leaving aside hygiene and evaluation order it's really just wrapping a method call in a lambda, i.e. {{f\(m\)}} becomes {{f\(x => m\(x\)\)}}. If there is an implicit conversion from the result type of m to the expected result type of the function, it is naturally applied, no special rules required.
+
+If you wrap a function application in another lambda you get the same result:
+
+{code}
+scala> vector2.flatMap { times2b }
+<console>:13: error: type mismatch;
+ found   : Option[Int] => Option[Int]
+ required: Option[Int] => scala.collection.GenTraversableOnce[?]
+       vector2.flatMap { times2b }
+                         ^
+
+scala> vector2.flatMap { x => times2b(x) }
+res1: scala.collection.immutable.Vector[Int] = Vector(2, 6, 8)
+{code}

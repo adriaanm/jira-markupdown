@@ -1,0 +1,10 @@
+I had this too (scala-2.10-RC3)
+{noformat}
+[error] how can getCommonSuperclass() do its job if different class symbols get
+the same bytecode-level internal name: scala/Enumeration$Value
+{noformat}
+
+It also happens when using scala.Enumeration$Value as argument type e.g. if you use a java interface you can not the scala enumeration name (e.g. Mode or WeekDay), but you have to use scala.Enumeration$Value and the scala classes that inherit from it must then use that too otherwise the compiler says that the method is not implemented. It doesn't recognize that Mode and scala.Enumeration$Value are the same type in bytecode. And if you do that then the compiler crashes with the error message.
+
+So now I don't use scala enumeration as an argument type when it has to interop with java. I use an Int and convert e.g. WeekDay.id before passing to Int (weekday: Int) and after passing back to the enumeration (WeekDay(weekday)).
+

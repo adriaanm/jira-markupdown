@@ -1,0 +1,120 @@
+Compiling the following code crashes the compiler
+{code}
+trait A {
+  def x: Double
+  def y: Double
+
+  def thisA: A
+  def copy( x: Double = 0, y: Double = 0 ): A
+}
+
+class B( in: A ) {
+  import in._
+
+  def foo( a: Double, b: Double ) = a
+
+  def bar = thisA.copy(
+    x = foo(
+      b = 1,
+      a = 2 )
+  )
+}
+{code}
+
+Stacktrace (fun.symbol == null):
+{noformat}
+error: java.lang.NullPointerException
+        at scala.tools.nsc.typechecker.Typers$Typer.noExpectedType$1(Typers.scala:3397)
+        at scala.tools.nsc.typechecker.Typers$Typer.scala$tools$nsc$typechecker$Typers$Typer$$handleMonomorphicCall$1(Typers.scala:3400)
+        at scala.tools.nsc.typechecker.Typers$Typer.doTypedApply(Typers.scala:3428)
+        at scala.tools.nsc.typechecker.Typers$Typer.tryNamesDefaults$1(Typers.scala:3313)
+        at scala.tools.nsc.typechecker.Typers$Typer.doTypedApply(Typers.scala:3386)
+        at scala.tools.nsc.typechecker.Typers$Typer.tryNamesDefaults$1(Typers.scala:3372)
+        at scala.tools.nsc.typechecker.Typers$Typer.doTypedApply(Typers.scala:3386)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$tryTypedApply$1$1.apply(Typers.scala:4412)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$tryTypedApply$1$1.apply(Typers.scala:4412)
+        at scala.tools.nsc.typechecker.Typers$Typer.silent(Typers.scala:693)
+        at scala.tools.nsc.typechecker.Typers$Typer.tryTypedApply$1(Typers.scala:4412)
+        at scala.tools.nsc.typechecker.Typers$Typer.normalTypedApply$1(Typers.scala:4457)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedApply$1(Typers.scala:4492)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedInAnyMode$1(Typers.scala:5250)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:5267)
+        at scala.tools.nsc.typechecker.Typers$Typer.runTyper$1(Typers.scala:5303)
+        at scala.tools.nsc.typechecker.Typers$Typer.scala$tools$nsc$typechecker$Typers$Typer$$typedInternal(Typers.scala:5330)
+        at scala.tools.nsc.typechecker.Typers$Typer.body$2(Typers.scala:5277)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:5281)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:5370)
+        at scala.tools.nsc.typechecker.Typers$Typer.computeType(Typers.scala:5461)
+        at scala.tools.nsc.typechecker.Namers$Namer.assignTypeToTree(Namers.scala:879)
+        at scala.tools.nsc.typechecker.Namers$Namer.methodSig(Namers.scala:1207)
+        at scala.tools.nsc.typechecker.Namers$Namer.getSig$1(Namers.scala:1525)
+        at scala.tools.nsc.typechecker.Namers$Namer.typeSig(Namers.scala:1537)
+        at scala.tools.nsc.typechecker.Namers$Namer$$anonfun$monoTypeCompleter$1$$anonfun$apply$1.apply$mcV$sp(Namers.scala:781)
+        at scala.tools.nsc.typechecker.Namers$Namer$$anonfun$monoTypeCompleter$1$$anonfun$apply$1.apply(Namers.scala:780)
+        at scala.tools.nsc.typechecker.Namers$Namer$$anonfun$monoTypeCompleter$1$$anonfun$apply$1.apply(Namers.scala:780)
+        at scala.tools.nsc.typechecker.Namers$Namer.scala$tools$nsc$typechecker$Namers$Namer$$logAndValidate(Namers.scala:1564)
+        at scala.tools.nsc.typechecker.Namers$Namer$$anonfun$monoTypeCompleter$1.apply(Namers.scala:780)
+        at scala.tools.nsc.typechecker.Namers$Namer$$anonfun$monoTypeCompleter$1.apply(Namers.scala:772)
+        at scala.tools.nsc.typechecker.Namers$$anon$1.completeImpl(Namers.scala:1679)
+        at scala.tools.nsc.typechecker.Namers$LockingTypeCompleter$class.complete(Namers.scala:1687)
+        at scala.tools.nsc.typechecker.Namers$$anon$1.complete(Namers.scala:1677)
+        at scala.reflect.internal.Symbols$Symbol.info(Symbols.scala:1429)
+        at scala.reflect.internal.Symbols$Symbol.initialize(Symbols.scala:1576)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:4919)
+        at scala.tools.nsc.typechecker.Typers$Typer.runTyper$1(Typers.scala:5303)
+        at scala.tools.nsc.typechecker.Typers$Typer.scala$tools$nsc$typechecker$Typers$Typer$$typedInternal(Typers.scala:5330)
+        at scala.tools.nsc.typechecker.Typers$Typer.body$2(Typers.scala:5277)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:5281)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedByValueExpr(Typers.scala:5359)
+        at scala.tools.nsc.typechecker.Typers$Typer.scala$tools$nsc$typechecker$Typers$Typer$$typedStat$1(Typers.scala:2998)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$62.apply(Typers.scala:3102)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$62.apply(Typers.scala:3102)
+        at scala.collection.immutable.List.loop$1(List.scala:172)
+        at scala.collection.immutable.List.mapConserve(List.scala:188)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:3102)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedTemplate(Typers.scala:1904)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedClassDef(Typers.scala:1750)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedMemberDef$1(Typers.scala:5216)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:5266)
+        at scala.tools.nsc.typechecker.Typers$Typer.runTyper$1(Typers.scala:5303)
+        at scala.tools.nsc.typechecker.Typers$Typer.scala$tools$nsc$typechecker$Typers$Typer$$typedInternal(Typers.scala:5330)
+        at scala.tools.nsc.typechecker.Typers$Typer.body$2(Typers.scala:5277)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:5281)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedByValueExpr(Typers.scala:5359)
+        at scala.tools.nsc.typechecker.Typers$Typer.scala$tools$nsc$typechecker$Typers$Typer$$typedStat$1(Typers.scala:2998)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$62.apply(Typers.scala:3102)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$62.apply(Typers.scala:3102)
+        at scala.collection.immutable.List.loop$1(List.scala:172)
+        at scala.collection.immutable.List.mapConserve(List.scala:188)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:3102)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedPackageDef$1(Typers.scala:4926)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedMemberDef$1(Typers.scala:5219)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:5266)
+        at scala.tools.nsc.typechecker.Typers$Typer.runTyper$1(Typers.scala:5303)
+        at scala.tools.nsc.typechecker.Typers$Typer.scala$tools$nsc$typechecker$Typers$Typer$$typedInternal(Typers.scala:5330)
+        at scala.tools.nsc.typechecker.Typers$Typer.body$2(Typers.scala:5277)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:5281)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:5355)
+        at scala.tools.nsc.typechecker.Analyzer$typerFactory$$anon$3.apply(Analyzer.scala:102)
+        at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:430)
+        at scala.tools.nsc.typechecker.Analyzer$typerFactory$$anon$3$$anonfun$run$1.apply(Analyzer.scala:94)
+        at scala.tools.nsc.typechecker.Analyzer$typerFactory$$anon$3$$anonfun$run$1.apply(Analyzer.scala:93)
+        at scala.collection.Iterator$class.foreach(Iterator.scala:743)
+        at scala.collection.AbstractIterator.foreach(Iterator.scala:1174)
+        at scala.tools.nsc.typechecker.Analyzer$typerFactory$$anon$3.run(Analyzer.scala:93)
+        at scala.tools.nsc.Global$Run.compileUnitsInternal(Global.scala:1625)
+        at scala.tools.nsc.Global$Run.compileUnits(Global.scala:1610)
+        at scala.tools.nsc.Global$Run.compileSources(Global.scala:1605)
+        at scala.tools.nsc.Global$Run.compile(Global.scala:1703)
+        at scala.tools.nsc.Driver.doCompile(Driver.scala:34)
+        at scala.tools.nsc.MainClass.doCompile(Main.scala:23)
+        at scala.tools.nsc.Driver.process(Driver.scala:55)
+        at scala.tools.nsc.Driver.main(Driver.scala:68)
+        at scala.tools.nsc.Main.main(Main.scala)
+{noformat}
+
+There are several workarounds:
+- adding {{val thisA=in.thisA}} or removing the import statement
+- calling foo with named parameters in a different order
+- don't use named parameters
+

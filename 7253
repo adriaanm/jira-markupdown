@@ -1,0 +1,34 @@
+Every nontrivial thing I try crashes 2.9, no wonder I wasn't setting the bar too high.
+
+Here's a nice realistic one.
+{code}
+
+class C[@specialized(Int, AnyRef) A, @specialized(Int, AnyRef) B, @specialized(Int, AnyRef) C](f: (A, B) => C)
+
+object Test {
+  def main(args:Array[String]) {
+    def show(x: Any) = println(x.getClass.getName)
+    
+    show(new C((x: Int, y: Int) => 1))
+    show(new C((x: Int, y: Int) => "abc"))
+    show(new C((x: Int, y: AnyRef) => 1))
+    show(new C((x: Int, y: AnyRef) => "abc"))
+    show(new C((x: AnyRef, y: Int) => 1))
+    show(new C((x: AnyRef, y: Int) => "abc"))
+    show(new C((x: AnyRef, y: AnyRef) => 1))
+    show(new C((x: AnyRef, y: AnyRef) => "abc"))
+  }
+}
+{code}
+Only works for III.
+{code}
+
+C$mcIII$sp
+C
+C
+C
+C
+C
+C
+C
+{code}

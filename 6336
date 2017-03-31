@@ -1,0 +1,12 @@
+Here is a simplified example of the looping implicit:
+{noformat}class A
+class B(val name: String) extends A
+implicit def aToB(a: A): B = { println("aToB"); a }
+
+println((new A).name)
+// leads to infinite loop on implicit aToB()
+{noformat}
+
+Is this a programmer error, or should the typechecker make sure an implicit shouldn't be applicable within its own definition?
+
+On second thought, it should fail completely. It's entirely nonsensical since {{a}} should never become a {{B}}, except the implicit is of a different opinion, hehe.

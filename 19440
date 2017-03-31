@@ -1,0 +1,44 @@
+Scala 2.11 can't type this over night, but 2.10 runs quickly.
+{code}
+import scala.reflect.runtime.universe.TypeTag
+
+trait Minimized {
+
+  type Rep[+T]
+
+  def abs(__arg0: Rep[Double]): Rep[Double] = infix_abs(Math,__arg0)
+
+  object Math
+
+  def infix_abs(self: Math.type, __arg0: Rep[Double]): Rep[Double]
+  def infix_abs[T:Arith](self: Rep[DenseVector[T]]): Rep[DenseVector[T]]
+
+
+  //trait Arith[T] // works
+  //type Arith[T] = Manifest[T] // hangs / takes forever
+  type Arith[T] = TypeTag[T] // hangs / takes forever
+
+  type DenseVector[T]
+  implicit def m_DenseVector[T:Arith]: Arith[DenseVector[T]]
+
+  implicit def tupleToDense2[A:Arith,B](t: Tuple2[A,B]): Rep[DenseVector[A]]
+
+
+  type Tup2[A,B]
+  implicit def m_Tup2[A:Arith,B:Arith]: Arith[Tup2[A,B]]
+  type Tup3[A,B,C]
+  implicit def m_Tup3[A:Arith,B:Arith,C:Arith]: Arith[Tup3[A,B,C]]
+  type Tup4[A,B,C,D]
+  implicit def m_Tup4[A:Arith,B:Arith,C:Arith,D:Arith]: Arith[Tup4[A,B,C,D]]
+  type Tup5[A,B,C,D,E]
+  implicit def m_Tup5[A:Arith,B:Arith,C:Arith,D:Arith,E:Arith]: Arith[Tup5[A,B,C,D,E]]
+  type Tup6[A,B,C,D,E,F]
+  implicit def m_Tup6[A:Arith,B:Arith,C:Arith,D:Arith,E:Arith,F:Arith]: Arith[Tup6[A,B,C,D,E,F]]
+  type Tup7[A,B,C,D,E,F,G]
+  implicit def m_Tup7[A:Arith,B:Arith,C:Arith,D:Arith,E:Arith,F:Arith,G:Arith]: Arith[Tup7[A,B,C,D,E,F,G]]
+  type Tup8[A,B,C,D,E,F,G,H]
+  implicit def m_Tup8[A:Arith,B:Arith,C:Arith,D:Arith,E:Arith,F:Arith,G:Arith,H:Arith]: Arith[Tup8[A,B,C,D,E,F,G,H]]
+  type Tup9[A,B,C,D,E,F,G,H,I]
+  implicit def m_Tup9[A:Arith,B:Arith,C:Arith,D:Arith,E:Arith,F:Arith,G:Arith,H:Arith,I:Arith]: Arith[Tup9[A,B,C,D,E,F,G,H,I]]
+}
+{code}

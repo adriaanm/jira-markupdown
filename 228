@@ -1,0 +1,88 @@
+Replying to [ticket:321 flyingsymbols]:
+
+At least on 2.6.1-final, the initial error message is different:
+
+{code}
+$$ scala
+Welcome to Scala version 2.6.1-final.
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> :l IntSet.scala
+Loading IntSet.scala...
+defined trait IntSet
+<console>:8: error: not found: type NonEmptySet
+               new NonEmptySet(x, new EmptySet, new EmptySet)
+                   ^
+defined class NonEmptySet
+<console>:7: error: not found: type EmptySet
+               var x: IntSet = new EmptySet
+                                   ^
+{code}
+
+If `IntSet.scala` is now :loaded again, then we'll see the type mismatch errors
+from the original report.
+
+The reason for the first error is that that `IntSet`, `EmptySet` and `NonEmptySet`
+are each compiled separately, as if you would have typed each of them on a
+separate line in the interpreter. Or in other words, the reason for the "not
+found: NonEmptySet" error is that scala hasn't had the chance to see the
+definition of `NonEmptySet` yet. 
+
+The second "not found" error follows from the first one: as the interpreter
+could not define `EmptySet`, it naturally cannot find it later on either.
+
+Now, the type mismatch errors are somewhat more involved. When the interpreter
+compiles a chunk of code, it actually wraps the code inside multiple nested
+objects:
+{code}
+object line2$$object {
+object $$iw{
+object $$iw{
+       trait IntSet {
+           def incl(x: Int): IntSet
+           def contains(x: Int): Boolean
+       }
+
+}
+}
+{code}
+
+And when a line references something that was defined in one of the previous
+lines, that something is imported from the last(?) line object defining it:
+
+{code}
+object line3$$object {
+object $$iw{
+import line2$$object.$$iw.$$iw.IntSet;
+object $$iw{
+       class EmptySet extends IntSet {
+           def contains(x: Int): Boolean = false
+           def incl(x: Int): IntSet = 
+               new NonEmptySet(x, new EmptySet, new EmptySet)
+       }
+
+}
+}
+
+;}
+{code}
+
+When `IntSet.scala` is :loaded for the second time, `IntSet` trait is first
+defined inside `line7$$object`, and then for `EmptySet`:
+
+{code}
+object line8$$object {
+object $$iw{
+import line4$$object.$$iw.$$iw.NonEmptySet;
+import line7$$object.$$iw.$$iw.IntSet;
+object $$iw{
+       class EmptySet extends IntSet {
+[...]
+{code}
+
+So, `EmpySet.incl` ought to return `line7$$object.$$iw.$$iw.IntSet` but it
+actually returns `line4$$object.$$iw.$$iw.NonEmptySet` that extends
+`line2$$object.$$iw.$$iw.IntSet`, which is clearly a type error. The type errors
+regarding `NonEmptySet` constructor parameters are caused by a similar thing,
+just the other way around.

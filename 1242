@@ -1,0 +1,15 @@
+I've looked at the code and I think that hack should've been removed already, the case it's supposed to handle doesn't occur anymore because of improvements to `instantiateTypeParams`.  Sorry!!
+
+Running an `ant dist` and if all goes well, will commit to trunk.
+
+The code is now:
+{code}
+              val resultpe = restpe.instantiateTypeParams(tparams, targs)
+              //@M substitution in instantiateParams needs to be careful!
+              //@M example: class Foo[a] { def foo[m[x]]: m[a] = error("") } (new Foo[Int]).foo[List] : List[Int]
+              //@M    --> first, m[a] gets changed to m[Int], then m gets substituted for List, 
+              //          this must preserve m's type argument, so that we end up with List[Int], and not List[a]
+              //@M related bug: SI-1438 
+              //println("instantiating type params "+restpe+" "+tparams+" "+targs+" = "+resultpe)
+              copy.TypeApply(tree, fun, args) setType resultpe
+{code}

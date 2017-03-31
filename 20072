@@ -1,0 +1,38 @@
+some discussion has been started over here: [http://stackoverflow.com/questions/36982684/auto-mix-api-when-self-typing-in-scala]
+
+This is somehow unexpected in scala(or my expectation is wrong). So following are some sample code:
+
+{code:scala}
+    trait A
+    trait B
+
+    trait HasA { def foo: A }
+    trait HasB { def foo: B }
+{code}
+
+so far so good, then i do
+
+{code:scala}
+scala> trait HasBoth extends HasA with HasB
+<console>:11: error: overriding method foo in trait HasA of type => A;
+ method foo in trait HasB of type => B has incompatible type
+       trait HasBoth extends HasA with HasB
+{code}
+
+Alright, I see the error. it makes sense.
+
+but the confusion comes following:
+
+{code:scala}
+trait Wrapper[T] { def get: T }
+trait HasBoth2 { self: Wrapper[HasA with HasB] => def bar = get.foo }
+{code}
+
+this isn't right. if we check the type of bar, its B. if we flip the order, such that the constraint is HasB with HasA, then bar is A.
+
+so we have some inconsistency here.
+
+Expectation:
+
+    1. {{HasA with HasB}} yields \{ def foo: A with B \} automatically, or
+    2. HasBoth2 yields a type incompatibility error.

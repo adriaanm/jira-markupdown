@@ -1,0 +1,13 @@
+In 2.9.1 REPL, repeating the exact same "find" query twice gives different results. It only does this when using both ".par" and ".view".
+
+See also http://stackoverflow.com/questions/8470490/can-views-be-used-with-parallel-collections/9458613#9458613
+
+scala> val f : Int => Int = _ + 10
+f: Int => Int = <function1>
+
+scala> List(1,2,3).par.view.map(f).find(_ > 11)
+res11: Option[Int] = Some(12)
+
+scala> List(1,2,3).par.view.map(f).find(_ > 11)
+res12: Option[Int] = None
+

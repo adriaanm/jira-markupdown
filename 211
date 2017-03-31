@@ -1,0 +1,17 @@
+Here is another example, with some comments. I hope this makes my concerns clear and concrete:
+{code}
+object Test {
+  def repeat(x: => Unit)(times: Int) = for (_ <- 1 to times) x
+
+  def test() {
+    // prints foo 5 times
+    repeat(println("foo"))(5)
+    
+    // prints foo once
+    val r = repeat(println("foo")) _
+    // does not print anything
+    r(5)
+  }
+}
+{code}
+If you don't find this behavior at all surprising, maybe you could provide some intuition for why it is correct?

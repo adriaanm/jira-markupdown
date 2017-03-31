@@ -1,0 +1,34 @@
+Paul: I've been poking around at this one, it seems similar to the problems we're trying sort out in macro-land.
+
+This will fix it:
+
+https://github.com/retronym/scala/compare/ticket/6648
+
+But I expect we can do a bit better, seems like it should be handled in the existing {{wasEmpty}} checks. Any insights to share? I'm all ears.
+
+By resetting that return type, we only end up with one {{$anon}} symbol after typer.
+
+Before:
+
+{noformat}
+*             object transformer1#12052
+*                 constructor transformer1#15334
+*                 value <local transformer1>#15335
+*                     anonymous class $anon#15341 (final)
+*                     anonymous class $anon#21138 (final)
+*                         constructor $anon#21139
+*                         value <local $anon>#21141
+*             object transformer1#12051 (private)
+{noformat}
+
+After:
+
+{noformat}
+  object transformer1#6962
+* object transformer1#6963
+*     constructor transformer1#15504
+*     value <local transformer1>#15505
+*         anonymous class $anon#21364 (final)
+*             constructor $anon#21365
+*             value <local $anon>#21367
+{noformat}

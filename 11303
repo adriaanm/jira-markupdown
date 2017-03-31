@@ -1,0 +1,15 @@
+What you are asking for is unsound. Here's why:
+
+{code}
+class Box[A](var value: A)
+class A { class Foo extends Box[A.this.type](A.this) }
+class B extends A { class Bar extends Foo }
+object Test extends App {
+  val b: B = new B
+  val a: A = new A // you wrote `b` here, but I changed to `new A` so as to demonstrate the unsoundness that this restriction prevents.
+  val mix: b.Bar with a.Foo = new b.Bar().asInstanceOf[b.Bar with a.Foo] // new b.Bar with a.Foo {}
+  (mix: b.Bar).value = b
+  val a1: a.type = (mix: a.Foo).value
+  assert(a1 == a) // fails
+}
+{code}

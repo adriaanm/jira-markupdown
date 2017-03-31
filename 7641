@@ -1,0 +1,14 @@
+This is a great example of the 'ResetAttrs' problem that has Eugene and I so flummoxed.
+
+The "safe" way to write the macro is:  
+
+{code}
+c.universe.reify( () => c.Expr[A](c.resetLocalAttrs(x.tree)).splice )
+{code}
+
+Splicing code into the body of the closure means that any symbols defined in the splicee will now have the wrong owner, the hacky way around this is to 'reset' the symbols/types to null and let the definitions pick up branch new symbols when the expanded macro is typechecked.
+
+I'll leave this ticket open as admission that this situation is untenable, it is far to easy to write a macro that works in some circumstances but breaks in others.
+
+https://github.com/retronym/scala/compare/scala:2.10.x...retronym:ticket/5797
+

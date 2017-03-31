@@ -1,0 +1,14 @@
+Given a class that is specialized on a type parameter, T and a method specialized on a type parameter
+W, the compiler does not generate the cross-product of methods required to avoid boxing and unboxing.  When the type parameter is moved from the class to the method, all of the variations are created.
+
+The is demonstrated in the following two gists:
+Boxing occurs on case Function1[T,W] but not Function1[T,T]
+Type parameter in class definition AND method.
+https://gist.github.com/1425438
+
+No boxing, type parameter moved to method from class.
+https://gist.github.com/1434304
+
+
+In the later case, we see from byte code that we will be calling the specialized Function1 apply methods,
+so no boxing/unboxing will occur.  I would expect that the same *should* happen in the first example.

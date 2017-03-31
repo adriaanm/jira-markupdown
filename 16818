@@ -1,0 +1,29 @@
+Reproduce Code (https://github.com/cvogt/slick/tree/SI-5551)
+{code}
+package scala.collection.slick
+object QueryableMacros{
+  def map[T, S](c: scala.reflect.makro.api.Context)
+               (_this: c.mirror.Expr[scala.collection.slick.Queryable[T]])
+               (S: c.mirror.TypeTag[S])(projection: c.mirror.Expr[T => S]): c.mirror.Expr[scala.collection.slick.Queryable[S]] = {
+    import c.mirror._
+    c.reify{new Queryable[S]}
+  } 
+}
+class Queryable[T]{
+  def map[S]( projection: T => S ) : Queryable[S] = macro QueryableMacros.map
+}
+{code}
+
+{code}
+package scala.collection.slick
+object TestQueryable extends App{
+  val q = new Queryable
+  q.map( x => 1 )
+}
+{code}
+
+Error
+{code}
+error: not found: value $local0
+one error found
+{code}

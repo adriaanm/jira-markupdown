@@ -1,0 +1,5 @@
+I'd like to have a {{by}} in object Ordering, as it is pretty much what I intend everywhere I use {{fromLessThan}}. Seems pretty straight-forward:
+
+{code}
+def by[A, B: Ordering](f: A => B): Ordering[A] = Ordering.fromLessThan((x, y) => implicitly[Ordering[B]].lt(f(x), f(y)))
+{code}

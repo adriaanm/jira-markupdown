@@ -1,0 +1,23 @@
+This problem was fixed in Scala 2.10.3 as ticket SI-7752
+
+{noformat}
+scalac-hash v2.10.2 test/files/pos/t6986.scala
+test/files/pos/t6986.scala:17: error: overloaded method value parseAll with alternatives:
+  ([T(in method parseAll)(in method parseAll)(in method parseAll)(in method parseAll)(in method parseAll)(in method parseAll)(in method parseAll)(in method parseAll)](p: _1.Parser[T(in method parseAll)(in method parseAll)(in method parseAll)(in method parseAll)(in method parseAll)(in method parseAll)(in method parseAll)(in method parseAll)], in: CharSequence)_1.ParseResult[T(in method parseAll)(in method parseAll)(in method parseAll)(in method parseAll)(in method parseAll)(in method parseAll)(in method parseAll)(in method parseAll)]) forSome { val _1: Arith } <and>
+  ([T(in method parseAll)(in method parseAll)(in method parseAll)(in method parseAll)(in method parseAll)(in method parseAll)(in method parseAll)(in method parseAll)](p: _2.Parser[T(in method parseAll)(in method parseAll)(in method parseAll)(in method parseAll)(in method parseAll)(in method parseAll)(in method parseAll)(in method parseAll)], in: java.io.Reader)_2.ParseResult[T(in method parseAll)(in method parseAll)(in method parseAll)(in method parseAll)(in method parseAll)(in method parseAll)(in method parseAll)(in method parseAll)]) forSome { val _2: Arith } <and>
+  ([T](p: _3.Parser[T], in: scala.util.parsing.input.Reader[Char])_3.ParseResult[T]) forSome { val _3: Arith }
+ cannot be applied to (Arith#Parser[Double], String)
+  p.parseAll(p.expr,"1+2")
+    ^
+one error found
+ticket/6985 ~/code/scala scalac-hash v2.10.3 test/files/pos/t6986.scala
+test/files/pos/t6986.scala:17: error: overloaded method value parseAll with alternatives:
+  ([T](p: _1.Parser[T], in: CharSequence)_1.ParseResult[T]) forSome { val _1: Arith } <and>
+  ([T](p: _2.Parser[T], in: java.io.Reader)_2.ParseResult[T]) forSome { val _2: Arith } <and>
+  ([T](p: _3.Parser[T], in: scala.util.parsing.input.Reader[Char])_3.ParseResult[T]) forSome { val _3: Arith }
+ cannot be applied to (Arith#Parser[Double], String)
+  p.parseAll(p.expr,"1+2")
+    ^
+one error found
+{noformat}
+

@@ -1,0 +1,34 @@
+The following code will fail at runtime with a ClassCastException triggered by {{identity(<value>)}} in {{processContainer()}}.
+
+{code}
+trait SelfTyped {
+  type Self
+}
+
+sealed trait Container { self =>
+  type Child = SelfTyped { type Self <: self.ChildSelf }
+  type ChildSelf
+  def children: List[Child]
+}
+
+sealed trait ExampleChild extends SelfTyped
+
+case class Example (children: List[Example#Child]) extends Container {
+  type Self = Example
+  type ChildSelf = ExampleChild
+}
+
+sealed trait AbstractNode extends ExampleChild { }
+sealed case class ConcreteNode () extends AbstractNode { override type Self = ConcreteNode }
+
+object ProofOfConcept {
+  def processContainer [C <: Container] (container: C): Unit = {
+    container.children.foreach {
+      case n: ConcreteNode =>
+        identity(n) // java.lang.ClassCastException: ConcreteNode cannot be cast to scala.runtime.Null$
+      case _ =>
+    }
+  }
+}
+ProofOfConcept.processContainer(Example(List(ConcreteNode())))
+{code}

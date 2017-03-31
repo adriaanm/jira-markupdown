@@ -1,0 +1,25 @@
+The bug appears to be in RefChecks.scala:
+
+{code}
+...
+    def checkSensible(pos: Position, fn: Tree, args: List[Tree]) = fn match {
+      case Select(qual, name @ (nme.EQ | nme.NE | nme.eq | nme.ne)) if args.length == 1 =>
+        def isReferenceOp = name == nme.eq || name == nme.ne
+
+...
+
+        // Whether def equals(other: Any) is overridden                                                                                                                                                                                     
+        def isUsingDefaultEquals      = {
+          val m = receiver.info.member(nme.equals_)
+          (m == Object_equals) || (m == Any_equals)
+        }
+        // Whether this == or != is one of those defined in Any/AnyRef or an overload from elsewhere.                                                                                                                                       
+        def isUsingDefaultScalaOp = {
+          val s = fn.symbol
+          (s == Object_==) || (s == Object_!=) || (s == Any_==) || (s == Any_!=)
+        }
+        // Whether the operands+operator represent a warnable combo (assuming anyrefs)                                                                                                                                                      
+        def isWarnable           = isReferenceOp || (isUsingDefaultEquals && isUsingDefaultScalaOp)
+{code}
+
+note that isReferenceOp is "true" whenever the method name is "eq" or "ne". This code does not take into account whether the method has been overloaded. A check similar to the one used by "isUsingDefaultEquals" and "isUsingDefaultScalaOp" should be included for "eq" and "ne".

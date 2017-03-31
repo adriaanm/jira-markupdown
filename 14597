@@ -1,0 +1,67 @@
+Hi,
+
+Given:
+
+{code}
+class SimpleDSL extends JavaTokenParsers{
+	def greetingParser = stringLiteral
+}
+{code}
+
+and
+
+{code}
+val parser = new SimpleDSL()
+parser.parseAll(parser.greetingParser, "hello") match{
+				case parser.Success(_,_) => ()
+				case x => fail(x.toString)
+			}
+{code}
+fail(...) is a part of Scalatest that just dumps its argument as a test failure
+should this happen?
+
+{code}
+
+
+org.scalatest.TestFailedException: [1.1] failure: string matching regex `"([^"\p{Cntrl}\\]|\\[\\/bfnrt]|\\u[a-fA-F0-9]{4})*"' expected but `h' found
+
+hello
+^
+	at org.scalatest.Assertions$$class.newAssertionFailedException(Assertions.scala:278)
+	at exDSL.AdressDSLTest.newAssertionFailedException(AdressDSLTest.scala:11)
+	at org.scalatest.Assertions$$class.fail(Assertions.scala:644)
+	at exDSL.AdressDSLTest.fail(AdressDSLTest.scala:11)
+	at exDSL.AdressDSLTest$$$$anonfun$$1$$$$anonfun$$apply$$1.apply(AdressDSLTest.scala:18)
+	at exDSL.AdressDSLTest$$$$anonfun$$1$$$$anonfun$$apply$$1.apply(AdressDSLTest.scala:13)
+	at org.scalatest.Spec$$$$anon$$2.apply(Spec.scala:1388)
+	at org.scalatest.Suite$$class.withFixture(Suite.scala:1509)
+	at exDSL.AdressDSLTest.withFixture(AdressDSLTest.scala:11)
+	at org.scalatest.Spec$$class.runTest(Spec.scala:1385)
+	at exDSL.AdressDSLTest.runTest(AdressDSLTest.scala:11)
+	at org.scalatest.Spec$$$$anonfun$$org$$scalatest$$Spec$$$$runTestsInBranch$$1.apply(Spec.scala:1310)
+	at org.scalatest.Spec$$$$anonfun$$org$$scalatest$$Spec$$$$runTestsInBranch$$1.apply(Spec.scala:1299)
+	at scala.collection.LinearSeqLike$$class.foreach(LinearSeqLike.scala:84)
+	at scala.collection.immutable.List.foreach(List.scala:29)
+	at org.scalatest.Spec$$class.org$$scalatest$$Spec$$$$runTestsInBranch(Spec.scala:1298)
+	at org.scalatest.Spec$$$$anonfun$$org$$scalatest$$Spec$$$$runTestsInBranch$$1.apply(Spec.scala:1318)
+	at org.scalatest.Spec$$$$anonfun$$org$$scalatest$$Spec$$$$runTestsInBranch$$1.apply(Spec.scala:1299)
+	at scala.collection.LinearSeqLike$$class.foreach(LinearSeqLike.scala:84)
+	at scala.collection.immutable.List.foreach(List.scala:29)
+	at org.scalatest.Spec$$class.org$$scalatest$$Spec$$$$runTestsInBranch(Spec.scala:1298)
+	at org.scalatest.Spec$$class.runTests(Spec.scala:1522)
+	at exDSL.AdressDSLTest.runTests(AdressDSLTest.scala:11)
+	at org.scalatest.Suite$$class.run(Suite.scala:1797)
+	at exDSL.AdressDSLTest.org$$scalatest$$Spec$$$$super$$run(AdressDSLTest.scala:11)
+	at org.scalatest.Spec$$class.run(Spec.scala:1599)
+	at exDSL.AdressDSLTest.run(AdressDSLTest.scala:11)
+	at org.scalatest.junit.JUnitRunner.run(JUnitRunner.scala:94)
+	at org.eclipse.jdt.internal.junit4.runner.JUnit4TestReference.run(JUnit4TestReference.java:46)
+	at org.eclipse.jdt.internal.junit.runner.TestExecution.run(TestExecution.java:38)
+	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.runTests(RemoteTestRunner.java:467)
+	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.runTests(RemoteTestRunner.java:683)
+	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.run(RemoteTestRunner.java:390)
+	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.main(RemoteTestRunner.java:197)
+
+{code}
+
+something screwy with the !RegEx I wager

@@ -1,0 +1,40 @@
+This code used to work in Scala-2.11
+
+{code}
+type Id[+A] = A
+
+trait Meh[F[_]] { def foo[A](a: => A): F[A] }
+
+val idmeh = new Meh[Id] { 
+    def foo[A](a: => A): Id[A] = a 
+}
+{code}
+Now this fails with 
+{code}
+<pastie>:18: error: covariant type Id occurs in invariant position in type => Meh[Id] of value idmeh
+       val idmeh = new Meh[Id] {
+{code}
+
+However, If I change where I define type {noformat}Id[+A] = A{noformat} then it works.
+
+{code}
+scala> :paste
+// Entering paste mode (ctrl-D to finish)
+
+type Id[+A] = A
+
+trait Meh[F[_]] { def foo[A](a: => A): F[A] }
+
+// Exiting paste mode, now interpreting.
+
+defined type alias Id
+defined trait Meh
+
+scala> val idmeh = new Meh[Id] {
+     |     def foo[A](a: => A): Id[A] = a
+     | }
+idmeh: Meh[Id] = $anon$1@77fdbd9b
+{code}
+
+
+I also get this behaviour with real source files, not just in the repl.

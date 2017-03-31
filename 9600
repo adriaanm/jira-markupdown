@@ -1,0 +1,201 @@
+I can now see why this only crashes in SBT. SBT has a custom compiler phase to record the API fingerprint of each file.
+
+{code}
+pool-4-thread-1@4427, prio=5, in group 'main', status: 'RUNNING'
+	  at scala.collection.MapLike$class.default(MapLike.scala:228)
+	  at scala.collection.AbstractMap.default(Map.scala:59)
+	  at scala.collection.MapLike$class.apply(MapLike.scala:141)
+	  at scala.collection.AbstractMap.apply(Map.scala:59)
+	  at scala.tools.nsc.symtab.classfile.ClassfileParser.sig2type$1(ClassfileParser.scala:771)
+	  at scala.tools.nsc.symtab.classfile.ClassfileParser.processClassType$1(ClassfileParser.scala:708)
+	  at scala.tools.nsc.symtab.classfile.ClassfileParser.sig2type$1(ClassfileParser.scala:728)
+	  at scala.tools.nsc.symtab.classfile.ClassfileParser.scala$tools$nsc$symtab$classfile$ClassfileParser$$sigToType(ClassfileParser.scala:816)
+	  at scala.tools.nsc.symtab.classfile.ClassfileParser.scala$tools$nsc$symtab$classfile$ClassfileParser$$parseAttribute$1(ClassfileParser.scala:837)
+	  at scala.tools.nsc.symtab.classfile.ClassfileParser.parseAttributes(ClassfileParser.scala:1048)
+	  at scala.tools.nsc.symtab.classfile.ClassfileParser.parseClass(ClassfileParser.scala:527)
+	  at scala.tools.nsc.symtab.classfile.ClassfileParser.parse(ClassfileParser.scala:112)
+	  at scala.tools.nsc.symtab.SymbolLoaders$ClassfileLoader.doComplete(SymbolLoaders.scala:255)
+	  at scala.tools.nsc.symtab.SymbolLoaders$SymbolLoader.complete(SymbolLoaders.scala:189)
+	  at scala.tools.nsc.symtab.SymbolLoaders$SymbolLoader.load(SymbolLoaders.scala:205)
+	  at scala.reflect.internal.Symbols$Symbol.typeParams(Symbols.scala:1567)
+	  at scala.reflect.internal.Types$NoArgsTypeRef.typeParams(Types.scala:2078)
+	  at scala.reflect.internal.Types$NoArgsTypeRef.isHigherKinded(Types.scala:2077)
+	  at scala.reflect.internal.Types$NoArgsTypeRef.normalizeImpl(Types.scala:2111)
+	  at scala.reflect.internal.Types$TypeRef.normalize(Types.scala:2316)
+	  at scala.reflect.internal.tpe.TypeMaps$ContainsCollector.traverse(TypeMaps.scala:959)
+	  at scala.reflect.internal.tpe.TypeMaps$TypeTraverser.apply(TypeMaps.scala:301)
+	  at scala.reflect.internal.tpe.TypeMaps$TypeMap.applyToSymbolInfo(TypeMaps.scala:219)
+	  at scala.reflect.internal.tpe.TypeMaps$TypeMap.loop$1(TypeMaps.scala:228)
+	  at scala.reflect.internal.tpe.TypeMaps$TypeMap.noChangeToSymbols(TypeMaps.scala:230)
+	  at scala.reflect.internal.tpe.TypeMaps$TypeMap.mapOver(TypeMaps.scala:244)
+	  at scala.reflect.internal.tpe.TypeMaps$TypeMap.mapOver(TypeMaps.scala:129)
+	  at scala.reflect.internal.tpe.TypeMaps$ContainsCollector.traverse(TypeMaps.scala:962)
+	  at scala.reflect.internal.tpe.TypeMaps$TypeCollector.collect(TypeMaps.scala:313)
+	  at scala.reflect.internal.Types$Type.contains(Types.scala:779)
+	  at scala.reflect.internal.Types$$anonfun$32.apply(Types.scala:3674)
+	  at scala.reflect.internal.Types$$anonfun$32.apply(Types.scala:3674)
+	  at scala.collection.TraversableLike$$anonfun$filterImpl$1.apply(TraversableLike.scala:259)
+	  at scala.collection.immutable.List.foreach(List.scala:302)
+	  at scala.collection.TraversableLike$class.filterImpl(TraversableLike.scala:258)
+	  at scala.collection.TraversableLike$class.filter(TraversableLike.scala:270)
+	  at scala.collection.AbstractTraversable.filter(Traversable.scala:104)
+	  at scala.reflect.internal.Types$class.existentialAbstraction(Types.scala:3674)
+	  at scala.reflect.internal.SymbolTable.existentialAbstraction(SymbolTable.scala:14)
+	  at scala.reflect.internal.Types$Type.asSeenFrom(Types.scala:672)
+	  at scala.reflect.internal.Types$Type.computeMemberType(Types.scala:706)
+	  at scala.reflect.internal.Symbols$MethodSymbol.typeAsMemberOf(Symbols.scala:2749)
+	  at scala.reflect.internal.Types$Type.memberType(Types.scala:697)
+	  at scala.reflect.internal.Types$Type.scala$reflect$internal$Types$Type$$findMembersInternal$1(Types.scala:1025)
+	  at scala.reflect.internal.Types$Type.findMembers(Types.scala:1047)
+	  at scala.reflect.internal.Types$Type.membersBasedOnFlags(Types.scala:636)
+	  at scala.reflect.internal.Types$Type.members(Types.scala:589)
+	  at xsbt.API.xsbt$API$$mkStructure(API.scala:238)
+	  at xsbt.API$$anonfun$structure$1.apply(API.scala:232)
+	  at xsbt.API$$anonfun$structure$1.apply(API.scala:232)
+	  at scala.collection.mutable.MapLike$class.getOrElseUpdate(MapLike.scala:188)
+	  at scala.collection.mutable.AbstractMap.getOrElseUpdate(Map.scala:92)
+	  at xsbt.API.structure(API.scala:232)
+	  at xsbt.API.xsbt$API$$structure(API.scala:229)
+	  at xsbt.API$$anonfun$xsbt$API$$mkClassLike$2.apply(API.scala:422)
+	  at xsbt.API$$anonfun$xsbt$API$$mkClassLike$2.apply(API.scala:422)
+	  at xsbt.Message$$anon$1.apply(Message.scala:8)
+	  at xsbti.SafeLazy$$anonfun$apply$1.apply(SafeLazy.scala:8)
+	  at xsbti.SafeLazy$Impl._t$lzycompute(SafeLazy.scala:20)
+	  at xsbti.SafeLazy$Impl._t(SafeLazy.scala:18)
+	  at xsbti.SafeLazy$Impl.get(SafeLazy.scala:24)
+	  at xsbt.API$$anonfun$xsbt$API$$forceStructures$1.apply(API.scala:100)
+	  at xsbt.API$$anonfun$xsbt$API$$forceStructures$1.apply(API.scala:100)
+	  at scala.collection.immutable.List.foreach(List.scala:302)
+	  at xsbt.API.xsbt$API$$forceStructures(API.scala:100)
+	  at xsbt.API$ApiPhase.processScalaUnit(API.scala:48)
+	  at xsbt.API$ApiPhase.processUnit(API.scala:38)
+	  at xsbt.API$ApiPhase$$anonfun$run$1.apply(API.scala:34)
+	  at xsbt.API$ApiPhase$$anonfun$run$1.apply(API.scala:34)
+	  at scala.collection.Iterator$class.foreach(Iterator.scala:743)
+	  at scala.collection.AbstractIterator.foreach(Iterator.scala:1174)
+	  at xsbt.API$ApiPhase.run(API.scala:34)
+{code}
+
+At the stack trace above, it is enumerating the members of the type:
+
+{code}
+java.util.Vector[E]#Itr
+        with java.util.ListIterator[E] {
+  final private[package util] val this$0: java.util.Vector[_]
+  private[package util] def <init>(x$2: Int): Vector.this.ListItr
+  def hasPrevious(): Boolean
+  def nextIndex(): Int
+  def previousIndex(): Int
+  def previous(): E
+  def set(x$1: E): Unit
+  def add(x$1: E): Unit
+}
+{code}
+
+{code}
+    private class Itr implements Iterator<E> {
+        int cursor;       // index of next element to return
+        int lastRet = -1; // index of last element returned; -1 if no such
+        int expectedModCount = modCount;
+
+        public boolean hasNext() {
+            // Racy but within spec, since modifications are checked
+            // within or after synchronization in next/previous
+            return cursor != elementCount;
+        }
+
+        public E next() {
+            synchronized (Vector.this) {
+                checkForComodification();
+                int i = cursor;
+                if (i >= elementCount)
+                    throw new NoSuchElementException();
+                cursor = i + 1;
+                return elementData(lastRet = i);
+            }
+        }
+
+        public void remove() {
+            if (lastRet == -1)
+                throw new IllegalStateException();
+            synchronized (Vector.this) {
+                checkForComodification();
+                Vector.this.remove(lastRet);
+                expectedModCount = modCount;
+            }
+            cursor = lastRet;
+            lastRet = -1;
+        }
+
+        final void checkForComodification() {
+            if (modCount != expectedModCount)
+                throw new ConcurrentModificationException();
+        }
+    }
+{code}
+
+Decompiled:
+
+{code}
+class java.util.Vector$Itr extends java.lang.Object implements java.util.Iterator{
+    int cursor;
+    int lastRet;
+    int expectedModCount;
+    final java.util.Vector this$0;
+    public boolean hasNext();
+    public java.lang.Object next();
+    public void remove();
+    final void checkForComodification();
+    java.util.Vector$Itr(java.util.Vector, java.util.Vector$1);
+}
+
+javap -classpath /Library/Java/JavaVirtualMachines/jdk1.7.0_17.jdk/Contents/Home/jre/lib/rt.jar  'java.util.Vector$1'
+Compiled from "Vector.java"
+class java.util.Vector$1 extends java.lang.Object implements java.util.Enumeration{
+    int count;
+    final java.util.Vector this$0;
+    java.util.Vector$1(java.util.Vector);
+    public boolean hasMoreElements();
+    public java.lang.Object nextElement();
+}
+{code}
+
+For reasons unknown to me, {{Itr}} accepts {{Vector$1}} as a constructor parameter.
+
+That's considered to be part of the API by SBT. The type ref {{java.util.Vector$1}} is normalized, which triggers its classfile to be read in order to see it has type parameters.
+
+During classfile parsing, it encounters the signature: Ljava.lang.Object;Ljava.util.Enumeration<TE;>;
+
+We expect a type parameter named 'E'. None is available.
+
+Really strange. Is the bytecode for Vector* consistent?
+
+{code}
+java.util.Vector$Itr(java.util.Vector, java.util.Vector$1);
+  Code:
+   Stack=2, Locals=3, Args_size=3
+   0:	aload_0
+   1:	aload_1
+   2:	invokespecial	#1; //Method "<init>":(Ljava/util/Vector;)V
+   5:	return
+  LineNumberTable:
+   line 1120: 0
+
+
+}
+
+javap -classpath /Library/Java/JavaVirtualMachines/jdk1.7.0_17.jdk/Contents/Home/jre/lib/rt.jar -p 'java.util.Vector'
+Compiled from "Vector.java"
+public class java.util.Vector extends java.util.AbstractList implements java.util.List,java.util.RandomAccess,java.lang.Cloneable,java.io.Serializable{
+    protected java.lang.Object[] elementData;
+    protected int elementCount;
+    protected int capacityIncrement;
+    private static final long serialVersionUID;
+    public java.util.Vector(int, int);
+    public java.util.Vector(int);
+    public java.util.Vector();
+    public java.util.Vector(java.util.Collection);
+
+{code}
+
+What constructor is being called?

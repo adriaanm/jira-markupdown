@@ -1,0 +1,38 @@
+The compilation using "ant -f debian/simpbuild.xml dist" does currently (r14263 but also before) not work, it  fails with the following errors:
+
+{code}
+$$ ant -f debian/simpbuild.xml dist
+Buildfile: debian/simpbuild.xml
+     [echo] OS:   UNIX (Linux i386 2.6.18-53.1.13.el5);
+     [echo] Java: 1.6.0_04 ('/usr/java/jdk1.6.0_04/jre');
+     [echo] JVM:  Java HotSpot(TM) Server VM 10.0-b19;
+     [echo] Ant:  Apache Ant version 1.6.3 compiled on April 28 2005.
+
+build:
+    [mkdir] Created dir: /local/mstock/scala/scala-svn/simpbuild/library
+    [javac] Compiling 12 source files to /local/mstock/scala/scala-svn/simpbuild/library
+   [scalac] Compiling 1 source file to /local/mstock/scala/scala-svn/simpbuild/library
+   [scalac] Compiling 327 source files to /local/mstock/scala/scala-svn/simpbuild/library
+    [mkdir] Created dir: /local/mstock/scala/scala-svn/simpbuild/compiler
+    [mkdir] Created dir: /local/mstock/scala/scala-svn/simpbuild/actors
+    [mkdir] Created dir: /local/mstock/scala/scala-svn/simpbuild/dbc
+    [javac] Compiling 6 source files to /local/mstock/scala/scala-svn/simpbuild/actors
+   [scalac] Compiling 65 source files to /local/mstock/scala/scala-svn/simpbuild/dbc
+   [scalac] Compiling 201 source files to /local/mstock/scala/scala-svn/simpbuild/compiler
+   [scalac] Compiling 20 source files to /local/mstock/scala/scala-svn/simpbuild/actors
+   [scalac] /local/mstock/scala/scala-svn/src/actors/scala/actors/Actor.scala:680: error: value intern is not a member of Symbol
+   [scalac]     exitReason = 'normal
+   [scalac]                  ^
+   [scalac] /local/mstock/scala/scala-svn/src/actors/scala/actors/Actor.scala:747: error: value intern is not a member of Symbol
+   [scalac]   private[actors] var exitReason: AnyRef = 'normal
+   [scalac]                                            ^
+   [scalac] /local/mstock/scala/scala-svn/src/actors/scala/actors/Actor.scala:807: error: value intern is not a member of Symbol
+   [scalac]     else if (reason != 'normal)
+   [scalac]                        ^
+   [scalac] three errors found
+
+BUILD FAILED
+/local/mstock/scala/scala-svn/debian/simpbuild.xml:315: Compile failed with 3 errors; see the compiler error output for details.
+
+Total time: 3 minutes 34 seconds
+{code}

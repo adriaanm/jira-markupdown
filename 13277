@@ -1,0 +1,20 @@
+Consider the following case:
+
+{code}
+   class Foo(f : => Unit){
+      lazy val bar = f;
+   }
+{code}
+
+Once bar has been evaluated, f is no longer needed, but instances of Foo will retain a reference to it anyway (and anything it in turn has captured), potentially preventing all sorts of things from being garbage collected. This is bad, and will become particularly important once SI-240 is done and we have lazy parameters. 
+
+It would be nice if the following was also handled correctly:
+
+{code}
+   class Foo(f : => Unit){
+      lazy val bar = f;
+      lazy val baz = f;
+   }
+{code}
+
+But this is somewhat less important and handling the case of only one lazy val will probably capture most of the use cases. 

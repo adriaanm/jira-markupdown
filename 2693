@@ -1,0 +1,3 @@
+This was introduced with the new equals method in r19456 and it highlights an interesting corner case. Thanks for reporting it so quickly. A little known secret is that "final" also signals the compiler to do constant folding, which is why this only happens when you say final.
+
+The corner case is that in java NaN != NaN in float primitives, but NaN == NaN among the boxed. Hopefully NaN is the only case where the boxed type has more generous equality than the primitive.

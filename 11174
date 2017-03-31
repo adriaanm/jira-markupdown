@@ -1,0 +1,35 @@
+Alternate link, or rather, canonical link:
+
+http://www.scala-lang.org/files/archive/spec/2.11/06-expressions.html#infix-operations
+
+I think it's not a violation because match is not an operator.
+
+There are SO questions about using it as one.  http://stackoverflow.com/q/18148534/1296806
+{code}
+scala> import collection.mutable.ListBuffer
+import collection.mutable.ListBuffer
+
+scala> val b = new ListBuffer[Int]
+b: scala.collection.mutable.ListBuffer[Int] = ListBuffer()
+
+scala> b += 43 match { case is @ Seq(_*) => is.head }
+res0: Int = 43
+
+scala> b toList match { case is @ Seq(_*) => is.head }
+warning: there was one feature warning; re-run with -feature for details
+res1: Int = 43
+{code}
+The last result is possible because the thing to the left of match is a postfix expression.  Contrast
+{code}
+scala> b toList :+ 42
+<console>:1: error: ';' expected but integer literal found.
+       b toList :+ 42
+                   ^
+{code}
+I had an idea that they could turn on operator behavior for match when language.postfixOps is off.  That might get confusing, except that this example might be less confusing.  Also confusing, it would have to be the other way around: you'd have to use the command option -language:postfixOps to turn off match precedence; or the parser could produce a multiverse view of your code until it looks at the language options and it collapses to a single reality.  Someone has already suggested that Schroedinger's kitteh runs the nightly builds; why not let her handle every compile run everywhere?
+
+Or,
+{code}
+scala> s += match 2 then { case 1 => "one" case 2 => "two" }
+scala> s += match 2 with { case 1 => "one" case 2 => "two" }
+{code}

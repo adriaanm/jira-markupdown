@@ -1,0 +1,24 @@
+scalac can parse Java sources to break cycles in mixed Scala/Java projects. However, the typer complains about correct (from the Java point of view) imports in Java sources:
+
+{code}
+package p1;
+public class EnclosingClass {
+	public class NestedClass {
+	}
+}
+{code}
+
+{code}
+import p1.EnclosingClass.NestedClass;
+public class ConsumingClass {
+	NestedClass nc;
+}
+{code}
+
+This results in:
+
+{code}
+NestedClass is not a member of _root_.p1.EnclosingClass.
+{code}
+
+See [IDE #1000361|https://www.assembla.com/spaces/scala-ide/tickets/1000361]

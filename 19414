@@ -1,0 +1,7 @@
+Otherwise, the stacktrace of the code calling {{Failure.get}} is lost. Wrapping the Failure exception preserves both stacktraces.
+
+This is important because if {{Failure.get}} is called this is likely to be a bug in the code that calls {{Failure.get}} (and not in the code that produced the original Failure).
+
+For some usages of {{Try}} this may not be too big a problem because {{Failure}} creation and calling {{Failure.get}} may occur together so that it is easy enough to infer where the problem is. However, in many cases {{Try}} is used to transport a possibly erroneous result over "bigger distances" where original stacktrace and {{Failure.get}} aren't executed close to each other so that finding the cause can get hard.
+
+One particularly irritating effect of the current implementation is that {{Await.result(future)}} directly relies on {{Try.get}} so that the exception being thrown by that call doesn't include the stacktrace of the {{Await.result}} call but just the mostly useless stacktrace of the failed Future execution (e.g. a "Future timed out" stack trace that doesn't include any user code).

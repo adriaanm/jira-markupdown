@@ -1,0 +1,49 @@
+You are right, SI-500 and SI-501 are not direct counter-examples. I remember now that we reasoned informally that type intersection would be similar but we never worked out a concrete example. I have done that now. Here it is:
+{code}
+class B
+class C(x: String) extends B
+
+class A {
+  type A >: Null
+  class D { type T >: C <: B }
+  val x: D with A = null
+  var y: x.T = new C("abc")
+}
+object Test extends A with Application {
+  class C { type T = Int; val x = 1 }
+  type A = C
+  y = 42
+}
+{code}
+(I'll add it to the test suite as null-unsoundness.scala).
+
+If you compile the test with scalac, you get:
+{code}
+ found   : Null(null)
+ required: A.this.D with A.this.A
+  val x: D with A = null
+                    ^
+one error found
+{code}
+I then changed the condition which causes the error. It's in symtab/Types, method
+isSubType0. One of the cases reads:
+
+{code}
+      case (_, RefinedType(parents2, ref2)) =>
+        (parents2 forall (tp2 => tp1 <:< tp2)) &&
+        (ref2.toList forall tp1.specializes) &&
+        (tp1.typeSymbol != NullClass ||
+        !parents2.exists(_.typeSymbol.isAbstractType))
+{code}
+I removed the last condition. Then the example compiles, but at runtime you see:
+{code}
+Exception in thread "main" java.lang.ExceptionInInitializerError
+	at Test.main(nulls.scala)
+Caused by: java.lang.ClassCastException: java.lang.Integer cannot be cast to B
+	at Test$$.<init>(nulls.scala:13)
+	at Test$$.<clinit>(nulls.scala)
+	... 1 more
+{code}
+So, here's the type hole. 
+
+In summary, ``what's wrong with the Scala type system_ is that the idea of a universal value of null is fundamentally at odds with type abstraction. The cleanest fix would be to eliminate `null'. Failing that, we have to live with the restriction, or design a different scheme. But this should be a SIP; as you can see the issues are tricky and require a lot of study.

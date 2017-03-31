@@ -1,0 +1,31 @@
+I came across the following situation.
+{code}
+object Run {
+ def main(args:Array[String]) {
+  val a = Blarg(Array(1,2,3))
+  println(a.m((x:Int) => x+1))
+ }
+}
+
+object Blarg {
+  def apply[T:Manifest](a:Array[T]) = new Blarg(a)
+}
+class Blarg [@specialized T:Manifest](val a:Array[T]) {
+  def m[@specialized W>:T,@specialized S](f:W=>S) = f(a(0))
+}
+
+{code}
+
+When run, this throws the runtime exception
+java.lang.RuntimeException: boom! you stepped on a bug. This method should never be called.
+
+However, when we specialize the apply method as follows,
+{code}
+object Blarg {
+  def apply[@specialized T:Manifest](a:Array[T]) = new Blarg(a)
+}
+{code}
+everything goes through as it should.
+
+The type parameters used in m are a workaround for the lack 
+of specialization on result type I submitted earlier.

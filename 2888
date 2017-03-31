@@ -1,0 +1,29 @@
+The bug still exists in Scala 2.8 r19890.
+
+To reproduce use the following code:
+
+{code}
+package scalacode
+import javacode.Methods
+class GenericsCompilerCrashTest {
+  def test() {
+    Methods.acceptGenericInterface(Methods.getGenericInterface())
+  }
+}
+{code}
+
+{code}
+package javacode;
+public interface GenericInterface<T> { }
+{code}
+
+{code}
+package javacode;
+public class Methods {
+  public static <T> GenericInterface<T> getGenericInterface() { return null; }
+  public static <T> void acceptGenericInterface(GenericInterface<? super T> gi) { }
+}
+{code}
+
+The problem is in the {{acceptGenericInterface}} method. Changing that method's signature to
+{{<T> void acceptGenericInterface(GenericInterface<T> gi)}} does not cause the compiler to crash.

@@ -1,0 +1,23 @@
+Been seeing what I can @specialize in the library without undue difficulty.
+
+Successes: Option, PartialFunction, List, Numeric, Ordering.
+
+Failure:
+{code}
+% git diff
+-trait Iterator[+A] extends TraversableOnce[A] {
++trait Iterator[@specialized +A] extends TraversableOnce[A] {
+
+% scalac29 -d /tmp src/library/scala/collection/Iterator.scala
+  Exception in thread "main" java.lang.UnsupportedOperationException
+  	at ch.epfl.lamp.fjbg.JMethodType.getSize(JMethodType.java:29)
+  	at ch.epfl.lamp.fjbg.JCode.emitGETFIELD(JCode.java:613)
+  	at scala.tools.nsc.backend.jvm.GenJVM$$BytecodeGenerator$$$$anonfun$$genBlock$$1$$2.apply(GenJVM.scala:1131)
+  	at scala.tools.nsc.backend.jvm.GenJVM$$BytecodeGenerator$$$$anonfun$$genBlock$$1$$2.apply(GenJVM.scala:1094)
+  	at scala.collection.IndexedSeqOptimized$$class.foreach(IndexedSeqOptimized.scala:34)
+  	at scala.collection.mutable.ArrayOps.foreach(ArrayOps.scala:38)
+  	at scala.tools.nsc.backend.icode.BasicBlocks$$BasicBlock.foreach(BasicBlocks.scala:126)
+  	at scala.tools.nsc.backend.jvm.GenJVM$$BytecodeGenerator.genBlock$$1(GenJVM.scala}} 
+{code}
+
+Paging Dr. Agos, Dr. Agos to the OR!

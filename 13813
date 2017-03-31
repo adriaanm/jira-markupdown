@@ -1,0 +1,16 @@
+I got the compiler exception quoted in the subject.
+
+The triggering code is as follows:
+{code}
+object Bug_New {
+  trait MyTrait {
+    type Alpha
+    def the_value : Alpha
+    class Factory() {def value : Alpha = the_value}
+  }
+
+  def fun[X<:MyTrait with Singleton]() = new X#Factory().value
+}
+{code}
+
+(scalac versions: 2.7.1.final & build from trunk.)

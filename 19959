@@ -1,0 +1,23 @@
+The `null` path `p` below can be used to collapse the subtyping lattice through bad bounds. This snippet was found jointly with Ross Tate who asked whether our recent soundness result for DOT would carry over in presence of `null` values.
+
+{code:java}
+object world extends App {
+  trait A { type L <: Nothing }
+  trait B { type L >: Any}
+  def toL(b: B)(x: Any): b.L = x
+  val p: B with A = null
+
+  // we can create a value of type Nothing
+  println(toL(p)("hello"): Nothing)
+  // at runtime: java.lang.ClassCastException: java.lang.String cannot be cast to scala.runtime.Nothing$
+
+  // variation on a theme...
+  def cast[T,U](x: T): U = toL(p)(x)
+
+  println(cast[Int,String](1) + "hello")
+  // at runtime: java.lang.ClassCastException: java.lang.Integer cannot be cast to java.lang.String
+
+  println(cast[String,Int => Int]("hello")(1))
+  // at runtime: java.lang.ClassCastException: java.lang.String cannot be cast to scala.Function1
+}
+{code}

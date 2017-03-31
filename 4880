@@ -1,0 +1,64 @@
+Confirm this bug. I have same behavior with scala-2.8.1 (I remove comment before `echo` in `scalac-net.bat`):
+{code}
+Z:\Learning\Scala\.NET>scalac-net -version
+Scala compiler version 2.8.1.final -- Copyright 2002-2010, LAMP/EPFL
+
+Z:\Learning\Scala\.NET>scalac-net helloworld.scala
+"C:\DevTools\jdk-current\bin\java.exe" -Xmx256M -Xms32M -Dscala.home="C:\DevTool
+s\scala\bin\.." -Denv.emacs=""  -cp "C:\DevTools\scala\bin\..\lib\jline.jar;C:\D
+evTools\scala\bin\..\lib\mscorlib.dll;C:\DevTools\scala\bin\..\lib\predef.dll;C:
+\DevTools\scala\bin\..\lib\scala-compiler.jar;C:\DevTools\scala\bin\..\lib\scala
+-dbc.jar;C:\DevTools\scala\bin\..\lib\scala-library.jar;C:\DevTools\scala\bin\..
+\lib\scala-swing.jar;C:\DevTools\scala\bin\..\lib\scalap.jar;C:\DevTools\scala\b
+in\..\lib\scalaruntime.dll" scala.tools.nsc.Main -target:msil helloworld.scala
+scala.tools.nsc.MissingRequirementError: class scala.runtime.VolatileBooleanRef
+not found.
+        at scala.tools.nsc.symtab.Definitions$$definitions$$.getModuleOrClass(Defi
+nitions.scala:517)
+        at scala.tools.nsc.symtab.Definitions$$definitions$$.getClass(Definitions.
+scala:475)
+        at scala.tools.nsc.symtab.Definitions$$definitions$$.newValueClass(Definit
+ions.scala:624)
+        at scala.tools.nsc.symtab.Definitions$$definitions$$.BooleanClass(Definiti
+ons.scala:92)
+        at scala.tools.nsc.symtab.Definitions$$definitions$$.initValueClasses(Defi
+nitions.scala:647)
+        at scala.tools.nsc.symtab.Definitions$$definitions$$.init(Definitions.scal
+a:791)
+        at scala.tools.nsc.Global$$Run.<init>(Global.scala:604)
+        at scala.tools.nsc.Main$$.process(Main.scala:105)
+        at scala.tools.nsc.Main$$.main(Main.scala:120)
+        at scala.tools.nsc.Main.main(Main.scala)
+error: fatal error: class scala.runtime.VolatileBooleanRef not found.
+{code}
+
+Interestingly, with -verbose key specified error is different:
+{code}
+Z:\Learning\Scala\.NET>scalac-net -verbose helloworld.scala
+[AssemRefs = .]
+Exception in thread "main" java.lang.RuntimeException: Unknown
+        at scala.tools.nsc.util.AssemblyClassPath.asClasspathString(MsilClassPat
+h.scala:115)
+        at scala.tools.nsc.util.AssemblyClassPath.asClasspathString(MsilClassPat
+h.scala:108)
+        at scala.tools.nsc.util.MergedClassPath$$$$anonfun$$asClasspathString$$1.app
+ly(ClassPath.scala:338)
+        at scala.tools.nsc.util.MergedClassPath$$$$anonfun$$asClasspathString$$1.app
+ly(ClassPath.scala:338)
+        at scala.collection.TraversableLike$$$$anonfun$$map$$1.apply(TraversableLike
+.scala:206)
+        at scala.collection.TraversableLike$$$$anonfun$$map$$1.apply(TraversableLike
+.scala:206)
+        at scala.collection.LinearSeqOptimized$$class.foreach(LinearSeqOptimized.
+scala:61)
+        at scala.collection.immutable.List.foreach(List.scala:45)
+        at scala.collection.TraversableLike$$class.map(TraversableLike.scala:206)
+
+        at scala.collection.immutable.List.map(List.scala:45)
+        at scala.tools.nsc.util.MergedClassPath.asClasspathString(ClassPath.scal
+a:338)
+        at scala.tools.nsc.Global.<init>(Global.scala:224)
+        at scala.tools.nsc.Main$$.process(Main.scala:89)
+        at scala.tools.nsc.Main$$.main(Main.scala:120)
+        at scala.tools.nsc.Main.main(Main.scala)
+{code}

@@ -1,0 +1,107 @@
+I'm getting a stack overflow exception in 2.7.3 and the nighly scala-2.8.0.r17185 when I try to use the 20090211 snapshot of Google Collections available at
+
+http://google-collections.googlecode.com/files/google-collect-snapshot-20090211.zip
+
+I compiled this code:
+
+{code}
+import com.google.common.collect.MapMaker
+
+abstract class AbstractEntityCache[C,E]
+{
+  protected
+  def create_new_entity(constructor_parameter : C) : E
+
+  private
+  val entity_by_constructor_parameter_ =
+  {
+    val computer = new com.google.common.base.Function[C, E] {
+                     def apply(constructor_parameter : C) : E =
+                     {
+                       create_new_entity(constructor_parameter)
+                     }
+                   }
+
+    new MapMaker()
+      .softValues()
+      .makeComputingMap(computer)
+  }
+}
+{code}
+
+with {{scalac -classpath google-collect-snapshot-20090211.jar}}
+
+With 2.7.3 I get
+
+{code}
+Exception in thread "main" java.lang.StackOverflowError
+        at scala.tools.nsc.symtab.Types$$commonOwnerMap$$.apply(Types.scala:3140)
+        at scala.tools.nsc.symtab.Types$$commonOwnerMap$$.apply(Types.scala:3136)
+        at scala.tools.nsc.symtab.Types$$TypeMap.mapOver(Types.scala:2420)
+{code}
+
+and with 2.8.0.r17185 I get:
+
+{code}
+exception when typing computer, pt = com.google.common.base.Function[_ >: ?, _ <: ?]
+exception when typing new MapMaker().softValues().makeComputingMap(computer), pt = ?
+exception when typing {
+  val computer: java.lang.Object with com.google.common.base.Function[C,E] = {
+    final class $$anon extends com.google.common.base.Function[C, E] {
+      def this(): template $$anon = {
+        $$anon.super.this();
+        ()
+      };
+      def apply(constructor_parameter: C): E = create_new_entity(constructor_parameter)
+    };
+    new $$anon()
+  };
+  new MapMaker().softValues().makeComputingMap(computer)
+}, pt = ?
+exception when typing abstract class AbstractEntityCache[C >: Nothing <: Any, E >: Nothing <: Any] extends scala.ScalaObject {
+  def this() = {
+    super.<init>();
+    ()
+  };
+  protected def create_new_entity(constructor_parameter: C): E;
+  private[this] val entity_by_constructor_parameter_ = {
+    val computer: java.lang.Object with com.google.common.base.Function[C,E] = {      final class $$anon extends com.google.common.base.Function[C, E] {
+        def this(): template $$anon = {
+          $$anon.super.this();
+          ()
+        };
+        def apply(constructor_parameter: C): E = create_new_entity(constructor_parameter)
+      };
+      new $$anon()
+    };
+    new MapMaker().softValues().makeComputingMap(computer)
+  }
+}, pt = ?
+exception when typing package <empty> {
+  import com.google.common.collect.MapMaker;
+  abstract class AbstractEntityCache[C >: Nothing <: Any, E >: Nothing <: Any] extends scala.ScalaObject {
+    def this() = {
+      super.<init>();
+      ()
+    };
+    protected def create_new_entity(constructor_parameter: C): E;
+    private[this] val entity_by_constructor_parameter_ = {
+      val computer: java.lang.Object with com.google.common.base.Function[C,E] = {
+        final class $$anon extends com.google.common.base.Function[C, E] {
+          def this(): template $$anon = {
+            $$anon.super.this();
+            ()
+          };
+          def apply(constructor_parameter: C): E = create_new_entity(constructor_parameter)
+        };
+        new $$anon()
+      };
+      new MapMaker().softValues().makeComputingMap(computer)
+    }
+  }
+}, pt = ?
+Exception in thread "main" java.lang.StackOverflowError
+        at scala.tools.nsc.symtab.Types$$commonOwnerMap$$.apply(Types.scala:3167)
+        at scala.tools.nsc.symtab.Types$$commonOwnerMap$$.apply(Types.scala:3163)
+        at scala.tools.nsc.symtab.Types$$TypeMap.mapOver(Types.scala:2445)
+{code}

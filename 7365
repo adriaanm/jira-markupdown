@@ -1,0 +1,18 @@
+I stumbled upon this without trying to do any evil.  It looks similar.
+
+The error is: {code}java.lang.VerifyError: (class: fracked/Test$$anonfun$fraction$1, method: applyOrElse signature: (ILscala/Function1;)Ljava/lang/Object;) Expecting to find object/array on stack{code}
+
+
+{code}
+package fracked
+
+object Test {
+  //def fraction: PartialFunction[Int, Int] = { case d if d != 0 => 42 / d }
+  def fraction: PartialFunction[Int, Int] = { case d if d != 0 => println(d.getClass); 42 / d }
+  //def fraction: PartialFunction[Int, Int] = { case d: Int if d != 0 => println(d.getClass); 42 / d } // ok
+  //def fraction: PartialFunction[Int, Int] = { case d if d != 0 => println("hello"); 42 / d }
+  def main(args: Array[String]) {
+    println(fraction(42))
+  }
+}
+{code}

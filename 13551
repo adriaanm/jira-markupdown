@@ -1,0 +1,24 @@
+If you write the following in the interpreter:
+{code}
+scala> trait A {
+     |   val x : String
+     | }
+defined trait A
+{code}
+And use up-arrow (or whatever your particular binding is), you get
+{code}
+scala> }
+{code}
+Which is nearly useless.  The history should instead group an entire statement.  For example, in zsh, if you write:
+{code}
+% for i in *.xml
+for> wc -c $$i
+8866 build.examples.xml
+46544 build.xml
+{code}
+Then hitting up arrow gives you:
+{code}
+% for i in *.xml
+wc -c $$i
+{code}
+rlwrap is not smart enough to either, it would probably require more configurability than is reasonable for it to offer, so we should fix the interaction with jline to get the more useful behavior.

@@ -1,0 +1,33 @@
+I think this bug is legitimate, or at least warrants clarification.  The issue at hand is presented more clearly as follows:
+{code}
+object A {
+  val x: Int = List("a")
+  implicit lazy val O1: (List[String] => Int) = ???
+}
+object B {
+  val x: Int = List("a")
+  implicit object O2 extends (List[String] => Int) { def apply(x: List[String]): Int = ??? }
+}
+/*
+./a.scala:9: error: type mismatch;
+ found   : List[String]
+ required: Int
+ Note: implicit object O2 is not applicable here because it comes after the application point and it lacks an explicit result type
+  val x: Int = List("a")
+                   ^
+one error found
+*/
+{code}
+
+object O2 is considered to be typeless.  I think it makes a lot more sense to either a) consider it to have type "O2.type" or b) failing that, to at least offer some means of giving it a so-called explicit result type.  Because right now there's no way to do it at all.  Naively, one might think this would work:
+{code}
+object C {
+  val x: Int = List("a")
+  implicit object O3 extends (List[String] => Int) {
+    self: (List[String] => Int) =>
+
+    def apply(x: List[String]): Int = ???
+  }
+}
+{code}
+But it doesn't.

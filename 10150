@@ -1,0 +1,17 @@
+Only the first error is reported when coming out of silent mode:
+
+{code}
+// def silent
+          context1.firstError match {
+            case Some(err) =>
+              stopStats()
+              SilentTypeError(err)
+            case None =>
+              // If we have a successful result, emit any warnings it created.
+              context1.flushAndIssueWarnings()
+              SilentResultValue(result)
+          }
+
+// def tryTypedApply
+silent(_.doTypedApply(tree, fun, args, mode, pt)) orElse onError
+{code}

@@ -1,0 +1,15 @@
+The companion of {{Equiv}} defines an implicit that materializes the type class for *any* type, using default equality.
+
+This is harmful, since {{Equiv}} cannot be safely used as a type class:
+
+{code}
+def maybeMerge(x: Foo, y: Foo)(implicit fooEquiv: Equiv[Foo]) =
+  if (fooEquiv.equiv(x, y)) x else merge(x, y)
+
+def mergeAll(x: Foo*) =
+  x.reduce(maybeMerge) // <-- oops, not intended to compile
+{code}
+
+{{scala.math.Equiv.universalEquiv}} should be deprecated and moved to {{scala.math.Equiv.Implicits.universalEquiv}}.
+
+{{scala.math.Equiv.Implicits}} could also contain an implicit version of {{scala.math.Equiv.fromComparator}}.

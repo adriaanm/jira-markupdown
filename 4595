@@ -1,0 +1,16 @@
+here's a simplified version of the example
+
+{code}
+class D[T, U](x: T)(implicit toIt: T => Iterable[U]) { def foo(id: U => Int) = 0 }
+implicit def iD[T, U](x: T)(implicit toIt: T => Iterable[U]) = new D(x)
+
+val data : Iterable[Int] = List(1,2)
+
+// OK
+iD(data).foo((x: Int) => x)
+
+// data.foo((x: Int) => x)
+// <console>:16: error: could not find implicit value for parameter toIt: (Iterable[Int]) => Iterable[U]
+//        data.foo((x: Int) => x)
+//        ^
+{code}

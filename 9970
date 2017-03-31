@@ -1,0 +1,57 @@
+{quote}
+Tracing out SI-7746:
+
+def f[T](x: Option[T]) = x match {
+    case Some(Some(5)) => true // It would fail on the following inputs: None, Some((x: T forSome x not in Some[?])), Some(Some((x: Any forSome x not in 5))), Some(_)
+  }
+unassigned List(V1=None.type#11, V3=5#10) in Map(V1=Some[?]#8 -> true, V2=Some[?]#9 -> false)
+
+...
+
+dropUnit(
+  ArrayBuffer(Set(V1=None.type#11, V1=Some[?]#8), Set(-V1=Some[?]#8, -V2=Some[?]#9, -V3=5#10), Set(V1=Some[?]#8, -V1=None.type#11)),
+  V3=5#10
+) = ArrayBuffer(Set(V1=None.type#11, V1=Some[?]#8), Set(-V1=Some[?]#8, -V2=Some[?]#9), Set(V1=Some[?]#8, -V1=None.type#11))
+DPLL
+ V1=None.type#11 \/   V1=Some[?]#8    /\
+  -V1=Some[?]#8  \/  -V2=Some[?]#9    /\
+  V1=Some[?]#8   \/ -V1=None.type#11
+DPLL
+ V1=None.type#11 \/   V1=Some[?]#8    /\
+  V1=Some[?]#8   \/ -V1=None.type#11
+DPLL
+
+dropUnit(
+  ArrayBuffer(Set(V1=None.type#11, V1=Some[?]#8), Set(-V1=Some[?]#8, -V2=Some[?]#9, -V3=5#10), Set(V1=Some[?]#8, -V1=None.type#11)),
+  -V3=5#10
+) = ArrayBuffer(Set(V1=None.type#11, V1=Some[?]#8), Set(V1=Some[?]#8, -V1=None.type#11))
+DPLL
+ V1=None.type#11 \/   V1=Some[?]#8    /\
+  V1=Some[?]#8   \/ -V1=None.type#11
+DPLL
+
+forcedYes(V3=5#10) Map(V1=Some[?]#8 -> true, V2=Some[?]#9 -> false, V3=5#10 -> true)
+forcedNo(V3=5#10) Map(V1=Some[?]#8 -> true, V3=5#10 -> false)
+...
+var assignment for model Map(V1=Some[?]#8 -> true, V3=5#10 -> false):
+V1(=x1: Option[?]) == (Some[?])  != ()
+V3(=x1.x.x: Any) == ()  != (5)
+describing (V1,List(Some[?]),List(),Map(),class Some,true)
+described as: Some(_)
+Taking the unassigned V3=5 as false leads us to simplify the model to a point where we suggest Some(_) as a counter example. But for V3 to be assignable at all (as i understand things), we need V2 = Some[?] to be true.
+
+Is Map(V1=Some[?]#8 -> true, V3=5#10 -> false): a valid counter example that is wrongly described, or an invalid counter example? (To me, it seems like the latter.)
+
+ adriaanm commented 2 days ago 
+I'm very open to improvements to the counter example algorithm (though I'm
+getting more anxious about changing any of this in 2.10 due to the risk of
+undetected regressions). I really wish I had more time to work on this
+right now, but I can't. I'd be more at ease if this was happening in
+master. I have budgeted time during the polish milestones to work on this
+kind of stuff (sept-oct).
+…
+
+ adriaanm commented 16 hours ago 
+Is Map(V1=Some[?]#8 -> true, V3=5#10 -> false): a valid counter example that is wrongly described, or an invalid counter example? (To me, it seems like the latter.)
+Yeah, the whole logic of dependencies between variables' types is not encoded in the formula. That's why the counter examples need to be pruned (https://github.com/scala/scala/blob/master/src/compiler/scala/tools/nsc/transform/patmat/MatchAnalysis.scala#L352)
+{quote}

@@ -1,0 +1,42 @@
+{code}
+scala> class A {
+     |   this_a =>
+     |   def b= new B
+     |   class B {
+     |     def a: this_a.type= this_a
+     |   }
+     | }
+defined class A
+
+scala> def a= new A {
+     |   def c { }
+     | }
+a: A{def c: Unit}
+
+scala> a.b.a.c
+<console>:10: error: value c is not a member of A
+       a.b.a.c
+             ^
+{code}
+
+Checking the type of a.b.a shows why:
+
+{code}
+scala> a.b.a
+res1: A = $anon$1@fe210a
+{code}
+
+Should be A{def c: Unit}
+
+Surprisingly, changing the "def a" into a "val" works around the issue in this particular case:
+{code}
+scala> val a= new A {
+     |   def c { }
+     | }
+a: A{def c: Unit} = $anon$1@2f0bd7
+
+scala> a.b.a
+res3: a.type = $anon$1@2f0bd7
+
+scala> a.b.a.c
+{code}

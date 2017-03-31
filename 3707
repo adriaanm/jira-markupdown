@@ -1,0 +1,38 @@
+Scala 2.8 is right to reject it. It has not enough information about the relationship between the Edge and Node types. Here is a not too much reduced example that's sufficiently close to the original I believe:
+
+{code}
+class GraphFun { 
+  class Node(val out : Edge)
+  class Edge
+}
+
+class CfgFun {
+  val gfun = new GraphFun
+
+  class Cfg {
+    type Node = gfun.Node
+    type Edge = gfun.Edge
+  }
+}
+
+object DFST {
+  def apply(cfg : CfgFun#Cfg) {
+    type Node = cfg.Node
+    type Edge = cfg.Edge
+
+    def visit(n: Node, e: Edge): Unit = visit(n, n.out)
+    ()
+  }
+}
+{code}
+
+This gives you
+{code}
+graph.scala:20: error: type mismatch;
+ found   : _11.type#gfun.Edge
+ required: Edge
+    def visit(n: Node, e: Edge): Unit = visit(n, n.out)
+{code}
+The compiler can't know that the type of the out edge is still on the same level as Node. This is related to family polymorphism and can probably be fixed with abstract member types. Look for the subject/observer example in http://www.scala-lang.org/sites/default/files/odersky/ScalableComponent.pdf
+
+That said, questions like these are best asked on the mailing list.

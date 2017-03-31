@@ -1,0 +1,20 @@
+{code}
+val xmlLs = scala.xml.XML.loadString( "<a>ceci &amp; un msg</a>" )
+{code}
+
+Gives me an element with only one child of type scala.xml.Text.
+
+Where as
+{code}
+val xmlCode = <a>ceci &amp; un msg</a>
+{code}
+
+Gives me an element with 3 children. The second is an scala.xml.EntityRef :
+{code}
+xmlCode.child(1).getClass
+{code}
+
+Then of course i have
+{code}
+xmlLs != xmlCode
+{code}

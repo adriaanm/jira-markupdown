@@ -1,0 +1,37 @@
+For the record, the following works if you compile with trunk compiler:
+{code}
+
+class OptionTypes {
+  val optionInt: Option[Int] = Some(1)
+  val optionDouble: Option[Double] = Some(4.5)
+  val optionString: Option[String] = Some("")
+  val listInt: List[Int] = List(1)
+  val listString: List[String] = List("")
+}
+
+import scala.reflect.mirror._
+
+object Test extends App {
+  val tpe = classToType(classOf[OptionTypes])
+  def getDeclaredField(tpe: Type, name: String) = 
+    tpe.member(newTermName(name))
+  println(getDeclaredField(tpe, "optionInt").tpe match { case NullaryMethodType(resultTpe) => resultTpe })
+  println(getDeclaredField(tpe, "optionDouble").tpe match { case NullaryMethodType(resultTpe) => resultTpe })
+  println(getDeclaredField(tpe, "optionString").tpe match { case NullaryMethodType(resultTpe) => resultTpe })
+  println(getDeclaredField(tpe, "listInt").tpe match { case NullaryMethodType(resultTpe) => resultTpe })
+  println(getDeclaredField(tpe, "listString").tpe match { case NullaryMethodType(resultTpe) => resultTpe })
+}
+{code}
+
+and gives the output:
+{code}
+Option[Int]
+Option[Double]
+Option[String]
+List[Int]
+List[String]
+{code}
+
+The API for Scala reflection is really awkward (it's actually non-existing) so the code isn't pretty. This will be improved.
+
+Also, this code doesn't work in REPL due to SI-5256.

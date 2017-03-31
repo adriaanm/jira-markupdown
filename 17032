@@ -1,0 +1,63 @@
+I'm losing an awful lot of time decoding torrents of spurious error messages.  In this case only the inability to find NameTransformer is legitimate; as soon as I fixed that it compiled.
+{noformat}
+quick.lib:
+[scalacfork] Compiling 2 files to /scala/trunk/build/quick/classes/library
+[scalacfork] /scala/trunk/src/library/scala/util/Origins.scala:8: error: not found: object NameTransformer
+[scalacfork] import NameTransformer._
+[scalacfork]        ^
+[scalacfork] /scala/trunk/src/library/scala/util/Origins.scala:108: error: type mismatch;
+[scalacfork]  found   : xs.type (with underlying type OneLine.this.StackSlice)
+[scalacfork]  required: ?{def eq(x$1: ? >: Null(null)): ?}
+[scalacfork]  possible cause: missing arguments for method or constructor
+[scalacfork] Note that implicit conversions are not applicable because they are ambiguous:
+[scalacfork]  both method tuple2ToZippedOps in object Predef of type [T1, T2](x: (T1, T2))runtime.Tuple2Zipped.Ops[T1,T2]
+[scalacfork]  and method tuple3ToZippedOps in object Predef of type [T1, T2, T3](x: (T1, T2, T3))runtime.Tuple3Zipped.Ops[T1,T2,T3]
+[scalacfork]  are possible conversion functions from xs.type to ?{def eq(x$1: ? >: Null(null)): ?}
+[scalacfork]     def newRep(xs: StackSlice): Rep     = if ((xs eq null) || (xs.length == 0)) null else xs(0)
+[scalacfork]                                                ^
+[scalacfork] /scala/trunk/src/library/scala/util/Origins.scala:108: error: value eq is not a member of OneLine.this.StackSlice
+[scalacfork]     def newRep(xs: StackSlice): Rep     = if ((xs eq null) || (xs.length == 0)) null else xs(0)
+[scalacfork]                                                   ^
+[scalacfork] /scala/trunk/src/library/scala/util/Origins.scala:108: error: type mismatch;
+[scalacfork]  found   : OneLine.this.StackSlice
+[scalacfork]     (which expands to)  <error>
+[scalacfork]  required: ?{def apply: ?}
+[scalacfork] Note that implicit conversions are not applicable because they are ambiguous:
+[scalacfork]  both method booleanArrayOps in object Predef of type (xs: Array[Boolean])scala.collection.mutable.ArrayOps.ofBoolean
+[scalacfork]  and method byteArrayOps in object Predef of type (xs: Array[Byte])scala.collection.mutable.ArrayOps.ofByte
+[scalacfork]  are possible conversion functions from OneLine.this.StackSlice to ?{def apply: ?}
+[scalacfork]     def newRep(xs: StackSlice): Rep     = if ((xs eq null) || (xs.length == 0)) null else xs(0)
+[scalacfork]                                                                                           ^
+[scalacfork] /scala/trunk/src/library/scala/util/Origins.scala:108: error: OneLine.this.StackSlice does not take parameters
+[scalacfork]     def newRep(xs: StackSlice): Rep     = if ((xs eq null) || (xs.length == 0)) null else xs(0)
+[scalacfork]                                                                                             ^
+[scalacfork] /scala/trunk/src/library/scala/util/Origins.scala:114: error: type mismatch;
+[scalacfork]  found   : xs.type (with underlying type MultiLine.this.StackSlice)
+[scalacfork]  required: ?{def take: ?}
+[scalacfork]  possible cause: missing arguments for method or constructor
+[scalacfork] Note that implicit conversions are not applicable because they are ambiguous:
+[scalacfork]  both method booleanArrayOps in object Predef of type (xs: Array[Boolean])scala.collection.mutable.ArrayOps.ofBoolean
+[scalacfork]  and method byteArrayOps in object Predef of type (xs: Array[Byte])scala.collection.mutable.ArrayOps.ofByte
+[scalacfork]  are possible conversion functions from xs.type to ?{def take: ?}
+[scalacfork]     def newRep(xs: StackSlice): Rep     = (xs take numLines).toList
+[scalacfork]                                            ^
+[scalacfork] /scala/trunk/src/library/scala/util/Origins.scala:115: error: type mismatch;
+[scalacfork]  found   : rep.type (with underlying type MultiLine.this.Rep)
+[scalacfork]  required: ?{def map(x$1: ? >: Any => String): ?}
+[scalacfork]  possible cause: missing arguments for method or constructor
+[scalacfork] Note that implicit conversions are not applicable because they are ambiguous:
+[scalacfork]  both method booleanArrayOps in object Predef of type (xs: Array[Boolean])scala.collection.mutable.ArrayOps.ofBoolean
+[scalacfork]  and method byteArrayOps in object Predef of type (xs: Array[Byte])scala.collection.mutable.ArrayOps.ofByte
+[scalacfork]  are possible conversion functions from rep.type to ?{def map(x$1: ? >: Any => String): ?}
+[scalacfork]     def repString(rep: Rep)             = rep.map("\n  " + _).mkString
+[scalacfork]                                           ^
+[scalacfork] /scala/trunk/src/library/scala/util/Origins.scala:115: error: value map is not a member of MultiLine.this.Rep
+[scalacfork]     def repString(rep: Rep)             = rep.map("\n  " + _).mkString
+[scalacfork]                                               ^
+[scalacfork] 8 errors found
+
+BUILD FAILED
+/scala/trunk/build.xml:504: Compilation failed because of an internal compiler error; see the error output for details.
+
+Total time: 7 seconds
+{noformat}

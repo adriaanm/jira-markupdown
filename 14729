@@ -1,0 +1,50 @@
+This bug is similar to SI-2553.
+
+Code that triggers the bug:
+{code}
+package bugs
+import org.junit.Test
+
+class RepeatedParametersBugTest {
+  
+  @Test
+  def theSumMustBeTen() {
+    assert(10 == sum(2, 3, 5))
+  }
+  
+  def sum(ints: Int*) = ints.foldLeft(0) { (x, y) => x + y}
+}
+{code}
+
+Error data:
+
+{code}
+null
+Error
+Sun Nov 22 02:44:37 EET 2009
+An internal error occurred during: "Launching ErrorInTestClassWithRepeatedParametersTest".
+
+java.lang.NullPointerException
+at java.lang.String.<init>(String.java:177)
+at org.eclipse.jdt.core.dom.ASTConverter.setQualifiedNameNameAndSourceRanges(ASTConverter.java:4921)
+at org.eclipse.jdt.core.dom.ASTConverter.convertType(ASTConverter.java:3252)
+at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:772)
+at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:450)
+at org.eclipse.jdt.core.dom.ASTConverter.buildBodyDeclarations(ASTConverter.java:179)
+at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2694)
+at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1264)
+at scala.tools.eclipse.contribution.weaving.jdt.core.DOMAspect.ajc$$around$$scala_tools_eclipse_contribution_weaving_jdt_core_DOMAspect$$1$$3b9eae81(DOMAspect.aj:138)
+at org.eclipse.jdt.core.dom.ASTParser.internalCreateAST(ASTParser.java:801)
+at org.eclipse.jdt.core.dom.ASTParser.createAST(ASTParser.java:657)
+at org.eclipse.jdt.internal.junit.launcher.JUnit4TestFinder.internalIsTest(JUnit4TestFinder.java:232)
+at org.eclipse.jdt.internal.junit.launcher.JUnit4TestFinder.findTestsInContainer(JUnit4TestFinder.java:116)
+at org.eclipse.jdt.junit.launcher.JUnitLaunchConfigurationDelegate.evaluateTests(JUnitLaunchConfigurationDelegate.java:264)
+at org.eclipse.jdt.junit.launcher.JUnitLaunchConfigurationDelegate.launch(JUnitLaunchConfigurationDelegate.java:129)
+at org.eclipse.debug.internal.core.LaunchConfiguration.launch(LaunchConfiguration.java:853)
+at org.eclipse.debug.internal.core.LaunchConfiguration.launch(LaunchConfiguration.java:703)
+at org.eclipse.debug.internal.ui.DebugUIPlugin.buildAndLaunch(DebugUIPlugin.java:866)
+at org.eclipse.debug.internal.ui.DebugUIPlugin$$8.run(DebugUIPlugin.java:1069)
+at org.eclipse.core.internal.jobs.Worker.run(Worker.java:55)
+{code}
+
+Tested with Eclipse 3.5.1 and SDT r19761.

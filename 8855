@@ -1,0 +1,71 @@
+Minimized further, showing  that {{-optimise}} isn't required:
+
+{noformat}
+object Test {
+
+  def main(args: Array[String]) { 
+
+    Some( while(this != null) {} )
+
+  }
+
+}
+{noformat}
+
+Error message:
+
+{noformat}
+java.lang.VerifyError: Uninitialized object exists on backward branch 4 in method Test$.main([Ljava/lang/String;)V at offset 5
+{noformat}
+
+Output produced by ASM's {{Textifier -debug}}
+
+{noformat}
+  public main([Ljava/lang/String;)V
+   L0
+    NEW scala/Some
+    DUP
+   L1
+   FRAME FULL [Test$ [Ljava/lang/String;] [L0 L0]
+    ALOAD 0
+    IFNONNULL L1
+    GETSTATIC scala/runtime/BoxedUnit.UNIT : Lscala/runtime/BoxedUnit;
+    INVOKESPECIAL scala/Some.<init> (Ljava/lang/Object;)V
+    POP
+    RETURN
+   L2
+    LOCALVARIABLE this LTest$; L0 L2 0
+    LOCALVARIABLE args [Ljava/lang/String; L0 L2 1
+    MAXSTACK = 3
+    MAXLOCALS = 2
+{noformat}
+
+Verbose output by {{javap}}
+
+{noformat}
+  public void main(java.lang.String[]);
+    flags: ACC_PUBLIC
+    Code:
+      stack=3, locals=2, args_size=2
+         0: new           #16                 // class scala/Some
+         3: dup           
+         4: aload_0       
+         5: ifnonnull     4
+         8: getstatic     #22                 // Field scala/runtime/BoxedUnit.UNIT:Lscala/runtime/BoxedUnit;
+        11: invokespecial #25                 // Method scala/Some."<init>":(Ljava/lang/Object;)V
+        14: pop           
+        15: return        
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+               0      16     0  this   LTest$;
+               0      16     1  args   [Ljava/lang/String;
+      LineNumberTable:
+        line 6: 0
+      StackMapTable: number_of_entries = 1
+           frame_type = 255 /* full_frame */
+          offset_delta = 4
+          locals = [ class Test$, class "[Ljava/lang/String;" ]
+          stack = [ uninitialized 0, uninitialized 0 ]
+{noformat}
+
+

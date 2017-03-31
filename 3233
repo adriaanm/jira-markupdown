@@ -1,0 +1,31 @@
+This is reproducible on the command line with no changes to any of the sources,
+
+bug2905/A.scala
+{code}
+package bug2905
+{code}
+
+bug2905/B.scala
+{code}
+package bug2905
+
+package A {
+}
+{code}
+
+now with,
+
+{code}
+scalac -sourcepath . bug2905/*.scala
+{code}
+
+I see,
+
+{code}
+bug2905/B.scala:3: error: A is already defined as object A
+package A {
+        ^
+one error found
+{code}
+
+Nb. the explicit "-sourcepath ." is essential here ... if it is omitted the compilation will complete without error. Also note that the package name has to match a source file name in the same compilation (ie. "package A" or "package B" will trigger the problem with the files A.scala and B.scala present, but "package C" won't).

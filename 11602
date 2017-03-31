@@ -1,0 +1,16 @@
+I took a look at this one thinking it would be low-hanging fruit, but it is actually pretty subtle. 
+
+{code}
+      def typedPackageDef(pdef0: PackageDef) = {
+        val pdef = treeCopy.PackageDef(pdef0, pdef0.pid, pluginsEnterStats(this, pdef0.stats))
+        val pid1 = typedQualifier(pdef.pid).asInstanceOf[RefTree]
+        assert(sym.moduleClass ne NoSymbol, sym)
+{code}
+
+When we typecheck `p.free` with `typedQualifer`, we end up with a reference to `p.package.free`, a `Select` rather than `RefTree`.
+
+We could easily enough gracefully error-out at this point, but that isn't the right semantic. It isn't an error to shadow a top level class or object with a member of the package object, so technically it shouldn't be an error to shadow a package. So along these lines, we might need a new typing Mode that only binds identifiers to package modules, and use that instead of `typedQualifer`.
+
+But given that no outsider will actually be able to use the defiintions in `package p.free` due to shadowing, it seems doubtful that we should bend over backwards to deal with this situation. Maybe it is enough to pattern match on the result of `typedQualifier` and issue an implementation restriction.
+
+Demoting this one to minor in any case.

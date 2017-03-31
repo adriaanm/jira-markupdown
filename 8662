@@ -1,0 +1,27 @@
+Uh, okay. Must have been something else. I was compiling the wrong version (2.11) of the Scala libraries.
+Anyway, now I've got the 2.10-RC1-Patch compiled. I wanted to make sure, and decompiling the ForkJoinTask class present in the scala-library.jar yields the following, so your patch is indeed present :
+
+{code}
+> javap -c ForkJoinTask | grep throw                                                                                                         2.10.0-RC1-Patch [adaa5d2] untracked
+   27:	athrow
+   135:	invokestatic	#48; //Method rethrow:(Ljava/lang/Throwable;)V
+   202:	invokestatic	#48; //Method rethrow:(Ljava/lang/Throwable;)V
+public final java.lang.Object get()   throws java.lang.InterruptedException, java.util.concurrent.ExecutionException;
+   39:	athrow
+   63:	athrow
+public final java.lang.Object get(long, java.util.concurrent.TimeUnit)   throws java.lang.InterruptedException, java.util.concurrent.ExecutionException, java.util.concurrent.TimeoutException;
+   13:	athrow
+   244:	athrow
+   314:	athrow
+   327:	athrow
+   355:	athrow
+   370:	athrow
+   390:	athrow
+   56:	ldc	#116; //String throwException
+   100:	athrow
+{code}
+
+It seems fine...
+...and I get the exact same error running it on Dalvik. Bummer. Seems that sun.misc.Unsafe doesn't have throwException.
+
+I'm not a huge Java hacker, so I do not know the specifics, but what's the reason behind the use of `sun.misc.Unsafe.throwException` instead of the normal `throw` keyword?

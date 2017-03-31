@@ -1,0 +1,6 @@
+Might I suggest you ask questions like this on the mailing list first? There you have literally thousands of people that read your questions, here I'd be surprised if there's more than a dozen.
+
+Type inference avoids inferring Nothing whenever possible, since it usually does not produce interesting results.
+Note that "Nothing for A is optimal, because Show[Int] <: Show[Nothing]." is backwards: why would you want to infer a type that includes more values than needed for the program to type check? (That's a rhetorical question.)
+
+The constraint we're solving is A <: Int, since Show[Int] <: Show[A] for the call to ShowMA to be well-typed. Thus, the most precise type we can pick for A is Int, since A is in a _covariant_ position in the method type of ShowMA. (On the other hand, if we would simply pick Nothing, type inference could be much faster.)

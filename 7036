@@ -1,0 +1,21 @@
+Stream is a caching generator of values, and it works exactly like that:
+
+{code}
+scala> val a = Array(1, 2, 3)
+a: Array[Int] = Array(1, 2, 3)
+
+scala> val b = a.toStream
+b: scala.collection.immutable.Stream[Int] = Stream(1, ?)
+
+scala> a(1) = 200; a(2) = 300
+
+scala> b.toList
+res1: List[Int] = List(1, 200, 300)
+
+scala> a(1) = 2000; a(2) = 3000
+
+scala> b.toList
+res3: List[Int] = List(1, 200, 300)
+{code}
+
+Once the value has been generated, it cannot be changed. Before it has been generated, it is unknown. If toStream were to copy the whole collection, then it would not be acting like a Stream, but like a List.

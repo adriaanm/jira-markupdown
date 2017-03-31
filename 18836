@@ -1,0 +1,22 @@
+This yields 0 instead of 3 with no warning:
+
+{code}
+def makeF(i: Int) = () => i
+
+trait Foo { val x: Int; val f = makeF(x) }
+
+val bar = new Foo { val x = 3 }
+
+println( bar.f() )
+{code}
+
+This is ok though:
+{code}
+trait Foo { val x: Int; val f = () => x }
+
+val bar = new Foo { val x = 3 }
+
+println( bar.f() )
+{code}
+
+Thanks!

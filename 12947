@@ -1,0 +1,45 @@
+// example due to Jamie Webb -- thanks to Miles Sabin for clarifying further
+
+this works as expected:
+{code}
+case class Key[X](v: X)
+case class Value[X](v: X)
+
+class PolyHashMap {
+    private val m = new scala.collection.mutable.HashMap[Any, Any]
+
+    def apply[A](k : Key[A]) : Value[A] =
+        m(k).asInstanceOf[Value[A]]
+
+    def update[A](k : Key[A], v : Value[A]) : Unit =
+        m(k) = v
+}
+
+val m = new PolyHashMap
+
+m(Key(1)) = Value("1") // error
+{code}
+
+this does not work as expected:
+{code}
+case class K[+X](v: X) // note the covariance (if you make these invariant, it works ok)
+case class V[+X](v: X)
+
+class PolyHashMap[Key[_], Value[_]] { // invariant
+    private val m = new scala.collection.mutable.HashMap[Any, Any]
+
+    def apply[A](k : Key[A]) : Value[A] =
+        m(k).asInstanceOf[Value[A]]
+
+    def update[A](k : Key[A], v : Value[A]) : Unit =
+        m(k) = v
+}
+
+// K, V's covariance should be "masked out" since Key and Value are invariant in their type param
+val m = new PolyHashMap[K, V]
+
+m(K(1)) = V("1") // no error! -- type inference should look at signature for variance, not in type arg
+{code}
+
+
+what expected: same error in both fragments, instead no errors is emitted in second one

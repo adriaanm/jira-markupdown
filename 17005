@@ -1,0 +1,40 @@
+Given two java classes:
+
+{code}
+public @interface Ann {
+  int value();
+}
+{code}
+
+{code}
+public class Cls {
+  public static final int KONST = 10;
+}
+{code}
+
+and a Scala class
+
+{code}
+class T {
+  @Ann(Cls.KONST)
+  def foo { }
+}
+{code}
+
+Compiling the three files together with {{scalac}} yields an error message:
+
+{code}
+lucmac:const luc$ ~/Downloads/latest/bin/scalac Ann.java Cls.java T.scala 
+T.scala:2: error: annotation argument needs to be a constant; found: Cls.KONST
+  @Ann(Cls.KONST)
+           ^
+one error found
+{code}
+
+Compiling first the java files and and putting their classfiles on the classpath allows compiling {{T.scala}}:
+
+{code}
+lucmac:const luc$ javac Ann.java Cls.java 
+lucmac:const luc$ ~/Downloads/latest/bin/scalac -cp . T.scala 
+lucmac:const luc$ 
+{code}

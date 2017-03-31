@@ -1,0 +1,33 @@
+Hmm... Well I can work on trying to isolate it down to a small repro case but I can't send you all the source for where I first discovered it because that is for work.
+
+Here is an excerpt of running "javap" command for the .class file compiled by the 2.7.7.final eclipse plugin, where you can see there is indeed the $$ thingee going on:
+
+javap -l -classpath ... RepoHandler
+
+...
+
+public java.util.List findModulesMatching(java.lang.String, java.util.Map);
+  LineNumberTable: 
+   line 153: 0
+   line 155: 6
+   line 157: 17
+   line 158: 26
+   line 178: 54
+
+  LocalVariableTable: 
+   Start  Length  Slot  Name   Signature
+   0      64      0    this       LRepoHandler;
+   0      64      1    repository       Ljava/lang/String;
+   0      64      2    match$$1       Ljava/util/Map;
+   0      64      3    repo$$1       LRepository;
+   6      58      4    entries       Ljava/util/Collection;
+   17      47      5    modules$$1       Ljava/util/Set;
+
+For source code
+
+    def findModulesMatching(repository: String, `match`: Map[String, Object]): List[Module] = { ... }
+
+NOTE: there are backticks around "match" in the Scala source even if they don't show up the way the ticket renders.
+
+Before I try a limited repro I will try compiling this same source with the command-line compiler and see if it does the same thing.
+

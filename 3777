@@ -1,0 +1,21 @@
+I wouldn't call this a bug. There is no guarantee in the spec that scalac catches such cases, and static checking of initialization is still being researched. In the presence of overriding, this becomes much more difficult:
+
+{code}
+class Test2 {
+  lazy val lazy1: Int = 2
+  lazy val lazy2: Int = 3 * lazy1
+}
+
+class Test extends Test2 {
+  override lazy val lazy1: Int = 2  * lazy2
+}
+
+object Test extends Application {
+  val x: Test2 = new Test2
+  val y: Test2 = new Test
+
+  println(y.lazy2)
+}
+{code}
+
+These classes may be compiled separately, so I don't see any way to guarantee correct errors. I agree that a warning is desirable, but it would work only in cases so obvious that it's not worth the effort. 

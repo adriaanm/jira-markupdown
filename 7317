@@ -1,0 +1,7 @@
+Oh man.  I was working with bb23d766bc , as the first commit where I saw the crashing behavior.  You're right, in current master the reduced example no longer crashes.  Here's one which still crashes.
+{code}
+trait F[@specialized(Int, AnyRef) T1, @specialized(AnyRef) R] {
+  def apply(v1: T1): R
+  def compose[A](g: A => T1): A => R = { x => apply(g(x)) }
+}
+{code}

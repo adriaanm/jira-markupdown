@@ -1,0 +1,45 @@
+You are right at the reenter scene. I evaluated and thought the code again, and found the issue is from a ResetReq followed by a ShutdownReq, below is a test code:
+
+{code}
+package interruptthread
+
+import scala.util.control.ControlException
+
+object Main {
+
+  def main(args: Array[String]) :Unit = {
+    newRunThread
+    println("stopped")
+  }
+
+  var outOfDate = true
+  def newRunThread: Thread = new Thread("running thread") {
+    try {
+      while(true) {
+        println("running")
+        reset
+        shutdown
+        while (outOfDate) {
+          println("running inner loop")
+        }
+      }
+    } catch {
+      case ex : ShutdownReq =>
+      case ex => 
+        outOfDate = false
+        newRunThread
+    }
+    
+    start
+  }
+
+  def shutdown = throw new ShutdownReq
+  def reset = throw new ResetReq
+
+  class ShutdownReq extends Exception with ControlException
+  class ResetReq extends Exception with ControlException
+
+}
+{code}
+
+The above code won't stop. But the patched like code will stop properly.

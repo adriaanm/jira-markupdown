@@ -1,0 +1,13 @@
+If I've understood you correctly - and I should have just closed this ticket, you left way too much for me to sort out just to figure out what you are reporting - you want this to statically exclude the third case:
+{code}
+  class D[-A] (v: A) { }
+  def size(t: D[D[Int] with D[String]]) = t match {
+    case x: D[D[Int]]    => 1
+    case x: D[D[String]] => 2
+    case x: D[D[Double]] => 3
+    case _               => 4
+  }
+{code}
+That would be a reasonable thing to want, but you seem not to realize that it would not help you at all.  The only case which will ever match there is the first one because of erasure.  The compiler limits the parameters to D[D[Int]]s and D[D[String]]s, but you still won't be able to distinguish them by matching on their types.  (You can distinguish them by matching on the value.) It doesn't bother trying to exclude D[D[Double]] because it can't tell one D[X] from another D[X] and it knows it.
+
+You're supposed to get unchecked warnings in a match like that - everyone ignores them, but at least I can say "if you'd read the unchecked warnings..." But actually it seems to be failing to warn with a parameterized type in the erasure zone, so I will open a ticket about that.

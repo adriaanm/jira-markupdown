@@ -1,0 +1,12 @@
+Here is a reduced test program that triggers the same crash: 
+
+{code:java}
+import scala.reflect.macros.blackbox.Context
+
+object Impls {
+  def foreach (c : Context) {
+     import c.universe._
+     c Expr ({ case lo(Select ()) => () })
+   }
+}
+{code}

@@ -1,0 +1,27 @@
+This is a duplicate of SI-3441 and SI-2735, except that there are a few different parsers at issue: the compiler's MarkupParser for literals, the library's MarkupParser, and the utility methods that use xerces, IIUC.
+{code}
+  def main(args: Array[String]): Unit = {
+    val input = """<elem one="test" two="test2" three="test3"></elem>"""
+    val doc = XML.loadString(input)
+    println(doc)
+    
+    val cpa = ConstructingParser.fromSource(io.Source.fromString(input), preserveWS = true)
+    val cpadoc = cpa.document()
+    val ppr = new PrettyPrinter(80,5)
+    println(ppr.format(cpadoc.docElem))
+  }
+{code}
+I remember this issue from the first Scala code I ever wrote, but I haven't used XML since then, so bear with me.  My solution was a hook in PrettyPrinter for formatting attributes:
+{code}
+      // in leafTag and startTag; but also Utility.toXML/serialize
+      //n.attributes buildString sb
+      formatAttributes(n, sb)
+{code}
+I realize now this was my first fold ever:
+{code}
+  override protected def formatAttributes(n: Node, sb: StringBuilder) {
+    //n.attributes.toList.reverse.foldLeft(sb) { (a,b) => a.append(' '); b.toString1(a); a }
+    (sb /: n.attributes.toList.reverse) { (r,v) => r.append(' '); v.toString1(r); r }
+  }
+{code}
+And maybe the last time I used /: except as an emoticon.  I see toString1 is protected now, so cut/paste that, too.  I don't know if such a formatAttributes hook is worth it?

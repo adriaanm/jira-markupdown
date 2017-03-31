@@ -1,0 +1,58 @@
+Views should not be allowed when typing the arguments of annotations.
+
+This is one way the problem manifests:
+
+{code}
+~/code/scala scala29
+Welcome to Scala version 2.9.1.final (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_31).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> implicit def intToGroup(i: Int) = Specializable.Integral
+<console>:7: error: not found: value Specializable
+       implicit def intToGroup(i: Int) = Specializable.Integral
+                                         ^
+
+scala> class foo(a: String) extends StaticAnnotation
+defined class foo
+
+scala> implicit def i2s(i: Int) = ""
+i2s: (i: Int)java.lang.String
+
+scala> @foo(1: String) def blerg {}
+blerg: Unit
+{code}
+
+
+{code}
+~/code scala210
+Welcome to Scala version 2.10.0-20120504-065643-e52be82eef (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_31).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+
+scala> class foo(a: String) extends annotation.StaticAnnotation
+defined class foo
+
+scala> implicit def i2s(i: Int) = ""
+warning: there were 1 feature warnings; re-run with -feature for details
+i2s: (i: Int)String
+
+scala> @foo(1: String) def blerg {}
+<console>:9: error: type mismatch;
+ found   : Int(1)
+ required: String
+       @foo(1: String) def blerg {}
+            ^
+error: 
+     while compiling:  <console>
+       current phase:  pickler
+     library version:  version 2.10.0-20120504-065643-e52be82eef
+    compiler version:  version 2.10.0-20120504-065643-e52be82eef
+  reconstructed args:  
+
+uncaught exception during compilation: scala.reflect.internal.FatalError
+scala.reflect.internal.FatalError: bad type: <error>(class scala.reflect.internal.Types$ErrorType$)
+        at scala.tools.nsc.symtab.classfile.Pickler$Pickle.scala$tools$nsc$symtab$classfile$Pickler$Pickle$$putType(Pickler.scala:226)
+
+{code}

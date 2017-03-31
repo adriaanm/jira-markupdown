@@ -1,0 +1,57 @@
+Compiling with 2.8.1 final and scala-2.9.0.r24304: 
+{code}
+class A { 
+  PartialFunction.condOpt(Nil) {  
+    case items@List(_*) if true ⇒ 
+  }
+}
+{code} 
+
+I get the following compiler exception:
+
+{code}
+error: java.lang.Error: symbol value items does not exist in A$$$$anonfun$$1.isDefinedAt
+	at scala.tools.nsc.symtab.SymbolTable.abort(SymbolTable.scala:35)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:1025)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$genLoadArguments$$1.apply(GenICode.scala:1220)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$genLoadArguments$$1.apply(GenICode.scala:1218)
+	at scala.collection.LinearSeqOptimized$$class.foldLeft(LinearSeqOptimized.scala:113)
+	at scala.collection.immutable.List.foldLeft(List.scala:45)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.genLoadArguments(GenICode.scala:1218)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:923)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:1051)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:1051)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:116)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:71)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:71)
+	at scala.collection.LinearSeqOptimized$$class.foreach(LinearSeqOptimized.scala:61)
+	at scala.collection.immutable.List.foreach(List.scala:45)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:71)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:138)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:90)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:71)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:71)
+	at scala.collection.LinearSeqOptimized$$class.foreach(LinearSeqOptimized.scala:61)
+	at scala.collection.immutable.List.foreach(List.scala:45)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:71)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:81)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:67)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.apply(GenICode.scala:63)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$applyPhase$$1.apply(Global.scala:322)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$applyPhase$$1.apply(Global.scala:322)
+	at scala.tools.nsc.reporters.Reporter.withSource(Reporter.scala:47)
+	at scala.tools.nsc.Global$$GlobalPhase.applyPhase(Global.scala:322)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:291)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:291)
+	at scala.collection.Iterator$$class.foreach(Iterator.scala:646)
+	at scala.collection.mutable.ListBuffer$$$$anon$$1.foreach(ListBuffer.scala:311)
+	at scala.tools.nsc.Global$$GlobalPhase.run(Global.scala:291)
+	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.run(GenICode.scala:56)
+	at scala.tools.nsc.Global$$Run.compileSources(Global.scala:879)
+	at scala.tools.nsc.Global$$Run.compile(Global.scala:980)
+	at scala.tools.nsc.Main$$.process(Main.scala:106)
+	at scala.tools.nsc.Main$$.main(Main.scala:123)
+	at scala.tools.nsc.Main.main(Main.scala)
+{code}
+
+

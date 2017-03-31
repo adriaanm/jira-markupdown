@@ -1,0 +1,11 @@
+(In r23020) Some tweaks to ListSet to make it less pathological in its outlook.
+We can see some modest improvements in run time and answer quality
+via the enclosed test case:
+
+//    with this patch:  2.250s elapsed, assertions pass.
+// without this patch: 51.441s elapsed, and it's a mercy killing:
+java.lang.StackOverflowError
+  at scala.collection.immutable.ListSet$$Node.contains(ListSet.scala:117)
+  at scala.collection.immutable.ListSet$$Node.contains(ListSet.scala:117)
+
+Closes SI-3822, review by community.

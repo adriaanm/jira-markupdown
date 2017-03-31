@@ -1,0 +1,25 @@
+The error message is fine. 
+
+It all starts with 
+
+{code}
+val handlers = new HashMap[DerivedPushNode[_], HandlerBase[_]]
+{code}
+
+Quoting from Sec. 3.2 of the Scala Language Spec, Placeholder Syntax for Existential Types
+
+"wildcard type is a shorthand for an existentially quantified type variable"
+
+
+And now from 3.2.10:
+
+"The set of values denoted by the existential type T forSome {Q} is the union of the set of values of all its type instances."
+
+Saying 
+
+{code}
+val handlers = new HashMap[DerivedPushNode[_], HandlerBase[_]]
+{code}
+
+casts a wider net than just what (apparently) is intended: a map from {{DerivedPushNode[EventType]}}  to {{HandlerBase[EventType]}}
+

@@ -1,0 +1,31 @@
+This was supposedly fixed by r15927. But since the commented code was resurrected in r16328 this bug is reappearing. 
+
+Here's a simple example:
+
+{code}
+trait Test {
+ def testFunc(i:Int) = ((i:Int) => i + 5)(i)
+}
+{code}
+
+And here the console session:
+
+{code}
+Welcome to Scala version 2.7.4.final (OpenJDK 64-Bit Server VM, Java 1.6.0_0).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> Class.forName("Test$$$$anonfun$$testFunc$$1")
+res0: java.lang.Class[_] = class Test$$$$anonfun$$testFunc$$1
+
+scala> res0.getSimpleName
+java.lang.IncompatibleClassChangeError: Test and
+Test$$$$anonfun$$testFunc$$1 disagree on InnerClasses attribute
+       at java.lang.Class.getDeclaringClass(Native Method)
+       at java.lang.Class.getEnclosingClass(Class.java:1102)
+       at java.lang.Class.getSimpleBinaryName(Class.java:1237)
+       at java.lang.Class.getSimpleName(Class.java:1129)
+       at .<init>(<console>:6)
+       at .<clinit>(<console>)
+       at RequestR...
+{code}

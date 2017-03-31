@@ -1,0 +1,45 @@
+Here is a reduced testcase
+
+{code}
+package test;
+class TestCase3() {
+  def this( groups: (String, Int)*) = this()
+  def this( groups: String*) = this()
+}
+{code}
+
+Compilation suceeds, but when run:
+
+{code}
+Exception in thread "main" java.lang.ClassFormatError: Repetitive method name/signature in class file test/TestCase3
+	at java.lang.ClassLoader.defineClass1(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:675)
+	at java.security.SecureClassLoader.defineClass(SecureClassLoader.java:124)
+	at java.net.URLClassLoader.defineClass(URLClassLoader.java:260)
+	at java.net.URLClassLoader.access$$100(URLClassLoader.java:56)
+	at java.net.URLClassLoader$$1.run(URLClassLoader.java:195)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at java.net.URLClassLoader.findClass(URLClassLoader.java:188)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:316)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:251)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:374)
+	at java.lang.Class.forName0(Native Method)
+	at java.lang.Class.forName(Class.java:242)
+	at scala.tools.nsc.ObjectRunner$$.findClass(ObjectRunner.scala:29)
+	at scala.tools.nsc.ObjectRunner$$.classExists(ObjectRunner.scala:42)
+	at scala.tools.nsc.MainGenericRunner$$.main(MainGenericRunner.scala:155)
+	at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
+{code}
+
+I believe behaviour should be as with methods:
+
+{code}
+error: double definition:
+method this:(String*)TestCase3 and
+method this:((String, Int)*)TestCase3 at line 3
+have same type after erasure: (Seq)TestCase3
+  def this( groups: String*) = this()
+      ^
+{code}
+
+

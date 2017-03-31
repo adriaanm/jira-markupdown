@@ -1,0 +1,19 @@
+Works in 2.10, but in master:
+{code}
+
+scala> implicit val f1: Int => String  = _ => "Int" ; implicit val f2: Long => String = _ => "Long"
+f1: Int => String = <function1>
+f2: Long => String = <function1>
+
+scala> (5: String)
+<console>:15: error: type mismatch;
+ found   : Int(5)
+ required: String
+Note that implicit conversions are not applicable because they are ambiguous:
+ both value f1 of type => Int => String
+ and value f2 of type => Long => String
+ are possible conversion functions from Int(5) to String
+              (5: String)
+               ^
+{code}
+Pull request coming in a minute.

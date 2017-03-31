@@ -1,0 +1,9 @@
+This appears to be quite sticky and I can see it's not realistic for me to solve it soon.
+{code}
+final class Boxy(val x: Object) extends AnyVal { }
+object Test {
+  def crash(f: () => Boxy) = ()
+  def main(args: Array[String]): Unit = crash(() => new Boxy(""))
+}
+{code}
+The value classes want to generate bridge methods; so does Function0.  They collide with the same signature in the closure.

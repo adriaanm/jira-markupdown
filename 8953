@@ -1,0 +1,19 @@
+The minimal test case that generates the error seems to be:
+
+{code}
+def test(kryo: Kryo, input:Input, typ: Class[Map[_,_]]): Map[_,_] = {
+	val len = 7
+	var coll: Map[Any, Any] = {
+		try { 
+			val someVar = null;
+			Map[Any,Any]().empty 
+		} catch { 
+			case _ => Map[Any,Any]().empty 
+		}
+	}
+	0 until len foreach {_ => coll += Tuple2( 0, 0) }
+	coll
+}
+{code}
+
+Looks similar to SI-5380 , and seems to be related to the wrapping of "coll" into a scala.runtime.ObjectRef . someVar is required but probably just prevents some other optimization.

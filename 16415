@@ -1,0 +1,7 @@
+If an exception is thrown inside the closure passed to receive or receiveWithin, then a :: object is leaked. Leaking a 32-byte object doesn't seem like much, but it adds up when you have 30 million of them.
+
+To fix this, actors should do clean up of the "senders" variable in a finally block.
+
+As a workaround, avoid throwing exceptions out of the closure. Same thing for using non-local return (which is implemented as an exception).
+
+Code to demonstrate memory leak included as attachment. It shows how the "senders" list grows indefinitely.

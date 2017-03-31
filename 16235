@@ -1,0 +1,42 @@
+Sample REPL session with -Ydependent-method-types. The following with a dependent argument type fails,
+
+{code}
+scala> trait Dep {
+     |    type T                                                                                                                                                                                       
+     |  }                                                                                                                                                                                              
+defined trait Dep
+
+scala> def m(d : Dep)(t : d.T) = t
+m: (d: Dep)(t: d.T)d.T
+
+scala> val f = m _
+<console>:12: error: method with dependent type (d: Dep)(t: d.T)d.T cannot be converted to function value
+       val f = m _
+{code}
+
+whereas with a type projection (ie. changing d.T to Dep#T) we succeed,
+
+{code}
+scala> def m(d : Dep)(t : Dep#T) = t
+m: (d: Dep)(t: Dep#T)Dep#T
+
+scala> val f = m _
+f: Dep => Dep#T => Dep#T = <function1>
+{code}
+
+Having both these constructs supported equally would be highly desirable for the usability of dependent methods in Scala.
+
+A more complete example which illustrates the usefulness of dependent function types,
+
+{code}
+implicit def m[D <: Dep](d : D)(implicit t : d.T) = t
+
+def n[D <: Dep](d : D)(implicit f : D => d.T) = f(d)
+
+val dep = new Dep { type T = String }
+implicit val s : String = "foo"
+
+val r : String = n(dep)
+{code}
+
+Here we would like m to be considered as a candidate for the implicit f in n. It isn't because eta expansion would generate a dependent function type corresponding to m.

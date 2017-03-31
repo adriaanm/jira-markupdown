@@ -1,0 +1,14 @@
+This is not related to specialization. 
+
+The root of the problem is stack discipline: the if expression leaves an Int on the stack for the true branch and Unit for the false branch. They're common supertype is Any, which is erased to Object: so there you have it, to put an I onto an Ljava.lang.Object stack slot you need boxing.
+
+{code}
+/* val resultOfIfExpression: Any = */ 
+  if (nonTrivialCondition == 42) {
+    returnsPrimitive(5) // put resultOfIfExpression: Any = Integer(returnsPrimitive(5))
+  } else {
+    Unit                // put resultOfIfExpression: Any = Unit
+  }
+{code}
+
+This could certainly be improved (-optimize doesn't help here) but it's not a blocker. With GenBCode just around the corner, it may be best if Miguel has a look.

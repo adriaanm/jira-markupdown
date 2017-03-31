@@ -1,0 +1,12 @@
+Running MIMA on the distribution tells us a lot about the distribution but not very much about the code being generated. Anything which can be compiled with 2.10.0 should be compilable with 2.10.1 and the generated artifacts should be MIMA-clean. At a minimum there is the whole test scala suite; but by the time 2.10.1 nears release, there will be dozens or hundreds of decent sized scala projects which compile with 2.10.0.
+
+The level of curation of individual projects should not be an issue, because the tests can be the moral equivalent of
+{code}
+for (p <- project) {
+  if ("sbt -scala-version 2.10.0 test" passes) {
+    ("sbt -scala-version 2.10.1 -mima-against 2.10.0 test" passes) || {
+      throw new WeHaveAMimaProblem
+    }
+  }
+}
+{code}

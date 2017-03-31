@@ -1,0 +1,26 @@
+More food for thought:
+
+{quote}
+Your message prompts a much more basic question (which could allow a much simpler fix, namely blacklisting the whole Java class library): how can we ever inline JDK's code while keeping it compatible with changes in the standard Java library? We inline Java method X from JDK library Y, that method's fixed in next release of the JDK, but since the application is not recompiled the fix is not included.
+
+This can have security implication; If we assume that the fix is for a security bug, a Scala application is potentially affected if any Scala code it uses (libraries or the application itself) was compiled with -optimise on a vulnerable machine.
+Please tell me I'm missing something here. Please.
+
+Such problems potentially generalize to any cross-library inlining, but only if the library contained the inlined code is allowed to be upgraded - is that on by default in when you create a POM file? I have no clue on publishing libraries.
+Also, this gets fun when you inline code from a buggy cryptography library, for instance, or (for different reasons) when you inline enough code to depend on changing implementation details of a library (not sure if that's possible in Scala though).
+
+-Paolo
+{quote}
+
+{quote}
+
+Thanks for raising this.
+
+Another variation thereof: inline a method body from the compile time JDK, which refers to classes/methods that are not available on some alternative runtime JDK.
+
+A reasonable heuristic to approximate disabling 'cross library inlining' might be to only allow inlining from code that is provided to the compiler as source files or as .class files, but not as JAR files. Inlining of methods in the Scala standard library has all the same implications as the Java standard library, however if you disable that you lose an important class of performance wins.
+
+We have to think very carefully about defaults here, and find a way balance the needs of the 'closed world' users who want maximum performance vs the 'open world' users who need safety in the face of unknown runtime environments.
+
+-jason
+{quote}

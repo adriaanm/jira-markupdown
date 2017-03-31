@@ -1,0 +1,19 @@
+Analysis: 
+
+I believe that we should create a throwaway Context in:
+
+{code}
+    // Typers.scala
+    def viewExists(from: Type, to: Type): Boolean = (
+         !from.isError
+      && !to.isError
+      && context.implicitsEnabled
+      && (inferView(EmptyTree, from, to, reportAmbiguous = false) != EmptyTree)
+    )
+{code}
+
+This is called in your example when performing overload resolution between the two `==` members on `ByteString`. One in inherited from `Any`, the other from `AnyRef`.
+
+Scala has a pretty gnarly approach to overload resolution, in which it checks if arguments of the types of candidate A could are applicable to to candidate B, and vice-versa. This should determine that the method in `AnyRef` is more specific. (Note: they are really two independent members, as the parameter types don't exactly coincide).
+
+Anyway, during this applicability checking, implicit views are allowed. This triggers a search for an implicit view from `Any => AnyRef`, which results in an ambiguous error with that warning. Coopting the ambiguity error for this purpose is already suspicious; I remember being a bit concerned when that was added, actually. Anyway, this error gets buffered in the enclosing Context (because we didn't make a child context to firewall the results of this implicit search), and later helpfully issued at the position of the `EmptyTree` passed as a dummy by `viewExists`.

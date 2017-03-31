@@ -1,0 +1,28 @@
+Reduced Qirun's test program: 
+
+{code:java}
+$ scalac-2.12.0 good.scala
+good.scala:2: error: cyclic aliasing or subtyping involving type T
+  def apply[T <: T] () {}
+            ^
+error: java.lang.AssertionError: assertion failed: TVar<T=null>
+	at scala.reflect.internal.Types$TypeVar.addLoBound(Types.scala:3032)
+	at scala.reflect.internal.tpe.TypeConstraints.$anonfun$solve$6(TypeConstraints.scala:234)
+	at scala.reflect.internal.tpe.TypeConstraints.solveOne$1(TypeConstraints.scala:230)
+	at scala.reflect.internal.tpe.TypeConstraints.$anonfun$solve$9(TypeConstraints.scala:260)
+	at scala.reflect.internal.tpe.TypeConstraints.solve(TypeConstraints.scala:260)
+	at scala.reflect.internal.tpe.TypeConstraints.solve$(TypeConstraints.scala:192)
+
+<snipped>
+
+$ 
+$ cat good.scala
+object A {
+  def apply[T <: T] () {}
+}
+
+object B { 
+  A () : Any
+}
+$ 
+{code}

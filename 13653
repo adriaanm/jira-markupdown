@@ -1,0 +1,24 @@
+Import statements and class constructors doesn't mix well. For example, this works fine:
+{code}
+object TestObject {
+  def x = 3
+}
+
+class TestClass(i : Int) {
+  def this() = {this(TestObject.x)}
+}
+{code}
+but doesn't:
+{code}
+class TestClass(i : Int) {
+  import TestObject.x
+  def this() = {this(x)}
+}
+{code}
+this doesn't work either:
+{code}
+class TestClass(i : Int) {
+  def this() = {import TestObject.x; this(x)}
+}
+{code}
+I find this behavior inconsistent with normal import rules.

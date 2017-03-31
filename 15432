@@ -1,0 +1,14 @@
+Set( 1, 2, 3 ).toSeq creates a Stream. I don't think that makes sense. Also, passing in this seq to a var-arg method doesn't make it "strict", so there is follow up problems, e.g. using map on the seq with side effects:
+{code}
+def test( i: Int* ) = {
+   var sum = 0
+   val x = i.map( n => { sum += n; n * n }).head
+   x + sum
+}
+
+scala> test( Set( 1, 2, 3 ).toSeq: _* )
+res2: Int = 2
+
+scala> test( Set( 1, 2, 3 ).toIndexedSeq: _* )
+res3: Int = 7
+{code}

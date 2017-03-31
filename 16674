@@ -1,0 +1,51 @@
+So I use a library which is supposed to work on jdk6 and jdk7. In some places it uses nio2.
+Javac is to use this library just fine, but scalac throws 
+{code}
+error: error while loading TFile, Missing dependency 'class java.nio.file.Path', required by c:\Users\OlegYch\.m2\repository\de\schlichtherle\truezip\truezip-file\7.4.3\truezip-file-7.4.3.jar(de/schlichtherle/truezip/file/TFile.class)
+{code}
+
+here is a transcript:
+{code}
+D:\>javac -cp c:\Users\OlegYch\.m2\repository\de\schlichtherle\truezip\truezip-file\7.4.3\truezip-file-7.4.3.jar;c:\Users\OlegYch\.m2\repository\de\schlichtherle\truezip\truezip-driver-file\7.4.3\truezip-driver-file-7.4.3.jar;c:\Users\OlegYch\.m2\repository\de\schlichtherle\truezip\truezip-kernel\7.4.3\truezip-kernel-7.4.3.jar test.java
+de\schlichtherle\truezip\file\TFile.class(de\schlichtherle\truezip\file:TFile.class): warning: Cannot find annotation method 'value()' in type 'edu.umd.cs.findbugs.annotations.DefaultAnnotation': class file for edu.umd.cs.findbugs.annotations.DefaultAnnotation not found
+de\schlichtherle\truezip\file\TFile.class(de\schlichtherle\truezip\file:TFile.class): warning: Cannot find annotation method 'value()' in type 'edu.umd.cs.findbugs.annotations.SuppressWarnings': class file for edu.umd.cs.findbugs.annotations.SuppressWarnings not found
+de\schlichtherle\truezip\fs\FsMountPoint.class(de\schlichtherle\truezip\fs:FsMountPoint.class): warning: Cannot find annotation method 'value()' in type 'edu.umd.cs.findbugs.annotations.DefaultAnnotation'
+de\schlichtherle\truezip\fs\FsMountPoint.class(de\schlichtherle\truezip\fs:FsMountPoint.class): warning: Cannot find annotation method 'value()' in type 'edu.umd.cs.findbugs.annotations.SuppressWarnings'
+de\schlichtherle\truezip\fs\FsPath.class(de\schlichtherle\truezip\fs:FsPath.class): warning: Cannot find annotation method 'value()' in type 'edu.umd.cs.findbugs.annotations.DefaultAnnotation'
+de\schlichtherle\truezip\fs\FsPath.class(de\schlichtherle\truezip\fs:FsPath.class): warning: Cannot find annotation method 'value()' in type 'edu.umd.cs.findbugs.annotations.SuppressWarnings'
+6 warnings
+
+D:\>java -cp c:\Users\OlegYch\.m2\repository\de\schlichtherle\truezip\truezip-file\7.4.3\truezip-file-7.4.3.jar;c:\Users\OlegYch\.m2\repository\de\schlichtherle\truezip\truezip-driver-file\7.4.3\truezip-driver-file-7.4.3.jar;c:\Users\OlegYch\.m2\repository\de\schlichtherle\truezip\truezip-kernel\7.4.3\truezip-kernel-7.4.3.jar;.
+test
+D:\
+
+D:\>scalac -cp c:\Users\OlegYch\.m2\repository\de\schlichtherle\truezip\truezip-file\7.4.3\truezip-file-7.4.3.jar;c:\Users\OlegYch\.m2\repository\de\schlichtherle\truezip\truezip-driver-file\7.4.3\truezip-driver-file-7.4.3.jar;c:\Users\OlegYch\.m2\repository\de\schlichtherle\truezip\truezip-kernel\7.4.3\truezip-kernel-7.4.3.jar
+test.scala
+error: error while loading TFile, Missing dependency 'class java.nio.file.Path', required by c:\Users\OlegYch\.m2\repository\de\schlichtherle\truezip\truezip-file\7.4.3\truezip-file-7.4.3.jar(de/schlichtherle/truezip/file/TFile.class)
+one error found
+
+D:\>java -version
+java version "1.6.0_24"
+Java(TM) SE Runtime Environment (build 1.6.0_24-b07)
+Java HotSpot(TM) Client VM (build 19.1-b02, mixed mode)
+
+D:\>scala -version
+Scala code runner version 2.9.1.final -- Copyright 2002-2011, LAMP/EPFL
+{code}
+
+here is test.scala
+{code}
+object Main extends App {
+  System.out.println(new de.schlichtherle.truezip.file.TFile("").getAbsoluteFile());
+}
+{code}
+here is test.java
+{code}
+public class test {
+  public static void main(String[] args) {
+    System.out.println(new de.schlichtherle.truezip.file.TFile("").getAbsoluteFile());
+  }
+}
+{code}
+here is path to dependency packed as one jar
+http://repo1.maven.org/maven2/de/schlichtherle/truezip/truezip-samples/7.4.3/truezip-samples-7.4.3-jar-with-dependencies.jar

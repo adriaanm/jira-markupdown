@@ -1,0 +1,17 @@
+I tried the tip in ticket 2748 but wihtout success.
+
+If I can have some hints were to search for that problem ... I could try to prepare a test case that reproduces that ...
+
+Here are the implicit conversions I do (if this could be the problem):
+
+    class RichObjectSet[T](objectSet:ObjectSet[T]) extends Iterator[T] {
+        def hasNext:Boolean =  objectSet.hasNext()
+        def next:T = objectSet.next()
+    }
+    implicit def toRichObjectSet[T](objectSet: ObjectSet[T] ) = new RichObjectSet[T](objectSet)
+
+    class RichFCollection[T](coll:FCollection[T]) extends Iterator[T]{
+        def hasNext:Boolean =  coll.iterator.hasNext()
+        def next:T = coll.iterator.next()
+    }
+    implicit def toRichFCollection[T](coll:FCollection[T] ) = new RichFCollection[T](coll)

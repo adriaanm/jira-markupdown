@@ -1,0 +1,18 @@
+(In r23380) Some uninteresting code related to error messages, which I'm
+checking in mostly because I booted the r23379 commit in a git-svn
+meltdown and posterity demands the message, which was:
+
+You can now use the self-type of an anonymous class as a singleton
+type in a pattern match ON THE MOON.  Actual test case excerpt:
+
+  val x4 = new { self =>
+    def f(x: Any) = x match {
+      case _: x1.type     => 1
+      case _: x2.type     => 2
+      case _: x3.type     => 3
+      case _: self.type   => 4
+      case x: Dingus.type => x.IamDingus
+    }
+  }
+
+Closes SI-576, no review.

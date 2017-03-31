@@ -1,0 +1,32 @@
+When using an implicit TypeTag parameter, you get {{TypeTag\[java.lang.String\]}} for a string literal or type {{java.lang.String}} in a type application, but you get {{TypeTag\[String\]}} for the type {{String}} in a type application. These two type tags do not compare equal.
+
+This is confusing, I expect the type application {{\[String\]}} to correspond to a string literal. Just like the type application {{\[Int\]}} corresponds to an integer literal.
+
+{code}
+import scala.reflect.runtime.universe.TypeTag
+
+class TypedContainer[T] private (storedTag: TypeTag[T], value: T) {
+
+  def apply[U](implicit tag: TypeTag[U], ev: T <:< U): U =
+    if (tag == storedTag)
+      value
+    else
+      throw new IllegalArgumentException(s"$tag != $storedTag")
+
+}
+
+object TypedContainer {
+  def apply[T](x: T)(implicit tag: TypeTag[T]): TypedContainer[T] =
+    new TypedContainer(tag, x)
+}
+
+object Main extends App {
+
+  val s: TypedContainer[String] = TypedContainer("Foo")
+
+  println(s[java.lang.String])  // works as expected
+  println(s[String])            // run-time error, but should work
+  // println(s[Int])            // compile error, as expected
+
+}
+{code}

@@ -1,0 +1,16 @@
+It's a bug in the pattern matcher, here's what it translates it to:
+{code}
+  class A extends java.lang.Object with ScalaObject {
+    private[this] val N: Nil.type = scala.Nil;
+    {
+      <synthetic> val temp1: Nil.type = scala.Nil;
+      if (temp1.==(scala.this.N())) // !! should be scala.this.A.N
+        ()
+      else
+        failCont%1(){
+          throw new MatchError(temp1)
+        }
+    }
+  }
+
+{code}

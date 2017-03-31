@@ -1,0 +1,50 @@
+See the two instances I have below (taken from REPL)
+
+Native XML handling, preserves the newline character.
+{code}
+scala> <foo key="val
+     | ue" />
+res0: scala.xml.Elem = 
+<foo key="val
+ue"/>
+{code}
+
+XML.loadString, however, converts to a newline.
+{code}
+scala> XML.loadString("""<foo key="val
+     | ue" />""")
+res3: scala.xml.Elem = <foo key="val ue"/>
+{code}
+
+As such, the XML blocks are not equal.
+{code}
+scala> res0 equals res3
+res6: Boolean = false
+{code}
+
+Newlines NOT inside of attributes are preserved in both instances are are equal as such.
+
+{code}
+scala> <foo>
+     | bar
+     | baz
+     | </foo>
+res4: scala.xml.Elem = 
+<foo>
+bar
+baz
+</foo>
+
+scala> XML.loadString("""<foo>
+     | bar
+     | baz
+     | </foo>""")
+res5: scala.xml.Elem = 
+<foo>
+bar
+baz
+</foo>
+
+scala> res4 equals res5
+res7: Boolean = true
+{code}

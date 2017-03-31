@@ -1,0 +1,23 @@
+Unlike, say, annotations or flags, knownDirectSubclasses doesn't get auto-populated and requires a symbol to be pre-initialized to work correctly.
+
+{code}
+import scala.reflect.runtime.universe._
+import scala.reflect.runtime.{currentMirror => cm}
+
+sealed class C
+class D extends C
+class E extends C
+
+object Test extends App {
+  val c = cm.staticClass("C")
+  println(c.knownDirectSubclasses)
+  c.typeSignature
+  println(c.knownDirectSubclasses)
+}
+{code}
+
+{code}
+19:43 ~/Projects/Kepler_7046/sandbox (ticket/7046)$ scalac Test.scala && scala Test
+Set()
+Set(class D, class E)
+{code}

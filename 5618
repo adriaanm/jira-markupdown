@@ -1,0 +1,59 @@
+The reason for my posting this Bug (SI-4330) was due to the fact that I
+am in the process of porting an enterprise framework written in
+Java over to Scala. I am not building on top of the Java version,
+I am converting all of it to Java. When the final release for
+the Java version made public, I will port the changes since the
+previous release candidate and then make the Scale version
+of the framework public.
+
+Currently, the Java version is 147kloc (code plus test cases)
+while my Scala port is 109kloc (code plus test cases). Porting
+the code is not hard. What is hard is finding the one line of
+code where I made a mistake during the port - thats the
+hard part. One such porting error took 1 1/2 days to find.
+
+In the base class constructor of the frameworks component
+hierarchy are two bits of code that are unsafe; code that
+executes in the base constructor what communicates with
+external code which might expect the instance to be fully
+constructed prior to such communication. In both cases,
+the creators of the component hierarchy are trying to
+enforce a "on-creation" behavior on all users who extend
+the class hierarchy.
+
+The first is a such external communication is a call out to
+a collection of "on-component-creation" listeners which take
+the (partially) constructed instance and, well, do whatever
+they want. This is mostly used to integrate with code that
+injects values into an object such as the frameworks own
+injector, Google Guice, Spring, etc. Since the instance is not
+fully constructed when this happens, I have to be careful that
+I do not actually, explicitly set the value of a field in a
+derived class constructor because that will override the
+injected value. (I have to define the instance variable as,
+e.g.: "var value: String = _", which will not override the
+injected value, but expecting end users to do this correctly
+is problematic at best.)
+
+The second external communication in the constructor is that
+the instance can be passed to an object passed in as constructor
+parameter. End users can create their own versions of such a
+parameter object and they may have expectations that the object
+being constructed is fully constructed prior to it being passed
+to their parameter object:
+
+{code}
+    class Node(data: Data) {
+        if (data.instanceOf[WrappedData])
+            data.asInstanceof[WrappedData].setNode(this)
+    }
+{code}
+
+The end user will have difficulty determining why things are not
+working where the answer is the fact that the instance is not
+fully constructed yet. For example, calling an instance method
+which is override in the not-yet constructed derived class.
+
+So, to make the framework safer while providing the ability to
+enforce a number of "on-construction" behaviors is the reason
+I posted the bug.

@@ -1,0 +1,14 @@
+Replying to [comment:2 dramage]:
+> Replying to [comment:1 extempore]:
+> > In case it has any bearing on your evaluation, you may want to know the actual motivation for the complicated logic in stringOf.  It is summarized as:
+> > {code}
+> > // Given:
+> > List(Array(1))
+> > // How to print as above and not as:
+> > List([I@18f55759)
+> > }}
+> > 100% of the logic spins out of the inability to change Array's toString method.  It does not arise from some high-minded attempt to improve everybody's toString method.
+> 
+> I appreciate the clarification.  It did occur to me that this method would also be used recursively.  So if the main motivation is really to fix java arrays' toString, why not go with proposal 1?  Is there a reason that stringOf should avoid x.toString *except* on null and on java arrays?  It seems like the only other branch that *doesn't* call x.toString is for Traversable with definite size not in scala.tools.nsc.io.  Something's fishy ... why have this branch instead of just implementing a default, desirable toString on Traversable?
+
+A bit more concretely, why not change Traversable's toString (which ultimately delegates to TraversableOnce.addString) to use ScalaRunTime.stringOf(x) instead of x.toString?

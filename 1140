@@ -1,0 +1,6 @@
+This re-surfaced with the fix to SI-2635. The problem seems to be deep in the constraint variable solver which can produce solutions that then do not conform to bounds. A simpler test case is here (in pending/pos/depexists.scala):
+{code}
+ val c: Cell[(a, b)] forSome { type a <: Number; type b <: (a, a) } = null
+ val d = c
+{code}
+I defer until we redo the whole approach to constraint solving (which we should do, soon).

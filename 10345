@@ -1,0 +1,18 @@
+Cut down:
+
+{code}
+class ann extends annotation.StaticAnnotation
+
+object Use { 
+  val dataSetup = new AnyRef {     // <---- error reported here
+    class Mem { def x: (Int @ann) = 0 }
+    type Memory = Mem
+  }
+}
+
+/**
+error: type mismatch;
+ found   : AnyRef{type Mem(in <refinement of AnyRef>)(in <refinement of AnyRef>)(in <refinement of AnyRef>)(in <refinement of AnyRef>) <: AnyRef{def x: Int}; type Memory = this.Mem(in <refinement of AnyRef>)(in <refinement of AnyRef>)(in <refinement of AnyRef>)(in <refinement of AnyRef>)}
+ required: AnyRef{type Mem(in <refinement of AnyRef>)(in <refinement of AnyRef>)(in <refinement of AnyRef>)(in <refinement of AnyRef>) <: AnyRef{def x: Int @ann}; type Memory = this.Mem(in <refinement of AnyRef>)(in <refinement of AnyRef>)(in <refinement of AnyRef>)(in <refinement of AnyRef>)}
+ */
+{code}

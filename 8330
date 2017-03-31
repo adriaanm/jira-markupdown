@@ -1,0 +1,7 @@
+I tried some other variants to flesh out the behavior:
+
+1.  If I specialize both type parameters, the specialized versions are only invoked if both parameters are AnyVal subtypes.  The compiler doesn't even emit method versions for the cases where one parameter is specialized and the other is generic.
+
+2.  If I specialize both type parameters, _and_ explicitly include AnyRef in the specialized types, then the compiler at least emits method versions having one primitive argument and one Object argument.  However, thye are never invoked.  Specialized versions are only invoked when both parameters are AnyVal subtypes.  (Exception: In 2.9.2, a specialized version is also invoked when both parameters are AnyRef, although in this case the specialized code is the same as the generic code).
+
+I'm attaching some sample code that exercises the different variants with all combinations of AnyVal vs AnyRef argument types.  It's a bit long to paste inline.

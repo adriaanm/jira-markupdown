@@ -1,0 +1,11 @@
+(In r23987) Optimization to string concatenation.  Our hands are sufficiently dirty
+with a primitive CONCAT and several opcodes, I'm assuming nobody will oppose
+this on principle.  Given an expression of the exact form "" + x
+(that is, the NPE-immune and much less ugly way to call .toString) we used
+to get 4x the bytecode and create an unneeded StringBuilder.  Now this:
+
+0:	aload_1
+1:	invokestatic	SI-20; //Method java/lang/String.valueOf:(Ljava/lang/Object;)Ljava/lang/String;
+4:	areturn
+
+Closes SI-4160, review by dragos.

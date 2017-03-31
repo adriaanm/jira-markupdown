@@ -1,0 +1,17 @@
+This is related to Bug SI-9830, which in  fact derives from this. This is the code 
+
+import scala.concurrent._
+import ExecutionContext.Implicits.global
+val f: Future[Int] = Future {
+  val source = scala.io.Source.fromChars(("x" * 7000000).toArray)
+  source.toSeq.indexOfSlice("teetotal")
+}
+
+Per the referenced bug, the stuff inside the Future {...} never completes, so of course the future never returns; typing 'f' in the REPL brings up this:
+
+res0: scala.concurrent.Future[Int] = List()
+
+because it's unfinished. What's odd is if you type 'f' a few more times, it returns the same "I'm not finished" result ever more slowly, and after ~15 seconds it stops returning anything at all. 
+IOW it seems the thread that spawns the future is hanging. The computing thread is taking up near 100% of cpu but not all of it (rest of my machine is fairly responsive) so the spawning thread has enough cpu to reply to my entering 'f', but it locks up. 
+Should this happen?
+

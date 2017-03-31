@@ -1,0 +1,28 @@
+Trying to come up with a pattern to match creation of anonymous inner classes, I ended with:
+
+{code:java}
+
+case b@q"""new $tpe[..$tparams](...$vparamss) { ..$body }""" => println("b: " + b); tpe
+case a@q"""new $tpe(...$vparamss) { ..$body }""" => println("a: " + a); tpe
+
+{code}
+
+To match for example the first two instantiations in the following snippet.
+
+{code:java}
+@searchAnonymous class MyClass {
+ 
+  val theLabel = new javax.swing.JLabel {
+    val alternateText = ???
+  }
+
+  new java.util.logging.Logger {
+     ..
+  }
+
+  val thePoint =  new java.awt.Point2D()
+}
+{code}
+
+
+Problem is that only the first case should be enough, as with the parameters pattern, that will match 0 or more parameter lists.

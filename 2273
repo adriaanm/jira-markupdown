@@ -1,0 +1,22 @@
+Just to note, this has nothing whatsoever to do with Stream (at least if SI-2835 is really a duplicate). At any rate, I reduced it to the following, in my case:
+
+{code}
+object CrashTest {
+  object Rule {
+    def unapplySeq(line: String) = line match {
+      case "" => Some(Seq("x"))
+      case "." => Some(Seq("y", ""))
+      case _ => None
+    }
+  }
+  
+  def computeRules(lines: Iterator[String]) = {
+    (lines foldLeft ("")) {
+      case (acc, line) => line match {
+        case Rule(rule: String) => acc // Removing ": String" prevents the crash
+        case Rule(rule, terminal: String) => terminal
+      }
+    }
+  }
+}
+{code}

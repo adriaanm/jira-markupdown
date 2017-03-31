@@ -1,0 +1,23 @@
+I'm sorry, this bug still exists in 2.8 final. If you look carefully at the test case, you will see that it tests the wrong thing!
+
+In the test case, the order of the _declarations_ of A and B are switched between the two versions:
+{code}
+trait A ...
+trait B ...
+{code} 
+vs 
+{code}
+trait B ...
+trait A ...
+{code}
+
+But this has *nothing* to do with the bug!! The important change is the order of A and B _in the declaration of Test_:
+{{ 
+object Test extends Application with A with B ... 
+object Test extends Application with B with A ...  // this one fails!
+{code}
+
+In 2.8 final, it remains the case that this works correctly in the interpreter, and incorrectly in the compiler. There seems to be no change in behavior since the bug was opened. The original transcript I included when I opened the bug is still what I see with the new release.
+
+Sorry to have to reopen this very old bug!
+

@@ -1,0 +1,36 @@
+Another in the thrilling series of language features which require the application of rocket science just to get them to leave you alone. All I want is the class object, must it be so hard? See also SI-8039 for what is in some sense the dual nightmare.
+
+{code}
+class A {
+  // Splitting out the implicit class doesn't help.
+  implicit class Foo[A](x: A) { def bar(f: A => Seq[A]) = f(x) }
+
+  // Okay, fair enough this doesn't work. Overly specific type is
+  // inferred and then dooms us later.
+  def f1 = classOf[List[_]] bar (_.getInterfaces.toSeq)
+  // a.scala:4: error: type mismatch;
+  //  found   : Seq[Class[_]]
+  //  required: Seq[Class[List[_]]]
+  //   def f1 = classOf[List[_]] bar (_.getInterfaces.toSeq)
+  //                                                  ^
+
+  // Apparently Class[_] is STILL too specific. Can anyone suggest a
+  // less specific type which is still a Class?
+  def f2 = (classOf[List[_]] : Class[_]) bar (_.getInterfaces.toSeq)
+  //  found   : Seq[Class[_]]
+  //  required: Seq[Class[_$3]] where type _$3
+  //   def f2 = (classOf[List[_]] : Class[_]) bar (_.getInterfaces.toSeq)
+  //
+
+  // Giving it a type parameter home doesn't help either.
+  def f3[A](x: Class[A]) = x bar (_.getInterfaces.toSeq)
+  // found   : Seq[Class[_]]
+  // required: Seq[Class[A]]
+  //  def f3[A](x: Class[A]) = x bar (_.getInterfaces.toSeq)
+  //                                                  ^
+
+  // At this point we've blown way past the "worth the trouble"
+  // boundary, but for the record it compiles this way.
+  def f4 = new Foo[Class[_]](classOf[List[_]]) bar (_.getInterfaces.toSeq)
+}
+{code}

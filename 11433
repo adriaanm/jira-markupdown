@@ -1,0 +1,25 @@
+Looks like my patch causes the tests to fail:
+
+{code}
+     [echo] Checking backward binary compatibility for scala-reflect (against 2.11.0)
+     [mima] Found 1 binary incompatibiities (27 were filtered out)
+     [mima] ======================================================
+     [mima]  * method values()java.util.concurrent.ConcurrentHashMap in class
+     [mima]    scala.reflect.runtime.ThreadLocalStorage#MyThreadLocalStorage has now a
+     [mima]    different result type; was: java.util.concurrent.ConcurrentHashMap, is now:
+     [mima]    java.util.Map
+     [mima] Generated filter config definition
+     [mima] ==================================
+     [mima]
+     [mima]     filter {
+     [mima]         problems=[
+     [mima]             {
+     [mima]                 matchName="scala.reflect.runtime.ThreadLocalStorage#MyThreadLocalStorage.values"
+     [mima]                 problemName=IncompatibleResultTypeProblem
+     [mima]             }
+     [mima]         ]
+     [mima]     }
+     [mima]
+{code}
+
+I'm not sure why we care about binary compatibility for a private class. I will look to see if there is an efficient way to use ConcurrentHashMap with weak keys.

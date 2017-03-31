@@ -1,0 +1,38 @@
+In general, it's desirable to avoid starting threads from static initializers (such as an object constructor) because of the risk of deadlock during class loading.
+
+The risk increases in 2.12 with lambdas. Besides making {{Pool}} a lazy val, the following change also unblocks, but it's really no way to live:
+
+{noformat}
+--- a/src/main/scala/foo/package.scala
++++ b/src/main/scala/foo/package.scala
+@@ -7,6 +7,13 @@ package object foo {
+ 
+   import bar.Proxy
+ 
++  val Pre = new Function0[Unit] {
++    def apply() = println("pre")
++  }   
++  val Post = new Function0[Unit] {
++    def apply() = println("post")
++  }
++
+   val Executor: ExecutorService = {
+     val threadFactory = new Proxy(
+       new ThreadFactory {
+@@ -17,12 +24,15 @@ package object foo {
+         }
+       },
+       Proxy.newProxy(
++        Pre, Post
++        /*
+         () => println("pre"),
+         () => println("post")
++        */
+       )
+     )
+     Executors.newCachedThreadPool(threadFactory)
+   }
+ 
+   val Pool: WorkerPool = new WorkerPool(Executor)
+}
+{noformat}

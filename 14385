@@ -1,0 +1,11 @@
+I have the following setup.
+A maven based project, with java sources at src/main/java and scala sources at src/main/scala. The scala sources use sources from java (mostly just GUI forms with no special behaviour)
+http://kenai.com/projects/nb-maven-generators/sources/mercurial/show
+
+I'm using netbeans and it's maven and scala plugins to work with the sources. While the project compiles fine with the maven-scala-plugin, I've got error badges in the editor. I've tried to play with the netbeans scala plugin source code and figured the root problem is in it's usage of -sourcepath. It will compile the file in editor and always only pass one source root, if it's the java one, I get errors about not finding scala sources, if it's the scala root, the java sources are not found.
+
+The maven-scala-plugin seems to workaround the problem by passing all files in the projects from both source roots as arguments. I'm not entirely sure the same approach can be taken in the netbeans scala plugin. It would mean recompilation of the whole project for each editor change. with larger projects it could be aa significant bottleneck (on assumption that most files don't require the complete sources of the project and that by using sourcepath the compiler only compiles what is necessary for the file in question.
+
+So the purpose of this enhancement is to add the possibility to add multiple source roots to the -sourcepath argument of the compiler.
+
+Thanks.

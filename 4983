@@ -1,0 +1,15 @@
+Replying to [comment:10 moors]:
+> the compiler should report an unreachable code error for the example above, but the matching behaviour has keep following the semantics of Java's instanceof, such is the oath we took when embarking on this journey
+
+I think this needs further consideration.  Can we use spec citations? I missed the oath apparently.
+
+> even if we did make a u-turn onto the high road, the worry is we'd be stuck in reflection traffic
+
+I can't see how it's a u-turn.  The example above doesn't now and hasn't ever said unreachable code.  But if we intentionally match covariantly it remains trivial to create runtime failures.  How is it any different in effect to have Array[String] match as Array[AnyRef] in a pattern match than it is to allow Array[String] as an argument to an Array[AnyRef] parameter type? 
+
+I can't see any point in making arrays behave invariantly everywhere else and then leaving open this huge hole for runtime failure.
+{code}
+(Array[String]("a"): Any) match { case x: Array[AnyRef] => x(0) = new AnyRef }
+java.lang.ArrayStoreException: java.lang.Object
+{code}
+And if we're really going to make matching work right wrt type parameters when a manifest is available, we have this fairly ridiculous situation where the erased types match correctly and the type which actually reified the relevant type information has that information discarded and leads to a runtime failure.

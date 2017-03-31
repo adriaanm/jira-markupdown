@@ -1,0 +1,26 @@
+When parsing {{s: String}}, using {{parseAll(p, new java.io.StringReader(s))}} is much, much more efficient than using just {{parseAll(p, s)}} - difference in runtime's order of growth is stunning.
+I've encoutered this while working on my project, so this is a real-world problem.
+
+I've made sort of a benchmark from it, it is attached to the issue. Here are the results for me:
+{code}
+parseAll(new StringReader(String))
+For 100 items: 7 ms
+For 500 items: 33 ms
+For 1000 items: 47 ms
+For 5000 items: 92 ms
+For 10000 items: 155 ms
+For 50000 items: 1358 ms
+===
+parseAll(String)
+For 100 items: 2 ms
+For 500 items: 34 ms
+For 1000 items: 97 ms
+For 5000 items: 1681 ms
+For 10000 items: 6116 ms
+For 50000 items: 175927 ms
+{code}
+
+P.S.
+Btw, gap between 10,000 and 50,000 is strange
+
+Duplicate of SI-7710.

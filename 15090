@@ -1,0 +1,11 @@
+[Edit by paulp: please see also my comments in ticket SI-3089.]
+
+In 2.7, both "keys" and "values" returned an Iterator.
+
+The 2.8 collections specification defines new methods "keysIterator" and "valuesIterator" and redefines the original "keys" and "values" methods to return Sets.
+
+However, the actual 2.8 code takes a worst-of-both-worlds approach, deprecating "keys" and "values" but still returning Iterator from both, adding the new "keysIterator" and "valuesIterator" methods with the same functionality, further retaining "keySet" from the original Map API, and adding a new method, "valuesIterable," which as its name suggests, returns an Iterable instead of a Set.
+
+I think that at the least, Map should implement the behavior defined in Martin's collections SID.  Someone reading the SID will reasonably expect the keys and values methods of Map to return Sets.
+
+However I think that "values" should return an Iterable rather than a Set.  After all the values in a Map may not be intended to be used in a Set.  For example we might have a Map of Dates to Users, with each entry representing the state of a User at that point in time.  The User instances are all "equal" from a business key perspective in that they all have the same name;  we just have different snapshots.  But someone calling a Set-returning "values" method would just get back one user.

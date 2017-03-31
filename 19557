@@ -1,0 +1,20 @@
+{code}
+class A(stream: java.io.InputStream)
+class B(url: java.net.URL) extends A(url.openStream)
+{code}
+
+Distilled from `ProcessBuilderImpl.scala` in the stdlib.
+
+Regressed in https://github.com/scala/scala/commit/9c36a7617
+
+{noformat}
+% scalac-hash 9c36a7617~1 -Xexperimental sandbox/test.scala
+
+% scalac-hash 9c36a7617 -Xexperimental sandbox/test.scala
+sandbox/test.scala:2: error: type mismatch;
+ found   : java.io.InputStream
+ required: Int
+class B(url: java.net.URL) extends A(url.openStream)
+                                         ^
+one error found
+{noformat}

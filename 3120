@@ -1,0 +1,14 @@
+Following on from the discussion that has occurred here: https://groups.google.com/forum/#!topic/scala-internals/RrmfYQpTTfc/discussion 
+
+It seems sensible that List.foldRight can be implemented simply at virtually no penalty to performance (caliper based benchmarks linked in the discussion above) in the smaller cases if implemented as follows:
+
+{code}
+  override def foldRight[B](z: B)(op: (A, B) => B): B = {
+    if (lengthCompare(10) < 0)  // MAX_DEPTH=10
+      super.foldRight(z)(op)
+    else
+      reverse.foldLeft(z)((right, left) => op(left, right))
+  }
+{code}
+
+This mitigates the case where a callee unwittingly does a foldRight on a type with the signature of Seq[User] for example which is actually a List.

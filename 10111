@@ -1,0 +1,19 @@
+In this example the position of the literal changes because scalac actually throws away the useless val, then decides that the literal must have covered the whole method body. I don't remember when it started doing that, but empirically I see somewhere before 2.10.
+{code}
+object Test {
+  def f1 = { val x = 5; "dog" }
+  def f2 = "cat"
+}
+// Parser:
+//
+// [16:45]def f1 = [25:45]{
+//   [27:36]val x = [35:36]5;
+//   [38:43]"dog"
+// };
+// [48:62]def f2 = [57:62]"cat"
+//
+// Typer:
+//
+// [16:45]def f1: [20]String = [25:45]"dog";
+// [48:62]def f2: [52]String = [57:62]"cat"
+{code}

@@ -1,0 +1,44 @@
+If a property of an object is defined as read/write in the base class then += works for subclasses.
+
+{code}
+object Test {
+  def main(args: Array[String]) {
+    var m = new Mutable()
+    m.a += 10
+    m.b += 10 //WORKS
+  }
+}
+
+abstract class Abstract {
+  var a = 0
+  def b = a
+  def b_=(v: Int) = { this.a = v }
+}
+
+class Mutable extends Abstract
+{code}
+
+However if the property is defined as read only in the base class and extended to read/write in a subclass, then using += will yield "reassignment to val" compiler error.
+
+{code}
+object Test {
+  def main(args: Array[String]) {
+    var m = new Mutable()
+    m.a += 10
+    m.b += 10 //error: reassignment to val
+  }
+}
+
+abstract class Abstract {
+  var a = 0
+  def b = a
+}
+
+class Mutable extends Abstract {
+  def b_=(v: Int) = { this.a = v }
+}
+{code}
+
+Same applies to *=, -=, and other variations.
+
+This problem was replicated on 2.7.4 and 2.7.3 (other versions were not tested).

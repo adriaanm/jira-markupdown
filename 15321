@@ -1,0 +1,153 @@
+{code}
+package com.example
+
+import java.io.{File, FileInputStream}
+
+object A
+{
+    val BLOCK_SIZE = 4096
+
+    def filter(dir: File)(p: String => Boolean): List[String] = Nil
+
+    def readFile[T](input: File)(f: FileInputStream => T) =
+    {
+        val stream = new FileInputStream(input)
+
+        try
+        {
+            f(stream)
+        }
+        finally
+        {
+            stream.close()
+        }
+    }
+
+    private def checkContentsIdentical(first: File, second: File): Boolean =
+    {
+        val firstBlock = new Array[Byte](A.BLOCK_SIZE)
+        val secondBlock = new Array[Byte](A.BLOCK_SIZE)
+
+
+        readFile(first) { firstStream =>
+            readFile(second) { secondStream =>
+
+                var firstCount = 0
+                var secondCount = 0
+
+                do
+                {
+                    firstCount = firstStream.read(firstBlock)
+                    secondCount = secondStream.read(secondBlock)
+                }
+                while (firstCount == BLOCK_SIZE && secondCount == BLOCK_SIZE && java.util.Arrays.equals(firstBlock, secondBlock))
+
+                (firstCount == secondCount) && Iterator.range(0, firstCount).forall( i => firstBlock(i) == secondBlock(i) )
+            }
+        }
+    }
+}
+{code}
+
+{code}
+import com.example.A
+
+class B
+{
+    private def localMatch(localFilename: String): Boolean = false
+
+    def inputFiles
+    {
+        A.filter(null)(localMatch _)
+    }
+
+}
+{code}
+
+Compile the two files in sequence with 2.8.0.RC2 -optimise
+
+{code}
+.../2.8.0.RC2/files/bin/scalac  \
+    -optimise A.scala && \
+.../2.8.0.RC2/files/bin/scalac \
+    -optimise B.scala
+{code}
+
+{code}
+Exception in thread "main" java.lang.AssertionError: assertion failed: class A.$$anonfun$$checkContentsIdentical$$1 linkedModule: object AList(method checkContentsIdentical, method readFile, method filter, value BLOCK_SIZE, value BLOCK_SIZE, constructor A, method $$asInstanceOf, method $$isInstanceOf, method synchronized, method ne, method eq, method !=, method ==, method ##, method finalize, method wait, method wait, method wait, method notifyAll, method notify, method toString, method clone, method equals, method hashCode, method getClass, method asInstanceOf, method isInstanceOf, method !=, method ==)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser$$innerClasses$$.innerSymbol$$1(ClassfileParser.scala:1186)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser$$innerClasses$$.classSymbol(ClassfileParser.scala:1198)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser.classNameToSymbol(ClassfileParser.scala:443)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser.sig2type$$1(ClassfileParser.scala:721)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser.scala$$tools$$nsc$$symtab$$classfile$$ClassfileParser$$$$sigToType(ClassfileParser.scala:799)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser$$ConstantPool.getType(ClassfileParser.scala:329)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser$$ConstantPool.getType(ClassfileParser.scala:326)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser.parseField(ClassfileParser.scala:571)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser$$$$anonfun$$1$$$$anonfun$$apply$$mcV$$sp$$1.apply(ClassfileParser.scala:523)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser$$$$anonfun$$1$$$$anonfun$$apply$$mcV$$sp$$1.apply(ClassfileParser.scala:523)
+	at scala.collection.immutable.Range$$ByOne$$class.foreach(Range.scala:276)
+	at scala.collection.immutable.Range$$$$anon$$2.foreach(Range.scala:259)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser$$$$anonfun$$1.apply$$mcV$$sp(ClassfileParser.scala:523)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser.parseClass(ClassfileParser.scala:543)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser.parse(ClassfileParser.scala:99)
+	at scala.tools.nsc.symtab.SymbolLoaders$$ClassfileLoader.doComplete(SymbolLoaders.scala:248)
+	at scala.tools.nsc.symtab.SymbolLoaders$$SymbolLoader.complete(SymbolLoaders.scala:62)
+	at scala.tools.nsc.symtab.SymbolLoaders$$SymbolLoader.complete(SymbolLoaders.scala:36)
+	at scala.tools.nsc.symtab.Symbols$$Symbol.info(Symbols.scala:744)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser$$ConstantPool.getMemberSymbol(ClassfileParser.scala:243)
+	at scala.tools.nsc.symtab.classfile.ICodeReader.parseInstruction$$1(ICodeReader.scala:533)
+	at scala.tools.nsc.symtab.classfile.ICodeReader.parseByteCode(ICodeReader.scala:623)
+	at scala.tools.nsc.symtab.classfile.ICodeReader.parseAttribute(ICodeReader.scala:187)
+	at scala.tools.nsc.symtab.classfile.ICodeReader$$$$anonfun$$parseMethod$$1.apply(ICodeReader.scala:170)
+	at scala.tools.nsc.symtab.classfile.ICodeReader$$$$anonfun$$parseMethod$$1.apply(ICodeReader.scala:170)
+	at scala.collection.immutable.Range$$ByOne$$class.foreach(Range.scala:279)
+	at scala.collection.immutable.Range$$$$anon$$2.foreach(Range.scala:259)
+	at scala.tools.nsc.symtab.classfile.ICodeReader.parseMethod(ICodeReader.scala:170)
+	at scala.tools.nsc.symtab.classfile.ICodeReader$$$$anonfun$$parseClass$$2.apply(ICodeReader.scala:84)
+	at scala.tools.nsc.symtab.classfile.ICodeReader$$$$anonfun$$parseClass$$2.apply(ICodeReader.scala:84)
+	at scala.collection.immutable.Range$$ByOne$$class.foreach(Range.scala:276)
+	at scala.collection.immutable.Range$$$$anon$$2.foreach(Range.scala:259)
+	at scala.tools.nsc.symtab.classfile.ICodeReader.parseClass(ICodeReader.scala:84)
+	at scala.tools.nsc.symtab.classfile.ClassfileParser.parse(ClassfileParser.scala:99)
+	at scala.tools.nsc.symtab.classfile.ICodeReader.readClass(ICodeReader.scala:54)
+	at scala.tools.nsc.backend.icode.Repository$$class.load(Repository.scala:47)
+	at scala.tools.nsc.backend.icode.Repository$$class.icode(Repository.scala:40)
+	at scala.tools.nsc.backend.icode.ICodes.icode(ICodes.scala:27)
+	at scala.tools.nsc.backend.opt.Inliners$$Inliner$$$$anonfun$$analyzeMethod$$1$$$$anonfun$$apply$$4.apply(Inliners.scala:339)
+	at scala.tools.nsc.backend.opt.Inliners$$Inliner$$$$anonfun$$analyzeMethod$$1$$$$anonfun$$apply$$4.apply(Inliners.scala:313)
+	at scala.collection.IndexedSeqOptimized$$class.foreach(IndexedSeqOptimized.scala:35)
+	at scala.collection.mutable.ArrayOps.foreach(ArrayOps.scala:35)
+	at scala.tools.nsc.backend.icode.BasicBlocks$$BasicBlock.foreach(BasicBlocks.scala:138)
+	at scala.tools.nsc.backend.opt.Inliners$$Inliner$$$$anonfun$$analyzeMethod$$1.apply(Inliners.scala:313)
+	at scala.tools.nsc.backend.opt.Inliners$$Inliner$$$$anonfun$$analyzeMethod$$1.apply(Inliners.scala:311)
+	at scala.collection.LinearSeqOptimized$$class.foreach(LinearSeqOptimized.scala:62)
+	at scala.collection.immutable.List.foreach(List.scala:46)
+	at scala.tools.nsc.backend.opt.Inliners$$Inliner.analyzeMethod(Inliners.scala:311)
+	at scala.tools.nsc.backend.opt.Inliners$$Inliner$$$$anonfun$$analyzeClass$$2.apply(Inliners.scala:288)
+	at scala.tools.nsc.backend.opt.Inliners$$Inliner$$$$anonfun$$analyzeClass$$2.apply(Inliners.scala:288)
+	at scala.collection.LinearSeqOptimized$$class.foreach(LinearSeqOptimized.scala:62)
+	at scala.collection.immutable.List.foreach(List.scala:46)
+	at scala.tools.nsc.backend.opt.Inliners$$Inliner.analyzeClass(Inliners.scala:288)
+	at scala.tools.nsc.backend.opt.Inliners$$InliningPhase.apply(Inliners.scala:51)
+	at scala.tools.nsc.backend.icode.ICodes$$ICodePhase$$$$anonfun$$apply$$1.apply(ICodes.scala:94)
+	at scala.tools.nsc.backend.icode.ICodes$$ICodePhase$$$$anonfun$$apply$$1.apply(ICodes.scala:94)
+	at scala.collection.LinearSeqOptimized$$class.foreach(LinearSeqOptimized.scala:62)
+	at scala.collection.immutable.List.foreach(List.scala:46)
+	at scala.collection.generic.TraversableForwarder$$class.foreach(TraversableForwarder.scala:45)
+	at scala.collection.mutable.LinkedHashSet.foreach(LinkedHashSet.scala:74)
+	at scala.tools.nsc.backend.icode.ICodes$$ICodePhase.apply(ICodes.scala:94)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$applyPhase$$1.apply(Global.scala:272)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$applyPhase$$1.apply(Global.scala:272)
+	at scala.tools.nsc.reporters.Reporter.withSource(Reporter.scala:49)
+	at scala.tools.nsc.Global$$GlobalPhase.applyPhase(Global.scala:272)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:248)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:248)
+	at scala.collection.Iterator$$class.foreach(Iterator.scala:632)
+	at scala.collection.mutable.ListBuffer$$$$anon$$1.foreach(ListBuffer.scala:305)
+	at scala.tools.nsc.Global$$GlobalPhase.run(Global.scala:248)
+	at scala.tools.nsc.Global$$Run.compileSources(Global.scala:729)
+	at scala.tools.nsc.Global$$Run.compile(Global.scala:815)
+	at scala.tools.nsc.Main$$.process(Main.scala:109)
+	at scala.tools.nsc.Main$$.main(Main.scala:123)
+	at scala.tools.nsc.Main.main(Main.scala)
+{code}

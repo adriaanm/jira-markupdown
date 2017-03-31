@@ -1,0 +1,16 @@
+Does this bug not exist for immutable.HashMap as well?  Or the other places in the library that use this pattern?
+
+To some extent, this is not a bug at all, its just how Java Serialization works.
+
+[~ichoran] I can't quite parse 'we can achieve a similar level of safety by changing the var to a val and making sure that the class still compiles'.   The old code would not compile after only changing var to val, and so the pattern used in immutable.HashMap (and elsewhere) was applied to List.
+
+This all started here:
+https://groups.google.com/forum/?fromgroups=#!topic/scala-internals/P7WNVkJQdHk
+
+The last few messages on that thread by me cover a few other options -- reflection and/or Unsafe can modify a val (final field), but will break if there is a security context that does not allow it.  Those options aren't so great.    Rex, you have a comment in that thread that not using ListBuffer (and using Array instead) is much faster and that is part of my inspiration to make the tail a val as well, but replacing the use of ListBuffer will require a lot of convincing others with performance numbers.  (then the two other instances in the compiler / reflection that modify the val need to change).
+
+If we simply revert the change, we are either admitting that List will always be mutable and  https://gist.github.com/jrudolph/6552186 will never be fixed, or deferring this 'bug' to the future when it becomes immutable.
+
+I had a local branch where the above was fixed and list was immutable.  The library worked fine, but needed performance work since ListBuffer was purposely broken (performance wise) to test it.  I did not continue any work because there was resistance to changing anything else at the time.  The discussion here: https://github.com/scala/scala/pull/3252  Is the best place to see where things are at. 
+
+I would be interested in picking this back up some time, but worry that the compiler and library still do not have enough performance testing tools to convince people that I'm not breaking things, and I don't want to embark on a big chunk of work without feeling like there is a chance it will get anywhere.

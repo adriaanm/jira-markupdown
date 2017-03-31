@@ -1,0 +1,13 @@
+You're right about ++:, it doesn't exist in Seq.
+
+But +: does, and it works, even if the Seq is a ListBuffer.  It looks like +: and :+ were added in order to resolve the ambiguities and pitfalls surrounding using the + method with Seq.
+
+All I am asking is to replace the definition of +: in BufferLike with the following:
+
+{code}
+@migration(2, 8,
+    "As of 2.8, +: always creates a new collection, even on Buffers.\n"+
+    "Use += instead if you intend to add by side effect to an existing collection.\n"
+)
+final def +:(elem: A): This = elem +=: clone()
+{code}

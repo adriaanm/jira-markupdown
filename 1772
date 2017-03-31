@@ -1,0 +1,22 @@
+OK! Here's a little transcript with today's trunk.
+{code}
+scala> val source = scala.io.Source.fromURL(new java.net.URL("http://www.itsascam.co.nz"))(io.Codec("ISO-8859-1"))             
+source: scala.io.Source = non-empty iterator
+
+scala> io.File("/tmp/1883-iso8859-1.html").writeAll(List(source.toList.mkString))(java.nio.charset.Charset.forName("ISO-8859-1"))
+{code}
+Now /tmp/1883-iso8859-1.html is identical to the file obtained by "wget http://www.itsascam.co.nz".
+
+You can read it as if were UTF-8 too, even though it isn't:
+{code}
+val source = scala.io.Source.fromURL(new java.net.URL("http://www.itsascam.co.nz"))(io.Codec("UTF-8"))                                                          source: scala.io.Source = non-empty iterator
+
+scala> io.File("/tmp/1883-utf8.html").writeAll(List(source.toList.mkString))(java.nio.charset.Charset.forName("ISO-8859-1"))                                                            
+{code}
+And the erroneous characters by default are ignored.  Notice it's 9 bytes shorter, because they were dropped.
+{code}
+[paulp@jon tmp]$$ ls -l *.html
+-rw-r--r--  1 paulp  wheel  18100 Aug 16 15:59 1883-iso8859-1.html
+-rw-r--r--  1 paulp  wheel  18091 Aug 16 16:01 1883-utf8.html
+{code}
+Precise interface remains in flux.

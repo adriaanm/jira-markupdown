@@ -1,0 +1,42 @@
+The bug was apparent in the trunk three days ago so I believe it affects all versions.  The class under concern is scala.util.matching.Regex.
+
+The following exception is somewhat surprising and undocumented in the scaladoc.
+
+{code}
+scala> "anything".r.replaceAllIn("anything", "\\")
+java.lang.StringIndexOutOfBoundsException: String index out of range: 1
+       at java.lang.String.charAt(String.java:694)
+       at java.util.regex.Matcher.appendReplacement(Matcher.java:716)
+       at java.util.regex.Matcher.replaceAll(Matcher.java:823)
+       at scala.util.matching.Regex.replaceAllIn(Regex.scala:103)
+       at .<init>(<console>:9)
+       at .<clinit>(<console>)
+       at .<init>(<console>:11)
+       at .<clinit>(<console>)
+       at $print(<console>)
+       at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+       at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+       at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+       at java.lang.reflect.Method.invoke(Method.java:616)
+       at scala.tools.nsc.interpreter.IMain$ReadEvalPrint.call(IMain.scala:704)
+       at scala.tools.nsc.interpreter.IMain$Request$$anonfun$14.apply(IMain.scala:920)
+       at scala.tools.nsc.interpreter.Line$$anonfun$1.apply$mcV$sp(Line.scala:43)
+       at scala.tools.nsc.io.package$$anon$2.run(package.scala:25)
+       at java.lang.Thread.run(Thread.java:679)
+{code}
+
+As the stacktrace suggests, Java has the same behavior.
+
+{code}
+    (Pattern.compile("anything").matcher("anything").replaceAll("\\")) 
+{code}
+
+At the least, this should be documented.  More unfortunately, there is an overload for replaceAllIn that takes an anonymous function Match=>String.  Presently the user must remember to escape all backslashes and dollar signs or the code will break when certain match groups are used.  This is undocumented and unreasonable; this problem does not arise in Java.
+
+I like the new signature for replaceAllIn, but there are shortcomings which convince me it should not be used.
+
+Java has the following documentation for replaceAll.
+
+At the least, the behavior should be commented in the scaladoc.  It is commented in the Javadoc.
+
+"Note that backslashes (\) and dollar signs ($) in the replacement string may cause the results to be different than if it were being treated as a literal replacement string. Dollar signs may be treated as references to captured subsequences as described above, and backslashes are used to escape literal characters in the replacement string. "

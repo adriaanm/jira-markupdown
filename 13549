@@ -1,0 +1,13 @@
+scala.concurrent.Channel implements the read method as:
+{code}
+  def read: a = synchronized {
+    if (null == written.next) {
+      nreaders = nreaders + 1; wait(); nreaders = nreaders - 1
+    }
+    val x = written.elem
+    written = written.next
+    x
+  }
+{code}
+
+The if (null == written.next) should be written as while (null == written.next) to avoid spurious wakeups and condition changes by new readers.

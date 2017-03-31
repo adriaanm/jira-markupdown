@@ -1,0 +1,18 @@
+Similar example:
+{code}
+class C[+T](val x: { var y : T })
+object A extends C[Int](new { var y = 1 })
+{code}
+Compiles well, but:
+{code}
+scala> (A:C[Any]).x.y = ""
+java.lang.NoSuchMethodException: A$$$$anon$$1.y_$$eq(java.lang.Object)
+        at java.lang.Class.getMethod(Class.java:1605)
+        at .reflMethod$$Method1(<console>:6)
+        at .<init>(<console>:6)
+        at .<clinit>(<console>)
+        at RequestResult$$.<init>(<console>:4)
+        at RequestResult$$.<clinit>(<console>)
+        at RequestResult$$result(<console>)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+{code}

@@ -1,0 +1,12 @@
+From the doc comment of askShutdown(): "Tell the compile server to shutdown, and do not restart again", that means, after the raised ShutdownReq Exception processed, the newRunnerThread should be stopped totally. 
+
+But the original code will just catch this Exception and won't interrupt it, that is, the newRunnerThread's code loop will continue. 
+
+On the contrast,  the patched code will call Thread.currentThread.interrupt to truly stop this thread.
+
+Another:
+{code}
+case ex: InterruptedException =>
+          Thread.currentThread.interrupt // interrupt again to avoid posible out-loop issue
+{code}
+is an usual way to ensure interrupt working even under some cases of out-loop.

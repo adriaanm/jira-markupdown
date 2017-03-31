@@ -1,0 +1,6 @@
+The only way to obtain the deferred member is to call decls on all the base types.
+{code}
+typeOf[C].baseTypeSeq.toList flatMap (_ decl TermName("f") alternatives) filter (_.isDeferred)
+res22: List[$r.intp.global.Symbol] = List(method f)
+{code}
+And then you're still not done, because that net will scoop up every deferred member, even ones for which a qualifying concrete implementation exists. So you have to reimplement all the logic for what overrides what when, and maybe there's someone on earth who has a chance at doing that correctly but it's a lonely club. For example, if the deferred f's owner is a trait, then a concrete implementation is okay even if it's defined in one of f's direct parents. But if the owner is an abstract class, then another implementation is required.

@@ -1,0 +1,27 @@
+Here's a way to remove Kotlin from the equation and compare the fault tolerance of javac and scalac. This example fails in scalac 2.11.8 and 2.12.0, so it must be slightly different to the case that regressed in 2.12.1. But I believe if we this one working, other cases will fall into line:
+
+{noformat}
+% printf 'public class C$D {}; class Test1 { static C$D foo() { return new C$D(); } }' > 'sandbox/C$D.java'; javac -d /tmp 'sandbox/C$D.java'
+
+% printf 'public class C { class D {}}; class Test2 { static void accept(C.D cd) {} }' > 'sandbox/C.java'; javac -d /tmp 'sandbox/C$D.java'
+
+% printf 'public class Client { Test2.accept(Test1.foo()) }' > sandbox/Client.java && javac -d /tmp -cp /tmp sandbox/Client.java
+
+% printf 'public class Client { { Test2.accept(Test1.foo()); } }' > sandbox/Client.java && javac -d /tmp -cp /tmp sandbox/Client.java
+
+% printf 'class ScalaClient { Test2.accept(Test1.foo()) }' > sandbox/ScalaClient.scala && ~/scala/2.11.8/bin/scalac -d /tmp -cp /tmp sandbox/ScalaClient.scala
+sandbox/ScalaClient.scala:1: error: type mismatch;
+ found   :
+ required: C#D
+class ScalaClient { Test2.accept(Test1.foo()) }
+                                          ^
+one error found
+
+% printf 'class ScalaClient { Test2.accept(Test1.foo()) }' > sandbox/ScalaClient.scala && ~/scala/2.12.0/bin/scalac -d /tmp -cp /tmp sandbox/ScalaClient.scala
+sandbox/ScalaClient.scala:1: error: type mismatch;
+ found   :
+ required: C#D
+class ScalaClient { Test2.accept(Test1.foo()) }
+                                          ^
+one error found
+{noformat}

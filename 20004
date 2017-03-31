@@ -1,0 +1,47 @@
+Given the following definition,
+{code}
+package bug
+
+object Wrap {
+  trait Foo {
+    def foo: Unit = ()
+  }
+}
+{code}
+
+The following REPL session results in an {{AbstractMethodError}},
+{code}
+scala> import bug._
+import bug._
+
+scala> import Wrap._
+import Wrap._
+
+scala> object Bar extends Foo
+defined object Bar
+
+scala> Bar.foo
+java.lang.AbstractMethodError: Bar$.foo()V
+  ... 43 elided
+{code}
+
+However, if the import from {{Wrap}} and the definition of {{Bar}} are both done within a single {{:paste}} evaluation succeeds as expected,
+{code}
+scala> import bug._
+import bug._
+
+scala> :paste
+// Entering paste mode (ctrl-D to finish)
+
+import Wrap._
+object Bar extends Foo
+
+// Exiting paste mode, now interpreting.
+
+import Wrap._
+defined object Bar
+
+scala> Bar.foo
+
+scala>
+{code}

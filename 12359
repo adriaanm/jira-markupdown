@@ -1,0 +1,19 @@
+That syntax is explicitly allowed and useful. 7.1 says "parameters labeled with an implicit modifier."
+
+But the edge case is that you can't do that with the first parameter, even if you supply other modifiers. Instead, it's turned into an implicit parameter list.
+
+{code}
+scala> class C(private implicit val c: Int, val s: String) {
+     | def f = implicitly[Int] }
+defined class C
+
+scala> new C()    // didn't want an implicit param list
+<console>:13: error: could not find implicit value for parameter c: Int
+       new C()
+       ^
+
+scala> def f(implicit i: Int, s: String) = s + i   // no ambiguity for methods
+f: (implicit i: Int, implicit s: String)String
+{code}
+
+I asked about that once and it was deemed too finicky.

@@ -1,0 +1,69 @@
+An update of SetLike.subsets. (improvement： the Iterator is determinate when the method subsets return. Then it would not be affected even if the Set is mutable and be changed later.)
+
+{code}
+trait SetLike[A, +This <: SetLike[A, This] with Set[A]] 
+  extends IterableLike[A, This] 
+  with Addable[A, This] 
+  with Subtractable[A, This] { self =>
+  
+  /**
+    Iterator of all subsets containing exactly len elements
+  */
+  def subsets(len: Int): Iterator[This] = {
+    require(len >= 0 && len <= size, "...")
+    new SubsetsItr(self.toIndexedSeq, len)
+  }
+  
+  /**
+    Iterator of all possible subsets of self
+  */
+  def subsets: Iterator[This] = new Iterator[This] {
+    val elms = self.toIndexedSeq
+    var len = 0
+    var itr = Iterator.empty :Iterator[This]
+    
+    override def hasNext = len <= elms.size || itr.hasNext
+    
+    override def next: This = {
+      if(itr.hasNext) itr.next 
+      else if(len <= self.size) {
+        itr = new SubsetsItr(elms,len)
+        len += 1
+        itr.next
+      }
+      else Iterator.empty.next
+    }
+  }
+  
+  /**
+     A Iterator include all subsets containing exactly len elements.
+     If the elements in 'This' type is ordered, then the subsets will also be in the same order.{ListSet(1,2,3).subsets => {1},{2},{3},{1,2},{1,3},{2,3},{1,2,3}}
+     @author Eastsun
+     @date 2010.12.6
+  */
+  private class SubsetsItr(elms: IndexedSeq[A], len: Int) extends Iterator[This] {
+    val idxs = Array.range(0,len+1)
+    idxs(len) = elms.size
+    var _hasNext = true
+    
+    override def hasNext = _hasNext
+    
+    override def next: This = {
+      if(!hasNext) Iterator.empty.next
+      
+      val sb = self.newBuilder
+      idxs.view(0,len).foreach{ idx => sb += elms(idx) }
+      val res = sb.result
+      
+      var i = len - 1
+      while(i >= 0 && idxs(i) == idxs(i+1)-1) i -= 1
+      if(i < 0) _hasNext = false
+      else {
+        idxs(i) += 1
+        for(j <- (i+1) until len) idxs(j) = idxs(j-1) + 1
+      }
+      res
+    }
+  }
+}
+{code}

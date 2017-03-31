@@ -1,0 +1,45 @@
+Proposed additions to {{object PartialFunction}} and {{object Option}} to provide a faster method for iterating over a largish collection of (Partial)Functions than orElse ... orElse ... orElse.
+
+{{PartialFunction.liftChain()}}:
+
+{code}
+  /**
+   * Turn a collection of [[PartialFunction]]s into a virtual match expression. If the
+   * supplied collection is mutable, then changes after this call will be reflected in
+   * future invocations of the chained function.
+   */
+  def liftChain[A, B](c: Iterable[PartialFunction[A, B]]): ((A) => Option[B]) = { x: A =>
+    // slow version: c.find(_.isDefinedAt(x)).map(_.apply(x))
+
+    // fast version:
+    var result: Option[B] = None
+    val i = c.iterator
+
+    while (result.isEmpty && i.hasNext) {
+      val func = i.next()
+      if (func.isDefinedAt(x))
+        result = Some(func(x))
+    }
+
+    result
+  }
+{code}
+
+{{Option.chain()}}:
+
+{code}
+  /**
+   * Turn a collection of functions returning [[Option]] into a virtual match expression.
+   * If the supplied collection is mutable, then changes after this call will be reflected in
+   * future invocations of the chained function.
+   */
+  def chain[A, B](c: Iterable[(A) => Option[B]]): ((A) => Option[B]) = { x: A =>
+    var result: Option[B] = None
+    val i = c.iterator
+
+    while (result.isEmpty && i.hasNext)
+      result = i.next().apply(x)
+
+    result
+  }
+{code}

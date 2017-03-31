@@ -1,0 +1,63 @@
+*Background:*
+Odersky's book, "+Programming in Scala, Second Edition+", Chapter 2, Footnotes, reads:
+[5] In the interpreter, however, you can _define_ a new val with a name that was already used before....
+
+*Test Case:*
+{code}
+val mySet = Set("Item1","Item2")
+val mySet: Set[String] = mySet + "Item3"
+{code}
+
+*Expected Output:*
+{code}
+mySet: Set[String] = Set(Item1, Item2, Item3)
+{code}
+
+*Actual Output:*
+{code}
+java.lang.NullPointerException
+        at $line40.$read$$iw$$iw$.<init>(<console>:8)
+        at $line40.$read$$iw$$iw$.<clinit>(<console>)
+        at $line40.$eval$.$print$lzycompute(<console>:7)
+        at $line40.$eval$.$print(<console>:6)
+        at $line40.$eval.$print(<console>)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+        at java.lang.reflect.Method.invoke(Unknown Source)
+        at scala.tools.nsc.interpreter.IMain$ReadEvalPrint.call(IMain.scala:773)
+        at scala.tools.nsc.interpreter.IMain$Request.loadAndRun(IMain.scala:1020)
+        at scala.tools.nsc.interpreter.IMain$WrappedRequest$$anonfun$loadAndRunReq$1.apply(IMain.scala:627)
+        at scala.tools.nsc.interpreter.IMain$WrappedRequest$$anonfun$loadAndRunReq$1.apply(IMain.scala:626)
+        at scala.reflect.internal.util.ScalaClassLoader$class.asContext(ScalaClassLoader.scala:31)
+        at scala.reflect.internal.util.AbstractFileClassLoader.asContext(AbstractFileClassLoader.scala:19)
+        at scala.tools.nsc.interpreter.IMain$WrappedRequest.loadAndRunReq(IMain.scala:626)
+        at scala.tools.nsc.interpreter.IMain.interpret(IMain.scala:558)
+        at scala.tools.nsc.interpreter.IMain.interpret(IMain.scala:554)
+        at scala.tools.nsc.interpreter.ILoop.reallyInterpret$1(ILoop.scala:804)
+        at scala.tools.nsc.interpreter.ILoop.interpretStartingWith(ILoop.scala:849)
+        at scala.tools.nsc.interpreter.ILoop.command(ILoop.scala:707)
+        at scala.tools.nsc.interpreter.ILoop.processLine(ILoop.scala:405)
+        at scala.tools.nsc.interpreter.ILoop.loop(ILoop.scala:431)
+        at scala.tools.nsc.interpreter.ILoop$$anonfun$process$1.apply$mcZ$sp(ILoop.scala:920)
+        at scala.tools.nsc.interpreter.ILoop$$anonfun$process$1.apply(ILoop.scala:906)
+        at scala.tools.nsc.interpreter.ILoop$$anonfun$process$1.apply(ILoop.scala:906)
+        at scala.reflect.internal.util.ScalaClassLoader$.savingContextLoader(ScalaClassLoader.scala:97)
+        at scala.tools.nsc.interpreter.ILoop.process(ILoop.scala:906)
+        at scala.tools.nsc.MainGenericRunner.runTarget$1(MainGenericRunner.scala:74)
+        at scala.tools.nsc.MainGenericRunner.run$1(MainGenericRunner.scala:87)
+        at scala.tools.nsc.MainGenericRunner.process(MainGenericRunner.scala:98)
+        at scala.tools.nsc.MainGenericRunner$.main(MainGenericRunner.scala:103)
+        at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
+{code}
+
+*Additional notes:*
+Running the below code:
+{code}
+mySet + "Item3"
+{code}
+...results in the following output:
+{code}
+scala.collection.immutable.Set[String] = Set(Item1, Item2, Item3)
+{code}
+It is only when we try to redefine mySet as this output, as described in the book, that we encounter issues.

@@ -1,0 +1,13 @@
+Replying to [comment:11 cbordelo]:
+
+> Actually I dont agree that the compiler needs to treat implicit conversions of Nothing and => Nothing the same way. There is a big difference in these two as the scala Actor library and my library shows. The by-name Nothing is advertising some later computation that via a conversion could be wrapped inside an object via an implicit conversion.
+
+You can disagree that 1 + 1 should be 2 as well, but that doesn't change the fact that the language cannot be consistent if implicits distinguished between T and => T.  The correct way to advertise that it is returning a "computation" is to actually have it return a "Computation" type.  Returning Nothing is advertising that it *DOES NOT RETURN*.  Furthermore, if Scala treated Nothing correctly to begin with, an implicit conversion would never be applicable because all projections and method calls should already succeed on the Nothing type.  
+
+
+> And if you look at scala Actor libray, the react method returns Nothing type so there is precedent for it and obvious usefulness for it. It does more than signal to the user that the method does not return. The compiler checks that code following a react method is in error, something that i want checked to prevent bugs.
+> If you try using the Actor library with loopWhile and andThen you'll know what I'm talking about. 
+
+Well, if I look at the actor's library I see loopWhile and andThen are implemented without implicit conversions on Nothing.  So it does not really support your argument.
+
+And if you use a proper "Computation" type the compiler will also report type mismatches for you as well.  So again, using Nothing gains you nothing.  You need to learn to use the type system to your advantage and using Nothing does not properly describe your intent.

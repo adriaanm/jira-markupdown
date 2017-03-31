@@ -1,0 +1,80 @@
+(!) Reproducing this issue requires running scala complier two times reusing previously generated classes. Only a second run triggers the bug.
+
+Consider generic class {{A}} implemented in java:
+{code:title="A.java"}
+public class A<T> {}
+{code}
+
+And scala object {{B}} that implements method {{m}} that takes an instace of A as a parameter with some default value:
+{code:title="B.scala"}
+object B {
+  def m(p: A[String] = null) {}
+}
+{code}
+And scala class C that invokes above method {{m}} leaving its parameter unspecified and relying on the default value:
+{code:title="C.scala"}
+class C {
+  B.m()
+}
+{code}
+This combination of classes compiles fine the first time, but when you invoke scalac the second time while having previously generated classes in the classpath it throws AssertionError:
+{noformat}
+$ scalac -d classes -classpath classes -sourcepath src src/C.scala # OK
+$ scalac -d classes -classpath classes -sourcepath src src/C.scala # Asserts!
+error: java.lang.AssertionError: assertion failed: A
+	at scala.Predef$.assert(Predef.scala:103)
+	at scala.tools.nsc.symtab.Types$PolyType.<init>(Types.scala:2069)
+	at scala.tools.nsc.symtab.Types$class.typeFun(Types.scala:2760)
+	at scala.tools.nsc.symtab.SymbolTable.typeFun(SymbolTable.scala:13)
+	at scala.tools.nsc.symtab.Types$class.typeFunAnon(Types.scala:2756)
+	at scala.tools.nsc.symtab.SymbolTable.typeFunAnon(SymbolTable.scala:13)
+	at scala.tools.nsc.symtab.Types$TypeRef.etaExpand(Types.scala:1804)
+	at scala.tools.nsc.symtab.Types$TypeRef.normalize0(Types.scala:1814)
+	at scala.tools.nsc.symtab.Types$TypeRef.normalize(Types.scala:1826)
+	at scala.tools.nsc.backend.icode.TypeKinds$class.toTypeKind(TypeKinds.scala:375)
+	at scala.tools.nsc.backend.icode.ICodes.toTypeKind(ICodes.scala:25)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$genLoadArguments$1.apply(GenICode.scala:1226)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$genLoadArguments$1.apply(GenICode.scala:1224)
+	at scala.collection.LinearSeqOptimized$class.foldLeft(LinearSeqOptimized.scala:111)
+	at scala.collection.immutable.List.foldLeft(List.scala:45)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.genLoadArguments(GenICode.scala:1224)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$backend$icode$GenICode$ICodePhase$$genLoad(GenICode.scala:924)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$backend$icode$GenICode$ICodePhase$$genStat(GenICode.scala:174)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$genStat$1.apply(GenICode.scala:143)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$genStat$1.apply(GenICode.scala:143)
+	at scala.collection.LinearSeqOptimized$class.foldLeft(LinearSeqOptimized.scala:111)
+	at scala.collection.immutable.List.foldLeft(List.scala:45)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.genStat(GenICode.scala:143)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$backend$icode$GenICode$ICodePhase$$genLoad(GenICode.scala:1052)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:114)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$gen$1.apply(GenICode.scala:69)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$gen$1.apply(GenICode.scala:69)
+	at scala.collection.LinearSeqOptimized$class.foreach(LinearSeqOptimized.scala:59)
+	at scala.collection.immutable.List.foreach(List.scala:45)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:69)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:136)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:88)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$gen$1.apply(GenICode.scala:69)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$gen$1.apply(GenICode.scala:69)
+	at scala.collection.LinearSeqOptimized$class.foreach(LinearSeqOptimized.scala:59)
+	at scala.collection.immutable.List.foreach(List.scala:45)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:69)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:79)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:65)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.apply(GenICode.scala:61)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$applyPhase$1.apply(Global.scala:326)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$applyPhase$1.apply(Global.scala:326)
+	at scala.tools.nsc.reporters.Reporter.withSource(Reporter.scala:47)
+	at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:326)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$run$1.apply(Global.scala:294)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$run$1.apply(Global.scala:294)
+	at scala.collection.Iterator$class.foreach(Iterator.scala:652)
+	at scala.collection.mutable.ListBuffer$$anon$1.foreach(ListBuffer.scala:311)
+	at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:294)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.run(GenICode.scala:54)
+	at scala.tools.nsc.Global$Run.compileSources(Global.scala:949)
+	at scala.tools.nsc.Global$Run.compile(Global.scala:1034)
+	at scala.tools.nsc.Main$.process(Main.scala:106)
+	at scala.tools.nsc.Main$.main(Main.scala:123)
+	at scala.tools.nsc.Main.main(Main.scala)
+{noformat} 

@@ -1,0 +1,16 @@
+The following code fails to compile,
+
+{code}
+class Foo(t: Any)
+class Bar(x: String = "bar")
+object Bar extends Foo(new Bar())
+{code}
+
+The error message is: "super constructor cannot be passed a self reference unless parameter is declared by-name". I would expect either the code to compile *or* a more informative error message.
+
+javap reveals that the zero-parameter constructor for class Bar with default value `x = "bar"` is actually defined as `init$default$1` in the companion object `Bar`. I assume the problem is that `extends Foo(new Bar())` is trying to access `Bar.init$default$1` before object `Bar` has been constructed.
+
+I couldn't find this restriction in the SLS. If the compile error is correct, perhaps the error message could be improved? Thanks.
+
+Possibly related: https://issues.scala-lang.org/browse/SI-4278
+Source: http://stackoverflow.com/questions/7448931/extending-a-class-with-many-implementation-that-each-have-main-methods-in-scala

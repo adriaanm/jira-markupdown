@@ -1,0 +1,13 @@
+Oh good, another bug involving access. Just throw it on the dead letter pile.
+{code}
+class Foo(x: Int) {
+  // a private type should never be displayed
+  private type This = Foo
+  def + (x: This): This = this
+}
+class Bar {
+  new Foo(5) + Nil    // required: Foo
+  val v = new Foo(5)
+  v + Nil             // required: Bar.this.v.This (which expands to) Foo
+}
+{code}

@@ -1,0 +1,26 @@
+This issue is reproducible in at least 2.8.0.RC3 and 2.8.0.RC4, perhaps earlier release candidates. Though the example below doesn't cause an error in 2.7.7, I can't say that it isn't a result of a different Actor implementation.  I haven't been able to narrow down exactly what about the `Actor` class causes this error. I am running 64bit OpenJDK 1.6.0_18.
+
+This issue comes up when calling Scala code from Jython. When Jython encounters a new class, it wraps that class and all its subclasses in a `PyType`. In order to do this, it calls `getClasses` for each class it encounters. The `Actor` class throws a `NoClassDefFoundError` when encountered.
+
+{code}
+scala> import scala.actors.Actor
+import scala.actors.Actor
+
+scala> classOf[Actor].getClasses
+java.lang.NoClassDefFoundError: scala/actors/Actor$$$$anonfun$$link$$2
+        at java.lang.Class.getDeclaredClasses0(Native Method)
+        at java.lang.Class.getDeclaredClasses(Class.java:1716)
+        at java.lang.Class$$2.run(Class.java:1311)
+        at java.security.AccessController.doPrivileged(Native Method)
+        at java.lang.Class.getClasses(Class.java:1305)
+        at .<init>(<console>:7)
+        at .<clinit>(<console>)
+        at RequestResult$$.<init>(<console>:9)
+        at RequestResult$$.<clinit>(<console>)
+        at RequestResult$$scala_repl_result(<console>)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+        at java.lang.reflect.Method.invoke(Method.java:616)
+        ...
+{code}

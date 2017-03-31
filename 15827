@@ -1,0 +1,30 @@
+I failed to find specification language either justifying or prohibiting this difference, but I was under the impression foo\(x\) is equivalent to this.foo\(x\), which here we can see it is not.
+
+{code}
+package object foo {
+  type HasLogger = { def logger: Logger }
+  implicit def mkLog(x: HasLogger) = new {
+    def loggingExceptions(body: => Unit): Unit =
+      try body
+      catch { case ex: Exception => println(ex) }
+  }
+}
+
+package foo {
+  case class Logger(name: String) { }
+
+  class B {
+    def logger = Logger("B")
+
+    // this compiles
+    def f1 = this.loggingExceptions(println("hi"))
+
+    // this does not:
+    // def f2 = loggingExceptions(println("hi"))
+    //
+    // 1124.scala:20: error: not found: value loggingExceptions
+    //     def f2 = loggingExceptions(println("hi"))
+    //              ^
+  }
+}
+{code}

@@ -1,0 +1,37 @@
+The 2.8 interpreter fights my implementation of `totally throws` and ultimately loses with a !StackOverflowException.  It'd be great if it gave up sooner...
+
+I define an exception type that tries not to be caught by overriding all methods to rethrow itself.  This technique is important for keeping calls to `System.exit` from terminating the jvm.  In 2.7, the exception propagated out of the interpreter where it could be caught by sbt.  I think the addition of binding `lastException` and more exception trapping changed this.
+
+You can see the relevant behavior in the following session:
+{code}
+Welcome to Scala version 2.8.0.Beta1-RC3 (OpenJDK 64-Bit Server VM, Java 1.6.0_0).
+
+scala> throw new Exception { override def toString = throw this }
+{code}
+
+The final stack trace isn't useful, but dumping the stack before the overflow has repeating frames that look like:
+
+{code}
+        at scala.tools.nsc.Interpreter$$$$anonfun$$beQuietDuring$$2.apply(Interpreter.scala:102)                         
+        at scala.util.control.Exception$$Catch.apply(Exception.scala:79)                                              
+        at scala.tools.nsc.Interpreter.beQuietDuring(Interpreter.scala:100)                                          
+        at scala.tools.nsc.Interpreter$$Request$$$$anonfun$$onErr$$1$$1.apply(Interpreter.scala:792)                       
+        at scala.tools.nsc.Interpreter$$Request$$$$anonfun$$onErr$$1$$1.apply(Interpreter.scala:791)                       
+        at scala.util.control.Exception$$Catch.apply(Exception.scala:80)                                              
+        at scala.tools.nsc.Interpreter$$Request.loadAndRun(Interpreter.scala:796)                                     
+        at scala.tools.nsc.Interpreter.interpret(Interpreter.scala:445)                                              
+        at scala.tools.nsc.Interpreter.bind(Interpreter.scala:484)                                                   
+        at scala.tools.nsc.Interpreter$$Request$$$$anonfun$$onErr$$1$$1$$$$anonfun$$apply$$11.apply(Interpreter.scala:792)     
+        at scala.tools.nsc.Interpreter$$Request$$$$anonfun$$onErr$$1$$1$$$$anonfun$$apply$$11.apply(Interpreter.scala:792)     
+        at scala.tools.nsc.Interpreter$$$$anonfun$$beQuietDuring$$2.apply(Interpreter.scala:102)                         
+        at scala.util.control.Exception$$Catch.apply(Exception.scala:79)                                              
+        at scala.tools.nsc.Interpreter.beQuietDuring(Interpreter.scala:100)                                          
+        at scala.tools.nsc.Interpreter$$Request$$$$anonfun$$onErr$$1$$1.apply(Interpreter.scala:792)                       
+        at scala.tools.nsc.Interpreter$$Request$$$$anonfun$$onErr$$1$$1.apply(Interpreter.scala:791)                       
+        at scala.util.control.Exception$$Catch.apply(Exception.scala:80)                                              
+        at scala.tools.nsc.Interpreter$$Request.loadAndRun(Interpreter.scala:796)                                     
+        at scala.tools.nsc.Interpreter.interpret(Interpreter.scala:445)                                              
+        at scala.tools.nsc.Interpreter.bind(Interpreter.scala:484)                                                   
+        at scala.tools.nsc.Interpreter$$Request$$$$anonfun$$onErr$$1$$1$$$$anonfun$$apply$$11.apply(Interpreter.scala:792)     
+        at scala.tools.nsc.Interpreter$$Request$$$$anonfun$$onErr$$1$$1$$$$anonfun$$apply$$11.apply(Interpreter.scala:792)
+{code}

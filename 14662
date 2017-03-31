@@ -1,0 +1,41 @@
+using Eclipse 3.5.1 scala plugin 2.7.7.final, Windows XP
+
+The plugin suggests the use of members that are not accesible.
+I dont know wheter the plugin, the compiler or both are defect. But they are not consistent.
+example:
+
+class one (a:Double) {
+	var x=a
+	def twice()={
+	  	x=a*2
+	  }	
+	def print(){
+		println(x) 	  
+	}
+ 
+}
+class two (z:Int,b:Int) extends one(z) {
+	override def twice()={
+	  	//x=a //does not compile but
+	  	//x=this.a // is within the syntax completion in teh eclipse plugin
+	  	x=z
+	  	x=b
+	  }
+	
+}
+
+object t1 extends Application {
+	var a1:one=new one(2)
+	a1.print
+ 	a1.twice
+	a1.print
+	//println( a1.a) // does not compile but is within the syntax completion in teh eclipse plugin
+
+ var a2:two=new two(2,3)
+	a2.print
+ 	a2.twice
+	a2.print
+	//println( a2.b) // does not compile but is within the syntax completion in teh eclipse plugin
+	//println( a2.a) // does not compile but is within the syntax completion in teh eclipse plugin
+ }
+

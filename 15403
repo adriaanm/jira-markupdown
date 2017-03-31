@@ -1,0 +1,43 @@
+I wouldn't have thought these would be particularly hard to unify, but regardless, a compilation error seems like an unlikely end? It can always be a List[Any] !
+{code}
+scala> List(List(1), Stream(1))            
+<console>:6: error: type mismatch;
+ found   : List[Int]
+ required: scala.collection.immutable.LinearSeq[Int] with scala.collection.LinearSeqOptimized[Int,scala.collection.immutable.LinearSeq[Int] with scala.collection.LinearSeqOptimized[Int,scala.collection.immutable.LinearSeq[Int] with scala.collection.LinearSeqOptimized[Int,scala.collection.immutable.LinearSeq[Int] with scala.collection.LinearSeqOptimized[Any,Any]]]{def companion: scala.collection.generic.GenericCompanion[scala.collection.immutable.LinearSeq[Any] with scala.collection.LinearSeqOptimized[Any,Any]]}]{def companion: scala.collection.generic.GenericCompanion[scala.collection.immutable.LinearSeq[Any] with scala.collection.LinearSeqOptimized[Any,scala.collection.immutable.LinearSeq[Any] with scala.collection.LinearSeqOptimi...
+       List(List(1), Stream(1))
+                ^
+<console>:6: error: type mismatch;
+ found   : scala.collection.immutable.Stream[Int]
+ required: scala.collection.immutable.LinearSeq[Int] with scala.collection.LinearSeqOptimized[Int,scala.collection.immutable.LinearSeq[Int] with scala.collection.LinearSeqOptimized[Int,scala.collection.immutable.LinearSeq[Int] with scala.collection.LinearSeqOptimized[Int,scala.collection.immutable.LinearSeq[Int] with scala.collection.LinearSeqOptimized[Any,Any]]]{def companion: scala.collection.generic.GenericCompanion[scala.collection.immutable.LinearSeq[Any] with scala.collection.LinearSeqOptimized[Any,Any]]}]{def companion: scala.collection.generic.GenericCompanion[scala.collection.immutable.LinearSeq[Any] with scala.collection.LinearSeqOptimized[Any,scala.collection.immutable.LinearSeq[Any] with sca...
+       List(List(1), Stream(1))
+                           ^
+{code}
+
+Naturally:
+
+{code}
+scala> List[Seq[Int]](List(1), Stream(1))
+res9: List[Seq[Int]] = List(List(1), Stream(1, ?))
+
+scala> List[Any](List(1), Stream(1))     
+res10: List[Any] = List(List(1), Stream(1, ?))
+
+scala> List(List(1), Stream(1): Seq[Int])   
+res11: List[Seq[Int]] = List(List(1), Stream(1, ?))
+{code}
+
+
+Update: A smaller test case for the same sort of problem, as reported in SI-8882.
+
+{code}
+import scala.language.higherKinds
+ 
+class A[T[_]]
+object B extends A[List]
+object C extends A[Option]
+ 
+// This compiles
+val values = Seq[Any](B, C) 
+// This doesn't
+val values = Seq(B, C)
+{code}

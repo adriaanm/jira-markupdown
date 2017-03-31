@@ -1,0 +1,13 @@
+I've tried removing the (useless) first case and adding this one instead to deliver on the promised optimization:
+
+{code}
+    case TypeRef(`pre`, `sym`, `args`) =>
+      tp
+{code}
+
+Observations:
+- The new case is run hundreds of times even on the simplest 'pos' tests, thousands on larger ones.
+- All partests pass.
+- The default case is also run -- the optimization applies about 1/3rd of the time.
+
+I'll now try to measure total run times to decide whether the optimization is worth the cost of the comparison (plan B: make the comparison simpler; plan C: remove the method altogether).

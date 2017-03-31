@@ -1,0 +1,98 @@
+I know, that I'm doing stupid thing (use Seq instead of *), but as far as I understand, it should not crush compiler:
+
+{code}
+package org.am
+
+class DynTest extends Dynamic {
+  def applyDynamicNamed(name: String)(values: Seq[(String, Any)]) = "test"
+}
+
+class CompilerError {
+  val test = new DynTest
+  test.crushTheCompiler(a = 1, b = 2)
+}
+{code} 
+
+sbt output:
+{code}
+> compile:compile
+[info] Compiling 3 Scala sources to D:\ProjectsNew\camel-stuff-test\target\scala-2.10\classes...
+[error] 
+[error]      while compiling: D:\ProjectsNew\camel-stuff-test\src\main\scala\org\am\CompilerError.scala
+[error]         during phase: typer
+[error]      library version: version 2.10.0
+[error]     compiler version: version 2.10.0
+[error]   reconstructed args: -deprecation -classpath D:\ProjectsNew\camel-stuff-test\target\scala-2.10\classes -bootclasspath D:\Java\jdk1.6.0_24\jre6\lib\resources.jar;D:\Java\jdk1.6.0_24\jre6\lib\rt.jar;D:\Java\jdk1.6.0_24\jre6\lib\sunrsasign.jar;D:\Java\jdk1.6.0_24\jre6\lib\jsse.jar;D:\Java\jdk1.6.0_24\jre6\lib\jce.jar;D:\Java\jdk1.6.0_24\jre6\lib\charsets.jar;D:\Java\jdk1.6.0_24\jre6\lib\modules\jdk.boot.jar;D:\Java\jdk1.6.0_24\jre6\classes;C:\Users\Angel\.sbt\boot\scala-2.10.0\lib\scala-library.jar -d D:\ProjectsNew\camel-stuff-test\target\scala-2.10\classes
+[error] 
+[error]   last tree to typer: Apply(method applyDynamicNamed)
+[error]               symbol: method applyDynamicNamed in class DynTest (flags: <method> <triedcooking>)
+[error]    symbol definition: def applyDynamicNamed(name: String)(values: Seq[(String, Any)]): String
+[error]                  tpe: (values: Seq[(String, Any)])String
+[error]        symbol owners: method applyDynamicNamed -> class DynTest -> package am
+[error]       context owners: value <local CompilerError> -> class CompilerError -> package am
+[error] 
+[error] == Enclosing template or block ==
+[error] 
+[error] Template( // val <local CompilerError>: <notype> in class CompilerError
+[error]   "java.lang.Object" // parents
+[error]   ValDef(
+[error]     private
+[error]     "_"
+[error]     <tpt>
+[error]     <empty>
+[error]   )
+[error]   // 3 statements
+[error]   DefDef( // def <init>(): org.am.CompilerError in class CompilerError
+[error]     <method>
+[error]     "<init>"
+[error]     []
+[error]     List(Nil)
+[error]     <tpt> // tree.tpe=org.am.CompilerError
+[error]     Block( // tree.tpe=Unit
+[error]       Apply( // def <init>(): Object in class Object, tree.tpe=Object
+[error]         CompilerError.super."<init>" // def <init>(): Object in class Object, tree.tpe=()Object
+[error]         Nil
+[error]       )
+[error]       ()
+[error]     )
+[error]   )
+[error]   ValDef( // private[this] val test: org.am.DynTest in class CompilerError
+[error]     private <local> <triedcooking>
+[error]     "test"
+[error]     <tpt> // tree.tpe=org.am.DynTest
+[error]     Apply( // def <init>(): org.am.DynTest in class DynTest, tree.tpe=org.am.DynTest
+[error]       new DynTest."<init>" // def <init>(): org.am.DynTest in class DynTest, tree.tpe=()org.am.DynTest
+[error]       Nil
+[error]     )
+[error]   )
+[error]   Apply(
+[error]     "test"."crushTheCompiler"
+[error]     // 2 arguments
+[error]     AssignOrNamedArg(
+[error]       "a"
+[error]       1
+[error]     )
+[error]     AssignOrNamedArg(
+[error]       "b"
+[error]       2
+[error]     )
+[error]   )
+[error] )
+[error] 
+[error] == Expanded type of tree ==
+[error] 
+[error] MethodType(
+[error]   params = List(TermSymbol(values: Seq[(String, Any)]))
+[error]   resultType = TypeRef(
+[error]     TypeSymbol(
+[error]       final class String extends Serializable with Comparable[String] with CharSequence
+[error]       
+[error]     )
+[error]   )
+[error] )
+[error] 
+[error] uncaught exception during compilation: java.lang.StackOverflowError
+[trace] Stack trace suppressed: run 'last compile:compile' for the full output.
+[error] (compile:compile) java.lang.StackOverflowError
+[error] Total time: 1 s, completed Jan 5, 2013 6:43:40 PM
+{code}

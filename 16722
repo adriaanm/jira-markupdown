@@ -1,0 +1,49 @@
+Compiling the following,
+
+{code}
+object TupledAmbiguity {
+  trait Base
+  
+  trait FooOps extends {
+    def foo[T](t : T) = t
+  }
+  
+  trait BarOps extends {
+    def foo(s : String, i : Int) = (s, i)
+  }
+  
+  implicit def baseFoo(b : Base) = new FooOps {}
+  implicit def baseBar(b : Base) = new BarOps {}
+  
+  val b = new Base {}
+  
+  val f1 = b.foo(23)          // OK
+  val f2 = b.foo("foo", 23)   // Ambiguous implicits
+  val f3 = b.foo(("foo", 23)) // OK, explicit tuple
+  
+  def foo[T](t : T) = t
+  def foo(s : String, i : Int) = (s, i)
+  
+  val f4 = foo(23)            // OK
+  val f5 = foo("foo", 23)     // OK
+}
+{code}
+
+Results in the following error being reported against the attempt to invoke BarOps#foo as a two argument method,
+
+{code}
+src/bugs/TupledAmbiguity.scala:20: error: type mismatch;
+ found   : bugs.TupledAmbiguity.b.type (with underlying type Object with bugs.TupledAmbiguity.Base)
+ required: ?{val foo(x$1: ?>: String("foo") <: Any,x$2: ?>: Int(23) <: Any): ?}
+Note that implicit conversions are not applicable because they are ambiguous:
+ both method baseBar in object TupledAmbiguity of type (b: bugs.TupledAmbiguity.Base)Object with bugs.TupledAmbiguity.BarOps
+ and method baseFoo in object TupledAmbiguity of type (b: bugs.TupledAmbiguity.Base)Object with bugs.TupledAmbiguity.FooOps
+ are possible conversion functions from bugs.TupledAmbiguity.b.type to ?{val foo(x$1: ?>: String("foo") <: Any,x$2: ?>: Int(23) <: Any): ?}
+  val f2 = b.foo("foo", 23)   // Ambiguous implicits
+           ^
+one error found
+{code}
+
+The cause of the ambiguity is the application of automatic tupling to the argument list in the problematic call which creates a second candidate signature which resolves to FooOps#foo with T inferred as (String, Int). Is this a bug? If not, it's at least unfortunate and counterintuitive as the comparison with the analogous case of f4 and f5 where automatic tupling doesn't interfere with overload resolution.
+
+

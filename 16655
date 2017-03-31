@@ -1,0 +1,100 @@
+Running this:
+
+{code:title=Test.scala}
+package continuationtest
+
+import util.continuations._
+
+object ContinuationTest {
+    def main(args: Array[String]) {
+        var cont: Option[Unit => Unit] = None
+
+        test(false, new Exception)   // test 1
+        test(true, new Exception)    // test 2
+
+        test(false, new Error)       // test 3
+        test(true, new Error)        // test 4
+
+
+        def test(doPause: Boolean, e: Throwable) {
+            println("===============")
+            catchException("(exception caught outside reset)") {
+                reset { foo(doPause, e) }
+            }
+            catchException("(exception caught outside continuation)") {
+                runCont
+            }
+        }
+
+        def foo(doPause: Boolean, e: Throwable): Unit @suspendable = {
+            try {
+                pause(doPause)
+                throw e
+            } catch {
+                case e => {
+                    println("rethrowing exception in foo()")
+                    throw e
+                }
+            }
+        }
+
+        def pause(doPause: Boolean): Unit @suspendable = {
+            if (doPause) {
+                shift[Unit, Unit, Unit] { k =>
+                    cont = Some(k)
+                }
+            }
+        }
+
+        def runCont {
+            if (cont.isDefined) {
+                println("(running continuation)")
+                val c = cont.get
+                cont = None
+                c()
+            } else {
+                println("(not running continuation)")
+            }
+
+        }
+
+        def catchException(msg: String)(f: => Unit) {
+            try { 
+	      f
+            } catch {
+                case e => {
+                    println(msg)
+                }
+            }
+        }
+    }
+}
+{code}
+
+outputs:
+
+{code}
+===============
+rethrowing exception in foo()
+(exception caught outside reset)
+(not running continuation)
+===============
+(running continuation)
+rethrowing exception in foo()
+(exception caught outside continuation)
+===============
+rethrowing exception in foo()
+(exception caught outside reset)
+(not running continuation)
+===============
+(running continuation)
+(exception caught outside continuation)
+{code}
+
+The problem is inconsistent behaviour of try-catch block in foo() function.
+
+When an object that extends Error class is thrown in foo(), the try-catch block catches the exception only if the pause() function did not call shift() (test 3). When pause() calls shift(), the exception is not caught by the try-catch block (test 4).
+
+When an object that extends Exception is throw, the try-catch block catches the exception in boths cases (tests 1, 2).
+
+I think this is a problem, because the behaviour of the try-catch block depends on the behaviour of the function that is called in the try block. If the implementation of the pause() function was not known to the programmer of foo(), he can not tell if the exception will be caught or not.

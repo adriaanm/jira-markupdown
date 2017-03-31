@@ -1,0 +1,13 @@
+The following shouldn't compile:
+
+{code}
+scala> ().asInstanceOf[Int]
+java.lang.ClassCastException: scala.runtime.BoxedUnit cannot be cast to java.lang.Integer
+  at scala.runtime.BoxesRunTime.unboxToInt(BoxesRunTime.java:105)
+  ... 32 elided
+ 
+scala> println(().asInstanceOf[Int])
+()
+{code}
+
+It is clear that it can't work in the first case because Unit can't be cast to Int. The second case is even more misleading because the cast is optimized away. A compilation error should be the best possible thing in both cases.

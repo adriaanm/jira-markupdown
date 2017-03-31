@@ -1,0 +1,13 @@
+Scala currently has a method {{StringLike#r}} for compiling strings to regexes. 
+
+Now that Scala has string interpolation and macros I think we can do even better with a {{r}} method on {{StringContext}}. Here is why:
+
+1. Escaping gets simpler (before: {{"""\d+""".r}}, after: {{r"\d+"}})
+
+2. Parameterization gets simpler (before: {{("foo"+Pattern.escape(bar)).r}}, after: {{r"foo$bar"}})
+
+3. Regexes can be syntax-checked at compile-time
+
+4. Pattern matching against regexes gets simpler (before: {{val re = """\d+(.*)\d+""".r; … case `re`\(x\) => x}}, after: {{case r"\d+$x\d+" => x}})
+
+I have a proof of concept implementation available at https://github.com/qerub/scala-regex-stringcontext and can make a patch for Scala proper if people like this idea.

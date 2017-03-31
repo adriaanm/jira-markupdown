@@ -1,0 +1,23 @@
+More info: If it is in a jar on the build path, but to work fully it requires the destination type to be known.
+
+i.e. if I do
+
+val book : java.util.List[String] = JavaAnnots.Book
+
+it is ok
+
+but if I do
+
+{{val book = JavaAnnots.Book}}
+
+I get the following error:
+
+{code}
+Multiple markers at this line 
+- ambiguous reference to overloaded definition, both value Book in object JavaAnnots of type java.util.List[java.lang.String] and object Book in object JavaAnnots of type 
+object com.foo.JavaAnnots.Book match expected type ? 
+- ambiguous reference to overloaded definition, both value Book in object JavaAnnots of type java.util.List[java.lang.String] and object Book in object JavaAnnots of type 
+object com.foo.JavaAnnots.Book match expected type ?
+{code}
+
+If JavaAnnots.java is in same project as the scala code ‘val book = JavaAnnots.Book’ works fine.

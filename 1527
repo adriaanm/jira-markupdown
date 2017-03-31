@@ -1,0 +1,19 @@
+An update: if you delete most of the large string expression starting on line 147,
+the problem goes away.  It may be that the Scala Compiler can't handle this large expression.
+Yes!  That's it!
+
+object Test {
+   var test = "abcdefghijk" +
+        "0123456789" +
+        "0123456789" +
+        "0123456789" +
+        ... // 200 times
+      ;
+}
+
+gets the same behavior.  So if you have a large stack you won't have the problem.
+That explains the intermittentness.
+
+I'm not sure if this *really* counts as a bug.  I guess it means I
+will have to change the scanner generator to not generate these large strings.
+

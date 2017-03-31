@@ -1,0 +1,18 @@
+After having thought more than is healthy about this, I really think there's nothing we can do. We should not go against IEEE and admit NaN == NaN. That would bring the whole of mathematics crashing down ;-). On the other hand, in the interest of fast equality we should mandate that == strictly contains eq. But now we are in a quandary. On the one hand
+{code}
+new java.lang.Float(NaN) != new java.lang.Float(NaN)
+{code}
+would be desirable to follow primitive float equality. On the other hand,
+{code}
+val x = new java.lang.Float(NaN)
+x == x
+{code}
+must hold because x eq x. But note that
+{code}
+val x = Float.NaN
+x == x
+{code}
+also must yield false. So it's a paradox which can't be resolved. The only consolation is that NaN is a paradox by itself. The only advice I can give is don't use it, or at least be extremely careful where you use it!
+
+ -- Martin
+

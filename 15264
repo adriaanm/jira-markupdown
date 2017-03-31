@@ -1,0 +1,89 @@
+hi,
+
+i am getting a compiler error with
+
+"Error:Caused by java.lang.Error: symbol value player$$1 does not exist in de.sciss.synth.Buffer.play"
+
+for the last change committed to http://github.com/Sciss/ScalaCollider (# f675b4b051969e9c4b852b444829b03eafd4cd2a )... the lines in charge are in de.sciss.synth.Buffer :
+
+{code}
+   def play( loop: Boolean = false, amp: Float = 1f, out: Int = 0 ) : Synth = {
+      val player = PlayBuf.ar( numChannels, id, BufRateScale.kr( id ), loop = if( loop ) 1 else 0 )
+      if( !loop ) FreeSelfWhenDone.kr( player )
+      player * amp
+   }.play( server, out )
+{code}
+
+the exception:
+
+{code}
+Information:Compilation completed with 44 errors and 0 warnings
+Information:44 errors
+Information:0 warnings
+Error:Scalac internal error: class java.lang.reflect.InvocationTargetException [sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method), sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39), sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25), java.lang.reflect.Method.invoke(Method.java:597), org.jetbrains.plugins.scala.compiler.rt.ScalacRunner.main(ScalacRunner.java:74)][scala.tools.nsc.symtab.SymbolTable.abort(SymbolTable.scala:34), scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:844), scala.tools.nsc.backend.icode.GenICode$$ICodePhase.genLoadArguments(GenICode.scala:1031), scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:664), scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:878), scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:870), scala.tools.nsc.backend.icode.GenICode$$ICodePhase.genLoadArguments(GenICode.scala:1031), scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:743), scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:513), scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genStat(GenICode.scala:184), scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$genStat$$1.apply(GenICode.scala:156), scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$genStat$$1.apply(GenICode.scala:156), scala.collection.LinearSeqOptimized$$class.foldLeft(LinearSeqOptimized.scala:124), scala.collection.immutable.List.foldLeft(List.scala:46), scala.tools.nsc.backend.icode.GenICode$$ICodePhase.genStat(GenICode.scala:156), scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:869), scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:127), scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:82), scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:82), scala.collection.LinearSeqOptimized$$class.foreach(LinearSeqOptimized.scala:62), scala.collection.immutable.List.foreach(List.scala:46), scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:82), scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:149), scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:101), scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:82), scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:82), scala.collection.LinearSeqOptimized$$class.foreach(LinearSeqOptimized.scala:62), scala.collection.immutable.List.foreach(List.scala:46), scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:82), scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:92), scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:78), scala.tools.nsc.backend.icode.GenICode$$ICodePhase.apply(GenICode.scala:74), scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$applyPhase$$1.apply(Global.scala:272), scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$applyPhase$$1.apply(Global.scala:272), scala.tools.nsc.reporters.Reporter.withSource(Reporter.scala:49), scala.tools.nsc.Global$$GlobalPhase.applyPhase(Global.scala:272), scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:248), scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:248), scala.collection.Iterator$$class.foreach(Iterator.scala:627), scala.collection.mutable.ListBuffer$$$$anon$$1.foreach(ListBuffer.scala:305), scala.tools.nsc.Global$$GlobalPhase.run(Global.scala:248), scala.tools.nsc.backend.icode.GenICode$$ICodePhase.run(GenICode.scala:67), scala.tools.nsc.Global$$Run.compileSources(Global.scala:729), scala.tools.nsc.Global$$Run.compile(Global.scala:815), scala.tools.nsc.Main$$.process(Main.scala:109), scala.tools.nsc.Main$$.main(Main.scala:123), scala.tools.nsc.Main.main(Main.scala), sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method), sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39), sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25), java.lang.reflect.Method.invoke(Method.java:597), org.jetbrains.plugins.scala.compiler.rt.ScalacRunner.main(ScalacRunner.java:74)]
+Error:sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+Error:sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+Error:sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+Error:java.lang.reflect.Method.invoke(Method.java:597)
+Error:org.jetbrains.plugins.scala.compiler.rt.ScalacRunner.main(ScalacRunner.java:74)
+Error:Caused by java.lang.Error: symbol value player$$1 does not exist in de.sciss.synth.Buffer.play
+Error:scala.tools.nsc.symtab.SymbolTable.abort(SymbolTable.scala:34)
+Error:scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:844)
+Error:scala.tools.nsc.backend.icode.GenICode$$ICodePhase.genLoadArguments(GenICode.scala:1031)
+Error:scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:664)
+Error:scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:878)
+Error:scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:870)
+Error:scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:743)
+Error:scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:513)
+Error:scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genStat(GenICode.scala:184)
+Error:scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$genStat$$1.apply(GenICode.scala:156)
+Error:scala.collection.LinearSeqOptimized$$class.foldLeft(LinearSeqOptimized.scala:124)
+Error:scala.collection.immutable.List.foldLeft(List.scala:46)
+Error:scala.tools.nsc.backend.icode.GenICode$$ICodePhase.genStat(GenICode.scala:156)
+Error:scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:869)
+Error:scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:127)
+Error:scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:82)
+Error:scala.collection.LinearSeqOptimized$$class.foreach(LinearSeqOptimized.scala:62)
+Error:scala.collection.immutable.List.foreach(List.scala:46)
+Error:scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:82)
+Error:scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:149)
+Error:scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:101)
+Error:scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:92)
+Error:scala.tools.nsc.backend.icode.GenICode$$ICodePhase.gen(GenICode.scala:78)
+Error:scala.tools.nsc.backend.icode.GenICode$$ICodePhase.apply(GenICode.scala:74)
+Error:scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$applyPhase$$1.apply(Global.scala:272)
+Error:scala.tools.nsc.reporters.Reporter.withSource(Reporter.scala:49)
+Error:scala.tools.nsc.Global$$GlobalPhase.applyPhase(Global.scala:272)
+Error:scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:248)
+Error:scala.collection.Iterator$$class.foreach(Iterator.scala:627)
+Error:scala.collection.mutable.ListBuffer$$$$anon$$1.foreach(ListBuffer.scala:305)
+Error:scala.tools.nsc.Global$$GlobalPhase.run(Global.scala:248)
+Error:scala.tools.nsc.backend.icode.GenICode$$ICodePhase.run(GenICode.scala:67)
+Error:scala.tools.nsc.Global$$Run.compileSources(Global.scala:729)
+Error:scala.tools.nsc.Global$$Run.compile(Global.scala:815)
+Error:scala.tools.nsc.Main$$.process(Main.scala:109)
+Error:scala.tools.nsc.Main$$.main(Main.scala:123)
+Error:scala.tools.nsc.Main.main(Main.scala)
+{code}
+
+the project is fairly complex and in this case uses a lot of implicits, so it will be difficult to create an isolated case...
+
+this is with Scala 2.8 RC1.
+
+a workaround has been committed in the next version # aec41adf6a91ad7ecf5b0028bb79359d06b9a3ef , which uses an explicit method for creating the Synth instead:
+
+{code}
+def play( loop: Boolean = false, amp: Float = 1f, out: Int = 0 ) : Synth = {
+      import SC._
+      SC.play( server, out ) { // working around nasty compiler bug
+         val ply = PlayBuf.ar( numChannels, id, BufRateScale.kr( id ), loop = if( loop ) 1 else 0 )
+         if( !loop ) FreeSelfWhenDone.kr( ply )
+         ply * amp
+      }
+   }
+{code}
+
+this still leaves me with a strange runtime error i will need to examine, though...
+
+sorry for not being able to provide easier cases, but i guess that is the nature of nasty compiler bugs....
+

@@ -1,0 +1,23 @@
+I think I have another instance of this bug.  I've cut the code down as much as I could:
+{code}
+trait A {
+  type C
+  def C: Int => C
+}
+
+class B extends A {
+  case class C(v: Int)
+}
+{code}
+
+I get the following with scalac 2.8.0.Beta1-prerelease on Java 1.6.0_17-b04-248-10M3025 on OS X 10.6.2:
+{code}
+java.lang.AssertionError: assertion failed: List(object C, object C)
+	at scala.tools.nsc.symtab.Symbols$$Symbol.suchThat(Symbols.scala:1058)
+	at scala.tools.nsc.symtab.Symbols$$Symbol.linkedModuleOfClass0(Symbols.scala:1261)
+	at scala.tools.nsc.symtab.Symbols$$Symbol.linkedModuleOfClass(Symbols.scala:1269)
+	at scala.tools.nsc.symtab.Symbols$$Symbol.linkedClassOfClass(Symbols.scala:1291)
+	at scala.tools.nsc.backend.jvm.GenJVM$$BytecodeGenerator$$$$anonfun$$addInnerClasses$$1.apply(GenJVM.scala:511)
+	at scala.tools.nsc.backend.jvm.GenJVM$$BytecodeGenerator$$$$anonfun$$addInnerClasses$$1.apply(GenJVM.scala:509)
+...
+{code}

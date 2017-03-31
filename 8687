@@ -1,0 +1,19 @@
+I believe this doesn't even need a java class to reproduce:
+
+{code:title=A.scala}
+class A[M] protected(m: M)
+class B extends A("a")
+{code}
+
+{noformat}
+$ scalac A.scala 
+A.scala:4: error: constructor A in class A cannot be accessed in package <empty>
+ Access to protected constructor A not permitted because
+ enclosing package <empty> is not a subclass of
+ class A where target is defined
+class B extends A("a")
+                ^
+one error found
+{noformat}
+
+This compiles in 2.8, but not later. It doesn't compile in current dotty either (same error message). On the other hand, specifying the type parameter makes it compile in all of them.

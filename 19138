@@ -1,0 +1,33 @@
+Proposed extension to {{object Future}} to provide an instantiator method which can automatically retry based on a {{Throwable}} predicate, without stacking on a {{recoverWith}} combinator for each retry:
+
+{code}
+  def retryable[T](shouldRetry: (Throwable) => Boolean)(body: => T)(implicit executor: ExecutionContext): Future[T] = {
+    val promise = Promise[T]()
+
+    def startFuture() {
+      Future {
+        body
+      }.onComplete {
+        case Failure(t) if shouldRetry(t) => startFuture()
+        case x => promise.complete(x)
+      }
+    }
+
+    startFuture()
+    promise.future
+  }
+{code}
+
+This could optionally be accompanied by a convenience method which counts an integer number of retries:
+
+{code}
+  def retryable[T](retries: Int)(body: => T)(implicit executor: ExecutionContext): Future[T] = {
+    var retrynum = 0
+    retryable { t =>
+      retrynum += 1
+      retrynum <= retries
+    }(body)
+  }
+{code}
+
+The retry loop will re-enqueue the original function body back onto the original {{ExecutionContext}} if the function results in a {{Failure}} and the {{shouldRetry}} predicate returns {{true}}. All the publicly exposed API goes through the instantiated {{DefaultPromise}}, shielding those calls from the underlying {{Future}} which may be replaced in case of a retry.

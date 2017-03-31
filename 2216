@@ -1,0 +1,40 @@
+From Bryan Castillo on scala-user:
+
+I tracked it through in a debugger using eclipse. I think if i+= 1 is moved
+before the check for unchanged or buffer is changed so that while (j <
+pos-1) is while (j < pos).
+
+These 2 methods seem to be the culprits from BasicTransformer.
+
+  def transform(ns: Seq[Node]): Seq[Node] = {
+    var i = 0
+    val it = ns.elements
+    try {
+      while (it.hasNext) {
+        val n = it.next
+        val n2 = transform(n)
+        if (!unchanged(n, n2)) {
+          throw NeedsCopy(n2)
+        }
+        i += 1
+      }
+      ns
+    } catch {
+      case NeedsCopy(n2) =>
+        val nb = buffer(i, ns)
+        nb ++= (n2:Iterable[xml.Node])
+        transform(it, nb)
+    }
+  }
+
+
+
+  protected def buffer(pos: Int, ns: Seq[Node]): NodeBuffer = {
+    val nb = new NodeBuffer()
+    var jt = ns.elements
+    var j = 0; while (j < pos-1) {
+      nb.append(jt.next)
+      j += 1
+    }
+    nb
+  }

@@ -1,0 +1,15 @@
+Funny that I never saw this ticket. I use the following, which has a different feature. I'd need to test it against openjdk, though.
+
+{code}
+import scala.xml.Elem
+import scala.xml.factory.XMLLoader
+import javax.xml.parsers.SAXParser
+object MyXML extends XMLLoader[Elem] {
+  override def parser: SAXParser = {
+    val f = javax.xml.parsers.SAXParserFactory.newInstance()
+    f.setNamespaceAware(false)
+    f.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+    f.newSAXParser()
+  }
+}
+{code}

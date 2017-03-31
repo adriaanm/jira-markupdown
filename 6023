@@ -1,0 +1,13 @@
+{code}
+scala> val shrinkable = collection.mutable.ArrayBuffer(1, 2, 3, 4, 5, 6, 7, 8, 9 ,10)
+shrinkable: scala.collection.mutable.ArrayBuffer[Int] = ArrayBuffer(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+
+scala> val shrinkable = collection.mutable.ArrayBuffer(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+shrinkable: scala.collection.mutable.ArrayBuffer[Int] = ArrayBuffer(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+
+scala> shrinkable --= (shrinkable.view filter {_ > 5})
+java.lang.IndexOutOfBoundsException: 8
+	at scala.collection.mutable.ResizableArray$class.apply(ResizableArray.scala:42)
+{code}
+
+Granted, it does work for sets right now, but that's just correct due to undefined behaviour.

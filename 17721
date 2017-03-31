@@ -1,0 +1,34 @@
+I tried hard to find a ticket for this, as I'd be surprised not to have one already. I found related tickets SI-1352 and SI-1994, but not exactly this one.
+
+See related [IDE ticket #1000758|https://www.assembla.com/spaces/scala-ide/tickets/1000758#/activity/ticket:]
+
+{code}
+// WithClone.java
+package test;
+
+public abstract class WithClone {
+  public abstract Object clone();
+}
+{code}
+
+{code}
+// Use.scala
+import test.WithClone
+
+class Foo {
+ def test(x: WithClone) {
+   x.clone() 
+ }
+}
+{code}
+results in
+
+{code}
+se.scala:5: error: method clone in class Object cannot be accessed in test.WithClone
+ Access to protected method clone not permitted because
+ prefix type test.WithClone does not conform to
+ class Foo where the access take place
+   x.clone() 
+     ^
+one error found
+{code}

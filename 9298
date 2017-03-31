@@ -1,0 +1,51 @@
+This bug has gone away in 2.10.1.
+
+https://github.com/retronym/scala/compare/scala:2.10.x...retronym:ticket/7200
+
+Broken in 2.9.2 and 2.10.0, but working in 2.10.1
+
+{code}
+--- sandbox/2.10.0.log
++++ sandbox/2.10.1.log
+       def coflatMap[A >: Nothing <: Any, B >: Nothing <: Any](f: Test.Nel[A] => B): Test.Nel[A] => Test.Nel[B] = ((l: Test.Nel[A]) => Test.this.Nel.apply[B](f.apply(l), l.tail match {
+         case immutable.this.Nil => immutable.this.Nil
+-        case (hd: A, tl: List[A])scala.collection.immutable.::[A]((h @ _), (t @ _)) => {
+-          val r: Test.Nel[Nothing] = NelFoo.this.coflatMap[A, Nothing](f).apply(Test.this.Nel.apply[A](h, t));
++        case (hd: A, tl: List[A])scala.collection.immutable.::[?A1]((h @ _), (t @ _)) => {
++          val r: Test.Nel[B] = NelFoo.this.coflatMap[A, B](f).apply(Test.this.Nel.apply[A](h, t));
+           {
+-            <synthetic> val x$1: Nothing = r.head;
+-            r.tail.::[Nothing](x$1)
++            <synthetic> val x$1: B = r.head;
++            r.tail.::[B](x$1)
+           }
+         }
+       }))
+{code}
+
+b74c33e represents the exact moment of progression. We should
+investigate that a little further so we can fully connect the dots.
+
+But that diff is a bit troublesome: what it the TypeVar ?A1 doing in the post-typer tree? I will pull on that thread to see what I can find.
+
+I chatted to Lukas today about his patch to Namers that (ostensibly) fixed this, and it seems to me that our current scheme for allowing recursive methods to use inherited inferred return types is quite risky.
+
+{code}
+scala> trait A { def foo: Any }; object B extends A { def foo = {if(false) foo; "" } }; B.foo
+defined trait A
+defined module B
+res0: String = ""
+{code}
+
+During typechecking of `B#foo`, the method has the return type {{Any}}, which is later refined to {{String}}.
+We can see this by trying to ascribe the more specific type:
+
+{code}
+scala> trait A { def foo: Any }; object B extends A { def foo = {if(false) foo: String; "" } }; B.foo
+<console>:9: error: type mismatch;
+ found   : Any
+ required: String
+              trait A { def foo: Any }; object B extends A { def foo = {if(false) foo: String; "" } };;
+                                                                                  ^
+{code}
+

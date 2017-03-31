@@ -1,0 +1,44 @@
+Thanks for you comment, Alex.
+
+I'm not sure your suggestion would help in the situation you describe though. It seems {{readResolve}} is called only after {{readObject}} returns (example below). So we'd get this sequence of events:
+* start de-serializing the {{Outer}} instance
+* start de-serializing the {{attr$}} instance for the {{attr$module}} field
+* invoke {{attr$.readObject}}
+** invokes the {{outer$.attr}} getter, which finds the {{attr$module}} field still being {{null}}, so a new module instance is created (constructor side-effects!)
+* invoke {{attr$.readResolve}}
+** the {{outer$.attr$module}} field is non-null, so its value is returned
+
+I don't see a way to prevent invoking the module constructor if the module is accessed by a custom {{readObject}}.
+
+{code}
+case class C(var s: String) {
+  private def readObject(in: ObjectInputStream): Unit = {
+    println("Before Default")
+    println(this)
+    in.defaultReadObject
+    println("After Default")
+    println(this)
+    this.s = "readObject"
+    println(this)
+  }
+
+  private def readResolve(): Object = {
+    println("readResolve")
+    C("readResolve")
+  }
+}
+{code}
+
+{noformat}
+scala> val c = C("orig")
+c: C = C(orig)
+
+scala> serializeDeserialize(c)
+Before Default
+C(null)
+After Default
+C(orig)
+C(readObject)
+readResolve
+res2: C = C(readResolve)
+{noformat}

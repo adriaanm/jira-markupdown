@@ -1,0 +1,28 @@
+The assertion 
+
+{code}
+Trying to access the this of another class: tree.symbol = class Crash, ctx.clazz.symbol = anonymous class Crash$$$$anonfun$$1 
+{code}
+
+is broken upon GenICode trying to emit (via genLoad) the rhs of: 
+
+{code}
+  val xxx: Int = Crash.this.t()
+{code}
+
+and that stmt comes from 
+
+{code}
+  @SerialVersionUID(0) final <synthetic> class Crash$$$$anonfun$$1 extends scala.runtime.AbstractFunction0$$mcD$$sp with Serializable {
+    final def apply(): Double = Crash$$$$anonfun$$1.this.apply$$mcD$$sp();
+    <specialized> def apply$$mcD$$sp(): Double = {
+      val xxx: Int = Crash.this.t();
+      42.0
+    };
+    final <bridge> def apply(): java.lang.Object = scala.Double.box(Crash$$$$anonfun$$1.this.apply());
+    def this($$outer: Crash): anonymous class Crash$$$$anonfun$$1 = {
+      Crash$$$$anonfun$$1.super.this();
+      ()
+    }
+  }
+{code}

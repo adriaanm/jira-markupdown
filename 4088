@@ -1,0 +1,20 @@
+This wasn't precisely documented anywhere, but in my opinion, once you've called a certain transformer method on an iterator (which may produce another iterator, like `take` or `drop`) it's state should be undefined - the original iterator shouldn't be used anymore.
+
+However, `next` should not invalidate the iterator's state, so this:
+
+{code}
+scala> val it = (1 to 12).toSeq.iterator 
+it: Iterator[Int] = non-empty iterator
+
+scala> it.next
+res0: Int = 1
+
+scala> it.take(2).toList
+res1: List[Int] = List(1, 2)
+{code}
+
+is a bug which has to do with `take` and `drop` in `IndexedSeqLike#Elements`. Once the iterator progresses to the next element, it should `take` only its remaining elements.
+
+I can fix this.
+
+

@@ -1,0 +1,12 @@
+Focusing initially on the spurious `Some(_)` case:
+
+This counter example is rendered from the model:
+
+{noformat}
+(0)  = {scala.Tuple2@3801}"(V1=Some[?]#8,true)"
+(1)  = {scala.Tuple2@3803}"(V3=5#10,false)"
+{noformat}
+
+V1 represents the scrutinee; V3 the contents of the nested Some.
+
+This comes from the `forced` part of `findAllModels`. I've removed that here: https://github.com/retronym/scala/compare/scala:2.10.x...ticket/7746

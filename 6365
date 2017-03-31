@@ -1,0 +1,53 @@
+Add the type explicitly, and the message is clearer.
+
+{code}
+
+scala> "nikita ivanov" split(" ") map (() => (_: String).length)
+<console>:6: error: type mismatch;
+ found   : () => (String) => Int
+ required: (java.lang.String) => ?
+       "nikita ivanov" split(" ") map (() => (_: String).length)
+                                          ^
+{code}
+
+The placeholder syntax for anonymous functions requires that the expected type is `FunctionN[T1,.. TN, R]`, where `N` is the number of underscores, and where `T1` .. `TN` are concrete types.
+
+{code}
+scala> _.length
+<console>:8: error: missing parameter type for expanded function ((x$1) => x$1.length)
+              _.length
+              ^
+
+scala> (_.length) : (String => Int)
+res5: String => Int = <function1>
+{code}
+
+A similar situation applies to Pattern Matching Anonymous Functions.
+
+{code}
+scala> { case x => x.length }
+<console>:8: error: missing parameter type for expanded function
+The argument types of an anonymous function must be fully known. (SLS 8.5)
+Expected type was: ?
+              { case x => x.length }
+              ^
+
+scala> { case x => x.length } : (String => Int)
+res8: String => Int = <function1>
+{code}
+
+Finally, a similar error can crop up in for-comprehensions.
+
+{code}
+scala> object ForEach {
+     |    def foreach[A, B](f: A => B) = ()
+     | }
+defined module ForEach
+
+scala> for { x <- ForEach } { () }
+<console>:9: error: missing parameter type
+              for { x <- ForEach } { () }
+                    ^
+{code}
+
+I'll leave this open as an enhancement on the error messages which are not consistent, and could be more explanatory. @Nikita: do you have a suggestion on a better wording?

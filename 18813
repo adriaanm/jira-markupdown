@@ -1,0 +1,27 @@
+Use case:
+
+{code}
+object Foo {
+  trait Config {
+    /** The bar obviously. */
+    def bar: Int
+  }
+  class ConfigBuilder extends Config {
+    /** @inheritdoc
+      *
+      * The default value is 1234.
+      */
+    var bar: Int = 1234
+  }
+}
+{code}
+
+This produces a false warning:
+
+{code}
+[warn] ... The comment for method bar_= contains @inheritdoc, but no parent comment is available to inherit from.
+[warn]     var bar: Int = 1234
+[warn]         ^
+{code}
+
+The resulting Scala doc correctly shows inherited and extended text for `var bar`.

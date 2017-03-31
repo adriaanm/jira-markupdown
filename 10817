@@ -1,0 +1,15 @@
+Here's where we lose track of the `_s`:
+
+https://github.com/scala/scala/pull/2848/files#diff-352de7f9c77a7e21df6940d6a1bcdc7eR62
+
+{code}
+      object SymbolAndTypeBound {
+        def unapply(tree: Tree): Option[(Symbol, Type)] = tree match {
+          case SymbolBound(sym, SymbolAndTypeBound(_, tpe)) => Some(sym -> tpe)
+          case TypeBound(tpe)                               => Some(binder -> tpe)
+          case _                                            => None
+        }
+      }
+{code}
+
+It vanishes into the `_` ether on line 3.

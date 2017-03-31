@@ -1,0 +1,14 @@
+I stumbled upon this very problem and this is very frustrating as I can't find any work around. 
+Note that the issue is the same with any kind of implicit parameters (not just context bounds).
+
+If one tries to fix the issue by resorting on macros (by doing something along the lines of `implicit def conv[T](s: String): T = macro conv_impl`,
+in the vain hope that removing the implicit parameters in the function signature (now relegated to
+an explicit call to inferImplicitValue/inferImplicitView inside the macro implementation "conv_impl")
+would help, then deception ensues: this does not work either.
+
+And of importance is the fact that when trying this macro implementation, one can see that the target type `T` is infered as "Nothing", thus preventing 
+to write any working implementation of this macro.
+
+As a side note, Roman Janusz initially reported the issue on the scala-user group, and he too noticed the problem with the target type being inferred as "Nothing": https://groups.google.com/forum/#!topic/scala-user/3fXswCh7Xz8
+
+Is there any plan to work on this issue in the forseable future?

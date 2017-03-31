@@ -1,0 +1,130 @@
+The following code causes the compiler to crashe.  Below the stack trace a similar version that uses a call-by-name parameter in "reify" works fine.
+
+{code}
+$$ cat test.scala
+object ShiftReset {
+  import scala.continuations.ControlContext._  
+  import scala.continuations.cps
+
+  def reflect[A,B](xs : List[A]) = shift{ xs.flatMap[B, List[B]] }
+  def reify[A, B](x : A @cps[List[A], B]) = reset{ List(x) }
+
+  def main(args: Array[String]): Unit = println(reify {
+    val x = reflect[Int, Int](List(1,2,3)) 
+    val y = reflect[Int, Int](List(2,4,8))
+    x * y
+  })
+}
+{code}
+{code}
+$$ scalac -classpath continuations/build/build.library -Xplugin:continuations/build/pack/selectivecps-plugin.jar test.scala
+Exception in thread "main" java.lang.AssertionError: assertion failed
+	at scala.Predef$$.assert(Predef.scala:89)
+	at scala.continuations.SelectiveANFTransform$$ANFTransformer$$$$anonfun$$transform$$3.apply(SelectiveANFTransform.scala:77)
+	at scala.continuations.SelectiveANFTransform$$ANFTransformer$$$$anonfun$$transform$$3.apply(SelectiveANFTransform.scala:75)
+	at scala.tools.nsc.ast.Trees$$Transformer.atOwner(Trees.scala:1581)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:37)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:30)
+	at scala.continuations.SelectiveANFTransform$$ANFTransformer.transform(SelectiveANFTransform.scala:75)
+	at scala.tools.nsc.ast.Trees$$Transformer.transformValDef(Trees.scala:1561)
+	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transformValDefs$$1.apply(Trees.scala:1563)
+	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transformValDefs$$1.apply(Trees.scala:1563)
+	at scala.collection.immutable.List.loop$$1(List.scala:116)
+	at scala.collection.immutable.List.mapConserve(List.scala:133)
+	at scala.tools.nsc.ast.Trees$$Transformer.transformValDefs(Trees.scala:1563)
+	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transformValDefss$$1.apply(Trees.scala:1565)
+	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transformValDefss$$1.apply(Trees.scala:1565)
+	at scala.collection.immutable.List.loop$$1(List.scala:116)
+	at scala.collection.immutable.List.mapConserve(List.scala:133)
+	at scala.tools.nsc.ast.Trees$$Transformer.transformValDefss(Trees.scala:1565)
+	at scala.continuations.SelectiveANFTransform$$ANFTransformer$$$$anonfun$$transform$$1.apply(SelectiveANFTransform.scala:56)
+	at scala.continuations.SelectiveANFTransform$$ANFTransformer$$$$anonfun$$transform$$1.apply(SelectiveANFTransform.scala:50)
+	at scala.tools.nsc.ast.Trees$$Transformer.atOwner(Trees.scala:1581)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:37)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:30)
+	at scala.continuations.SelectiveANFTransform$$ANFTransformer.transform(SelectiveANFTransform.scala:50)
+	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transformStats$$1.apply(Trees.scala:1573)
+	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transformStats$$1.apply(Trees.scala:1571)
+	at scala.collection.immutable.List.loop$$1(List.scala:116)
+	at scala.collection.immutable.List.mapConserve(List.scala:133)
+	at scala.tools.nsc.ast.Trees$$Transformer.transformStats(Trees.scala:1571)
+	at scala.tools.nsc.ast.Trees$$Transformer.transform(Trees.scala:1477)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.scala$$tools$$nsc$$transform$$TypingTransformers$$TypingTransformer$$$$super$$transform(TypingTransformers.scala:48)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer$$$$anonfun$$transform$$1.apply(TypingTransformers.scala:48)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer$$$$anonfun$$transform$$1.apply(TypingTransformers.scala:48)
+	at scala.tools.nsc.ast.Trees$$Transformer.atOwner(Trees.scala:1581)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:37)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:30)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.transform(TypingTransformers.scala:48)
+	at scala.continuations.SelectiveANFTransform$$ANFTransformer.transform(SelectiveANFTransform.scala:103)
+	at scala.tools.nsc.ast.Trees$$Transformer.transformTemplate(Trees.scala:1557)
+	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transform$$2.apply(Trees.scala:1447)
+	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transform$$2.apply(Trees.scala:1446)
+	at scala.tools.nsc.ast.Trees$$Transformer.atOwner(Trees.scala:1581)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:37)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:30)
+	at scala.tools.nsc.ast.Trees$$Transformer.transform(Trees.scala:1445)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.transform(TypingTransformers.scala:52)
+	at scala.continuations.SelectiveANFTransform$$ANFTransformer.transform(SelectiveANFTransform.scala:103)
+	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transformStats$$1.apply(Trees.scala:1573)
+	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transformStats$$1.apply(Trees.scala:1571)
+	at scala.collection.immutable.List.loop$$1(List.scala:116)
+	at scala.collection.immutable.List.mapConserve(List.scala:133)
+	at scala.tools.nsc.ast.Trees$$Transformer.transformStats(Trees.scala:1571)
+	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transform$$1.apply(Trees.scala:1441)
+	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transform$$1.apply(Trees.scala:1441)
+	at scala.tools.nsc.ast.Trees$$Transformer.atOwner(Trees.scala:1581)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:37)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:30)
+	at scala.tools.nsc.ast.Trees$$Transformer.transform(Trees.scala:1440)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.scala$$tools$$nsc$$transform$$TypingTransformers$$TypingTransformer$$$$super$$transform(TypingTransformers.scala:48)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer$$$$anonfun$$transform$$2.apply(TypingTransformers.scala:50)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer$$$$anonfun$$transform$$2.apply(TypingTransformers.scala:50)
+	at scala.tools.nsc.ast.Trees$$Transformer.atOwner(Trees.scala:1581)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:37)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.atOwner(TypingTransformers.scala:30)
+	at scala.tools.nsc.transform.TypingTransformers$$TypingTransformer.transform(TypingTransformers.scala:50)
+	at scala.continuations.SelectiveANFTransform$$ANFTransformer.transform(SelectiveANFTransform.scala:103)
+	at scala.tools.nsc.ast.Trees$$Transformer.transformUnit(Trees.scala:1574)
+	at scala.tools.nsc.transform.Transform$$Phase.apply(Transform.scala:31)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$applyPhase$$1.apply(Global.scala:281)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$applyPhase$$1.apply(Global.scala:281)
+	at scala.tools.nsc.reporters.Reporter.withSource(Reporter.scala:48)
+	at scala.tools.nsc.Global$$GlobalPhase.applyPhase(Global.scala:281)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:259)
+	at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$run$$1.apply(Global.scala:259)
+	at scala.collection.Iterator$$class.foreach(Iterator.scala:582)
+	at scala.collection.mutable.ListBuffer$$$$anon$$1.foreach(ListBuffer.scala:285)
+	at scala.tools.nsc.Global$$GlobalPhase.run(Global.scala:259)
+	at scala.tools.nsc.Global$$Run.compileSources(Global.scala:749)
+	at scala.tools.nsc.Global$$Run.compile(Global.scala:839)
+	at scala.tools.nsc.Main$$.process(Main.scala:110)
+	at scala.tools.nsc.Main$$.main(Main.scala:124)
+	at scala.tools.nsc.Main.main(Main.scala)
+{code}
+
+Making reify take a call-by-name parameter solves the problem
+
+{code}
+$$ cat test2.scala
+object ShiftReset {
+  import scala.continuations.ControlContext._  
+  import scala.continuations.cps
+
+  def reflect[A,B](xs : List[A]) = shift{ xs.flatMap[B, List[B]] }
+  def reify[A, B](x : =>A @cps[List[A], B]) = reset{ List(x) }
+
+  def main(args: Array[String]): Unit = println(reify {
+    val x = reflect[Int, Int](List(1,2,3)) 
+    val y = reflect[Int, Int](List(2,4,8))
+    x * y
+  })
+}
+{code}
+{code}
+$$ scalac -classpath continuations/build/build.library -Xplugin:continuations/build/pack/selectivecps-plugin.jar test2.scala
+{code}
+{code}
+$$ scala -classpath ./:continuations/build/build.library ShiftReset
+List(2, 4, 8, 4, 8, 16, 6, 12, 24)
+{code}

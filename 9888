@@ -1,0 +1,22 @@
+So, I'm currently implementing value classes in Dotty (see https://github.com/lampepfl/dotty/pull/411) and I was trying to understand why nested value classes where forbidden in scalac, but I have to admit that I'm not sure I understand what Paul means when he says:
+bq. AFAIK the only reason for the restriction is the requirement that everything be reconstructable at runtime via pattern matching.
+My best guess is that this is related to something like:
+{code:scala}
+case class Foo(val unFoo: Int) extends AnyVal
+
+case class Bar(val unBar: Foo) extends AnyVal
+
+object O {
+  def thing(x: Any) = {
+    x match {
+      case Bar(Foo(i)) => i
+      case _ => 0
+    }
+  }
+  def test() = {
+    val bf = new Bar(new Foo(1))
+    thing(bf)
+  }
+}
+{code}
+But this work just fine in my pull request, and it doesn't seem impossible to handle in scalac either. Can someone give me an example of something that is likely to fail with nested value classes? Thanks.

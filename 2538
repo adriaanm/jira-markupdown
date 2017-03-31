@@ -1,0 +1,36 @@
+A possible variation on my earlier suggestion for synchronizedBuffer:-
+
+def +(elem: A) could have return type  this.type :-
+
+{code}
+  override def +(elem: A): this.type = synchronized[this.type] {
+    super.+(elem)
+    this
+  }
+{code}
+
+Note that synchronizedSet.clone causes similar problems to synchronizedBuffer, and should perhaps be defined:-
+
+{code}
+trait SynchronizedSet[A, +This <: Set[A]] extends ...
+    override def clone(): This = ...
+{code}
+
+synchronizedMap also has problems, seen when compiling
+{code}
+    new OpenHashMap[String, Boolean] with SynchronizedMap[String, Boolean]
+    new WeakHashMap[String, Boolean] with SynchronizedMap[String, Boolean]
+{code}
+
+openHashMap
+def iterator = new Iterator[(Key, Value)]{ ... }
+
+can become
+def iterator: Iterator[(Key, Value)] = new Iterator[(Key, Value)]{ ... }
+
+
+javaConversions.jMapWrapper
+def iterator = new Iterator[(A, B)] {
+
+can become
+def iterator: Iterator[(A, B)] = new Iterator[(A, B)] {

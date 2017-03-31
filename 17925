@@ -1,0 +1,16 @@
+scala> class Foo[S] { type X = List[S]; val x: X = List() }
+defined class Foo
+
+scala> new Foo[Int].x : List[Int]
+res0: List[Int] = List()
+
+scala> def foo[S] = { type X = List[S]; List():X }
+foo: [S]=> X
+
+scala> foo[Int] : List[Int]
+<console>:9: error: type mismatch;
+ found   : X
+    (which expands to)  List[S]
+ required: List[Int]
+              foo[Int] : List[Int]
+                 ^

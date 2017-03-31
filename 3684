@@ -1,0 +1,19 @@
+Here is another related issue.  There does not seem to be any way to get this to compile without changing the name of the parameter in Foo.
+{code}
+trait Settings {
+  type T = Int
+  def f: T = 5
+}
+
+class Bar(val settings: Settings) { }
+
+class Foo(settings: Settings) extends Bar(settings) {
+  def g = settings.f
+}
+{code}
+{code}
+a.scala:9: error: private value settings escapes its defining scope as part of type Foo.this.settings.T
+  def g = settings.f
+      ^
+one error found
+{code}

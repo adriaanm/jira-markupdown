@@ -1,0 +1,36 @@
+=== In repl: ===
+{code}
+scala> Some("foo") (2)
+<console>:6: error: scala.Some.apply[java.lang.String]("foo") of type Some[java.lang.String] does not take parameters
+       Some("foo") (2)
+                   ^
+{code} 
+
+=== Longer example, with scalac ===
+{{ 
+object Weird {
+  { (s: String) => 
+      val foo = Some(s); // to illustrate that vals are printed in the error
+      foo 
+  }.apply("first param") ("spurious param")
+}
+{code}
+
+scalac ouptut:
+{code}
+ClosureTypeError.scala:24: error: ((s: String) => {
+  val foo: Some[String] = scala.Some.apply[String](s);
+  foo
+}).apply("first param") of type Some[String] does not take parameters
+  }.apply("first param") ("spurious param")
+                         ^
+one error found
+{code}
+
+=== Additional information ===
+The error message can be quite long, for example, 144 lines and >9600 characters.
+
+=== What versions of the following are you using? ===
+- Scala version 2.9.0.r23895-b20110104172722 (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_22).
+
+- Operating system: Mac OS 10.6.6

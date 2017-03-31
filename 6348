@@ -1,0 +1,53 @@
+More interesting findings here. It turns out that it's broken for object (not case object) too. Thus the minimal test-case would be:
+{code}
+package test
+abstract class Test[A] {
+  object Y  
+}
+{code}
+
+You'll get following errors:
+{code}
+
+mac-grek:badsigs grek$ rm -rf classes/* && scalac -d classes/ Test.scala && ~/scala/badsigs/badsigs.sh `pwd`/classes
+Cleaning up /Users/grek/scala/badsigs/badsigs_working_dir
+Checking /Users/grek/tmp/badsigs/classes:
+Running Main app (will generate Java files and run ecj)
+----------
+1. ERROR in /Users/grek/scala/badsigs/badsigs_working_dir/src/C0.java (at line 0)
+	import test.Test$Y$;
+	^
+Inconsistent classfile encountered: The undefined type parameter A is referenced from within Test$Y$
+----------
+1 problem (1 error)
+
+----------
+1. ERROR in /Users/grek/scala/badsigs/badsigs_working_dir/src/C1.java (at line 0)
+	import test.Test;
+	^
+The class file Test<A> contains a signature '()Ltest/Test<TA;>.Y;' ill-formed at position 18
+----------
+1 problem (1 error)
+
+Found 2 errors
+{code}
+
+However, if I use lazy val and inner class:
+{code}
+package test
+abstract class Test[A] {  
+  class Y
+  lazy val Y = new Y
+}
+{code}
+
+badsigs.sh doesn't report any problems. It turns out that signatures of accessor method Y are in both cases the same (and correct). It's InnerClasses attribute that's broken in first case (object Y is not reported as an inner class).
+
+Diff of javap for both cases proves the point:
+{code}
+mac-grek:badsigs grek$ diff object_sig lazyval_sig 
+[...]
+>   InnerClass: 
+>    public #3= #17 of #13; //Y=class test/Test$Y of class test/Test
+[...]
+{code}

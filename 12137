@@ -1,0 +1,13 @@
+Ideally, we should extrapolate that there's a method `foo(t: T): Int` added to trait `Boo` only if `S =:= Char` or `S =:= Long`. 
+But we have no way to do so -- what if we had:
+
+{code}
+object Boo {
+  implicit class BooCharIsFoo(boo: Boo[Char]) extends Foo[/* >>> */Nothing/* <<< */]
+  implicit class BooLongIsFoo(boo: Boo[Long]) extends Foo[/* >>> */AnyRef /* <<< */]
+}
+{code}
+
+As an alternative, we could show the signature of `foo` from trait `Foo`, but that wouldn't make sense, as it refers to type parameter `S`, which doesn't exist in trait `Boo`.
+
+The only sane approach I can think of is to add a scaladoc annotation that instructs the inferencer to ignore the implicit conversion -- this way, we can hide very specific conversions.  WDYT?

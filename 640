@@ -1,0 +1,12 @@
+Which is an analog to:
+
+{code}
+          // ignore current variable scope in patterns to enforce linearity
+        val startContext = if (mode.typingPatternOrTypePat) context.outer else context
+        val nameLookup   = tree.symbol match {
+          case NoSymbol   => startContext.lookupSymbol(name, qualifies)
+          case sym        => LookupSucceeded(EmptyTree, sym)
+        }
+{code}
+
+in {{typedIdent}}.

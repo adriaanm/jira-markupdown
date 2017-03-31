@@ -1,0 +1,25 @@
+
+Due to the rewrite of right-associative operators as described in 6.12.3 it's effectively impossible to write a nonstrict right-associative operator; anything you pass will get forced.
+
+I'm guessing this has been reported before and can't be fixed because it would change the meaning of a lot of code, but I couldn't find an obvious duplicate.
+
+{code:title=Surprising behavior|borderStyle=solid}
+object WAT extends App {
+ 
+  object Foo {
+    def !:(n: => Any) = "foo"
+  }
+ 
+  lazy val a = { println("AAA"); 1 }
+  lazy val b = { println("BBB"); 1 }
+  
+  Foo.`!:`(a) // ok
+ 
+  b !: Foo    // rewritten as { val x = b; Foo.`!:`(x) } 
+              // per 6.12.3 and thus forces `b`, oops
+ 
+}
+ 
+// output is BBB
+{code} 
+

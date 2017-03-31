@@ -1,0 +1,13 @@
+An @ambiguousImplicits annotation would be useful in any situation in which ambiguity is intentionally used to enforce a constraint. However, I'm not sure it should go on the implicit method(s) since that could itself introduce ambiguity. For the use cases I know of, it would be reasonable to put the annotation on the target type. As in
+
+{code:java}
+
+@ambiguousImplicits(msg = "An explicit type parameter is required.")
+sealed trait NotNothing[T] { type U }                                          
+object NotNothing {
+   implicit val nothingIsNothing = new NotNothing[Nothing] { type U = Any }
+   implicit def notNothing[T] = new NotNothing[T] { type U = T }           
+}
+{code}
+
+I also don't think that this issue rises to the level of "blocker", but I have no power to edit that field.

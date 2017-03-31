@@ -1,0 +1,41 @@
+Now that generics are visible to Java it seems that scala.Nothing causes some troubles:
+
+{code}
+// Fails: javac -cp scala-library-2.7.2.RC1.jar <file>
+// incompatible types
+// found   : scala.None$$
+// required: scala.Option<Foo>
+class NothingBug1 {
+    public NothingBug1() {
+	scala.Option<Foo> o = scala.None$$.MODULE$$;
+    }
+}
+
+// Fails: javac -cp scala-library-2.7.2.RC1.jar <file>
+// cannot access scala.Nothing
+// class file for scala.Nothing not found
+class NothingBug2 {
+    public NothingBug2() {
+	scala.Option<? extends Foo> o = scala.None$$.MODULE$$;
+    }
+}
+
+// This compiles with javac but fails with Eclipse java compiler:
+// 'The type scala.Nothing cannot be resolved. It is indirectly referenced from required .class files'
+class NothingBug3 {
+    public NothingBug3() {
+	scala.Option<?> o = scala.None$$.MODULE$$;
+    }
+}
+
+// This compiles with javac but fails with Eclipse java compiler:
+// 'The type scala.Nothing cannot be resolved. It is indirectly referenced from required .class files'
+class NothingBug4 {
+    public NothingBug4() {
+	scala.Option o = scala.None$$.MODULE$$;
+    }
+}
+
+class Foo {
+}
+{code}

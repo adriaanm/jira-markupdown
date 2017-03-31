@@ -1,0 +1,30 @@
+Just trying to understand the type command in REPL.
+
+Maybe there are still some corner cases. I did follow SI-7132.
+
+{code}
+scala> :type def i = 8
+=> Int
+
+scala> :type val i = 9
+Int
+
+scala> :type val i = 9 ; val j = 8
+=> Int <and> => Int
+
+scala> :type -v val i = 9 ; val j = 8
+// Type signature
+=> Int <and> => Int
+
+// Internal Type structure
+OverloadedType(
+  alts = List(
+    NullaryMethodType(
+      TypeRef(TypeSymbol(final abstract class Int extends AnyVal))
+    )
+    NullaryMethodType(
+      TypeRef(TypeSymbol(final abstract class Int extends AnyVal))
+    )
+  )
+)
+{code}

@@ -1,0 +1,49 @@
+{noformat}
+scala> :paste
+// Entering paste mode (ctrl-D to finish)
+
+class Bippy { trait Foo[A] }
+
+object p {
+  final class Implicits[C <: Bippy with Singleton](val c: C) {
+    def f: Int = 1
+    def f[A](x: A)(ev: c.Foo[A]): Int = 2
+  }
+
+  val c  = new Bippy
+}
+
+// Exiting paste mode, now interpreting.
+
+defined class Bippy
+defined object p
+
+scala> val pre = typeOf[p.Implicits[p.c.type]]
+pre: $r.intp.global.Type = p.Implicits[p.c.type]
+
+scala> val alts = typeOf[p.Implicits[_]].member(TermName("f")).alternatives
+alts: List[$r.intp.global.Symbol] = List(method f, method f)
+
+scala> alts.map(_.initialize)
+res2: List[$r.intp.global.Symbol] = List(method f, method f)
+
+scala> alts.map(_.defString)
+res3: List[String] = List(def f[A](x: A)(ev: Implicits.this.c.Foo[A]): Int, def f: Int)
+
+scala> val sym = alts.head
+sym: $r.intp.global.Symbol = method f
+
+scala> pre memberType sym
+res4: $r.intp.global.Type = ([A](x: A)(ev: _7.c.Foo[A])Int) forSome { val _7: p.Implicits[p.c.type] }
+{noformat}
+
+Not overloading vs overloading governs whether this existential gets skolemized away in `adapt`.
+
+{code}
+  case tp if mode.typingExprNotLhs && isExistentialType(tp) =>
+    adapt(tree setType tp.dealias.skolemizeExistential(context.owner, tree), mode, pt, original)
+{code}
+
+Here's a crude demonstration that this remedies the problem:
+
+https://github.com/retronym/scala/compare/ticket/8267?expand=1

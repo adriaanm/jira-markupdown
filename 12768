@@ -1,0 +1,70 @@
+Since annotations should now follow the type, I tried to convert an example to this new syntax. While doing so, I came up with a (presumably syntactically incorrect) example that crashes the compiler:
+
+*Code*
+{code}
+class C {
+  new (G @A)[Int]
+}
+class G[T] {}
+class A extends Annotation
+{code}
+(I think the second line should read more like {{new (G[Int] @A)}} to be syntactically valid, which can be compiled.) I was using _Scala compiler version 2.6.0.12796.20070905-080155 -- (c) 2002-2007 LAMP/EPFL_. The exception which was produced looked as follows:
+
+*What happened*
+{code}
+$$ scalac -Xplug-types ex01.scala
+Exception in thread "main" java.lang.NullPointerException
+        at scala.tools.nsc.typechecker.Typers$$Typer.typedAppliedTypeTree$$0(Typers.scala:2633)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:2909)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:2957)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typedTypeConstructor(Typers.scala:3034)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typedNew$$0(Typers.scala:2109)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:2791)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:2957)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typedQualifier(Typers.scala:3010)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:2874)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:2957)
+        at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$102.apply(Typers.scala:2271)
+        at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$102.apply(Typers.scala:2271)
+        at scala.tools.nsc.typechecker.Typers$$Typer.silent(Typers.scala:553)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typedApply$$0(Typers.scala:2271)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:2854)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:2957)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:2990)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typedStat$$0(Typers.scala:1465)
+        at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$57.apply(Typers.scala:1495)
+        at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$57.apply(Typers.scala:1495)
+        at scala.List$$.loop$$0(List.scala:244)
+        at scala.List$$.mapConserve(List.scala:261)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typedStats(Typers.scala:1495)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typedTemplate(Typers.scala:1113)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typedClassDef(Typers.scala:999)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:2677)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:2957)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:2990)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typedStat$$0(Typers.scala:1465)
+        at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$57.apply(Typers.scala:1495)
+        at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$57.apply(Typers.scala:1495)
+        at scala.List$$.loop$$0(List.scala:244)
+        at scala.List$$.mapConserve(List.scala:261)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typedStats(Typers.scala:1495)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typed1(Typers.scala:2673)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:2957)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:2990)
+        at scala.tools.nsc.typechecker.Analyzer$$typerFactory$$$$anon$$1.apply(Analyzer.scala:39)
+        at scala.tools.nsc.Global$$GlobalPhase.applyPhase(Global.scala:249)
+        at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$2.apply(Global.scala:238)
+        at scala.tools.nsc.Global$$GlobalPhase$$$$anonfun$$2.apply(Global.scala:238)
+        at scala.Iterator$$class.foreach(Iterator.scala:375)
+        at scala.collection.mutable.ListBuffer$$$$anon$$0.foreach(ListBuffer.scala:255)
+        at scala.tools.nsc.Global$$GlobalPhase.run(Global.scala:238)
+        at scala.tools.nsc.Global$$Run.compileSources(Global.scala:534)
+        at scala.tools.nsc.Global$$Run.compile(Global.scala:615)
+        at scala.tools.nsc.Main$$.process(Main.scala:86)
+        at scala.tools.nsc.Main$$.main(Main.scala:107)
+        at scala.tools.nsc.Main.main(Main.scala)
+{code}
+
+*Expected*
+
+Clean compilation if the code is correct or display of a syntax error.

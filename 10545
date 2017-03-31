@@ -1,0 +1,67 @@
+It only affects normalization, not specialization (hooray!):
+{code}
+sun@sun-laptop:~$ cat x.scala
+
+trait X[@specialized(Int) A, @specialized(Long) B] { def foo(a: A, b: B) = { println("T") }}
+trait Y[@specialized(Long) B, @specialized(Int) A] extends X[A,B] { override def foo(a: A, b: B) = { println("Y") }}
+
+object Test {
+  def main(args: Array[String]): Unit = {
+    (new Y[Long, Int] {}).foo(1,2)
+    (new Y[Long, Int] {}: X[Int, Long]).foo(1,2)
+  }
+}
+
+sun@sun-laptop:~$ scalac -Xprint:spec x.scala 
+[[syntax trees at end of                specialize]] // x.scala
+package <empty> {
+  abstract trait X[@specialized(scala.Int) A >: Nothing <: Any, @specialized(scala.Long) B >: Nothing <: Any] extends Object {
+    def /*X*/$init$(): Unit = {
+      ()
+    };
+    def foo(a: A, b: B): Unit = scala.this.Predef.println("T");
+    <specialized> def foo$mcIJ$sp(a: Int, b: Long): Unit = X.this.foo(a.asInstanceOf[A](), b.asInstanceOf[B]())
+  };
+  abstract trait Y[@specialized(scala.Long) B >: Nothing <: Any, @specialized(scala.Int) A >: Nothing <: Any] extends Object with X[A,B] {
+    def /*Y*/$init$(): Unit = {
+      ()
+    };
+    override def foo(a: A, b: B): Unit = scala.this.Predef.println("Y");
+    override <specialized> def foo$mcIJ$sp(a: Int, b: Long): Unit = Y.this.foo(a.asInstanceOf[A](), b.asInstanceOf[B]())
+  };
+  object Test extends Object {
+    def <init>(): Test.type = {
+      Test.super.<init>();
+      ()
+    };
+    def main(args: Array[String]): Unit = {
+      {
+  final class $anon extends Object with Y$mcIJ$sp {
+    def <init>(): anonymous class $anon = {
+      $anon.super.<init>();
+      ()
+    }
+  };
+  new anonymous class $anon()
+}.foo$mcIJ$sp(1, 2L);
+      ({
+  final class $anon extends Object with Y$mcIJ$sp {
+    def <init>(): anonymous class $anon = {
+      $anon.super.<init>();
+      ()
+    }
+  };
+  new anonymous class $anon()
+}: X[Int,Long]).foo$mcIJ$sp(1, 2L)
+    }
+  };
+  abstract <specialized> trait X$mcIJ$sp extends AnyRef with X[Int,Long] {
+    override <specialized> def foo(a: Int, b: Long): Unit = X$mcIJ$sp.this.foo$mcIJ$sp(a, b);
+    override <specialized> def foo$mcIJ$sp(a: Int, b: Long): Unit = scala.this.Predef.println("T")
+  };
+  abstract <specialized> trait Y$mcIJ$sp extends AnyRef with Y[Long,Int] with X$mcIJ$sp {
+    override <specialized> def foo(a: Int, b: Long): Unit = Y$mcIJ$sp.this.foo$mcIJ$sp(a, b);
+    override <specialized> def foo$mcIJ$sp(a: Int, b: Long): Unit = scala.this.Predef.println("Y")
+  }
+}
+{code}

@@ -1,0 +1,20 @@
+Some of the seals can be removed too:
+{code}
+package types
+
+trait Document {
+  sealed trait FieldBase
+  trait StaticFieldBase extends FieldBase with StaticDocument
+  trait DynamicFieldBase extends FieldBase with DynamicDocument
+}
+
+sealed trait StaticDocument extends Document {
+  abstract class AbstractField extends FieldBase
+}
+
+sealed trait DynamicDocument extends Document {
+  abstract class AbstractField extends FieldBase
+}
+
+class Collection extends StaticDocument
+{code}

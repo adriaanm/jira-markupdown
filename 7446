@@ -1,0 +1,23 @@
+This is a regression from 2.7.7 to 2.8.0. The class seems to be incorrectly shadowing the imported implicit of the same name.
+
+{code}
+  ~/code/scratch/20120518 cat Bar.scala
+import Implicits._
+
+class Baz
+
+object Test {
+  implicitly[Int]
+}
+
+object Implicits  {
+  implicit val Baz: Int = 0
+}
+  ~/code/scratch/20120518 rm -rf out/* 
+  ~/code/scratch/20120518 scalac210 -language:implicitConversions -d out -classpath out Bar.scala 
+  ~/code/scratch/20120518 scalac210 -language:implicitConversions -d out -classpath out Bar.scala 
+Bar.scala:6: error: could not find implicit value for parameter e: Int
+  implicitly[Int]
+            ^
+one error found
+{code}

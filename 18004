@@ -1,0 +1,15 @@
+Since Scala 2.10 currying functions with repeated parameters seems to change the repeated parameters into a Seq[] parameter.
+
+Code:
+{quote}def doSomething(x: Int)(abc: Int*)(y: Int) = x + abc.sum * y
+def doLess = doSomething(0)_{quote}
+
+Output with Scala 2.9.2:
+{quote}doSomething: (x: Int)(abc: Int*)(y: Int)Int
+doLess: Int* => (Int => Int){quote}
+
+Output with Scala 2.10.0:
+{quote}doSomething: (x: Int)(abc: Int*)(y: Int)Int
+doLess: Seq[Int] => (Int => Int){quote}
+
+

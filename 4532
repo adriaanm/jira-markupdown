@@ -1,0 +1,22 @@
+The problem seems to lie in the Enumeration.populateNameMap() method. It uses reflections to collect all methods that matches the signature () => Value, so it accidentally picks up the Value method of Enumeration.
+
+Here's a print dump:
+{code}
+populateNameMap:enter nmap='Map()'
+populateNameMap name='a' m='public scalatest.Enumeration$$Value line4$$object$$$$iw$$$$iw$$$$iw$$t$$.a()' value='0'
+populateNameMap declaringClass='class line4$$object$$$$iw$$$$iw$$$$iw$$t$$'
+populateNameMap name='b' m='public scalatest.Enumeration$$Value line4$$object$$$$iw$$$$iw$$$$iw$$t$$.b()' value='1'
+populateNameMap declaringClass='class line4$$object$$$$iw$$$$iw$$$$iw$$t$$'
+populateNameMap name='Value' m='public final scalatest.Enumeration$$Value scalatest.Enumeration.Value()' value='2'
+populateNameMap declaringClass='class scalatest.Enumeration'
+populateNameMap:exit nmap='Map(2 -> Value, 1 -> b, 0 -> a)'
+{code}
+
+A quick fix could be just to filter away the method from the Enumeration class:
+{code}
+private def populateNameMap() {
+...
+  val methods = getClass.getMethods filter (m => m.getParameterTypes.isEmpty && classOf[Value].isAssignableFrom(m.getReturnType) && classOf[Enumeration] != m.getDeclaringClass)
+...
+}
+{code}

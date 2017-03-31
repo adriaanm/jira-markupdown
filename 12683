@@ -1,0 +1,11 @@
+Type inference does not support bounds that refer to other type parameters. Why do you need T2? This works:
+{code}
+    def addAll[B >: A](that: Container[B]): Boolean
+{code}
+
+If you have to be able to specify the container, you could try:
+{code}
+    def addAll[B >: A, C[x] <: Container[x]](that: C[B]): Boolean
+{code}
+
+The inferred types then look like ` t1.addAll[Any, Container](t2)`

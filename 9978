@@ -1,0 +1,93 @@
+I've cobbled together a test case, which has indeed progressed in 2.11.
+
+{noformat}
+% tail build.sbt test.scala
+==> build.sbt <==
+scalaVersion := "2.11.0-M4"
+
+libraryDependencies +=  "com.google.guava" % "guava" % "14.0.1"
+
+
+==> test.scala <==
+object Test {
+  def foo(c: com.google.common.cache.CacheBuilder[_, _]) {}
+}
+
+% sbt -scala-home "$(scala-hash -h a954321)" compile
+[info] a954321 => /Users/jason/usr/scala-v2.11.0-M3-153-ga954321
+Detected sbt version 0.13.0-RC2
+Using /Users/jason/.sbt/0.13.0-RC2 as sbt dir, -sbt-dir to override.
+[YourKit Java Profiler 11.0.9] Log file: /Users/jason/.yjp/log/14872.log
+[info] Loading project definition from /Users/jason/code/scratch3/project
+[info] Set current project to scratch3 (in build file:/Users/jason/code/scratch3/)
+[info] Defining {.}/*:scalaHome
+[info] The new value will be used by *:allDependencies, *:ivyConfigurations and 4 others.
+[info] 	Run `last` for details.
+[info] Reapplying settings...
+[info] Set current project to scratch3 (in build file:/Users/jason/code/scratch3/)
+[info] Updating {file:/Users/jason/code/scratch3/}scratch3...
+[info] Resolving com.google.guava#guava;14.0.1 ...
+[info] Done updating.
+[info] Compiling 1 Scala source and 1 Java source to /Users/jason/code/scratch3/target/scala-2.11.0-M4/classes...
+[info] 'compiler-interface' not yet compiled for Scala 2.11.0-20130613-115152-a954321682. Compiling...
+[info]   Compilation completed in 15.208 s
+[warn] Class javax.annotation.Nullable not found - continuing with a stub.
+[warn] Class javax.annotation.Nullable not found - continuing with a stub.
+[warn] Class javax.annotation.Nullable not found - continuing with a stub.
+[warn] Class javax.annotation.Nullable not found - continuing with a stub.
+[warn] Class javax.annotation.Nullable not found - continuing with a stub.
+[warn] Class javax.annotation.CheckReturnValue not found - continuing with a stub.
+[warn] 6 warnings found
+[success] Total time: 18 s, completed Aug 15, 2013 9:48:36 AM
+
+
+% sbt -scala-home "$(scala-hash -h a954321~1)" compile
+[info] a954321~1 => /Users/jason/usr/scala-v2.11.0-M3-152-g5312d63
+Detected sbt version 0.13.0-RC2
+Using /Users/jason/.sbt/0.13.0-RC2 as sbt dir, -sbt-dir to override.
+[YourKit Java Profiler 11.0.9] Log file: /Users/jason/.yjp/log/14931.log
+[info] Loading project definition from /Users/jason/code/scratch3/project
+[info] Set current project to scratch3 (in build file:/Users/jason/code/scratch3/)
+[info] Defining {.}/*:scalaHome
+[info] The new value will be used by *:allDependencies, *:ivyConfigurations and 4 others.
+[info] 	Run `last` for details.
+[info] Reapplying settings...
+[info] Set current project to scratch3 (in build file:/Users/jason/code/scratch3/)
+[info] Compiling 1 Scala source and 1 Java source to /Users/jason/code/scratch3/target/scala-2.11.0-M4/classes...
+[info] 'compiler-interface' not yet compiled for Scala 2.11.0-20130605-180002-5312d63055. Compiling...
+[info]   Compilation completed in 16.349 s
+[warn] Class javax.annotation.Nullable not found - continuing with a stub.
+[warn] Caught: java.lang.NullPointerException while parsing annotations in /Users/jason/.ivy2/cache/com.google.guava/guava/bundles/guava-14.0.1.jar(com/google/common/cache/LocalCache.class)
+[error] bad constant pool tag ${in.buf(start)} at byte $start
+[error] uncaught exception during compilation: FatalError("
+...
+
+
+/code/scratch3 sbt -scala-home "$(scala-hash -h v2.10.2)" compile
+[info] v2.10.2 => /Users/jason/usr/scala-v2.10.2-0-g60d462e
+Detected sbt version 0.13.0-RC2
+Using /Users/jason/.sbt/0.13.0-RC2 as sbt dir, -sbt-dir to override.
+[YourKit Java Profiler 11.0.9] Log file: /Users/jason/.yjp/log/14990.log
+[info] Loading project definition from /Users/jason/code/scratch3/project
+[info] Set current project to scratch3 (in build file:/Users/jason/code/scratch3/)
+[info] Defining {.}/*:scalaHome
+[info] The new value will be used by *:allDependencies, *:ivyConfigurations and 4 others.
+[info] 	Run `last` for details.
+[info] Reapplying settings...
+[info] Set current project to scratch3 (in build file:/Users/jason/code/scratch3/)
+[info] Compiling 1 Scala source and 1 Java source to /Users/jason/code/scratch3/target/scala-2.11.0-M4/classes...
+[info] 'compiler-interface' not yet compiled for Scala 2.10.2-20130530-074427-60d462ef6e. Compiling...
+[info]   Compilation completed in 15.238 s
+[warn] Class javax.annotation.Nullable not found - continuing with a stub.
+[warn] Caught: java.lang.NullPointerException while parsing annotations in /Users/jason/.ivy2/cache/com.google.guava/guava/bundles/guava-14.0.1.jar(com/google/common/cache/LocalCache.class)
+[error] error while loading LocalCache, class file '/Users/jason/.ivy2/cache/com.google.guava/guava/bundles/guava-14.0.1.jar(com/google/common/cache/LocalCache.class)' is broken
+[error] (class java.lang.RuntimeException/bad constant pool tag 9 at byte 125)
+[warn] Class javax.annotation.CheckReturnValue not found - continuing with a stub.
+[warn] Caught: java.lang.NullPointerException while parsing annotations in /Users/jason/.ivy2/cache/com.google.guava/guava/bundles/guava-14.0.1.jar(com/google/common/cache/CacheBuilder.class)
+[error] error while loading CacheBuilder, class file '/Users/jason/.ivy2/cache/com.google.guava/guava/bundles/guava-14.0.1.jar(com/google/common/cache/CacheBuilder.class)' is broken
+[error] (class java.lang.RuntimeException/bad constant pool index: 0 at pos: 15184)
+[warn] four warnings found
+[error] two errors found
+[error] (compile:compile) Compilation failed
+[error] Total time: 16 s, completed Aug 15, 2013 9:50:56 AM
+{noformat}

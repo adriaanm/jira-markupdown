@@ -1,0 +1,18 @@
+{code}
+scala> trait A { val x: A }
+defined trait A
+
+scala> trait B { val x: B }
+defined trait B
+
+scala> class C extends A with B { lazy val x = new C }
+defined class C
+
+scala> class D extends A with B { lazy val x = new D }
+defined class D
+
+scala> if (true) new C else new D
+res0: ScalaObject with A with B = C@662ad0d
+{code}
+
+In 2.9 the type of res0 was ScalaObject with A with B { val x: ScalaObject with A with B }.

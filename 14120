@@ -1,0 +1,12 @@
+Eclipse may generate invalid classfiles. In my examples, it is the superclass that gets a `<none>` instead of a proper class name (it's a `NoSymbol` that somehow gets through). The same file is correctly compiled by `scalac`, `fsc` and `scalac -Xresident`, so I assume it must be some preprocessing done by Eclipse that is causing this.
+
+I am sorry for not being able to reduce this to a simple example. You can reproduce this if you checkout `http://lampsvn.epfl.ch/svn-repos/scala/scala/branches/specialized/` and open the scala project. Open 'transform/SpecializeTypes.scala'. Go to line 658, append a space then delete it. Save. Run `javap`:
+
+{code}
+javap -classpath build/quick/classes/compiler/ scala.tools.nsc.transform.SpecializeTypes\$$SpecialOverload 
+Compiled from "SpecializeTypes.scala"
+public class scala.tools.nsc.transform.SpecializeTypes$$SpecialOverload extends <none> implements scala.ScalaObject,scala.Product,java.io.Serializable{
+    public ...
+{code}
+
+It does not happen all the time, sometimes I need to repeat the above steps several times. After a fresh start, it works the first time, but the second almost always fails. The line on which the change is done seems to matter. I noticed a correlation between the outline mode being empty or filled with bogus names and broken classfiles. It also seems to happen more often when the Error log is rolling with "breaking probably infinite loop with [tope2ydm, cb7ieu]" and "Error in JDT core during AST creation".

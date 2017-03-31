@@ -1,0 +1,42 @@
+Or
+{code}
+scala> var f: Int => Int = i => i
+f: Int => Int = <function1>
+
+scala> val i = f(10)
+i: Int = 10
+
+scala> f = null
+f: Int => Int = null
+
+scala> var f: Int => Int = i => i
+f: Int => Int = <function1>
+
+scala> f   // reports the first f, not its redefinition
+res0: Int => Int = null
+{code}
+
+Both object and class templates (incorrectly or spuriously) import too much (both first f and i), but object template correctly imports the desired f, which hides the previous f.  The class template has different logic that fails to import the correct f at res0, so it resolves to the incorrect one.
+
+Imports can require previous imports:
+
+{code}
+scala> trait T ; class C { implicit val t: T = new T {} }
+defined trait T
+defined class C
+
+scala> val c = new C
+c: C = C@77afea7d
+
+scala> import c.t
+import c.t
+
+scala> implicitly[T]
+res0: T = C$$anon$1@5442a311
+
+scala> val t = 17
+t: Int = 17
+
+scala> t
+res1: T = C$$anon$1@5442a311
+{code}

@@ -1,0 +1,19 @@
+Some variations:
+
+{code}
+trait HK {
+  type Rep[X]
+
+  // okay
+  def unzip2[A, B](ps: Rep[List[(A, B)]])
+  unzip2(null.asInstanceOf[Rep[List[(Int, String)]]])
+
+  // okay
+  def unzipHK[A, B, C[_]](ps: Rep[C[(A, B)]])
+  unzipHK(null.asInstanceOf[Rep[List[(Int, String)]]])
+
+  // fail
+  def unzipHKRet[A, B, C[_]](ps: Rep[C[(A, B)]]): (Rep[C[A]], Rep[C[B]])
+  unzipHKRet(null.asInstanceOf[Rep[List[(Int, String)]]])
+}
+{code}

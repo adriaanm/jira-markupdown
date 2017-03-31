@@ -1,0 +1,20 @@
+(In r21167) Leveraged -Xmigration to burn off some warts which arose in the
+new collections.  Warnings put in place for behavioral changes,
+allowing the following.  1) Buffers: create new collections on
+++ and -- like all the other collections.  2) Maps: eliminated
+never-shipped redundant method valuesIterable and supplied these
+return types:
+
+  def keys: Iterable[A]
+  def keysIterator: Iterator[A]
+  def values: Iterable[B]
+  def valuesIterator: Iterator[B]
+  def keySet: Set[A]
+
+I concluded that keys should return Iterable because keySet
+also exists on Map, and is not solely in the province of Maps
+even if we wanted to change it: it's defined on Sorted and
+also appears in some Sets.  So it seems sensible to have keySet
+return a Set and keys return the more general type.
+
+Closes SI-3089, SI-3145.  Review by odersky.

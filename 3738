@@ -1,0 +1,23 @@
+i am having the same problem here:
+
+{code}
+trait Lala
+
+class Test[ T <% Lala ]( thunk: => T ) {
+   def test : Int = {
+       println( "HERE" )
+       val t: Lala = thunk
+       42
+   }
+}
+
+implicit def thunkToTest[ T <% Lala ]( thunk: => T ) = new Test( thunk )
+
+def rara( f: Test[ _ ]) : Int = f.test
+
+rara { println( "!!!" ); new Lala{} }
+{code}
+
+obviously "!!!" is printed early and not the whole curly braces block treated as the thunk. i think this is counter-intuitive. someone suggested that a call rara({ println( "!!!" ); new Lala{} }) would work, but looks rather bad will confuse people in a DSL (where they will in all other cases make calls such as lulu { ... })
+
+if you decide not to change the behaviour, a compiler warning would be very useful. i spent half a day figuring out what was going on and till i could distill the above example.

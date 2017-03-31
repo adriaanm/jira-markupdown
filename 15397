@@ -1,0 +1,26 @@
+See this: http://stackoverflow.com/questions/2959311/can-i-have-a-negative-value-as-constant-expression-in-scala
+
+Suppose you have a Java annotation:
+
+{code}
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.FIELD)
+public @interface DoubleValue {
+  double value();
+} 
+{code}
+
+Try to use it in Scala with a negative value:
+
+{code}
+class Test {
+  @DoubleValue(-0.05)
+  var a = 0
+}
+{code}
+
+You get a strange error:
+
+"annotation argument needs to be a constant; found: 0.05.unary_-"
+
+Tested with Scala 2.8.0.RC3 on Sun Java 1.6.0_20

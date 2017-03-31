@@ -1,0 +1,14 @@
+Actually, we've got the same bug in regular sequence extractors:
+
+{code}
+scala-hash v2.11.4 -optimize
+Welcome to Scala version 2.11.4-20141023-110636-d783face36 (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_25).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> val b = Buffer(1, 2, 3)
+b: scala.collection.mutable.Buffer[Int] = ArrayBuffer(1, 2, 3)
+
+scala> b match { case Buffer(1, i, 3) => b(1) = 42; i }
+res0: Int = 42
+{code}

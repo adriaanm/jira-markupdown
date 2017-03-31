@@ -1,0 +1,15 @@
+Cool. Sorry for the dup.
+
+I don't think your workaround helps here, since now the Process types are completely unrelated to each other and can't be combined. :( One of the points of this library I am writing (it is based roughly on [Ed's machines library|https://github.com/ekmett/machines] and [the port to Scala|https://github.com/ekmett/machines] is that we can mix and match Processes with different capabilities (represented by their F argument).
+
+The workaround I settled on was something like this:
+
+{code}
+case class Two[A,B]() { // a two input Process
+  type f[x,y] { def get: Either[A =:= y, B =:= y] }
+  case object L extends f[Unit,A] { def get = Left(implicitly) }
+  case object R extends f[Unit,B] { def get = Right(implicitly) }
+}
+{code}
+
+I then use Process[Two[A,B]#f,C] to represent a Process that accepts two inputs, and now f is an actual type, not just a type alias, so I can go back to pattern matching on Await. I can't pattern match on L and R (since Two[A,B]().L != Two[A,B]().L - they belong to completely separate types), but even if I could Scala is missing the GADT support that would refine the types properly there anyway. Instead I pattern match on the result of calling get, which contains an equality witness on either side that also lets me refine the types correctly. Somewhat annoying to use but not too horrible so far...

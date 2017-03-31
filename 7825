@@ -1,0 +1,14 @@
+The following quick hack (visiting anon-closure-classes in a compilation unit before other classes) won't do the trick:
+
+{noformat}
+  class InliningPhase(prev: Phase) extends ICodePhase(prev) {
+    def name = phaseName
+    val inliner = new Inliner
+
+    override def apply(unit: global.CompilationUnit) {
+      val Pair(anonClos, nonAnonClos) = unit.icode partition { ic => isClosureClass(ic.symbol) }
+      anonClos    foreach apply
+      nonAnonClos foreach apply
+    }
+{noformat}
+

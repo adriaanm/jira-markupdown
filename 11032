@@ -1,0 +1,16 @@
+A smaller example that does not involve covariance but does produce a ClassCastException. This is scala 2.11.5:- 
+
+{code}
+object Test {
+  trait B
+  case class C[X, Y]( x: X, y: Y, f: X => Y) extends B
+  def eval(b: B) = b match { case C(x, y, f) => f(y) }
+  eval(C("abc", 0, (x: String) => x.length))
+}
+Test
+
+java.lang.ClassCastException: java.lang.Integer cannot be cast to java.lang.String
+  at Test$$anonfun$1.apply(<console>:13)
+  at Test$.eval(<console>:11)
+  ... 45 elided
+{code}

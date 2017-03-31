@@ -1,0 +1,10 @@
+http://lampsvn.epfl.ch/trac/scala/browser/scala/trunk/src/library/scala/runtime/NonLocalReturnException.scala should be suppressing the stack trace generation for performance reasons. Exception throwing is fast, but stack trace generation is slow. See for example, http://www.javaspecialists.eu/archive/Issue129.html
+
+The following should do the trick:
+
+{code}
+class NonLocalReturnException[T](val key: AnyRef, val value: T) extends RuntimeException{
+  override def fillInStackTrace = null;
+}
+{code}
+

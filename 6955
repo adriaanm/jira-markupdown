@@ -1,0 +1,45 @@
+Please don't link to gists; please don't supply test code which is not self-contained; please don't include a bunch of extraneous detail.
+
+After that, it looks like this.
+{code}
+class ClassMethod[@specialized T](x: T) {
+  def m1[@specialized W](f: T => W): W = f(x)
+  def m2(f: T => T): T = f(x)
+}
+
+class ClassClass[@specialized T, @specialized W](x: T) {
+  def m3(f: T => W): W = f(x)
+  def m4(f: T => T): T = f(x)
+}
+{code}
+
+{noformat}
+// ClassClass$mcII$sp
+public int m3(scala.Function1);
+   0:	aload_0
+   1:	aload_1
+   2:	invokevirtual	#13; //Method m3$mcII$sp:(Lscala/Function1;)I
+   5:	ireturn
+
+public int m3$mcII$sp(scala.Function1);
+   0:	aload_1
+   1:	aload_0
+   2:	getfield	#22; //Field x$mcI$sp:I
+   5:	invokeinterface	#28,  2; //InterfaceMethod scala/Function1.apply$mcII$sp:(I)I
+   10:	ireturn
+
+// ClassMethod$mcI$sp
+public java.lang.Object m1(scala.Function1);
+   0:	aload_0
+   1:	aload_1
+   2:	invokevirtual	#13; //Method m1$mcI$sp:(Lscala/Function1;)Ljava/lang/Object;
+   5:	areturn
+
+public java.lang.Object m1$mcI$sp(scala.Function1);
+   0:	aload_1
+   1:	aload_0
+   2:	getfield	#22; //Field x$mcI$sp:I
+   5:	invokestatic	#28; //Method scala/runtime/BoxesRunTime.boxToInteger:(I)Ljava/lang/Integer;
+   8:	invokeinterface	#34,  2; //InterfaceMethod scala/Function1.apply:(Ljava/lang/Object;)Ljava/lang/Object;
+   13:	areturn
+{noformat}

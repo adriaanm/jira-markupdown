@@ -1,0 +1,26 @@
+There are fairly good reasons for wanting to write it.  Writing 
+{code}
+object Test extends Application {
+val o = new { self =>
+              override def equals(other : Any) : Boolean =
+                 other match {
+                   case that : self.type => true
+                   ...
+                   case _ => false
+                 }
+      }
+}
+{code}
+is more uniform than writing
+{code}
+object Test extends Application {
+val o = new { self =>
+              override def equals(other : Any) : Boolean =
+                 (self eq other) ||
+                 (other match {
+                   ...
+                   case _ => false
+                  })
+      }
+}
+{code}

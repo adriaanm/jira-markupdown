@@ -1,0 +1,21 @@
+You are missing something, namely that there is already flatten on Iterator.  Your example is mixing and matching from Traversable and Iterator.
+{code}
+scala> val x = List(Some(1), None, Some(2))
+x: List[Option[Int]] = List(Some(1), None, Some(2))
+
+scala> x map (_.iterator)
+res0: List[Iterator[Int]] = List(non-empty iterator, empty iterator, non-empty iterator)
+
+scala> res0.iterator.flatten
+res1: Iterator[Int] = non-empty iterator
+
+scala> res1.toList
+res2: List[Int] = List(1, 2)
+{code}
+I already implemented a generalization which allows this to work, but martin says it has to wait until 2.9.
+
+http://www.scala-lang.org/node/6572
+
+You can use it now if you want:
+
+http://github.com/scala/scala/tree/trav-once-map

@@ -1,0 +1,45 @@
+A.java
+{code}
+public class A {
+  public B b() { return null; }
+}
+{code}
+
+B.java
+{code}
+public abstract class B {
+  public abstract int m();
+}
+{code}
+
+Test.scala
+{code}
+class T {
+  def f(a: A) = g(a.b)
+  def g(b: => B) = null
+}
+{code}
+
+Compiling:
+{noformat}
+$ javac A.java B.java
+$ scalac -Xexperimental A.scala -Xprint:typer
+A.scala:2: error: type mismatch;
+ found   : B
+ required: Int
+  def f(a: A) = g(a.b)
+                    ^
+[[syntax trees at end of                     typer]] // A.scala
+package <empty> {
+  class T extends scala.AnyRef {
+    def <init>(): T = {
+      T.super.<init>();
+      ()
+    };
+    def <f: error>(a: A): <error> = T.this.g(a.b);
+    def g(b: => B): Null = null
+  }
+}
+
+one error found
+{noformat}

@@ -1,0 +1,15 @@
+Not only does it fail, but there is nothing which can be done in Y2 (e.g. overriding to resolve the ambiguity, even though neither m should even be inherited in Y2, let alone overridable) to make it compile. This is among the consequences of refusing to fix SI-2568.
+{code}
+package s {
+  trait B1 { private val m = "B1" }
+  trait B2 { private[s] val m = "B2" }
+}
+class Y1 extends s.B1 with s.B2  // compiles
+class Y2 extends s.B2 with s.B1  // fails
+
+// ./a.scala:6: error: overriding value m in trait B2 of type String;
+//  value m in trait B1 of type String has weaker access privileges; it should not be private
+// class Y2 extends s.B2 with s.B1  // fails
+//       ^
+// one error found
+{code}

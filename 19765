@@ -1,0 +1,82 @@
+{noformat}
+tail  sandbox/{Named,NamedImpl}.java sandbox/test.scala
+==> sandbox/Named.java <==
+package bug;
+
+public @interface Named {}
+
+==> sandbox/NamedImpl.java <==
+import bug.Named;
+import java.io.Serializable;
+import java.lang.annotation.Annotation;
+
+public class NamedImpl implements Named {
+
+    public Class<? extends Annotation> annotationType() {
+        return null;
+    }
+}
+
+==> sandbox/test.scala <==
+class C {
+  new bug.NamedImpl
+}
+ticket/9387 /code/scala javac -d . sandbox/Named.java sandbox/NamedImpl.java && qscalac sandbox/test.scala
+java.lang.AssertionError: assertion failed: Invalid interfaces in Lbug/NamedImpl;: List(Lbug/Named;)
+	at scala.Predef$.assert(Predef.scala:165)
+	at scala.tools.nsc.backend.jvm.BTypes$ClassBType.checkInfoConsistency(BTypes.scala:850)
+	at scala.tools.nsc.backend.jvm.BTypes$ClassBType.info_$eq(BTypes.scala:827)
+	at scala.tools.nsc.backend.jvm.BTypesFromSymbols.scala$tools$nsc$backend$jvm$BTypesFromSymbols$$setClassInfo(BTypesFromSymbols.scala:344)
+	at scala.tools.nsc.backend.jvm.BTypesFromSymbols$$anonfun$classBTypeFromSymbol$4.apply(BTypesFromSymbols.scala:120)
+	at scala.tools.nsc.backend.jvm.BTypesFromSymbols$$anonfun$classBTypeFromSymbol$4.apply(BTypesFromSymbols.scala:112)
+	at scala.collection.MapLike$class.getOrElse(MapLike.scala:128)
+	at scala.collection.concurrent.TrieMap.getOrElse(TrieMap.scala:633)
+	at scala.tools.nsc.backend.jvm.BTypesFromSymbols.classBTypeFromSymbol(BTypesFromSymbols.scala:112)
+	at scala.tools.nsc.backend.jvm.BTypesFromSymbols$$anonfun$primitiveOrClassToBType$1$2.apply(BTypesFromSymbols.scala:153)
+	at scala.tools.nsc.backend.jvm.BTypesFromSymbols$$anonfun$primitiveOrClassToBType$1$2.apply(BTypesFromSymbols.scala:153)
+	at scala.collection.MapLike$class.getOrElse(MapLike.scala:128)
+	at scala.collection.AbstractMap.getOrElse(Map.scala:59)
+	at scala.tools.nsc.backend.jvm.BTypesFromSymbols.primitiveOrClassToBType$1(BTypesFromSymbols.scala:153)
+	at scala.tools.nsc.backend.jvm.BTypesFromSymbols.typeToBType(BTypesFromSymbols.scala:168)
+	at scala.tools.nsc.backend.jvm.BCodeHelpers$BCInnerClassGen$class.toTypeKind(BCodeHelpers.scala:355)
+	at scala.tools.nsc.backend.jvm.BCodeSkelBuilder$PlainSkelBuilder.toTypeKind(BCodeSkelBuilder.scala:50)
+	at scala.tools.nsc.backend.jvm.BCodeSkelBuilder$PlainSkelBuilder.tpeTK(BCodeSkelBuilder.scala:85)
+	at scala.tools.nsc.backend.jvm.BCodeBodyBuilder$PlainBodyBuilder.genApply(BCodeBodyBuilder.scala:599)
+	at scala.tools.nsc.backend.jvm.BCodeBodyBuilder$PlainBodyBuilder.genLoad(BCodeBodyBuilder.scala:312)
+	at scala.tools.nsc.backend.jvm.BCodeBodyBuilder$PlainBodyBuilder.genStat(BCodeBodyBuilder.scala:89)
+	at scala.tools.nsc.backend.jvm.BCodeBodyBuilder$PlainBodyBuilder$$anonfun$genBlock$1.apply(BCodeBodyBuilder.scala:809)
+	at scala.tools.nsc.backend.jvm.BCodeBodyBuilder$PlainBodyBuilder$$anonfun$genBlock$1.apply(BCodeBodyBuilder.scala:809)
+	at scala.collection.immutable.List.foreach(List.scala:381)
+	at scala.tools.nsc.backend.jvm.BCodeBodyBuilder$PlainBodyBuilder.genBlock(BCodeBodyBuilder.scala:809)
+	at scala.tools.nsc.backend.jvm.BCodeBodyBuilder$PlainBodyBuilder.genLoad(BCodeBodyBuilder.scala:373)
+	at scala.tools.nsc.backend.jvm.BCodeSkelBuilder$PlainSkelBuilder.emitNormalMethodBody$1(BCodeSkelBuilder.scala:621)
+	at scala.tools.nsc.backend.jvm.BCodeSkelBuilder$PlainSkelBuilder.genDefDef(BCodeSkelBuilder.scala:655)
+	at scala.tools.nsc.backend.jvm.BCodeSkelBuilder$PlainSkelBuilder.gen(BCodeSkelBuilder.scala:525)
+	at scala.tools.nsc.backend.jvm.BCodeSkelBuilder$PlainSkelBuilder$$anonfun$gen$1.apply(BCodeSkelBuilder.scala:527)
+	at scala.tools.nsc.backend.jvm.BCodeSkelBuilder$PlainSkelBuilder$$anonfun$gen$1.apply(BCodeSkelBuilder.scala:527)
+	at scala.collection.immutable.List.foreach(List.scala:381)
+	at scala.tools.nsc.backend.jvm.BCodeSkelBuilder$PlainSkelBuilder.gen(BCodeSkelBuilder.scala:527)
+	at scala.tools.nsc.backend.jvm.BCodeSkelBuilder$PlainSkelBuilder.genPlainClass(BCodeSkelBuilder.scala:125)
+	at scala.tools.nsc.backend.jvm.GenBCode$BCodePhase$Worker1.visit(GenBCode.scala:183)
+	at scala.tools.nsc.backend.jvm.GenBCode$BCodePhase$Worker1$$anonfun$run$1.apply$mcV$sp(GenBCode.scala:137)
+	at scala.tools.nsc.Global$GlobalPhase.withCurrentUnit(Global.scala:431)
+	at scala.tools.nsc.backend.jvm.GenBCode$BCodePhase$Worker1.run(GenBCode.scala:137)
+	at scala.tools.nsc.backend.jvm.GenBCode$BCodePhase.buildAndSendToDisk(GenBCode.scala:355)
+	at scala.tools.nsc.backend.jvm.GenBCode$BCodePhase.run(GenBCode.scala:324)
+	at scala.tools.nsc.Global$Run.compileUnitsInternal(Global.scala:1504)
+	at scala.tools.nsc.Global$Run.compileUnits(Global.scala:1489)
+	at scala.tools.nsc.Global$Run.compileSources(Global.scala:1484)
+	at scala.tools.nsc.Global$Run.compile(Global.scala:1585)
+	at scala.tools.nsc.Driver.doCompile(Driver.scala:35)
+	at scala.tools.nsc.MainClass.doCompile(Main.scala:24)
+	at scala.tools.nsc.Driver.process(Driver.scala:55)
+	at scala.tools.nsc.Driver.main(Driver.scala:68)
+	at scala.tools.nsc.Main.main(Main.scala)
+error: Error while emitting test.scala
+assertion failed: Invalid interfaces in Lbug/NamedImpl;: List(Lbug/Named;)
+one error found
+{noformat}
+
+As seen in the community build: https://typesafe.slack.com/files/adriaan/F07FZV3PT/genbcode_crasher_in_play-core__community_build_.sh
+
+/cc [~moors] [~sethtisue] [~rytz]

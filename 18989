@@ -1,0 +1,50 @@
+According to the announcement of 2.11.0-RC1, I report an issue I have with code that compiles file under 2.10.3 but does not compile under 2.11.0-RC1.
+
+The issue can be reduced to the following minimal case:
+
+{code}
+Welcome to Scala version 2.10.3 (Java HotSpot(TM) 64-Bit Server VM, Java 1.7.0_51).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> :paste
+// Entering paste mode (ctrl-D to finish)
+
+object A extends A
+class A {
+  private var a: Boolean = false 
+  def run { A.a = true }
+}
+
+// Exiting paste mode, now interpreting.
+
+defined module A
+defined class A
+
+scala>
+{code}
+
+The same code fails to compile with Scala 2.11.0-RC1
+
+{code}
+Welcome to Scala version 2.11.0-RC1 (Java HotSpot(TM) 64-Bit Server VM, Java 1.7.0_51).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> :paste
+// Entering paste mode (ctrl-D to finish)
+
+object A extends A
+class A {
+  private var a: Boolean = false 
+  def run { A.a = true }
+}
+
+// Exiting paste mode, now interpreting.
+
+<console>:10: error: value a is not a member of object A
+         def run { A.a = true }
+                     ^
+
+scala>
+{code}

@@ -1,0 +1,36 @@
+I figure this might work:
+
+{code}
+$ scala
+Welcome to Scala version 2.9.2 (OpenJDK 64-Bit Server VM, Java 1.7.0_09).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> class Foo
+defined class Foo
+
+scala> class Bar extends Foo
+defined class Bar
+
+scala> class Baz extends Bar
+defined class Baz
+
+scala> val l = List(new Foo, new Bar, new Baz)
+l: List[Foo] = List(Foo@10a44013, Bar@f6aa7ee, Baz@2337022a)
+
+scala> implicit def RichList[A](l: List[A]) = new {
+     |   def narrow[X <: A](implicit m: ClassManifest[X]) = l filter m.erasure.isInstance
+     | }
+RichList: [A](l: List[A])java.lang.Object{def narrow[X <: A](implicit m: ClassManifest[X]): List[A]}
+
+scala> l.narrow[Foo]
+res0: List[Foo] = List(Foo@10a44013, Bar@f6aa7ee, Baz@2337022a)
+
+scala> l.narrow[Bar]
+res1: List[Foo] = List(Bar@f6aa7ee, Baz@2337022a)
+
+scala> l.narrow[Baz]
+res2: List[Foo] = List(Baz@2337022a)
+{code}
+
+... a little more concise than Pauls example.

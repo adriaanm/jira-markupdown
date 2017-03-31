@@ -1,0 +1,10 @@
+Here it is minimized a ways, and with only one source file.  It's still order-dependent: if you move the class definitions before the method definition, it no longer crashes.  Which is more than a little scary all by itself.
+{code}
+trait Foo {
+  def crash(x: Dingus[_]) = x match { case m: Bippy[tv] => }
+
+  class Dingus[T]
+  class Bippy[CC[X] <: Seq[X]]() extends Dingus[CC[Int]]
+}
+{code}
+It's easy enough to make this stop crashing, but not so easy to fix it without existential type constructors.  I had a vision that adriaan will fix it.

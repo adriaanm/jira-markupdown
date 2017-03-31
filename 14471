@@ -1,0 +1,24 @@
+These are probably all the same bug (trunk/2.8):
+
+object bug { def main(a: Array[String]) {
+  def fill1[A](n: Int)(elem: => A): Array[A] = {
+    val r=new Array[A](n)
+    var i=0;while(i<n){
+      r(i)=elem
+      i+=1}
+    r
+  }
+  def fill2[A](n1: Int, n2: Int)(elem: => A): Array[Array[A]] =
+    Array.fill(n1)(fill1(n2)(elem))
+  def fill2t[A](n1: Int, n2: Int)(elem: => A): Array[Array[A]] =
+    Array.tabulate(n1)(_=>fill1(n2)(elem))
+
+  val fine=fill2(1,1)(true) // no problem
+  // a-f all give java.lang.ClassCastException: [Lscala.runtime.BoxedArray; cannot be cast to [[Z
+  val a=Array.fill(1)(fill1(1)(true)) // not fine, although it's the expansion of the above call
+  val b=fill2t(1,1)(true)
+  val c=Array.fill(1)(new Array[Boolean](1))
+  val d=Array.tabulate(1)(_ => new Array[Boolean](1))
+  val e=Array.tabulate(1)(_=>Array.fill(1)(true))
+  val f=Array.fill(1,1)(true)
+} }

@@ -1,0 +1,31 @@
+Our way to expand private names by appending to fully qualified owner is not discriminating enough. Consider:
+{code}
+object nesting {
+  class C {
+  
+    class D {
+      private def x = "D"
+      def show = x
+      class E {
+    	println(x)
+      }
+    }
+    
+    val foo: D = {
+      class D extends C.this.D {
+        private def x = "foo.D"
+    	class E {
+    	  println(x)
+    	}
+      }
+      new D
+    }
+  }
+  val c = new C
+  val d = c.foo
+  d.show
+}
+{code}
+This should print "D" but prints "Foo.D". The problem lies in fullName which only retains the names of enclosing classes, and drops all enclosing values. 
+
+I believe we can fix the problem by leaving some trace that there is an enclosing term in the full name. It could be as simple as an extra dot in the full name. I.e. right now the full name of the class D in foo is nesting.C.D. If it was nesting.C..D or nesting.C._.D instead the clash would be avoided. 

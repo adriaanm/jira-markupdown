@@ -1,0 +1,23 @@
+{code}
+class TypeTest {
+  type Foldable[X[_]] = X[_]
+  def forComp[Coll[X]<:Foldable[Coll]](c: Coll[_]) = c.map //
+}
+{code}
+
+{code}
+Exception in thread "main" java.lang.StackOverflowError
+	at scala.reflect.internal.Types$AbstractTypeRef$class.thisInfo(Types.scala:2099)
+	at scala.reflect.internal.Types$AbstractArgsTypeRef.thisInfo(Types.scala:2327)
+	at scala.reflect.internal.Types$TypeRef.baseClasses(Types.scala:2199)
+	at scala.reflect.internal.Types$SimpleTypeProxy$class.baseClasses(Types.scala:165)
+	at scala.reflect.internal.Types$ExistentialType.baseClasses(Types.scala:2550)
+	at scala.reflect.internal.Types$TypeRef.baseClasses(Types.scala:2199)
+	at scala.reflect.internal.Types$SubType.baseClasses(Types.scala:1070)
+	at scala.reflect.internal.Types$TypeRef.baseClasses(Types.scala:2199)
+	at scala.reflect.internal.Types$SimpleTypeProxy$class.baseClasses(Types.scala:165)
+	at scala.reflect.internal.Types$ExistentialType.baseClasses(Types.scala:2550)
+	at scala.reflect.internal.Types$TypeRef.baseClasses(Types.scala:2199)
+	at scala.reflect.internal.Types$SubType.baseClasses(Types.scala:1070)
+	at scala.reflect.internal.Types$TypeRef.baseClasses(Types.scala:2199)
+{code}

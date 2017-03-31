@@ -1,0 +1,20 @@
+This is what it looks like when a raw tree is printed.  Pro tip: you can find exactly where such things are happening with -Xprompt.  (This is the one thing I learned from a week with adriaan.  Well that, and that americans are loud and boorish.)
+{code}
+qscalac -Xprompt files/neg/bug4196.scala 
+files/neg/bug4196.scala:5: error: Some[String] does not take parameters
+  }.apply("first param") ("spurious param")
+                         ^
+r)esume, a)bort: a
+Exception in thread "main" java.lang.Error: user abort
+	at scala.tools.nsc.reporters.ConsoleReporter.abort(ConsoleReporter.scala:119)
+	at scala.tools.nsc.reporters.ConsoleReporter.displayPrompt(ConsoleReporter.scala:106)
+	at scala.tools.nsc.reporters.AbstractReporter.info0(AbstractReporter.scala:46)
+	at scala.tools.nsc.reporters.Reporter.error(Reporter.scala:69)
+	at scala.tools.nsc.CompilationUnits$$CompilationUnit.error(CompilationUnits.scala:76)
+	at scala.tools.nsc.typechecker.Contexts$$Context.unitError(Contexts.scala:282)
+	at scala.tools.nsc.typechecker.Contexts$$Context.error(Contexts.scala:290)
+	at scala.tools.nsc.typechecker.Infer$$Inferencer.error(Infer.scala:205)
+	at scala.tools.nsc.typechecker.Infer$$Inferencer.errorTree(Infer.scala:209)
+	at scala.tools.nsc.typechecker.Typers$$Typer.doTypedApply(Typers.scala:2510)
+----> right there
+{code}

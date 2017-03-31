@@ -1,0 +1,18 @@
+Ok, let me clarify what I think. First, I have been disgusted by the present behavior since 2009. I might even have opened a ticket about. I consider it wrong, but it is a bit in line with Java behavior. String's "matches" works that way.
+
+I *am* saying that "fixing" it could break things. For example:
+
+{code}
+string match {
+  case p1() => ...
+  case p2() => ...
+}
+{code}
+
+An application might well _depend_ on p1 not doing a partial match, because that's how it has always worked.
+
+If a `@migration` warning -- which did not exist 2 years ago -- is considered good enough, then, yes, I'd _love_ for it to be truly fixed. People can always adjust their regex by enclosing them in anchors if they want the previous behavior.
+
+The solution I proposed enables people who want "correct" behavior to be able to get it, while not breaking any existing code.
+
+Now, just a bit of review on the pull request, I'm a bit concerned about the use of "lazy val" for pattern. Access to a "val" is much faster than to a "lazy val", and pretty much every method needs a compiled pattern. So, while one might save compiling a pattern twice when creating an "unanchored" version, one looses performance everywhere else.

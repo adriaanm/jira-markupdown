@@ -1,0 +1,22 @@
+The spec states: "... Subclasses of a sealed class can be inherited anywhere."  So, for example:
+
+{code}
+// AB.scala
+sealed trait A
+trait B extends A
+{code}
+
+{code}
+// CD.scala
+case object C extends B
+case object D extends B
+{code}
+
+This seems to defeat the purpose of {{sealed}} as a way of declaring closed algebraic types.  I can write the following:
+
+{code}
+def nonexhaustive(a: A): A = a match {
+  case C => C
+  // no case for D
+}
+{code}

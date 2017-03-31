@@ -1,0 +1,21 @@
+The thing is that {{j.l.Throwable.getStackTraceDepth()}} is package-protected, and the following program doesn't compile:
+
+{noformat}
+object O extends Throwable
+
+object Test {
+  def main(args: Array[String]) {
+    O.getStackTraceDepth()
+  }
+}
+{noformat}
+
+The error reads
+
+{noformat}
+error: method getStackTraceDepth in class Throwable cannot be accessed in object O
+    O.getStackTraceDepth()
+      ^
+one error found
+{noformat}
+

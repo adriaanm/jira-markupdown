@@ -1,0 +1,59 @@
+Related ticket: [https://lampsvn.epfl.ch/trac/scala/ticket/1510 SI-1510] ?
+
+*Release:*
+scala-2.8.0.Beta1-prerelease
+
+*Problem:*
+Compiler & library will fail with an internal compiler error if path contains whitespace.
+
+I have not experienced this error for the latest stable release (2.7.7).
+
+*Platform:*
+Java 6 Update 18, Windows 7 (32-bit)
+
+*Log:*
+{code}
+Buildfile: build.xml
+     [echo] Using ANT_OPTS: -Xms512M -Xmx1024M -Xss1M -XX:MaxPermSize=128M
+
+init:
+     [echo] Build number is '${version.major}.${version.minor}.${version.patch}'
+
+
+build-library:
+    [mkdir] Created dir: <path-to-project>\bu
+ild\classes\library
+    [javac] Compiling 13 source files to <path-to-project>
+ Compiler 2.8\build\classes\library
+[scalacfork] Compiling 522 files to <path-to-project>
+iler 2.8\build\classes\library
+[scalacfork] scalac error: don't know what to do with Scala
+[scalacfork]   scalac -help  gives more information
+
+BUILD FAILED
+java.lang.RuntimeException: Compilation failed because of an internal compiler e
+rror; see the error output for details.
+        at scala.Predef$.error(Predef.scala:74)
+        at scala.tools.ant.sabbus.ScalacFork.execute(ScalacFork.scala:105)
+        at org.apache.tools.ant.UnknownElement.execute(UnknownElement.java:288)
+        at sun.reflect.GeneratedMethodAccessor1.invoke(Unknown Source)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAcces
+sorImpl.java:25)
+        at java.lang.reflect.Method.invoke(Method.java:597)
+        at org.apache.tools.ant.dispatch.DispatchUtils.execute(DispatchUtils.jav
+a:106)
+        at org.apache.tools.ant.Task.perform(Task.java:348)
+        at org.apache.tools.ant.Target.execute(Target.java:357)
+        at org.apache.tools.ant.Target.performTasks(Target.java:385)
+        at org.apache.tools.ant.Project.executeSortedTargets(Project.java:1337)
+        at org.apache.tools.ant.Project.executeTarget(Project.java:1306)
+        at org.apache.tools.ant.helper.DefaultExecutor.executeTargets(DefaultExe
+cutor.java:41)
+        at org.apache.tools.ant.Project.executeTargets(Project.java:1189)
+        at org.apache.tools.ant.Main.runBuild(Main.java:758)
+        at org.apache.tools.ant.Main.startAnt(Main.java:217)
+        at org.apache.tools.ant.launch.Launcher.run(Launcher.java:257)
+        at org.apache.tools.ant.launch.Launcher.main(Launcher.java:104)
+
+Total time: 10 seconds
+{code}

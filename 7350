@@ -1,0 +1,28 @@
+The hamcrest minimized version:
+
+{code}
+import org.hamcrest.CoreMatchers._
+import org.junit.Assert._
+
+class MyTest {
+
+  var state = 10
+
+  def test() {
+    assertThat("Bad state before runToBreakpoint", state, anyOf(is(42), is(-42)))
+  }
+}
+{code}
+
+Use the following for build.sbt
+{code}
+name := "test-crash"
+
+scalaVersion := "2.10.2-SNAPSHOT"
+
+resolvers += Resolver.sonatypeRepo("snapshots")
+
+libraryDependencies += "junit" % "junit" % "4.11"
+{code}
+
+It fails with virtually all Scala versions known to man [2.9.3 - 2.11.0-M3]

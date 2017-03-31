@@ -1,0 +1,23 @@
+When one of the elements of a tuple is null, attempting to put the tuple in a hash map causes a !NullPointerException. It appears that the hashCode method on tuples does not handle null as a tuple element. I would expect a tuple to return some hash code even one of its elements is null.
+
+{code}
+Welcome to Scala version 2.6.0-final.
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> val x = (null, 1)
+x: (Null, Int) = (null,1)
+
+scala> val m = new scala.collection.mutable.HashMap[(String, Int), Int]
+m: scala.collection.mutable.HashMap[(String, Int),Int] = Map()
+
+scala> m.update(x, 1)
+java.lang.NullPointerException
+        at scala.runtime.ScalaRunTime$$._hashCode(ScalaRunTime.scala:82)
+        at scala.Tuple2.hashCode(Tuple2.scala:17)
+        at scala.collection.mutable.HashTable$$class.elemHashCode(HashTable.scala:151)
+        at scala.collection.mutable.HashMap.elemHashCode(HashMap.scala:33)
+        at scala.collection.mutable.HashTable$$class.findEntry(HashTable.scala:66)
+        at scala.collection.mutab...
+scala>
+{code}

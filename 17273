@@ -1,0 +1,13 @@
+https://gist.github.com/2943283
+
+{code}
+class Indirection[T](implicit val c: CompanionProvider[T]) {
+  def indirect: c.CompanionT = c.provide
+}
+
+// error: value foo is not a member of _1.c.CompanionT
+new Indirection[Foo].indirect.foo
+{code}
+
+this doesn't work because `new Indirection[Foo]: Indirection[Foo]`,
+i.e., there's no information about the implicit value that was inferred for `c` in the type of the target of the selection of `indirect`

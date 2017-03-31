@@ -1,0 +1,16 @@
+The following code compiles correctly, despite the use of the _ syntax for untyped macros in the HasWhere constructor. See https://groups.google.com/d/topic/scala-user/ge_-waot97Y/discussion
+
+{code}
+implicit class HasWhere(val exp : _) {
+  def where(block : Unit) = macro whereInfix
+}
+
+def whereInfix(c : Context)(block : c.Expr[Unit]) = {
+  import c.universe._
+
+  val exp = Select(c.prefix.tree, TermName("exp"))
+  val Expr(Block((inner, _))) = block
+  val newinner = inner :+ exp
+  Block(newinner : _*)
+}
+{code}

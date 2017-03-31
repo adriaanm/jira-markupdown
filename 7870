@@ -1,0 +1,11 @@
+The issue was only partly fixed: {{Success.flatMap}} is still (as of 2.10.M6 at least)
+
+{code}
+  def flatMap[U](f: T => Try[U]): Try[U] =
+    try f(value)
+    catch {
+      case e: Throwable => Failure(e)
+    }
+{code}
+
+which eats control exceptions.

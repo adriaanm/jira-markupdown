@@ -1,0 +1,10 @@
+You have to make it `protected[this]`, after the fix for SI-6566.
+
+{code}
+import language.higherKinds
+ 
+trait ELI[N]
+trait Companion[+CC[N, E[X] <: ELI[X]]] {
+  protected[this] type Coll = CC[_,Nothing]
+}
+{code}

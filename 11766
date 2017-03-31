@@ -1,0 +1,34 @@
+The behavior of the second line has nothing at all to do with the first line. The book is correct.
+
+The variable on the RHS refers to the variable on the LHS being defined, hence it is recursive. You can google it. I am far too lazy for such an undertaking.
+
+The REPL will not actually bring the first variable into scope at all, which is slightly different from what the book says; such a distinction may only matter with certain imports.
+
+Actually, that's not true. For some reason, it pulls in the import. But the mechanism is known to be imprecise. As a rule, it tries to import only what it needs from history.
+{code}
+scala> val mySet: Set[String] = mySet + "Item3"
+[[syntax trees at end of                     typer]] // <console>
+package $line2 {
+  object $read extends scala.AnyRef {
+    def <init>(): $line2.$read.type = {
+      $read.super.<init>();
+      ()
+    };
+    object $iw extends scala.AnyRef {
+      def <init>(): type = {
+        $iw.super.<init>();
+        ()
+      };
+      import $line1.$read.$iw.$iw.mySet;
+      object $iw extends scala.AnyRef {
+        def <init>(): type = {
+          $iw.super.<init>();
+          ()
+        };
+        private[this] val mySet: Set[String] = $iw.this.mySet.+("Item3");
+        <stable> <accessor> def mySet: Set[String] = $iw.this.mySet
+      }
+    }
+  }
+}
+{code}

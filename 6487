@@ -1,0 +1,14 @@
+the "cure" here was worse than the disease, at least for me. https://github.com/scala/scala/commit/dce6b34c38a6d774961ca6f9fd50b11300ecddd6 broke my app under 2.10. the commit introduces a ThreadLocal, without providing any way of calling `remove()` on it to clean up. so my no-longer-used Thread isn't eligible for garbage collection anymore like it was on 2.9.
+
+I was able to work around it as follows by running this code when I'm done parsing:
+{noformat}
+val field = getClass.getDeclaredField("scala$util$parsing$combinator$Parsers$$lastNoSuccessVar")
+field.setAccessible(true)
+val field2 = classOf[scala.util.DynamicVariable[_]].getDeclaredField("tl")
+field2.setAccessible(true)
+field2.get(field.get(this)).asInstanceOf[java.lang.ThreadLocal[_]].remove()
+field.set(this, null)
+{noformat}
+but, yuck.
+
+the good news is the lastNoSuccess thing is deprecated in 2.10, so it can be removed in 2.11.

@@ -1,0 +1,249 @@
+Yet another bug with protected access. Stopped working in M3.
+
+t1/Base.java
+{code}
+package t1;
+
+public class Base {
+  protected Vis inner;
+}
+{code}
+
+t1/Vis.java
+{code}
+package t1;
+
+public class Vis { }
+{code}
+
+Foo.scala
+{code}
+import t1.Vis
+
+abstract class Foo extends t1.Base {
+  trait Nested {
+    def crash() {
+      inner
+    }
+  }
+}
+{code}
+
+Changing trait to class fixes the problem.
+
+Crash:
+{code}
+exception when typing Nested$class.this.Foo$Nested$$$outer().Foo$$super$inner()/class scala.reflect.internal.Trees$Apply
+t1.Vis does not take parameters in file erasureCrash.scala
+scala.reflect.internal.Types$TypeError: t1.Vis does not take parameters
+	at scala.tools.nsc.typechecker.Contexts$Context.issueCommon(Contexts.scala:369)
+	at scala.tools.nsc.typechecker.Contexts$Context.issue(Contexts.scala:373)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.issue(Infer.scala:281)
+	at scala.tools.nsc.typechecker.Typers$Typer.scala$tools$nsc$typechecker$Typers$Typer$$duplErrorTree$1(Typers.scala:2879)
+	at scala.tools.nsc.typechecker.Typers$Typer.doTypedApply(Typers.scala:3165)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedApply$1(Typers.scala:4336)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:5114)
+	at scala.tools.nsc.transform.Erasure$Eraser.typed1(Erasure.scala:756)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:5285)
+	at scala.tools.nsc.typechecker.Typers$Typer.scala$tools$nsc$typechecker$Typers$Typer$$typedStat$1(Typers.scala:2690)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$54$$anonfun$55.apply(Typers.scala:2786)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$54$$anonfun$55.apply(Typers.scala:2786)
+	at scala.collection.immutable.List.loop$1(List.scala:164)
+	at scala.collection.immutable.List.mapConserve(List.scala:180)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$54.apply(Typers.scala:2786)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$54.apply(Typers.scala:2785)
+	at scala.tools.nsc.typechecker.Typers$Typer.withSavedContext(Typers.scala:523)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:2785)
+
+
+....
+
+	at scala.collection.Iterator$class.foreach(Iterator.scala:726)
+	at scala.collection.AbstractIterator.foreach(Iterator.scala:1155)
+	at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:426)
+	at scala.tools.nsc.Global$Run.compileUnitsInternal(Global.scala:1576)
+	at scala.tools.nsc.Global$Run.compileUnits(Global.scala:1550)
+	at scala.tools.nsc.Global$Run.compileSources(Global.scala:1546)
+	at scala.tools.nsc.Global$Run.compile(Global.scala:1656)
+	at scala.tools.nsc.Driver.doCompile(Driver.scala:33)
+	at scala.tools.nsc.Main$.doCompile(Main.scala:79)
+	at scala.tools.nsc.Driver.process(Driver.scala:54)
+	at scala.tools.nsc.Driver.main(Driver.scala:67)
+	at scala.tools.nsc.Main.main(Main.scala)
+error: unrecoverable error
+exception when typing {
+  Nested$class.this.Foo$Nested$$$outer().Foo$$super$inner();
+  ()
+}
+exception when typing def crash(): Unit = {
+  Nested$class.this.Foo$Nested$$$outer().Foo$$super$inner();
+  ()
+}
+exception when typing abstract trait Nested$class extends Object with Foo#Nested {
+  def /*Nested$class*/$init$(): Unit = {
+    ()
+  };
+  def crash(): Unit = {
+    Nested$class.this.Foo$Nested$$$outer().Foo$$super$inner();
+    ()
+  }
+}
+exception when typing abstract class Foo extends t1.Base {
+  final <superaccessor> def Foo$$super$inner(): t1.Vis;
+  def <init>(): Foo = {
+    Foo.super.<init>();
+    ()
+  };
+  abstract trait Nested extends Object {
+    def crash(): Unit;
+    <synthetic> <stable> def Foo$Nested$$$outer(): Foo
+  };
+  abstract trait Nested$class extends Object with Foo#Nested {
+    def /*Nested$class*/$init$(): Unit = {
+      ()
+    };
+    def crash(): Unit = {
+      Nested$class.this.Foo$Nested$$$outer().Foo$$super$inner();
+      ()
+    }
+  }
+}
+exception when typing package <empty> {
+  abstract class Foo extends t1.Base {
+    final <superaccessor> def Foo$$super$inner(): t1.Vis;
+    def <init>(): Foo = {
+      Foo.super.<init>();
+      ()
+    };
+    abstract trait Nested extends Object {
+      def crash(): Unit;
+      <synthetic> <stable> def Foo$Nested$$$outer(): Foo
+    };
+    abstract trait Nested$class extends Object with Foo#Nested {
+      def /*Nested$class*/$init$(): Unit = {
+        ()
+      };
+      def crash(): Unit = {
+        Nested$class.this.Foo$Nested$$$outer().Foo$$super$inner();
+        ()
+      }
+    }
+  }
+}
+
+     while compiling: erasureCrash.scala
+        during phase: erasure
+     library version: version 2.10.0-20120808-025545-a80b538763
+    compiler version: version 2.10.0-20120813-143144-6b733b3596
+  reconstructed args: -classpath bin
+
+  last tree to typer: This(trait Nested)
+              symbol: trait Nested in class Foo (flags: <interface> abstract <trait> <lateinterface>)
+   symbol definition: abstract trait Nested extends Object
+       symbol owners: trait Nested -> class Foo -> package <empty>
+      context owners: method crash -> class Nested$class -> class Foo -> package <empty>
+
+== Enclosing template or block ==
+
+Apply( // val Foo$Nested$$$outer(): Foo in trait Nested, tree.tpe=Foo
+  Nested$class.this."Foo$Nested$$$outer" // val Foo$Nested$$$outer(): Foo in trait Nested, tree.tpe=()Foo
+  Nil
+)
+
+unhandled exception while transforming erasureCrash.scala
+error: 
+     while compiling: erasureCrash.scala
+        during phase: erasure
+     library version: version 2.10.0-20120808-025545-a80b538763
+    compiler version: version 2.10.0-20120813-143144-6b733b3596
+  reconstructed args: -classpath bin
+
+  last tree to typer: This(trait Nested)
+              symbol: trait Nested in class Foo (flags: <interface> abstract <trait> <lateinterface>)
+   symbol definition: abstract trait Nested extends Object
+       symbol owners: trait Nested -> class Foo -> package <empty>
+      context owners: method crash -> class Nested$class -> class Foo -> package <empty>
+
+== Enclosing template or block ==
+
+Apply( // val Foo$Nested$$$outer(): Foo in trait Nested, tree.tpe=Foo
+  Nested$class.this."Foo$Nested$$$outer" // val Foo$Nested$$$outer(): Foo in trait Nested, tree.tpe=()Foo
+  Nil
+)
+
+uncaught exception during compilation: scala.reflect.internal.FatalError
+error: scala.reflect.internal.FatalError: 
+     while compiling: erasureCrash.scala
+        during phase: global=erasure, atPhase=posterasure
+     library version: version 2.10.0-20120808-025545-a80b538763
+    compiler version: version 2.10.0-20120813-143144-6b733b3596
+  reconstructed args: -classpath bin
+
+  last tree to typer: This(trait Nested)
+              symbol: trait Nested in class Foo (flags: <interface> abstract <trait> <lateinterface>)
+   symbol definition: abstract trait Nested extends Object
+       symbol owners: trait Nested -> class Foo -> package <empty>
+      context owners: method crash -> class Nested$class -> class Foo -> package <empty>
+
+== Enclosing template or block ==
+
+Apply( // val Foo$Nested$$$outer(): Foo in trait Nested, tree.tpe=Foo
+  Nested$class.this."Foo$Nested$$$outer" // val Foo$Nested$$$outer(): Foo in trait Nested, tree.tpe=()Foo
+  Nil
+)
+
+unrecoverable error
+	at scala.reflect.internal.SymbolTable.abort(SymbolTable.scala:46)
+	at scala.tools.nsc.Global.abort(Global.scala:250)
+	at scala.tools.nsc.transform.Erasure$Eraser.typed1(Erasure.scala:763)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:5285)
+	at scala.tools.nsc.typechecker.Typers$Typer.scala$tools$nsc$typechecker$Typers$Typer$$typedStat$1(Typers.scala:2690)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$54$$anonfun$55.apply(Typers.scala:2786)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$54$$anonfun$55.apply(Typers.scala:2786)
+	at scala.collection.immutable.List.loop$1(List.scala:164)
+	at scala.collection.immutable.List.mapConserve(List.scala:180)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$54.apply(Typers.scala:2786)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$54.apply(Typers.scala:2785)
+	at scala.tools.nsc.typechecker.Typers$Typer.withSavedContext(Typers.scala:523)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:2785)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedBlock(Typers.scala:2249)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$typed1$3.apply(Typers.scala:4946)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$typed1$3.apply(Typers.scala:4946)
+	at scala.tools.nsc.typechecker.Typers$Typer.typerWithLocalContext(Typers.scala:506)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:4945)
+	at scala.tools.nsc.transform.Erasure$Eraser.typed1(Erasure.scala:756)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:5285)
+	at scala.tools.nsc.typechecker.Typers$Typer.transformedOrTyped(Typers.scala:5484)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedDefDef(Typers.scala:2078)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:4914)
+	at scala.tools.nsc.transform.Erasure$Eraser.typed1(Erasure.scala:756)
+
+...
+
+
+	at scala.tools.nsc.Driver.process(Driver.scala:54)
+	at scala.tools.nsc.Driver.main(Driver.scala:67)
+	at scala.tools.nsc.Main.main(Main.scala)
+
+error: fatal error: 
+     while compiling: erasureCrash.scala
+        during phase: global=erasure, atPhase=posterasure
+     library version: version 2.10.0-20120808-025545-a80b538763
+    compiler version: version 2.10.0-20120813-143144-6b733b3596
+  reconstructed args: -classpath bin
+
+  last tree to typer: This(trait Nested)
+              symbol: trait Nested in class Foo (flags: <interface> abstract <trait> <lateinterface>)
+   symbol definition: abstract trait Nested extends Object
+       symbol owners: trait Nested -> class Foo -> package <empty>
+      context owners: method crash -> class Nested$class -> class Foo -> package <empty>
+
+== Enclosing template or block ==
+
+Apply( // val Foo$Nested$$$outer(): Foo in trait Nested, tree.tpe=Foo
+  Nested$class.this."Foo$Nested$$$outer" // val Foo$Nested$$$outer(): Foo in trait Nested, tree.tpe=()Foo
+  Nil
+)
+
+unrecoverable error
+{code}

@@ -1,0 +1,21 @@
+Just as a note that the below code seems to be similar and have the same problem, however it can be remedied by marking the abstract classes as sealed:
+
+{code}
+sealed trait Result
+
+abstract class FullResult(values: Int) extends Result
+
+abstract class PartialResult(values: Int) extends Result
+
+case class GetResult(events: Int) extends FullResult(events) with Result
+
+case class PGetResult(events: Int, isLast: Boolean) extends PartialResult(events) with Result
+
+object Test {
+  def handle(r: Result) = r match {
+    case res: GetResult => res.events
+    case res: PGetResult => res.events
+    case res => 42
+  }
+}
+{code}

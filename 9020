@@ -1,0 +1,19 @@
+also wanted to quote Jason's (more general) comments from scala-internals on the matter:
+
+I was thinking about the way we synthesize the pattern matching partial functions some more, and was struck by (thankfully unjustified) fear about what happens in:
+
+  object X { val pf: PartialFunction[Any, Any] = { case _ => this } }
+
+Serendipitously, the chicken/egg problem prevents us unhygenically binding `this` to the partial function:
+
+  // should use the DefDef for the context's tree, but it doesn't exist yet (we need the typer we're creating to create it)
+  val methodBodyTyper = newTyper(context.makeNewScope(context.tree, methodSym))
+  ...
+  val match_ = methodBodyTyper.typedMatch(gen.mkUnchecked(selector), cases, mode, ptRes)
+
+The This node carries the symbol for `Test`, even after the anon class is lifted out, which works out fine but was prompted me to double take before I'd reached for -Xprint-types.
+
+  // cases.head.body.expr
+  // this{Test.type}.=={(x$1: AnyRef)Boolean}(Test{Test.type}){Boolean}
+
+Any local classes/methods defined in the case body do have correct parentage: the second argument to `makeNewScope` provides the method symbol, which is ready for children.

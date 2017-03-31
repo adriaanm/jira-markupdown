@@ -1,0 +1,13 @@
+Looking at the source code (in List.scala) I think this is the problem:
+
+{code}
+final case class ::[B](private var hd: B, private[scala] var tl: List[B]) extends List[B] {
+  def head : B = hd
+  def tail : List[B] = tl
+{code}
+
+I suspect the problem would go away if we had this instead:
+
+{code}
+final case class ::[B](head: B, tail: List[B]) extends List[B] {
+{code}

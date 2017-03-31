@@ -1,0 +1,53 @@
+Turns out the offending symbol is created during the `constructors` phase:
+{code}
+[[syntax trees at end of              constructors]] // t9531.scala
+package <empty>#4 {
+  class Val#8276 extends Object#128 {
+    protected[this] var check#8399: Object#128 = _;
+    <accessor> def check#8397(): Object#128 = Val#8276.this.check#8399;
+    <accessor> def check_=#8398(x$1#12551: Object#128): Unit#2646 = Val#8276.this.check#8399 = x$1#12551;
+    <accessor> <specialized> def check$mcI$sp#22020(): Int#1110 = scala#22.Int#1111.unbox#8647(Val#8276.this.check#8397());
+    <accessor> <specialized> def check$mcI$sp_=#22021(x$1#22023: Int#1110): Unit#2646 = Val#8276.this.check_=#8398(scala#22.Int#1111.box#8645(x$1#22023));
+    def specInstance$#24970(): Boolean#2541 = false;
+    def <init>#8396(): Val#8276 = {
+      Val#8276.super.<init>#3132();
+      if (Val#8276.this.specInstance$#24970().unary_!#20298())
+        {
+          Val#8276.this.check_=#8398({
+            val actual#20295: String#230 = "xyz";
+            scala#23.this.Predef#1750.assert#7892(actual#20295.==#5936("abc"));
+            scala#23.this.Predef#1750.???#7907()
+          });
+          ()
+        };
+      ()
+    }
+  };
+  <specialized> class Val$mcI$sp#22025 extends Val#8276 {
+    <specialized> protected[this] var check$mcI$sp#22027: Int#1110 = _;
+    <accessor> <specialized> def check$mcI$sp#22028(): Int#1110 = Val$mcI$sp#22025.this.check$mcI$sp#22027;
+    override <accessor> <specialized> def check#22029(): Int#1110 = Val$mcI$sp#22025.this.check$mcI$sp#22028();
+    <accessor> <specialized> def check$mcI$sp_=#22030(x$1#22031: Int#1110): Unit#2646 = Val$mcI$sp#22025.this.check$mcI$sp#22027 = x$1#22031;
+    override <accessor> <specialized> def check_=#22032(x$1#22034: Int#1110): Unit#2646 = Val$mcI$sp#22025.this.check$mcI$sp_=#22030(x$1#22034);
+    def specInstance$#25111(): Boolean#2541 = true;
+    override <bridge> <specialized> <artifact> def check_=#29407(x$1#29409: Object#128): Unit#2646 = Val$mcI$sp#22025.this.check_=#22032(scala#22.Int#1111.unbox#8647(x$1#29409));
+    override <bridge> <specialized> <artifact> def check#29403(): Object#128 = scala#22.Int#1111.box#8645(Val$mcI$sp#22025.this.check#22029());
+    <specialized> def <init>#22026(): Val$mcI$sp#22025 = {
+      Val$mcI$sp#22025.super.<init>#8396();
+      Val$mcI$sp#22025.this.check_=#8398({
+        private[this] val actual#29537: String#230 = "xyz";
+        scala#23.this.Predef#1750.assert#7892(Val$mcI$sp#22025.this.actual#29536.==#5936("abc"));
+        scala#23.this.Predef#1750.???#7907()
+      });
+      ()
+    }
+  }
+}
+...
+Val$mcI$sp#22025.this.actual#29536
+value actual#29536
+=> String#230
+icode
+error: Unknown type: => String#230, => String#230 [class scala.reflect.internal.Types$NullaryMethodType, class scala.reflect.internal.Types$NullaryMethodType] TypeRef? false
+error: scala.reflect.internal.FatalError: Unknown type: => String#230, => String#230 [class scala.reflect.internal.Types$NullaryMethodType, class scala.reflect.internal.Types$NullaryMethodType] TypeRef? false
+{code}

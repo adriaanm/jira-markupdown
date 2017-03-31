@@ -1,0 +1,16 @@
+For now, we only have call-by-name parameters. We should allow the {{lazy}} modifier on parameters, for instance:
+
+{code}
+def f[a](lazy t: a) = {
+ ..
+}
+{code}
+
+The meaning should be equivalent to:
+
+{code}
+def f[a](t': => a) = {
+  lazy val t: a = t'
+  ..
+}
+{code}

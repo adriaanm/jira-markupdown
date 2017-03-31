@@ -1,0 +1,27 @@
+Before fixing SI-3224 the following worked:
+
+{code}
+def list[T](list: List[T]) = "foobar"
+implicit def array2list[T](array: Array[T]) = array.toList
+{code}
+
+
+{code}
+scala> list(Array())
+res0: java.lang.String = foobar
+{code}
+
+But now this creates this error:
+
+{code}
+scala> list(Array())
+<console>:8: error: polymorphic expression cannot be instantiated to expected type;
+ found   : [T]Array[T]
+ required: List[?]
+       list(Array())
+                 ^
+{code}
+
+Array[Nothing]() works, though (or anything else instead of Nothing).
+
+I think this is a regression?

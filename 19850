@@ -1,0 +1,28 @@
+I expected the following to compile:
+{code}
+import scala.language.higherKinds
+
+trait Foo {
+  type Rep[A]
+}
+ 
+trait Fun[F <: Foo, A, B] {
+  def apply(foo: F): foo.Rep[A => B]
+}
+ 
+object Fun {
+  def apply[F <: Foo, A, B](f: F => F#Rep[A => B]): Fun[F, A, B] = new Fun[F, A, B] {
+    def apply(foo: F) = f(foo).asInstanceOf[foo.Rep[A => B]]
+  }
+}
+{code}
+but it results in
+{code}
+[error] /tmp/rendererUz1PC89Fd2/src/main/scala/test.scala:20: type mismatch;
+[error]  found   : foo.Rep[A => B]
+[error]  required: foo.Rep[A => B]
+[error]     def apply(foo: F) = f(foo).asInstanceOf[foo.Rep[A => B]]
+[error]                                            ^
+[error] one error found
+{code}
+Adding explicit return type to `def apply` makes it work.

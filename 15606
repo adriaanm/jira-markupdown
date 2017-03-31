@@ -1,0 +1,27 @@
+Max OS X 10.6.4, Java 1.6.0_20, Scala 2.8.0-final and trunk (r22790)
+
+The following program contains two uses of m.elements where m is a Map.  This method has been deprecated.  With -deprecation I get a warning for the first one, but not for the second.  Shouldn't both attract warnings?
+
+{code}
+object Deprecated {
+
+    def main (args : Array[String]) {
+        val m = Map ("1" -> "one", "2" -> "two")
+        for (p <- m.elements) println (p)
+        for ((v, t) <- m.elements) println (v)   // no warning
+    }
+
+}
+{code}
+
+{code}
+scalac -deprecation Deprecated.scala
+Deprecated.scala:5: warning: method elements in trait IterableLike is deprecated: use `iterator' instead
+        for (p <- m.elements) println (p)
+                    ^
+one warning found
+(1,one)
+(2,two)
+1
+2
+{code}

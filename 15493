@@ -1,0 +1,40 @@
+
+{code}
+C:\work> scala -P:continuations:enable -deprecation
+Welcome to Scala version 2.8.0.RC6 (Java HotSpot(TM) Client VM, Java 1.6.0_20).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> class foo[T] { val i = null.asInstanceOf[T]}
+defined class foo
+
+scala> new foo
+res0: foo[Nothing] = foo@7ba849
+
+scala> res0.i
+java.lang.NullPointerException
+        at RequestResult$$.<init>(<console>:12)
+        at RequestResult$$.<clinit>(<console>)
+        at RequestResult$$scala_repl_result(<console>)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+        at java.lang.reflect.Method.invoke(Method.java:597)
+        at scala.tools.nsc.Interpreter$$Request$$$$anonfun$$loadAndRun$$1$$$$anonfun$$apply$$18.apply(Interpreter.scala:981)
+        at scala.tools.nsc.Interpreter$$Request$$$$anonfun$$loadAndRun$$1$$$$anonfun$$apply$$18.apply(Interpreter.scala:981)
+        at scala.util.control.Exception$$Catch.apply(Exception.scala:79)
+        at scala.tools.nsc.Interpreter$$Request$$$$anonfun$$loadAndRun$$1.apply(...
+scala> val a = res0.i
+java.lang.NullPointerException
+        at RequestResult$$.<init>(<console>:12)
+        at RequestResult$$.<clinit>(<console>)
+        at RequestResult$$scala_repl_result(<console>)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+        at java.lang.reflect.Method.invoke(Method.java:597)
+        at scala.tools.nsc.Interpreter$$Request$$$$anonfun$$loadAndRun$$1$$$$anonfun$$apply$$18.apply(Interpreter.scala:981)
+        at scala.tools.nsc.Interpreter$$Request$$$$anonfun$$loadAndRun$$1$$$$anonfun$$apply$$18.apply(Interpreter.scala:981)
+        at scala.util.control.Exception$$Catch.apply(Exception.scala:79)
+        at scala.tools.nsc.Interpreter$$Request$$$$anonfun$$loadAndRun$$1.apply(...
+{code}

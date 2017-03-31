@@ -1,0 +1,10 @@
+The parallel case with ImmutableMapFactory is instructive
+
+{code}
+scala> object Factory extends scala.collection.generic.ImmutableMapFactory[scala.collection.immutable.HashMap] {}
+<console>:7: error: object creation impossible, since method empty in class MapFactory of type [A, B]=> scala.collection.immutable.HashMap[A,B] is not defined
+       object Factory extends scala.collection.generic.ImmutableMapFactory[scala.collection.immutable.HashMap] {}
+              ^
+{code}
+
+The reason is that ImmutableSetFactory mixes in GenericCompanion by way of generic.SetFactory by way of GenericSeqCompanion. ImmutableMapFactory does not mix in GenericCompanion.

@@ -1,0 +1,21 @@
+s/wrong number of args/too many args/
+
+You get an error if there are not enough args, since the varargs don't align. That is true in general.
+
+The Elem object serves as an extractor for Nodes, which have no notion of minimizeEmpty.
+
+(That extractor tripped someone else up recently, so maybe that's a design issue.)
+
+It might make a nice Abide rule to warn about this sort of thing.
+
+Or maybe a compiler lint option to warn about "splitting" a varargs. Is that a general issue? Maybe only when mixing args and varargs.
+{code}
+scala> val r = "(a*)(b*)(c*)".r
+r: scala.util.matching.Regex = (a*)(b*)(c*)
+
+scala> "abc" match { case r(as, rest @ _*) => as }  // dangerous?
+res5: String = a
+
+scala> "abc" match { case r(as, _, _) => as }
+res6: String = a
+{code}

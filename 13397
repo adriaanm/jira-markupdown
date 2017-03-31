@@ -1,0 +1,44 @@
+As reported on the scala-tools list, following r14964 the plugin build fails,
+
+{code}
+Buildfile: build.xml
+
+init:
+Trying to override old definition of task for
+    [echo] Scala library version 2.7.1.r14974-b20080509183928 -- Copyright 2002-2008,
+LAMP/EPFL
+
+build.core:
+   [mkdir] Created dir: /wrk/kit/development/scala/trunk/plugin/build/core
+  [scalac] Compiling 29 source files to /wrk/kit/development/scala/trunk/plugin/build/core
+
+[scalac] /wrk/kit/development/scala/trunk/plugin/lampion.core/src/scala/tools/editor/Presentations.scala:319:
+error: type mismatch;
+  [scalac]  found   : Seq[Any]
+  [scalac]  required: RandomAccessSeq[Char]
+  [scalac]           return new Edit(edit.offset, 0, edit.text + "*") {
+  [scalac]                                                     ^
+
+[scalac] /wrk/kit/development/scala/trunk/plugin/lampion.core/src/scala/tools/editor/Presentations.scala:330:
+error: type mismatch;
+  [scalac]  found   : Seq[Any]
+  [scalac]  required: RandomAccessSeq[Char]
+  [scalac]           } else new Edit(edit.offset, 0, edit.text + ">") {
+  [scalac]                                                         ^
+  [scalac] two errors found
+
+BUILD FAILED
+/wrk/kit/development/scala/trunk/plugin/build.xml:85: Compile failed with 2 errors; see the
+compiler error output for details.
+{code}
+
+Previously the RandomAccessSeq[Char] edit.text was being implicitly converted to a RichString, concatenated then converted back to a RandomAccessSeq[Char]. The addition of + in Seq frustrates this by defining an applicable + with return type Seq[Char].
+
+A fix is to add a covariantly returning definition of + to RandomAccessSeq,
+
+{code}
+override def +[B >: A](e: B): RandomAccessSeq[B] =
+  this ++ Seq.single(e)
+{code}
+
+The use of this in the plugin has to be adjusted slightly to append a char rather than a string literal.

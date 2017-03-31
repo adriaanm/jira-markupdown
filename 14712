@@ -1,0 +1,29 @@
+stack overflow occuring (but not always) using 2.8 traversables such as mutable Set with for comprehension and XML literal
+
+scala> for (i <- collection.mutable.Set(0)) yield <a>&quot;</a>
+java.lang.StackOverflowError
+        at scala.collection.SeqLike$$$$anonfun$$hashCode$$1.apply(SeqLike.scala:605)
+
+        at scala.collection.TraversableLike$$$$anonfun$$foldLeft$$1.apply(Traversabl
+eLike.scala:323)
+        at scala.collection.TraversableLike$$$$anonfun$$foldLeft$$1.apply(Traversabl
+eLike.scala:322)
+...
+
+This seems to happen under 2.8.0 latest but not at 2.7.3
+I tested this just now with a build of --
+zeus> svn info
+Path: .
+URL: http://lampsvn.epfl.ch/svn-repos/scala/scala/trunk
+Repository Root: http://lampsvn.epfl.ch/svn-repos/scala
+Repository UUID: 5e8d7ff9-d8ef-0310-90f0-a4852d11357a
+Revision: 19673
+Node Kind: directory
+Schedule: normal
+Last Changed Author: moors
+Last Changed Rev: 19673
+Last Changed Date: 2009-11-16 12:44:25 -0500 (Mon, 16 Nov 2009)
+
+Problem can be seen with the interpreter, but also with compiled code at runtime.
+
+

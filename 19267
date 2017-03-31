@@ -1,0 +1,52 @@
+{code}
+class AScala {
+  @annotation.varargs def foo[T](a: Int, b: T*): T = b.head
+}
+{code}
+
+{code}
+public class B {
+  public static void main(String[] args) {
+    AScala as = new AScala();
+    System.out.println(as.foo(16, "a", "b", "c"));
+  }
+}
+{code}
+
+compile first the scala file, then the java file. works for java up to 7, javac 8 issues an error
+{noformat}
+B.java:4: error: reference to println is ambiguous
+    System.out.println(as.foo(16, "a", "b", "c"));
+              ^
+  both method println(char[]) in PrintStream and method println(String) in PrintStream match
+1 error
+{noformat}
+
+probably due to the generic signature. here's the bytecode for AScala
+{noformat}
+  public <T extends java.lang.Object> T foo(int, java.lang.Object...);
+    descriptor: (I[Ljava/lang/Object;)Ljava/lang/Object;
+    flags: ACC_PUBLIC, ACC_VARARGS
+...
+    Signature: #45                          // <T:Ljava/lang/Object;>(I[Ljava/lang/Object;)TT;
+{noformat}
+
+and for AJava
+{code}
+public class AJava {
+  <T> T foo(int a, T... b) {
+    return b[0];
+  }
+}
+{code}
+
+{noformat}
+  <T extends java.lang.Object> T foo(int, T...);
+    descriptor: (I[Ljava/lang/Object;)Ljava/lang/Object;
+    flags: ACC_VARARGS
+...
+    Signature: #11                          // <T:Ljava/lang/Object;>(I[TT;)TT;
+{noformat}
+
+
+When fixing this, also revert https://github.com/scala/scala/pull/3961

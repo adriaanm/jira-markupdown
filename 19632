@@ -1,0 +1,20 @@
+If calling a generic function, the parameter type(s) of which equal a nested type of a type parameter, the compiler fails with a type error at the call site, even when said nested type's exact value could be deduced.
+
+{code}
+trait A[T0] {
+ type Te = T0
+}
+
+class Ai extends A[Int]
+
+def f[T <: A[_]](p : T#Te) = ???
+
+f[Ai](5)
+{code}
+{noformat}
+error: type mismatch;
+ found   : Int(5)
+ required: _$1
+              f[Ai](5)
+                    ^
+{noformat}

@@ -1,0 +1,18 @@
+Speaking of "val isConstant" take a look at: https://github.com/paulp/scala/tree/wip/predicates
+
+At the time I was pursuing unnecessary allocations of Function1 (especially for _ => true and _ => false) but there are more uses, as you see.
+{code}
+final class Predicate[@specialized T](val f: T => Boolean, val isFlipped: Boolean) extends (T => Boolean) 
+...
+
+  fun match {
+    // Rewrite _ => true and _ => false to reuse preallocated constant predicates
+    case Function(vparam :: Nil, Literal(Constant(v: Boolean))) =>
+      enterSym(context, vparam)
+      if (context.retyping) context.scope enter vparam.symbol
+      val formal    = typedValDef(vparam).symbol.tpe
+      val funtpe    = appliedType(clazz, formal, BooleanClass.tpe)
+      val predicate = termMember(FunctionModule, "Predicate" + v.toString.capitalize)
+
+      typed(gen.mkNullaryCall(predicate, formal :: Nil), funtpe)
+{code}

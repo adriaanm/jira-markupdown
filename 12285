@@ -1,0 +1,13 @@
+Okay, the bounds of `T` don't contribute constraints because they are cyclic:
+
+https://github.com/scala/scala/blob/d24e298cbd955101a6b4342602b32ed37643dfb0/src/reflect/scala/reflect/internal/tpe/TypeConstraints.scala#L212
+
+I guess this is to avoid having type vars on LHS and RHS of a subtyping check.
+
+Dotty typechecks this as:
+
+{code}
+Test.AfromB[Test.C']: Test.A[Test.C]
+{code}
+
+How does it come to this solution? Is C really the maximal type in the range `C <: T <: B[T]`. Why not `B[C]`? This would make a great blog post, hint, hint!

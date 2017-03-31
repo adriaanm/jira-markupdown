@@ -1,0 +1,24 @@
+Problem with {{updateDynamic}}:
+\\
+If a dynamic field assignment is invoked within an expression (the type of the assignment invocation depends on the result type of method {{updateDynamic}}), then the compiler reports the error {{reassignment to val}}. 
+
+{code}
+scala> val foo = new A // A implements selectDynamic and updateDynamic
+foo: A = A@71933d6c
+
+scala> foo.xxx = 3
+foo.xxx: Any = 3
+
+scala> foo.xxx
+res0: Any = 3
+
+scala> println(foo.xxx = 3)
+<console>:12: error: reassignment to val
+              println(foo.xxx = 3)
+                              ^
+
+scala> val x = (foo.xxx = 3) == ()
+<console>:11: error: reassignment to val
+       val x = (foo.xxx = 3) == ()
+                        ^
+{code}

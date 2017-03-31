@@ -1,0 +1,25 @@
+The overeager `depoly` is also to blame for this implicit search failure.
+
+{code}
+trait Web {
+  type LocalName
+}
+trait Companion1[A]
+trait WebDSL[W <: Web] {
+  trait LocalNameCompanion extends Companion1[W#LocalName] {
+    type A = String
+  }
+  implicit val LocalName: LocalNameCompanion
+}
+object Test {
+  def t[W <: Web](implicit webDSL: WebDSL[W]): Unit = {
+    import webDSL._
+    implicitly[LocalNameCompanion] // succeeds
+    implicitly[Companion1[W#LocalName]] // fails
+  }
+}
+{code}
+
+`LocalName`'s type is incorrectly approximated to => `?#LocalNameCompanion`, which does not conform to the expected type `Companion1[W#LocalName]`
+
+As reported https://groups.google.com/forum/#!topic/scala-user/Wvh8q85gFAs

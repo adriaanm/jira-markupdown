@@ -1,0 +1,75 @@
+The following code worked flawlessly on 2.9:
+
+{code}
+object japi {
+@deprecated("Do not use this directly, use subclasses of this", "2.0")
+  class UnitFunctionBridge[-T] extends (T ⇒ BoxedUnit) {
+    override final def apply(t: T): BoxedUnit = {
+      internal(t)
+      BoxedUnit.UNIT
+    }
+    protected def internal(result: T): Unit = ()
+  }
+}
+
+abstract class Foreach[-T] extends japi.UnitFunctionBridge[T] {
+  override final def internal(t: T): Unit = each(t)
+
+  /**
+   * This method will be invoked once when/if a Future that this callback is registered on
+   * becomes successfully completed
+   */
+  @throws(classOf[Throwable])
+  def each(result: T): Unit
+}
+{code}
+
+And then from Java:
+
+{code}
+ @Test
+  public void mustBeAbleToForeachAFuture() throws Throwable {
+    final CountDownLatch latch = new CountDownLatch(1);
+    Promise<String> cf = Futures.promise(system.dispatcher());
+    Future<String> f = cf;
+    f.foreach(new Foreach<String>() {
+      public void each(String future) {
+        latch.countDown();
+      }
+    });
+
+    cf.success("foo");
+    assertTrue(latch.await(5000, TimeUnit.MILLISECONDS));
+    assertEquals(Await.result(f, timeout), "foo");
+  }
+{code}
+
+However, using Scala 2.10-M4 javac spits this in mah face:
+
+{code}
+[error] /Users/viktorklang/Documents/workspace/akka/akka/akka-actor-tests/src/test/java/akka/dispatch/JavaFutureTests.java:117: apply$mcLJ$sp(long) in akka.dispatch.japi.UnitFunctionBridge cannot implement apply$mcLJ$sp(long) in scala.Function1; attempting to use incompatible return type
+[error] found   : java.lang.Object
+[error] required: scala.runtime.BoxedUnit
+[error]     f.foreach(new Foreach<String>() {
+[error]                                     ^
+[error] 1 error
+[error] {file:/Users/viktorklang/Documents/workspace/akka/akka/}akka-actor-tests/test:compile: javac returned nonzero exit code
+[error] Total time: 125 s, completed Jun 25, 2012 1:27:58 PM
+{code}
+
+
+
+This steps around it... But I think it has a certain kind of smell:
+
+{code}
+  @deprecated("Do not use this directly, use subclasses of this", "2.0")
+  class UnitFunctionBridge[-T] extends (T ⇒ BoxedUnit) {
+    final def apply$mcLJ$sp(l: Long): BoxedUnit = { internal(l.asInstanceOf[T]); BoxedUnit.UNIT }
+    final def apply$mcLI$sp(i: Int): BoxedUnit = { internal(i.asInstanceOf[T]); BoxedUnit.UNIT }
+    final def apply$mcLF$sp(f: Float): BoxedUnit = { internal(f.asInstanceOf[T]); BoxedUnit.UNIT }
+    final def apply$mcLD$sp(d: Double): BoxedUnit = { internal(d.asInstanceOf[T]); BoxedUnit.UNIT }
+
+    override final def apply(t: T): BoxedUnit = { internal(t); BoxedUnit.UNIT }
+    protected def internal(result: T): Unit = ()
+  }
+{code}

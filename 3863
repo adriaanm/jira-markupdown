@@ -1,0 +1,26 @@
+This is a little more illuminating:
+{code}
+scala> val x1 = <foo>bar</foo>
+x1: scala.xml.Elem = <foo>bar</foo>
+
+scala> val x2 = x1.map( i => i)
+x2: scala.xml.NodeSeq = NodeSeq(<foo>bar</foo>)
+
+scala> x2.getClass
+res41: java.lang.Class[_] = class scala.xml.NodeSeq$$$$anon$$1
+
+scala> x1.getClass
+res42: java.lang.Class[_] = class scala.xml.Elem
+
+scala> x2(0)
+res43: scala.xml.Node = <foo>bar</foo>
+
+scala> x1 == x2(0)
+res44: Boolean = true
+
+scala> x2(0) == x1  
+res45: Boolean = true
+
+scala> 
+{code}
+So really it looks like the behavior of map has changed, not the behavior of equals.

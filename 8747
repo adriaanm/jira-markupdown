@@ -1,0 +1,18 @@
+right.. the point is that in the first case the named arguments are in the parameter order, so they are simply discarded early on, so technically the invocation is not actually triggering the named arguments transformation in the typer. that's why it passes.
+
+maybe the spec should mention that - "named arguments are transformed int positional ones if all of them are on the corresponding parameter positions"
+
+another instance of the same is the following - in principle it's not allowed to have a positional argument after a named one, but:
+
+{code}
+scala> def foo(a: Int, b: Int) = 0
+foo: (a: Int, b: Int)Int
+
+scala> foo(1, b = 2)
+res0: Int = 0
+
+scala> foo(b = 2, 1)
+<console>:9: error: positional after named argument.
+              foo(b = 2, 1)
+                         ^
+{code}

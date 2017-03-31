@@ -1,0 +1,29 @@
+{code}
+import scala.reflect.macros.WhiteboxContext
+import scala.language.experimental.macros
+
+object Macros {
+  def impl(c: WhiteboxContext) = {
+    import c.universe._
+    q"if (true) Some(2) else None"
+  }
+
+  def foo: Any = macro impl
+}
+{code}
+
+{code}
+object Test extends App {
+  val x: Option[Int] = Macros.foo
+}
+{code}
+
+{code}
+12:25 ~/Projects/Master/sandbox (master)$ scalac Macros.scala && scalac Test.scala
+Test.scala:2: error: type mismatch;
+ found   : Any
+ required: Option[Int]
+  val x: Option[Int] = Macros.foo
+                              ^
+one error found
+{code}

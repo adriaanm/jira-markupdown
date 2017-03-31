@@ -1,0 +1,32 @@
+I'm not sure, but it seems a bug:
+{code}
+trait F
+trait Y extends F
+trait G extends F
+trait B extends F
+class T
+class O extends T
+class P extends T
+class A extends O with Y with B
+
+class D extends P with G with B
+
+object Test {
+  def main(args : Array[String]) {
+    val z = 1 match {
+      case 1 => new A
+      case _ => new D
+    }
+    val o: Int = z
+  }
+}
+{code}
+After compilation you'll see error message about 'z' type:
+{code}
+error: type mismatch;
+found   : aasdf.B with aasdf.T
+required: Int
+val o: Int = z
+{code}
+As I see in compound type first is Trait and second is class, what is wrong.
+I'm not sure, but I think this bug can cause problems with following linearization and right methods resolving from such wrong type.

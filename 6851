@@ -1,0 +1,20 @@
+This also shows up combining Tag Types with Value Classes:
+{code}
+scala> trait Day
+defined trait Day
+
+scala> class DayOps(val i: Int with Day) extends AnyVal
+<console>:8: error: ambiguous reference to overloaded definition,
+both method == in class Object of type (x$1: AnyRef)Boolean
+and  method == in class Int of type (x: Double)Boolean
+match argument types (Int with Day) and expected result type Boolean
+       class DayOps(val i: Int with Day) extends AnyVal
+             ^
+error: type mismatch;
+ found   : Double
+ required: AnyRef
+Note: an implicit exists from scala.Double => java.lang.Double, but
+methods inherited from Object are rendered ambiguous.  This is to avoid
+a blanket implicit which would convert any scala.Double to any AnyRef.
+You may wish to use a type ascription: `x: java.lang.Double`.
+{code}

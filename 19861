@@ -1,0 +1,50 @@
+
+{code:scala}
+// D.java 
+public interface D {
+  String getName();
+}
+// C.java
+public interface C {
+  Object transform(String msg);
+}
+// B.java
+public interface B {
+  C getC();
+  D getD();
+}
+// A.scala
+class A {
+  def withB(b: B): Unit = {
+    val c: C = b.getC
+    val d: D = b.getD
+    println(c)
+  }
+}
+// build.sbt
+scalaVersion := "2.12.0-M3"
+
+scalacOptions += "-Xexperimental"
+{code}
+
+h5.Excepted
+
+no error
+
+h5. Actual
+
+{code:text}
+[info] Compiling 1 Scala source and 3 Java sources to /tmp/type-mixup/target/scala-2.12.0-M3/classes...
+[error] /tmp/type-mixup/A.scala:3: type mismatch;
+[error]  found   : () => C
+[error]  required: C
+[error]     val c: C = b.getC
+[error]                  ^
+[error] /tmp/type-mixup/A.scala:4: type mismatch;
+[error]  found   : D
+[error]  required: String
+[error]     val d: D = b.getD
+[error]                  ^
+[error] two errors found
+[error] (compile:compile) Compilation failed
+{code}

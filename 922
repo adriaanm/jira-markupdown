@@ -1,0 +1,13 @@
+The above runs as a script -- 'scala example.scala'.
+Below is a variation for compiling with scalac, to make it easier to run in the test suite:
+
+{code}
+trait Foo
+
+case class Bar[E](input: E)( implicit val foo: Foo ) 
+
+object Cyclic extends Application {
+  implicit object f extends Foo
+  implicit object bar extends Bar(1)
+}
+{code}

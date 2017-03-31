@@ -1,0 +1,16 @@
+A similar problem is with code ( with each class in separate file):
+{code}
+class G {
+	def x: String = "foo"
+}
+class H extends G
+class I {
+  def y(a:H):String = a.x
+}
+{code}
+
+and the later change in definition of x to say
+{code}
+def x:Int = 0
+{code}
+doesn't cause class I to recompile. This is because, theoretically, compilation of H (forced by compilation of G) doesn't create any new changes.

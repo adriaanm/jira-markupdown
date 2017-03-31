@@ -1,0 +1,17 @@
+The following compiles under 2.8 final but throws a VerifyError when instantiated.
+{code}
+class Test {
+  def this(un: Int) = {
+    this()
+    def test(xs: List[Int]) = xs map (x => x)
+    ()
+  }                                                                              
+}
+{code}
+{code}
+java.lang.VerifyError: (
+  class: Test, method: test$$1 
+  signature: (Lscala/collection/immutable/List;)Lscala/collection/immutable/List;)
+Incompatible argument to function  
+{code}
+See also SI-1909.

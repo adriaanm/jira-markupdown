@@ -1,0 +1,37 @@
+{code}
+scala 2.12.0> val s = "abc"
+s: String = abc
+
+scala 2.12.0> s.replaceAllLiterally _
+<console>:13: error: missing argument list for method replaceAllLiterally in trait StringLike
+Unapplied methods are only converted to functions when a function type is expected.
+You can make this conversion explicit by writing `replaceAllLiterally _` or `replaceAllLiterally(_,_)` instead of `replaceAllLiterally`.
+              s.replaceAllLiterally _
+                ^
+
+scala 2.12.0> s.replaceAllLiterally _ //print
+   scala.Predef.augmentString($line3.$read.$iw.$iw.s).replaceAllLiterally // : <error>
+{code}
+
+As diagnosed [on gitter|https://gitter.im/scala/contributors?at=5828ea7fdf5ae9664551a958].
+{quote}
+ Method conversion is represented by expr: () => <empty> (ie, a Typed node). The code that handles these in typedTyped typechecks expr by calling typed1, which just typechecks without also adapting the result to the pt/mode. However if typed1 itself calls recursively calls into typed (which does adapt), the mode is material.
+{quote}
+{code}
+diff --git a/src/compiler/scala/tools/nsc/typechecker/Typers.scala b/src/compiler/scala/tools/nsc/typechecker/Typers.scala
+index 0c2f512..a370265 100644
+--- a/src/compiler/scala/tools/nsc/typechecker/Typers.scala
++++ b/src/compiler/scala/tools/nsc/typechecker/Typers.scala
+@@ -5207,3 +5207,3 @@ trait Typers extends Adaptations with Tags with TypersTracking with PatternTyper
+           case Typed(expr, Function(Nil, EmptyTree)) =>
+-            typed1(suppressMacroExpansion(expr), mode, pt) match {
++            typed1(suppressMacroExpansion(expr), mode.forFunMode, pt) match {
+               case macroDef if treeInfo.isMacroApplication(macroDef) => MacroEtaError(macroDef)
+{code}
+Test golf:
+{code}
+trait C {
+  implicit def convert: C => { def yo(a: Any): Any }
+  this.yo _
+}
+{code}

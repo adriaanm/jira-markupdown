@@ -1,0 +1,26 @@
+The following code will give a ClassCast exception.
+
+{code}
+package test
+object patternUnsoundness extends App {
+
+  class C[+T]
+
+  case class D[S](_s: S) extends C[S] {
+    var s: S = _s
+  }
+
+  val x = new D[String]("abc")
+  val y: C[Object] = x
+
+  y match {
+    case d @ D(x) => d.s = new Integer(1)
+  }
+
+  val z: String = x.s // ClassCast exception
+}
+{code}
+
+Unfortunately, it looks like a difficult fix, because the obvious fix (require that the type parameter S is determined uniquely) would break all :: patterns, because List is declared to be covariant whereas :: is declared to be non-variant. Of course :: could and should have been declared covariant so there's no unsoundness problem for Lists themselves.
+
+(JZ: edited to s/Some/::/)

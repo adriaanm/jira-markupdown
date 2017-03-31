@@ -1,0 +1,16 @@
+I observed that it works up to 27, and then fails at 28:
+
+{noformat}
+scala> (HashSet[Int]() ++ (1 to 28)).par map (_ + 1)
+java.lang.ArrayIndexOutOfBoundsException: 128
+	at scala.collection.parallel.mutable.ParFlatHashTable$ParFlatHashTableIterator.scan(ParFlatHashTable.scala:36)
+	at scala.collection.parallel.mutable.ParFlatHashTable$ParFlatHashTableIterator.next(ParFlatHashTable.scala:53)
+{noformat}
+
+So I went looking for hardcoded usages of the number 100, and found what seems to be the relevant one.
+
+UnrolledBuffer.scala:
+
+  val waterline = 50
+  val waterlineDelim = 100
+

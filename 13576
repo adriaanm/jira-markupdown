@@ -1,0 +1,22 @@
+J.java:
+{code}
+class J { enum E { E1 } }
+{code}
+S.scala:
+{code}
+class S { System.out.println(J.E.E1) ; }
+{code}
+
+If I run J.java through javac first, then scalac will compile S.scala, but if I try to run them both through scalac:
+{code}
+  ~/newbug> ~/scala/dists/latest/bin/scalac S.scala J.java 
+S.scala:1: error: not found: value J
+class S { System.out.println(J.E.E1) ; }
+                             ^
+one error found
+{code}
+
+this is with the current build (r15519)
+
+thanks for your attention to my bug reports :-)
+

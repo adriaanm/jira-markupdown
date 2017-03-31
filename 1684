@@ -1,0 +1,42 @@
+To put that into context: I ran into the problem when I tried to write some Android code. When implementing [http://developer.android.com/reference/android/widget/Filter.html android.widget.Filter] you'll have to return an instance of [http://developer.android.com/reference/android/widget/Filter.FilterResults.html Filter.FilterResults]. This class is a static protected inner class which cannot be accessed from Scala. I've spotted no other protected inner classes in Android yet.
+
+The workaround is to create an abstract class in Java implementing the interface which wraps accesses to the inner class. One may then implement this abstract class from Scala.
+
+In this particular case:
+{code}
+#!java
+import android.widget.BaseAdapter;
+import android.widget.Filter;
+
+public abstract class MyFilter<T> extends Filter{
+        private final BaseAdapter parent;
+        public MyFilter(BaseAdapter parent) {
+                this.parent = parent;
+        }
+
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+                FilterResults res = new FilterResults();
+                T value = getResult(constraint);
+                res.values = value;
+                res.count = countFromData(value);
+                return res;
+
+        }
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults res) {
+                setData(res.count,(T) res.values);
+                if (res.count == 0)
+                        parent.notifyDataSetInvalidated();
+                else
+                        parent.notifyDataSetChanged();
+        }
+        protected abstract void setData(int count,T data);
+        protected abstract int countFromData(T data);
+        protected abstract T getResult(CharSequence constraint);
+}
+{code}
+
+Hmm, I think I understand the problem: Scala interprets the Java class (`Test` resp. `Filter`) as a class *and* a companion object holding all the static members. So the easiest fix is not feasible - to allow implementing classes access to (protected) members of the companion object of the implemented class - because it would affect Scala code as well. So, could perhaps _protected_ static inner classes not be interpreted as (non-static) member classes as well? (What's the use case of protected static inner classes of objects in Scala?)
+
+BTW: Why does the import work, shouldn't that be disallowed as well?

@@ -1,0 +1,17 @@
+
+The compiler could emit better advice, or possibly a tool (clippy) could take up the slack.
+
+{code}
+scala> vs.flatMap(f _)
+<console>:14: error: type mismatch;
+ found   : () => Option[Int] => Option[Int]
+ required: Option[Int] => scala.collection.GenTraversableOnce[?]
+       vs.flatMap(f _)
+                  ^
+
+scala> vs.flatMap(o => f(o))
+res3: scala.collection.immutable.Vector[Int] = Vector(2)
+
+scala> vs.flatMap(f(_))
+res4: scala.collection.immutable.Vector[Int] = Vector(2)
+{code}

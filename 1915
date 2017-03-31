@@ -1,0 +1,13 @@
+class MyActor extends Actor {
+  private val mutableHashMap = new MutableHashMap[String, String]
+  private var lst: List[String] = Nil
+
+  def act = loop {
+    react {
+      case s: String if !mutableHashMap.contains(s) => mutableHashMap(s) = "Good morning"
+      case s: String => lst ::= s
+    }
+  }
+}
+
+Because the guard is executed outside the scope of the actor and may be executed concurrently with a thread updating the mutablehashmap, you've given up all concurrency guarantees for Actors.  This is a serious defect.  It cannot reasonably be cured with a comment.  It can be cured by moving all code that touches (creates, tests, or applies) the partial function in react/receive to execute only on the thread that is currently running the Actor.  Anything short of that gives up what the Actor is.

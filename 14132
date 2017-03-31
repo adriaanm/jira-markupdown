@@ -1,0 +1,47 @@
+If you compile the class
+{code}
+import _root_.javax.persistence._
+
+@Entity class JPA {
+
+  @Id var someId: Int = _
+
+}
+{code}
+
+scalac puts the @Id-annotation on the private field:
+{code}
+Field name: 3=someId private Signature: 4=int
+Attribute "RuntimeVisibleAnnotations", length:6
+{code}
+
+as well as on the accessors:
+{code}
+Method name:15="someId_$$eq" public Signature: 16=(int)void
+Attribute "Code", length:58, max_stack:2, max_locals:2, code_length:6
+  0: aload_0
+  1: iload_1
+  2: putfield SI-20=<Field JPA.someId int>
+  5: return
+Attribute "LineNumberTable", length:6, count: 1
+  line: 5 at pc: 0
+Attribute "LocalVariableTable", length:22, count: 2
+  slotSI-0: name: 21=this, type: 22=JPA (pc: 0 length: 6)
+  slotSI-1: name: 23=x$$1, type: 4=int (pc: 0 length: 6)
+Attribute "RuntimeVisibleAnnotations", length:6
+
+Method name:3="someId" public Signature: 25=()int
+Attribute "Code", length:29, max_stack:1, max_locals:1, code_length:5
+  0: aload_0
+  1: getfield SI-20=<Field JPA.someId int>
+  4: ireturn
+Attribute "LineNumberTable", length:6, count: 1
+  line: 5 at pc: 0
+Attribute "RuntimeVisibleAnnotations", length:6
+{code}
+
+This is deep within undefined behavior territory in JPA.
+
+Eclipselink copes just fine (I think it just ignores the methods), while OpenJPA seems to identify the methods as annotated property accessors and complains that the entity uses field access on someId and property access on someId() and someId_$$eq().
+
+This severely limits the interoperability with java, since you cannot write a JPA entity using field access that will be accepted by OpenJPA.

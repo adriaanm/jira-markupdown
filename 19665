@@ -1,0 +1,29 @@
+The {{matchesName}} method in {{scala.tools.nsc.transform.Constructors.scala}} currently matches any parameter which starts with the param.name, followed by the join symbol ($). This has the possibility of wrongly matching a parameter during compilation which will silently compile without warnings and introduce problems in runtime.
+
+A minimal reproducible is easy, and will create the same problem in all use-case versions of Scala:
+
+{noformat}
+scala> case class Invoice(`total tax`: Int, total: Int)
+defined class Invoice
+
+scala> Invoice(`total tax` = 20, total = 120)
+res0: Invoice = Invoice(20,20)
+
+scala> res0.total
+res1: Int = 20
+{noformat}
+
+A proposal would be to change the method from 
+{noformat}
+def matchesName(param: Symbol) = param.name == name ||
+  param.name.startsWith(name + nme.NAME_JOIN_STRING)
+{noformat}
+
+to
+
+{noformat}
+def matchesName(param: Symbol) = param.name == name ||
+  param.name == name.append(nme.NAME_JOIN_STRING)
+{noformat}
+
+I'll make a PR with the failing test, to discuss the potential solution.

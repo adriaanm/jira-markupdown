@@ -1,0 +1,35 @@
+That was SI-6120. Now it needs a dash of configurable reporter.
+
+{code}
+scala> object X { @deprecated("","") def x(): Int = 42 }
+defined object X
+
+scala> X x
+warning: there was one deprecation warning; re-run with -deprecation for details
+warning: there was one feature warning; re-run with -feature for details
+res0: Int = 42
+
+scala> :warnings
+<console>:9: warning: method x in object X is deprecated:
+              X x
+                ^
+<console>:9: warning: postfix operator x should be enabled
+by making the implicit value scala.language.postfixOps visible.
+This can be achieved by adding the import clause 'import scala.language.postfixOps'
+or by setting the compiler option -language:postfixOps.
+See the Scala docs for value scala.language.postfixOps for a discussion
+why the feature should be explicitly enabled.
+              X x
+                ^
+
+scala> :replay -deprecation
+Replaying: object X { @deprecated("","") def x(): Int = 42 }
+defined object X
+
+Replaying: X x
+<console>:9: warning: method x in object X is deprecated:
+              X x
+                ^
+warning: there was one feature warning; re-run with -feature for details
+res0: Int = 42
+{code}

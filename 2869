@@ -1,0 +1,17 @@
+Paul: sorry to awaken you from that blissful p.*m.*-denial. Could you have a look please?
+
+It looks like the body%1 generated for the 2nd leg/branch/case gets an empty parameter list (expected to have one param)
+
+self-contained test (will commit to pending):
+
+{code}
+object Breakdown {
+  def unapplySeq(x: Int): Some[List[String]] = Some(List("", "there")) 
+}
+object Test {
+  42 match {
+    case Breakdown("") =>  // needed to trigger bug
+    case Breakdown("", who) => println ("hello " + who)
+  }
+}
+{code}

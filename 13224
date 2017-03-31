@@ -1,0 +1,24 @@
+This can be reproduced with the following app:
+{code}
+object debugBinTest {
+  def doFred() {
+    var sync = new Object();
+    sync.synchronized {
+	   sync.wait(2000); // 2 secs
+       println("free") // <<<<<--- change this
+    }
+  }
+  def main(args : Array[String]) : Unit = {
+    while(true) {
+      doFred()
+    }
+  }
+}
+{code}
+when you debug this (MUST be debugged not just run and let it keep running) and change what is printed it should then print the new text on the next iteration (or a couple after that).
+
+Instead this only occurs when you force a refresh on the bin directory.
+
+This does not affect compilation correctness, editing of files or even project cleans, but it stops proper debugging.  This may be related to the problem I noticed with the project compilation getting out of step and requiring a clean, but I have no evidence of that.
+
+This works as expected on an equivalent java app.  The seperate function is required for the eclipse debugger to do its runtime class update trickery.

@@ -1,0 +1,25 @@
+When I use an 'if' clause with a stream in a 'for' comprehension, it begins to slow down severely. The following code will generate multiples of 37 up until around 5.2 million, and then slows down to a crawl:
+{code}
+object ForIfTest {
+  def main(args: Array[String]): Unit = {
+    for {
+      n <- Stream.from(1) if (n % 37) == 0
+    } {
+      println(n)
+    }
+  }
+}
+{code}
+
+However, when I replace the 'if' clause with a filter, the performance problem goes away:
+{code}
+object ForIfTest {
+  def main(args: Array[String]): Unit = {
+    for {
+      n <- Stream.from(1).filter(a => { (a % 37) == 0 })
+    } {
+      println(n)
+    }
+  }
+}
+{code}

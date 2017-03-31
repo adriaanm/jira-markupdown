@@ -1,0 +1,35 @@
+
+Doesn't crash anymore, the reified tree corresponds to the desugared Match.
+
+Jason, what do you think, good enough? (I guess so, because SI-5272 has been FIXED).
+
+{noformat}
+C:\scala>build\quick\bin\scala
+Welcome to Scala version 2.10.0-20120502-222338-24be606216 (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_29).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> import reflect.mirror._
+import reflect.mirror._
+
+scala> reify { 1 match { case 0 => 0 } }
+res1: reflect.mirror.Expr[Int] =
+Expr[Int]({
+  case <synthetic> val x1 = 1;
+  case4(){
+    if (0.$eq$eq(x1))
+      {
+        val x2 = x1;
+        matchEnd3(0)
+      }
+    else
+      case5()
+  };
+  case5(){
+    matchEnd3(throw new <type ?>(x1))
+  };
+  matchEnd3(x){
+    x
+  }
+})
+{noformat}

@@ -1,0 +1,111 @@
+Trying to splice an empty list of trees into a quasiquote to instantiate a trait does not work as expected.
+
+For example, this works as expected:
+
+{code:scala}
+object Bar {
+  import language.experimental.macros
+  import scala.reflect.macros.Context
+
+  trait Foo
+  def foo: Bar.Foo = macro fooImpl
+  def fooImpl(c: Context): c.Expr[Bar.Foo] = {
+    import c.universe._
+    c.Expr[Foo](q"new Bar.Foo {}")
+  }
+}
+{code}
+
+And so is this:
+
+
+{code:scala}
+object Bar {
+  import language.experimental.macros
+  import scala.reflect.macros.Context
+
+  trait Foo
+  def foo: Bar.Foo = macro fooImpl
+  def fooImpl(c: Context): c.Expr[Bar.Foo] = {
+    import c.universe._
+    val trees = List(q"")
+    c.Expr[Foo](q"new Bar.Foo {..$trees}")
+  }
+}
+{code}
+Notice that the spliced list is not empty.
+
+But this fails to compile:
+{code}
+object Bar {
+  import language.experimental.macros
+  import scala.reflect.macros.Context
+
+  trait Foo
+  def foo: Bar.Foo = macro fooImpl
+  def fooImpl(c: Context): c.Expr[Bar.Foo] = {
+    import c.universe._
+    val trees = List()
+    c.Expr[Foo](q"new Bar.Foo {..$trees}")
+  }
+}
+{code}
+
+With this trace:
+{quote}
+Bar.scala:10: exception during macro expansion:
+java.util.NoSuchElementException: head of empty list
+        at scala.collection.immutable.Nil$.head(List.scala:337)
+        at scala.collection.immutable.Nil$.head(List.scala:334)
+        at org.scalalang.macroparadise.quasiquotes.Holes$class.parseCardinality(Holes.scala:193)
+        at org.scalalang.macroparadise.quasiquotes.Quasiquotes.parseCardinality(Quasiquotes.scala:7)
+        at org.scalalang.macroparadise.quasiquotes.Holes$class.parseCardinality(Holes.scala:193)
+        at org.scalalang.macroparadise.quasiquotes.Quasiquotes.parseCardinality(Quasiquotes.scala:7)
+        at org.scalalang.macroparadise.quasiquotes.Holes$Hole$.apply(Holes.scala:168)
+        at org.scalalang.macroparadise.quasiquotes.Placeholders$class.appendHole$1(Placeholders.scala:35)
+        at org.scalalang.macroparadise.quasiquotes.Placeholders$$anonfun$codeAndPosMap$1.apply(Placeholders.scala:41)
+        at org.scalalang.macroparadise.quasiquotes.Placeholders$$anonfun$codeAndPosMap$1.apply(Placeholders.scala:38)
+        at scala.reflect.internal.util.Collections$class.foreach2(Collections.scala:150)
+        at scala.reflect.internal.SymbolTable.foreach2(SymbolTable.scala:13)
+        at org.scalalang.macroparadise.quasiquotes.Placeholders$class.codeAndPosMap(Placeholders.scala:38)
+        at org.scalalang.macroparadise.quasiquotes.Quasiquotes.codeAndPosMap$lzycompute(Quasiquotes.scala:7)
+        at org.scalalang.macroparadise.quasiquotes.Quasiquotes.codeAndPosMap(Quasiquotes.scala:7)
+        at org.scalalang.macroparadise.quasiquotes.Placeholders$class.code(Placeholders.scala:48)
+        at org.scalalang.macroparadise.quasiquotes.Quasiquotes.code$lzycompute(Quasiquotes.scala:7)
+        at org.scalalang.macroparadise.quasiquotes.Quasiquotes.code(Quasiquotes.scala:7)
+        at org.scalalang.macroparadise.quasiquotes.Quasiquotes.expandQuasiquote(Quasiquotes.scala:46)
+        at org.scalalang.macroparadise.typechecker.FastTrack$ParadiseFastTrack$$anonfun$hijack$1$$anonfun$apply$1.apply(FastTrack.scala:22)
+        at org.scalalang.macroparadise.typechecker.FastTrack$ParadiseFastTrack$$anonfun$hijack$1$$anonfun$apply$1.apply(FastTrack.scala:22)
+        at org.scalalang.macroparadise.typechecker.FastTrack$$anonfun$1.applyOrElse(FastTrack.scala:14)
+        at org.scalalang.macroparadise.typechecker.FastTrack$$anonfun$1.applyOrElse(FastTrack.scala:14)
+        at scala.runtime.AbstractPartialFunction.apply(AbstractPartialFunction.scala:33)
+        at scala.tools.reflect.FastTrack$FastTrackEntry.run(FastTrack.scala:25)
+{quote}
+
+But what's more strange, is that when making an empty list in a less apparent way, such as:
+
+{code}
+object Bar {
+  import language.experimental.macros
+  import scala.reflect.macros.Context
+
+  trait Foo
+  def foo: Bar.Foo = macro fooImpl
+  def fooImpl(c: Context): c.Expr[Bar.Foo] = {
+    import c.universe._
+    val trees = for { x <- 0 to -1} yield x
+    c.Expr[Foo](q"new Bar.Foo {..$trees}")
+  }
+}
+{code}
+
+The code compiles, but fails to instantiate the trait at runtime, with this error:
+{quote}
+error: trait Foo is abstract; cannot be instantiated
+Bar.foo
+{quote}
+
+Which boils down to the fact, that for some reason, the quasiquote produces the tree for 
+{code}new Bar.Foo() {code} 
+instead of 
+{code} new Bar.Foo{} {code}

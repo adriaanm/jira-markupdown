@@ -1,0 +1,18 @@
+I suspect the `fromSource` condition in the following code might be at play:
+
+{code}
+  /** if there's a `package` member object in `pkgClass`, enter its members into it. */
+  def openPackageModule(pkgClass: Symbol) {
+
+    val pkgModule = pkgClass.info.decl(nme.PACKAGEkw)
+    def fromSource = pkgModule.rawInfo match {
+      case ltp: SymLoader => ltp.fromSource
+      case _ => false
+    }
+    if (pkgModule.isModule && !fromSource) {
+      // println("open "+pkgModule)//DEBUG
+      openPackageModule(pkgModule, pkgClass)
+    }
+  }
+{code}
+

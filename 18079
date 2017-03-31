@@ -1,0 +1,15 @@
+On Windows, can't delete a file after slurping.
+{code}
+import scala.compat.Platform.EOL
+import scala.io.Codec
+import scala.reflect.io._
+import java.io.{ File => JFile }
+
+object Test extends App {
+  val j = new JFile(args(0))
+  val s = new File(j).slurp()
+  Console println s.lines.mkString(s"${args(0)} {$EOL", EOL, s"$EOL}$EOL")
+  val res = j.delete()
+  Console println s"Deleted? $res"
+}
+{code}

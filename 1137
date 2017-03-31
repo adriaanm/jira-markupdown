@@ -1,0 +1,41 @@
+Rather comically, this exception is a null pointer dereference caused by the attempt to log the[[BR]]
+incorrect detection of a not-actually-possible null pointer dereference. In Typers.scala:[[BR]]
+
+{code}
+          if (!global.phase.erasedTypes && settings.Xchecknull.value &&
+              !sym.isConstructor &&
+              !(qual.tpe <:< NotNullClass.tpe) && !qual.tpe.isNotNull)
+              unit.warning(tree.pos, "potential null pointer dereference: 
+              "+tree)
+{code}
+
+In the synthesized equals method for case classes, the passed argument has .isInstanceOf[AnyRef][[BR]]
+called on it. Since the argument is not first checked for null, the compiler believes this is a possible null[[BR]]
+pointer dereference, even though null.isInstanceOf[...] simply returns false. It proceeds to call[[BR]]
+unit.warning, even though unit is in this case (and others) null, thus throwing the exception.[[BR]]
+
+That exception is then swallowed and rendered mysterious in ParallelMatching:
+{code}
+      try { ...
+      } catch {
+        case e =>
+          throw new FatalError("EXCEPTION: "+e.getMessage())
+      }
+
+{code}
+
+Independently of the fix for this bug, I have several observations:
+
+1) Putting a test for a debugging flag in the middle of a series of boolean tests pretty much[[BR]]
+guarantees heisenbugs. If a flag exists only to harden checks or output debugging information, please[[BR]]
+test for it in isolation.
+
+2) Swallowing a specific exception which indicates exactly where the bug is and outputting only[[BR]]
+e.getMessage() instead (which in this case was null) is less than helpful.
+
+3) The compiler badly needs a unified logging interface which can do things like verifying unit is not[[BR]]
+null before calling unit.warning.
+
+4) The fact that unit is treated like a safe value when in fact it can be null underlies a number of[[BR]]
+open bugs. See at least SI-1308 and SI-1087 but based on my brief inspections of many open bugs I am sure[[BR]]
+there are others.

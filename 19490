@@ -1,0 +1,23 @@
+In the example:
+
+{code:test.scala}
+package test
+object Test {
+  def main(args: Array[String]): Unit = {
+    println(classOf[IsInFactUsed])
+  }
+
+  private trait IsInFactUsed
+}
+{code}
+
+Compiling with -Ywarn-unused gives an incorrect warning
+
+{code}
+$ scalac -Ywarn-unused test.scala 
+test.scala:8: warning: private trait IsInFactUsed in object Test is never used
+  private trait IsInFactUsed
+                ^
+one warning found
+{code}
+

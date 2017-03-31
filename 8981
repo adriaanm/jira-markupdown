@@ -1,0 +1,9 @@
+What does the variance of ClassTag have to do with the first option? ClassTag is invariant in its own type parameter - that doesn't preclude this:
+{code}
+implicitly[ClassTag[List[Int]]] == ClassTag[List[_]]
+implicitly[ClassTag[List[Any]]] == ClassTag[List[_]]
+implicitly[ClassTag[List[String]]] == ClassTag[List[_]]
+{code}
+One ClassTag which creates Array[List[T]]s can create any Array[List[T]]. They're all the same.
+
+If you never create or allow the creation of ClassTags with type args which aren't enforced and can't be enforced, then it looks viable (and much improved) to me.

@@ -1,0 +1,17 @@
+{code}
+val q"$fun(..$args)" = q"minus(ten)(2)"
+{code}
+
+throws scala.MatchError exception, whereas {{q"minus(ten)(2)"}} is
+
+{code}
+Apply(Apply(Ident(TermName("minus")), List(Ident(TermName("ten")))), List(Literal(Constant(2))))
+{code}
+
+and the expected results is {{fun}} matched to {code}
+Apply(Ident(TermName("minus")), List(Ident(TermName("ten"))))
+{code} and {{args}} matched to {code}
+List(Literal(Constant(2)))
+{code}
+
+{{q"$fun(...$args)"}} works fine and matches {{args}} to a list of {{ten}} and {{2}}.

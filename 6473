@@ -1,0 +1,19 @@
+Not having a sensible copy behavior leaves you with partially incomplete case classes.  Having a feature that adds behavior you can't get anywhere else, but which breaks your typical use cases, is less clear of a win than if you keep all typical use cases.
+Here's what 2.10 does:
+
+{code}
+scala> case class C(a: Int, b: Int, c: Int)
+defined class C
+
+scala> C(1,2,3).copy(4,5)
+res0: C = C(4,5,3)
+
+scala> case class D(a: Int, xs: Int*)
+defined class D
+
+scala> D(1,2,3).copy(4,5)
+<console>:10: error: value copy is not a member of D
+              D(1,2,3).copy(4,5)
+{code}
+
+If this is something with a natural fix, then great.  But if it doesn't have a natural fix, maybe the privileged position of varargs in case classes is less of a win than we think.

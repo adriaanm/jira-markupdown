@@ -1,0 +1,11 @@
+(In r24547) My early attempts to implement non-integral ranges in a way which
+was useful without having lots of floating point traps were less
+than successful.  One of the bigger backfires is that the requirement
+not to round (trying, and failing anyway, to avoid surprises with
+methods like "contains") inflicts runtime errors.
+
+The simple way to improve this, which seems a good idea anyway,
+is to make the default math context something less inclined to
+exceptions.  Default BigDecimal mc is now DECIMAL128.
+References SI-1812, SI-4201 and puts SI-4201 back to normal priority.
+Review by community.

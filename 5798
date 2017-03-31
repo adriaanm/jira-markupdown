@@ -1,0 +1,127 @@
+[[syntax trees at end of cleanup]]// Scala source: bt4.scala
+
+{code}
+package <empty> {
+  final class Outer extends java.lang.Object with ScalaObject {
+    @volatile protected var bitmap$$0: Int = 0;
+    <synthetic> lazy private[this] var Inner1$$module: object Outer$$Inner1 = _;
+    <synthetic> <stable> <accessor> lazy def Inner1(): object Outer$$Inner1 = {
+      if (Outer.this.bitmap$$0.&(1).==(0))
+        {
+          Outer.this.synchronized({
+            if (Outer.this.bitmap$$0.&(1).==(0))
+              {
+                Outer.this.Inner1$$module = new object Outer$$Inner1(Outer.this);
+                Outer.this.bitmap$$0 = Outer.this.bitmap$$0.|(1);
+                ()
+              };
+            scala.runtime.BoxedUnit.UNIT
+          });
+          ()
+        };
+      Outer.this.Inner1$$module
+    };
+    private[this] val inner: Outer$$Inner = _;
+    <stable> <accessor> def inner(): Outer$$Inner = Outer.this.inner;
+    def bar(): Int = {
+      <synthetic> val temp5: Outer$$Inner = Outer.this.inner();
+      if (temp5.$$isInstanceOf[Outer$$Inner1]().&&(temp5.$$asInstanceOf[Outer$$Inner1]().Outer$$Inner1$$$$$$outer().eq(Outer.this)))
+        {
+          temp5.$$asInstanceOf[Outer$$Inner1]().foo()
+        }
+      else
+        throw new MatchError(temp5)
+    };
+    def this(): Outer = {
+      Outer.super.this();
+      Outer.this.inner = new Outer$$Inner1(Outer.this, 0);
+      ()
+    }
+  };
+  final object Crash extends java.lang.Object with ScalaObject {
+    def main(args: Array[java.lang.String]): Unit = scala.this.Predef.println(scala.Int.box(new Outer().bar()));
+    def this(): object Crash = {
+      Crash.super.this();
+      ()
+    }
+  };
+  sealed abstract trait Outer$$Inner extends java.lang.Object;
+  final case class Outer$$Inner1 extends java.lang.Object with Outer$$Inner with ScalaObject with Product with Serializable {
+    def productIterator(): Iterator = scala.Product$$class.productIterator(Outer$$Inner1.this);
+    @deprecated("use productIterator instead") def productElements(): Iterator = scala.Product$$class.productElements(Outer$$Inner1.this);
+    <caseaccessor> <paramaccessor> private[this] val foo: Int = _;
+    <stable> <caseaccessor> <accessor> <paramaccessor> def foo(): Int = Outer$$Inner1.this.foo;
+    <synthetic> def copy(foo: Int = foo): Outer$$Inner1 = new Outer$$Inner1(Outer$$Inner1.this.$$outer, foo);
+    <synthetic> def copy$$default$$1(): Int = Outer$$Inner1.this.foo();
+    override def hashCode(): Int = ScalaRunTime.this._hashCode(Outer$$Inner1.this);
+    override def toString(): java.lang.String = ScalaRunTime.this._toString(Outer$$Inner1.this);
+    override def equals(x$$1: java.lang.Object): Boolean = Outer$$Inner1.this.eq(x$$1).||({
+      {
+        <synthetic> val temp1: java.lang.Object = x$$1;
+        if (temp1.$$isInstanceOf[Outer$$Inner1]())
+          {
+            <synthetic> val temp2: Outer$$Inner1 = temp1.$$asInstanceOf[Outer$$Inner1]();
+            <synthetic> val temp3: Int = temp2.foo();
+            val foo$$1: Int = temp3;
+            if (Outer$$Inner1.this.gd1$$1(foo$$1))
+              {
+                x$$1.$$asInstanceOf[Outer$$Inner1]().canEqual(Outer$$Inner1.this)
+              }
+            else
+              {
+                false
+              }
+          }
+        else
+          {
+            false
+          }
+      }
+    });
+    override def productPrefix(): java.lang.String = "Inner1";
+    override def productArity(): Int = 1;
+    override def productElement(x$$1: Int): java.lang.Object = {
+      <synthetic> val temp4: Int = x$$1;
+      if (temp4.==(0))
+        {
+          scala.Int.box(Outer$$Inner1.this.foo())
+        }
+      else
+        {
+          throw new java.lang.IndexOutOfBoundsException(scala.Int.box(x$$1).toString())
+        }
+    };
+    override def canEqual(x$$1: java.lang.Object): Boolean = x$$1.$$isInstanceOf[Outer$$Inner1]();
+    <synthetic> <paramaccessor> private[this] val $$outer: Outer = _;
+    final <synthetic> private[this] def gd1$$1(x$$1: Int): Boolean = x$$1.==(Outer$$Inner1.this.foo());
+    def this($$outer: Outer, foo: Int): Outer$$Inner1 = {
+      Outer$$Inner1.this.foo = foo;
+      if ($$outer.eq(null))
+        throw new java.lang.NullPointerException()
+      else
+        Outer$$Inner1.this.$$outer = $$outer;
+      Outer$$Inner1.super.this();
+      scala.Product$$class./*Product$$class*/$$init$$(Outer$$Inner1.this);
+      ()
+    }
+  };
+  final <synthetic> object Outer$$Inner1 extends scala.runtime.AbstractFunction1 with ScalaObject with Serializable {
+    final override def toString(): java.lang.String = "Inner1";
+    case <synthetic> def unapply(x$$0: Outer$$Inner1): Option = if (x$$0.==(null))
+      scala.this.None
+    else
+      new Some(scala.Int.box(x$$0.foo()));
+    case <synthetic> def apply(foo: Int): Outer$$Inner1 = new Outer$$Inner1(Outer$$Inner1.this.$$outer, foo);
+    <synthetic> <paramaccessor> private[this] val $$outer: Outer = _;
+    case <synthetic> <bridge> def apply(v1: java.lang.Object): java.lang.Object = Outer$$Inner1.this.apply(scala.Int.unbox(v1));
+    def this($$outer: Outer): object Outer$$Inner1 = {
+      if ($$outer.eq(null))
+        throw new java.lang.NullPointerException()
+      else
+        Outer$$Inner1.this.$$outer = $$outer;
+      Outer$$Inner1.super.this();
+      ()
+    }
+  }
+}
+{code}

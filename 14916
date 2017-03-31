@@ -1,0 +1,177 @@
+Having a trait with methods that use declared abstract types for pattern matching compiles different if the method is defined in the trait or if exactly the same code is used in a concrete subclass.
+
+Here is the example: 
+{code}
+
+trait Value {
+    type T
+    protected val value: T
+    type Self <: {val value: T}
+
+    def myType: String
+
+    protected def newValue(newVal: T): Self
+    override def hashCode = value.hashCode
+    override def equals(other: Any): Boolean = other match {
+        case that: Self =>
+          println(myType)
+          this.value == that.value
+        case _ => false
+    }
+}
+
+{code} 
+
+I created a JUnit Test using that trait with two different concrete classes, I was expecting instances of the same class not to be equal even if the contained value is equal. But I to my surprise the instances compared equally.
+{code}
+import org.junit.Assert._
+import org.junit.Test
+
+import org.scalatest.junit.AssertionsForJUnit
+
+class AbstractTypeTest extends AssertionsForJUnit {
+    class CU1(val value: BigDecimal) extends Value  {
+        type T = BigDecimal
+        type Self = CU1
+
+        def myType = classOf[Self].getName
+        protected def newValue(newVal: T) = new CU1(newVal)
+
+    }
+
+    class CU2(val value: BigDecimal) extends Value {
+        type T = BigDecimal
+        type Self = CU2
+
+        def myType = classOf[Self].getName
+        protected def newValue(newVal: T) = new CU2(newVal)
+    }
+
+    @Test def debugEquality() {
+        val a = new CU1(25)
+        val b = new CU2(25)
+        assert(a != b, "amounts in different currencies should not be equal")
+        assert(b != a, "amounts in different currencies should not be equal")
+
+    }
+}
+{code}
+
+After some investigation I found out that this will hold if I override the equality method in the concrete class using exactly the same implementation as in the trait. 
+
+{code}
+
+import org.junit.Assert._
+import org.junit.Test
+
+import org.scalatest.junit.AssertionsForJUnit
+
+class AbstractTypeTest extends AssertionsForJUnit {
+    class CU1(val value: BigDecimal) extends Value  {
+        type T = BigDecimal
+        type Self = CU1
+
+        def myType = classOf[Self].getName
+        protected def newValue(newVal: T) = new CU1(newVal)
+
+        override def equals(other: Any): Boolean = other match {
+            case that: Self =>
+              println(myType)
+              this.value == that.value
+            case _ => false
+        }
+    }
+
+    class CU2(val value: BigDecimal) extends Value {
+        type T = BigDecimal
+        type Self = CU2
+
+        def myType = classOf[Self].getName
+        protected def newValue(newVal: T) = new CU2(newVal)
+    }
+
+    @Test def debugEquality() {
+        val a = new CU1(25)
+        val b = new CU2(25)
+        assert(a === b, "amounts in different currencies should not be equal")
+        assert(b === a, "amounts in different currencies should not be equal")
+
+    }
+}
+{code}
+
+I use JD to decompile the resulting classes and saw that both classes (CU1 and CU2) have totally different implementations for the equality method which based in my understanding of traits should not be the case, both classes should be nearly identical.
+
+{code}
+
+ public class CU1
+    implements Value, ScalaObject
+  {
+    private final BigDecimal value;
+
+    public CU1(BigDecimal value)
+    {
+      Value.class.$$init$$(this);
+    }
+
+    public boolean equals(Object other)
+    {
+      Object localObject = other; if ((!(localObject instanceof CU1)) || (((CU1)localObject).oforero$$AbstractTypeTest$$CU1$$$$$$outer() != oforero$$AbstractTypeTest$$CU1$$$$$$outer()))
+        break label72;
+      Predef..MODULE$$.println(myType());
+      localBigDecimal = ((CU1)localObject)
+        .value();
+      BigDecimal tmp45_34 = value(); if (tmp45_34 != null) break label57; label57: label72: tmp45_34;
+    }
+
+    public CU1 newValue(BigDecimal newVal)
+    {
+      return new CU1(oforero$$AbstractTypeTest$$CU1$$$$$$outer(), newVal);
+    }
+
+    public String myType()
+    {
+      return CU1.class.getName();
+    }
+
+    public BigDecimal value()
+    {
+      return this.value; } 
+    public int $$tag() throws RemoteException { return ScalaObject.class.$$tag(this); } 
+    public int hashCode() { return Value.class.hashCode(this);
+    }
+  }
+}
+
+
+ public class CU2
+    implements Value, ScalaObject
+  {
+    private final BigDecimal value;
+
+    public CU2(BigDecimal value)
+    {
+      Value.class.$$init$$(this);
+    }
+
+    public CU2 newValue(BigDecimal newVal)
+    {
+      return new CU2(oforero$$AbstractTypeTest$$CU2$$$$$$outer(), newVal);
+    }
+
+    public String myType()
+    {
+      return CU2.class.getName();
+    }
+
+    public BigDecimal value()
+    {
+      return this.value; } 
+    public int $$tag() throws RemoteException { return ScalaObject.class.$$tag(this); } 
+    public boolean equals(Object x$$1) { return Value.class.equals(this, x$$1); } 
+    public int hashCode() { return Value.class.hashCode(this);
+    }
+  }
+{code}
+
+I first found this in 2.8 (Snapshot 17.01.2010) and confirmed it in 2.7.7

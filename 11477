@@ -1,0 +1,21 @@
+{code}
+git diff head
+diff --git a/src/compiler/scala/tools/nsc/backend/icode/GenICode.scala b/src/compiler/scala/tools/nsc/backend/icode/GenICode.scala
+index d9f56b4..49b9199 100644
+--- a/src/compiler/scala/tools/nsc/backend/icode/GenICode.scala
++++ b/src/compiler/scala/tools/nsc/backend/icode/GenICode.scala
+@@ -567,6 +567,11 @@ abstract class GenICode extends SubComponent {
+                   // the list, otherwise infinite recursion happens for
+                   // finalizers that contain 'return'
+                   val fctx = finalizerCtx.newBlock()
++                  val fctxScope = fctx.scope
++                  fctx.scope = ctx1.scope
++                  fctxScope.locals.foreach(fctx.scope.add)
++                  fctx.bb.varsInScope.clear()
++                  fctx.bb.varsInScope ++= fctx.scope.varsInScope
+                   fctx.bb killIf ctx1.bb.ignore
+                   ctx1.bb.closeWith(JUMP(fctx.bb))
+                   ctx1 = genLoad(f1, fctx, UNIT)
+{code}
+
+That seems close to a fix, but I don't understand the phase well enough to be sure.

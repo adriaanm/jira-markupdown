@@ -1,0 +1,27 @@
+Dear developers,
+
+The following code also seems to show a related unsoundness.
+
+{code}
+sealed abstract class MyADT[+A]
+case object MyNone extends MyADT[Nothing]
+case class MyFun[A](fun: A=>A) extends MyADT[A]
+
+def data : MyADT[Any] = MyFun((x:Int)=>x+1)
+
+val foo : Any =
+  data match {
+    case MyFun(f) => f("a")
+    case _ => 0
+  }
+{code}
+
+In this code, I simply try to encode the following polymorphic ADT in such a way that MyNone does not require unnecessary parentheses ().
+
+MyADT[A] = MyNone | MyFun of A->A
+
+However, as the code shows, Scala unsoundly accepts the wrong code and produce a type error at run time.
+So, could you let me know whether there is a sound way to encode MyADT without requiring unnecessary parentheses in Scala?
+
+Thanks,
+Gil

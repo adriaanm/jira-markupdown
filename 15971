@@ -1,0 +1,70 @@
+Because of erasure, the compiler needs to insert casts to get the expected type. The "expected type" logic seems to depend on the use of the type, rather than the statically-known type.
+
+In this example, since the class `AbstractFoo` is the one that defines the field `t`, the compiler thinks it needs to cast the result of `ScalaBipp.make.get` to `AbstractFoo` in order to access `t`. This is incorrect behavior, since `AbstractFoo` might in fact be inaccessible in the scope in which the cast is applied.
+
+=== What steps will reproduce the problem (please be specific and use wikiformatting)? ===
+`test/AbstractFoo.java`
+{code}
+package test;
+
+/* package private */ class AbstractFoo {
+  public int t;
+}
+{code} 
+`ScalaBipp.scala`
+{code}
+package test
+
+class ScalaBipp extends AbstractFoo {
+  def make: Option[ScalaBipp] = Option(this)
+}
+{code}
+`test.scala`
+{code}
+package other
+
+object IllegalAccess {
+    val x = (new test.ScalaBipp).make.get.t // java.lang.IllegalAccessError: tried to access class test.AbstractFoo from class other.IllegalAccess$$
+}
+{code}
+
+=== What is the expected behavior? ===
+No runtime failure.
+
+=== What do you see instead? ===
+Runtime exception accessing class `test.AbstractFoo` and the following bytecode:
+{code}
+javap -c other.IllegalAccess$$
+
+   0:	new	SI-16; //class test/ScalaBipp
+   3:	dup
+   4:	invokespecial	SI-18; //Method test/ScalaBipp."<init>":()V
+   7:	invokevirtual	SI-22; //Method test/ScalaBipp.make:()Lscala/Option;
+   10:	invokevirtual	SI-28; //Method scala/Option.get:()Ljava/lang/Object;
+   13:	checkcast	SI-30; //class test/AbstractFoo
+   16:	getfield	SI-34; //Field test/AbstractFoo.t:I
+   19:	istore_2
+   20:	return
+
+
+{code}
+
+
+
+
+
+
+
+
+
+
+
+
+
+=== Additional information ===
+The checkcast on line 13 is wrong. It should cast to `ScalaBipp` rather than `AbstractFoo`. 
+
+test
+
+=== Scala version ===
+trunk r24156

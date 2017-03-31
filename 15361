@@ -1,0 +1,151 @@
+Use of sequence extractors in a particular order induces an incorrect match.  The test case below fails under 2.8.0.RC2, but works correctly under 2.7.7
+
+Here is the test case:
+
+{code}
+case class Wrapper(list: List[String]) {
+  def check(pf: PartialFunction[Wrapper,Any]) {
+    if (pf.isDefinedAt(this)) pf(this)
+  }
+}
+
+object Unwrap { 
+  def unapplySeq(w: Wrapper) = Some(w.list) 
+}
+
+// works correctly
+Wrapper(List("a", "b")) check { 
+  case Unwrap("a", "b") => 
+}
+
+// works correctly
+Wrapper(List("a", "b")) check { 
+  case Unwrap("c", "d") => assert(false, "c, d")
+}
+
+// works correctly
+Wrapper(List("a", "b")) check { 
+  case Unwrap("e") => assert(false, "e")
+}
+
+// works correctly
+Wrapper(List("a", "b")) check { 
+  case Unwrap("e") => assert(false, "e")
+  case Unwrap("c", "d") => assert(false, "c, d")
+}
+
+// fails
+Wrapper(List("a", "b")) check { 
+  case Unwrap("c", "d") => assert(false, "c, d")
+  case Unwrap("e") => assert(false, "e")
+}
+
+// fails, its not just PartialFunctions
+Wrapper(List("a", "b")) match { 
+  case Unwrap("c", "d") => assert(false, "c, d")
+  case Unwrap("e") => assert(false, "e")
+}
+{code}
+
+And here is the interpreter transcript:
+
+{code}
+Welcome to Scala version 2.8.0.RC2 (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_20).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> case class Wrapper(list: List[String]) {
+     |   def check(pf: PartialFunction[Wrapper,Any]) {
+     |     if (pf.isDefinedAt(this)) pf(this)
+     |   }
+     | }
+defined class Wrapper
+
+scala> 
+
+scala> object Unwrap { 
+     |   def unapplySeq(w: Wrapper) = Some(w.list) 
+     | }
+defined module Unwrap
+
+scala> 
+
+scala> // works correctly
+
+scala> Wrapper(List("a", "b")) check { 
+     |   case Unwrap("a", "b") => 
+     | }
+
+scala> 
+
+scala> // works correctly
+
+scala> Wrapper(List("a", "b")) check { 
+     |   case Unwrap("c", "d") => assert(false, "c, d")
+     | }
+
+scala> 
+
+scala> // works correctly
+
+scala> Wrapper(List("a", "b")) check { 
+     |   case Unwrap("e") => assert(false, "e")
+     | }
+
+scala> 
+
+scala> // works correctly
+
+scala> Wrapper(List("a", "b")) check { 
+     |   case Unwrap("e") => assert(false, "e")
+     |   case Unwrap("c", "d") => assert(false, "c, d")
+     | }
+
+scala> 
+
+scala> // fails
+
+scala> Wrapper(List("a", "b")) check { 
+     |   case Unwrap("c", "d") => assert(false, "c, d")
+     |   case Unwrap("e") => assert(false, "e")
+     | }
+java.lang.AssertionError: assertion failed: e
+	at scala.Predef$$.assert(Predef.scala:93)
+	at $$anonfun$$1.apply(<console>:11)
+	at $$anonfun$$1.apply(<console>:9)
+	at Wrapper.check(<console>:7)
+	at .<init>(<console>:9)
+	at .<clinit>(<console>)
+	at RequestResult$$.<init>(<console>:9)
+	at RequestResult$$.<clinit>(<console>)
+	at RequestResult$$scala_repl_result(<console>)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at scala.tools.nsc.Interpreter$$Request$$$$anonfun$$loadAndRun$$1$$$$anonfun$$apply$$18.apply(Interpreter.scala:984)
+	at scala.tools.nsc.Interpreter$$Requ...
+scala> 
+
+scala> // fails, its not just PartialFunctions
+
+scala> Wrapper(List("a", "b")) match { 
+     |   case Unwrap("c", "d") => assert(false, "c, d")
+     |   case Unwrap("e") => assert(false, "e")
+     | }
+java.lang.AssertionError: assertion failed: e
+	at scala.Predef$$.assert(Predef.scala:93)
+	at .<init>(<console>:11)
+	at .<clinit>(<console>)
+	at RequestResult$$.<init>(<console>:9)
+	at RequestResult$$.<clinit>(<console>)
+	at RequestResult$$scala_repl_result(<console>)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at scala.tools.nsc.Interpreter$$Request$$$$anonfun$$loadAndRun$$1$$$$anonfun$$apply$$18.apply(Interpreter.scala:984)
+	at scala.tools.nsc.Interpreter$$Request$$$$anonfun$$loadAndRun$$1$$$$anonfun$$apply$$18.apply(Interpreter.scala:984)
+	at scala.util.control.Exc...
+scala> 
+{code}

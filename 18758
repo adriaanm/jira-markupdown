@@ -1,0 +1,52 @@
+This one is also in 2.10, not a regression. The code is essentially the same as the code in SI-8133, except instead of an implicit class I have a non-implicit class and an implicit conversion, and combined into one file because it no longer depends on separate compilation (but it still depends on AnyOps extending AnyVal.)
+{code}
+// a.scala
+package object pkg {
+  class AnyOps(val x: Any) extends AnyVal { def to_s: String = "" + x }
+  implicit def mkAnyOps(x: Any): AnyOps = new AnyOps(x)
+}
+package pkg {
+  package object other { }
+  package other { class Crash { def f() = List(1) map (_.to_s) } }
+}
+{code}
+Outcome of successive compilations:
+{code}
+% scalac3 a.scala && scalac3 a.scala
+error: EmptyScope.enter
+error: scala.reflect.internal.FatalError:
+  EmptyScope.enter
+     while compiling: a.scala
+        during phase: extmethods
+     library version: version 2.11.0-20140109-065029-992050a619
+    compiler version: version 2.11.0-20140109-065029-992050a619
+  reconstructed args:
+
+  last tree to typer: Ident(x)
+       tree position: line 2 of a.scala
+            tree tpe: Boolean
+              symbol: value x
+   symbol definition: x: Boolean (a TermSymbol)
+      symbol package: <none>
+       symbol owners: value x
+           call site: constructor AnyOps in class AnyOps in package pkg
+
+== Source file context for tree position ==
+
+     0 package object pkg {
+     1   class AnyOps(val x: Any) extends AnyVal { def to_s: String = "" + x }
+     2   implicit def mkAnyOps(x: Any): AnyOps = new AnyOps(x)
+     3 }
+     4 package pkg {
+     5   package object other { }
+     6   package other { class Crash { def f() = List(1) map (_.to_s) } }
+	at scala.reflect.internal.SymbolTable.abort(SymbolTable.scala:56)
+	at scala.tools.nsc.Global.abort(Global.scala:263)
+	at scala.reflect.internal.Scopes$EmptyScope$.enterEntry(Scopes.scala:460)
+	at scala.reflect.internal.Scopes$Scope.enter(Scopes.scala:131)
+	at scala.tools.nsc.transform.ExtensionMethods$Extender.makeExtensionMethodSymbol$1(ExtensionMethods.scala:215)
+	at scala.tools.nsc.transform.ExtensionMethods$Extender.transform(ExtensionMethods.scala:218)
+	at scala.tools.nsc.transform.ExtensionMethods$Extender.transform(ExtensionMethods.scala:125)
+	at scala.reflect.api.Trees$Transformer$$anonfun$transformStats$1.apply(Trees.scala:2666)
+	at scala.reflect.api.Trees$Transformer$$anonfun$transformStats$1.apply(Trees.scala:2664)
+{code}

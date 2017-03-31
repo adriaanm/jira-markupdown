@@ -1,0 +1,15 @@
+In r24221 I made changes so that fsc would occasionally reuse a compiler instance as it is designed to do.  Unfortunately since then it quite enjoys hanging with no output.  An example sequence:
+{code}
+// you do this and it sits there indefinitely
+% scala -e 'println("hi")'
+// ctrl-C and do this, which nulls the cached Global instance
+% fsc -reset
+// this time it works
+% scala -e 'println("hi")'
+hi
+{code}
+This is not an improvement.  This behavior is "new" only because fsc has historically never reused a compiler instance for a new connection (which goes all the way back to ticket SI-84: see SI-1683 for an earlier manifestation.) I don't know what's going on internally with the Global because we don't get any output.  I should probably just disable the caching altogether.  At least we avoid jvm startup time I guess.
+
+This should be figured out before 2.9 because scripts use fsc by default.
+
+This can be assigned to me but I could use some input on what if anything I should expect to work with a cached Global.

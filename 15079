@@ -1,0 +1,13 @@
+There is no intermediate transition between 2.7.7 and 2.8.0 if a program uses !MultiMap.add/addBinding; code that references [source:scala/branches/2.7.x/src/library/scala/collection/mutable/MultiMap.scala@16894#L25 MultiMap.add] will not compile under 2.8.0, code that references [source:scala/branches/2.8.x/src/library/scala/collection/mutable/MultiMap.scala@20412#L25 MultiMap.addBinding] will not compile under 2.7.7 .
+
+This is a bug because it forces a big-step upgrade, where everyone moves forward all together, and only when every incompatibility has been hashed out.  This large pothole in the upgrade path appears to be unnecessary.
+
+Proposed fix:
+
+either
+
+ (a) declare that 2.8.0 is a transitional version, and include !MultiMap.add, or
+
+ (b) create a transitional 2.7.8 version that includes !MultiMap.addBinding.
+
+(and generalize this for all other similar library incompatibilities that I don't know about)

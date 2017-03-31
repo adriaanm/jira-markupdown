@@ -1,0 +1,39 @@
+Please try again on the mailing list to see if you can find the history of this choice. [scala-language] would be suitable.
+
+I don't know myself, but if I had to guess I would say it would be so you could reason about the associativy by thinking of `match` as a regular method:
+
+{code}
+object Test {
+  def `match`(a: PartialFunction[Any, Any]) = 0
+
+  def op(t: Test.type) = t
+
+  this op this match { case x => x }
+
+  this op this `match` { case x => x }
+}
+{code}
+
+{noformat}
+qbin/scalac -Xprint:parser sandbox/test.scala
+[[syntax trees at end of                    parser]] // test.scala
+package <empty> {
+  object Test extends scala.AnyRef {
+    def <init>() = {
+      super.<init>();
+      ()
+    };
+    def `match`(a: PartialFunction[Any, Any]) = 0;
+    this match {
+      case (x @ _) => x
+    };
+    def op(t: Test.type) = t;
+    this.op(this) match {
+      case (x @ _) => x
+    };
+    this.op(this).`match`(<empty> match {
+      case (x @ _) => x
+    })
+  }
+}
+{noformat}

@@ -1,0 +1,25 @@
+Replying to [comment:12 odersky]:
+>       !exists(part => part.isAbstractType && part.owner.isTerm)
+
+Whenever I see multistep logic like this I look around to see where else it's already used.  In this case I find it here, in Infer:
+{code}
+    /** A traverser to collect type parameters referred to in a type
+     */
+    object freeTypeParamsOfTerms extends SymCollector {
+      protected def includeCondition(sym: Symbol): Boolean =
+        sym.isAbstractType && sym.owner.isTerm
+    }
+{code}
+Notably this collector is utilized on both pattp and pt immediately after the point where isFinalType is failing the match.  So I think I can achieve this simply be reordering the logic.
+
+However, the issues run deeper, because if I don't fail the match statically, we are reminded of what this code does in 2.7 (see ticket SI-2361) because it doesn't compile:
+{code}
+scala>   def f[T](a: Array[T])  = a match { 
+     |     case x: Array[Int]    => x(0)
+     |     case x: Array[Double] => 5
+     |   }
+<console>:6: error: unreachable code
+           case x: Array[Double] => 5
+                                    ^
+{code}
+Basically, this is too involved for me to do anything about it quickly, I have too much else to do for 2.8 to ship.  I'm inclined to leave it as it is for now - I don't think it's excluding any code which would otherwise work - but let me know if you'd prefer something else.

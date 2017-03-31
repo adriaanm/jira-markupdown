@@ -1,0 +1,21 @@
+Ha ha ha, classic.  Macros have nothing to do with anything, it's just when you're writing your first macro you tend to blame macros for the verify errors.
+
+This is more than sufficient:
+{code}
+
+object Test {
+  def f(ch: Char): Any = ch match {
+    case 'b' | 'B'                               => 1
+    case 'c' | 'C'                               => 2
+    case 'd' | 'u' | 'i' | 'o' | 'x' | 'X' | 'c' => 3
+    case 'f' | 'e' | 'E' | 'g' | 'G'             => 4
+    case 'h' | 'H'                               => 5
+    case 's'                                     => 6
+    case _                                       => 7
+  }
+  
+  def main(args: Array[String]): Unit = {
+    f('a')
+  }
+}
+{code}

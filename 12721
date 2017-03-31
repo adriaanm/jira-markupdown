@@ -1,0 +1,19 @@
+Aladdin: *[http://scala-webapps.epfl.ch/bugtracking/bugs/displayItem.do?id=1295 bug 1295], [http://scala-webapps.epfl.ch/bugtracking/contribs/display.do?id=770 contrib 770]*
+
+== Code ==
+
+{code}
+class X { def unapply(v : Int) = Some(v + 1) }
+val q = new X
+5 match { case q(x) => x }
+{code}
+
+== What happened ==
+
+{code}
+java.lang.ClassCastException:  cannot be cast to 
+{code}
+
+== What expected ==
+
+Prints 6. This works in the compiler, and works in the interpreter if I use an object rather than class + val.

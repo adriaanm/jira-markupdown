@@ -1,0 +1,34 @@
+I get a similar error when running a program using a big Map object defined in source code.
+Code:
+{code}
+object ChiSquareAlpha
+{
+  val ChiSquareToAlphaIndexTable = Map(
+    1 -> Array(0.00016,0.00063,0.00393,0.01579,0.06418,0.14847,0.45494,1.07419,1.64237,2.70554,3.84146,5.41189,6.63490,10.82757),
+    .. 9998 other entries ..
+    10000 -> Array(9673.95,9711.71,9768.53,9819.19,9880.79,9925.36,9999.33,10073.68,10118.82,10181.66,10233.75,10292.58,10331.93,10442.73)
+  )
+
+  def main(args: Array[String]): Unit = {
+    println(ChiSquareToAlphaIndexTable(9999)(0))
+  }
+}
+{code}
+
+With Scala 2.10 (target jvm-1.6) and oracle-jre-bin-1.7.0.21 (same result with jre-1.6.0.45) under 64 Bit Linux:
+{noformat}
+Exception in thread "main" java.lang.NoClassDefFoundError: bm/statistic/ChiSquareAlpha$
+	at bm.statistic.ChiSquareAlpha.main(ChiSquareAlpha.scala)
+Caused by: java.lang.ClassNotFoundException: bm.statistic.ChiSquareAlpha$
+	at java.net.URLClassLoader$1.run(Unknown Source)
+	at java.net.URLClassLoader$1.run(Unknown Source)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at java.net.URLClassLoader.findClass(Unknown Source)
+	at java.lang.ClassLoader.loadClass(Unknown Source)
+	at sun.misc.Launcher$AppClassLoader.loadClass(Unknown Source)
+	at java.lang.ClassLoader.loadClass(Unknown Source)
+	... 1 more
+{noformat}
+
+I'll attach source file ChiSquareAlpha.scala to reproduce it. 
+Hope that helps to fix the bug.

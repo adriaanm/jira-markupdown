@@ -1,0 +1,19 @@
+In SLS section 6.13 Typed Expression is defined as:
+
+{code}
+Expr1 ::= PostfixExpr ‘:’ CompoundType
+{code}
+
+(Note elsewhere the definition, although equivalent, is via {{'PostfixExpr Ascription'}})
+
+At the very least this does not allow an expression to be typed using an Infix Type, which is allowed by the compiler.  For example I have a source file containing the following which compiles correctly:
+
+{code}
+  /** ^~^(f) is equivalent to ^^ { case b1 ~ b2 => f(b1, b2) } 
+   */
+  def ^~^[B1, B2, B >: A <% B1 ~ B2, C](f : (B1, B2) => C) = map { a =>
+    (a : B1 ~ B2) match { case b1 ~ b2 => f(b1, b2) } 
+  }
+{code}
+
+Note the expression {{(a : B1 ~ B2)}}.  I'm not sure what the correct definition is, but perhaps it should be '{{InfixType}}' or just '{{Type}}' instead of '{{CompoundType}}'.

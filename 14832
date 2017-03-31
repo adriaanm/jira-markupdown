@@ -1,0 +1,19 @@
+I think if I set my mind to it I could construct a lot more examples than this, but any number of collisions are too many.  Is there any other character which could be utilized during mangling? It looks like this situation may improve in the future, as somewhat discussed here:
+
+  http://blogs.sun.com/jrose/entry/symbolic_freedom_in_the_vm
+
+Regardless, I think it would be worth figuring out something better which works on java 5.  There's simply no way so many different things can be encoded with dollar signs and have it all come out clean in the wash.  
+{code}
+class A_+
+class A_ { class plus }
+{code}
+This will give you a probably random choice of A_+ and A#plus in your A_$plus.class file.
+{code}
+scala> val a = new A_
+a: A_ = A_@33d88c1f
+
+scala> new a.plus
+java.lang.NoSuchMethodError: A_$plus.<init>(LA_;)V
+	at .<init>(<console>:6)
+{code}
+See also SI-1994, where dragos says "This has to do with the mangling scheme for class protected members, which needs to be changed."

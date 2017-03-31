@@ -1,0 +1,19 @@
+This has been driving me nuts:
+{code}
+% scalac3 -versionScala compiler version 2.10.0-20120706-081450-c632aaca8b -- Copyright 2002-2011, LAMP/EPFL
+% scalac3 -d /tmp src/compiler/scala/reflect/makro/runtime/FrontEnds.scala
+src/compiler/scala/reflect/makro/runtime/FrontEnds.scala:44: error: object nsc is not a member of package tools
+    case reporter: tools.nsc.reporters.AbstractReporter => reporter.displayPrompt()
+                         ^
+src/compiler/scala/reflect/makro/runtime/FrontEnds.scala:44: error: value displayPrompt is not a member of scala.tools.nsc.reporters.Reporter
+    case reporter: tools.nsc.reporters.AbstractReporter => reporter.displayPrompt()
+                                                                    ^
+two errors found
+{code}
+Reduced example:
+{code}
+package scala.reflect.makro
+
+class Bippy extends tools.nsc.Settings() { }
+{code}
+It appears that scala classes are able to "opt out" of being in the scala package, which seems reasonable enough, except it is inconsistently applied.  Clearly FrontEnds (among numerous other examples) is usually compiling fine.  I don't yet know what the trigger is.

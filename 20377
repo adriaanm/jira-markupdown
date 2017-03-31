@@ -1,0 +1,35 @@
+I have Java generic abstract class:
+
+{code:title=AbstractJava.java|borderStyle=solid}
+public abstract class AbstractJava<T> {
+    protected abstract T test(Class<? extends T> c);
+}
+{code}
+
+And its implementation:
+
+{code:title=ConcreteJava.java|borderStyle=solid}
+public class ConcreteJava extends AbstractJava<Object> {
+    @Override
+    protected Object test(Class<?> c) {
+        return null;
+    }
+}
+{code}
+
+Then I want to override {{ConcreteJava.test()}} in Scala class:
+
+{code:title=ConcreteScala.scala|borderStyle=solid}
+  class ConcreteScala extends ConcreteJava {
+    override protected def test(c: Class[_]) = super.test(c)
+  }
+{code}
+
+But compilation fails with:
+
+{quote}
+class ConcreteScala needs to be abstract, since method test in class AbstractJava of type (c: Class[_ <: Object])Object is not defined
+{quote}
+
+There is old [SO question|http://stackoverflow.com/q/6440176/746347]. I tried solution from answer but it does not help.
+And also [the new one|http://stackoverflow.com/q/41649352/746347].

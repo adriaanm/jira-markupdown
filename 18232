@@ -1,0 +1,29 @@
+In SeqView's scaladoc:
+{code}
+def flatten[B]: Seq[B]
+[use case] Converts this sequence of traversable collections into a sequence formed by the elements of these traversable collections.
+{code}
+
+But scala compiler does not accept SeqView.flatten as a Seq:
+
+{code}
+scala> Seq(Seq(1)).view.flatten
+res0: scala.collection.SeqView[Seq[Int],Seq[Seq[Int]]]#Transformed[Int] = SeqViewN(...)
+
+scala> res0: Seq[Int]
+<console>:9: error: type mismatch;
+ found   : scala.collection.SeqView[Seq[Int],Seq[Seq[Int]]]#Transformed[Int]
+ required: Seq[Int]
+              res0: Seq[Int]
+              ^
+
+scala> var left:scala.collection.SeqView[Seq[Int],Seq[Seq[Int]]]#Transformed[Int] = _
+left: scala.collection.SeqView[Seq[Int],Seq[Seq[Int]]]#Transformed[Int] = null
+
+scala> left = res0
+<console>:9: error: type mismatch;
+ found   : scala.collection.SeqView[Seq[Int],Seq[Seq[Int]]]#Transformed(in trait TraversableViewLike)[Int]
+ required: scala.collection.SeqView[Seq[Int],Seq[Seq[Int]]]#Transformed(in trait SeqViewLike)[Int]
+       left = res0
+              ^
+{code}

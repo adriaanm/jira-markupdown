@@ -1,0 +1,36 @@
+Test case:
+
+{code}
+package zgstest
+
+object TabTest {
+  object pane extends scala.swing.TabbedPane {
+    val p = new scala.swing.TabbedPane.Page("p", new scala.swing.SplitPane)
+    pages += p
+    selection.page = p // line 7
+  }
+
+  def main(args : Array[String]) { println(pane.toString) }
+}
+
+{code}
+
+Result:
+{code}
+Exception in thread "main" java.lang.ExceptionInInitializerError
+        at zgstest.TabTest$$.main(TabTest.scala:10)
+        at zgstest.TabTest.main(TabTest.scala)
+Caused by: java.lang.NullPointerException
+        at scala.Proxy$$class.equals(Proxy.scala:28)
+        at scala.swing.Component.equals(Component.scala:46)
+        at scala.swing.TabbedPane$$Page.index(TabbedPane.scala:64)
+        at scala.swing.TabbedPane$$selection$$.page_$$eq(TabbedPane.scala:118)
+        at zgstest.TabTest$$pane$$.<init>(TabTest.scala:7)
+        at zgstest.TabTest$$pane$$.<clinit>(TabTest.scala)
+{code}
+
+Scala:
+{code}
+scala -version
+Scala code runner version 2.8.0.r18720-b20090919143443 -- Copyright 2002-2009, LAMP/EPFL
+{code}

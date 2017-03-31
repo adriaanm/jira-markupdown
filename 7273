@@ -1,0 +1,20 @@
+A bit of a disappointing resolution. Nevertheless the workaround is ... workable. Version that actually compiles looks like this,
+
+{code}
+scala> trait Context { trait Tree }
+defined trait Context
+
+scala> def foo [T <: Context](tree : T#Tree)(implicit ctx : T) : ctx.Tree = null
+foo: [T <: Context](tree: T#Tree)(implicit ctx: T)ctx.Tree
+
+scala> implicit val context = new Context {}
+context: Object with Context = $anon$1@757456c4
+
+scala> val tree = new context.Tree {}
+tree: Object with context.Tree = $anon$1@1f5311a4
+
+scala> foo(tree)
+res0: context.Tree = null
+{code}
+
+Nb. no {{Singleton}}.

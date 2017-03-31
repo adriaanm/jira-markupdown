@@ -1,0 +1,23 @@
+Ahem... The above fix breaks scalac outside of Emacs:
+```
+$ scalac *.scala
+Error: Could not find or load main class
+```
+I guess that's because it adds an empty parameter, which java (understandably) mistakes for the name of the main class. However, the only alternative I could think of doesn't work either, because it EMACS_OPT is still expanded to multiple arguments, while it needs to expand as either zero or one.
+
+I fear one needs to only quote the content of {{$EMACS}}, replacing space by backslash space. I'm troubled by not finding any standard solution to this problem.
+
+{code}
+$ diff -u $(which scalac){~,}
+--- /Users/pgiarrusso/opt/scala/bin/scalac~	2013-11-11 03:20:29.000000000 +0100
++++ /Users/pgiarrusso/opt/scala/bin/scalac	2013-11-11 03:23:13.000000000 +0100
+@@ -74,7 +74,7 @@
+ # Possible additional command line options
+ WINDOWS_OPT=""
+ EMACS_OPT=""
+-[[ -n "$EMACS" ]] && EMACS_OPT="-Denv.emacs=$EMACS"
++[[ -n "$EMACS" ]] && EMACS_OPT="-Denv.emacs='$EMACS'"
+
+ # Remove spaces from SCALA_HOME on windows
+ if [[ -n "$cygwin" ]]; then
+{code}

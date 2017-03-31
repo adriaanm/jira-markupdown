@@ -1,0 +1,42 @@
+I just tried building sbt with Scala 2.11.0-M8 and I got:
+
+{code}
+[error] /Users/grek/scala/xsbt/main/actions/src/main/scala/sbt/compiler/Eval.scala:362: value toArray is not a member of Eval.this.global.Range
+[error] 			defs += fragmentUnit(defString, range.toArray)
+[error] 			                                      ^
+[error] /Users/grek/scala/xsbt/main/actions/src/main/scala/sbt/compiler/Eval.scala:364: type mismatch;
+[error]  found   : Eval.this.global.Range
+[error]  required: scala.collection.TraversableOnce[Int]
+[error] 			lines ++= range
+[error] 			          ^
+[error] /Users/grek/scala/xsbt/main/actions/src/main/scala/sbt/compiler/Eval.scala:366: value end is not a member of Eval.this.global.Range
+[error] 			lines ++= (range.end :: range.end :: Nil)
+[error] 			                 ^
+[error] /Users/grek/scala/xsbt/main/actions/src/main/scala/sbt/compiler/Eval.scala:366: value end is not a member of Eval.this.global.Range
+[error] 			lines ++= (range.end :: range.end :: Nil)
+[error] 			                              ^
+[error] four errors found
+{code}
+
+I've been scratching my head for a while but then it became clear what happened. The code in {{Eval.scala}} refers to {{scala.Range}} (without any explicit import). Now, for reason I didn't identify yet there's Range class mixed into {{Global}} name space. Compare:
+
+{code}
+// Scala 2.10.2
+scala> val globalTpe = typeOf[Global]
+globalTpe: $r.intp.global.Type = scala.tools.nsc.Global
+
+scala> globalTpe.member("Range": TypeName)
+res5: $r.intp.global.Symbol = <none>
+
+// Scala 2.11.0-M8
+scala> val globalTpe = typeOf[Global]
+globalTpe: $r.intp.global.Type = scala.tools.nsc.Global
+
+scala> globalTpe.member("Range": TypeName)
+res12: $r.intp.global.Symbol = class Range
+
+scala> res12.fullName
+res13: String = scala.reflect.internal.Positions.Range
+{code}
+
+That class shadows (through {{globa._}} import) the one previously used.

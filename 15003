@@ -1,0 +1,48 @@
+Using Scala 2.8.0.r20828 and Java 1.6
+
+Because the bitmask for lazy vals is shared by classes in an inheritance chain, adding a private lazy val breaks binary compatibility/separate compilation.  Consider A.scala and B.scala:
+
+A.scala
+{code}
+class A {
+   lazy val x = 1
+}
+{code}
+
+B.scala
+{code}
+class B extends A {
+   lazy val y = 2
+}
+{code}
+
+and a test class in C.scala
+{code}
+object C {
+   def main(args: Array[String]) {
+      val b = new B
+      println( b.x )
+      println( b.y )
+   }
+}
+{code}
+
+Compiling all files and running C prints
+{code}
+1
+2
+{code}
+
+Change A.scala to use a private lazy val:
+{code}
+class A {
+   lazy val x = x2
+   private lazy val x2 = 1
+}
+{code}
+
+Recompiling A.scala and running C prints
+{code}
+1
+0
+{code}

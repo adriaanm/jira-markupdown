@@ -1,0 +1,33 @@
+Java annotations definitions cause errors when they're actually fine.
+
+
+SoaStreamable.java:
+
+{code}
+import java.lang.annotation.Documented; 
+import java.lang.annotation.ElementType; 
+import java.lang.annotation.Inherited; 
+import java.lang.annotation.Retention; 
+import java.lang.annotation.RetentionPolicy; 
+import java.lang.annotation.Target; 
+@Documented 
+@Retention(RetentionPolicy.RUNTIME) 
+@Target( { ElementType.METHOD }) 
+@Inherited 
+public @interface SoaStreamable { 
+    String mime() default ""; 
+} 
+{code}
+
+{code}
+miles@lewis:test$$ ~/projects/scala/scala/dists/latest/bin/scalac 
+-Ybuilder-debug:refined src/test/SoaStreamable.java 
+src/test/SoaStreamable.java:15: error: not found: type _root_ 
+   String mime() default ""; 
+          ^ 
+{code}
+
+NOTE that the same error is shown in the Eclipse plugin. 
+
+
+NOTE that this does not show when building from ant, with the scalac ant task.... ???

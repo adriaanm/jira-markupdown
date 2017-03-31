@@ -1,0 +1,24 @@
+Given phase assembly
+
+{code}
+apm@mara:~/tmp$ scalac -Ydebug -Xplugin:../projects/deprecator/checker.jar -Xshow-phases -Xgenerate-phase-graph phase-bug
+             phase name  id  description
+             ----------  --  -----------
+                 parser   1  parse source into ASTs, perform simple desugaring
+       elide-deprecated   2  
+                  namer   3  resolve names, attach symbols to named trees
+         packageobjects   4  load package objects
+                  typer   5  the meat and potatoes: type the trees
+       check-deprecated   6  
+                 patmat   7  translate match expressions
+         superaccessors   8  add super accessors in traits and nested classes
+{code}
+
+then stop-after:parser fails
+
+{code}
+apm@mara:~/tmp$ scalac -Ydebug -Xplugin:../projects/deprecator/checker.jar -Ystop-after:parser trivial.scala [running phase parser on trivial.scala]
+error: uncaught exception during compilation: java.lang.AssertionError
+error: java.lang.AssertionError: assertion failed: <no phase>
+	at scala.reflect.internal.SymbolTable.phase_$eq(SymbolTable.scala:161)
+{code}

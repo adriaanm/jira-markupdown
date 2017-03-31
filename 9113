@@ -1,0 +1,48 @@
+Paul pointed out my pull request that in Scala we allow polymorphic exceptions. This is not being handled properly by ClassfileParser probably with an assumption that since we are parsing exception declarations emitted by Java we'll never get polymorphic exceptions there. That assumption is wrong if you mix Scala and Java. The trick is to define polymorphic exception in Scala. Then declare it in {{throws}} declaration in Java class. See the following transcript:
+
+{code}
+rm -rf classes/*
+Grzegorzs-MacBook-Pro:scala-throws grek$ cat Foo.scala
+package test
+
+class Foo[T] extends Exception
+Grzegorzs-MacBook-Pro:scala-throws grek$ scalac Foo.scala -d classes/
+Grzegorzs-MacBook-Pro:scala-throws grek$ cat Xyz.java 
+package test;
+
+public class Xyz {
+	public void abc() throws Foo {}
+}
+Grzegorzs-MacBook-Pro:scala-throws grek$ 
+
+Grzegorzs-MacBook-Pro:scala-throws grek$ javac -cp /usr/local/Cellar/scala/2.10.0/libexec/lib/scala-library.jar:classes/ -d classes/ Xyz.java
+Grzegorzs-MacBook-Pro:scala-throws grek$ scala -classpath classes/
+Welcome to Scala version 2.10.0 (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_37).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> :power
+** Power User mode enabled - BEEP WHIR GYVE **
+** :phase has been set to 'typer'.          **
+** scala.tools.nsc._ has been imported      **
+** global._, definitions._ also imported    **
+** Try  :help, :vals, power.<tab>           **
+
+scala> rootMirror.getClassByName(newTermName("test.Xyz")).info.member(newTermName("abc"))
+res0: $r.intp.global.Symbol = method abc
+
+scala> res0.annotations
+res1: List[$r.intp.global.AnnotationInfo] = List(throws(classOf[test.Foo]))
+
+scala> val Literal(const) = res1.head.args.head
+const: $r.intp.global.Constant = Constant(test.Foo)
+
+scala> const.typeValue
+res2: $r.intp.global.Type = test.Foo
+
+scala> res2.typeParams
+res3: List[$r.intp.global.Symbol] = List(type T)
+
+scala> exit
+warning: there were 1 deprecation warnings; re-run with -deprecation for details
+{code}

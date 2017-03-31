@@ -1,0 +1,29 @@
+{code}
+Welcome to Scala version 2.8.0.r18376-b20090722104910 (Java HotSpot(TM) Client VM, Java 1.5.0_20).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> def foo(xs:List[String]) = xs match { case Seq(x) => x ; case Seq(x,y) => "" }
+<console>:4: error: unreachable code
+       def foo(xs:List[String]) = xs match { case Seq(x) => x ; case Seq(x,y) => "" }
+{code}
+
+works in 2.7.5.
+
+also maybe the use of Seq should be giving a deprecation warning?
+
+if I replace Seq with Sequence, then I first get:
+{code}
+error: not found: value Sequence
+{code}
+
+I think this must be an oversight where something is missing from Predef. if I import
+Sequence then I find Sequence has the same bug:
+{code}
+scala> import scala.collection.Sequence
+import scala.collection.Sequence
+
+scala> def foo(xs:List[String]) = xs match { case Sequence(x) => x ; case Sequence(x,y) => "" }
+<console>:5: error: unreachable code
+       def foo(xs:List[String]) = xs match { case Sequence(x) => x ; case Sequence(x,y) => "" }
+{code}

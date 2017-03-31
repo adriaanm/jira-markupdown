@@ -1,0 +1,14 @@
+With two classes:
+
+JavaB.java--public class JavaB { public int i = 1; }
+
+ScalaC.java--class ScalaC { val b = new JavaB() }
+
+Causes the line "val b" to get a "JavaB does not have a constructor" error. Note that technically there are no real Problems, this is just a line error.
+
+Making the error goes away requires manually changing JavaB (e.g. set i = 2), then manually changing ScalaC (e.g. rename val b to val c). Basically, incrementally compiling each file, then the "no constructor" error goes away.
+
+Hitting clean build makes it come back.
+
+I'm using r20428.
+

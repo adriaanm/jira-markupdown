@@ -1,0 +1,31 @@
+Just checked. It seems without toLong the results are the same, but I guess with toLong the results have a better chance at being correct. Just wondering how the implementation in NumericRange would look like ...
+
+I found one problem:
+
+It throws an exception for things like 1 to -1, the original did not. No idea what's more correct.
+
+{code}
+java.util.NoSuchElementException: next on empty iterator
+	at scala.collection.Iterator$$anon$3.next(Iterator.scala:28)
+	at scala.collection.Iterator$$anon$3.next(Iterator.scala:26)
+	at scala.collection.IndexedSeqLike$Elements.next(IndexedSeqLike.scala:63)
+	at scala.collection.IterableLike$class.head(IterableLike.scala:90)
+	at scala.collection.immutable.Range.head(Range.scala:43)
+	at .sum2(<console>:20)
+	at .<init>(<console>:22)
+	at .<clinit>(<console>)
+	at .<init>(<console>:11)
+	at .<clinit>(<console>)
+	at $export(<console>)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:616)
+	at scala.tools.nsc.interpreter.IMain$ReadEvalPrint.call(IMain.scala:593)
+	at scala.tools.nsc.interpreter.IMain$Request$$anonfun$10.apply(IMain.scala:831)
+	at scala.tools.nsc.interpreter.Line$$anonfun$1.apply$mcV$sp(Line.scala:43)
+	at scala.tools.nsc.io.package$$anon$2.run(package.scala:31)
+	at java.lang.Thread.run(Thread.java:679)
+{code}
+
+No idea where there is an Iterator involved ...

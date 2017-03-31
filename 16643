@@ -1,0 +1,45 @@
+The CPS transform fails for any conditional where:
+* only one branch of the conditional needs the CPS transform, and
+* the conditional is followed by other code.
+
+e.g. The following code fails when executed with a recent nightly build.
+{noformat}
+import scala.util.continuations._
+
+object Test {
+  def shifted: Unit @suspendable = shift { (k: Unit => Unit) => () }
+  def test1(b: => Boolean) = {
+    reset {
+      if (b) shifted
+      ()
+    }
+  }
+  def test2(b: => Boolean) = {
+    reset {
+      if (b) shifted else ()
+      ()
+    }
+  }
+  def main(args: Array[String]) = {
+    test1(true)
+    test1(false)
+    test2(true)
+    test2(false)
+  }
+}
+{noformat}
+
+{noformat}
+$ ~/opt/scala-2.10.0.dev-1302-g6a33a20/bin/scala ifelseX.scala 
+/p/scala/bugs/ifelseX.scala:9: error: type mismatch;
+ found   : Unit
+ required: Unit @scala.util.continuations.cpsParam[Unit,Unit]
+      if (b) shifted
+      ^
+/p/scala/bugs/ifelseX.scala:15: error: type mismatch;
+ found   : Unit
+ required: Unit @scala.util.continuations.cpsParam[Unit,Unit]
+      if (b) shifted else ()
+                          ^
+two errors found
+{noformat}

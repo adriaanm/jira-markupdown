@@ -1,0 +1,7 @@
+I think this bug is valid.  To be very relaxed about whether there is an empty parameter list at all the calling sites but very strict about it when defining structural types means we are perpetually being confounded by the otherwise meaningless presence of a pair of parentheses.  I think we should either be stricter at the call sites (and there was some momentum for that a while ago, but I think martin decided against) or more liberal here.
+
+Maybe if we had union types and could say
+{code}
+def fn(x: { def f: Int } <or> { def f(): Int}): Int = x.f
+{code}
+then we could at least work around it, even if that is pretty ugly.  But as it stands even that outlet is unavailable.

@@ -1,0 +1,29 @@
+In 1.6.1-final, the following code
+{code}
+class Element(var contents: Array[String]) {
+  private def heighten(h: int) = {
+    val top = Element(" ")
+    top above this above top
+  }
+
+  def above(that: Element) = {
+    this
+  }
+}
+
+object Element {
+  def apply(strings: String*) = new Element(strings.toArray)
+}
+{code}
+compiles fine with scalac, but when loaded into scala, it fails with:
+{code}
+scala> Loading d:\peter\play\scala\bug.scala...
+<console>:7: error: type mismatch;
+ found   : Element
+ required: Element
+           top above this above top
+                     ^
+defined module Element
+{code}
+
+If I eliminate the reference to the object Element, it works.  Is the interpreter supposed to be able to handle such forward references?

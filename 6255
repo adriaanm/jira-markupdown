@@ -1,0 +1,8 @@
+OK, and just for completeness' sake the answer for the idiomatically correct workaround that Aaron Novstrup provided to my original question on StackOverflow (use an abstract field on the base class), modified a bit to match your example code above:
+
+        abstract class A { var x: Int; def increment() { x+=1 } }
+        class B (var x: Int) extends A { override def toString = x.toString }
+        val b = new B(0)
+        assert( b.x == 0 )
+        b.increment()
+        assert( b.x == 1 )

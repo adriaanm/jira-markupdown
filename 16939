@@ -1,0 +1,38 @@
+If doing 'text/html' in an EditorPane, adding text by 'text += xxxx' results in a blank.  Using 'text = "xxx" + "yyy"' works OK.
+
+The attached file is a standalone GUI app which demonstrates.
+
+{code}
+import scala.swing._
+
+// change with SimpleSwingApplication for newer than 2.9.1
+object EditorPaneBug extends SimpleGUIApplication {
+  
+  val testText = new EditorPane {
+    contentType = "text"
+    text += "Test line 1 of text for contentType = 'text'\n"
+    text += "Test line 2 of text\n"
+    text += "Test line 3 of text\n"
+  }
+  val testHtmlBug = new EditorPane {
+    contentType = "text/html"
+    text += "Test line 1 of text for contentType = <b>'text/html'</b>"
+    text += "<p>Test line 2 of text"
+    text += "<p>Test line 3 of text"    
+  }
+  val testHtmlWorks = new EditorPane {
+    contentType = "text/html"
+    text = "Test line 1 of text for contentType = <b>'text/html'</b>" + 
+            "<p>Test line 2 of text" +
+            "<p>Test line 3 of text"    
+  }
+
+  def top = new MainFrame{
+    contents = new GridPanel(3, 1) {
+      contents += testText
+      contents += testHtmlBug
+      contents += testHtmlWorks
+    }
+  }
+}
+{code}

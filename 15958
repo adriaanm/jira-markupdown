@@ -1,0 +1,28 @@
+= problem =
+
+Collections have the methods
+
+{code}
+drop, dropWhile (from the left)
+dropRight       (from the right)
+{code}
+
+but there is no {{dropRightWhile}}, no complete symmetry
+of dropping from the left or from the right. why not?
+
+The same is true for the method "take": {{take, takeWhile, takeRight}}, but no {{takeRightWhile}}
+
+= suggestion =
+
+SeqLike has the twins  
+{code}
+indexWhere( p: (A) => Boolean ) : Int
+lastIndexWhere( p: (A) => Boolean ) : Int
+{code}
+so you could define
+
+{code}
+def takeRightWhile( p: (A) => Boolean ) = drop ( lastIndexWhere( !p(_) ) + 1 )
+{code}
+
+Frank

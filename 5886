@@ -1,0 +1,14 @@
+OK, it seems that quite some parts have outdated assumptions, like this part:
+
+{code}
+// source 'class A { ... }' becomes in bytecode: interface A.class + class A$$class.class
+// source 'object A { ... }' becomes in bytecode: interface A.class + class A$$.class
+val append = if (loader.loadClass(className).isInterface) "$$class" else "$$"
+{code}
+
+When did Scala actually change the classname mangling? It is certainly before I started looking at Scala during 2.7.x. 
+
+This code obviously hasn't worked since a long time, isn't used anywhere and mainly just throws exceptions.
+
+Maybe this is a candidate for a "quick delete"?
+Even Java did that once with some constructor which used a private class and therefore wasn't usable for any user code at all.

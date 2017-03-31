@@ -1,0 +1,95 @@
+The following code fails with a {{ClassCastException}} at runtime.
+
+{code}
+object Test {
+  def main(args: Array[String]): Unit = {
+    reset {
+      val f: (() => Int @suspendable) = () => 1
+      f()
+    }
+  }
+}
+{code}
+
+{code}
+java.lang.ClassCastException: java.lang.Integer cannot be cast to scala.continuations.ControlContext
+{code}
+
+The problem (I think) is that selectiveanf doesn't propagate the ValDef's @cps[Unit,Unit] to the Function's body. Without the @cps, the body fails to get translated to a ControlContext.
+
+Other examples that I think should work:
+
+Functions returning functions.
+
+{code}
+object Test {
+  def main(args: Array[String]): Unit = {
+    reset {
+      val f: (() => (() => Int @suspendable)) = () => (() => 1)
+      f()()
+    }
+  }
+}
+{code}
+
+DefDef returning functions
+
+{code}
+object Test {
+  def main(args: Array[String]): Unit = {
+    reset {
+      def f(): (() => (() => Int @suspendable)) = () => (() => 1)
+      f()()()
+    }
+  }
+}
+{code}
+
+Apply accepting a function
+
+{code}
+object Test {
+  def main(args: Array[String]): Unit = {
+    reset {
+      def f(g: () => (Int @suspendable)): Int @suspendable = g()
+      f(() => 1)
+    }
+  }
+}
+{code}
+
+Another version of Apply, but in this case types might be harder to propagate from the ValDef (for me anyway!)
+
+{code}
+object Test {
+  def main(args: Array[String]): Unit = {
+    reset {
+      val f: Option[() => (Int @suspendable)] = Some(() => 1)
+      f.get.apply
+    }
+  }
+}
+{code}
+
+Not sure about Typed
+
+{code}
+object Test {
+  def main(args: Array[String]): Unit = {
+    reset {
+      val f = ((() => 1) : (() => (Int @suspendable)))
+      f()
+    }
+  }
+}
+{code}
+
+I had a go at fixing this, but I was only able to solve some of the cases. I could probably have got things solved - eventually - but I thought I'd just create a ticket at this stage. :-) I'll attach it FYI, with a brief explanation here. I don't think you'll want to actually use they, since it's a bit of a mess and it doesn't actually work. :-) It's a learning exercise more than anything.
+
+The solution seems to involve first looking out for trees that might have a declared type. e.g. ValDef, Apply, Typed, Assign, Return, DefDef. When a declared type is found, it can be used to translate the expressions contained within the trees. For example, when translating the body of a DefDef, it is important to know the return type, because if the body evaluates to an anonymous function, annotations from within the return type might need to be applied to the anonymous function's body.
+
+I think this might be an extension of the current scheme which only propagates the annotations from the top type, instead of annotations from the whole type tree. In my implementation I added the type information as an extra parameter to the translation frunctions, rather than attempting to generalise the existing cpsR parameter. I moved the Function translation into the transValue method and out of the transform method.
+
+Things that are obviously wrong with my implementation:
+* Replaces return type of anonymous function with that of the expected type, rather than just propagating the annotations.
+* Can't propagate annotations when the expected type and the type of the value don't match exactly. i.e. when the value is a subtype of the expected type. "val f: Option[() => (Int @suspendable)] = Some(() => 1)"

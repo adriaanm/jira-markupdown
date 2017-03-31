@@ -1,0 +1,5 @@
+"This problem is caused by the fact that AnyRef specialization is a bit more tricky than specialization on primitive types. When we specialize on AnyRef and then we check if given type argument for specialized type parameter is valid we have to use subtyping relationship instead of equality."
+
+Are you sure of this assessment? This looks more to me like a case of comparing types in the wrong environment.  In Baz, A=String, and def apply(x: String): Boolean exists.  When looking for specialized overrides involving A, (String)Boolean is exactly the method signature it ought to be looking for. The fact that it doesn't override it says to me it's looking for the wrong signature, not that it needs to apply a different test.
+
+Parameter types of method overrides must match exactly, which also makes me skeptical that a subtype test is what's needed.

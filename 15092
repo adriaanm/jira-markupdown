@@ -1,0 +1,13 @@
+Compiling the following code snippet with -Yspecialize and running the application causes a java.lang.AbstractMethodError. Note that when placing the Fn1 object in a val everything works fine.
+{code}
+object Test {
+  trait Fn1[@specialized I] { def apply(a : I) : Unit }
+  class Call(pred : Fn1[Int]) { pred(10) }
+
+  def main(args : Array[String]) {
+    val f = new Fn1[Int] { def apply(a : Int) {} }
+    new Call(f)  // Works fine
+    new Call(new Fn1[Int] { def apply(a : Int) {} })  // Error!
+  }
+}
+{code}

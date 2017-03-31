@@ -1,0 +1,18 @@
+Things move fast in equalityland, PiS is lagging a ways back.  (Not saying it's incorrect, I can't tell without context.) You'll need to cite the spec on something like this, not a book.  What that line doesn't mention is that == is also overloaded on all the primitive types, so Float == Float does not call the == method on Any.  == is comparing primitives and equals is comparing boxes, and the already shaky correspondence between these is going away any day now if my sources can be believed.
+
+{code}
+scala> java.lang.Float.NaN == java.lang.Float.NaN    
+res0: Boolean = false
+
+scala> java.lang.Float.NaN equals java.lang.Float.NaN
+res1: Boolean = true
+{code}
+
+Soon the above will be but a detail, since == will be doing this:
+{code}
+scala> 0 == 0L
+res0: Boolean = true
+
+scala> (0: Any) == (0L: Any)
+res1: Boolean = false
+{code}

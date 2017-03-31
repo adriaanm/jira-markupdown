@@ -1,0 +1,9 @@
+The {{j.u.c.ConcurrentHashMap}} guarantees at most one mapping function invocation per {{computeIfAbsent}}, and once if the new value is also added to the map. It can do this because it uses locks under-the-hood.
+
+In {{TrieMap}}, which is lock-free, we could achieve the invoke-mapping-function-only-if-inserted effect by creating a lazy node within the map.
+Note that this means that the mapping function might be invoked after the {{computeIfAbsent}} returns, or even by some other thread. So:
+- this solution would not have exactly correspond to {{j.u.c.ConcurrentHashMap}} behavior - there is a difference in semantics, and we don't win consistency
+- the primary use-case for putting a side-effect into the mapping function (as is sometimes done with {{getOrElseUpdate}}) becomes bogus, in fact, non-thread-safe
+- the secondary use-case (better performance, due to not invoking mapping function O(P) times where P is the number of concurrent threads accessing the same key) has an unclear performance win, because the mapping function should be short and inexpensive anyway (see {{j.u.c.ConcurrentMap}} docs - long mapping functions and contention on the same key have terrible performance either way
+
+For these reasons, I'd be inclined to push back and say that it's not worth it.

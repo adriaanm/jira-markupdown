@@ -1,0 +1,23 @@
+Here's a possible implementation of foldRight - this could be added to the Traversable trait as it depends only on foreach.
+
+{code}
+def foldRight[A,B](z: B)(op: (A,B) => B): B = {
+  import scala.collection.mutable.ArrayStack
+  val s = new ArrayStack[A] 
+  foreach(a => s += a)
+  s.elements.foldLeft(z)((b,a) => op(a,b))                 
+}
+{code}
+
+Here's another implementation that I think could have better gc performance:
+
+{code}
+def foldRight[A,B](z: B)(op: (A,B) => B): B = {
+  import scala.collection.mutable.ArrayStack
+  val s = new ArrayStack[A] 
+  foreach(a => s += a)
+  var r = z           
+  while (!s.isEmpty) { r = op(s.pop, r) }
+  r
+}
+{code}

@@ -1,0 +1,30 @@
+Compiling the following trait with 2.12.0 vs 2.12.1 produces different bytecode
+{code:java}
+trait Actor {
+  @throws(classOf[Exception]) // when changing this you MUST also change ActorDocTest
+  //#lifecycle-hooks
+  def preStart(): Unit = ()
+}
+{code}
+
+Classfile produced with 2.12.0:
+{code:java}
+Compiled from "A.scala"
+public interface Actor {
+  public static void preStart$(Actor) throws java.lang.Exception;
+  public void preStart() throws java.lang.Exception;
+  public static void $init$(Actor);
+}
+{code}
+
+Classfile produced with 2.12.1:
+
+{code:java}
+public interface Actor {
+  public static void preStart$(Actor);
+  public void preStart() throws java.lang.Exception;
+  public static void $init$(Actor);
+}
+{code}
+
+Note how the signature of method {{preStart$}} is different.

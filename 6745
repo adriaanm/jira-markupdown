@@ -1,0 +1,12 @@
+(extempore in [r25985|https://codereview.scala-lang.org/fisheye/changelog/scala-svn?cs=25985]) Deprecated ambiguous dot syntaxes.
+
+1.+(2) - what is it? Is it 3 or 3.0? Come scala 2.11 you won't
+have to not know (or even not know there's something you don't know.)
+1.+(2) will then be safely considered equivalent to 1 + 2, because
+any dot not followed by a digit is not part of a number.
+
+Primarily, that's these forms:    3.f 3.d 3.
+
+If you prefer an error to a warning, use -Xfuture.
+
+Let's deprecate 012 == 10 too! (See comment.) References SI-5089, no review.

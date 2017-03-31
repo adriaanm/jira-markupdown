@@ -1,0 +1,55 @@
+So, I was a bit optimistic. Here's a pretty robust test case that proves that it is working, except in the case of AnyRef specialization:
+
+{code}
+import scala.{specialized => spec}
+
+class D[@spec T, @spec W](t:T, w:W)
+
+object D {
+  def get[@spec T, @spec W](t:T, w:W) = {
+    println(new D[T, W](t, w).getClass.getName)
+    w
+  }
+}
+
+class C[@spec T](x: T) {
+  def m[@spec W](f: T => W): W = f(x)
+}
+
+object Test {
+  // annotated all the types to work around SI-5526
+  def main(args:Array[String]) {
+    println(new D[Int, Int](1, 1).getClass.getName)
+    println(new D[Int, String](1, "a").getClass.getName)
+    println(new D[String, Int]("a", 1).getClass.getName)
+    println(new D[String, String]("a", "a").getClass.getName)
+    println(new D[Int, Double](1, 2.0).getClass.getName)
+
+    // this output should be the same as above
+    new C[Int](1).m[Int]((x:Int) => D.get[Int, Int](x, 1))
+    new C[Int](1).m[String]((x:Int) => D.get[Int, String](x, "a"))
+    new C[String]("a").m[Int]((x:String) => D.get[String, Int](x, 1))
+    new C[String]("a").m[String]((x:String) => D.get[String, String](x, "a"))
+    new C[Int](1).m[Double]((x:Int) => D.get[Int, Double](x, 2.0))
+  }
+}
+{code}
+
+The output I get is:
+
+{code}
+D$mcII$sp
+D$mcIL$sp
+D$mcLI$sp
+D
+D$mcID$sp
+D$mcII$sp
+D
+D
+D
+D$mcID$sp
+{code}
+
+The top 5 lines are correct, but the bottom 5 should be the same as the top, which they are except in the IL and LI cases. It seems that AnyRef specialization is working when invoked directly (in cases 2 and 3) but not when invoked indirectly (cases 7 and 8).
+
+I think I may close this bug (since it seems to be working in the case that Marc originally posted) and open a new one dealing with this AnyRef behavior.

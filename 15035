@@ -1,0 +1,26 @@
+{code}
+
+sealed trait Identity[A] {
+  val value: A
+}
+
+trait Coerce[A, B] {
+  def unwrap: (A => B)
+}
+
+object Coerce {
+  def IdentityCoerce[B] = new Coerce[Identity[B], B] {
+     // java.lang.Error: A in trait Identity cannot be instantiated from ?x$$1.type
+     def unwrap = _.value
+     
+     // Providing the type of _ works around the problem.
+     //def unwrap = (_: Identity[B]).value 
+  }
+}
+{code}
+
+Tested with 2.8.0.r20847-b20100210020246.
+
+Similar error message to SI-2741, but in different circumstances, so I'm raising a separate ticket.
+
+Full stack trace attached.

@@ -1,0 +1,70 @@
+I compiled again with the scala compiler 2.9.0.RC1 on Windows 7 and got this error with scalac. But with "fsc -target:msil helloworlddotnet.scala" I didn't have an error.
+Same example:
+{code}
+import System.Console
+
+object test extends Application {
+  Console.WriteLine("Hello world!")
+}
+{code}
+{code}
+C:\scala-2.9.0.RC1\examples>scalac -target:msil helloworlddotnet.scala
+error: java.lang.Error: typeConstructor inapplicable for <none>
+        at scala.tools.nsc.symtab.SymbolTable.abort(SymbolTable.scala:35)
+        at scala.tools.nsc.symtab.Symbols$$Symbol.typeConstructor(Symbols.scala:8
+74)
+        at scala.tools.nsc.symtab.Definitions$$definitions$$.scala$$tools$$nsc$$symta
+b$$Definitions$$definitions$$$$booltype(Definitions.scala:157)
+        at scala.tools.nsc.symtab.Definitions$$definitions$$.init(Definitions.scal
+a:798)
+        at scala.tools.nsc.Global$$Run.<init>(Global.scala:680)
+        at scala.tools.nsc.Main$$.process(Main.scala:105)
+        at scala.tools.nsc.Main$$.main(Main.scala:123)
+        at scala.tools.nsc.Main.main(Main.scala)
+
+Exception in thread "main" java.lang.Error: typeConstructor inapplicable for <no
+ne>
+        at scala.tools.nsc.symtab.SymbolTable.abort(SymbolTable.scala:35)
+        at scala.tools.nsc.symtab.Symbols$$Symbol.typeConstructor(Symbols.scala:8
+74)
+        at scala.tools.nsc.symtab.Definitions$$definitions$$.scala$$tools$$nsc$$symta
+b$$Definitions$$definitions$$$$booltype(Definitions.scala:157)
+        at scala.tools.nsc.symtab.Definitions$$definitions$$.init(Definitions.scal
+a:798)
+        at scala.tools.nsc.Global$$Run.<init>(Global.scala:680)
+        at scala.tools.nsc.Main$$.process(Main.scala:105)
+        at scala.tools.nsc.Main$$.main(Main.scala:123)
+        at scala.tools.nsc.Main.main(Main.scala)
+{code}
+With verbose:
+{code}
+C:\scala-2.9.0.RC1\examples>scalac -verbose -target:msil helloworlddotnet.scala
+[AssemRefs = .]
+[search path for source files: ]
+Exception in thread "main" java.lang.RuntimeException: Unknown
+        at scala.sys.package$$.error(package.scala:27)
+        at scala.tools.nsc.util.AssemblyClassPath.asClasspathString(MsilClassPat
+h.scala:115)
+        at scala.tools.nsc.util.AssemblyClassPath.asClasspathString(MsilClassPat
+h.scala:108)
+        at scala.tools.nsc.util.MergedClassPath$$$$anonfun$$asClasspathString$$1.app
+ly(ClassPath.scala:342)
+        at scala.tools.nsc.util.MergedClassPath$$$$anonfun$$asClasspathString$$1.app
+ly(ClassPath.scala:342)
+        at scala.collection.TraversableLike$$$$anonfun$$map$$1.apply(TraversableLike
+.scala:245)
+        at scala.collection.TraversableLike$$$$anonfun$$map$$1.apply(TraversableLike
+.scala:245)
+        at scala.collection.LinearSeqOptimized$$class.foreach(LinearSeqOptimized.
+scala:59)
+        at scala.collection.immutable.List.foreach(List.scala:45)
+        at scala.collection.TraversableLike$$class.map(TraversableLike.scala:245)
+
+        at scala.collection.immutable.List.map(List.scala:45)
+        at scala.tools.nsc.util.MergedClassPath.asClasspathString(ClassPath.scal
+a:342)
+        at scala.tools.nsc.Global.<init>(Global.scala:210)
+        at scala.tools.nsc.Main$$.process(Main.scala:88)
+        at scala.tools.nsc.Main$$.main(Main.scala:123)
+        at scala.tools.nsc.Main.main(Main.scala)
+{code}

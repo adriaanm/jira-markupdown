@@ -1,0 +1,32 @@
+Took a quick look. First, Utility.serialize is the non-formatting option. Second the PrettyPrinter is pretty ugly. It's not obvious whether it's trying to minimize verticality. When is GSOC again?
+{code}
+scala> val xx = <a>{ PCData("Here is some very long text\nto split.") }</a>
+xx: scala.xml.Elem =
+<a><![CDATA[Here is some very long text
+to split.]]></a>
+
+scala> val pp = new PrettyPrinter(1000,2)
+pp: scala.xml.PrettyPrinter = scala.xml.PrettyPrinter@13275d8
+
+scala> pp format xx
+res7: String = <a><![CDATA[Here is some very long text to split.]]></a>
+
+scala> val pp = new PrettyPrinter(10,2)
+pp: scala.xml.PrettyPrinter = scala.xml.PrettyPrinter@673919a7
+
+scala> pp format xx
+res8: String =
+<a>
+  <![CDATA[Here is some very long text
+to split.]]>
+</a>
+
+scala> val pp = new PrettyPrinter(2,2)
+pp: scala.xml.PrettyPrinter = scala.xml.PrettyPrinter@41853299
+
+scala> pp format xx
+res9: String =
+"<a><![CDATA[Here is some very long text to split.]]></a>
+"
+
+{code}

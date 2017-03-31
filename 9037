@@ -1,0 +1,29 @@
+Upon closer observation, the bug you describe is different from the one I mentioned. Moreover, the one you describe cannot be reproduced any more in 2.10.2. Now we get:
+{code}
+scala> def f[A](v: Covariant[A]) = v match { case Invariant(xs) => xs }
+f: [A](v: Covariant[A])Array[_ <: A]
+{code}
+hence the soundness hole you describe does not show up:
+{code}
+scala> f(Invariant(arr): Covariant[Any])(0) = Nil
+<console>:13: error: type mismatch;
+ found   : scala.collection.immutable.Nil.type
+ required: ?A1 where type ?A1
+              f(Invariant(arr): Covariant[Any])(0) = Nil
+                                                     ^
+{code}
+
+But the type of {{f}} is still very bad, and I can use the technique of my example:
+
+{code}
+class Bad extends Invariant[Any](Array(1, 2, 3)) with Covariant[Boolean]
+
+scala> f(new Bad)
+res3: Array[_ <: Boolean] = Array(1, 2, 3) //What???
+
+scala> res3(0)
+java.lang.ClassCastException: java.lang.Integer cannot be cast to java.lang.Boolean
+<BOOM>
+{code}
+
+Should I open another bug and close this one?

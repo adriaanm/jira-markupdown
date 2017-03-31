@@ -1,0 +1,9 @@
+The tail of empty list exception happends due to the following method in {{mixin}} which, instead of looking at the new list of base classes which is obtained after specialization, looks at the list of base classes after pickler:
+
+{code}
+  private def rebindSuper(base: Symbol, member: Symbol, mixinClass: Symbol): Symbol =
+    exitingPickler {
+      var bcs = base.info.baseClasses.dropWhile(mixinClass != _).tail
+{code}
+
+I don't know this phase well enough to understand why this is done this way - I'd just extract the {{base.info.baseClasses}} call outside of the closure.

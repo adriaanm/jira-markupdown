@@ -1,0 +1,10 @@
+Is this a problem? I only see it eliding the cast when nothing ever uses the value after being cast. In this code the first one disappears in erasure, but not the second.
+{code}
+object Test {
+  def main(args: Array[String]) {
+    fakefakefake().asInstanceOf[String]
+    fakefakefake().asInstanceOf[String].length
+  }
+  def fakefakefake(): Object = new Object
+}
+{code}

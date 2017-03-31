@@ -1,0 +1,34 @@
+That's interesting.  I'm sorry to say there must be something is wrong, either in our line numbers, version string creation, correspondence to actual source code, or... any ideas?
+{noformat}
+	at scala.reflect.internal.Symbols$Symbol.makeSerializable(Symbols.scala:1473)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedModuleDef(Typers.scala:1705)
+{noformat}
+In ffaa3cb89e, that call to makeSerializable is on line 1722, not 1705.
+
+If I chase it backward, it doesn't look like it has ever been at 1705, at least not in a long time.  This is the 2.10.x branch, it's similar on master.
+{code}
+% for sha in $(git log --format=%h -n20 -- src/compiler/scala/tools/nsc/typechecker/Typers.scala) ; \
+  do echo "$sha $(git show $sha:src/compiler/scala/tools/nsc/typechecker/Typers.scala |grep -n makeSerializable)"; \
+  done
+
+c96db8b555 1722:              clazz.makeSerializable()
+9ec19f34ac 1720:              clazz.makeSerializable()
+52ea3cc76f 1720:              clazz.makeSerializable()
+dbe69dc0db 1709:              clazz.makeSerializable()
+beb08c206b 1710:              clazz.makeSerializable()
+08e5fd23e7 1710:              clazz.makeSerializable()
+8c69f4da33 1710:              clazz.makeSerializable()
+fce3f8b2e3 1721:              clazz.makeSerializable()
+0e061f420f 1709:              clazz.makeSerializable()
+66603a2c00 1710:              clazz.makeSerializable()
+c30a9bddc4 1710:              clazz.makeSerializable()
+9bcb335b8a 1708:              clazz.makeSerializable()
+dbe7ef94dd 1710:              clazz.makeSerializable()
+344215b92d 1708:              clazz.makeSerializable()
+ea0d891f23 1708:              clazz.makeSerializable()
+210f8c8f10 1708:              clazz.makeSerializable()
+55b609458f 1708:              clazz.makeSerializable()
+e9c01dd1ce 1709:              clazz.makeSerializable()
+255e096f1a 1709:              clazz.makeSerializable()
+41dfb16121 1709:              clazz.makeSerializable()
+{code}

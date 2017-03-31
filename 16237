@@ -1,0 +1,35 @@
+Mac OSX
+Scala 2.9.0-1 REPL
+
+
+scala> trait A { val typeName: String }
+defined trait A
+
+scala> trait B extends A { val actualType: Class[_]; final lazy val typeName = actualType.getName }
+defined trait B
+
+scala> trait C extends B { final val actualType = classOf[Boolean] }
+defined trait C
+
+scala> object EXAMPLE extends C
+java.lang.ClassFormatError: Duplicate method name&signature in class file EXAMPLE$
+	at java.lang.ClassLoader.defineClass1(Native Method)
+	at java.lang.ClassLoader.defineClassCond(ClassLoader.java:632)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:616)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:466)
+	at scala.tools.nsc.interpreter.AbstractFileClassLoader.findClass(AbstractFileClassLoader.scala:52)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:307)
+	at scala.tools.nsc.interpreter.AbstractFileClassLoader.scala$tools$nsc$util$ScalaClassLoader$$super$loadClass(AbstractFileClassLoader.scala:17)
+	at scala.tools.nsc.util.ScalaClassLoader$class.loadClass(ScalaClassLoader.scala:50)
+	at scala.tools.nsc.interpreter.AbstractFileClassLoader.loadClass(AbstractFileClassLoader.scala:17)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:248)
+	at java.lang.Class.getDeclaredMethods0(Native Method)
+	at java.lang.Class.privateGetDeclaredMethods(Class.java:2427)
+	at java.lang.Class.privateGetPublicMethods(Class.java:2547)
+	at java.lang.Class.getMethods(Class.java:1410)
+	at scala.tools.nsc.interpreter.IMain$ReadEvalPrint.evalMethod(IMain.scala:628)
+	at scala.tools.nsc.interpreter.IMain$ReadEvalPrint.call(IMain.scala:592)
+	at scala.tools.nsc.interpreter.IMain$Request$$anonfun$10.apply(IMain.scala:828)
+	at scala.tools.nsc.interpreter.Line$$anonfun$1.apply$mcV$sp(Line.scala:43)
+	at scala.tools.nsc.io.package$$anon$2.run(package.scala:31)
+	at java.lang.Thread.run(Thread.java:680)

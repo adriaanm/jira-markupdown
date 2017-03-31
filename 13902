@@ -1,0 +1,49 @@
+A base class, which defines a method localize(String): String
+
+{code}
+$$ cat BaseClass.java
+public abstract class BaseClass {
+    public String localize(String str) { return str; }
+}
+
+{code}
+
+An intermediate class, which defines an auxiliary method localize(String, String...): String
+
+
+{code}
+$$ cat IntermediateClass.java
+public abstract class IntermediateClass extends BaseClass {
+    public String localize(String str, String... args) { return str; }
+}
+
+{code}
+
+A client Scala class, which tries to use the localize method in the base class, not interested in the auxiliary method at all:
+
+
+{code}
+$$ cat Client.scala
+object Client extends IntermediateClass {
+  def main(args: Array[String]) {
+    println(localize("hello world!"));
+  }
+}
+{code}
+
+Scalac v. 2.7.2-final fails in the method resolution. In 2.7.0, it works fine. 
+
+
+{code}
+$$ scalac Client.scala
+Client.scala:3: error: erroneous reference to overloaded definition,
+most specific definition is: method localize in class BaseClass of type (java.lang.String)java.lang.String,
+yet alternative definition   method localize in class IntermediateClass of type (java.lang.String,java.lang.String*)java.lang.String
+is defined in a subclass
+    println(localize("hello world!"));
+            ^
+one error found
+{code}
+
+
+In ticket SI-547 a similar error message is described.

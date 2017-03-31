@@ -1,0 +1,10 @@
+I guess this idiom doesn't work with traits quite yet, but inlining an elided def is light and somewhat safe from accidental invocation:
+{code}
+class Enabled {
+  import annotation.elidable
+  //@unused("Language feature types are mere phantoms of the mind")
+  @inline @elidable(elidable.MINIMUM)
+  implicit protected final def implicits = language.implicitConversions
+  //i.e., def implicits: languageFeature.implicitConversions = null
+}
+{code}

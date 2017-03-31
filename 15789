@@ -1,0 +1,114 @@
+
+== Setup ==
+
+Snow Leopard (10.6.4), !MacBookPro :
+{code}
+$$ uname -a
+Darwin FOOBAR_OSX_HOST.local 10.4.0 Darwin Kernel Version 10.4.0: Fri Apr 23 18:28:53 PDT 2010; root:xnu-1504.7.4~1/RELEASE_I386 i386
+{code}
+
+Scala version
+"2.8.0.final"
+
+
+== Problem Description ==
+--------------------------------
+* In the Scala 'prompt'/interpreter, tab-completion (AKA autocomplete) is NOT working.
+[[BR]]
+
+It simply inserts a TAB-character.
+
+* This behaviour is the same in both xterm (X11) and Terminal.app
+[[BR]]
+
+* I do not know whether this is a "core" Scala issue or a JLine problem.
+[[BR]]
+[[BR]]
+FWIW,
+[[BR]]
+in Terminal.app, Scala does not play well with `readLine` either: I have to use the `rlwrap` workaround.
+
+[[BR]]
+
+* This makes repl-usage/-exploration difficult.
+[[BR]]
+
+Especially in situations where it is required (*per the repl's own guidelines!*)
+
+{code}
+scala> :power
+** Power User mode enabled - BEEP BOOP      **
+** scala.tools.nsc._ has been imported      **
+** New vals! Try repl, global, power        **
+** New cmds! :help to discover them         **
+** New defs! Type power.<tab> to reveal     **  <====== REPL is asking for TAB to "see more details" !!
+
+{code}
+
+
+
+In contrast,
+[[BR]]
+
+ this works fine on a Linux host: hitting TAB offered me method-name completions as expected.
+[[BR]]
+
+== Examples ==
+* Below are attempts on[[BR]]
+
+a. my !MacBookPro, 
+{code}
+$$ scala
+Welcome to Scala version 2.8.0.final (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_22).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> var a = "abc"
+a: java.lang.String = abc
+
+scala> a.<tab-character-inserted-here-when-I-hit-TAB>
+
+{code}
+[[BR]]
+
+b. a linux M/C - _scala built from trunk_
+{code}
+$$ build/pack/bin/scala
+Welcome to Scala version 2.9.0.r23460-b20101108003053 (Java HotSpot(TM) Client VM, Java 1.6.0_06).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> var a = "abc"
+a: java.lang.String = abc
+
+scala> a.<I-hit-TAB-here-and-saw-the-completions-offered-below>
+
++                     asInstanceOf          charAt
+codePointAt           codePointBefore       codePointCount
+compareTo             compareToIgnoreCase   concat
+contains              contentEquals         endsWith
+equalsIgnoreCase      getBytes              getChars
+indexOf               intern                isEmpty
+isInstanceOf          lastIndexOf           length
+matches               offsetByCodePoints    regionMatches
+replace               replaceAll            replaceFirst
+split                 startsWith            subSequence
+substring             toCharArray           toLowerCase
+toString              toUpperCase           trim
+
+scala> a.
+
+{code}
+
+{code}
+$$ uname -a
+Linux FOOBAR_LINUX_HOST 2.6.12-1.1372_FC3smp SI-1 SMP Fri Jul 15 01:30:03 EDT 2005 i686 i686 i386 GNU/Linux
+
+{code}
+
+
+* Sought feedback on mailing-list[[BR]]
+
+This was one of my initial-impressions that I was seeking community feedback from on the `scala-users` mailing-list: have already received very useful feedback on the other issues[[BR]]
+
+[http://scala-programming-language.1934581.n4.nabble.com/Extremely-high-CPU-usage-no-Autocomplete-with-scala-2-8-0-final-Core2Duo-2-26GHz-2GB-MacBookPro-Mac--td3030894.html]

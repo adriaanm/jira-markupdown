@@ -1,0 +1,15 @@
+{code}
+scala> import scala.reflect.runtime.universe._
+import scala.reflect.runtime.universe._
+
+scala> q""" "bob's" """
+res0: reflect.runtime.universe.Literal = "bob\'s"
+
+scala> "bob's"
+res1: String = bob's
+{code}
+I also just noticed this doesn't deconst the type argument to Expr.
+{code}
+reify { "bob's" }
+res2: reflect.runtime.universe.Expr[String] = Expr[String("bob\'s")]("bob\'s")
+{code}

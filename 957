@@ -1,0 +1,24 @@
+As a workaround, I have added a catching of all other exceptions near Editor.scala:54:
+
+{code}
+        try {
+          if (reconcile) {
+            JavaModelUtil.reconcile(unit)
+            unit.getElementAt(offset)
+          } else if (unit.isConsistent())
+            unit.getElementAt(offset)   <----------- line 54
+          else
+            null
+        } catch {
+          case ex : JavaModelException => {
+            if (!ex.isDoesNotExist)
+              JavaPlugin.log(ex.getStatus)
+            null
+          }
+          case e =>                      <------- have added
+            e.printStackTrace
+            null
+        }
+{code}
+
+During last days with very active plugin using have not noticed any side effects except for eliminating one of annoying situations forcing the IDE restarting. In particular, have not noticed any changes in other 'lost control' situations.

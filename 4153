@@ -1,0 +1,12 @@
+Also while ++: doesn't exist in Seq, we've changed ++ in BufferLike to create a new buffer (instead of appending to the current one) so I think that if ++: is going to exist for buffers, it should work in a similar fashion.
+
+{code}
+@migration(2, 8,
+    "As of 2.8, ++: always creates a new collection, even on Buffers.\n"+
+    "Use ++=: instead if you intend to add by side effect to an existing collection.\n"
+)
+final def ++:(xs: Traversable[A]): This = xs ++=: clone()
+{code}
+
+Also I just realized that in the +: definition the migration message should say "Use +=: ..."
+

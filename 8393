@@ -1,0 +1,11 @@
+I've refined the fix and documented exactly what goes wrong.
+
+  https://github.com/retronym/scala/compare/ticket/6358
+
+Long story short: 
+
+ - extensionmethods only changes the owner of {{x$lzy}} to {{extension$lazyString}}
+ - refchecks reintroduces the accessor {{x}} with it's original owner {{lazyString}}
+ - calamity ensues.
+
+My patch seems to work around this, but it isn't very appealing for the traversals like {{ChangeOwnerTraverser}} to follow {{Symbol#referenced}} in such an ad-hoc manner. Instead, could we mandate that we cannot remove a symbol definition from a tree only to add it again in a later phase? It would make it much harder to smuggle through untransformed symbols.

@@ -1,0 +1,9 @@
+{code}
+  override def typeTagToManifest[T: ClassTag](mirror0: Any, tag: base.Universe # TypeTag[T]): Manifest[T] = {
+    // [Eugene++] implement more sophisticated logic
+    // Martin said it'd be okay to simply copypaste `Implicits.manifestOfType`
+    val mirror = mirror0.asInstanceOf[Mirror]
+    val runtimeClass = mirror.runtimeClass(tag.in(mirror).tpe)
+    Manifest.classType(runtimeClass).asInstanceOf[Manifest[T]]
+  }
+{code}

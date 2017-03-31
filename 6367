@@ -1,0 +1,3 @@
+This patch breaks the lazyness of stream for the initial element. I think that isn't a big problem, though effects of that can be subtle. Assigning null to self shouldn't be necessary -- if you don't use it in a method, it shouldn't become part of the object.
+
+I'm surprised, however, that "val stream" inside the definition of "var these" doesn't suffer from the same problem -- even though it is in a small scope, it ought to be saved so that it is preserved when the by-name LazyCell gets invoked. It might even be a bug here.

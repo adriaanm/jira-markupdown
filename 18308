@@ -1,0 +1,7 @@
+For example scala.concurrent.SyncVar uses currentTimeMillis in method waitMeasuringElapsed which is used in method get. This can result in quite long waits if system-clock is changed meanwhile. Get-method description clearly states that parameter is timeout, which is not related to current system-clock time in any way. 
+
+Using system-clock time in any concurrent libraries, except in cases where that is the specific purpose, is quite confusing and easily results in frozen processes when time is set backwards (or something happens too soon, if set forwards)
+
+In general, it seems that using System.nanoTime() in all cases should be the norm as it does not suffer from above. There is almost never the case where one is interested in time elapsed in system-clock time, compared to actual stop-watch/wall-clock time. The wrapping of nanotime in every 292 years seems to be quite small price to pay comparared to relatively frequent system-clock change. Also all parameters could be defined as nanoseconds for added granularity.
+
+For clarity, scala core should define nanotime as standard way to be used in all delays, waits, timeouts, etc. e.g. by introducing it in Predef with clear documentation, perhaps also starting it from zero (e.g. private val start = System.nanoTime(); def now() { System.nanoTime() - start }).

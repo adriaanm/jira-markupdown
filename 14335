@@ -1,0 +1,26 @@
+I have the Java-class-without-a-constructor error on a public Java class that has a public constructor. I moved from the latest production (non 2.8) plugin to the nightly plugin based on ticket 1840. But that didn't help.
+
+This code in object RPTestScala
+
+    package com.foo.bar.rpbeantest
+    import _root_.com.epiphany.rpbean.RPManager;
+    ....
+    val manager = new RPManager()
+
+Has this errror on the final line
+
+    com.epiphany.rpbean.RPManager does not have a constructor
+
+but other classes are constructible
+
+    val request = new RPRequest()
+
+--------
+
+Disassembly of the Java jar shows:
+
+$$ javap -classpath ~/Desktop/rpbean/lib/rpbean.jar com.epiphany.rpbean.RPManager | grep RPMan
+Compiled from "RPManager.java"
+public class com.epiphany.rpbean.RPManager extends java.lang.Object implements java.io.Serializable{
+    static java.lang.Class class$$com$$epiphany$$rpbean$$RPManager;
+    public com.epiphany.rpbean.RPManager();

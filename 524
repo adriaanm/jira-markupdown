@@ -1,0 +1,16 @@
+Replying to [comment:2 DRMacIver]:
+> More importantly, this is evidence of a problem in the implementation - the head of the stream is not being allowed to be garbage collected. This basically means the socket example is unworkable because you'll retain all data ever read from it. This is sad, as this sort of lazy IO can often be really really handy. In general this will cause problems where the stream is potentially very large - the memory footprint will be much larger than it needs to be.
+> 
+> This might be relevant to the implementation: http://groups.google.com/group/cal_language/browse_thread/thread/728a3d4ff0f77b00
+
+We are aware of the problem, and this has been discussed several times on the mailing list. I haven't thought about it long enough to be sure it's unsolvable, but here's a quick summary of why this is not easy to do:
+
+{code}
+for (i <- Stream.from(2)) f
+{code} is translated to
+{code}
+Stream.from(2).foreach(f)
+{code}
+We'd like the GC to be able to collect memory while iterating through the stream, that means while inside `foreach`. That means the call stack contains `foreach`, `from(2)` and `main`, and `main` pushed a reference to the head of the stream before calling `from(2)`. That reference is a GC root. Additionally, each cell holds a reference to the value once it has been resolved (as each cell should be evaluated at most once). That leads to keeping everything in memory. I guess switching to a more functional design (in which these are not methods on Stream cells, but static methods) might help, but we'd lose for comprehensions.
+
+We are open for suggestions. :)

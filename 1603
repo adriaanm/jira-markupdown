@@ -1,0 +1,17 @@
+There seems to be a workaround for the simpler case:
+{code}
+public interface A<T extends String> {
+    T get();
+}
+
+public abstract class B implements A {}
+
+class C extends B {
+    this: A[_] =>
+    def get = "foo"
+}
+{code}
+
+See http://michid.wordpress.com/2009/06/24/puzzle-implement-this-solution/
+
+If we could actually refer to the existential type used in the self type, this could probably also be used to work around the original issue.

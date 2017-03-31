@@ -1,0 +1,16 @@
+{code}
+type ResultOf[Function] = {
+  type Result
+}
+object ResultOf {
+  type ResultOfFunction1[A, R] = ResultOf[A => R] {
+    type Result = R
+  }
+  implicit def resultOfFunction1[A, R]: ResultOfFunction1[A, R] = null
+}
+def betterImplicitly[RequiredType][ActuallyType](implicit i: RequiredType with ActuallyType) = i
+val functionTypeTrait = betterImplicitly[ResultOf[String => Int]]
+val shouldBeInt: functionTypeTrait.Result = 0
+{code}
+
+With multiple type parameter lists support, we will have a better {{implicitly}} method, which infers a specified type instead of the required type.

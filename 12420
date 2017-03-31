@@ -1,0 +1,12 @@
+Reduced to
+{code:scala}
+  import scala.collection.immutable.HashMap
+  val m1 = HashMap[String, Seq[Int]]().updated("0", Seq(0))
+  val m2 = HashMap[String, Seq[Int]]().updated("0", Seq(1))
+  // println(m1)
+  // println(m2)
+  m1.merged(m2) {
+    case ((k, v1), (_, v2)) => (k, v1 ++ v2)
+  }
+{code}
+Exception disappears if uncomment println statements

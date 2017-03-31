@@ -1,0 +1,49 @@
+A couple of anomalies:
+{noformat}
+apm@mara:~/projects/snytt$ ~/scala-2.10.4/bin/scaladoc -d /tmp foo.scala
+warning: dropping dependency on node with no phase object: pickler
+foo.scala:24: error: pattern type is incompatible with expected type;
+ found   : A.foo.bar.D
+ required: A.foo.bar.D
+      case _: A.foo.bar.D => // error here
+                        ^
+model contains 6 documentable templates
+one error found
+apm@mara:~/projects/snytt$ ~/scala-2.10.4/bin/scaladoc -Xfatal-warnings -d /tmp foo.scala
+error: dropping dependency on node with no phase object: pickler
+foo.scala:24: error: pattern type is incompatible with expected type;
+ found   : A.foo.bar.D
+ required: A.foo.bar.D
+      case _: A.foo.bar.D => // error here
+                        ^
+model contains 6 documentable templates
+one error found
+apm@mara:~/projects/snytt$ ~/scala-2.10.4/bin/scaladoc -Xgenerate-phase-graph g -d /tmp foo.scala
+Exception in thread "main" java.util.NoSuchElementException: None.get
+	at scala.None$.get(Option.scala:313)
+	at scala.None$.get(Option.scala:311)
+	at scala.tools.nsc.PhaseAssembly$$anonfun$graphToDotFile$1.apply(PhaseAssembly.scala:291)
+	at scala.tools.nsc.PhaseAssembly$$anonfun$graphToDotFile$1.apply(PhaseAssembly.scala:289)
+	at scala.collection.mutable.HashSet.foreach(HashSet.scala:79)
+	at scala.tools.nsc.PhaseAssembly$class.graphToDotFile(PhaseAssembly.scala:289)
+	at scala.tools.nsc.PhaseAssembly$class.buildCompilerFromPhasesSet(PhaseAssembly.scala:213)
+	at scala.tools.nsc.Global.buildCompilerFromPhasesSet(Global.scala:37)
+	at scala.tools.nsc.Global.computePhaseDescriptors(Global.scala:774)
+	at scala.tools.nsc.Global.phaseDescriptors$lzycompute(Global.scala:778)
+	at scala.tools.nsc.Global.phaseDescriptors(Global.scala:778)
+	at scala.tools.nsc.Global$Run.<init>(Global.scala:1301)
+	at scala.tools.nsc.doc.DocFactory.makeUniverse(DocFactory.scala:54)
+	at scala.tools.nsc.doc.DocFactory.generate$1(DocFactory.scala:122)
+	at scala.tools.nsc.doc.DocFactory.document(DocFactory.scala:134)
+	at scala.tools.nsc.ScalaDoc.process(ScalaDoc.scala:49)
+	at scala.tools.nsc.ScalaDoc$.main(ScalaDoc.scala:75)
+	at scala.tools.nsc.ScalaDoc.main(ScalaDoc.scala)
+apm@mara:~/projects/snytt$ ~/scala-2.10.4/bin/scaladoc -Xshow-phases
+warning: Phases are restricted when using Scaladoc
+
+{noformat}
+So it's impossible to inspect the phases.
+
+-Xfatal-warnings doesn't "count" the phase warning because of the compiler error.
+
+Anyway, phase assembly is addressed by SI-8755.

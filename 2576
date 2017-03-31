@@ -1,0 +1,12 @@
+Thanks for submitting the patch. However, I think I found a problem:
+{code}
+  /* Override to avoid tuple allocation in foreach */
+  override def keySet: collection.Set[A] = new DefaultKeySet {
+    override def foreach[C](f: A => C) = foreachEntry(_.key)
+  }
+{code}
+In the body of the overridden `foreach` you are never calling `f`. I suppose you want to do
+{code}
+    override def foreach[C](f: A => C) = foreachEntry(e => f(e.key))
+{code}
+It seems this should be covered by a test case, which apparently it is not. Could you please revise your patch and add tests for each overridden method? Thanks.

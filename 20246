@@ -1,0 +1,36 @@
+{code}
+Welcome to Scala 2.11.8 (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_102).
+Type in expressions for evaluation. Or try :help.
+
+scala> :paste
+// Entering paste mode (ctrl-D to finish)
+
+trait Converter {
+  type To
+  type From
+}
+object Converter {
+  type Aux[-From0, +To0] = Converter {
+    type To <: To0
+    type From >: From0
+  }
+}
+trait Outer {
+  trait InnerLike { this: Inner =>
+    type To
+    type From
+    type F = Converter.Aux[From, To]
+  }
+  type Inner <: InnerLike
+  def cast(inner: Inner)(f: inner.F): Inner#F = f
+}
+
+// Exiting paste mode, now interpreting.
+
+<console>:28: error: type mismatch;
+ found   : inner.F
+    (which expands to)  Converter{type To <: inner.To; type From >: inner.From}
+ required: Converter{type To <: _2.To; type From >: _2.From} forSome { val _2: Outer.this.Inner }
+         def cast(inner: Inner)(f: inner.F): Inner#F = f
+                                                       ^
+{code}

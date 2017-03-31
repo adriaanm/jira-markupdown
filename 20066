@@ -1,0 +1,16 @@
+The following code creates a spurious warning (because of the concatenated string):
+{code}
+@implicitNotFound("not found ${H}”+".") trait X[H]
+{code}
+
+{code}
+possible missing interpolator: detected an interpolated expression
+[warn] @implicitNotFound("not found ${H}"+".") trait X[H]
+{code}
+
+The warning disappears if we write
+{code}
+@implicitNotFound("not found ${H}.") trait X[H]
+{code}
+
+In my original code I broke the message in 2 because it was too long.

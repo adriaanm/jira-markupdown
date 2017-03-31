@@ -1,0 +1,23 @@
+For the following code:
+{code}
+object p {
+  trait A {
+    private[p] val m = 1
+  }
+}
+
+trait B {
+  val m = "1"
+}
+trait Mix extends p.A with B
+{code}
+
+I get the message:
+{code}
+  value m in trait A of type Int  and
+  value m in trait B of type String
+ (Note: this can be resolved by declaring an override in trait Mix.)
+ trait Mix extends p.A with B
+{code}
+
+Maybe my expectations are incorrect but I expected the package protected member to never conflict with another member outside of the definition package.

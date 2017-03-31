@@ -1,0 +1,13 @@
+As an aside, I'm baffled that it seems to matter here whether we use {{match}} or a val pattern:
+
+{noformat}
+scala> def foo[A : Ordering](xs: List[A]) = { val ys @ (_ :: _) = xs; ys.min }
+foo: [A](xs: List[A])(implicit evidence$1: Ordering[A])A
+
+scala> def foo[A : Ordering](xs: List[A]) = xs match { case ys @ (_ :: _) => ys.min }
+<console>:11: error: No implicit Ordering defined for ?A1.
+       def foo[A : Ordering](xs: List[A]) = xs match { case ys @ (_ :: _) => ys.min }
+                                                                                ^
+{noformat}
+
+Perhaps it's a clue.

@@ -1,0 +1,9 @@
+Before SI-5604 was fixed for good (in https://github.com/scala/scala/commit/e6f10b07d44f0ddde26246b4a41527a84eede81c ) defensive code was in charge of rescueing compilation upon that bug being hit. That defensive code has been made "unreachable" by the fix in question, as pointed out by [~grek].
+
+In order to test the waters without that defensive code, commit https://github.com/magarciaEPFL/scala/commit/2cba0775699730a595d102029897ead4b19b52f9 turns that defensive code into an {{abort()}}  with descriptive message (although there's already a test, it never hurts to have an additional assert in the compiler thus preventing regressions).
+
+Running the nightly (for each of GenASM, GenBCode) doesn't trigger the {{abort()}} in question.
+
+This ticket reminds us to rephrase that defensive code (as in https://github.com/magarciaEPFL/scala/commit/2cba0775699730a595d102029897ead4b19b52f9) once GenBCode has been merged (actually could be rephrased already for GenASM).
+
+

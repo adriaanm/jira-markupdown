@@ -1,0 +1,23 @@
+{{-Yno-generic-signatures}} didn't help in my case.
+I still got a following exception from vanilla library source.
+
+{noformat}
+$ qbin/scalac -Yno-generic-signatures -sourcepath src/library -d sandbox -cp build/libs/classes/forkjoin:build/locker/classes/library src/library/scala/collection/SeqViewLike.scala src/library/scala/collection/GenSeqViewLike.scala
+error: something is wrong: cannot make sense of type application
+  A
+  collection.GenTraversableViewLike[A,Coll,This]
+unhandled exception while transforming GenSeqViewLike.scala
+error: uncaught exception during compilation: FatalError("
+     while compiling: src/library/scala/collection/GenSeqViewLike.scala
+        during phase: global=erasure, enteringPhase=explicitouter
+     library version: version 2.11.0-20130421-223257-66ba223de5
+    compiler version: version 2.11.0-20130421-223257-66ba223de5
+  reconstructed args: -d sandbox -classpath build/libs/classes/forkjoin:build/locker/classes/library -Yno-generic-signatures -sourcepath src/library
+
+  last tree to typer: TypeTree(trait Seq)
+              symbol: trait Seq in package collection (flags: abstract <trait>)
+   symbol definition: abstract trait Seq[+A] extends PartialFunction[Int,A] with Iterable[A] with GenSeq[A] with GenericTraversableTemplate[A,Seq] with SeqLike[A,Seq[A]]
+                 tpe: Seq
+       symbol owners: trait Seq -> package collection
+      context owners: anonymous class $anonfun -> method createReversedIterator -> class Reversed$class -> trait GenSeqViewLike -> package collection
+{noformat}

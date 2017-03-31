@@ -1,0 +1,26 @@
+Range doesn't provide a sensible implementation, but uses this one from TraversableOnce:
+
+{code} def sum[B >: A](implicit num: Numeric[B]): B = foldLeft(num.zero)(num.plus) {code}
+
+This is probably the worst case algorithm.
+
+It is possible to provide an algorithm taking constant time for at least step size 1 and probably every other step size, too.
+
+I just written a quick-and-dirty implementation covering step size 1:
+
+{code}
+  final def sum: Int = {
+    var _end = if (isInclusive) end else end-1
+    if (step == 1)
+      if(start >= 0)
+        -gauss(start-1) + gauss(_end)
+      else
+        -gauss(-start) + gauss(_end)
+    else
+      sum()
+  }
+
+  @inline private def gauss(end: Int) = (end+1)*end/2
+{code}
+
+NumericRange has the same problem. The same algorithm applies, but with Numeric[T] instead of Int as a type.

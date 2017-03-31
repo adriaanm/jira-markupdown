@@ -1,0 +1,9 @@
+Most of these are not a big deal because {{prefixLength}} only makes sense in a sequential context anyway, so any parallel collections that do it "in parallel" are producing nonsense anyway and deserve to fail.  Proxies are deprecated and SeqView is sequential only, so those are fine also.
+
+{{Vector#++}} is already fixed.
+
+Unfortunately {{List#flatMap}} and {{GenericTraversableTemplate#transpose}} (which is used by e.g. {{List}}) have up to about a 10% performance penalty from just dropping a {{.seq}} in.  ({{.toIterator}} is worse).
+
+I don't see any way to improve matters; for correctness one just needs to fix these.  It does suggest that sequential use will be improved by the removal of the parallel collections, however.
+
+PR in https://github.com/scala/scala/pull/4344

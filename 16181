@@ -1,0 +1,54 @@
+Consider the code:
+{code}
+trait A extends DelayedInit {
+  println("A ConstructionCode")
+
+  def delayedInit(body: => Unit) = {
+    body
+    postConstructionCode
+  }
+  protected def postConstructionCode: Unit = {
+    println("A PostConstructionCode")
+  }
+}
+trait B extends A {
+  println("B ConstructionCode")
+  override protected def postConstructionCode: Unit = {
+    super.postConstructionCode
+    println("B PostConstructionCode")
+  }
+}
+
+trait C extends B {
+  println("C ConstructionCode")
+  override protected def postConstructionCode: Unit = {
+    super.postConstructionCode
+    println("C PostConstructionCode")
+  }
+}
+object Test {
+  def main(args: Array[String]) {
+    val c = new C {}
+  }
+}
+{code}
+This produces the output:
+{code}
+A ConstructionCode
+B ConstructionCode
+C ConstructionCode
+{code}
+But when the constructed "C" has a non-empty constructor, such as:
+{code}
+    val c = new C { println("New C ConstructionCode") }
+{code}
+Then the DelayedInit works and generates:
+{code}
+A ConstructionCode
+B ConstructionCode
+C ConstructionCode
+New C ConstructionCode
+A PostConstructionCode
+B PostConstructionCode
+C PostConstructionCode
+{code}

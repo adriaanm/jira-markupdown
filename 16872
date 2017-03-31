@@ -1,0 +1,41 @@
+This session from my REPL is probably more explanatory than I can be:
+
+{code}
+scala> case class Class1()
+defined class Class1
+
+scala> case class Class2(implicit class1: Class1) {
+     |   def printClass1() = println(class1)
+     | }
+defined class Class2
+
+scala> object Test {
+     |   val class2 = new Class2
+     |   implicit val class1 = new Class1()
+     | }
+<console>:12: error: could not find implicit value for parameter class1: Class1
+         val class2 = new Class2
+                      ^
+
+scala> object Test {
+     |   val class2 = new Class2
+     |   implicit val class1: Class1 = new Class1()
+     | }
+defined module Test
+
+scala> Test.class2.printClass1()
+null
+
+scala> object Test {
+     |   implicit val class1 = new Class1()
+     |   val class2 = new Class2
+     | }
+defined module Test
+
+scala> Test.class2.printClass1()
+Class1()
+{code}
+
+This is an example of using implicit parameters as a basic inversion of control in the first definition of the module Test the compiler is correctly failing as there is no definition at that point. However, in the second definition of Test, the compiler appears to allow this through, but passes the reference to class1 before it is initialized (confirmed using -Xprint:typer). The final definition is the fully valid case.
+
+It would appear that specifying the type of class1 somehow causes that code to be valid.

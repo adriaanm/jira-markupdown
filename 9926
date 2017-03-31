@@ -1,0 +1,16 @@
+Also, and not that I expect soundness to suddenly be a subject of interest, but this is a soundness issue (that's how I encountered it.) Patterns cannot be typed this way.
+{noformat}
+case class Som[A](f: A => A)
+
+object Test {
+  def f(x: Any) = x match { case Som(f) => f }
+  def g(x: Int): Int = x
+
+  def main(args: Array[String]): Unit = {
+    val x = Som[Int](g)
+    val y = f(x)
+    y("")
+    // java.lang.ClassCastException: java.lang.String cannot be cast to java.lang.Integer
+  }
+}
+{noformat}

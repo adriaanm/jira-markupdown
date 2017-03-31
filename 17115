@@ -1,0 +1,108 @@
+{code}
+import scala.reflect.runtime.universe._
+
+object Test extends App {
+  reify(new { val x = 2 })
+}
+{code}
+
+{code}
+undetParam added: type T
+undetParam inferred: type T as Object{val x: Int}
+looking for macro implementation: macro method reify
+macro expansion is serviced by a fast track
+calculateUndetparams: Set()
+typechecking macro expansion scala.reflect.runtime.`package`.universe.reify[Object{val x: Int}]({
+  final class $anon extends scala.AnyRef {
+    def <init>(): anonymous class $anon = {
+      $anon.super.<init>();
+      ()
+    };
+    private[this] val x: Int = 2;
+    <stable> <accessor> def x: Int = $anon.this.x
+  };
+  new $anon()
+}) at source-C:\Projects\Kepler\sandbox\Test.scala,line-4,offset=74
+looking for macro implementation: macro method reify
+macro expansion is serviced by a fast track
+argss: List(List(MacroContext(reify@source-C:\Projects\Kepler\sandbox\Test.scala,line-4,offset=74 +0)), List(Expr[Nothing]({
+  final class $anon extends scala.AnyRef {
+    def <init>(): anonymous class $anon = {
+      $anon.super.<init>();
+      ()
+    };
+    private[this] val x: Int = 2;
+    <stable> <accessor> def x: Int = $anon.this.x
+  };
+  new $anon()
+})))
+rawArgs: List(MacroContext(reify@source-C:\Projects\Kepler\sandbox\Test.scala,line-4,offset=74 +0), Expr[Nothing]({
+  final class $anon extends scala.AnyRef {
+    def <init>(): anonymous class $anon = {
+      $anon.super.<init>();
+      ()
+    };
+    private[this] val x: Int = 2;
+    <stable> <accessor> def x: Int = $anon.this.x
+  };
+  new $anon()
+}))
+reifying = 
+{
+  final class $anon extends scala.AnyRef {
+    def <init>(): anonymous class $anon = {
+      $anon.super.<init>();
+      ()
+    };
+    private[this] val x: Int = 2;
+    <stable> <accessor> def x: Int = $anon.this.x
+  };
+  new $anon()
+}
+Block(List(ClassDef(Modifiers(final), newTypeName("$anon"), List(), Template(List(Select(Ident(newTermName("scala")), newTypeName("AnyRef"))), ValDef(Modifiers(private), newTermName("_"), TypeTree().setType(<notype>), EmptyTree), List(DefDef(Modifiers(), newTermName("<init>"), List(), List(List()), TypeTree().setType(Object{val x: Int}), Block(List(Apply(Select(Super(This(newTypeName("")), newTypeName("")), newTermName("<init>")), List())), Literal(Constant(())))), ValDef(Modifiers(private[this]), newTermName("x "), TypeTree().setType(Int), Literal(Constant(2))), DefDef(Modifiers(<method> <stable> <accessor>), newTermName("x"), List(), List(), TypeTree().setType(Int), Select(This(newTypeName("$anon")), newTermName("x "))))))), Apply(Select(New(Ident(newTypeName("$anon"))), newTermName("<init>")), List()))
+reifee is located at: source-C:\Projects\Kepler\sandbox\Test.scala,line-4,offset=75
+universe = scala.reflect.runtime.`package`.universe
+mirror = <empty>
+[calculate phase]
+boundSym: anonymous class $anon of type <notype>
+boundSym: constructor $anon of type anonymous class $anon
+boundSym: value x of type Int
+boundSym: value x of type Int
+[reshape phase]
+resetting visibility of field: private[this] val x: Int = 2 => val x: Int = 2
+discarding accessor method: <stable> <accessor> def x: Int = $anon.this.x
+TypeTree, non-essential: Object{val x: Int} (TypeRef)
+verdict: discarded
+TypeTree, non-essential: Int (TypeRef)
+verdict: discarded
+[interlude]
+reifee = 
+{
+  final class $anon extends scala.AnyRef {
+    def <init>(): anonymous class $anon = {
+      $anon.super.<init>();
+      ()
+    };
+    val x = 2
+  };
+  new $anon()
+}
+Block(List(ClassDef(Modifiers(final), newTypeName("$anon"), List(), Template(List(Select(Ident(newTermName("scala")), newTypeName("AnyRef"))), ValDef(Modifiers(private), newTermName("_"), TypeTree().setType(<notype>), EmptyTree), List(DefDef(Modifiers(), newTermName("<init>"), List(), List(List()), TypeTree(), Block(List(Apply(Select(Super(This(newTypeName("")), newTypeName("")), newTermName("<init>")), List())), Literal(Constant(())))), ValDef(Modifiers(), newTermName("x"), TypeTree(), Literal(Constant(2))))))), Apply(Select(New(Ident(newTypeName("$anon"))), newTermName("<init>")), List()))
+[calculate phase]
+boundSym: anonymous class $anon of type <notype>
+boundSym: constructor $anon of type <type ?>
+boundSym: <none> of type <type ?>
+[metalevels phase]
+[interlude]
+symbol table = <empty>
+[reify phase]
+reifying bound type type AnyRef (underlying type is Object, dealiased is Object)
+tpe is locatable: reify as Ident(class Object)
+Test.scala:4: error: implementation restriction: cannot reify block of type Object{val x: Int} that involves a type declared inside the block being reified. consider casting the return value to a suitable type
+  reify(new { val x = 2 })
+typechecking <empty> with expected type ?, implicit views = true, macros = true
+        ^
+<empty>
+macro expansion has failed: null
+one error found
+{code}

@@ -1,0 +1,40 @@
+The analagous Java code compiles and runs successfully. Crucially, a bridge method is added to BadClass.
+
+{code}
+public class Test {
+	interface SimpleTrait<T> {
+	  int myMethod(T t);
+	  default void doIt(T t) {
+	    myMethod(t);
+	  }
+	}
+
+	static abstract class SimpleClass<T> implements SimpleTrait<T> {
+	  public int myMethod(String t) { return 5; }
+	}
+
+	static class BadClass extends SimpleClass<String> {}
+
+	
+	public static void main(String... args) {
+		new BadClass().doIt("");
+	}
+}
+{code}
+
+{noformat}
+% javap -v -classpath . 'Test$BadClass'
+...
+  public int myMethod(java.lang.Object);
+    descriptor: (Ljava/lang/Object;)I
+    flags: ACC_PUBLIC, ACC_BRIDGE, ACC_SYNTHETIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_0
+         1: aload_1
+         2: checkcast     #2                  // class java/lang/String
+         5: invokespecial #3                  // Method Test$SimpleClass.myMethod:(Ljava/lang/String;)I
+         8: ireturn
+      LineNumberTable:
+        line 13: 0
+{noformat}

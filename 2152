@@ -1,0 +1,105 @@
+(In r19478) Merged revisions 19452-19459,19461,19463-19467,19469,19471-19474 via svnmerge from 
+https://lampsvn.epfl.ch/svn-repos/scala/scala/trunk
+
+........
+  r19452 | moors | 2009-11-09 10:21:41 +0100 (Mon, 09 Nov 2009) | 1 line
+  
+  fixed SI-2583, patch supplied by huynhjl
+........
+  r19453 | odersky | 2009-11-09 11:02:50 +0100 (Mon, 09 Nov 2009) | 2 lines
+  
+  Fixed SI-2504
+  Fixed SI-2517
+........
+  r19454 | phaller | 2009-11-09 11:23:57 +0100 (Mon, 09 Nov 2009) | 1 line
+  
+  Moved (non-regression) actor-receive-sender test to pending for bug fixing.
+........
+  r19455 | phaller | 2009-11-09 11:31:13 +0100 (Mon, 09 Nov 2009) | 1 line
+  
+  Increased partest timeout, since it seems we are hitting it in some hudson configs.
+........
+  r19456 | odersky | 2009-11-09 11:35:54 +0100 (Mon, 09 Nov 2009) | 1 line
+  
+  fast path equals and hash methods.
+........
+  r19457 | odersky | 2009-11-09 12:38:42 +0100 (Mon, 09 Nov 2009) | 1 line
+  
+  Fixed SI-2569
+........
+  r19458 | odersky | 2009-11-09 12:39:02 +0100 (Mon, 09 Nov 2009) | 1 line
+  
+  Better implementation of Predef.hash
+........
+  r19459 | dragos | 2009-11-09 13:03:48 +0100 (Mon, 09 Nov 2009) | 2 lines
+  
+  Equality checks go to ScalaRunTime.inlinedEquals when -optimise is on
+........
+  r19461 | phaller | 2009-11-09 16:01:17 +0100 (Mon, 09 Nov 2009) | 1 line
+  
+  Fixed DaemonScheduler on IBM J9.
+........
+  r19463 | dragos | 2009-11-09 16:24:07 +0100 (Mon, 09 Nov 2009) | 2 lines
+  
+  Fixed the optimizer for inlining correctly ScalaRunTime.inlinedEquals
+........
+  r19464 | dragos | 2009-11-09 16:24:10 +0100 (Mon, 09 Nov 2009) | 2 lines
+  
+  Made Benchmarks use standard output instead of requiring a file name on the command line
+........
+  r19465 | rytz | 2009-11-09 16:25:40 +0100 (Mon, 09 Nov 2009) | 1 line
+  
+  use scalacfork for strap build, should make windows build work. Rename RichWindow so that ant does not always re-compile it.
+........
+  r19466 | cunei | 2009-11-09 17:13:33 +0100 (Mon, 09 Nov 2009) | 6 lines
+  
+  Adds isDefinedAt to Function1. As a consequence,
+  code that mixes in PartialFunction now have to
+  define isDefinedAt as override.
+  
+  Fixes SI-2225.
+........
+  r19467 | plocinic | 2009-11-09 17:42:15 +0100 (Mon, 09 Nov 2009) | 1 line
+  
+  Fixed SI-2557, SI-2562
+........
+  r19469 | odersky | 2009-11-09 19:34:49 +0100 (Mon, 09 Nov 2009) | 3 lines
+  
+  added `locally' to Predef.
+  added overloaded hashes to Predef.
+  some small changes.
+........
+  r19471 | moors | 2009-11-09 21:10:22 +0100 (Mon, 09 Nov 2009) | 7 lines
+  
+  fixed bug in implicit resolution that only manifested itself when multiple implicit arguments needed to be resolved and they were intended to instantiate type parameters
+  
+  two problems:
+   - type parameters that could not be inferred where removed from undetparams erroneously
+   - the successfully inferred parameters were not propagated to the the implicit arguments on the right (implicit resolution searches for implicit arguments from left to right, fixing type parameters in the process)
+  
+  this should give the green light for the addition of Zipped to TupleN
+........
+  r19472 | cunei | 2009-11-09 21:34:09 +0100 (Mon, 09 Nov 2009) | 3 lines
+  
+  Reverted r19466, as the decision is now that
+  isDefinedAt should /not/ be in Function1
+........
+  r19473 | moors | 2009-11-09 22:33:34 +0100 (Mon, 09 Nov 2009) | 1 line
+  
+  attempt to fix build -- can't build on my old macbook, so flying blind :-/
+........
+  r19474 | extempore | 2009-11-09 23:03:12 +0100 (Mon, 09 Nov 2009) | 12 lines
+  
+  Breaks down the hash function in BoxesRunTime by type so we can
+  do as much as possible at compile time.  Documents various trouble
+  points I've identified with trying to get the hashCodes aligned.
+  Test case exercises the hashCode functions.
+  
+  Deleted all the code associated with previous equality adventures.
+  Don't worry, I can put anything back if it turns out we have to
+  change course again, but for now it's noise.
+  
+  Also, gives return types to the box and unbox methods which are
+  added to the primitive companions, so e.g. Int.box(5) now returns
+  a j.l.Integer instead of an Object.
+........

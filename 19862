@@ -1,0 +1,113 @@
+The new backend does an admirable job of eliminating closure allocation when possible:
+
+{code:scala}
+@inline def foreachFn[E <: AnyRef, U] (array :Array[E])(op :E => U) {
+    var ii = 0 ; val max = array.length; while (ii < max) {
+      op(array(ii))
+      ii += 1
+    }
+  }
+
+  def testFn (array :Array[String], prefix :String) {
+    foreachFn(array) { key =>
+      println(prefix + key)
+    }
+  }
+{code}
+
+yields:
+
+{code:text}
+public void testFn(java.lang.String[], java.lang.String);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: checkcast     #49                 // class "[Ljava/lang/Object;"
+       5: aload_2
+       6: astore        8
+       8: aload         8
+      10: invokedynamic #72,  0             // InvokeDynamic #0:apply:(Ljava/lang/String;)Lscala/runtime/java8/JFunction1;
+      15: checkcast     #25                 // class scala/Function1
+      18: astore        5
+      20: astore        4
+      22: astore_3
+      23: iconst_0
+      24: istore        6
+      26: aload         4
+      28: arraylength
+      29: istore        7
+      31: iload         6
+      33: iload         7
+      35: if_icmpge     68
+      38: aload         5
+      40: aload         4
+      42: iload         6
+      44: aaload
+      45: astore        9
+      47: pop
+      48: aload         8
+      50: aload         9
+      52: checkcast     #74                 // class java/lang/String
+      55: invokestatic  #61                 // Method Test$$$anonfun$1$adapted:(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Object;
+      58: pop
+      59: iload         6
+      61: iconst_1
+      62: iadd
+      63: istore        6
+      65: goto          31
+      68: return
+{code}
+
+but boy that $adapted method sure is annoying. I don't need a BoxedUnit. So let's try to eliminate it by using java.util.function.Consumer:
+{code:scala}
+  @inline def foreachSAM[E <: AnyRef, U] (array :Array[E])(op :java.util.function.Consumer[E]) {
+    var ii = 0 ; val max = array.length; while (ii < max) {
+      op.accept(array(ii))
+      ii += 1
+    }
+  }
+
+  def testSAM (array :Array[String], prefix :String) {
+    foreachSAM(array) { key =>
+      println(prefix + key)
+    }
+  }
+{code}
+
+Oh noes, there goes my lovely closure elimination:
+
+{code:text}
+  public void testSAM(java.lang.String[], java.lang.String);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: checkcast     #49                 // class "[Ljava/lang/Object;"
+       5: new           #12                 // class Test$$anonfun$2
+       8: dup
+       9: aload_2
+      10: invokespecial #86                 // Method Test$$anonfun$2."<init>":(Ljava/lang/String;)V
+      13: astore        5
+      15: astore        4
+      17: astore_3
+      18: iconst_0
+      19: istore        6
+      21: aload         4
+      23: arraylength
+      24: istore        7
+      26: iload         6
+      28: iload         7
+      30: if_icmpge     54
+      33: aload         5
+      35: aload         4
+      37: iload         6
+      39: aaload
+      40: invokeinterface #45,  2           // InterfaceMethod java/util/function/Consumer.accept:(Ljava/lang/Object;)V
+      45: iload         6
+      47: iconst_1
+      48: iadd
+      49: istore        6
+      51: goto          26
+      54: return
+{code}
+
+You know we love to have our cake and eat it too.

@@ -1,0 +1,19 @@
+The current implementation of Console.format is defined to return Unit.  This is counter to expectations set by Java's String#format method, which returns a value of type String.  As it stands, format and printf are functionally redundant, with no mechanism for formatting a String without printing it to stdout.
+
+The implementation for Console.format should be changed to the following:
+
+{code}
+def format(text: String, args: Any*): String =
+  if (text eq null) "null" else
+    String.format(text, args.asInstanceOf[scala.runtime.BoxedObjectArray].unbox(args.getClass).asInstanceOf[Array[Object]])
+{code}
+
+Correspondingly, the implementation of Console.printf must be changed as well:
+
+{code}
+def printf(text: String, args: Any*) {
+  out.print(format(text, args:_*))
+}
+{code}
+
+I can only assume this was the intention, since the current implementation of Console.format returns String value "null" when the input pattern is null.

@@ -1,0 +1,22 @@
+Replying to [comment:5 prokopec]:
+> The following should be accompanied with examples:
+> 
+>  * scala is more expressive than java, so its not always clear without to which entity annotation really belongs
+
+The sample is scala API itself. Take a look at
+[http://www.scala-lang.org/api/current/scala/annotation/target/package.html the target package] and its classes (so called meta annotations). They are introduced just as a hint to which element of a definition compiler shall apply annotation. However, compiler makes now checks is this appliance valid or not.
+
+> * annotation misplacing getting visible only at runtime. Its really cumbersome to manually detect this fact (via runtime error) 
+> 
+Here the "classical" example is ctor annotation. Most people write
+
+{code}
+@annot
+class MyClass(a: A) {}
+{code}
+instead of 
+{code}
+class MyClass @annot()(a: A) {}
+{code}
+
+and compiler gives even no warning despite that annotation has ctor @target. I understand that this case completely depends on language knowledge and developer's attention, but all people have mistakes and it's compiler's job to detect as many as possible.

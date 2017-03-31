@@ -1,0 +1,16 @@
+Since adriaan's changes enabled me to move merge onto the instance, now this not only works, it infers "Product with A" not merely A.  Good eye, type inferencer!
+{code}
+object TIF {
+  abstract class A
+  case class B(b : String) extends A
+  case class C(c : String) extends A
+
+  val l = List(Right(B("b")), Left(C("c")))
+  val m = l map (_.merge)
+}
+
+scala> TIF.m
+res2: List[Product with TIF.A] = List(B(b), C(c))
+{code}
+
+I'm not altering the status of this ticket since I don't know whether the object behavior is still considered a bug.  Point is there are more options now.

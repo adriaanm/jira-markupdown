@@ -1,0 +1,18 @@
+Replying to [comment:2 DRMacIver]:
+> Do you have a use case?
+For example:
+{code}
+scala> val m = new scala.collection.mutable.HashMap[String,String] { override def default(s:String) = "none" }
+m: scala.collection.mutable.HashMap[String,String] = Map()
+
+scala> m("a")
+res1: String = none
+
+scala> val c = m.clone
+c: scala.collection.mutable.Map[String,String] = Map()
+
+scala> c("a")
+java.util.NoSuchElementException: key not found: a
+{code}
+
+Actually, in my alternative HashMap implementation http://github.com/alex14n/CompactHashMap java-style cloning is more convenient (I have many `private[this]` fields and I all need is to clone couple of arrays), and I'm afraid that having clone() defined in new 2.8 traits will break it.

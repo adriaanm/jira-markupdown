@@ -1,0 +1,21 @@
+This compiles with 2.9.2
+{code}
+scala> val l : List[_] = List(1,2,3)
+l: List[_] = List(1, 2, 3)
+
+scala> l.map( _.toString )
+res0: List[java.lang.String] = List(1, 2, 3)
+{code}
+
+But does not with 2.10.0
+
+{code}
+scala> val l : List[_] = List(1,2,3)
+l: List[_] = List(1, 2, 3)
+
+scala> l.map( _.toString )
+<console>:9: error: missing parameter type for expanded function ((x$1) => x$1.toString)
+              l.map( _.toString )
+{code}
+
+I'm not sure if it's related to SI-5330, so I created another issue.

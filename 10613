@@ -1,0 +1,15 @@
+Yep, its as I suspected:
+
+{noformat}
+public class com.aldebaran.proxy.Variant
+  SourceFile: "Variant.java"
+  InnerClasses:
+       public static final #44= #43 of #31; //typeV=class com/aldebaran/proxy/Variant$typeV of class com/aldebaran/proxy/Variant
+  minor version: 0
+{noformat}
+
+Not sure why Variant$typeV is missing from that JAR. I've googled around for similar problems with SWIG, but nothing obvious appears. Maybe you could check on a SWIG mailing list?
+
+How does this work with javac? As a workaround, you could create a Java wrapper class manually for Variant, and refer to that from Scala. So long as scalac never needs to load Variant.class, you will be able to compile.
+
+I'll leave this open pending a report of how javac works. Maybe we can demote the error to a warning.

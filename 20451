@@ -1,0 +1,23 @@
+The [documentation for Scaladoc|https://wiki.scala-lang.org/display/SW/Tags+and+Annotations] expressly states that multiple @note tags are supported. However, there are several problems when multiple @note tags are used:
+
+1. When rendered to HTML, these notes are combined into a single note, with the paragraph body of each note separated by a line containing a single comma.
+
+2. The separate @note elements are not rendered where they appear in the body text, but all the notes are rendered together, possibly at the location of the first @note. This may perhaps be intentional, but makes it impossible to note important points within a larger discussion.
+
+3. The @note elements are rendered in reverse order.
+
+Thus, the following Scaladoc markup is rendered as shown in the attached screenshot:
+
+{noformat}
+* Some body text.
+  *
+  * @note This is the body of the first note.
+  *
+  * Some more body text.
+  *
+  * @note This is the body of the second note.
+  *
+  * @note This is the body of the third note.
+{noformat}
+
+(Observe also that the ‘Note’ label in the screenshot is not rendered as boldly as it should be, due to the Bold/Italic variants of the Open Sans font not having been embedded in the generated HTML. See [SI-10235|https://issues.scala-lang.org/browse/SI-10235].)

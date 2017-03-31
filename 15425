@@ -1,0 +1,39 @@
+{code}
+~/code/scratch/scalap-inner: cat inner.scala 
+object test {
+  abstract class A {
+    class B1
+    type B2
+    def b1: A#B1
+    def b2: A#B2
+  }
+
+  trait C {
+    def b1: A#B1
+    def b2: A#B2
+  }
+}
+
+~/code/scratch/scalap-inner: scalac -d out inner.scala && scalap -classpath out test
+object test extends java.lang.Object with scala.ScalaObject {
+  def this() = { /* compiled code */ }
+  abstract class A extends java.lang.Object with scala.ScalaObject {
+    def this() = { /* compiled code */ }
+    class B1 extends java.lang.Object with scala.ScalaObject {
+      def this() = { /* compiled code */ }
+    }
+    type B2
+    def b1 : test.A.B1
+    def b2 : B2
+  }
+  trait C extends java.lang.Object {
+    def b1 : test.A.B1
+    def b2 : B2
+  }
+}
+{code}
+
+There are two problems: 
+ * `A.B1` should be `A#B1`
+ * The reference to `B1` from `trait C` should be qualified as `A#B1`
+

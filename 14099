@@ -1,0 +1,119 @@
+{code}
+$$ scalac -version
+Scala compiler version 2.7.3final -- (c) 2002-2008 LAMP/EPFL
+{code}
+
+The code:
+{code}
+class Base
+class Special extends Base
+
+object VA1 {
+  def log(msg: Base): Unit = {}
+  def log(msg: Base, y: Throwable): Unit = {}
+  
+  def f(func: Base => Unit, something: Special*): Unit = {}
+  def f(func: Base => Unit, i: Int, something: Special*): Unit = {}
+}
+
+object VA2 {
+  def log(msg: Special => Unit): Unit = {}
+  def log(msg: Special => Unit, y: Throwable): Unit = {}
+  
+  def f(func: Special => Unit, something: Base*): Unit = {}
+  def f(func: Special => Unit, i: Int, something: Base*): Unit = {}
+}
+
+object NoVA1 {
+  def log(x: Base): Unit = {}
+  def log(x: Base, y: Throwable): Unit = {}
+  
+  def f(func: Base => Unit): Unit = {}
+  def f(func: Base => Unit, something: Special): Unit = {}
+  def f(func: Base => Unit, i: Int, something: Special): Unit = {}
+}
+
+object NoVA2 {
+  def log(x: Special): Unit = {}
+  def log(x: Special, y: Throwable): Unit = {}
+  
+  def f(func: Special => Unit): Unit = {}
+  def f(func: Special => Unit, something: Base): Unit = {}
+  def f(func: Special => Unit, i: Int, something: Base): Unit = {}
+}
+
+object Test {
+  
+  VA1.f(VA1.log _)                // compiles correctly
+  VA1.f(VA1.log _, new Base)      // 1: compiler mistake
+  VA1.f(VA1.log _, 5, new Base)   // 2: compiler mistake
+
+  VA2.f(VA2.log _)                // 3: compiler mistake
+  VA2.f(VA2.log _, new Base)      // 4: compiler mistake
+  VA2.f(VA2.log _, 5, new Base)   // 5: compiler mistake
+
+  // ***** All below compiles correctly ***** //
+
+  NoVA1.f(NoVA1.log _)
+  NoVA1.f(NoVA1.log _, new Special)
+  NoVA1.f(NoVA1.log _, 5, new Special)
+
+  NoVA2.f(NoVA2.log _)
+  NoVA2.f(NoVA2.log _, new Base)
+  NoVA2.f(NoVA2.log _, 5, new Base)
+  NoVA2.f(NoVA2.log _, new Special)
+  NoVA2.f(NoVA2.log _, 5, new Special)
+}
+{code}
+
+Produces the following compiler output:
+{code}
+Test.scala:41: error: ambiguous reference to overloaded definition,
+both method log in object VA1 of type (Base,Throwable)Unit
+and  method log in object VA1 of type (Base)Unit
+match expected type ?
+  VA1.f(VA1.log _, new Base)      // 1: compiler mistake
+            ^
+Test.scala:41: error: overloaded method value f with alternatives
+((Base) => Unit,Int,Special*)Unit <and> ((Base) => Unit,Special*)Unit
+cannot be applied to (<error>,Base)
+  VA1.f(VA1.log _, new Base)      // 1: compiler mistake
+      ^
+Test.scala:42: error: ambiguous reference to overloaded definition,
+both method log in object VA1 of type (Base,Throwable)Unit
+and  method log in object VA1 of type (Base)Unit
+match expected type ?
+  VA1.f(VA1.log _, 5, new Base)   // 2: compiler mistake
+            ^
+Test.scala:42: error: overloaded method value f with alternatives
+((Base) => Unit,Int,Special*)Unit <and> ((Base) => Unit,Special*)Unit
+cannot be applied to (<error>,Int,Base)
+  VA1.f(VA1.log _, 5, new Base)   // 2: compiler mistake
+      ^
+Test.scala:44: error: type mismatch;
+ found   : ((Special) => Unit,Throwable)Unit <and> ((Special) => Unit)Unit
+ required: (Special) => Unit
+  VA2.f(VA2.log _)                // 3: compiler mistake
+            ^
+Test.scala:45: error: ambiguous reference to overloaded definition,
+both method log in object VA2 of type ((Special) => Unit,Throwable)Unit
+and  method log in object VA2 of type ((Special) => Unit)Unit
+match expected type ?
+  VA2.f(VA2.log _, new Base)      // 4: compiler mistake
+            ^
+Test.scala:46: error: ambiguous reference to overloaded definition,
+both method log in object VA2 of type ((Special) => Unit,Throwable)Unit
+and  method log in object VA2 of type ((Special) => Unit)Unit
+match expected type ?
+  VA2.f(VA2.log _, 5, new Base)   // 5: compiler mistake
+            ^
+7 errors found
+{code}
+
+In the non-vararg case everything gets compiled correctly.  With varargs although, the compiler is not capable anymore to infer the overloaded method with the correct signature.
+
+This can be worked around with adding another method with slightly different name.  See for example the lift project's logging class (the info and infoF methods): 
+
+http://scala-tools.org/mvnsites/liftweb/lift-util/scaladocs/net/liftweb/util/Log$$object.html
+
+(Solution: get rid of varargs?!)

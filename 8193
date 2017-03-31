@@ -1,0 +1,16 @@
+Update on this after digging around a bit.
+
+The following seems to happen. 
+
+In the case of {{col.map(new OtherFunc)}}, the expected type of {{map}} is {{MyFunc[Int,?\]}}. Meanwhile, the type parameters of {{OtherFunc}} are inferred independently of the implicit conversion to be {{OtherFunc[Any, Nothing\]}}.
+
+In the case of {{col.map(_.toString)}}, the expected type of {{map}} is also {{MyFunc[Int,?\]}}.
+However, in this case, implicit search seems to try to find a conversion from {{Function1[<error>,<error>\]}} to the above expected type.
+
+-Ydebug -Ylog:typer output for the {{col.map(_.toString)}} case:
+{code}
+[log typer] inferring view from scala.this.Function1[<error>,<error>] to <empty>.this.MyFunc[scala.this.Int,?]
+[log typer] infer view from scala.this.Function1[<error>,<error>] to <empty>.this.MyFunc[scala.this.Int,?]
+{code}
+
+In both cases, implicit search does not have an influence on inferring the type of the argument of {{map}}. This doesn't seem to be spec'd, but I agree that this would be very nice to have.

@@ -1,0 +1,42 @@
+Section 6.7.1 ("Method Values") in the language spec says: 
+
+bq. Example 6.7.1 The method values in the left column are each equivalent to the anonymous functions (§6.23) on their right. 
+{noformat}
+List.map2(xs, ys)_     x => List.map2(xs, ys)(x) 
+{noformat}
+
+But I don't think this expansion is correct.  6.7 says "e _ represents e 
+converted to a function type by eta expansion (§6.26.5)", and in 6.26.5, 
+we see that eta expansion introduces fresh names for subexpressions.  So 
+the actual expansion is: 
+
+{noformat}
+{ val x0 = xs; val x1 = ys; x => List.map2(x0, x1)(x) } 
+{noformat}
+
+for some fresh names x0 and x1. 
+
+The difference matters if a subexpressions has side effects.  So for 
+example with eta expansion we see the side effects immediately: 
+
+{noformat}
+scala> def f(a: Int)(b: Int) { } 
+f: (a: Int)(b: Int)Unit 
+
+scala> def g = { println("hey!"); 4 } 
+g: Int 
+
+scala> f(g) _ 
+hey! 
+res11: Int => Unit = <function1> 
+{noformat}
+
+Whereas without the introduction of fresh names, evaluation is deferred: 
+
+{noformat}
+scala> f(g)(_) 
+res12: Int => Unit = <function1> 
+{noformat}
+
+because the behavior in this latter case is governed by 6.23 
+("Placeholder Syntax for Anonymous Functions"), not 6.26.5.

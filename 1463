@@ -1,0 +1,21 @@
+I committed this to a github branch:
+
+http://github.com/ijuma/scala/commit/b7b0459ae872701a9486d7692b76a353b02cbfbc
+
+I will also attach a patch.
+
+Commit comment follows for convenience:
+
+Fix ticket SI-1600: Serialization and deserialization of hash-based collections should not re-use hashCode.
+    
+Implementation and tests are included for immutable.HashMap, mutable.HashMap, mutable.LinkedHashMap, immutable.HashSet, mutable.HashSet, immutable.LinkedHashSet.
+    
+The basic idea is that we store the size, load factor and elements during serialization and we rebuild the collection on deserialization. Note that this is not compatible with the previous serialization format. All @SerialVersionUIDs have been reset to 1.
+
+I'm not particularly happy about the way _loadFactor is used in some cases, but that seemed like the lesser evil given the current interface.
+    
+WeakHashMap is not Serializable and it would not make sense to make it so. TreeHashMap has not been reintegrated yet. OpenHashMap has not been updated. I think that collection is flawed in many ways and it should either be removed or it should be reimplemented. I'll file a separate ticket for that.
+
+Some tests in serialization.check were updated as the toString order after serialization can be different in some cases.
+    
+ant all.clean && ant dist finished successfully.

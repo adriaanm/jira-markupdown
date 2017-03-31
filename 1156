@@ -1,0 +1,32 @@
+I'm not sure why List.dropWhile wasn't compiled tail recursively, as List is sealed and :: is final.
+
+
+Anyway, here are possible implementations for Iterator.drop and List.dropWhile 
+
+{code}
+def drop(n: Int): Iterator[A] = {
+    def loop(n2: Int): Iterator[A] = {
+        if (n2 > 0 && hasNext) {
+            next()
+            loop(n2 - 1)
+        } else {
+            this
+        }
+    }
+
+    loop(n)
+}
+{code}
+
+{code}
+def dropWhile(p: A => Boolean): List[A] = {
+    def loop(these: List[A]): List[A] = {
+        if (these.isEmpty || !p(these.head))
+            these
+        else
+            loop(these.tail)
+    }
+
+    loop(this)
+}
+{code}

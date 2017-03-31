@@ -1,0 +1,26 @@
+The presentation compiler may recurse too much in `pollForWork`. This may happen if a lot of `ask` calls (interrupts) are queued, and the PC thread needs to service all of them before going further.
+
+See [#1001407|https://scala-ide-portfolio.assembla.com/spaces/scala-ide/tickets/1001407#/activity/ticket:].
+
+{code}
+java.lang.StackOverflowError
+	at scala.reflect.internal.Symbols$Symbol.nameString(Symbols.scala:2318)
+	at scala.tools.refactoring.common.PimpedTrees$TreeMethodsForPositions.nameString(PimpedTrees.scala:319)
+	at scala.tools.refactoring.common.PimpedTrees$TreeMethodsForPositions.namePosition(PimpedTrees.scala:224)
+	at scala.tools.eclipse.semantichighlighting.classifier.SafeSymbol$$anonfun$5.apply(SafeSymbol.scala:111)
+	at scala.tools.eclipse.semantichighlighting.classifier.SafeSymbol$$anonfun$5.apply(SafeSymbol.scala:111)
+	at scala.tools.nsc.util.InterruptReq.execute(InterruptReq.scala:26)
+	at scala.tools.nsc.interactive.Global.pollForWork(Global.scala:340)
+	at scala.tools.nsc.interactive.Global.pollForWork(Global.scala:345)
+	at scala.tools.nsc.interactive.Global.pollForWork(Global.scala:345)
+	at scala.tools.nsc.interactive.Global.pollForWork(Global.scala:345)
+	at scala.tools.nsc.interactive.Global.pollForWork(Global.scala:345)
+	at scala.tools.nsc.interactive.Global.pollForWork(Global.scala:345)
+	at scala.tools.nsc.interactive.Global.pollForWork(Global.scala:345)
+	at scala.tools.nsc.interactive.Global.pollForWork(Global.scala:345)
+	at scala.tools.nsc.interactive.Global.pollForWork(Global.scala:345)
+	at scala.tools.nsc.interactive.Global.pollForWork(Global.scala:345)
+	at scala.tools.nsc.interactive.Global.pollForWork(Global.scala:345)
+	at scala.tools.nsc.interactive.Global.pollForWork(Global.scala:345)
+...
+{code}

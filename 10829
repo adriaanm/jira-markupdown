@@ -1,0 +1,15 @@
+After I patch past the variance issue there is only one more issue before compilation succeeds. To me that says it's easily worth making this work and testing it.
+
+The last problem is a change in the scala.runtime support java classes, introduced in 265fc6b230 . Now it generates calls to "create" which doesn't exist in the 2.10 sources.
+
+{noformat}
+error: scala.reflect.internal.FatalError: object VolatileFloatRef does not have a member create
+	at scala.reflect.internal.Definitions$DefinitionsClass.scala$reflect$internal$Definitions$DefinitionsClass$$fatalMissingSymbol(Definitions.scala:1165)
+	at scala.reflect.internal.Definitions$DefinitionsClass$$anonfun$getMember$1.apply(Definitions.scala:1188)
+	at scala.reflect.internal.Definitions$DefinitionsClass$$anonfun$getMember$1.apply(Definitions.scala:1183)
+	at scala.reflect.internal.Symbols$Symbol.orElse(Symbols.scala:2433)
+	at scala.reflect.internal.Definitions$DefinitionsClass.getMember(Definitions.scala:1182)
+	at scala.reflect.internal.Definitions$DefinitionsClass.getMemberMethod(Definitions.scala:1217)
+{noformat}
+
+It's relatively easy to work around by substituting the 2.11 scala/runtime/*.java classes for the 2.10 ones.

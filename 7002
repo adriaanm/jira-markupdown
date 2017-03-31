@@ -1,0 +1,17 @@
+Hi,
+I don't understand whether fixing that example would also fix the code I reported.
+Maybe I'm being dense here, but my code is more similar to:
+
+{code}
+def foo[A, B <: Traversable[A]](base: B) = null
+foo(List(1))
+{code}
+which gives:
+{code}
+<console>:9: error: inferred type arguments [Nothing,List[Int]] do not conform to method foo's type parameter bounds [A,B <: Traversable[A]]
+              foo(List(1))
+              ^
+{code}
+there, the problem is in deducing {{A}} which is on the _right_ of a subtype constraint. Of course, I'm not sure it makes a difference, that's why I'm asking.
+
+Additionally, Scala's specification request that a constraint system be used for local type inference (Sec. 6.26.4), but according to the specification, both this example with {{foo}} and the example you posted should be valid - i.e. it seems that an appropriate substitution exists and that a constraint system should be able to find it. Is that strategy actually implemented?

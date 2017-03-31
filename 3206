@@ -1,0 +1,23 @@
+In r17916, Pickler:564 was updated to output a reference the the synthetic getter method for the default parameter. However, the corresponding change was not made to !ShowPickled. This perhaps explains the errors in the debugging output from -Xshow-class.
+
+Pickler:564
+{code}
+case sym: TermSymbol =>
+          if (!sym.isModule && sym.defaultGetter != NoSymbol)
+            writeRef(sym.defaultGetter)
+          writeSymInfo(sym)
+          if (sym.alias != NoSymbol) writeRef(sym.alias)
+          if (sym.isModule) MODULEsym else VALsym
+{code} 
+
+ShowPickled:79
+{code}
+    def printSymInfo() {
+      printNameRef()
+      printSymbolRef()
+      val pflags = buf.readLongNat()
+      out.print(" " + toHexString(pflags) +
+                "[" + Flags.flagsToString(Flags.pickledToRawFlags(pflags)) + "] ")
+      printTypeRef()
+    }
+{code}

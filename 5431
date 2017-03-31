@@ -1,0 +1,36 @@
+The following program generates an invalid signature.  It is again the primitive type parameter problem.
+{code}
+import scala.collection.mutable
+
+object Test {
+  def f[A, B] = new mutable.HashMap[A, B] { }
+  def g[A] = new mutable.HashMap[A, Int] { }
+  def h[A] = new mutable.HashMap[A, Int] { override def default(k: A) = 0 }
+}
+{code}
+Methods f and g are marked bridge as expected.
+{code}
+public B scala.collection.mutable.HashMap.default(A) (bridge) in Test$$$$anon$$2
+public B scala.collection.mutable.HashMap.default(A) (bridge) in Test$$$$anon$$3
+{code}
+The third class gets these:
+{code}
+bridge=false public int Test$$$$anon$$3.default(A)
+bridge=true  public java.lang.Object Test$$$$anon$$3.default(java.lang.Object)
+{code}
+But Int is not a valid return type for the non-bridge method, because all code based on HashMap will be looking for an object on the stack.
+
+As far as I can see, there isn't any valid way to implement a generically defined method and have primitives appearing in the signature in type parameter positions.  My only idea (this is what I was talking about at villars) is to implement additional bridges, like:
+{code}
+public java.lang.Integer Test$$$$anon$$3.default(java.lang.Object)
+{code}
+But that may be infeasible.
+
+So the signature bombs are still in there.  I found this one in SeqLike.
+{code}
+private def occCounts[B](sq: Seq[B]): mutable.Map[B, Int] = {
+  val occ = new mutable.HashMap[B, Int] { override def default(k: B) = 0 }
+  for (y <- sq.seq) occ(y) += 1
+  occ
+}
+{code}

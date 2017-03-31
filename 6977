@@ -1,0 +1,298 @@
+Why don't we provide a most simplistic version for the common use cases like
+
+{noformat}
+case class MyRange(from: Int, to: Int) {
+  def foreach(f: Int => Unit): Unit = {
+    var i = from
+    while (i < to) {
+      f(i)
+      i+=1
+    }
+  }
+}
+ def timeMyRange(reps:Int) = {
+
+   var i=0
+   var sum = 0L
+   while(i<reps) {
+     for(j<-MyRange(0, size))
+       sum+=j
+     i+=1
+   }
+   sum
+ }
+
+{noformat}
+
+Rerunning the caliper benchmark from the mailing list (on my machine, without -optimize):
+
+{noformat}
+[info]  0% Scenario{vm=java, trial=0, benchmark=ForLoop} 19535.70 ns; σ=78.04 ns @ 3 trials
+[info] 33% Scenario{vm=java, trial=0, benchmark=MyRange} 5091.66 ns; σ=19.43 ns @ 3 trials
+[info] 67% Scenario{vm=java, trial=0, benchmark=WhileLoop} 5099.48 ns; σ=93.54 ns @ 10 trials
+[info] 
+[info] benchmark    us linear runtime
+[info]   ForLoop 19.54 ==============================
+[info]   MyRange  5.09 =======
+[info] WhileLoop  5.10 =======
+[info] 
+[info] vm: java
+[info] trial: 0
+{noformat}
+
+I don't think {{-optimize}} will win the fight against hotspot when it comes to inlining. Without looking at the output of {{-XX:+PrintAssembly}}, you will never be sure what is possible on HotSpot.
+
+For example for the for loop example, here's what hotspot produces (but only after 10 secs and having tried other optimizations first):
+{noformat}
+
+ # {method} 'timeForLoop' '(I)J' in 'Test$'
+  0x00007f8d79168100: callq  0x00007f8d7d91c1d0  ;   {runtime_call}
+  0x00007f8d79168105: nopw   0x0(%rax,%rax,1)
+  0x00007f8d79168110: mov    %eax,-0x6000(%rsp)
+  0x00007f8d79168117: push   %rbp
+  0x00007f8d79168118: sub    $0x40,%rsp
+  0x00007f8d7916811c: rex mov    0x8(%rsi),%ebp
+  0x00007f8d79168120: mov    (%rsi),%rbx
+  0x00007f8d79168123: mov    0x10(%rsi),%r13d
+  0x00007f8d79168127: mov    %rsi,%rdi
+  0x00007f8d7916812a: mov    $0x7f8d7d99fdc0,%r10
+  0x00007f8d79168134: callq  *%r10
+  0x00007f8d79168137: test   %rbx,%rbx
+  0x00007f8d7916813a: je     0x00007f8d79168313
+  0x00007f8d79168140: mov    0x8(%rbx),%r10d
+  0x00007f8d79168144: cmp    $0x82540d58,%r10d  ;   {oop('scala/runtime/LongRef')}
+  0x00007f8d7916814b: jne    0x00007f8d7916831a  ;*iload_2
+                                                ; - Test$::timeForLoop@11 (line 17)
+  0x00007f8d79168151: cmp    %r13d,%ebp
+  0x00007f8d79168154: jge    0x00007f8d791682fb  ;*if_icmpge
+                                                ; - Test$::timeForLoop@13 (line 17)
+  0x00007f8d7916815a: mov    %rbx,%r10          ;*putfield sum$2
+                                                ; - Test$$anonfun$timeForLoop$1::<init>@2 (line 18)
+                                                ; - Test$::timeForLoop@33 (line 18)
+  0x00007f8d7916815d: jmp    0x00007f8d791681a6
+  0x00007f8d7916815f: nop    
+  0x00007f8d79168160: mov    %edx,%r11d         ;*aload_1
+                                                ; - scala.collection.immutable.Range::foreach$mVc$sp@23 (line 75)
+                                                ; - Test$::timeForLoop@36 (line 18)
+  0x00007f8d79168163: mov    %r11d,%edx
+  0x00007f8d79168166: add    0x14(%r10),%edx    ;*iadd
+                                                ; - scala.collection.immutable.Range::foreach$mVc$sp@35 (line 76)
+                                                ; - Test$::timeForLoop@36 (line 18)
+  0x00007f8d7916816a: movslq %r11d,%r11
+  0x00007f8d7916816d: add    %r11,%rcx          ;*ladd
+                                                ; - Test$$anonfun$timeForLoop$1::apply$mcVI$sp@13 (line 19)
+                                                ; - scala.collection.immutable.Range::foreach$mVc$sp@25 (line 75)
+                                                ; - Test$::timeForLoop@36 (line 18)
+  0x00007f8d79168170: mov    %rcx,0x10(%r9)     ; OopMap{r10=Oop r9=NarrowOop rbp=Oop [8]=Oop [16]=NarrowOop off=116}
+                                                ;*goto
+                                                ; - scala.collection.immutable.Range::foreach$mVc$sp@37 (line 76)
+                                                ; - Test$::timeForLoop@36 (line 18)
+  0x00007f8d79168174: test   %eax,0x5691e86(%rip)        # 0x00007f8d7e7fa000
+                                                ;*goto
+                                                ; - scala.collection.immutable.Range::foreach$mVc$sp@37 (line 76)
+                                                ; - Test$::timeForLoop@36 (line 18)
+                                                ;   {poll}
+  0x00007f8d7916817a: cmp    %eax,%edx
+  0x00007f8d7916817c: jne    0x00007f8d79168160  ;*if_icmpeq
+                                                ; - scala.collection.immutable.Range::foreach$mVc$sp@20 (line 74)
+                                                ; - Test$::timeForLoop@36 (line 18)
+  0x00007f8d7916817e: mov    %rbp,%rsi
+  0x00007f8d79168181: xchg   %ax,%ax
+  0x00007f8d79168183: callq  0x00007f8d7912e820  ; OopMap{[8]=Oop [16]=NarrowOop off=136}
+                                                ;*invokeinterface apply$mcVI$sp
+                                                ; - scala.collection.immutable.Range::foreach$mVc$sp@42 (line 78)
+                                                ; - Test$::timeForLoop@36 (line 18)
+                                                ;   {optimized virtual_call}
+  0x00007f8d79168188: mov    (%rsp),%ebp
+  0x00007f8d7916818b: inc    %ebp               ;*iadd
+                                                ; - Test$::timeForLoop@41 (line 20)
+  0x00007f8d7916818d: cmp    0x4(%rsp),%ebp
+  0x00007f8d79168191: jge    0x00007f8d791682f6
+  0x00007f8d79168197: mov    0x8(%rsp),%rbx
+  0x00007f8d7916819c: mov    0x4(%rsp),%r13d
+  0x00007f8d791681a1: mov    0x10(%rsp),%r10d   ;*synchronization entry
+                                                ; - scala.LowPriorityImplicits::intWrapper@-1 (line 32)
+                                                ; - Test$::timeForLoop@20 (line 18)
+  0x00007f8d791681a6: mov    0x60(%r15),%rax
+  0x00007f8d791681aa: mov    %rax,%r11
+  0x00007f8d791681ad: add    $0x28,%r11
+  0x00007f8d791681b1: cmp    0x70(%r15),%r11
+  0x00007f8d791681b5: jae    0x00007f8d79168292
+  0x00007f8d791681bb: mov    %r11,0x60(%r15)
+  0x00007f8d791681bf: prefetchnta 0xc0(%r11)
+  0x00007f8d791681c7: mov    $0x825713c0,%r11d  ;   {oop('scala/collection/immutable/Range')}
+  0x00007f8d791681cd: mov    0xb0(%r11),%r11
+  0x00007f8d791681d4: mov    %r11,(%rax)
+  0x00007f8d791681d7: movl   $0x825713c0,0x8(%rax)  ;   {oop('scala/collection/immutable/Range')}
+  0x00007f8d791681de: mov    %r12d,0xc(%rax)
+  0x00007f8d791681e2: mov    %r12,0x18(%rax)
+  0x00007f8d791681e6: mov    %r12,0x20(%rax)    ;*new  ; - scala.collection.immutable.Range$::apply@0 (line 267)
+                                                ; - scala.runtime.RichInt::until@8 (line 21)
+                                                ; - Test$::timeForLoop@25 (line 18)
+  0x00007f8d791681ea: mov    $0x1000f4240,%r11
+  0x00007f8d791681f4: mov    %r11,0x10(%rax)
+  0x00007f8d791681f8: mov    %rax,%r8           ;*synchronization entry
+                                                ; - scala.collection.immutable.Range$::apply@-1 (line 267)
+                                                ; - scala.runtime.RichInt::until@8 (line 21)
+                                                ; - Test$::timeForLoop@25 (line 18)
+  0x00007f8d791681fb: mov    0x60(%r15),%rax
+  0x00007f8d791681ff: mov    %rax,%r11
+  0x00007f8d79168202: add    $0x10,%r11
+  0x00007f8d79168206: cmp    0x70(%r15),%r11
+  0x00007f8d7916820a: jae    0x00007f8d791682c3
+  0x00007f8d79168210: mov    %r11,0x60(%r15)
+  0x00007f8d79168214: prefetchnta 0xc0(%r11)
+  0x00007f8d7916821c: mov    $0x8257a1c8,%r9d   ;   {oop('Test$$anonfun$timeForLoop$1')}
+  0x00007f8d79168222: mov    0xb0(%r9),%r11
+  0x00007f8d79168229: mov    %r11,(%rax)
+  0x00007f8d7916822c: movl   $0x8257a1c8,0x8(%rax)  ;   {oop('Test$$anonfun$timeForLoop$1')}
+  0x00007f8d79168233: mov    %ebp,(%rsp)
+  0x00007f8d79168236: mov    %rbx,0x8(%rsp)
+  0x00007f8d7916823b: mov    %r13d,0x4(%rsp)
+  0x00007f8d79168240: mov    %r8,0x18(%rsp)     ;*new  ; - Test$::timeForLoop@28 (line 18)
+  0x00007f8d79168245: mov    %r10d,0xc(%rax)    ;*putfield sum$2
+                                                ; - Test$$anonfun$timeForLoop$1::<init>@2 (line 18)
+                                                ; - Test$::timeForLoop@33 (line 18)
+  0x00007f8d79168249: mov    %r10d,0x10(%rsp)
+  0x00007f8d7916824e: mov    %rax,%rbp          ;*synchronization entry
+                                                ; - Test$::timeForLoop@-1 (line 15)
+  0x00007f8d79168251: mov    0x18(%rsp),%rsi
+  0x00007f8d79168256: nop    
+  0x00007f8d79168257: callq  0x00007f8d7912e820  ; OopMap{rbp=Oop [8]=Oop [16]=NarrowOop [24]=Oop off=348}
+                                                ;*invokevirtual length
+                                                ; - scala.collection.immutable.Range::foreach$mVc$sp@1 (line 71)
+                                                ; - Test$::timeForLoop@36 (line 18)
+                                                ;   {optimized virtual_call}
+  0x00007f8d7916825c: test   %eax,%eax
+  0x00007f8d7916825e: jle    0x00007f8d79168188  ;*if_icmple
+                                                ; - scala.collection.immutable.Range::foreach$mVc$sp@5 (line 71)
+                                                ; - Test$::timeForLoop@36 (line 18)
+  0x00007f8d79168264: mov    0x18(%rsp),%rsi
+  0x00007f8d79168269: xchg   %ax,%ax
+  0x00007f8d7916826b: callq  0x00007f8d7912e820  ; OopMap{rbp=Oop [8]=Oop [16]=NarrowOop [24]=Oop off=368}
+                                                ;*invokevirtual last
+                                                ; - scala.collection.immutable.Range::foreach$mVc$sp@9 (line 72)
+                                                ; - Test$::timeForLoop@36 (line 18)
+                                                ;   {optimized virtual_call}
+  0x00007f8d79168270: mov    0x18(%rsp),%r10
+  0x00007f8d79168275: mov    0xc(%r10),%r11d    ;*getfield start
+                                                ; - scala.collection.immutable.Range::start@1 (line 43)
+                                                ; - scala.collection.immutable.Range::foreach$mVc$sp@14 (line 73)
+                                                ; - Test$::timeForLoop@36 (line 18)
+  0x00007f8d79168279: cmp    %eax,%r11d
+  0x00007f8d7916827c: je     0x00007f8d7916830b  ;*if_icmpeq
+                                                ; - scala.collection.immutable.Range::foreach$mVc$sp@20 (line 74)
+                                                ; - Test$::timeForLoop@36 (line 18)
+  0x00007f8d79168282: mov    %rbp,%r8
+  0x00007f8d79168285: mov    0xc(%rbp),%r9d     ;*getfield sum$2
+                                                ; - Test$$anonfun$timeForLoop$1::apply$mcVI$sp@1 (line 19)
+                                                ; - scala.collection.immutable.Range::foreach$mVc$sp@25 (line 75)
+                                                ; - Test$::timeForLoop@36 (line 18)
+  0x00007f8d79168289: mov    0x10(%r9),%rcx     ;*getfield elem
+                                                ; - Test$$anonfun$timeForLoop$1::apply$mcVI$sp@8 (line 19)
+                                                ; - scala.collection.immutable.Range::foreach$mVc$sp@25 (line 75)
+                                                ; - Test$::timeForLoop@36 (line 18)
+                                                ; implicit exception: dispatches to 0x00007f8d79168335
+  0x00007f8d7916828d: jmpq   0x00007f8d79168163
+  0x00007f8d79168292: mov    %r10d,0xc(%rsp)
+  0x00007f8d79168297: mov    %r13d,0x8(%rsp)
+  0x00007f8d7916829c: mov    %rbx,(%rsp)
+  0x00007f8d791682a0: mov    $0x825713c0,%rsi   ;   {oop('scala/collection/immutable/Range')}
+  0x00007f8d791682aa: nop    
+  0x00007f8d791682ab: callq  0x00007f8d79154da0  ; OopMap{[0]=Oop [12]=NarrowOop off=432}
+                                                ;*new  ; - scala.collection.immutable.Range$::apply@0 (line 267)
+                                                ; - scala.runtime.RichInt::until@8 (line 21)
+                                                ; - Test$::timeForLoop@25 (line 18)
+                                                ;   {runtime_call}
+  0x00007f8d791682b0: mov    (%rsp),%rbx
+  0x00007f8d791682b4: mov    0x8(%rsp),%r13d
+  0x00007f8d791682b9: mov    0xc(%rsp),%r10d
+  0x00007f8d791682be: jmpq   0x00007f8d791681ea
+  0x00007f8d791682c3: mov    %r8,0x18(%rsp)
+  0x00007f8d791682c8: mov    %r10d,0x10(%rsp)
+  0x00007f8d791682cd: mov    %r13d,0x4(%rsp)
+  0x00007f8d791682d2: mov    %rbx,0x8(%rsp)
+  0x00007f8d791682d7: mov    %ebp,(%rsp)
+  0x00007f8d791682da: mov    $0x8257a1c8,%rsi   ;   {oop('Test$$anonfun$timeForLoop$1')}
+  0x00007f8d791682e4: xchg   %ax,%ax
+  0x00007f8d791682e7: callq  0x00007f8d79154da0  ; OopMap{[8]=Oop [16]=NarrowOop [24]=Oop off=492}
+                                                ;*new  ; - Test$::timeForLoop@28 (line 18)
+                                                ;   {runtime_call}
+  0x00007f8d791682ec: mov    0x10(%rsp),%r10d
+  0x00007f8d791682f1: jmpq   0x00007f8d79168245
+  0x00007f8d791682f6: mov    0x8(%rsp),%rbx     ;*if_icmpge
+                                                ; - Test$::timeForLoop@13 (line 17)
+  0x00007f8d791682fb: mov    0x10(%rbx),%rax    ; implicit exception: dispatches to 0x00007f8d79168382
+  0x00007f8d791682ff: add    $0x40,%rsp
+  0x00007f8d79168303: pop    %rbp
+  0x00007f8d79168304: test   %eax,0x5691cf6(%rip)        # 0x00007f8d7e7fa000
+                                                ;   {poll_return}
+  0x00007f8d7916830a: retq   
+  0x00007f8d7916830b: mov    %r11d,%edx
+  0x00007f8d7916830e: jmpq   0x00007f8d7916817e
+  0x00007f8d79168313: xor    %ebx,%ebx
+  0x00007f8d79168315: jmpq   0x00007f8d79168151
+  0x00007f8d7916831a: mov    $0xffffffad,%esi
+  0x00007f8d7916831f: mov    %r13d,(%rsp)
+  0x00007f8d79168323: mov    %rbx,0x8(%rsp)
+  0x00007f8d79168328: xchg   %ax,%ax
+  0x00007f8d7916832b: callq  0x00007f8d7912dea0  ; OopMap{[8]=Oop off=560}
+                                                ;*iload_2
+                                                ; - Test$::timeForLoop@11 (line 17)
+                                                ;   {runtime_call}
+  0x00007f8d79168330: callq  0x00007f8d7d91c1d0  ;*iload_2
+                                                ; - Test$::timeForLoop@11 (line 17)
+                                                ;   {runtime_call}
+  0x00007f8d79168335: mov    $0xffffff86,%esi
+  0x00007f8d7916833a: mov    0x4(%rsp),%ebp
+  0x00007f8d7916833e: pushq  0x18(%rsp)
+  0x00007f8d79168342: popq   0x10(%rsp)
+  0x00007f8d79168346: mov    %r8,0x18(%rsp)
+  0x00007f8d7916834b: mov    %eax,0x4(%rsp)
+  0x00007f8d7916834f: mov    %r11d,0x20(%rsp)
+  0x00007f8d79168354: xchg   %ax,%ax
+  0x00007f8d79168357: callq  0x00007f8d7912dea0  ; OopMap{[8]=Oop [16]=Oop [24]=Oop off=604}
+                                                ;*aload_1
+                                                ; - scala.collection.immutable.Range::foreach$mVc$sp@23 (line 75)
+                                                ; - Test$::timeForLoop@36 (line 18)
+                                                ;   {runtime_call}
+  0x00007f8d7916835c: callq  0x00007f8d7d91c1d0  ;*new
+                                                ; - scala.collection.immutable.Range$::apply@0 (line 267)
+                                                ; - scala.runtime.RichInt::until@8 (line 21)
+                                                ; - Test$::timeForLoop@25 (line 18)
+                                                ;   {runtime_call}
+  0x00007f8d79168361: mov    %rax,%rsi
+  0x00007f8d79168364: jmp    0x00007f8d79168378  ;*new
+                                                ; - Test$::timeForLoop@28 (line 18)
+  0x00007f8d79168366: mov    %rax,%rsi
+  0x00007f8d79168369: jmp    0x00007f8d79168378  ;*invokevirtual length
+                                                ; - scala.collection.immutable.Range::foreach$mVc$sp@1 (line 71)
+                                                ; - Test$::timeForLoop@36 (line 18)
+  0x00007f8d7916836b: mov    %rax,%rsi
+  0x00007f8d7916836e: jmp    0x00007f8d79168378  ;*invokevirtual last
+                                                ; - scala.collection.immutable.Range::foreach$mVc$sp@9 (line 72)
+                                                ; - Test$::timeForLoop@36 (line 18)
+  0x00007f8d79168370: mov    %rax,%rsi
+  0x00007f8d79168373: jmp    0x00007f8d79168378  ;*invokeinterface apply$mcVI$sp
+                                                ; - scala.collection.immutable.Range::foreach$mVc$sp@42 (line 78)
+                                                ; - Test$::timeForLoop@36 (line 18)
+  0x00007f8d79168375: mov    %rax,%rsi          ;*invokevirtual length
+                                                ; - scala.collection.immutable.Range::foreach$mVc$sp@1 (line 71)
+                                                ; - Test$::timeForLoop@36 (line 18)
+  0x00007f8d79168378: add    $0x40,%rsp
+  0x00007f8d7916837c: pop    %rbp
+  0x00007f8d7916837d: jmpq   0x00007f8d79154660  ;*getfield elem
+                                                ; - Test$::timeForLoop@47 (line 22)
+                                                ;   {runtime_call}
+  0x00007f8d79168382: mov    $0xfffffff6,%esi
+  0x00007f8d79168387: callq  0x00007f8d7912dea0  ; OopMap{off=652}
+                                                ;*getfield elem
+                                                ; - Test$::timeForLoop@47 (line 22)
+                                                ;   {runtime_call}
+  0x00007f8d7916838c: callq  0x00007f8d7d91c1d0  ;*aload_1
+                                                ; - scala.collection.immutable.Range::foreach$mVc$sp@23 (line 75)
+                                                ; - Test$::timeForLoop@36 (line 18)
+                                                ;   {runtime_call}
+{noformat}
+
+There's so much stuff in there, mainly that there are still calls remaining to {{last}}, {{length}}, etc. What it boils down to IMO is that Range is much too complicated for the common cases.

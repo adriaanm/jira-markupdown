@@ -1,0 +1,40 @@
+I'm creating this ticket to document the issue and my effort to address it, as I expect it to come up again, and I think it's probably fixable with more effort.
+
+Consider the following:
+{code}
+trait Selector
+trait Closeable
+trait Disposable
+trait DatagramSocket
+
+class X {
+  def disposes[T <: Selector](abstractSelector: T) { }
+  def disposes[T <: Closeable](closeable: T) { }
+  def disposes[T <: Disposable](disposable: T) { }
+  def disposes(datagramSocket: DatagramSocket): DatagramSocket = datagramSocket
+}
+{code}
+This is rejected by scalac in the typer with:
+{code}
+generic-overload.scala:9: error: method disposes is defined twice
+  def disposes[T <: Disposable](disposable: T) { }
+      ^
+one error found
+{code}
+However equivalent java source can be compiled.  The post-erasure method signatures are all distinct so in theory scala also should be able to compile this.
+
+Attempting to address this I adjusted the compiler logic.  The method which needs a relaxed variation is "matches" in Types.
+{code}
+    def matches(that: Type): Boolean = matchesType(this, that, !phase.erasedTypes)
+{code}
+And then in Typers, "checkNoDoubleDefsAndAddSynthetics" would use the variation, which would treat polytypes as different if their type parameter bounds would lead to different erasures.  This is delicate because if it is relaxed too much, test cases such as tcpoly_boundedmonad will fail to compile:
+{code}
+trait Monad[T <: Bound[T], MyType[x <: Bound[x]], Bound[_]] {
+  def map[S <: Bound[S]](f: T => S): MyType[S]  // etc
+}                                                                               
+class Set[T <: Ordered[T]] extends Monad[T, Set, Ordered] {
+  def map[S <: Ordered[S]](f: T => S): Set[S] = error("TODO") // etc
+}                                                                   
+{code}
+
+So it has to be relaxed far enough to let the motivating example proceed, but not so far that (for instance) Set is no longer seen as implementing the methods in Monad.

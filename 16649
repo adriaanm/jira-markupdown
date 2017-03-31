@@ -1,0 +1,29 @@
+A simple return statement fails when CPS transformed. The same statement without CPS annotations works properly so the code structure itself is OK.
+
+This form should be able to be transformed.
+
+{noformat}
+import scala.util.continuations._
+
+object Test {
+
+  def test1(): Int @cps[Int] = {
+    return 1
+  }
+
+  def main(args: Array[String]): Any = {
+    println(reset(test1()))
+  }
+
+}
+{noformat}
+
+{noformat}
+$ ~/opt/scala-2.10.0.dev-1302-g6a33a20/bin/scala -P:continuations:enable returnX.scala
+/p/scala/bugs/returnX.scala:8: error: type mismatch;
+ found   : Int(1)
+ required: Int @util.continuations.cps[Int]
+    return 1
+           ^
+one error found
+{noformat}

@@ -1,0 +1,25 @@
+Below you can find the reproduction and workaround.
+
+Reproduction:
+{code}
+scala> def large = new String(Array.ofDim[Char](16 * 1024 * 1024))
+large: String
+
+scala> (1 to 100).map { i => println(i); val q = collection.mutable.PriorityQueue[String](); q += large; q.dequeue(); q }
+1
+2
+3
+java.lang.OutOfMemoryError: Java heap space
+{code}
+The workaround is to use the PriorityQueue from Java:
+{code}
+bc.. scala> (1 to 100).map { i => println(i); val q = new java.util.PriorityQueue[String](); q.add(large); q.remove(); q }
+1
+2
+3
+...
+98
+99
+100
+res17: scala.collection.immutable.IndexedSeq[java.util.PriorityQueue[String]] = Vector([], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [])
+{code}

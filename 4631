@@ -1,0 +1,31 @@
+to illustrate that there's no overriding relation here:
+
+{code}
+// A.java
+package a;
+
+public class A { void a() {System.out.println("a");} }
+
+// B.java
+package b;
+
+public class B extends a.A { void a() {System.out.println("b");} }
+
+// Test.java
+package a;
+
+public class Test {
+  public static void main(String[] args) {
+    a.A a = new b.B();
+    a.a();
+  }
+}
+{code}
+
+$$ java a.Test
+
+{code}
+a
+{code}
+
+yep...

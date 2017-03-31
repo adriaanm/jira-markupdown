@@ -1,0 +1,14 @@
+Jason: actually it turned out that the example you give in this ticket has not been broken by
+https://github.com/scala/scala/commit/2a2d9235
+
+but by
+
+https://github.com/scala/scala/commit/df9f470f
+
+The reason is that we no longer delegate to {{filter}} (which Stream overrides) but we provide our own implementation based on {{foreach}}.
+
+I believe that changes to {{LinearSeqOptimized}} are irrelevant for other (non-lazy collections) in a sense that they do not change semantics. Do you agree?
+
+I don't understand why Stream mixes-in {{LinearSeqOptimized}} in the first place but this seems to be (also) irrelevant. In order to fix this bug we need to override {{filterNot}} in Stream the same way as {{filter}} is overriden of revert change to {{TraversableLike}}. I think the later is way to go.
+
+WDYT?

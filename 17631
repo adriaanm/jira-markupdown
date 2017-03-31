@@ -1,0 +1,8 @@
+{code}
+scala> def twiceImpl(c: reflect.macros.Context)(e: c.Expr[Any]) = { val expr = c.universe.reify { e; e }; expr.tree.foreach(t => println(t.pos)); expr }
+<console>:10: warning: a pure expression does nothing in statement position; you may be omitting necessary parentheses
+       def twiceImpl(c: reflect.macros.Context)(e: c.Expr[Any]) = { val expr = c.universe.reify { e; e }; expr.tree.foreach(t => println(t.pos)); expr }
+                                                                                                  ^
+{code}
+
+Not sure what the correct fix is, though. Move that check post typer? Are there other things happening in the typer that doesn't make sense for reify?

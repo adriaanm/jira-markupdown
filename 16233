@@ -1,0 +1,46 @@
+I have an entry point wrapper that looks something like the trait listed below that is intended to expose a main for a java entry point if type T = Unit or an arbitrary return type T if the module is embedded:
+
+{code}
+trait RunWrapper[T] {
+  def run(args : Array[String]) : T;
+  def main(args : Array[String]) : T = {
+    try { run(args) } finally { }
+  }
+}
+
+// Entry point for java
+object A extends RunWrapper[Unit] {
+  def run(args : Array[String]) { println("the end") }
+}
+{code}
+Unfortunately, I get this bytecode from the compiler (the same for both 2.8.1 and 2.9.0.1):
+
+$ javap A
+Compiled from "test.scala"
+public final class A extends java.lang.Object{
+    public static final java.lang.Object main(java.lang.String[]);
+    public static final void run(java.lang.String[]);
+}
+
+Why do I get a return type of java.lang.Object, in this case, for main()? How do I get void in this scenario so that java will allow my to use A as an entry point?
+
+However, if I define the following:
+
+object B extends RunWrapper[Unit] {
+  def run(args : Array[String]) { println("the end") }
+  override def main(args : Array[String]) { try { run(args) } finally { } }
+}
+
+I get this:
+
+{noformat}
+$ javap B
+Compiled from "test.scala"
+public final class B extends java.lang.Object{
+    public static final void main(java.lang.String[]);
+    public static final void run(java.lang.String[]);
+    public static final java.lang.Object main(java.lang.String[]);
+}
+{noformat}
+
+So it seems override didn't override anything  and the compiler doesn't complain or warn about this.  Is this a boxing issue?

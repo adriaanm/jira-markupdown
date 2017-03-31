@@ -1,0 +1,13 @@
+Line 222 in Iterator.scala should be:
+
+    def take(n: Int): Iterator[A] = new Iterator[A] {
+
+Otherwise the type returned by take makes it hard to subclass Iterator:
+
+  scala> val it: Iterator[Int] = Array(1, 2, 3, 4, 5).elements
+  val it: Iterator[Int] = Array(1, 2, 3, 4, 5).elements
+  it: Iterator[Int] = non-empty iterator
+
+  scala> it.take(3)
+  it.take(3)
+  res8: java.lang.Object with Iterator[Int]{def remaining: Int; def remaining_=(Int): Unit} = non-empty iterator

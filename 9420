@@ -1,0 +1,27 @@
+This issue has re-surfaced.
+
+I have a case class with an associated companion class defined in a domains package (Play project) as follows:
+
+case class Registration(serviceName: String, serviceUrl: String, metadata: Option[Map[String, String]] = None)
+
+object Registration {
+  implicit val format = Json.format[Registration]
+}
+
+We have a custom HTTP library we have built for our organisation which allows us to make HTTP calls - it is publicly available here (https://github.com/hmrc/http-verbs). The following call is made:
+
+    http.POST(s"$serviceUrl/registration", registration, Seq("Content-Type" -> "application/json")) 
+
+where the second parameter is of type Registration.
+
+When compiling the compiler complains as follows:
+
+`[error] /foo/app/connectors/ServiceLocatorConnector.scala:40: diverging implicit expansion for type uk.gov.hmrc.play.http.HttpReads[P]
+[error] starting with method readFromJson in trait JsonHttpReads
+[error]     http.POST(s"$serviceUrl/registration", registration,
+[error]              ^
+[error] one error found
+[error] (compile:compileIncremental) Compilation failed` 
+
+When I explicitly import the companion object into the same translation unit where this http.POST method is called, the compiler is able to pick up the implicit and compilation is a success. If I don't, then it complains about diverging implicit expansion error.
+

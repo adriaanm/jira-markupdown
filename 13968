@@ -1,0 +1,13 @@
+Running undo many times in succession triggers an Abnormal Workbench Condition (java.lang.Error) and renders the current editor useless--forcing user to close & re-open the file he's editing to continue.
+
+To reproduce:
+ 1. run `File > New > Scala Project`
+ 1. create a new Scala object
+ 1. type the following method manually (do not cut 'n paste) into the object body: 
+{code}
+def foo(arg:Int){}
+{code} 
+ 1. Save (Ctrl+S).
+ 1. Hold down `Ctrl+Z` as if to undo what you just typed. This should trigger the Error.
+
+I was able to reproduce in both 2.7.2 and 2.7.3.RC2 using Eclipse 3.4.1 on Windows Vista 64 bit.

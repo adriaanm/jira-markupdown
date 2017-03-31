@@ -1,0 +1,30 @@
+Fixed in r18404. For example:
+{code}
+object Serialize {
+  import java.io._
+  def write[A](o: A): Array[Byte] = {
+    val ba = new ByteArrayOutputStream(512)
+    val out = new ObjectOutputStream(ba)
+    out.writeObject(o)
+    out.close()
+    ba.toByteArray()
+  }
+  def read[A](buffer: Array[Byte]): A = {
+    val in =
+      new ObjectInputStream(new ByteArrayInputStream(buffer))
+    in.readObject().asInstanceOf[A]
+  }
+}
+object Enu extends Enumeration {
+  val ONE = Value("1")
+  val TWO = Value("2")
+}
+println(Enu.ONE)
+val one: Enu.Value = Serialize.read(Serialize.write(Enu.ONE))
+println(one)
+{code}
+prints
+{code}
+1
+1
+{code}

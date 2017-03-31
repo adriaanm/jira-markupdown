@@ -1,0 +1,29 @@
+The relevant players in this bug / limitation are shown in the following log output:
+
+{noformat}
+% qbin/scalac -Ylog:typer -Xdev -explaintypes sandbox/test.scala
+[log typer] updated bounds: type A from  to:  >: (c, c) <: (c, c)
+[log typer] instantiateTypeVar with nonEmpty saved type bounds {
+  enclosing  Context(test.scala) {    owner       = method extractParent
+      saved  List((type A,))
+     tparam  AbstractTypeSymbol type c
+}
+[log typer] redundant bounds: discarding TypeBounds(Nothing, Any) for type c, no improvement on TypeBounds(Nothing, Any)
+[log typer] Discarding inferred TypeBounds(lo=(c, c), hi=(c, c)) because type A does not appear in: (c, c)
+[log typer] Adding cast to pattern because (c, c) does not conform to expected type A
+[log typer] updated bounds: type a from  to:  >: A <: A
+[log typer] inconsistent bounds: discarding TypeBounds(Any, A with (c, c))
+[log typer] redundant bounds: discarding TypeBounds(Nothing, Any) for type c, no improvement on TypeBounds(Nothing, Any)
+sandbox/test.scala:17: error: type mismatch;
+ found   : (c, c)
+ required: a
+        case child: Child[c] => child.c: a
+                                      ^
+(c, c) <: a?
+false
+[log typer] Discarding inferred TypeBounds(lo=A, hi=A) because type a does not appear in: A
+[log typer] updated bounds: type a from  to:  >: A <: A
+warning: !!! Preserving inference: a=A in a (based on TypeBounds(lo=A, hi=A)) before restoring type a to saved <empty bounds>: A
+one warning found
+one error found
+{noformat}

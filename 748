@@ -1,0 +1,16 @@
+For now this can be fixed by writing your example as
+{code}
+package test;
+
+import scala.tools.nsc._
+
+class Foo;
+
+object Main extends Application{
+  val int = new Interpreter(new Settings()) {
+    override def parentClassLoader = this.getClass.getClassLoader()
+  }
+  int.bind("foo", "test.Foo", new Foo());
+}
+{code}
+I'll see if making this the default breaks anything.

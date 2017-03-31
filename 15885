@@ -1,0 +1,26 @@
+{code}
+abstract class A {
+  private def foo = List(1, 2)
+}
+trait B extends A {
+  private def foo = List("a", "b")
+  // However it compiles correctly if the type is given:
+  // private def foo: List[String] = List("a", "b")
+}
+{code}
+{code}
+% scalac29 -version
+Scala compiler version 2.9.0.r23832-b20101223012507 -- Copyright 2002-2010, LAMP/EPFL
+% scalac29 bug.scala
+bug.scala:5: error: type mismatch;
+ found   : java.lang.String("a")
+ required: Int
+  private def foo = List("a", "b")
+                         ^
+bug.scala:5: error: type mismatch;
+ found   : java.lang.String("b")
+ required: Int
+  private def foo = List("a", "b")
+                              ^
+two errors found
+{code}

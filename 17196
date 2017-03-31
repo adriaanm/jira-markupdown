@@ -1,0 +1,66 @@
+Let's say we compile code like this:
+{code:title=check-both.scala}
+trait Foo[@specialized(Int) A] {
+  def foo(x: A): A
+}
+abstract class Inter extends Foo[Int]
+class Baz extends Inter {
+  def foo(x: Int) = x + 1
+}
+{code}
+
+./bin/scalac -d classes/ check-both.scala
+and we'll inspect methods in Baz:
+
+{code:title=javap classes/Baz}
+Compiled from "check-both.scala"
+public class Baz extends Inter{
+    public int foo(int);
+    public int foo$mcI$sp(int);
+    public java.lang.Object foo(java.lang.Object);
+    public Baz();
+}
+{code}
+
+Now let's compile the same code in two steps:
+
+{code:title=check.scala}
+trait Foo[@specialized(Int) A] {  
+  def foo(x: A): A
+}
+
+abstract class Inter extends Foo[Int]
+{code}
+
+using ./bin/scalac -d classes/ check.scala
+and then:
+
+{code}
+class Baz extends Inter {
+  def foo(x: Int) = x + 1
+}
+{code}
+
+using ./bin/scalac -cp classes/ -d classes/ check2.scala
+if we then inspect byte of Baz we'll see:
+{code}
+Compiled from "check2.scala"
+public class Baz extends Inter{
+    public int foo(int);
+    public java.lang.Object foo(java.lang.Object);
+    public Baz();
+}
+{code}
+
+Notice the difference that there's no public int foo$mcI$sp(int); generated this time. The reason for that is that we do not pickle SPECIALIZED flag that is set on type parameter symbols. Thus, if we read bytecode for Inter and Foo we'll not have SPECIALIZED flag set for parameter A and this will cause specialization to not kick in.
+
+Now, the reason why we do not pickle SPECIALIZED flag is twofold:
+1. SPECIALIZED flag is set uncurry (see: https://github.com/scala/scala/blob/master/src/compiler/scala/tools/nsc/transform/UnCurry.scala#L569). This is rather questionable place for that kind of code as it mutates flags and pickle will never see those changes.
+2. Even if we set the flag before symbols pickling this won't help because
+only 32 lowest bits are pickled (see https://github.com/scala/scala/blob/master/src/reflect/scala/reflect/internal/Flags.scala#L310) and SPECIALIZED has index 40 (https://github.com/scala/scala/blob/master/src/reflect/scala/reflect/internal/Flags.scala#L160).
+
+The first problem has been introduced in 7bddd73 (https://github.com/scala/scala/commit/7bddd73f6e18bde931026abf5fe2526b747727ad) but I don't think reverting this change makes sense for efficiency reasons. Therefore we have two choices:
+1. Change the index of SPECIALIZED flag so it gets pickled and set it before pickling happens (probably right before, it means in pickler).
+2. Check for specialized annotation while unpickling symbols and set the flag there.
+
+I like the first solution much better. We don't want to slow down unpickling.

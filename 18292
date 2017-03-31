@@ -1,0 +1,27 @@
+When looking up type members, either in runtime reflection or in macros, bridge methods appear in results. For example:
+
+{code}
+Welcome to Scala version 2.10.1 (Java HotSpot(TM) 64-Bit Server VM, Java 1.7.0_17).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> import scala.reflect.runtime.universe._
+import scala.reflect.runtime.universe._
+
+scala> typeOf[String].members.filter(_.name.decoded == "compareTo") foreach { m => println(m.fullName, m.typeSignature) }
+(java.lang.String.compareTo,(x$1: String)Int)
+(java.lang.String.compareTo,(x$1: Any)Int) // bridge method
+
+scala> typeOf[String].declarations.filter(_.name.decoded == "compareTo") foreach { m => println(m.fullName, m.typeSignature) }
+(java.lang.String.compareTo,(x$1: Any)Int) // bridge method
+(java.lang.String.compareTo,(x$1: String)Int)
+
+scala> typeOf[String].member(newTermName("compareTo")).asTerm.alternatives foreach { m => println(m.fullName, m.typeSignature) }
+(java.lang.String.compareTo,(x$1: String)Int)
+
+scala> typeOf[String].declaration(newTermName("compareTo")).asTerm.alternatives foreach { m => println(m.fullName, m.typeSignature) }
+(java.lang.String.compareTo,(x$1: Any)Int) // bridge method
+(java.lang.String.compareTo,(x$1: String)Int)
+{code}
+
+As we can see, there is also some inconsistent behaviour - looking up member by name does not return bridge method.

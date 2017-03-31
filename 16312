@@ -1,0 +1,25 @@
+I initially reported this about getClass, but actually it has nothing to do with it.
+{noformat}
+class C[T]
+class A {
+  def f[T](x: T): C[_ <: T] = null
+  def g = List(1d) map f
+}
+{noformat}
+{noformat}
+% scalac3 ./a.scala 
+exception when traversing ((x: Double) => A.this.f[Double](x))
+...
+error: scala.reflect.internal.Types$TypeError: type mismatch;
+ found   : C[(some other)_$1(in value $anonfun)] where type (some other)_$1(in value $anonfun) <: T
+ required: C[_ <: Double]
+	at scala.tools.nsc.typechecker.Contexts$Context.error(Contexts.scala:295)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.error(Infer.scala:207)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.typeError(Infer.scala:217)
+{noformat}
+
+The problem is hinted at via -Yinfer-debug:
+
+[inferImplicit] result: SearchResult(immutable.this.List.canBuildFrom[C[_ <: Double]], TreeTypeSubstituter(List(type That),List(List[C[_ <: Double]])))
+
+The type C[_ <: T] is inferred at multiple points, and the trip through inference ends up unpacking more than one existential.  This is not too surprising given how much is taking place in a line like `List(1d) map f`.

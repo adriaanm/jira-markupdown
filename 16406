@@ -1,0 +1,66 @@
+The two tests below are different only in an aspect which is apparently irrelevant to the tests, yet one passes and one fails. Investigating further, I've understood that I was wrong in my expectation, but it took me REALLY long -- even though I read everything I could find (including "How the constructors phase works" by Miguel Garcia, which is pretty detailed). Of course documentation bug SI-4467 didn't help, but even with the correction I doubt I would have understood much faster.
+
+{code}
+import org.scalatest.Suite
+import org.scalatest.junit.AssertionsForJUnit
+import org.junit.Test
+import scala.collection.mutable.HashMap
+class ReproduceBugXXX extends Suite {
+  
+  @Test
+  def testA_works_as_I_expected {
+    ObjectA // just to summon the object into existence
+  }
+
+  @Test
+  def testB_reproduces_the_bug {
+    ObjectB
+  }  
+}
+
+class ClassA extends DelayedInit {
+  lazy val y = 1                           // this line is not necessary, just makes the lack of
+                                           // consistency more blatant. "lazy" is the single
+                                           // difference between testA and testB
+  def delayedInit(init: => Unit): Unit = {
+    init                                   // is ObjectA$delayedInit$body according to my debugger
+    assert (ObjectA.x == 1)
+  }
+}
+
+object ObjectA extends ClassA {
+  val x = 1
+}
+
+class ClassB extends DelayedInit {
+  val y = 1
+  def delayedInit(init: => Unit): Unit = {
+    init                                   // is ClassB$delayedInit$body according to my debugger
+    assert (ObjectB.x == 1)
+  }
+}
+
+object ObjectB extends ClassB {
+  val x = 1
+}
+{code}
+
+Here's a proposal for improvement (though I'm not too happy about it's clarity, so I'd appreciate help from someone native in English and Scala):
+
+{quote}
+All objects, classes and traits directly or indirectly inheriting 
+the `DelayedInit` marker trait will have their initialization code
+rewritten as follows:
+`code` becomes `delayedInit(code)`.
+
+Initialization code comprises all statements and all value definitions
+that are executed during initialization.
+
+If there is no initialization code, no rewriting will occur, and hence
+no call to delayedInit for that object/class/trait.
+
+Note that this rewriting will occur at each object/class/trait in an
+inheritance chain below the level where DelayedInit is inherited,
+which may result in multiple calls to delayedInit methods as the
+different levels of the hierarchy are initialized.
+{quote}

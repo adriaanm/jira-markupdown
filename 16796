@@ -1,0 +1,171 @@
+It's an edge case of an experimental feature, but perhaps it shines a light on something interesting.
+
+{code}
+scala> def macro tree(a: Any) = {
+     |     val util = Util(_context); import util._
+     |     reify(a)
+     |   }
+tree: (a: Any)Any
+
+scala> tree(())
+res2: reflect.mirror.Literal = ()
+
+
+scala> tree(tree(()))
+res3: reflect.mirror.Block = 
+{
+  val $mr: reflect.mirror.type = scala.reflect.`package`.mirror;
+  $mr.Literal.apply($mr.Constant.apply(()))
+}
+
+scala> tree(tree(tree(())))
+error: symbol value $mr does not exist in <init>
+uncaught exception during compilation: scala.reflect.internal.FatalError
+scala.reflect.internal.FatalError: 
+     while compiling:  <console>
+       current phase:  icode
+     library version:  version 2.10.0-M2-0039-gef2361190c-2012-02-24
+    compiler version:  version 2.10.0-M1-0380-ga6a9684f5b-2012-02-21
+  reconstructed args:  -Xmacros -bootclasspath /System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Classes/jsfd.jar:/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Classes/classes.jar:/System/Library/Frameworks/JavaVM.framework/Frameworks/JavaRuntimeSupport.framework/Resources/Java/JavaRuntimeSupport.jar:/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Classes/ui.jar:/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Classes/laf.jar:/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Classes/sunrsasign.jar:/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Classes/jsse.jar:/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Classes/jce.jar:/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Classes/charsets.jar:/Users/jason/code/macrocosm/project/.boot/scala-2.10.0-SNAPSHOT/lib/scala-library.jar -classpath /Users/jason/code/macrocosm/target/scala-2.10/classes:/Users/jason/code/macrocosm/project/.boot/scala-2.10.0-SNAPSHOT/lib/scala-compiler.jar:/Users/jason/code/macrocosm/project/.boot/scala-2.10.0-SNAPSHOT/lib/scala-compiler.jar:/Users/jason/code/macrocosm/project/.boot/scala-2.10.0-SNAPSHOT/lib/jansi.jar:/Users/jason/code/macrocosm/project/.boot/scala-2.10.0-SNAPSHOT/lib/jline.jar -Yoverride-objects -Xexperimental -Yvirtpatmat -unchecked -Yinfer-argument-types -Yrepl-sync
+
+symbol value $mr does not exist in $line19.$read$$iw$$iw$$iw$$iw$$iw$$iw$$iw$$iw$$iw$$iw$$iw$$iw$$iw$$iw$$iw$$iw$$iw$$iw$$iw$$iw.<init>
+        at scala.reflect.internal.SymbolTable.abort(SymbolTable.scala:37)
+        at scala.tools.nsc.Global.abort(Global.scala:189)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$backend$icode$GenICode$ICodePhase$$genLoad(GenICode.scala:1002)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$genLoadArguments$1.apply(GenICode.scala:1205)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$genLoadArguments$1.apply(GenICode.scala:1203)
+        at scala.collection.LinearSeqOptimized$class.foldLeft(LinearSeqOptimized.scala:111)
+        at scala.collection.immutable.List.foldLeft(List.scala:77)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.genLoadArguments(GenICode.scala:1203)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$backend$icode$GenICode$ICodePhase$$genLoad(GenICode.scala:902)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$genLoadArguments$1.apply(GenICode.scala:1205)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$genLoadArguments$1.apply(GenICode.scala:1203)
+        at scala.collection.LinearSeqOptimized$class.foldLeft(LinearSeqOptimized.scala:111)
+        at scala.collection.immutable.List.foldLeft(List.scala:77)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.genLoadArguments(GenICode.scala:1203)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$backend$icode$GenICode$ICodePhase$$genLoad(GenICode.scala:902)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$genLoadArguments$1.apply(GenICode.scala:1205)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$genLoadArguments$1.apply(GenICode.scala:1203)
+        at scala.collection.LinearSeqOptimized$class.foldLeft(LinearSeqOptimized.scala:111)
+        at scala.collection.immutable.List.foldLeft(List.scala:77)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.genLoadArguments(GenICode.scala:1203)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$backend$icode$GenICode$ICodePhase$$genLoad(GenICode.scala:902)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$genLoadArguments$1.apply(GenICode.scala:1205)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$genLoadArguments$1.apply(GenICode.scala:1203)
+        at scala.collection.LinearSeqOptimized$class.foldLeft(LinearSeqOptimized.scala:111)
+        at scala.collection.immutable.List.foldLeft(List.scala:77)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.genLoadArguments(GenICode.scala:1203)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$backend$icode$GenICode$ICodePhase$$genLoad(GenICode.scala:902)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$backend$icode$GenICode$ICodePhase$$genLoad(GenICode.scala:1055)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.genLoadQualifier(GenICode.scala:1155)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$backend$icode$GenICode$ICodePhase$$genLoad(GenICode.scala:721)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$genLoadArguments$1.apply(GenICode.scala:1205)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$genLoadArguments$1.apply(GenICode.scala:1203)
+        at scala.collection.LinearSeqOptimized$class.foldLeft(LinearSeqOptimized.scala:111)
+        at scala.collection.immutable.List.foldLeft(List.scala:77)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.genLoadArguments(GenICode.scala:1203)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$backend$icode$GenICode$ICodePhase$$genLoad(GenICode.scala:902)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$genLoadArguments$1.apply(GenICode.scala:1205)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$genLoadArguments$1.apply(GenICode.scala:1203)
+        at scala.collection.LinearSeqOptimized$class.foldLeft(LinearSeqOptimized.scala:111)
+        at scala.collection.immutable.List.foldLeft(List.scala:77)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.genLoadArguments(GenICode.scala:1203)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$backend$icode$GenICode$ICodePhase$$genLoad(GenICode.scala:902)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$genLoadArguments$1.apply(GenICode.scala:1205)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$genLoadArguments$1.apply(GenICode.scala:1203)
+        at scala.collection.LinearSeqOptimized$class.foldLeft(LinearSeqOptimized.scala:111)
+        at scala.collection.immutable.List.foldLeft(List.scala:77)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.genLoadArguments(GenICode.scala:1203)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$backend$icode$GenICode$ICodePhase$$genLoad(GenICode.scala:813)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$genLoadArguments$1.apply(GenICode.scala:1205)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$genLoadArguments$1.apply(GenICode.scala:1203)
+        at scala.collection.LinearSeqOptimized$class.foldLeft(LinearSeqOptimized.scala:111)
+        at scala.collection.immutable.List.foldLeft(List.scala:77)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.genLoadArguments(GenICode.scala:1203)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$backend$icode$GenICode$ICodePhase$$genLoad(GenICode.scala:813)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$backend$icode$GenICode$ICodePhase$$genLoad(GenICode.scala:1055)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.genLoadQualifier(GenICode.scala:1155)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$backend$icode$GenICode$ICodePhase$$genLoad(GenICode.scala:721)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$genLoadArguments$1.apply(GenICode.scala:1205)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$genLoadArguments$1.apply(GenICode.scala:1203)
+        at scala.collection.LinearSeqOptimized$class.foldLeft(LinearSeqOptimized.scala:111)
+        at scala.collection.immutable.List.foldLeft(List.scala:77)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.genLoadArguments(GenICode.scala:1203)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$backend$icode$GenICode$ICodePhase$$genLoad(GenICode.scala:902)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$genLoadArguments$1.apply(GenICode.scala:1205)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$genLoadArguments$1.apply(GenICode.scala:1203)
+        at scala.collection.LinearSeqOptimized$class.foldLeft(LinearSeqOptimized.scala:111)
+        at scala.collection.immutable.List.foldLeft(List.scala:77)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.genLoadArguments(GenICode.scala:1203)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$backend$icode$GenICode$ICodePhase$$genLoad(GenICode.scala:902)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$genLoadArguments$1.apply(GenICode.scala:1205)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$genLoadArguments$1.apply(GenICode.scala:1203)
+        at scala.collection.LinearSeqOptimized$class.foldLeft(LinearSeqOptimized.scala:111)
+        at scala.collection.immutable.List.foldLeft(List.scala:77)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.genLoadArguments(GenICode.scala:1203)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$backend$icode$GenICode$ICodePhase$$genLoad(GenICode.scala:813)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$genLoadArguments$1.apply(GenICode.scala:1205)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$genLoadArguments$1.apply(GenICode.scala:1203)
+        at scala.collection.LinearSeqOptimized$class.foldLeft(LinearSeqOptimized.scala:111)
+        at scala.collection.immutable.List.foldLeft(List.scala:77)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.genLoadArguments(GenICode.scala:1203)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$backend$icode$GenICode$ICodePhase$$genLoad(GenICode.scala:813)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$backend$icode$GenICode$ICodePhase$$genLoad(GenICode.scala:1028)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$backend$icode$GenICode$ICodePhase$$genStat(GenICode.scala:167)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$genStat$1.apply(GenICode.scala:147)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$genStat$1.apply(GenICode.scala:147)
+        at scala.collection.LinearSeqOptimized$class.foldLeft(LinearSeqOptimized.scala:111)
+        at scala.collection.immutable.List.foldLeft(List.scala:77)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$backend$icode$GenICode$ICodePhase$$genLoad(GenICode.scala:1027)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:115)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$gen$1.apply(GenICode.scala:71)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$gen$1.apply(GenICode.scala:71)
+        at scala.collection.LinearSeqOptimized$class.foreach(LinearSeqOptimized.scala:59)
+        at scala.collection.immutable.List.foreach(List.scala:77)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:71)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:140)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:90)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$gen$1.apply(GenICode.scala:71)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$gen$1.apply(GenICode.scala:71)
+        at scala.collection.LinearSeqOptimized$class.foreach(LinearSeqOptimized.scala:59)
+        at scala.collection.immutable.List.foreach(List.scala:77)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:71)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:81)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:67)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.apply(GenICode.scala:63)
+        at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:408)
+        at scala.tools.nsc.Global$GlobalPhase$$anonfun$run$1.apply(Global.scala:374)
+        at scala.tools.nsc.Global$GlobalPhase$$anonfun$run$1.apply(Global.scala:368)
+        at scala.collection.Iterator$class.foreach(Iterator.scala:687)
+        at scala.collection.AbstractIterator.foreach(Iterator.scala:1112)
+        at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:368)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.run(GenICode.scala:56)
+        at scala.tools.nsc.Global$Run.compileUnitsInternal(Global.scala:1200)
+        at scala.tools.nsc.Global$Run.compileUnits(Global.scala:1173)
+        at scala.tools.nsc.Global$Run.compileSources(Global.scala:1167)
+{code}
+
+Sometimes it pops up at level two:
+
+{code}
+scala> tree(tree("".isEmpty))
+res2: reflect.mirror.Block = 
+{
+  val $mr: reflect.mirror.type = scala.reflect.`package`.mirror;
+  $mr.Apply.apply($mr.Select.apply($mr.Literal.apply($mr.Constant.apply("")), $mr.newTermName("isEmpty")), immutable.this.Nil)
+}
+
+scala> tree(tree(Nil.reverse))
+res3: reflect.mirror.Block = 
+{
+  val $mr: reflect.mirror.type = scala.reflect.`package`.mirror;
+  $mr.Select.apply($mr.Select.apply($mr.This($mr.staticModule("scala.collection.immutable").moduleClass), $mr.newTermName("Nil")), $mr.newTermName("reverse"))
+}
+
+scala> tree(tree(Array(0)))
+error: symbol value $mr does not exist in <init>
+...
+
+scala> tree(Array(0))
+res5: reflect.mirror.Apply = scala.Array.apply(0)
+{code}

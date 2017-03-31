@@ -1,0 +1,38 @@
+{code}
+class C {
+  def test(): Unit = {
+    try {
+      val r: Any = new Object
+      r match {
+        case any =>
+          println("")
+          return
+      }
+    }
+    finally {
+      println("")
+    }
+  }
+}
+
+
+{code}
+
+{noformat}
+scalac-hash v2.11.4 sandbox/test.scala
+error: java.lang.NullPointerException
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase$Context.exitScope(GenICode.scala:1916)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$backend$icode$GenICode$ICodePhase$$genLoad(GenICode.scala:917)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$genLoadTry$1.apply(GenICode.scala:419)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$genLoadTry$1.apply(GenICode.scala:417)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase$Context.Try(GenICode.scala:2088)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$backend$icode$GenICode$ICodePhase$$genLoad(GenICode.scala:590)
+{noformat}
+
+The new, experiemental backend, GenBCode, is not susceptible to this bug.
+
+{noformat}
+scalac-hash v2.11.4 -Ybackend:GenBCode sandbox/test.scala
+{noformat}
+
+A workraround is to refactor the code to avoid an early return.

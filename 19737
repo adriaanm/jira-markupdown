@@ -1,0 +1,27 @@
+Input HelloWorld.scala:
+
+{code}
+import scala.annotation.StaticAnnotation
+
+case class Important(whys: String*) extends StaticAnnotation
+
+@Important("foo", "bar")
+class HelloWorld {
+  def say() { println("Hi") }
+}
+{code}
+
+scalac HelloWorld.scala
+scalap HelloWorld
+
+Output:
+
+{code}
+@Important("foo")
+class HelloWorld extends scala.AnyRef {
+  def this() = { /* compiled code */ }
+  def say(): scala.Unit = { /* compiled code */ }
+}
+{code}
+
+The annotation is missing "bar".

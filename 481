@@ -1,0 +1,47 @@
+I see this between RC3 and final:
+
+{code}
+$$ /opt/scala-2.7.0-RC3/bin/scala
+Welcome to Scala version 2.7.0-RC3 (Java HotSpot(TM) Server VM, Java 1.5.0_13).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> scala.xml.XML.loadString("<foo bar='&amp;' />");
+res0: scala.xml.Elem = <foo bar="&amp;"></foo>
+
+scala> exit
+
+
+$$ /opt/scala-2.7.0-final/bin/scala
+Welcome to Scala version 2.7.0-final (Java HotSpot(TM) Server VM, Java 1.5.0_13).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> scala.xml.XML.loadString("<foo bar='&amp;' />");
+java.util.NoSuchElementException
+        at scala.RandomAccessSeq$$$$anon$$12.next(RandomAccessSeq.scala:144)
+        at scala.xml.Utility$$.parseAttributeValue(Utility.scala:408)
+        at scala.xml.UnprefixedAttribute.<init>(UnprefixedAttribute.scala:24)
+        at scala.xml.parsing.FactoryAdapter$$$$anonfun$$startElement$$1.apply(FactoryAdapter.scala:155)
+        at scala.xml.parsing.FactoryAdapter$$$$anonfun$$startElement$$1....
+
+{code}
+
+Same result with Java 6.  I was originally getting this problem with 2.7.0 from the maven repository.
+
+Just to avoid any doubts, here's your expression again:
+
+{code}
+$$ /opt/scala-2.7.0-final/bin/scala
+Welcome to Scala version 2.7.0-final (Java HotSpot(TM) Server VM, Java 1.5.0_13).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> scala.xml.XML.load(new java.io.StringReader("<test2 s=\"a&amp;\"></test2>"))
+java.util.NoSuchElementException
+        at scala.RandomAccessSeq$$$$anon$$12.next(RandomAccessSeq.scala:144)
+        at scala.xml.Utility$$.parseAttributeValue(Utility.scala:408)
+        at scala.xml.UnprefixedAttribute.<init>(UnprefixedAttribute.scala:24)
+        at scala.xml.parsing.FactoryAdapter$$$$anonfun$$startElement$$1.apply(FactoryAdapter.scala:155)
+        at scala.xml.parsing.FactoryAdapter$$$$anonfun$$startElement$$1....
+{code}

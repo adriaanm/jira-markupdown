@@ -1,0 +1,23 @@
+Looking at the source here:
+
+https://github.com/scala/scala/blob/v2.10.4/src/library/scala/xml/Utility.scala#L227
+
+I can see that the problem is that minimizeTags is not being passed in recursive calls to sequenceToXML.  It should be a 1-line fix...
+{code}
+*** 224,230 ****
+          } else {
+            // children, so use long form: <xyz ...>...</xyz>
+            sb.append('>')
+!           sequenceToXML(el.child, el.scope, sb, stripComments)
+            sb.append("</")
+            el.nameToString(sb)
+            sb.append('>')
+--- 224,230 ----
+          } else {
+            // children, so use long form: <xyz ...>...</xyz>
+            sb.append('>')
+!           sequenceToXML(el.child, el.scope, sb, stripComments, minimizeTags = minimizeTags)
+            sb.append("</")
+            el.nameToString(sb)
+            sb.append('>')
+{code}

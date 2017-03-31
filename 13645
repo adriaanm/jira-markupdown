@@ -1,0 +1,32 @@
+*Problem*:
+When making a clean distribution build of scala-library on a windows system, the build target will fail at line 39.  The error is:
+  BUILD FAILED
+  C:\eclipse3.4\workspaceScala\scala-library\build.xml:39:   C:\eclipse3.4\workspaceScala\scala\dists\latest\src not found.
+
+The build script at this point is trying to copy a series of jar files from the scala project to the scala-library project.  Here is the relevant snippet from scala-library\build.xml:
+
+{code}
+		<copy todir="lib">
+      <fileset dir="${scala.origin}/lib">
+        <include name="scala-library.jar"/>
+        <include name="scala-dbc.jar"/>
+        <include name="scala-swing.jar"/>
+      </fileset>
+      <fileset dir="${scala.origin}/src">
+        <include name="scala-library-src.jar"/>
+        <include name="scala-dbc-src.jar"/>
+        <include name="scala-swing-src.jar"/>
+      </fileset>
+{code}
+
+The root problem is actually in the scala/build.xml.  The dist.latest.win task copies the distribution you have just built to a /scala/dists/latest directory.  Unfortunately dist.latest.win is called before the dist.src is run.  
+
+On Unix systems this is no problem since a symbolic link is used to point to the latest build directory.  On windows systems the latest build is copied to a new "latest" directory before all the components have been created.  
+
+*Fix*:
+Change the dist task call sequence.
+
+(Old)   dist.done<--dist.src<--dist.man<--dist.doc<--dist.latest<--(dist.latest.unix,dist.latest.win)<--dist.base<--dist.start
+
+(New) dist.done<--dist.latest<--(dist.latest.unix,dist.latest.win)<--dist.src<--dist.man<--dist.doc<--dist.base<--dist.start
+

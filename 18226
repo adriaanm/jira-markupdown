@@ -1,0 +1,34 @@
+see code 
+{code}
+  final override def sum[B >: Int](implicit num: Numeric[B]): Int = {
+    if (isEmpty) 0
+    else if (numRangeElements == 1) head
+    else (numRangeElements.toLong * (head + last) / 2).toInt
+  }
+{code}
+
+test that show that such implementation is wrong
+{code}
+scala>  object mynum extends Numeric[Int] { 
+     |   // Members declared in scala.math.Numeric
+     |   def fromInt(x: Int): Int = ???
+     |   def minus(x: Int,y: Int): Int = ???
+     |   def negate(x: Int): Int = ???
+     |   def plus(x: Int,y: Int): Int = ???
+     |   def times(x: Int,y: Int): Int = ???
+     |   def toDouble(x: Int): Double = ???
+     |   def toFloat(x: Int): Float = ???
+     |   def toInt(x: Int): Int = ???
+     |   def toLong(x: Int): Long = ???
+     |   
+     |   // Members declared in scala.math.Ordering
+     |   def compare(x: Int,y: Int): Int = ???
+     | }
+defined module mynum
+
+scala> (1 to 100).sum(mynum)
+res0: Int = 5050
+
+{code}
+
+This test should throw scala.NotImplementedError

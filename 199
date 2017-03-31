@@ -1,0 +1,26 @@
+@transient vars with traits are still not transfered into the resulting class as transient fields.
+
+given the following scenario:
+
+---8<---
+trait Log {
+  @transient var logger: String = _
+
+  def log = {
+    if( logger==null )
+      logger = "I'm new here"
+    logger
+  }
+}
+
+object ScalaTest extends Log {
+
+  def main(args : Array[String]) : Unit = {
+    System.out.println( log )
+  }
+}
+---8<---
+
+object ScalaTest should have a transient field 'logger' when the trait's applied. currently, it's generated just as a private field.
+
+regards, --- jan. 

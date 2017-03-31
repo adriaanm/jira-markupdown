@@ -1,0 +1,36 @@
+After reading the specs, I'm convinced I should have:
+{code}
+TPlus { type T <: Nothing } <:< TPlus { type T <: TPlus {type H <: A} } 
+{code}
+simply because 
+{code}
+Nothing <:< TPlus {type H <: A}
+{code}
+but the former does not hold while the latter does, as you can see below.
+
+{code}
+package shapelessexperiments
+
+sealed trait Coproduct
+
+sealed trait TPlus extends Coproduct {
+  type H
+  type T <: Coproduct
+}
+
+object Bug {
+  sealed trait Term
+  case class A() extends Term
+  case class B() extends Term
+  case class C(x: Int) extends Term
+
+  implicitly[TPlus { type T <: Nothing } <:< TPlus { type T <: TPlus } ]
+  implicitly[TPlus { type T <: Nothing } <:< TPlus { type T <: TPlus {type H <: A} } ] //FAILS!
+  implicitly[Nothing <:< TPlus {type H <: A} ] //But it should only recurse on this, which succeeds!
+  implicitly[TPlus { type T <: TPlus {type H <: Nothing} } <:< TPlus { type T <: TPlus {type H <: A} } ]
+
+  implicitly[TPlus { type H <: A; type T <: TPlus { type H <: Nothing } } <:< TPlus { type H <: A; type T <: TPlus { type H <: B } }]
+}
+{code}
+
+At the very least, dotty agrees with me.

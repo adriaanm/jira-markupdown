@@ -1,0 +1,37 @@
+on windows scala interpreter crashes after:
+
+ * type one char (or more) on an empty command line
+ * go left one char with cursor keys
+ * press escape
+
+{code}
+scala>Exception in thread "Thread-1" java.lang.StringIndexOutOfBoundsException:
+String index out of range: -1
+        at ava.lang.AbstractStringBuilder.deleteCharAt(AbstractStringBuilder.java:770)
+        at java.lang.StringBuffer.deleteCharAt(StringBuffer.java:382)
+        at jline.ConsoleReader.killLine(ConsoleReader.java:742)
+        at jline.ConsoleReader.readLine(ConsoleReader.java:569)
+        at jline.ConsoleReader.readLine(ConsoleReader.java:416)
+        at scala.tools.nsc.interpreter.JLineReader.readLine(JLineReader.scala:24)
+        at scala.tools.nsc.InterpreterLoop$$$$anonfun$$1.apply(InterpreterLoop.scala:135)
+        at scala.tools.nsc.InterpreterLoop$$$$anonfun$$1.apply(InterpreterLoop.scala:135)
+        at scala.concurrent.SyncVar.liftedTree1$$1(SyncVar.scala:46)
+        at scala.concurrent.SyncVar.setWithCatch(SyncVar.scala:45)
+        at scala.concurrent.ops$$$$anonfun$$future$$1.apply(ops.scala:38)
+        at scala.concurrent.ops$$$$anonfun$$future$$1.apply(ops.scala:38)
+        at scala.concurrent.ops$$$$anon$$1.run(ops.scala:28)
+Exception in thread "main" java.lang.StringIndexOutOfBoundsException: String index out of range: -1
+        at java.lang.AbstractStringBuilder.deleteCharAt(AbstractStringBuilder.java:770)
+        at java.lang.StringBuffer.deleteCharAt(StringBuffer.java:382)
+        at jline.ConsoleReader.killLine(ConsoleReader.java:742)
+        at jline.ConsoleReader.readLine(ConsoleReader.java:569)
+        at jline.ConsoleReader.readLine(ConsoleReader.java:416)
+        at scala.tools.nsc.interpreter.JLineReader.readLine(JLineReader.scala:24)
+        at scala.tools.nsc.InterpreterLoop$$$$anonfun$$1.apply(InterpreterLoop.scala:135)
+        at scala.tools.nsc.InterpreterLoop$$$$anonfun$$1.apply(InterpreterLoop.scala:135)
+        at scala.concurrent.SyncVar.liftedTree1$$1(SyncVar.scala:46)
+        at scala.concurrent.SyncVar.setWithCatch(SyncVar.scala:45)
+        at scala.concurrent.ops$$$$anonfun$$future$$1.apply(ops.scala:38)
+        at scala.concurrent.ops$$$$anonfun$$future$$1.apply(ops.scala:38)
+        at scala.concurrent.ops$$$$anon$$1.run(ops.scala:28)
+{code}

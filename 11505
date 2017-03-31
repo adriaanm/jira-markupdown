@@ -1,0 +1,68 @@
+Very little penalty for worst case and big wins for better cases if you shortcut right inside the detection of LinearSeq.  Here is code that can be used with Thyme to test.
+
+{code}
+object BenchShortcut {
+  def run() {
+    val th = new ichi.bench.Thyme
+
+    @noinline def v_ = (0 to 9).map(x => x.toString).toVector
+    @noinline def v1 = Vector("1")
+    @noinline def va = Vector("a")
+    lazy val v1z = v1
+    lazy val vaz = va
+    @noinline def v_1 = v_ ++ v1
+    @noinline def v_a = v_ ++ va
+    lazy val v_1z = v_1
+    lazy val v_az = v_a
+
+    @noinline def l_ = (0 to 9).map(x => x.toString).toList
+    @noinline def l1 = "1" :: Nil
+    @noinline def la = "a" :: Nil
+    lazy val l1z = l1
+    lazy val laz = la
+    @noinline def l_1 = l_ ::: l1
+    @noinline def l_a = l_ ::: la
+    lazy val l_1z = l_1
+    lazy val l_az = l_a
+
+    @noinline def s_ = (0 to 9).map(x => x.toString).toStream
+    @noinline def s1 = Stream("1")
+    @noinline def sa = Stream("a")
+    lazy val s1z = s1
+    lazy val saz = sa
+    @noinline def s_1 = s_ #::: s1
+    @noinline def s_a = s_ #::: sa
+    lazy val s_1z = s_1
+    lazy val s_az = s_a
+
+    val vva, vvb = Array.tabulate(1024)(i => if ((i&1) == 0) v1 else va)
+    val vvc, vvd = Array.tabulate(1024)(i => if ((i&1) == 0) v1z else vaz)
+
+    val lla, llb = Array.tabulate(1024)(i => if ((i&1) == 0) l1 else la)
+    val llc, lld = Array.tabulate(1024)(i => if ((i&1) == 0) l1z else laz)
+
+    val ssa, ssb = Array.tabulate(1024)(i => if ((i&1) == 0) s1 else sa)
+    val ssc, ssd = Array.tabulate(1024)(i => if ((i&1) == 0) s1z else saz)
+
+    th.pbenchOff(){ var i,n = 0; while (i < 1024) { if (vva(i) == vvb(i)) n += 1; i += 1 }; n }{ var i,n = 0; while (i < 1024) { if (vvc(i) == vvd(i)) n += 1; i += 1 }; n }
+    th.pbenchOff(){ var i,n = 0; while (i < 1024) { if (lla(i) == llb(i)) n += 1; i += 1 }; n }{ var i,n = 0; while (i < 1024) { if (llc(i) == lld(i)) n += 1; i += 1 }; n }
+    th.pbenchOff(){ var i,n = 0; while (i < 1024) { if (ssa(i) == ssb(i)) n += 1; i += 1 }; n }{ var i,n = 0; while (i < 1024) { if (ssc(i) == ssd(i)) n += 1; i += 1 }; n }
+
+    val vv_a, vv_b = Array.tabulate(1024)(i => if ((i&1) == 0) v_1 else v_a)
+    val vv_c, vv_d = Array.tabulate(1024)(i => if ((i&1) == 0) v_1z else v_az)
+
+    val ll_a, ll_b = Array.tabulate(1024)(i => if ((i&1) == 0) l_1 else l_a)
+    val ll_c, ll_d = Array.tabulate(1024)(i => if ((i&1) == 0) l_1z else l_az)
+
+    val ss_a, ss_b = Array.tabulate(1024)(i => if ((i&1) == 0) s_1 else s_a)
+    val ss_c, ss_d = Array.tabulate(1024)(i => if ((i&1) == 0) s_1z else s_az)
+
+    th.pbenchOff(){ var i,n = 0; while (i < 1024) { if (vv_a(i) == vv_b(i)) n += 1; i += 1 }; n }{ var i,n = 0; while (i < 1024) { if (vv_c(i) == vv_d(i)) n += 1; i += 1 }; n }
+    th.pbenchOff(){ var i,n = 0; while (i < 1024) { if (ll_a(i) == ll_b(i)) n += 1; i += 1 }; n }{ var i,n = 0; while (i < 1024) { if (ll_c(i) == ll_d(i)) n += 1; i += 1 }; n }
+    th.pbenchOff(){ var i,n = 0; while (i < 1024) { if (ss_a(i) == ss_b(i)) n += 1; i += 1 }; n }{ var i,n = 0; while (i < 1024) { if (ss_c(i) == ss_d(i)) n += 1; i += 1 }; n }
+  }
+
+  def main(args: Array[String]) { run; run; run }
+
+}
+{code}

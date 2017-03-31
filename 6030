@@ -1,0 +1,27 @@
+Compiled scala with your patch applied (from the github scala clone master branch). Now attempting my test gives this:
+
+:1:244: '/' expected instead of ''                                                                                                                                                                                                                                                   ^
+:1:244: name expected, but char '' cannot start a name                                                                                                                                                                                                                                                   ^
+Exception in thread "XMLEventReader" scala.xml.parsing.FatalError: expected closing tag of stream:stream
+        at scala.xml.parsing.MarkupParser$class.errorNoEnd(MarkupParser.scala:41)
+        at scala.xml.pull.XMLEventReader$Parser.errorNoEnd(XMLEventReader.scala:56)
+        at scala.xml.parsing.MarkupParserCommon$class.xEndTag(MarkupParserCommon.scala:93)
+        at scala.xml.pull.XMLEventReader$Parser.xEndTag(XMLEventReader.scala:56)
+        at scala.xml.parsing.MarkupParser$class.element1(MarkupParser.scala:555)
+        at scala.xml.pull.XMLEventReader$Parser.element1(XMLEventReader.scala:56)
+        at scala.xml.parsing.MarkupParser$class.content1(MarkupParser.scala:408)
+        at scala.xml.pull.XMLEventReader$Parser.content1(XMLEventReader.scala:56)
+        at scala.xml.parsing.MarkupParser$class.content(MarkupParser.scala:429)
+        at scala.xml.pull.XMLEventReader$Parser.content(XMLEventReader.scala:56)
+        at scala.xml.parsing.MarkupParser$class.document(MarkupParser.scala:234)
+        at scala.xml.pull.XMLEventReader$Parser.document(XMLEventReader.scala:56)
+        at scala.xml.pull.XMLEventReader$Parser$$anonfun$run$1.apply(XMLEventReader.scala:90)
+        at scala.xml.pull.XMLEventReader$Parser$$anonfun$run$1.apply(XMLEventReader.scala:90)
+        at scala.xml.pull.ProducerConsumerIterator$class.interruptibly(XMLEventReader.scala:113)
+        at scala.xml.pull.XMLEventReader.interruptibly(XMLEventReader.scala:26)
+        at scala.xml.pull.XMLEventReader$Parser.run(XMLEventReader.scala:90)
+        at java.lang.Thread.run(Thread.java:679)
+
+It seems it's matching the end of the stream (but not eof) as '' or the empty string.
+
+Alas of course it cannot find a closing tag to <stream:stream> as.. well it is a stream.

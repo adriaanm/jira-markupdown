@@ -1,0 +1,23 @@
+let's have a look at the code that does type check after uncurry (scalac -Xprint:uncurry):
+
+The vararg is considered a scala.collection.Seq[A[_]], Seq is covariant so that a mutable.Seq[B] <: collection.Seq[A[_]]
+
+{code}
+def bar(b: B): Unit = {
+  val array: Array[B] = ...
+  val seq: mutable.Seq[B] = wrapRefArray[B](array);
+  foo(wrapRefArray[A[_]](Array[A[_]]{b, b}));
+  foo(seq)
+};
+
+def foo(s: Seq[A[_]]): Unit = ...
+{code}
+
+
+So, back to the bug: when passing `array` to `foo`, the compiler complains. I guess this is indeed a bug since `val x : Seq[A[_]] = array` compiles (uncurry turns it into `val x: Seq[A[_]] = scala.this.Predef.wrapRefArray[B](array);`)
+
+Workaround:
+
+{code}
+    val array : Array[A[_]] = Array(b, b)
+{code}

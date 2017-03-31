@@ -1,0 +1,56 @@
+Steps:
+
+1. Create prj1/Prj1.scala:
+
+
+{code}
+package prj1
+
+abstract class Step[A,B] {
+  protected var nextStep : Step[B,_] = _
+}
+{code}
+
+
+2. Create prj2/Prj2.scala:
+
+
+{code}
+package prj2
+
+import prj1.Step
+
+class OtherClass {
+  private class Step2 extends Step[Int,Int] 
+}
+{code}
+
+
+
+3. Try to compile this way:
+
+
+{code}
+scalac prj1/Prj1.scala prj2/Prj2.scala
+{code}
+
+
+- all compiles fine. Try this way:
+
+
+{code}
+scalac prj1/Prj1.scala
+scalac -classpath prj1 prj2/Prj2.scala
+{code}
+
+
+You'll get the error: 
+
+
+{code}
+prj2/Prj2.scala:6: error: class Step2 needs to be abstract, since type _$$1 in class Step with bounds >: Nothing <: Any is not defined
+{code}
+
+
+Commenting out 'protected var nextStep : Step[B,_] = _' in Prj1.scala eliminates the problem.
+r14660 is in use.

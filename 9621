@@ -1,0 +1,20 @@
+A different perspective:
+
+{code}
+sealed trait Bar[S] {
+  def system: S
+}
+
+trait Foo { def bar(): Unit }
+
+trait FooBar extends Bar[Foo]
+
+trait Test[S] {
+  val bar: Bar[S]
+
+  def blip(fb0: Bar[S] with FooBar) {
+    val sys = fb0.system
+    sys.bar()
+  }
+}
+{code}

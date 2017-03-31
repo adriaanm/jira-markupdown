@@ -1,0 +1,27 @@
+This code raises a weird exception on my self-built scala 2.7.3-final on Darwin 9.5.0 (OSX 10.5) with Java 1.5.0_16:
+
+ import scala.actors.Actor._
+ 
+ val gatherer = actor {
+   receive {
+     case _ => println("received message")
+   }
+ }
+
+ gatherer ! "foo"
+
+
+% scala-2.7.3.final-sources/build/pack/bin/scala bug.scala
+
+java.lang.NoClassDefFoundError: Main$$$$anon$$1$$$$anonfun$$1$$$$anonfun$$apply$$1
+	at Main$$$$anon$$1$$$$anonfun$$1.apply((virtual file):8)
+	at Main$$$$anon$$1$$$$anonfun$$1.apply((virtual file):8)
+	at scala.actors.Actor$$$$anon$$1.act(Actor.scala:94)
+	at scala.actors.Reaction.run(Reaction.scala:76)
+	at scala.actors.Actor$$$$anonfun$$start$$1.apply(Actor.scala:784)
+	at scala.actors.Actor$$$$anonfun$$start$$1.apply(Actor.scala:782)
+	at scala.actors.FJTaskScheduler2$$$$anon$$1.run(FJTaskScheduler2.scala:165)
+	at scala.actors.FJTask$$Wrap.run(Unknown Source)
+	at scala.actors.FJTaskRunner.scanWhileIdling(Unknown Source)
+	at scala.actors.FJTaskRunner.run(Unknown Source)
+

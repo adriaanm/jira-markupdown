@@ -1,0 +1,11 @@
+I have a library 
+{code}
+object Assert {
+ def usageError(msg: String) = throw new Abort(msg)
+}
+{code}
+The following always produces a dead-code warning when -Ywarn-dead-code is enabled.
+{code}
+lazy val foo = Assert.usageError("not to be used.")
+{code}
+Clearly this is not dead code. 

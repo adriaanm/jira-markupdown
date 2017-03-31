@@ -1,0 +1,18 @@
+This is degenerate, but ought it to be illegal?
+
+In the real world, there are many behaviors that are degenerate but not illegal, or no longer illegal, except in certain states of the Union where they frown on that sort of thing. (For instance, buying beer on Sunday.)
+
+I took a quick look, and the example CaseTest[_] fails in the "copy" method but not in the companion module factory method, which are not exactly the same for some reason. The error is the wildcard in the new expr. (-Xprint:typer shows new pkg.this.CaseTest[_](data) versus new pkg.CaseTest[Any](data).)  So this comes close to passing under the radar.
+
+The spec says that the motivation for the shorthand A[_] is visibility and relevance.
+
+One use case for top-level _, in quick test code, is to stub some UserKlass[This, That, Other] as class UserKlass[_,_,_].
+
+I have to come up with symbols? Couldn't the compiler just make me a symbol?  So I don't have to remember if we prefer A,B,C or T,U,V? This goes to relevance. And it depletes my decision-making budget.
+
+Another use case is where a type param is deprecated because improvements in type inference make it superfluous.
+trait T[@deprecated("I'm free","2.11") _, B <: S[_]]
+Then, hypothetically, one could warn on usage of T[X, Y] but not T[_, Y].
+
+Just thinking aloud.
+

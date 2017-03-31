@@ -1,0 +1,53 @@
+From the API Enumeration:
+
+_"All values in an enumeration share a common, unique type defined as the Value type member of the enumeration (Value  selected on the stable identifier path of the enumeration instance)."_
+
+But there is a type erasure within Enumeration class.
+That can give an unexpected type error. Example:
+
+
+
+{code}
+object X extends Enumeration { val x,y = Value }
+object A extends Enumeration { val a,b = Value }
+{code}
+
+
+
+X.Value and A.Value are different types. So the functions
+
+
+{code}
+  def pp( z:X.Value) {}
+  def pp( z:A.Value) {}
+{code}
+
+
+should be different too, but you get a compile error:
+
+
+{code}
+error: double definition:
+method pp:(z: A.Value)Unit and
+method pp:(z: X.Value)Unit at line 34
+have same type after erasure: (z: Enumeration#Value)Unit
+  def pp( z:A.Value) {}
+{code}
+
+
+BTW I found a curious workaround
+
+
+{code}
+  def pp( z:X.Value) { println("X") }
+  def pp( z:A.Value)(implicit t:Int=0) { println("A") }
+
+  pp(X.x)
+  pp(A.a)
+{code}
+
+
+There is no compile error any more and the output shows
+"X" and "A" as expected.
+
+Frank

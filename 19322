@@ -1,0 +1,208 @@
+Compiling the following code:
+{code}
+object Interpreter {
+  def mkDataProp(i: Int) = i
+  def break(n: Int): Unit =
+    try {
+      n match {
+        case _ =>
+          val newDesc = mkDataProp(n)
+          n match { case _ => return }
+      }
+    } catch { case e: Throwable => }
+    finally { }
+}
+{code}
+crashes the Scala compiler with the following output:
+{code}
+bash-3.2$ ant
+Buildfile: /Users/sukyoungryu/Desktop/bug-report/build.xml
+
+compile:
+   [scalac] Compiling 1 source file to /Users/sukyoungryu/Desktop/bug-report
+   [scalac] error: 
+   [scalac]      while compiling: /Users/sukyoungryu/Desktop/bug-report/Interpreter.scala
+   [scalac]         during phase: icode
+   [scalac]      library version: version 2.10.2
+   [scalac]     compiler version: version 2.10.2
+   [scalac]   reconstructed args: -sourcepath /Users/sukyoungryu/Desktop/bug-report -classpath /Users/sukyoungryu/Desktop/bug-report/scala-reflect-2.10.2.jar:/Users/sukyoungryu/Desktop/bug-report/scala-compiler-2.10.2.jar:/Users/sukyoungryu/Desktop/bug-report/scala-library-2.10.2.jar -d /Users/sukyoungryu/Desktop/bug-report -deprecation -dependencyfile /Users/sukyoungryu/Desktop/bug-report/.scala_dependencies
+   [scalac] 
+   [scalac]   last tree to typer: Ident(x)
+   [scalac]               symbol: value x (flags: <param> <synthetic> <triedcooking>)
+   [scalac]    symbol definition: x: runtime.BoxedUnit
+   [scalac]                  tpe: runtime.BoxedUnit
+   [scalac]        symbol owners: value x
+   [scalac]       context owners: object Interpreter -> package <empty>
+   [scalac] 
+   [scalac] == Enclosing template or block ==
+   [scalac] 
+   [scalac] Template( // val <local Interpreter>: <notype> in object Interpreter, tree.tpe=Interpreter.type
+   [scalac]   "java.lang.Object" // parents
+   [scalac]   ValDef(
+   [scalac]     private
+   [scalac]     "_"
+   [scalac]     <tpt>
+   [scalac]     <empty>
+   [scalac]   )
+   [scalac]   // 3 statements
+   [scalac]   DefDef( // def mkDataProp(i: Int): Int in object Interpreter
+   [scalac]     <method> <triedcooking>
+   [scalac]     "mkDataProp"
+   [scalac]     []
+   [scalac]     // 1 parameter list
+   [scalac]     ValDef( // i: Int
+   [scalac]       <param> <triedcooking>
+   [scalac]       "i"
+   [scalac]       <tpt> // tree.tpe=Int
+   [scalac]       <empty>
+   [scalac]     )
+   [scalac]     <tpt> // tree.tpe=Int
+   [scalac]     "i" // i: Int, tree.tpe=Int
+   [scalac]   )
+   [scalac]   DefDef( // def break(n: Int): Unit in object Interpreter
+   [scalac]     <method>
+   [scalac]     "break"
+   [scalac]     []
+   [scalac]     // 1 parameter list
+   [scalac]     ValDef( // n: Int
+   [scalac]       <param> <triedcooking>
+   [scalac]       "n"
+   [scalac]       <tpt> // tree.tpe=Int
+   [scalac]       <empty>
+   [scalac]     )
+   [scalac]     <tpt> // tree.tpe=Unit
+   [scalac]     Try( // tree.tpe=Unit
+   [scalac]       Block( // tree.tpe=Unit
+   [scalac]         // 2 statements
+   [scalac]         ValDef( // case val x1: Int
+   [scalac]           case <synthetic>
+   [scalac]           "x1"
+   [scalac]           <tpt> // tree.tpe=Int
+   [scalac]           "n" // n: Int, tree.tpe=Int
+   [scalac]         )
+   [scalac]         LabelDef( // case def case4(): Unit, tree.tpe=Unit
+   [scalac]           ()
+   [scalac]           Apply( // case def matchEnd3(x: runtime.BoxedUnit): Unit, tree.tpe=Unit
+   [scalac]             "matchEnd3" // case def matchEnd3(x: runtime.BoxedUnit): Unit, tree.tpe=(x: runtime.BoxedUnit)Unit
+   [scalac]             Block( // tree.tpe=runtime.BoxedUnit
+   [scalac]               ValDef( // val newDesc: Int
+   [scalac]                 0
+   [scalac]                 "newDesc"
+   [scalac]                 <tpt> // tree.tpe=Int
+   [scalac]                 Apply( // def mkDataProp(i: Int): Int in object Interpreter, tree.tpe=Int
+   [scalac]                   Interpreter.this."mkDataProp" // def mkDataProp(i: Int): Int in object Interpreter, tree.tpe=(i: Int)Int
+   [scalac]                   "n" // n: Int, tree.tpe=Int
+   [scalac]                 )
+   [scalac]               )
+   [scalac]               Block( // tree.tpe=runtime.BoxedUnit
+   [scalac]                 // 2 statements
+   [scalac]                 ValDef( // case val x1: Int
+   [scalac]                   case <synthetic>
+   [scalac]                   "x1"
+   [scalac]                   <tpt> // tree.tpe=Int
+   [scalac]                   "n" // n: Int, tree.tpe=Int
+   [scalac]                 )
+   [scalac]                 LabelDef( // case def case4(): Unit, tree.tpe=Unit
+   [scalac]                   ()
+   [scalac]                   Apply( // case def matchEnd3(x: runtime.BoxedUnit): Unit, tree.tpe=Unit
+   [scalac]                     "matchEnd3" // case def matchEnd3(x: runtime.BoxedUnit): Unit, tree.tpe=(x: runtime.BoxedUnit)Unit
+   [scalac]                     Return( // def break(n: Int): Unit in object Interpreter, tree.tpe=Nothing
+   [scalac]                       ()
+   [scalac]                     )
+   [scalac]                   )
+   [scalac]                 )
+   [scalac]                 LabelDef( // case def matchEnd3(x: runtime.BoxedUnit): Unit, tree.tpe=runtime.BoxedUnit
+   [scalac]                   "x" // x: runtime.BoxedUnit, tree.tpe=runtime.BoxedUnit
+   [scalac]                   "scala"."runtime"."BoxedUnit"."UNIT" // final val UNIT: runtime.BoxedUnit in object BoxedUnit, tree.tpe=runtime.BoxedUnit
+   [scalac]                 )
+   [scalac]               )
+   [scalac]             )
+   [scalac]           )
+   [scalac]         )
+   [scalac]         LabelDef( // case def matchEnd3(x: runtime.BoxedUnit): Unit, tree.tpe=Unit
+   [scalac]           "x" // x: runtime.BoxedUnit, tree.tpe=runtime.BoxedUnit
+   [scalac]           ()
+   [scalac]         )
+   [scalac]       )
+   [scalac]       CaseDef( // tree.tpe=Unit
+   [scalac]         Bind( // val e: Throwable, tree.tpe=Throwable
+   [scalac]           "e"
+   [scalac]           Typed( // tree.tpe=Throwable
+   [scalac]             "_" // tree.tpe=Throwable
+   [scalac]             <tpt> // tree.tpe=Throwable
+   [scalac]           )
+   [scalac]         )
+   [scalac]         ()
+   [scalac]       )
+   [scalac]       ()
+   [scalac]     )
+   [scalac]   )
+   [scalac]   DefDef( // def <init>(): Interpreter.type in object Interpreter
+   [scalac]     <method>
+   [scalac]     "<init>"
+   [scalac]     []
+   [scalac]     List(Nil)
+   [scalac]     <tpt> // tree.tpe=Interpreter.type
+   [scalac]     Block( // tree.tpe=Unit
+   [scalac]       Apply( // def <init>(): Object in class Object, tree.tpe=Object
+   [scalac]         Interpreter.super."<init>" // def <init>(): Object in class Object, tree.tpe=()Object
+   [scalac]         Nil
+   [scalac]       )
+   [scalac]       ()
+   [scalac]     )
+   [scalac]   )
+   [scalac] )
+   [scalac] 
+   [scalac] == Expanded type of tree ==
+   [scalac] 
+   [scalac] TypeRef(TypeSymbol(final class BoxedUnit extends Serializable))
+   [scalac] 
+   [scalac] uncaught exception during compilation: java.lang.NullPointerException
+   [scalac] java.lang.NullPointerException
+   [scalac] 	at scala.tools.nsc.backend.icode.GenICode$ICodePhase$Context.newBlock(GenICode.scala:1994)
+   [scalac] 	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.genLoadLabelDef$1(GenICode.scala:616)
+   [scalac] 	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$backend$icode$GenICode$ICodePhase$$genLoad(GenICode.scala:636)
+   [scalac] 	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$backend$icode$GenICode$ICodePhase$$genLoad(GenICode.scala:1069)
+   [scalac] 	at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$genLoadTry$1.apply(GenICode.scala:426)
+   [scalac] 	at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$genLoadTry$1.apply(GenICode.scala:424)
+   [scalac] 	at scala.tools.nsc.backend.icode.GenICode$ICodePhase$Context.Try(GenICode.scala:2150)
+   [scalac] 	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$backend$icode$GenICode$ICodePhase$$genLoad(GenICode.scala:718)
+   [scalac] 	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:124)
+   [scalac] 	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:72)
+   [scalac] 	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:149)
+   [scalac] 	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:99)
+   [scalac] 	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:72)
+   [scalac] 	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:90)
+   [scalac] 	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:68)
+   [scalac] 	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.apply(GenICode.scala:64)
+   [scalac] 	at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:464)
+   [scalac] 	at scala.tools.nsc.Global$GlobalPhase$$anonfun$run$1.apply(Global.scala:431)
+   [scalac] 	at scala.tools.nsc.Global$GlobalPhase$$anonfun$run$1.apply(Global.scala:431)
+   [scalac] 	at scala.collection.Iterator$class.foreach(Iterator.scala:727)
+   [scalac] 	at scala.collection.AbstractIterator.foreach(Iterator.scala:1157)
+   [scalac] 	at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:431)
+   [scalac] 	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.run(GenICode.scala:57)
+   [scalac] 	at scala.tools.nsc.Global$Run.compileUnitsInternal(Global.scala:1583)
+   [scalac] 	at scala.tools.nsc.Global$Run.compileUnits(Global.scala:1557)
+   [scalac] 	at scala.tools.nsc.Global$Run.compileSources(Global.scala:1553)
+   [scalac] 	at scala.tools.nsc.Global$Run.compile(Global.scala:1662)
+   [scalac] 	at scala.tools.ant.Scalac.executeInternal(Scalac.scala:699)
+   [scalac] 	at scala.tools.ant.Scalac.execute(Scalac.scala:647)
+   [scalac] 	at org.apache.tools.ant.UnknownElement.execute(UnknownElement.java:291)
+   [scalac] 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+   [scalac] 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+   [scalac] 	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+   [scalac] 	at java.lang.reflect.Method.invoke(Method.java:606)
+   [scalac] 	at org.apache.tools.ant.dispatch.DispatchUtils.execute(DispatchUtils.java:106)
+   [scalac] 	at org.apache.tools.ant.Task.perform(Task.java:348)
+   [scalac] 	at org.apache.tools.ant.Target.execute(Target.java:390)
+   [scalac] 	at org.apache.tools.ant.Target.performTasks(Target.java:411)
+   [scalac] 	at org.apache.tools.ant.Project.executeSortedTargets(Project.java:1399)
+   [scalac] 	at org.apache.tools.ant.Project.executeTarget(Project.java:1368)
+   [scalac] 	at org.apache.tools.ant.helper.DefaultExecutor.executeTargets(DefaultExecutor.java:41)
+   [scalac] 	at org.apache.tools.ant.Project.executeTargets(Project.java:1251)
+   [scalac] 	at org.apache.tools.ant.Main.runBuild(Main.java:809)
+   [scalac] 	at org.apache.tools.ant.Main.startAnt(Main.java:217)
+   [scalac] 	at org.apache.tools.ant.launch.Launcher.run(Launcher.java:280)
+   [scalac] 	at org.apache.tools.ant.launch.Launcher.main(Launcher.java:109)
+{code}

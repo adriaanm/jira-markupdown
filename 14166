@@ -1,0 +1,34 @@
+A combination of super access and parametric class will lead to malformed Scala signature/nonexisting symbol.
+
+Recipe for the explosion:
+
+{code}
+[cunei@lampmac7 flaw]$$ cat D0.scala
+ 
+package p
+
+class X[T]
+
+trait A {
+  def m(s:X[_]) {}
+}
+
+trait B extends A {
+  def f { super.m(null) }
+}
+
+[cunei@lampmac7 flaw]$$ cat D1.scala 
+
+package p
+class C extends B
+
+[cunei@lampmac7 flaw]$$ ~/trunk/build/quick/bin/scalac D0.scala
+[cunei@lampmac7 flaw]$$ ~/trunk/build/quick/bin/scalac D1.scala
+Exception in thread "main" java.lang.RuntimeException: malformed Scala signature of B at 403; reference type _$$1 of value m refers to nonexisting symbol.
+        at scala.tools.nsc.symtab.classfile.UnPickler$$UnPickle.errorBadSignature(UnPickler.scala:763)
+        at scala.tools.nsc.symtab.classfile.UnPickler$$UnPickle.scala$$tools$$nsc$$symtab$$classfile$$UnPickler$$UnPickle$$$$readSymbol(UnPickler.scala:172)
+        at scala.tools.nsc.symtab.classfile.UnPickler$$UnPickle$$$$anonfun$$scala$$tools$$nsc$$symtab$$classfile$$UnPickler$$UnPickle$$$$readSymbolRef$$1.apply(UnPickler.scala:715)
+        at scala.tools.nsc.symtab.classfile.UnPickler$$UnPickle$$$$anonfun$$scala$$tools$$nsc$$symtab$$classfile$$UnPickler$$UnPickle$$$$readSymbolRef$$1.apply(UnPickler.scala:715)
+        at scala.tools.nsc.symtab.classfile.UnPickler$$UnPickle.scala$$tools$$nsc$$symtab$$classfile$$UnPickler$$UnPickle$$$$at(UnPickler.scala:139)
+       (~95 other frames follow)
+{code}

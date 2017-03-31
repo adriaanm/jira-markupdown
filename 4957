@@ -1,0 +1,16 @@
+The bug seems to be in scala.collection.mutable.SetLike:
+
+{code}
+74  /** Adds an element to this $$coll.
+75	   *
+76	   *  @param elem the element to be added
+77	   *  @return `true` if the element was not yet present in the set, `false` otherwise.
+78	   */
+79	  def add(elem: A): Boolean = {
+80	    val r = contains(elem)
+81	    this += elem
+82	    r
+83	  }
+{code}
+
+This definition of add() clearly returns true if the element WAS present in the set, contrary to the comment.  

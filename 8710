@@ -1,0 +1,22 @@
+This is kind of fishy, too:
+
+{code}
+scala> import collection.mutable.{ArrayBuffer => ListBuffer}
+import collection.mutable.{ArrayBuffer=>ListBuffer}
+
+scala> val lb = ListBuffer('a, 'b, 'c, 'd, 'e)
+lb: scala.collection.mutable.ArrayBuffer[Symbol] = ArrayBuffer('a, 'b, 'c, 'd, 'e)
+
+scala> lb.updated(-4, 'd)
+res7: scala.collection.mutable.ArrayBuffer[Symbol] = ArrayBuffer('d, 'b, 'c, 'd, 'e)
+
+scala> lb.updated(12, 'd)
+java.lang.UnsupportedOperationException: empty.tail
+  at scala.collection.TraversableLike$class.tail(TraversableLike.scala:449)
+  at scala.collection.mutable.IndexedSeqLike$$anon$1.scala$collection$IndexedSeqOptimized$$super$tail(IndexedSeqLike.scala:52)
+  at scala.collection.IndexedSeqOptimized$class.tail(IndexedSeqOptimized.scala:129)
+  at scala.collection.mutable.IndexedSeqLike$$anon$1.tail(IndexedSeqLike.scala:52)
+  at scala.collection.SeqLike$class.updated(SeqLike.scala:516)
+  at scala.collection.AbstractSeq.updated(Seq.scala:41)
+  ... 32 elided
+{code}

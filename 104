@@ -1,0 +1,19 @@
+I simplified the example a bit further:
+
+first file:
+{code}
+trait Foo {
+  def receive[R]: R = error("")
+}
+
+trait Factor extends Foo {
+  override def receive[R]: R = super.receive
+}
+{code}
+
+second file:
+{code}
+abstract class Buggy extends Factor
+{code}
+
+I couldn't think of any further simplifications that still result in a crash

@@ -1,0 +1,17 @@
+I read the docs of implicit classes here: http://docs.scala-lang.org/sips/pending/implicit-classes.html
+
+And these comments:
+
+    Odersky: "An implicit class must have a primary constructor with exactly one argument in its first parameter list." I do not see a rason for this restriction. AFAICS the class can have arbitrary parameter lists. You just create an implicit method with the same parameters. 
+
+
+    Suereth: Right. I was conflating value classes + implicit classes in that part of the spec.
+
+
+In that light, it looks to me that this should be accepted:
+
+scala> implicit class C(x: String, y: String)
+<console>:8: error: implicit classes must accept exactly one primary constructor parameter
+       implicit class C(x: String, y: String)
+
+

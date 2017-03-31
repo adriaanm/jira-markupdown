@@ -1,0 +1,23 @@
+This solution improves runtime since long values having no bit sets are avoided. However, with this solution, all bits of a long value having a single bit set are still enumerated. Using {code:java}java.lang.Long.numberOfTrailingZeros{code} allows to consider only the bits which are set. I believe this method call is implemented as a single assembly instruction in most CPU architectures.
+
+I compared both solutions by considering different density of bits in a long value. Surprisingly, on my computer, even when all bits are set, the first solution is faster (using a while loop and final val for both solutions).
+
+I agree that the while loop improves runtime compared to the for loop. I think the reason is because a Range instance is created. It would be great if this could be optimized.
+
+Did you get better performances using the proposed solution compared to the following ? If so I would be very interested in the benchmark.
+
+{code:java}
+override def foreach[B](f: Int => B) {
+  var i = 0
+  while (i != nwords) {
+    if (elems(i) != 0L) {
+      var l = elems(i)
+      do {
+        f((i << LogWL) + java.lang.Long.numberOfTrailingZeros(l))
+        l &= l - 1
+      } while (l != 0L)
+    }
+    i += 1
+  }
+}
+{code}

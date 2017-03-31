@@ -1,0 +1,9 @@
+Okay, that would make sense, but that's not what I see. Anyway, if only the calls are removed, we still have a problem because annotations are not inherited, or are they? In the following code which is based on your original example code, only the second call could ever be elided:
+
+{code}
+val b = new B
+b.xx()
+(b:A).xx()
+{code}
+
+So, I'm still in favor of "@elidable should be applicable only to final methods". Well, this also has a problem when B.xx() has the annotation and A.xx() does not. I will look into it later.

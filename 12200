@@ -1,0 +1,85 @@
+[~fommil] - I don't see any evidence that ZipFileSystem is faster than simply ZipFile, and it's only slightly faster than ZipInputStream.  In comparing
+
+{code}
+def zipsumA(p: java.nio.file.Path) = {
+  import java.nio.file._
+  val fs = FileSystems.newFileSystem(p, null)
+  val root = fs.getPath("/")
+  var l = 0L
+  var n = 0L
+  Files.walkFileTree(root, new SimpleFileVisitor[Path]{
+    override def visitFile(path: Path, attr: attribute.BasicFileAttributes) = {
+      val bb = java.nio.ByteBuffer.wrap(Files.readAllBytes(path))
+      n += bb.remaining
+      var i = 0
+      while (bb.remaining > 4) i ^= bb.getInt
+      l += i
+      FileVisitResult.CONTINUE
+    }
+  })
+  fs.close
+  (n, l)
+}
+{code}
+
+with older-style
+
+{code}
+def zipsumB(p: java.nio.file.Path) = {
+  import java.util.zip._
+  val zf = new ZipFile(p.toFile)
+  val zes = zf.entries
+  var n, l = 0L
+  while (zes.hasMoreElements) {
+    val ze = zes.nextElement
+    val b = new Array[Byte](ze.getSize.toInt)
+    val zis = zf.getInputStream(ze)
+    var i = 0
+    while (i < b.length) i += zis.read(b, i, b.length - i)
+    n += b.length
+    val bb = java.nio.ByteBuffer.wrap(b)
+    var j = 0
+    while (bb.remaining > 4) j ^= bb.getInt
+    l += j
+    zis.close
+  }
+  zf.close
+  (n, l)
+}
+{code}
+
+and
+
+{code}
+def zipsumC(p: java.nio.file.Path) = {
+  import java.util.zip._
+  val zis = new ZipInputStream(new java.io.FileInputStream(p.toFile))
+  var n, l = 0L
+  var ze = zis.getNextEntry
+  while (ze ne null) {
+    if (ze.getSize > 0) {
+      val b = new Array[Byte](ze.getSize.toInt)
+      var i = 0
+      while (i < b.length) i += zis.read(b, i, b.length - i)
+      n += b.length
+      val bb = java.nio.ByteBuffer.wrap(b)
+      var j = 0
+      while (bb.remaining > 4) j ^= bb.getInt
+      l += j
+    }
+    zis.closeEntry
+    ze = zis.getNextEntry
+  }
+  else if (ze.getSize < 0) throw new Exception("This only works for ZipEntries with known size annotation")
+  zis.close
+  (n, l)
+}
+{code}
+
+I see that ZipFileSystem (method A) is about 6% slower than ZipFile (method B) and 5% faster than ZipInputStream (method C).
+
+Thus, given the modest differences I wouldn't bother prioritizing this for speed, and if it is using ZipInputStream now, I'd tend to go for ZipFile before ZipFileSystem.
+
+If you know differently, can you please provide some evidence?
+
+(Granted, this is only reading, but generally there's more reading than writing.)

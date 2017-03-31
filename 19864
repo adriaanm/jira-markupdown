@@ -1,0 +1,32 @@
+
+I have lots of unit test code with lines like this:
+{code}
+@Test def bar() {
+    ...
+    val Seq(_, _) = foo() // produces warning unused
+    ...
+}
+{code}
+
+When I have warn-unused turned on, I get a warning on this:
+
+    private val in method bar is never used.
+
+But notice, there is no val here. I've used the underscore here. 
+
+I don't have a workaround to suppress this warning other than rewriting as 
+{code}
+@Test def bar () {
+    foo() match { case Seq(_,_) => /* ok */ }
+}
+{code}
+Having to permute the source code into a match-case just to suppress this spurious warning is painful, and there is a loss of code symmetry I don't like, as lots of other very similar tests look like:
+{code}
+@Test def bar2() {
+    val Seq(a, _) = foo2()
+    assertEquals("a", a)
+}
+{code}
+This does not produce the spurious warning.
+
+

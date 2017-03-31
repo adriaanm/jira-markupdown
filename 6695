@@ -1,0 +1,33 @@
+As an exercise, I read the formatting help:
+
+{code}
+package elysian
+
+class ElysianFields {
+  import ElysianFields._
+  def run() {
+    //oops // OK
+    feature
+    println("Hello, "+ bugInWaiting.getClass.getName)
+  }
+  def feature: Char = oops // DNC
+  //def feature: Unit = oops // OK
+
+  //java.lang.ClassCastException: scala.runtime.BoxedUnit cannot be cast to elysian.ElysianFields
+  //val bugInWaiting: ElysianFields = oops // OK to elide?
+  val bugInWaiting: AnyRef = oops // OK 
+}
+
+object ElysianFields {
+
+  import annotation.elidable
+  import annotation.elidable._
+
+  @elidable(150)
+  def oops = throw new UnsupportedOperationException
+
+  def main(args: Array[String]) {
+    new ElysianFields().run()
+  }
+}
+{code}

@@ -1,0 +1,42 @@
+I seem to have discovered a bug in the remote actors code when using hostnames rather than IP addresses to refer to remote hosts. This bug is reproducible. The bug does not affect behaviour (in my experience, anyway), but will leak memory.
+
+Everything here refers to the 2.8.0 RC releases, and also the latest SVN code. I am running the following:
+
+Scala:
+{code}
+$$ scala
+Welcome to Scala version 2.8.0.r21968-b20100518235047 (Java HotSpot(TM) Server VM, Java 1.6.0_16).
+{code}
+
+Java:
+{code}
+$$ java -version
+java version "1.6.0_16"
+Java(TM) SE Runtime Environment (build 1.6.0_16-b01)
+Java HotSpot(TM) Server VM (build 14.2-b01, mixed mode)
+{code}
+
+
+The bug: Sending messages from one remote actor to another using the -hostname- rather than IP address when selecting the remote actor will create two proxies on one side of the communication for message handling rather than one. These proxies retain session and channel mappings for synchronous messages and future-type requests. This state would normally be cleared as replies are received, but the bug means that outbound messages use a different Proxy to inbound messages, and so state is retained.
+
+I have attached code which demonstrates this bug. The sequence of events, at a high level, is as follows; I have two machines, 'lifou' which sends synchronous messages, 192.168.1.5, and 'ikeq', 192.168.1.3, which receives and replies to messages:
+
+ 1. lifou calls select(), which creates a new Proxy object to communicate with ikeq (e.g., Sink@Node(ikeq,51236)).
+ 1. ikeq: A new Proxy object is created at ikeq (creator: remotesender0@Node(192.168.1.5,51234)).
+ 1. lifou: Sends a synchronous message to ikeq, which uses the Proxy from step 1. A Pair is added to this Proxy's channelMap.
+ 1. ikeq: Receives message via Proxy created in 2, and a pair is added to it's sessionMap.
+ 1. ikeq: Responds, and uses Proxy created in 2. The Proxy correctly removes the appropriate entry from the sessionMap.
+ 1. lifou: Receives incoming message, and creates a new Proxy (creator: TestActorSink@Node(192.168.1.3,51236)). A Pair is added to it's sessionMap.
+
+Further message exchanges continue to do the following:
+ 1. Outbound messages at lifou use the proxy created in step 1.
+ 1. Inbound messages at lifou use the proxy created in step 6.
+
+Memory management at ikeq is not affected by this bug. Profiling the initiator (poorly named as the Source in the code) should reveal the leak. When performing asynchronous message passing, part of this bug still exists (multiple Proxy instances are created, but the channelMap/sessionMap state is not).
+
+
+This problem is really easy to work around: If the developer remembers to resolve IP addresses, then there is no problem.
+
+I have attached a very small diff also, which applies the same logic to one method in NetKernel and removes this requirement on application developers. As yet, I have not tested this code thoroughly, but it appears to work.
+
+-S.

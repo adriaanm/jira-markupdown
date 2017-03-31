@@ -1,0 +1,27 @@
+Attached is a three-file reproduction with instructions to reproduce with either scalac or sbt.
+
+The bug persists with {{-no-specialization}}; and appears in at least 2.8.1 and 2.9.1.
+
+Workaround is to choose a different name for the object.
+
+{code}
+error: java.lang.NullPointerException
+	at scala.tools.nsc.Global$Run.compiles(Global.scala:843)
+	at scala.tools.nsc.Global$Run.compiles(Global.scala:844)
+	at scala.tools.nsc.Global$Run.compiles(Global.scala:843)
+	at scala.tools.nsc.transform.SpecializeTypes.addConcreteSpecMethod(SpecializeTypes.scala:1760)
+	at scala.tools.nsc.transform.SpecializeTypes.scala$tools$nsc$transform$SpecializeTypes$$specializeMember(SpecializeTypes.scala:838)
+	at scala.tools.nsc.transform.SpecializeTypes$$anonfun$16$$anonfun$apply$17.apply(SpecializeTypes.scala:719)
+	at scala.tools.nsc.transform.SpecializeTypes$$anonfun$16$$anonfun$apply$17.apply(SpecializeTypes.scala:718)
+	at scala.collection.TraversableLike$$anonfun$flatMap$1.apply(TraversableLike.scala:200)
+	at scala.collection.TraversableLike$$anonfun$flatMap$1.apply(TraversableLike.scala:200)
+	at scala.collection.LinearSeqOptimized$class.foreach(LinearSeqOptimized.scala:59)
+	at scala.collection.immutable.List.foreach(List.scala:45)
+	at scala.collection.TraversableLike$class.flatMap(TraversableLike.scala:200)
+	at scala.collection.immutable.List.flatMap(List.scala:45)
+	at scala.tools.nsc.transform.SpecializeTypes$$anonfun$16.apply(SpecializeTypes.scala:718)
+	at scala.tools.nsc.transform.SpecializeTypes$$anonfun$16.apply(SpecializeTypes.scala:716)
+	at scala.collection.TraversableLike$$anonfun$flatMap$1.apply(TraversableLike.scala:200)
+	at scala.collection.TraversableLike$$anonfun$flatMap$1.apply(TraversableLike.scala:200)
+	at scala.collection.LinearSeqOptimized$class.foreach(LinearSeqOptimized.scala:59)
+{code}

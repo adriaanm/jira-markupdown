@@ -1,0 +1,28 @@
+@retronym I still don't understand what the bug is. You're doing an unchecked pattern match in the val assignment, that's how it works. The behavior is exactly the same in earlier versions if the unapply returns the type which was understood in earlier versions.
+{code}
+% cat test/files/neg/t7850.scala
+class Casey(a: Int) { def isEmpty = false; def get = this }
+object Casey { def unapply(a: Casey) = Some(a) }
+
+object Test {
+  def main(args: Array[String]) {
+    val Casey(x) = new Casey(1)
+    assert(x == 1, x)
+  }
+}
+
+% scalac210 -d /tmp test/files/neg/t7850.scala
+test/files/neg/t7850.scala:7: warning: Casey and Int are unrelated: they will most likely never compare equal
+    assert(x == 1, x)
+             ^
+scalone warning found
+% scala210 -cp /tmp Test
+java.lang.AssertionError: assertion failed: Casey@1495c8c2
+  at scala.Predef$.assert(Predef.scala:179)
+  at Test$.main(t7850.scala:7)
+  at Test.main(t7850.scala)
+  at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+  at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+  at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+  at java.lang.reflect.Method.invoke(Method.java:606)
+{code}

@@ -1,0 +1,32 @@
+I just ran the compiler based on [this commit | https://github.com/scala/scala/commit/c243435f113615b2f7407fbd683c93ec16c73749] on the code example in the ticket linked by Iulian. Below is the tree printed after typer, with -Yrangepos flag
+
+{code}
+[[syntax trees at end of                     typer]] // Foo.scala
+[0:63]package [0:0]<empty> {
+  [0:37]class Baz extends [9:37][39]scala.AnyRef {
+    [10:31]<paramaccessor> private[this] val f: [14]Int = _;
+    [14]<stable> <accessor> <paramaccessor> def f: [14]Int = [14][14]Baz.this.f;
+    [39]def <init>([14]f: [17]<type: [17]scala.Int> = [30]B.a): [9]Baz = [39]{
+      [39][39][39]Baz.super.<init>();
+      [9]()
+    }
+  };
+  [6]<synthetic> object Baz extends [6][6]AnyRef {
+    [6]def <init>(): [9]Baz.type = [6]{
+      [6][6][6]Baz.super.<init>();
+      [9]()
+    };
+    [14]<synthetic> def <init>$default$1: [14]Int = [30]B.a
+  };
+  [39:63]object B extends [48:63][63]scala.AnyRef {
+    [63]def <init>(): [48]B.type = [63]{
+      [63][63][63]B.super.<init>();
+      [48]()
+    };
+    [52:61]private[this] val a: [56]Int = [60:61]2;
+    [56]<stable> <accessor> def a: [56]Int = [56][56]B.this.a
+  }
+}
+{code}
+
+Looks like offset position are assigned to the `B.a` tree, which is why hyperlinking fails.

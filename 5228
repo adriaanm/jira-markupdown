@@ -1,0 +1,10 @@
+There are unfortunate consequences lurking here. Subclassing, universal equality and type classes really don't like to be in the same room as each other.
+
+{code}
+scala> implicitly[Equiv[Set[Int]]].equiv(Set(1, 2), Set(2, 1))
+res0: Boolean = false
+{code}
+
+The workaround [https://github.com/scalaz/scalaz/blob/master/core/src/main/scala/scalaz/Equal.scala#L171 isn't pretty].
+
+Maybe you can restrict this to `CC[X]<:Seq[X]` to avoid some more obvious problems; and/or document around this.

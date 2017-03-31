@@ -1,0 +1,71 @@
+I can confirm with Scala 2.8.1, Java 1.6.0_20 (64-bit HotSpot).
+In one file we have:
+{code}
+package object test {
+  def foo(a: Int, b: Int) = a + b
+  def foo(a: Int, b: Int, c: Int) = a + b + c
+  
+  def bar[A, B](a: A, b: B) = (a, b)
+  def bar[A, B, C](a: A, b: B, c: C) = (a, b, c)
+  
+  def baz(a: AnyVal) = a
+  def baz(a: String) = a
+  def baz(a: Seq[_]) = a
+  
+  def test1() {
+    foo(1, 2)
+    foo(1, 2, 3)
+    
+    bar(1, 2)
+    bar(1, 2, 3)
+    bar('a', new Object)
+    bar('a', new Object, 'a'.asInstanceOf[AnyRef])
+    
+    baz(5)
+    baz("5")
+  }  
+}
+{code}
+The above file compiles with no errors.
+
+In another file we have the exact same method `test1`, this time in an object `Test`:
+{code}
+package test
+
+object Test {
+  def test1() {
+    foo(1, 2)
+    foo(1, 2, 3)
+    
+    bar(1, 2)
+    bar(1, 2, 3)
+    bar('a', new Object)
+    bar('a', new Object, 'a'.asInstanceOf[AnyRef])
+    
+    baz(5)
+    baz("5")
+  }  
+}
+{code}
+The compiler reports the following errors:
+{code}
+test2.scala:5: error: not enough arguments for method foo: (a: Int,b: Int,c: Int)Int.
+Unspecified value parameter c.
+    foo(1, 2)
+       ^
+test2.scala:8: error: not enough arguments for method bar: (a: A,b: B,c: C)(A, B, C).
+Unspecified value parameter c.
+    bar(1, 2)
+       ^
+test2.scala:10: error: not enough arguments for method bar: (a: A,b: B,c: C)(A, B, C).
+Unspecified value parameter c.
+    bar('a', new Object)
+       ^
+test2.scala:13: error: type mismatch;
+ found   : Int(5)
+ required: Seq[_]
+    baz(5)
+        ^
+four errors found
+{code}
+I think this is a pretty big bug in package objects.

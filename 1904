@@ -1,0 +1,26 @@
+Just ran into this in a really subtle way:
+
+{code:title=package.scala}
+package foo
+package object bar {
+  def duh(n:Long) = println("long")
+  def duh(n:Double) = println("double")
+}
+{code}
+
+{code:title=main.scala}
+package foo.bar
+object Main {
+  def main(args:Array[String]) {
+    duh(33L)
+    foo.bar.duh(33L)
+  }
+}
+{code}
+
+{code:title=output}
+double
+long
+{code}
+
+In the wild it takes a moment to notice that this is going on because the Long values will get coerced into Doubles. Currently scala.math would hit this bug in a big way if it needed to use its own functions (e.g. abs). I noticed this when writing a similar "math package".

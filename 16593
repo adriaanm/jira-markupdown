@@ -1,0 +1,48 @@
+Currently, this is not allowed:
+{code}
+class Foo(lazy val p: String)
+{code}
+
+Although I can create another lazy val like this:
+{code}
+class Foo(p: => String) {
+  lazy val p2 = p
+}
+{code}
+But it wastes memory since it creates three fields in byte codes:
+{code}
+public class Foo implements scala.ScalaObject {
+  private final scala.Function0<java.lang.String> p;
+  private java.lang.String p2;
+  public volatile int bitmap$0;
+  public java.lang.String p2();
+  public Foo(scala.Function0<java.lang.String>);
+}
+{code}
+
+I suggest that scalac automatically generate code for {{ class Foo(lazy val p: String) }} like this:
+{code}
+object Foo {
+	private final def createLazy(setter: Function0[String] => Unit,
+			initial: => String) = { () =>
+		val result = initial
+		setter { () => result }
+		result
+	}
+}
+
+class Foo(p: => String) {
+	var p2: Function0[String] = FasterLazy(p2_=, p)
+}
+{code}
+This approach creates only one field:
+{code}
+public class Foo implements scala.ScalaObject {
+  private scala.Function0<java.lang.String> p2;
+  public scala.Function0<java.lang.String> p2();
+  public void p2_$eq(scala.Function0<java.lang.String>);
+  public Foo(scala.Function0<java.lang.String>);
+}
+{code}
+
+And it even a little faster than {{lazy val}}, since it omits checking if the field initialized or not.

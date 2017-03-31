@@ -1,0 +1,36 @@
+This must be close to a fix, but it still crashes:
+
+{noformat}
+diff --git a/src/compiler/scala/tools/nsc/transform/ExtensionMethods.scala b/src/compiler/scala/tools/nsc/transform/ExtensionMethods.scala
+index 6cc957a..e5d30eb 100644
+--- a/src/compiler/scala/tools/nsc/transform/ExtensionMethods.scala
++++ b/src/compiler/scala/tools/nsc/transform/ExtensionMethods.scala
+@@ -124,7 +124,8 @@ abstract class ExtensionMethods extends Transform with TypingTransformers {
+           MethodType(List(thisParam), restpe)
+       }
+       val GenPolyType(tparams, restpe) = origInfo cloneInfo extensionMeth
+-      GenPolyType(tparams ::: newTypeParams, transform(restpe) substSym (clazz.typeParams, newTypeParams))
++      val newResType = transform(restpe) substThisAndSym (clazz, singleType(currentOwner.companionModule.thisType, thisParam), clazz.typeParams, ne
++      GenPolyType(tparams ::: newTypeParams, newResType)
+     }
+ 
+     private def allParams(tpe: Type): List[Symbol] = tpe match {
+{noformat}
+
+{noformat}
+
+  last tree to typer: Ident(dep)
+              symbol: value dep (flags: <param> <triedcooking>)
+   symbol definition: dep: $this.path.Dep
+       symbol owners: value dep -> method apply$extension -> object ValueClass -> package <empty>
+      context owners: method apply$extension -> object ValueClass -> package <empty>
+
+// final def apply$extension[P <: Path]($this: ValueClass[P])(dep: $this.path.Dep): $this.path.Dep in object ValueClass
+
+uncaught exception during compilation: scala.reflect.internal.Types$TypeError
+error: scala.reflect.internal.Types$TypeError: type mismatch;
+ found   : ValueClass[P]#path.Dep
+ required: $this.path.Dep
+{noformat}
+
+One for another day...

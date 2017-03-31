@@ -1,0 +1,29 @@
+I think the issue might happen in cases even simpler than what's described, as in no parameter necessary.  That or I found a separate but related issue.
+
+Given this trait def:
+
+{code}
+trait Instrumented {
+  private lazy val errorer = ErrorReporterMgr.getMgr.getErrorReporter(super.getClass)
+  private lazy val logger = LoggerMgr.getMgr.getLogger(super.getClass)
+  private lazy val tracer = TracerMgr.getMgr.getTracer(super.getClass)
+}
+{code}
+
+this object won't compile:
+{code}
+object CustomInstrumented extends Instrumented
+{code}
+
+If both are compiled in the same compiler invocation then it is successful, but if Instrumented is compiled first and then CustomInstrumented is compiled separately, I get this friendly exception:
+
+{code}
+Exception in thread "main" java.lang.RuntimeException: malformed Scala signature of Instrumented2 at 1069; reference type ?0 of method getClass refers to nonexisting symbol.
+    at scala.tools.nsc.symtab.classfile.UnPickler$$UnPickle.errorBadSignature(UnPickler.scala:762)
+    at scala.tools.nsc.symtab.classfile.UnPickler$$UnPickle.scala$$tools$$nsc$$symtab$$classfile$$UnPickler$$UnPickle$$$$readSymbol(UnPickler.scala:172)
+    at scala.tools.nsc.symtab.classfile.UnPickler$$UnPickle$$$$anonfun$$scala$$tools$$nsc$$symtab$$classfile$$UnPickler$$UnPickle$$$$readSymbolRef$$1.apply(UnPickler.scala:714)
+    at scala.tools.nsc.symtab.classfile.UnPickler$$UnPickle$$$$anonfun$$scala$$tools$$nsc$$symtab$$classfile$$UnPickler$$UnPickle$$$$readSymbolRef$$1.apply(UnPickler.scala:714)
+    ...
+{code}
+
+I'm running 2.7.5.  I tried the latest build of 2.8 and I do not have this problem, so I'm assuming this fix (or a related one) fixed it.  I would really like to use Scala in my project but this issue leaves me dead in the water.  Any chance this fix would be patched to the 2.7.x branch?

@@ -1,0 +1,12 @@
+I apparently failed to update this ticket when I tried this out and found the real deal killer.
+{code}
+scala> val nextid = { var x = 1 ; () => try "x" + x finally x += 1 }
+nextid: () => String = <function0>
+
+scala> nextid() #:: nextid() #:: nextid() #:: Stream[String]()
+res0: scala.collection.immutable.Stream[String] = Stream(x1, ?)
+
+scala> res1.toList
+res1: List[String] = List(x1, x2, x3)
+{code}
+If this evaluates right to left you get List(x3, x2, x1), and because whether an argument is by-name or not is not visible at the call site, you always have to worry about it.

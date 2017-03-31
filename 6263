@@ -1,0 +1,13 @@
+That filter is only in place if inlining isn't on.  I don't have a good explanation for what seems like an unreasonable amount of indirection, but you can see it in the PathResolver constructor. 
+
+{code}
+class PathResolver(settings: Settings, context: JavaContext) {
+  def this(settings: Settings) = this(settings, if (settings.inline.value) new JavaContext else DefaultJavaContext)
+{code}
+
+{noformat}
+% scala3 -Yinline
+
+scala> global.definitions.getClass("scala.collection.immutable.MapLike$class")
+res0: global.Symbol = class MapLike$class
+{noformat}

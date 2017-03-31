@@ -1,0 +1,18 @@
+Another example from Noel Welsh + [~djspiewak]
+
+{code}
+  {
+    sealed trait Foo[A] {
+      def run: A =
+        this match {
+          case Map(elt, f) => f("Can I have some type safety please?x")
+        }
+    }
+    final case class Map[A,B](elt: A, f: A => B) extends Foo[B]
+    // expand the case class and a type error is issued, as per examples above.
+    // final class Map[A,B](val elt: A, val f: A => B) extends Foo[B]
+    // object Map {
+    //  def unapply[A, B](m: Map[A, B]): Option[(A, A => B)] = Some((m.elt, m.f))
+    //}
+  }
+{code}

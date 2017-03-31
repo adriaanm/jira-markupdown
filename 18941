@@ -1,0 +1,61 @@
+I tried to compile specs2 with the `-Ydelambdafy:method` option and I got the following error:
+
+{code}
+[error] symbol value $outer does not exist in org.specs2.specification.FormFragmentsBuilder$$anon$1.$anonfun$6
+[trace] Stack trace suppressed: run last specs2/compile:compile for the full output.
+[trace] Stack trace suppressed: run last specs2-form/compile:compile for the full output.
+[error] (specs2/compile:compile) scala.reflect.internal.FatalError:
+[error]   symbol value $outer does not exist in org.specs2.specification.FormFragmentsBuilder$$anon$1.$anonfun$6
+[error]      while compiling: /Users/etorreborre/projects/specs/specs2/form/src/main/scala/org/specs2/specification/Forms.scala
+[error]         during phase: icode
+[error]      library version: version 2.11.0-RC1
+[error]     compiler version: version 2.11.0-RC1
+[error]   reconstructed args: -Ywarn-nullary-unit -feature -Xlint -Ywarn-inaccessible -Xcheckinit -unchecked -classpath /Users/etorreborre/projects/specs/specs2/target/scala-2.11.0-RC1/classes:/Users/etorreborre/.ivy2/cache/org.scala-lang/scala-compiler/jars/scala-compiler-2.11.0-RC1.jar:/Users/etorreborre/.ivy2/cache/org.scala-lang/scala-reflect/jars/scala-reflect-2.11.0-RC1.jar:/Users/etorreborre/.ivy2/cache/org.scala-lang.modules/scala-xml_2.11.0-RC1/bundles/scala-xml_2.11.0-RC1-1.0.0.jar:/Users/etorreborre/.ivy2/cache/org.scala-lang.modules/scala-parser-combinators_2.11.0-RC1/bundles/scala-parser-combinators_2.11.0-RC1-1.0.0.jar:/Users/etorreborre/.ivy2/cache/org.hamcrest/hamcrest-core/jars/hamcrest-core-1.3.jar:/Users/etorreborre/.ivy2/cache/org.mockito/mockito-core/jars/mockito-core-1.9.5.jar:/Users/etorreborre/.ivy2/cache/org.objenesis/objenesis/jars/objenesis-1.0.jar:/Users/etorreborre/.ivy2/cache/org.scalacheck/scalacheck_2.11.0-RC1/jars/scalacheck_2.11.0-RC1-1.11.3.jar:/Users/etorreborre/.ivy2/cache/org.scala-sbt/test-interface/jars/test-interface-1.0.jar:/Users/etorreborre/.ivy2/cache/junit/junit/jars/junit-4.11.jar:/Users/etorreborre/.ivy2/cache/org.pegdown/pegdown/jars/pegdown-1.2.1.jar:/Users/etorreborre/.ivy2/cache/org.parboiled/parboiled-java/jars/parboiled-java-1.1.4.jar:/Users/etorreborre/.ivy2/cache/org.parboiled/parboiled-core/jars/parboiled-core-1.1.4.jar:/Users/etorreborre/.ivy2/cache/org.ow2.asm/asm/jars/asm-4.1.jar:/Users/etorreborre/.ivy2/cache/org.ow2.asm/asm-tree/jars/asm-tree-4.1.jar:/Users/etorreborre/.ivy2/cache/org.ow2.asm/asm-analysis/jars/asm-analysis-4.1.jar:/Users/etorreborre/.ivy2/cache/org.ow2.asm/asm-util/jars/asm-util-4.1.jar:/Users/etorreborre/.ivy2/cache/org.specs2/classycle/jars/classycle-1.4.3.jar:/Users/etorreborre/.ivy2/cache/org.scalaz/scalaz-core_2.11.0-RC1/bundles/scalaz-core_2.11.0-RC1-7.0.6.jar:/Users/etorreborre/.ivy2/cache/org.scalaz/scalaz-concurrent_2.11.0-RC1/bundles/scalaz-concurrent_2.11.0-RC1-7.0.6.jar:/Users/etorreborre/.ivy2/cache/org.scalaz/scalaz-effect_2.11.0-RC1/bundles/scalaz-effect_2.11.0-RC1-7.0.6.jar:/Users/etorreborre/.ivy2/cache/com.chuusai/shapeless_2.11.0-M7/bundles/shapeless_2.11.0-M7-2.0.0-M1.jar -bootclasspath /Library/Java/JavaVirtualMachines/1.7.0.jdk/Contents/Home/jre/lib/resources.jar:/Library/Java/JavaVirtualMachines/1.7.0.jdk/Contents/Home/jre/lib/rt.jar:/Library/Java/JavaVirtualMachines/1.7.0.jdk/Contents/Home/jre/lib/sunrsasign.jar:/Library/Java/JavaVirtualMachines/1.7.0.jdk/Contents/Home/jre/lib/jsse.jar:/Library/Java/JavaVirtualMachines/1.7.0.jdk/Contents/Home/jre/lib/jce.jar:/Library/Java/JavaVirtualMachines/1.7.0.jdk/Contents/Home/jre/lib/charsets.jar:/Library/Java/JavaVirtualMachines/1.7.0.jdk/Contents/Home/jre/lib/jfr.jar:/Library/Java/JavaVirtualMachines/1.7.0.jdk/Contents/Home/jre/lib/JObjC.jar:/Library/Java/JavaVirtualMachines/1.7.0.jdk/Contents/Home/jre/classes:/Users/etorreborre/.ivy2/cache/org.scala-lang/scala-library/jars/scala-library-2.11.0-RC1.jar -Ydelambdafy:method -deprecation -language:_ -language:_ -language:_ -language:_ -language:_ -language:_ -language:_ -language:_ -language:_ -language:_ -language:_ -language:_ -language:_ -language:_ -language:_ -language:_ -Ywarn-nullary-override -Ywarn-infer-any -Ywarn-adapted-args
+[error]
+[error]   last tree to typer: TypeTree(object ScalaCheckMatchers$class)
+[error]        tree position: line 96 of /Users/etorreborre/projects/specs/specs2/scalacheck/src/main/scala/org/specs2/matcher/ScalaCheckMatchers.scala
+[error]             tree tpe: org.specs2.matcher.ScalaCheckMatchers$class
+[error]               symbol: abstract object ScalaCheckMatchers$class in package matcher
+[error]    symbol definition: abstract class ScalaCheckMatchers$class extends  (a ClassSymbol with ImplClassSymbol)
+[error]       symbol package: org.specs2.matcher
+[error]        symbol owners: object ScalaCheckMatchers$class
+[error]            call site: constructor OneExpectationPerProp$$anon$8 in package matcher
+[error]
+[error] == Source file context for tree position ==
+[error]
+[error]     93     Prop.forAll((t1: T1, t2: T2, t3: T3, t4: T4, t5: T5, t6: T6, t7: T7, t8: T8) => toProp(result(t1, t2, t3, t4, t5, t6, t7, t8)))
+[error]     94   def check8NoShrink[T1, T2, T3, T4, T5, T6, T7, T8, R](result: (T1, T2, T3, T4, T5, T6, T7, T8) => R)(implicit toProp: (=>R) => Prop, a1: Arbitrary[T1], a2: Arbitrary[T2], a3: Arbitrary[T3], a4: Arbitrary[T4], a5: Arbitrary[T5], a6: Arbitrary[T6], a7: Arbitrary[T7], a8: Arbitrary[T8]): Prop =
+[error]     95     Prop.forAllNoShrink(a1.arbitrary, a2.arbitrary, a3.arbitrary, a4.arbitrary, a5.arbitrary, a6.arbitrary, a7.arbitrary, a8.arbitrary)((t1: T1, t2: T2, t3: T3, t4: T4, t5: T5, t6: T6, t7: T7, t8: T8) => toProp(result(t1, t2, t3, t4, t5, t6, t7, t8)))
+[error]     96
+[error]     97   /** execute a PartialFunction as a ScalaCheck property */
+[error]     98   def prop[T, S](f: PartialFunction[T, S])(implicit toProp: S => Prop, a: Arbitrary[T], s: Shrink[T]): Prop = checkPartial(f)
+[error]     99   def propNoShrink[T, S](f: PartialFunction[T, S])(implicit toProp: S => Prop, a: Arbitrary[T]): Prop = checkPartialNoShrink(f)
+[error] (specs2-form/compile:compile) scala.reflect.internal.FatalError:
+[error]   symbol value $outer does not exist in org.specs2.specification.FormFragmentsBuilder$$anon$1.$anonfun$6
+[error]      while compiling: /Users/etorreborre/projects/specs/specs2/form/src/main/scala/org/specs2/specification/Forms.scala
+[error]         during phase: icode
+[error]      library version: version 2.11.0-RC1
+[error]     compiler version: version 2.11.0-RC1
+[error]   reconstructed args: -Ywarn-nullary-unit -feature -Xlint -Ywarn-inaccessible -Xcheckinit -unchecked -bootclasspath /Library/Java/JavaVirtualMachines/1.7.0.jdk/Contents/Home/jre/lib/resources.jar:/Library/Java/JavaVirtualMachines/1.7.0.jdk/Contents/Home/jre/lib/rt.jar:/Library/Java/JavaVirtualMachines/1.7.0.jdk/Contents/Home/jre/lib/sunrsasign.jar:/Library/Java/JavaVirtualMachines/1.7.0.jdk/Contents/Home/jre/lib/jsse.jar:/Library/Java/JavaVirtualMachines/1.7.0.jdk/Contents/Home/jre/lib/jce.jar:/Library/Java/JavaVirtualMachines/1.7.0.jdk/Contents/Home/jre/lib/charsets.jar:/Library/Java/JavaVirtualMachines/1.7.0.jdk/Contents/Home/jre/lib/jfr.jar:/Library/Java/JavaVirtualMachines/1.7.0.jdk/Contents/Home/jre/lib/JObjC.jar:/Library/Java/JavaVirtualMachines/1.7.0.jdk/Contents/Home/jre/classes:/Users/etorreborre/.ivy2/cache/org.scala-lang/scala-library/jars/scala-library-2.11.0-RC1.jar -classpath /Users/etorreborre/projects/specs/specs2/form/target/scala-2.11.0-RC1/classes:/Users/etorreborre/projects/specs/specs2/core/target/scala-2.11.0-RC1/classes:/Users/etorreborre/projects/specs/specs2/matcher/target/scala-2.11.0-RC1/classes:/Users/etorreborre/projects/specs/specs2/common/target/scala-2.11.0-RC1/classes:/Users/etorreborre/projects/specs/specs2/markdown/target/scala-2.11.0-RC1/classes:/Users/etorreborre/projects/specs/specs2/core/target/scala-2.11.0-RC1/test-classes:/Users/etorreborre/projects/specs/specs2/common/target/scala-2.11.0-RC1/test-classes:/Users/etorreborre/projects/specs/specs2/matcher-extra/target/scala-2.11.0-RC1/classes:/Users/etorreborre/projects/specs/specs2/analysis/target/scala-2.11.0-RC1/classes:/Users/etorreborre/projects/specs/specs2/scalacheck/target/scala-2.11.0-RC1/classes:/Users/etorreborre/.ivy2/cache/org.scalaz/scalaz-core_2.11.0-RC1/bundles/scalaz-core_2.11.0-RC1-7.0.6.jar:/Users/etorreborre/.ivy2/cache/org.scala-lang.modules/scala-parser-combinators_2.11.0-RC1/bundles/scala-parser-combinators_2.11.0-RC1-1.0.0.jar:/Users/etorreborre/.ivy2/cache/org.scala-lang.modules/scala-xml_2.11.0-RC1/bundles/scala-xml_2.11.0-RC1-1.0.0.jar:/Users/etorreborre/.ivy2/cache/org.scalaz/scalaz-concurrent_2.11.0-RC1/bundles/scalaz-concurrent_2.11.0-RC1-7.0.6.jar:/Users/etorreborre/.ivy2/cache/org.scalaz/scalaz-effect_2.11.0-RC1/bundles/scalaz-effect_2.11.0-RC1-7.0.6.jar:/Users/etorreborre/.ivy2/cache/org.scala-lang/scala-reflect/jars/scala-reflect-2.11.0-RC1.jar:/Users/etorreborre/.ivy2/cache/org.scalacheck/scalacheck_2.11.0-RC1/jars/scalacheck_2.11.0-RC1-1.11.3.jar:/Users/etorreborre/.ivy2/cache/org.scala-sbt/test-interface/jars/test-interface-1.0.jar:/Users/etorreborre/.ivy2/cache/org.mockito/mockito-core/jars/mockito-core-1.9.5.jar:/Users/etorreborre/.ivy2/cache/org.objenesis/objenesis/jars/objenesis-1.0.jar:/Users/etorreborre/.ivy2/cache/junit/junit/jars/junit-4.11.jar:/Users/etorreborre/.ivy2/cache/org.hamcrest/hamcrest-core/jars/hamcrest-core-1.3.jar:/Users/etorreborre/.ivy2/cache/org.pegdown/pegdown/jars/pegdown-1.2.1.jar:/Users/etorreborre/.ivy2/cache/org.parboiled/parboiled-java/jars/parboiled-java-1.1.4.jar:/Users/etorreborre/.ivy2/cache/org.parboiled/parboiled-core/jars/parboiled-core-1.1.4.jar:/Users/etorreborre/.ivy2/cache/org.ow2.asm/asm/jars/asm-4.1.jar:/Users/etorreborre/.ivy2/cache/org.ow2.asm/asm-tree/jars/asm-tree-4.1.jar:/Users/etorreborre/.ivy2/cache/org.ow2.asm/asm-analysis/jars/asm-analysis-4.1.jar:/Users/etorreborre/.ivy2/cache/org.ow2.asm/asm-util/jars/asm-util-4.1.jar:/Users/etorreborre/.ivy2/cache/org.scala-lang/scala-compiler/jars/scala-compiler-2.11.0-RC1.jar:/Users/etorreborre/.ivy2/cache/org.specs2/classycle/jars/classycle-1.4.3.jar -Ydelambdafy:method -deprecation -language:_ -language:_ -language:_ -language:_ -language:_ -language:_ -language:_ -language:_ -language:_ -language:_ -language:_ -language:_ -language:_ -language:_ -language:_ -language:_ -Ywarn-nullary-override -Ywarn-infer-any -Ywarn-adapted-args
+[error]
+[error]   last tree to typer: TypeTree(class Exception)
+[error]        tree position: line 20 of /Users/etorreborre/projects/specs/specs2/form/src/main/scala/org/specs2/specification/Forms.scala
+[error]             tree tpe: Exception
+[error]               symbol: class Exception in package lang
+[error]    symbol definition: class Exception extends Throwable (a ClassSymbol)
+[error]       symbol package: java.lang
+[error]        symbol owners: class Exception
+[error]            call site: constructor FormFragmentsBuilder$$anon$1 in package specification
+[error]
+[error] == Source file context for tree position ==
+[error]
+[error]     17 trait FormFragmentsBuilder extends FragmentsBuilder {
+[error]     18   implicit def formsAreExamples(aForm: =>Form): Example = {
+[error]     19     lazy val form = tryOr(aForm.executeForm) { (e: Exception) =>
+[error]     20       Form("Initialisation error").tr(PropCell(Prop("", e.getMessage.notNull, (s: String, t: String) => Error(e))("message")))
+[error]     21     }
+[error]     22     new Example(FormFormattedString.create(form), () => form.result.getOrElse(Success(""))) {
+[error]     23       override def matches(s: String) = true
+{code}
+
+I'm sorry, this is not particularly minimised but at least this should be reproducible by cloning the specs2 project and modifying the build file.

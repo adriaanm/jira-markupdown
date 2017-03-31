@@ -1,0 +1,31 @@
+this one still fails for field writes (2.12.0-M4):
+
+A.java
+{code}
+package a;
+/*package private*/ abstract class A { public int t; }
+{code}
+B.java
+{code}
+package a;
+public class B extends A { }
+{code}
+Test.scala
+{code}
+package b
+object Test {
+  def main(args: Array[String]): Unit = {
+    val b = new a.B
+    b.t = 10
+  }
+}
+{code}
+
+{noformat}
+$ javac A.java B.java -d .
+$ scalac12 Test.scala
+$ scala12 b.Test
+java.lang.IllegalAccessError: tried to access class a.A from class b.Test$
+{noformat}
+
+I'll push a fix.

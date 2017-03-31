@@ -1,0 +1,21 @@
+I got around it with:
+
+{code}
+object CaseClassOverload {
+
+  class Format
+
+  private var registered: Map[String, X] = Map()
+
+  case class X private[CaseClassOverload] (unique: String)(implicit format: Format) {
+    registered synchronized {
+      require(!(registered contains unique), s"$unique already registered")
+      registered += unique -> this
+    }
+  }
+
+  val error = X("a")(new Format)
+}
+{code}
+
+Probably a cleaner way to do it anyway.

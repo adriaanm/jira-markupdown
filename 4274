@@ -1,0 +1,9 @@
+In r24468 I added implicits which allow the following:
+{code}
+import Ordering.Implicits._
+import Numeric.Implicits._
+
+def f1[T: Numeric](x: T, y: T, z: T)  = x + y + z
+def f2[T: Ordering](x: T, y: T, z: T) = if (x < y) (z > y) else (x < z)
+{code}
+They need to be imported (but they are in a trait for easy access, so you can e.g. mix that into a package object if you want them accessible everywhere in your project.) I tried to throw in Integral/Fractional too but I couldn't outrun the misdesign's intersection with implicit search.  I don't see this improving much anytime soon and deem this complete.

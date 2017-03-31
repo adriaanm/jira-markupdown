@@ -1,0 +1,18 @@
+Ok, so it's a different bug now, really.   No longer class cast exception, but the CanBuildFrom's are all off.
+
+Here's a relevant snippet with the types inferred:
+
+{code}
+scala> val x = collection.mutable.ArrayBuffer(1,2,3)
+x: scala.collection.mutable.ArrayBuffer[Int] = ArrayBuffer(1, 2, 3)
+
+scala> x.view
+res1: scala.collection.mutable.IndexedSeqView[Int,scala.collection.mutable.ArrayBuffer[Int]] = SeqView(...)
+
+scala> res1 map (_ + "0")
+res2: scala.collection.SeqView[String,scala.collection.mutable.Seq[_]] = SeqViewM(...)
+{code}
+
+
+We loose the IndexedSeqView after a map, which tells me either (a) it's not overridden (likely) or (b) it's missing an appropriate CanBuildFrom.    If the answer is (a), I'll have to dig further.  This may be a limitation on IndexedSeqView that *after* a transformation operation, you shouldn't treat it as an IndexedSeq anymore.
+

@@ -1,0 +1,25 @@
+Think of AnyRef as an alias for Object:
+
+
+{code:scala}
+scala> type Foo = String
+defined type alias Foo
+
+scala> new Foo
+res0: String = ""
+
+scala> :power
+
+scala> val x = symbolOf[AnyRef]
+x: $r.intp.global.TypeSymbol = type AnyRef
+
+scala> x.isAliasType
+res6: Boolean = true
+
+scala> x.tpe.dealias
+res7: $r.intp.global.Type = Object
+{code}
+
+Assuming that you didn't find any case where something compiled with AnyRef, but was rejected when using Object (or the other way around), I'd say that this isn't a bug.
+
+I guess the main question is: Should we prefer displaying AnyRef over Object? Always, or are there any exceptions?

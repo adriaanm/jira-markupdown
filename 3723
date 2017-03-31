@@ -1,0 +1,65 @@
+
+== *Status update* (2.8.0 RC6) ==
+
+
+*Long*
+{code}
+Long.MinValue to -2L
+_java.lang.IllegalArgumentException: Implementation restricts ranges to Int.MaxValue elements._ // This is correct.
+
+Long.MinValue to -1L                   
+_scala.collection.immutable.NumericRange.Inclusive[Long] = NumericRange()_ // This should result in the same Error as above...
+
+Long.MinValue to 0L   
+_scala.collection.immutable.NumericRange.Inclusive[Long] = NumericRange(-9223372036854775808)_ // This too
+
+Long.MinValue to 1L       
+_scala.collection.immutable.NumericRange.Inclusive[Long] = NumericRange(-9223372036854775808, -9223372036854775807)_
+
+-1L to Long.MaxValue
+_scala.collection.immutable.NumericRange.Inclusive[Long] = NumericRange(-1)_
+
+0L to Long.MaxValue 
+_scala.collection.immutable.NumericRange.Inclusive[Long] = NumericRange()_
+
+1L to Long.MaxValue 
+_java.lang.IllegalArgumentException: Implementation restricts ranges to Int.MaxValue elements._
+{code}
+
+*Int*
+{code}
+Int.MinValue to Int.MaxValue
+_scala.collection.immutable.Range.Inclusive with scala.collection.immutable.Range.ByOne = Range()_
+
+Int.MinValue to -2
+_scala.collection.immutable.Range.Inclusive with scala.collection.immutable.Range.ByOne = Range(-2147483648, -2147483647, -2147483646, -2147483645, -2147483644, -2147483643, -2147483642, -2147483641, -2147483640, -2147483639, -2147483638, ..._
+
+Int.MinValue to -1
+_scala.collection.immutable.Range.Inclusive with scala.collection.immutable.Range.ByOne = Range()_
+
+Int.MinValue to 0 
+_scala.collection.immutable.Range.Inclusive with scala.collection.immutable.Range.ByOne = Range()_
+{code}
+
+*Short*
+Seems to work.
+
+*Chars*
+{code}
+Char.MinValue to Char.MaxValue
+_scala.collection.immutable.NumericRange[Char] = NumericRange()_
+
+(Char.MinValue:Int) to (Char.MaxValue) 
+_scala.collection.immutable.Range.Inclusive with scala.collection.immutable.Range.ByOne = Range(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, ..._
+{code}
+
+*Byte*
+Seems to work.
+
+
+Until this is fixed it might be a good thing to add a check like
+{code}
+if(step > 0) require(start < end)
+else (step < 0) require(start > end)
+{code}
+to at least warn people that their code looks right, but won't work.

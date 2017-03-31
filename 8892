@@ -1,0 +1,17 @@
+In Scala concrete members always override abstract members.
+
+{code}
+scala> class Derived { def clone: AnyRef }
+<console>:7: error: overriding method clone in class Derived of type ()AnyRef;
+ method clone in class Object of type ()Object has weaker access privileges; it should be public;
+ (Note that method clone in class Derived of type ()AnyRef is abstract,
+  and is therefore overridden by concrete method clone in class Object of type ()Object)
+       class Derived { def clone: AnyRef }
+             ^
+{code}
+
+Here's a quick attempt to use Java rules for Java defined methods:
+
+https://github.com/retronym/scala/compare/ticket/6760
+
+I still need to exercise it with some more tests and run it past Martin.

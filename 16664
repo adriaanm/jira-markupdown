@@ -1,0 +1,49 @@
+Recently I wanted to use the collection.immutable.TreeMap implementation with some fairly large trees (10k - 200k elements). Unfortunately it turns out that only the basic lookup/add/delete operations perform well. All others are usually O(n), even simple operations like head.
+
+There seem to be three root causes:
+
+1. Most operations use the default implementations from IterableLike/TraversableLike, so many of these operations are defined in terms of 'iterator'. If you look at the definition of iterator in TreeSet/TreeMap you'll find that they use RedBlack#Tree.toStream, which constructs a fully realized stream of elements in the tree upon _creation_ (so it is an O(n) space/time operation even before starting any iteration).
+
+2. The range related operations (range, from, to, until) construct a new tree by splitting the existing tree. Unfortunately, the size of the new tree is calculated by calling RedBlack#Tree.count. This is an O(n) operation (also see SI-4026).
+
+3. The RedBlack implementation uses nested classes and is extended by TreeMap/TreeSet. That means that any node in the tree has a pointer to the root of the tree itself. This is an obvious source of space leaks, especially when using structural sharing. See for example SI-4084, although that particular issue may have been fixed already.
+
+
+To fix the first issue I created a custom iterator for RedBlack trees (RedBlack#TreeIterator) that is constructed on O(n log n) time/space and is also much quicker at iteration. I've also added custom implementations for head/last/headOption/lastOption/init/tail. This can be found on the "trees-iterator" branch at http://github.com/erikrozendaal/scala. The diff is here: https://github.com/erikrozendaal/scala/compare/master...trees-iterator
+
+Here's a quick overview of the performance difference of various operations. Take a large pinch of salt when looking at the numbers, since getting consistent benchmarks out of the JVM seems to be a black art. The benchmark code can be found at https://gist.github.com/1507127
+
+Master build number is 2.10.0.rdev-4019-2011-12-20-gbba3b00.
+
+TreeSet containing 10000 random ints.
+- foreach:       master: 2443 ops/sec, trees-iterator: same.
+- head:          master:  354 ops/sec, trees-iterator:  10M ops/sec
+- last:          master:  322 ops/sec, trees-iterator:  10M ops/sec
+- tail:          master:   41 ops/sec, trees-iterator: 180K ops/sec
+- init:          master:   89 ops/sec, trees-iterator: 138K ops/sec
+- iterator:      master:  360 ops/sec, trees-iterator: 1.8M ops/sec
+- iterator.size: master:   41 ops/sec, trees-iterator: 1428 ops/sec
+
+(Note that 'iterator.size' is much slower than the 'last' operation, which is almost as fast as 'head'. This is due to 'head' and 'iterator.size' using an iterator, while 'last' is defined in TraversableLike and uses the faster RedBlack#Tree.foreach operation directly. 'last' would be even faster if it didn't call 'head' first).
+
+The quick fix for the second issue is to turn the count method in RedBlack#NonEmpty into a val. This speeds up range operations and also allows O(log n) versions of drop/take/dropRight/takeRight/slice/splitAt by using structural tree sharing. Also takeWhile/dropWhile/span can be implemented more efficiently. This change may effect serialization compatibility though (is this a problem?) and also increases the memory used per RedBlack node. See the trees-ranges branch (diff:https://github.com/erikrozendaal/scala/compare/trees-iterator...trees-ranges).
+
+Compared to master and trees-iterator the performance changes are:
+
+TreeSet containing 10000 random ints.
+- drop(5)         : master:  33 ops/sec, trees-iterator: 113 ops/sec, trees-ranges: 270K ops/sec
+- take(5)         : master: 381 ops/sec, trees-iterator:  1M ops/sec, trees-ranges:   1M ops/sec
+- drop(5000)      : master:  39 ops/sec, trees-iterator: 225 ops/sec, trees-ranges: 326K ops/sec
+- take(5000)      : master:  59 ops/sec, trees-iterator: 262 ops/sec, trees-ranges: 356K ops/sec
+- dropWhile(_ < 0): master: 241 ops/sec, trees-iterator: 242 ops/sec, trees-ranges: 2822 ops/sec
+- takeWhile(_ < 0): master:  61 ops/sec, trees-iterator: 265 ops/sec, trees-ranges: 2812 ops/sec
+
+
+The only way I see to fix issue 3 is to changed the nested RedBlack classes into ordinary classes. This obviously breaks binary and source compatibility (TreeMap/TreeSet can no longer extend this class, but my suspicion is that RedBlack is not meant to be used outside of the scala library). But this does fix the space leak and brings back down the memory used by a RedBlack node. The code can be found in the trees-redblack branch and also includes some micro-optimizations for head/tail functionality. Seehttps://github.com/erikrozendaal/scala/compare/trees-ranges...trees-redblack. Also note that this breaks test/files/run/t2873.scala, since it uses RedBlack#Empty for testing for the absence of a compiler bug.
+
+Finally, these patches are mainly about getting usable big-O performance out of TreeMap/TreeSet. A lot can still be done to increase efficiency (smarter use of the Ordering class to avoid additional comparisons, etc).
+
+Any chance that these patches can become part of 2.10? What about 2.9 for at least the binary compatible changes?
+
+Regards, 
+Erik

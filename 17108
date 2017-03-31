@@ -1,0 +1,19 @@
+Also, empty tries sometimes throw an exception when `size` is called.
+
+{code}
+% test/partest --verbose test/files/scalacheck/Ctrie.scala
+...
+debug: Exception in thread "SpawnThread" java.lang.ArithmeticException: / by zero
+at scala.collection.concurrent.CNode.computeSize(TrieMap.scala:476)
+at scala.collection.concurrent.CNode.cachedSize(TrieMap.scala:462)
+at scala.collection.concurrent.INode.cachedSize(TrieMap.scala:371)
+at scala.collection.concurrent.TrieMap.cachedSize(TrieMap.scala:898)
+at scala.collection.concurrent.TrieMap.size(TrieMap.scala:903)
+
+[snip 100 repetitions of stack trace]
+
+debug: test for 'test/files/scalacheck/Ctrie.scala' success: false
+testing: [...]/files/scalacheck/Ctrie.scala                           [  OK  ]
+
+All of 1 tests were successful (elapsed time: 00:01:10)
+{code}

@@ -1,0 +1,17 @@
+Problem is in class scala.util.parsing.combinator.lexical.StdLexical
+method:
+{code}
+  protected def comment: Parser[Any] = (
+      '*' ~ '/'  ^^ { case _ => ' '  }
+    | chrExcept(EofCh) ~ comment
+    )
+{code}
+causes recursion for every character in multiline comments.
+Should be rather something like:
+{code}
+  protected def comment: Parser[Any] = (
+      rep('*') ~ '/'  ^^ { case _ => ' '  }
+    | rep('*') ~ comment //to avoid recursion for multiline comments filled with '*'
+    | rep(chrExcept(EofCh, '*')) ~ comment
+    )
+{code}

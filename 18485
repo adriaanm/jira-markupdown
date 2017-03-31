@@ -1,0 +1,287 @@
+$ scala -version
+Scala code runner version 2.10.2 -- Copyright 2002-2013, LAMP/EPFL
+
+$ java -version
+java version "1.7.0_25"
+Java(TM) SE Runtime Environment (build 1.7.0_25-b15)
+Java HotSpot(TM) 64-Bit Server VM (build 23.25-b01, mixed mode)
+
+$ cat hello.scala 
+println("Hello, world!")
+
+$ scala hello.scala # hangs, pressed Ctrl-\
+^\2013-08-21 23:48:24
+Full thread dump Java HotSpot(TM) 64-Bit Server VM (23.25-b01 mixed mode):
+
+"Thread-5" daemon prio=10 tid=0x00007fbde0542800 nid=0x13c9 runnable [0x00007fbdd3abd000]
+   java.lang.Thread.State: RUNNABLE
+	at java.io.FileInputStream.readBytes(Native Method)
+	at java.io.FileInputStream.read(FileInputStream.java:242)
+	at java.io.BufferedInputStream.read1(BufferedInputStream.java:273)
+	at java.io.BufferedInputStream.read(BufferedInputStream.java:334)
+	- locked <0x00000000e1ab7080> (a java.lang.UNIXProcess$ProcessPipeInputStream)
+	at java.io.FilterInputStream.read(FilterInputStream.java:107)
+	at scala.sys.process.BasicIO$.loop$1(BasicIO.scala:225)
+	at scala.sys.process.BasicIO$.transferFullyImpl(BasicIO.scala:233)
+	at scala.sys.process.BasicIO$.transferFully(BasicIO.scala:214)
+	at scala.sys.process.BasicIO$$anonfun$toStdErr$1.apply(BasicIO.scala:203)
+	at scala.sys.process.BasicIO$$anonfun$toStdErr$1.apply(BasicIO.scala:203)
+	at scala.sys.process.ProcessBuilderImpl$Simple$$anonfun$4.apply$mcV$sp(ProcessBuilderImpl.scala:76)
+	at scala.sys.process.ProcessImpl$Spawn$$anon$1.run(ProcessImpl.scala:22)
+
+"Thread-4" daemon prio=10 tid=0x00007fbde0540800 nid=0x13c8 runnable [0x00007fbdd3bbe000]
+   java.lang.Thread.State: RUNNABLE
+	at java.io.FileInputStream.readBytes(Native Method)
+	at java.io.FileInputStream.read(FileInputStream.java:242)
+	at java.io.BufferedInputStream.read1(BufferedInputStream.java:273)
+	at java.io.BufferedInputStream.read(BufferedInputStream.java:334)
+	- locked <0x00000000e1ab4fc8> (a java.lang.UNIXProcess$ProcessPipeInputStream)
+	at java.io.FilterInputStream.read(FilterInputStream.java:107)
+	at scala.sys.process.BasicIO$.loop$1(BasicIO.scala:225)
+	at scala.sys.process.BasicIO$.transferFullyImpl(BasicIO.scala:233)
+	at scala.sys.process.BasicIO$.transferFully(BasicIO.scala:214)
+	at scala.sys.process.BasicIO$$anonfun$toStdOut$1.apply(BasicIO.scala:208)
+	at scala.sys.process.BasicIO$$anonfun$toStdOut$1.apply(BasicIO.scala:208)
+	at scala.sys.process.ProcessBuilderImpl$Simple$$anonfun$3.apply$mcV$sp(ProcessBuilderImpl.scala:73)
+	at scala.sys.process.ProcessImpl$Spawn$$anon$1.run(ProcessImpl.scala:22)
+
+"process reaper" daemon prio=10 tid=0x00007fbde053d800 nid=0x13c6 runnable [0x00007fbdd3ce7000]
+   java.lang.Thread.State: RUNNABLE
+	at java.lang.UNIXProcess.waitForProcessExit(Native Method)
+	at java.lang.UNIXProcess.access$200(UNIXProcess.java:54)
+	at java.lang.UNIXProcess$3.run(UNIXProcess.java:174)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:615)
+	at java.lang.Thread.run(Thread.java:724)
+
+"Thread-2" daemon prio=10 tid=0x00007fbde04f7800 nid=0x13a7 runnable [0x00007fbdd810d000]
+   java.lang.Thread.State: RUNNABLE
+	at java.io.FileInputStream.readBytes(Native Method)
+	at java.io.FileInputStream.read(FileInputStream.java:242)
+	at java.io.BufferedInputStream.read1(BufferedInputStream.java:273)
+	at java.io.BufferedInputStream.read(BufferedInputStream.java:334)
+	- locked <0x00000000e1a9f430> (a java.lang.UNIXProcess$ProcessPipeInputStream)
+	at java.io.FilterInputStream.read(FilterInputStream.java:107)
+	at scala.sys.process.BasicIO$.loop$1(BasicIO.scala:225)
+	at scala.sys.process.BasicIO$.transferFullyImpl(BasicIO.scala:233)
+	at scala.sys.process.BasicIO$.transferFully(BasicIO.scala:214)
+	at scala.sys.process.BasicIO$$anonfun$toStdErr$1.apply(BasicIO.scala:203)
+	at scala.sys.process.BasicIO$$anonfun$toStdErr$1.apply(BasicIO.scala:203)
+	at scala.sys.process.ProcessBuilderImpl$Simple$$anonfun$4.apply$mcV$sp(ProcessBuilderImpl.scala:76)
+	at scala.sys.process.ProcessImpl$Spawn$$anon$1.run(ProcessImpl.scala:22)
+
+"Thread-1" daemon prio=10 tid=0x00007fbde04f9800 nid=0x13a6 runnable [0x00007fbdd3ffe000]
+   java.lang.Thread.State: RUNNABLE
+	at java.io.FileInputStream.readBytes(Native Method)
+	at java.io.FileInputStream.read(FileInputStream.java:242)
+	at java.io.BufferedInputStream.read1(BufferedInputStream.java:273)
+	at java.io.BufferedInputStream.read(BufferedInputStream.java:334)
+	- locked <0x00000000e1a9d378> (a java.lang.UNIXProcess$ProcessPipeInputStream)
+	at java.io.FilterInputStream.read(FilterInputStream.java:107)
+	at scala.sys.process.BasicIO$.loop$1(BasicIO.scala:225)
+	at scala.sys.process.BasicIO$.transferFullyImpl(BasicIO.scala:233)
+	at scala.sys.process.BasicIO$.transferFully(BasicIO.scala:214)
+	at scala.sys.process.BasicIO$$anonfun$toStdOut$1.apply(BasicIO.scala:208)
+	at scala.sys.process.BasicIO$$anonfun$toStdOut$1.apply(BasicIO.scala:208)
+	at scala.sys.process.ProcessBuilderImpl$Simple$$anonfun$3.apply$mcV$sp(ProcessBuilderImpl.scala:73)
+	at scala.sys.process.ProcessImpl$Spawn$$anon$1.run(ProcessImpl.scala:22)
+
+"process reaper" daemon prio=10 tid=0x00007fbde04f6000 nid=0x13a4 runnable [0x00007fbdd8135000]
+   java.lang.Thread.State: RUNNABLE
+	at java.lang.UNIXProcess.waitForProcessExit(Native Method)
+	at java.lang.UNIXProcess.access$200(UNIXProcess.java:54)
+	at java.lang.UNIXProcess$3.run(UNIXProcess.java:174)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:615)
+	at java.lang.Thread.run(Thread.java:724)
+
+"Service Thread" daemon prio=10 tid=0x00007fbde0144800 nid=0x13a1 runnable [0x0000000000000000]
+   java.lang.Thread.State: RUNNABLE
+
+"C2 CompilerThread1" daemon prio=10 tid=0x00007fbde0142000 nid=0x13a0 waiting on condition [0x0000000000000000]
+   java.lang.Thread.State: RUNNABLE
+
+"C2 CompilerThread0" daemon prio=10 tid=0x00007fbde013f800 nid=0x139f waiting on condition [0x0000000000000000]
+   java.lang.Thread.State: RUNNABLE
+
+"Signal Dispatcher" daemon prio=10 tid=0x00007fbde013d000 nid=0x139e waiting on condition [0x0000000000000000]
+   java.lang.Thread.State: RUNNABLE
+
+"Finalizer" daemon prio=10 tid=0x00007fbde00ef000 nid=0x139d in Object.wait() [0x00007fbdd8a04000]
+   java.lang.Thread.State: WAITING (on object monitor)
+	at java.lang.Object.wait(Native Method)
+	- waiting on <0x00000000e18b5798> (a java.lang.ref.ReferenceQueue$Lock)
+	at java.lang.ref.ReferenceQueue.remove(ReferenceQueue.java:135)
+	- locked <0x00000000e18b5798> (a java.lang.ref.ReferenceQueue$Lock)
+	at java.lang.ref.ReferenceQueue.remove(ReferenceQueue.java:151)
+	at java.lang.ref.Finalizer$FinalizerThread.run(Finalizer.java:189)
+
+"Reference Handler" daemon prio=10 tid=0x00007fbde00ec800 nid=0x139c in Object.wait() [0x00007fbdd8b05000]
+   java.lang.Thread.State: WAITING (on object monitor)
+	at java.lang.Object.wait(Native Method)
+	- waiting on <0x00000000e18b5320> (a java.lang.ref.Reference$Lock)
+	at java.lang.Object.wait(Object.java:503)
+	at java.lang.ref.Reference$ReferenceHandler.run(Reference.java:133)
+	- locked <0x00000000e18b5320> (a java.lang.ref.Reference$Lock)
+
+"main" prio=10 tid=0x00007fbde0009800 nid=0x1392 waiting on condition [0x00007fbde92d4000]
+   java.lang.Thread.State: TIMED_WAITING (sleeping)
+	at java.lang.Thread.sleep(Native Method)
+	at scala.tools.nsc.CompileSocket.getPort(CompileSocket.scala:131)
+	at scala.tools.nsc.CompileSocket.getsock$1(CompileSocket.scala:166)
+	at scala.tools.nsc.CompileSocket.getOrCreateSocket(CompileSocket.scala:184)
+	at scala.tools.nsc.ScriptRunner.compileWithDaemon(ScriptRunner.scala:80)
+	at scala.tools.nsc.ScriptRunner.scala$tools$nsc$ScriptRunner$$compile$1(ScriptRunner.scala:123)
+	at scala.tools.nsc.ScriptRunner$$anonfun$withCompiledScript$1.apply$mcZ$sp(ScriptRunner.scala:157)
+	at scala.tools.nsc.ScriptRunner$$anonfun$withCompiledScript$1.apply(ScriptRunner.scala:131)
+	at scala.tools.nsc.ScriptRunner$$anonfun$withCompiledScript$1.apply(ScriptRunner.scala:131)
+	at scala.tools.nsc.util.package$.trackingThreads(package.scala:51)
+	at scala.tools.nsc.util.package$.waitingForThreads(package.scala:35)
+	at scala.tools.nsc.ScriptRunner.withCompiledScript(ScriptRunner.scala:130)
+	at scala.tools.nsc.ScriptRunner.runScript(ScriptRunner.scala:188)
+	at scala.tools.nsc.ScriptRunner.runScriptAndCatch(ScriptRunner.scala:201)
+	at scala.tools.nsc.MainGenericRunner.runTarget$1(MainGenericRunner.scala:76)
+	at scala.tools.nsc.MainGenericRunner.process(MainGenericRunner.scala:96)
+	at scala.tools.nsc.MainGenericRunner$.main(MainGenericRunner.scala:105)
+	at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
+
+"VM Thread" prio=10 tid=0x00007fbde00e5000 nid=0x139b runnable 
+
+"GC task thread#0 (ParallelGC)" prio=10 tid=0x00007fbde0018000 nid=0x1393 runnable 
+
+"GC task thread#1 (ParallelGC)" prio=10 tid=0x00007fbde001a000 nid=0x1394 runnable 
+
+"GC task thread#2 (ParallelGC)" prio=10 tid=0x00007fbde001b800 nid=0x1395 runnable 
+
+"GC task thread#3 (ParallelGC)" prio=10 tid=0x00007fbde001d800 nid=0x1396 runnable 
+
+"GC task thread#4 (ParallelGC)" prio=10 tid=0x00007fbde001f800 nid=0x1397 runnable 
+
+"GC task thread#5 (ParallelGC)" prio=10 tid=0x00007fbde0021000 nid=0x1398 runnable 
+
+"GC task thread#6 (ParallelGC)" prio=10 tid=0x00007fbde0023000 nid=0x1399 runnable 
+
+"GC task thread#7 (ParallelGC)" prio=10 tid=0x00007fbde0025000 nid=0x139a runnable 
+
+"VM Periodic Task Thread" prio=10 tid=0x00007fbde014f000 nid=0x13a2 waiting on condition 
+
+2013-08-21 23:48:24
+Full thread dump Java HotSpot(TM) 64-Bit Server VM (23.25-b01 mixed mode):
+
+"Service Thread" daemon prio=10 tid=0x00007f7300144800 nid=0x13c3 runnable [0x0000000000000000]
+   java.lang.Thread.State: RUNNABLE
+
+"C2 CompilerThread1" daemon prio=10 tid=0x00007f7300142000 nid=0x13c2 waiting on condition [0x0000000000000000]
+   java.lang.Thread.State: RUNNABLE
+
+"C2 CompilerThread0" daemon prio=10 tid=0x00007f730013f000 nid=0x13c1 waiting on condition [0x0000000000000000]
+   java.lang.Thread.State: RUNNABLE
+
+"Signal Dispatcher" daemon prio=10 tid=0x00007f730013d000 nid=0x13c0 waiting on condition [0x0000000000000000]
+   java.lang.Thread.State: RUNNABLE
+
+"Finalizer" daemon prio=10 tid=0x00007f73000ef000 nid=0x13bf in Object.wait() [0x00007f72f318d000]
+   java.lang.Thread.State: WAITING (on object monitor)
+	at java.lang.Object.wait(Native Method)
+	- waiting on <0x00000000e18b5798> (a java.lang.ref.ReferenceQueue$Lock)
+	at java.lang.ref.ReferenceQueue.remove(ReferenceQueue.java:135)
+	- locked <0x00000000e18b5798> (a java.lang.ref.ReferenceQueue$Lock)
+	at java.lang.ref.ReferenceQueue.remove(ReferenceQueue.java:151)
+	at java.lang.ref.Finalizer$FinalizerThread.run(Finalizer.java:189)
+
+"Reference Handler" daemon prio=10 tid=0x00007f73000ec800 nid=0x13be in Object.wait() [0x00007f72f328e000]
+   java.lang.Thread.State: WAITING (on object monitor)
+	at java.lang.Object.wait(Native Method)
+	- waiting on <0x00000000e18b5320> (a java.lang.ref.Reference$Lock)
+	at java.lang.Object.wait(Object.java:503)
+	at java.lang.ref.Reference$ReferenceHandler.run(Reference.java:133)
+	- locked <0x00000000e18b5320> (a java.lang.ref.Reference$Lock)
+
+"main" prio=10 tid=0x00007f7300009800 nid=0x13b4 runnable [0x00007f7307a77000]
+   java.lang.Thread.State: RUNNABLE
+	at java.net.PlainSocketImpl.socketAccept(Native Method)
+	at java.net.AbstractPlainSocketImpl.accept(AbstractPlainSocketImpl.java:398)
+	at java.net.ServerSocket.implAccept(ServerSocket.java:530)
+	at java.net.ServerSocket.accept(ServerSocket.java:498)
+	at scala.tools.util.SocketServer$$anonfun$1.apply(SocketServer.scala:48)
+	at scala.tools.util.SocketServer$$anonfun$1.apply(SocketServer.scala:46)
+	at scala.tools.nsc.io.Socket$Box.either(Socket.scala:32)
+	at scala.tools.util.SocketServer.loop$1(SocketServer.scala:82)
+	at scala.tools.util.SocketServer.run(SocketServer.scala:96)
+	at scala.tools.nsc.CompileServer$$anonfun$execute$1$$anonfun$apply$mcZ$sp$1.apply$mcZ$sp(CompileServer.scala:206)
+	at scala.tools.nsc.CompileServer$$anonfun$execute$1$$anonfun$apply$mcZ$sp$1.apply(CompileServer.scala:201)
+	at scala.tools.nsc.CompileServer$$anonfun$execute$1$$anonfun$apply$mcZ$sp$1.apply(CompileServer.scala:201)
+	at scala.util.DynamicVariable.withValue(DynamicVariable.scala:57)
+	at scala.Console$.withOut(Console.scala:107)
+	at scala.tools.nsc.CompileServer$$anonfun$execute$1.apply$mcZ$sp(CompileServer.scala:201)
+	at scala.tools.nsc.CompileServer$$anonfun$execute$1.apply(CompileServer.scala:201)
+	at scala.tools.nsc.CompileServer$$anonfun$execute$1.apply(CompileServer.scala:201)
+	at scala.util.DynamicVariable.withValue(DynamicVariable.scala:57)
+	at scala.Console$.withErr(Console.scala:148)
+	at scala.tools.nsc.CompileServer$.execute(CompileServer.scala:200)
+	at scala.tools.nsc.CompileServer$.main(CompileServer.scala:181)
+	at scala.tools.nsc.CompileServer.main(CompileServer.scala)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:606)
+	at scala.tools.nsc.util.ScalaClassLoader$$anonfun$run$1.apply(ScalaClassLoader.scala:71)
+	at scala.tools.nsc.util.ScalaClassLoader$class.asContext(ScalaClassLoader.scala:31)
+	at scala.tools.nsc.util.ScalaClassLoader$URLClassLoader.asContext(ScalaClassLoader.scala:139)
+	at scala.tools.nsc.util.ScalaClassLoader$class.run(ScalaClassLoader.scala:71)
+	at scala.tools.nsc.util.ScalaClassLoader$URLClassLoader.run(ScalaClassLoader.scala:139)
+	at scala.tools.nsc.CommonRunner$class.run(ObjectRunner.scala:28)
+	at scala.tools.nsc.ObjectRunner$.run(ObjectRunner.scala:45)
+	at scala.tools.nsc.CommonRunner$class.runAndCatch(ObjectRunner.scala:35)
+	at scala.tools.nsc.ObjectRunner$.runAndCatch(ObjectRunner.scala:45)
+	at scala.tools.nsc.MainGenericRunner.runTarget$1(MainGenericRunner.scala:74)
+	at scala.tools.nsc.MainGenericRunner.process(MainGenericRunner.scala:96)
+	at scala.tools.nsc.MainGenericRunner$.main(MainGenericRunner.scala:105)
+	at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
+
+"VM Thread" prio=10 tid=0x00007f73000e5000 nid=0x13bd runnable 
+
+"GC task thread#0 (ParallelGC)" prio=10 tid=0x00007f7300018000 nid=0x13b5 runnable 
+
+"GC task thread#1 (ParallelGC)" prio=10 tid=0x00007f730001a000 nid=0x13b6 runnable 
+
+"GC task thread#2 (ParallelGC)" prio=10 tid=0x00007f730001b800 nid=0x13b7 runnable 
+
+"GC task thread#3 (ParallelGC)" prio=10 tid=0x00007f730001d800 nid=0x13b8 runnable 
+
+"GC task thread#4 (ParallelGC)" prio=10 tid=0x00007f730001f800 nid=0x13b9 runnable 
+
+"GC task thread#5 (ParallelGC)" prio=10 tid=0x00007f7300021000 nid=0x13ba runnable 
+
+"GC task thread#6 (ParallelGC)" prio=10 tid=0x00007f7300023000 nid=0x13bb runnable 
+
+"GC task thread#7 (ParallelGC)" prio=10 tid=0x00007f7300025000 nid=0x13bc runnable 
+
+"VM Periodic Task Thread" prio=10 tid=0x00007f730014f000 nid=0x13c4 waiting on condition 
+
+JNI global references: 129
+
+Heap
+ PSYoungGen      total 27328K, used 2349K [0x00000000e18b0000, 0x00000000e3720000, 0x0000000100000000)
+  eden space 23488K, 10% used [0x00000000e18b0000,0x00000000e1afb598,0x00000000e2fa0000)
+  from space 3840K, 0% used [0x00000000e3360000,0x00000000e3360000,0x00000000e3720000)
+  to   space 3840K, 0% used [0x00000000e2fa0000,0x00000000e2fa0000,0x00000000e3360000)
+ ParOldGen       total 62336K, used 0K [0x00000000a4a00000, 0x00000000a86e0000, 0x00000000e18b0000)
+  object space 62336K, 0% used [0x00000000a4a00000,0x00000000a4a00000,0x00000000a86e0000)
+ PSPermGen       total 21248K, used 9771K [0x000000009f800000, 0x00000000a0cc0000, 0x00000000a4a00000)
+  object space 21248K, 45% used [0x000000009f800000,0x00000000a018ac68,0x00000000a0cc0000)
+
+JNI global references: 143
+
+Heap
+ PSYoungGen      total 27328K, used 4345K [0x00000000e18b0000, 0x00000000e3720000, 0x0000000100000000)
+  eden space 23488K, 18% used [0x00000000e18b0000,0x00000000e1cee6d0,0x00000000e2fa0000)
+  from space 3840K, 0% used [0x00000000e3360000,0x00000000e3360000,0x00000000e3720000)
+  to   space 3840K, 0% used [0x00000000e2fa0000,0x00000000e2fa0000,0x00000000e3360000)
+ ParOldGen       total 62336K, used 0K [0x00000000a4a00000, 0x00000000a86e0000, 0x00000000e18b0000)
+  object space 62336K, 0% used [0x00000000a4a00000,0x00000000a4a00000,0x00000000a86e0000)
+ PSPermGen       total 21248K, used 10343K [0x000000009f800000, 0x00000000a0cc0000, 0x00000000a4a00000)
+  object space 21248K, 48% used [0x000000009f800000,0x00000000a0219c00,0x00000000a0cc0000)
+
+/opt/scala-2.10.2/bin/scala: line 21:  5077 Quit                    (core dumped) "$@"
+Could not connect to compilation daemon after 300 attempts.

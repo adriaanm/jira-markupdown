@@ -1,0 +1,22 @@
+
+
+That's unfortunately not an easy one (I am not even sure there is a way to fix this). The problem is that in 
+{code}
+public interface OuterInterface {
+  public interface InnerInterface {
+    public void foo();
+  }
+}
+{code} 
+`InnerInterface` is a static member of `OuterInterface`. So it can't be inherited and the error in `ConcreteImpl.scala` is as expected. As to `AbstractImpl.java`, the Java parser is just a parser, it can't have any context information. The only thing one could possibly consider is import all companion objects of inherited classes and interfaces. I.e `AbstractImpl` could be translated to the following Scala code:
+{code}
+  abstract class AbstractImpl extends _root_.java.lang.Object with OuterInterface {
+    import OuterInterface._
+    def create(): InnerInterface
+  }
+{code}
+But that's both incomplete and possibly incorrect. It's incomplete because 
+interfaces inherited by `OuterInterface` are not considered. It's possibly incorrect
+because a companion object might not exist. Neither of the two shortcomings can be solved without adding context information, which is beyond our design. So I am afraid it's a wontfix until some completely new design emerges.
+
+

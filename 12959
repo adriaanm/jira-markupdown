@@ -1,0 +1,17 @@
+The following code:
+{code}
+  val args = new scala.collection.jcl.HashMap[String, Array[String]]  
+  args.put ("foo", Array ("bar"))
+{code}
+produced Java array before (with Scala 2.6.1 prerelease), but now it produces a BoxedAnyArray
+{code}
+  args.get ("foo") .get .getClass
+{code}
+returns "class scala.runtime.BoxedAnyArray".
+This leads to
+{code}
+java.lang.ClassCastException: scala.runtime.BoxedAnyArray
+{code}
+in the Java application, which expected Java array.
+
+According to the [http://www.scala-lang.org/docu/files/api/scala/Array.html documentation] Array[String] must be a Java array.

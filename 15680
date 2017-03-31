@@ -1,0 +1,10 @@
+{code}
+object OverloadingShapeType {
+  // comment out this, and the other alternative is applied successfully.
+  implicit def blerg[A](f: String) {}
+
+  implicit def blerg[M[X] <: Seq[X], A](l: M[A]) {}
+
+  blerg(List(1)) // error: type mismatch; found   : List[Int] required: String
+}
+{code}

@@ -1,0 +1,50 @@
+Not a code patch, but here's a class that I use. It is just Range[Int] converted to BigRange[BigInt].
+
+Since there is no common type ancestry between Int and BigInt, I couldn't create a parameterized Range.
+
+
+{code}
+class BigRange(val start: BigInt, val end: BigInt, val step: BigInt) extends RandomAccessSeq.Projection[BigInt] {
+  if (step == 0) throw new Predef.IllegalArgumentException
+
+  /** Create a new range with the start and end values of this range and
+   *  a new <code>step</code>.
+   */
+  def by(step: BigInt)= new BigRange(start, end, step)
+
+  lazy val length: Int = {
+    if (start < end && this.step < 0) 0
+    else if (start > end && this.step > 0) 0
+    else {
+      val base = if (start < end) end - start
+                 else start - end
+      assert(base >= 0)
+      val step = if (this.step < 0) -this.step else this.step
+      assert(step >= 0)
+      (base / step + last(base, step)).intValue
+    }
+  }
+
+  protected def last(base: BigInt, step: BigInt): BigInt =
+    if (base % step != 0) 1 else 0
+
+  def apply(idx: Int) = {
+    if (idx < 0 || idx >= length) throw new Predef.IndexOutOfBoundsException
+    start + (step * idx)
+  }
+
+  def apply(idx: BigInt): BigInt = {
+    if (idx < 0 || idx >= length) throw new Predef.IndexOutOfBoundsException
+    start + (step * idx)
+  }
+
+  /** a <code>Seq.contains</code>, not a <code>Iterator.contains</code>! */
+  def contains(x: BigInt): Boolean =
+    if (step > 0)
+      x >= start && x < end && (((x - start) % step) == 0)
+    else
+      x <= start && x > end && (((x - end) % step) == 0)
+
+}
+
+{code}

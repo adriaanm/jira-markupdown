@@ -1,0 +1,43 @@
+Seth suggested I post this recreation here. Try this on a 2.12.1 REPL:
+
+{code:scala}
+import scala.concurrent._
+import scala.concurrent.duration._
+import scala.concurrent.ExecutionContext.Implicits.global
+
+// This works fine:
+val x = Future(42)
+Await.result(x, 1.second)
+
+// This throws a TimeoutException:
+Await.result(Future(42), 1.second)
+{code}
+
+Adding {{scalacOptions += "-Ydelambdafy:inline"}} to {{build.sbt}} makes the problem go away.
+
+The problem can also result in a {{NoClassDefFoundError}} as shown here (running Tut on an ebook project):
+
+{code}
+[tut] compiling: /Users/dave/dev/projects/advanced-scala/src/pages/test.md
+java.lang.NoClassDefFoundError: Could not initialize class $line4.$read$$iw$$iw$$iw$$iw$$iw$$iw$
+    at scala.runtime.java8.JFunction0$mcI$sp.apply(JFunction0$mcI$sp.java:12)
+    at scala.concurrent.Future$.$anonfun$apply$1(Future.scala:653)
+    at scala.util.Success.$anonfun$map$1(Try.scala:251)
+    at scala.util.Success.map(Try.scala:209)
+    at scala.concurrent.Future.$anonfun$map$1(Future.scala:287)
+    ... manually elided for brevity
+[tut] *** Error reported at /Users/dave/dev/projects/advanced-scala/src/pages/monads/test.md:6
+java.util.concurrent.TimeoutException: Futures timed out after [1 second]
+  at scala.concurrent.impl.Promise$DefaultPromise.ready(Promise.scala:255)
+  at scala.concurrent.impl.Promise$DefaultPromise.result(Promise.scala:259)
+  at scala.concurrent.Await$.$anonfun$result$1(package.scala:190)
+  at scala.concurrent.BlockContext$DefaultBlockContext$.blockOn(BlockContext.scala:53)
+  at scala.concurrent.Await$.result(package.scala:123)
+  ... 88 elided
+[error] (run-main-0) java.lang.Exception: Tut execution failed.
+[trace] Stack trace suppressed: run last *:streams for the full output.
+[trace] Stack trace suppressed: run last *:tutOnly for the full output.
+[error] (*:tutOnly) Nonzero exit code: 1
+[error] Total time: 5 s, completed 27-Feb-2017 09:38:19
+{code}
+

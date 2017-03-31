@@ -1,0 +1,59 @@
+This wasn't the stack trace I was trying to get a small error for, but I can't seem to make it past this one in my test project.
+
+Unspecialize W, and everything is fine.
+
+{code}
+
+class Automaton[@specialized(Double) W,State] { 
+
+  def finalWeight(s: State): W = error("todo");
+
+  def allStates: Set[State] = error("toodo");
+
+  /**
+   * Returns a map from states to its final weight. may expand all nodes.
+   */
+  def finalStateWeights = Map.empty ++ allStates.map { s => (s,finalWeight(s)) }
+
+  // This works fine:
+  /*
+  def finalStateWeights() = {
+    val it = allStates.iterator;
+    while(it.hasNext) {
+      finalWeight(it.next);
+    }
+  }
+  */
+
+}
+
+}
+
+{code}
+
+{code}
+
+ scala.tools.nsc.symtab.Types$$TypeError: type mismatch;
+ found   : s.type (with underlying type State)
+ required: State
+        at scala.tools.nsc.typechecker.Contexts$$Context.error(Contexts.scala:274)
+        at scala.tools.nsc.typechecker.Infer$$Inferencer.error(Infer.scala:214)
+        at scala.tools.nsc.typechecker.Infer$$Inferencer.typeError(Infer.scala:224)
+        at scala.tools.nsc.typechecker.Infer$$Inferencer.typeErrorTree(Infer.scala:239)
+        at scala.tools.nsc.typechecker.Typers$$Typer.adapt(Typers.scala:991)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:4047)
+        at scala.tools.nsc.typechecker.Duplicators$$BodyDuplicator.typed(Duplicators.scala:290)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typedArg(Typers.scala:2106)
+        at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$typedArgs$$3.apply(Typers.scala:2116)
+        at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$typedArgs$$3.apply(Typers.scala:2115)
+        at scala.collection.TraversableLike$$$$anonfun$$map$$1.apply(TraversableLike.scala:203)
+        at scala.collection.TraversableLike$$$$anonfun$$map$$1.apply(TraversableLike.scala:203)
+        at scala.collection.LinearSeqOptimized$$class.foreach(LinearSeqOptimized.scala:62)
+        at scala.collection.immutable.List.foreach(List.scala:46)
+        at scala.collection.TraversableLike$$class.map(TraversableLike.scala:203)
+        at scala.collection.immutable.List.map(List.scala:46)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typedArgs(Typers.scala:2115)
+        at scala.tools.nsc.typechecker.Typers$$Typer.doTypedApply(Typers.scala:2315)
+        at scala.tools.nsc.typechecker.Typers$$Typer.typedApply$$1(Typers.scala:3264)
+
+{code}

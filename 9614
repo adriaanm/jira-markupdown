@@ -1,0 +1,36 @@
+There is no evidence of a bug from your screenshot; introducing the curly braces defines the subtypes of {{Expr}} in a scope that is not visible from the place you do the pattern match.
+
+You can organize your code as:
+
+{code}
+sealed abstract class Base
+case class Number(n: Int) extends Base
+...
+
+object test {
+  def foo(b: Base) = b match {
+     case Number(n) =>
+  }
+}
+{code}
+
+Or, if you prefer:
+
+{code}
+sealed abstract class Base
+object Base {
+  case class Number(n: Int) extends Base
+}
+...
+
+object test {
+  import Base._
+  def foo(b: Base) = b match {
+     case Number(n) =>
+  }
+}
+{code}
+
+The first option is probably easier to start with; some prefer the second to avoid introducing so many names at the top level.
+
+But please direct followup discussions to the Coursera forums or to scala-user; JIRA is only for confirmed bugs.

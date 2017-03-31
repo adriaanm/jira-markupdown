@@ -1,0 +1,14 @@
+Replying to [comment:20 odersky]:
+> I don't understand: Vectors do have +: (prepend), :+ (append) and updated methods.
+> Which functionality are you missing?
+
+It's purely a syntactic issue.  With immutable Map, you can do something like the following:
+
+{code}
+val m1 = Map('a -> 1, 'b -> 2)
+val m2 = m1('a) = 3
+{code}
+
+Unfortunately, Vector uses "updated" rather than "update", standing out as the *only* collection to break with this convention.  It also does not implement the + operator, which is particularly bizarre given the fact that + has been conventionally used in Scala for sequence append.
+
+If you prefer, I can start a thread on some mailing list regarding this issue so that we don't have to hijack a closed bug.

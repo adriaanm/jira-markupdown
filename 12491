@@ -1,0 +1,43 @@
+Hello All,
+
+Below please find a more readable code snippet which triggers the "same" assertion failure. The code snippet (along with all my other reported issues) is generated from a testcase in the scala repository. Hope it would help.
+
+{code}
+$ scalac aaa.scala
+aaa.scala:5: error: illegal cyclic reference involving type T
+  def apply[T <: T](t: T) = new W[t.type](t)
+                                  ^
+aaa.scala:5: error: illegal cyclic reference involving type T
+  def apply[T <: T](t: T) = new W[t.type](t)
+                                          ^
+aaa.scala:5: error: cyclic aliasing or subtyping involving type T
+  def apply[T <: T](t: T) = new W[t.type](t)
+            ^
+aaa.scala:11: error: illegal cyclic reference involving type T
+  W("fooo").v ra_: RightAssoc
+   ^
+error: java.lang.AssertionError: assertion failed: TVar<T=null>
+	at scala.Predef$.assert(Predef.scala:219)
+	at scala.reflect.internal.Types$TypeVar.addLoBound(Types.scala:3032)
+	at scala.reflect.internal.tpe.TypeConstraints.$anonfun$solve$6(TypeConstraints.scala:234)
+	at scala.reflect.internal.tpe.TypeConstraints.$anonfun$solve$6$adapted(TypeConstraints.scala:230)
+	at scala.collection.immutable.List.foreach(List.scala:378)
+	at scala.reflect.internal.tpe.TypeConstraints.solveOne$1(TypeConstraints.scala:230)
+	at scala.reflect.internal.tpe.TypeConstraints.$anonfun$solve$9(TypeConstraints.scala:260)
+	at scala.reflect.internal.tpe.TypeConstraints.$anonfun$solve$9$adapted(TypeConstraints.scala:260)
+
+$ cat aaa.scala
+class W[T <: AnyRef](val t: T) {
+  val v: T {} = t
+}
+object W {
+  def apply[T <: T](t: T) = new W[t.type](t)
+}
+object RightAssoc {
+  def ra_:[T](t: T): Unit = ()
+}
+object Boom {
+  W("fooo").v ra_: RightAssoc
+}
+
+{code}

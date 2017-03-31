@@ -1,0 +1,7 @@
+Yes, sorry.  A lot of this got brought up on scala-debate but I should be clearer here in the jira.
+
+As Regex is currently implemented its unapplySeq uses .match() which attempts to exactly match the regex to the provided string.  In effect it adds the start and end anchors to your regex.  There are several problems with this.  First, you are already supplying a regex and if you wanted anchors presumably you would have supplied them.  I have taught six people Scala and every one has tripped over this with, "Why is it not doing what I tell it?", being the most common complaint.  Second, the quick-and-dirty way to get around this is to add {{".\*"}} to the start and end of your pattern (e.g., {noformat}""".*(\d+).*""".r{noformat}) but this can have a rather surprising performance impact in certain situations because of backtracking.
+
+The current pull request adds a trait which can be used to override unapplySeq to use .find(0) instead of .match().  Additionally it adds a .qr method into StringLike so that a Regex with NoImplicitAnchors can be easily generated just like using .r to get a Regex.
+
+Hope that states the problem and fix better.

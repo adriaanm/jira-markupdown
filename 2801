@@ -1,0 +1,19 @@
+If A.x is:
+{code}
+def x[@specialized("Int") T](t: T) = t
+{code}
+
+Modifying it to be:
+{code}
+def x[@specialized("Long") T](t: T) = t
+{code}
+causes B to correctly be recompiled because B used a specialized method that is now gone.
+
+However, changing it back to "Int" will not recompile B because it uses the unspecialized method now and annotation arguments are not compared.  B should be recompiled because x is now specialized to Int.
+
+
+Replying to "Any others that should be checked?" in r20624, Java annotations are not supposed to modify the annotated source code, but Scala annotations can.  Obviously serialized is an example of one.  I've not used the continuations plugin, but it looks like changes to 'cps' need to be propagated.
+
+I don't know about remote, serializable, throws, and cloneable.  I don't think the added signatures are visible to Scala code, so they might be fine.  I don't know what how the refined build manager is supposed to interact with Java sources, though, in which case it might matter.
+
+Java annotations can cause messages to be displayed during compilation, however.  A standard example is deprecated.  This might warrant a blacklist instead of a whitelist for annotations, since you can't know all annotations and their behaviors.

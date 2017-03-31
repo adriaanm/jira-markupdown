@@ -1,0 +1,34 @@
+changing the broken_val line to
+
+{code}
+val broke_val = tempval.-:(new AnyRef {}) // type mismatch error only when assigning
+{code}
+
+works around the bug... the prefix method call expansion seems to be ruining the dependent method types party
+
+smaller test case and typer output:
+{code}
+object Test {
+  trait Foo[T] 
+
+  trait Bar {
+    def -:(core: AnyRef): Foo[core.type] = error("")
+  }
+
+  val tempval: Bar = error("")
+  val cor: AnyRef = error("")
+  
+  val ok : Foo[cor.type] = tempval.-:(cor)
+  val oops : Foo[cor.type] = cor -: tempval 
+}
+{code}
+
+{code}
+    private[this] val ok: Test.Foo[Test.cor.type] = Test.this.tempval.-:(Test.this.cor);
+    <stable> <accessor> def ok: Test.Foo[Test.cor.type] = Test.this.ok;
+    private[this] val oops: Test.Foo[Test.cor.type] = {
+      <synthetic> val x$1: AnyRef = Test.this.cor;
+      Test.this.tempval.-:(x$1)
+    };
+    <stable> <accessor> def oops: Test.Foo[Test.cor.type] = Test.this.oops
+{code}

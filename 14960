@@ -1,0 +1,39 @@
+It's a relatively common operation to call toSeq on other collection types (to pass it to methods that require a Seq, like sort) so I believe we should try to be efficient.
+
+TraversableLike currently it calls toList, but that is not particularly efficient and there is a toList method for people who want a List (and can benefit from it). Ideally we'd return a properly-sized GenericArray or ArrayBuffer, but I don't see a way to check if a given collection has an efficient size method, so the simplest seems to make it call toIndexedSeq.
+
+MapLike and SetLike both suggest providing an efficient size method and the implementations override isEmpty as size == 0, so I think it is OK to rely on the size in toSeq.
+
+With that in mind, for MapLike.toSeq, I'd suggest something like:
+
+{code}
+  override def toSeq: Seq[(A, B)] = {
+    val result = new mutable.GenericArray[(A, B)](size)
+    var i = 0
+    for (x <- this) {
+      result(i) = x
+      i += 1
+    }
+    result
+  }
+{code}
+
+For SetLike.toSeq, I'd suggest something like:
+
+{code}
+  override def toSeq: Seq[A] = {
+    val result = new mutable.GenericArray[A](size)
+    var i = 0
+    for (x <- this) {
+      result(i) = x
+      i += 1
+    }
+    result
+  }
+{code}
+
+It's obviously possible to reduce duplication by having a toGenericArray in Traversable or as a utility method that takes a traversable somewhere for internal methodsr1.
+
+If this is deemed a good idea and patches (with tests) would help, I could provide those.
+
+r1 Note that a toGenericArray would be useful in other places too, like Seq.sortWith.

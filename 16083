@@ -1,0 +1,4 @@
+= problem =
+Scala 2.9 RC1 has been released, and there are still no collections that have been specialized as far as I can tell from the source. Missing specialization for Vector in particular is a problem because the overhead of storing an Integer instead of an Int is about 5x on a 64 bit JVM, and Vector is the most performant collection we have.
+
+I understand adding specialization everywhere would create code bloat, but just adding it to Vector alone (and not even IndexedSeqLike and such) would greatly reduce the memory consumption of these classes.

@@ -1,0 +1,93 @@
+{code}
+// Avoid malformed type errors that occur with def
+
+
+abstract class Content {
+    type T
+    def data: T
+}
+
+abstract class Wrapper { self =>
+    type T
+    def content: Content { type T <: self.T }
+    
+    // We would like to be able to directly read content.data
+
+    // The type of content.data should perhaps be either Wrapper.this.T or
+    // $$unique.T forSome { val $$unique: Content{type T <: Wrapper.this.T} }
+
+
+    // Here are four approaches that already work
+
+    val c1 = content
+    def data1: T = c1.data
+
+    
+    // return type is  c2.T forSome { val c2: Content{type T <: Wrapper.this.T} }
+    // return type T needed to be explicitly supplied when using 2.5.1-final or earlier
+    def data2 /*: T*/ = {
+        val c2 = content
+        
+        c2.data
+    }
+
+    def data3: T = {
+        def impl(c3: Content { type T <: self.T }): T = c3.data
+        impl(content)
+    }
+
+    def data4: T = {
+        val c4 = new Object { val x = content }.x
+        c4.data
+    }
+
+
+
+
+    // It isn't clear to me (Eric) why the following four do not also work
+    
+    // I suspected it may be because forSome works with val but not def
+    // However this doesn't explain why data1,data2,data3 already worked with 2.5.1-final
+
+    
+    def data5: T = content.data
+/*
+error: method data cannot be accessed in Content{type T <: Wrapper.this.T}
+ because its instance type => Content{type T <: Wrapper.this.T}#T 
+ contains a malformed type: Content{type T <: Wrapper.this.T}#T
+    def data5: T = content.data
+*/
+
+    class id6[U](val get: U) {}
+    def id6: T = {
+        new id6(content).get.data
+    }
+/*
+error: method data cannot be accessed in Content{type T <: Wrapper.this.T}
+ because its instance type => Content{type T <: Wrapper.this.T}#T
+  contains a malformed type: Content{type T <: Wrapper.this.T}#T
+        new id6(content).get.data
+*/
+
+    def data7: T = {
+        def impl(c7: => Content { type T <: self.T }): T = c7.data
+        impl(content)
+    }
+/*
+error: method data cannot be accessed in Content{type T <: Wrapper.this.T}
+ because its instance type => Content{type T <: Wrapper.this.T}#T
+  contains a malformed type: Content{type T <: Wrapper.this.T}#T
+        def impl(c7: => Content { type T <: self.T }): T = c7.data
+*/
+
+    def data8: T = {
+        new Object { val x = content }.x.data
+    }
+/*
+error: method data cannot be accessed in Content{type T <: Wrapper.this.T}
+ because its instance type => Content{type T <: Wrapper.this.T}#T
+  contains a malformed type: Content{type T <: Wrapper.this.T}#T
+        new Object { val x = content }.x.data
+*/
+}
+{code}

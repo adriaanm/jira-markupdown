@@ -1,0 +1,55 @@
+By way of example:
+
+{code}
+object TestMe {
+  def returnsPrimitive(x: Int): Int = x
+
+  def testme() {
+    val nonTrivialCondition = 42
+    if (nonTrivialCondition == 42) {
+      returnsPrimitive(5)
+    }
+    else {
+      Unit
+    }
+    Unit
+  }
+}
+{code}
+
+Even though the value of the if-then-else branch is unused, it boxes the integer returned by returnsPrimitive().
+
+{code}
+public void testme();
+    flags: ACC_PUBLIC
+    Code:Bug
+      stack=2, locals=2, args_size=1
+         0: bipush        42
+         2: istore_1      
+         3: iload_1       
+         4: bipush        42
+         6: if_icmpne     20
+         9: aload_0       
+        10: iconst_5      
+        11: invokevirtual #22                 // Method returnsPrimitive:(I)I
+        14: invokestatic  #28                 // Method scala/runtime/BoxesRunTime.boxToInteger:(I)Ljava/lang/Integer;
+        17: goto          23
+        20: getstatic     #33                 // Field scala/Unit$.MODULE$:Lscala/Unit$;
+        23: pop           
+        24: getstatic     #33                 // Field scala/Unit$.MODULE$:Lscala/Unit$;
+        27: pop           
+        28: return        
+      LineNumberTable:
+        line 14: 0
+        line 15: 3
+        line 16: 9
+        line 19: 20
+        line 15: 23
+        line 21: 24
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+               0      29     0  this   Lfast/TestMe$;
+               3      25     1 nonTrivialCondition   I
+{code}
+
+Presumably, this boxing could be eliminated?

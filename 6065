@@ -1,0 +1,13 @@
+The spec language you quote says that:
+
+ 1) given x.asInstanceOf[T]
+ 2) if T is a numeric value type
+ 3) and if x is a member of a non-numeric value type
+ 4) then there will be a CCE.
+
+().asInstanceOf[AnyRef] fails to meet 2.
+
+scala> ().asInstanceOf[Int]
+java.lang.ClassCastException: scala.runtime.BoxedUnit cannot be cast to java.lang.Integer
+	at scala.runtime.BoxesRunTime.unboxToInt(Unknown Source)
+	at .<init>(<console>:8)

@@ -1,0 +1,54 @@
+Yes, compiling B.scala with -optimise invalidates the assert below. 
+Leaving -optimise out makes compilation succeed. 
+This behavior irrespective of whether A.scala was previously compiled with -optimise or not. 
+
+
+{code}
+    /** Return the class symbol for 'externalName'. It looks it up in its outer class. 
+     *  Forces all outer class symbols to be completed.
+     * 
+     *  If the given name is not an inner class, it returns the symbol found in 'definitions'.
+     */
+    def classSymbol(externalName: Name): Symbol = {
+      /** Return the symbol of `innerName', having the given `externalName'. */
+      def innerSymbol(externalName: Name, innerName: Name, static: Boolean): Symbol = {
+        def getMember(sym: Symbol, name: Name): Symbol =
+          if (static)
+            if (sym == clazz) staticDefs.lookup(name)
+            else sym.companionModule.info.member(name)
+          else
+            if (sym == clazz) instanceDefs.lookup(name)
+            else sym.info.member(name)
+
+        innerClasses.get(externalName) match {
+          case Some(entry) =>
+            val outerName =
+              if (entry.outerName.endsWith("$$")) entry.outerName.subName(0, entry.outerName.length - 1)
+              else entry.outerName
+            val sym = classSymbol(outerName)
+            val s = 
+              // if loading during initialization of `definitions' typerPhase is not yet set.
+              // in that case we simply load the member at the current phase
+              if (currentRun.typerPhase != null)
+                atPhase(currentRun.typerPhase)(getMember(sym, innerName.toTypeName))
+              else 
+                getMember(sym, innerName.toTypeName)
+            assert(s ne NoSymbol, sym + "." + innerName + " linkedModule: " + sym.companionModule + sym.companionModule.info.members)
+            s
+
+          case None =>
+            val cls = classNameToSymbol(externalName)
+            cls
+            //if (static) cls.companionClass else cls
+        }
+      }
+
+      get(externalName) match {
+        case Some(entry) =>
+          val clazz = innerSymbol(entry.externalName, entry.originalName, isStatic(entry.jflags))
+          clazz
+        case None =>
+          classNameToSymbol(externalName)
+      }
+    }
+{code}

@@ -1,0 +1,31 @@
+Maybe I'm missing something, but:
+The code isn't trying to do "new Foo#Bar" (which the Java compiler would already reject), it's just using Foo#Bar in a method signature. 
+Is there a good reason why this scala class works:
+{code:title=scala}
+class Whatever {
+  def useInner(inner: SomeScala#InnerClass) = inner.printStr
+}
+{code}
+
+but this java class shouldn't?
+{code:title=java}
+class JavaClass {
+    public void useInner(SomeScala.InnerClass inner) {
+        inner.printStr(); 
+    }
+}
+{code}
+
+They're equivalent, aren't they? Yet the scala compiler will reject the 2nd one.
+
+I don't understand why using scala inner classes from java is sure to be unsound. The example above should be fine, and the only unsound usage I can think of isn't prevented by the scala compiler:
+{code:title=java}
+SomeScala a = new SomeScala("a");
+InnerClass aa = a.new InnerClass();
+SomeScala b = new SomeScala("b");
+		
+a.useMyInner(aa); //useMyInner is "def useMyInner(inner: InnerClass) = ???"
+b.useMyInner(aa); //invalid if this was scala, but in java it works even when the scala compiler reads in the source
+{code}
+
+If you're not convinced, this probably won't convince you but I'll voice my opinion anyway: I would prefer a scala compiler that didn't do extra checks on java code, unless they were just given as warnings. Rejecting java code that would compile with the java compiler means you can't convert your java project to a mixed scala/java project. To anyone who complained that they can use java to do unsound things with scala classes (eg the "b.useMyInner(aa)" example), I think a fair response would be "if you want the safety of the scala compiler, write in scala".

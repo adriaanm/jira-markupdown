@@ -1,0 +1,31 @@
+For `ResultExpr`
+, the latter is actually correct: “{{{ a => }}}” is rejected by the compiler (missing parameter type).
+
+As for your question: I am not sure I can answer precisely: maybe you'll want to ask the question on the newsgroup. But my intuition is that since we are in a block, this syntax allows us to read the “=>” as “and from now on, execute the block only when applied”. For example:
+
+{code}
+{
+  println(2)
+  println(3)
+a: Int =>
+  println(4)
+  println(a)
+}
+{code}
+
+May be read as “print 2 and 3 once, when the block is created, and then print 4 and a whenever the block is applied”.
+
+Otherwise, one would have to write:
+
+{code}
+{
+  println(2)
+  println(3)
+  a: Int => {
+    println(a)
+    println(a*2)
+  }
+}
+{code}
+
+which is marginally uglier.

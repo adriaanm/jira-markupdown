@@ -1,0 +1,33 @@
+The following shows the problem:
+
+{noformat}
+lucmac:sandbox luc$ rm -f *.class && scalac-hash v2.11.2 Test.scala SomeAnnotation.java && javac SomeAnnotation.java && scala-hash v2.11.2 Test
+Annotation is present
+
+lucmac:sandbox luc$ rm -f *.class && scalac-hash v2.11.3 Test.scala SomeAnnotation.java && javac SomeAnnotation.java && scala-hash v2.11.3 Test
+Annotation is NOT present
+
+lucmac:sandbox luc$ cat SomeAnnotation.java 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface SomeAnnotation { }
+
+lucmac:sandbox luc$ cat Test.scala 
+@SomeAnnotation class A
+
+object Test {
+  def main(args: Array[String]): Unit = {
+    if (classOf[A].isAnnotationPresent(classOf[SomeAnnotation])) {
+      println("Annotation is present")
+    }
+    else {
+      println("Annotation is NOT present")
+    }
+  }
+}
+{noformat}

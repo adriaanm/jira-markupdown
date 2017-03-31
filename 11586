@@ -1,0 +1,40 @@
+FWIW.
+{noformat}
+scala> :pa -raw
+// Entering paste mode (ctrl-D to finish)
+
+package foo {trait F { def f(i: Int) = 2 * i ; def f(d: Double) = 3 * d } }
+package object foo extends foo.F { def f(s: String) = s * 2 }
+package bar { object baz extends foo.F { def f(s: String) = s * 2 } }
+
+// Exiting paste mode, now interpreting.
+
+
+scala> foo f 2
+res0: Int = 4
+
+scala> foo f "two"
+<console>:8: error: overloaded method value f with alternatives:
+  (d: Double)Double <and>
+  (i: Int)Int
+ cannot be applied to (String)
+              foo f "two"
+                  ^
+
+scala> bar.baz f 2
+res2: Int = 4
+
+scala> bar.baz f "two"
+res3: String = twotwo
+
+scala> :pa -raw
+// Entering paste mode (ctrl-D to finish)
+
+package object fooz extends foo.F { override def f(d: Double) = 4 * d }
+
+// Exiting paste mode, now interpreting.
+
+
+scala> fooz f 3.14
+res4: Double = 12.56
+{noformat}

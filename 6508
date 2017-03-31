@@ -1,0 +1,9 @@
+The problem is that DCE considers the following instructions in {{Test$delayedInit$body.apply()}} to be redundant, and removes them:
+
+{noformat}
+    7	LOAD_MODULE object Foo
+    7	STORE_LOCAL(variable a1)
+{noformat}
+
+Compiling with all optimizations except DCE ( {{-Yinline -Yinline-handlers -Yclosure-elim}} ) doesn't show this bug.
+

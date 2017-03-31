@@ -1,0 +1,24 @@
+To quote Paul Butcher,
+
+Actually - I take that back. I have one test of this form for the old non-type-macro-based version of mocks and one for the typemacro-based version. And they're in different suites, so they might be running parallel with each other.
+
+But if this is the problem, then I suspect we really need to reconsider the thread safety of reflection. If just adding a TypeTag context bound to a method is enough to make it non-threadsafe, then it's bound to catch people out.
+
+Raising the priority.
+
+upd. Discussion: http://groups.google.com/group/scala-internals/browse_thread/thread/58d62991c21ba2f8.
+
+{code}
+> [info] - cope with context bounds *** FAILED ***
+> [info]   java.lang.NullPointerException:
+> [info]   at scala.reflect.internal.Types$TypeRef.computeHashCode(Types.scala:2332)
+> [info]   at scala.reflect.internal.Types$UniqueType.<init>(Types.scala:1274)
+> [info]   at scala.reflect.internal.Types$TypeRef.<init>(Types.scala:2315)
+> [info]   at scala.reflect.internal.Types$NoArgsTypeRef.<init>(Types.scala:2107)
+> [info]   at scala.reflect.internal.Types$ModuleTypeRef.<init>(Types.scala:2078)
+> [info]   at scala.reflect.internal.Types$PackageTypeRef.<init>(Types.scala:2095)
+> [info]   at scala.reflect.internal.Types$TypeRef$.apply(Types.scala:2516)
+> [info]   at scala.reflect.internal.Types$class.typeRef(Types.scala:3577)
+> [info]   at scala.reflect.internal.SymbolTable.typeRef(SymbolTable.scala:13)
+> [info]   at scala.reflect.internal.Symbols$TypeSymbol.newTypeRef(Symbols.scala:2754)
+{code}

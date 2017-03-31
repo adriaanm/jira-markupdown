@@ -1,0 +1,11 @@
+There is indeed a problem with scalac's Java signatures: `PartialFunction.orElse`:
+
+{code}
+def orElse[A1 <: A, B1 >: B](that: PartialFunction[A1, B1]) : PartialFunction[A1, B1] = 
+{code}
+has the following illegal signature:
+{code}
+<A1:B1:Ljava/lang/Object;>(....)
+{code}
+
+It misses the upper bound for A1, it should be something like `<A1:TA;B1:....`

@@ -1,0 +1,19 @@
+This bug is a consequence of scalac reusing the Scala typechecker to analyze Java source files, given the difference binding precedence rules:
+
+Java Spec:
+{quote}
+A single-type-import declaration d in a compilation unit c of package p that imports
+a type named n shadows, throughout c, the declarations of:
+• any top level type named n declared in another compilation unit of p
+• any type named n imported by a type-import-on-demand declaration in c
+• any type named n imported by a static-import-on-demand declaration in c
+{quote}
+
+Scala Spec:
+{quote}
+Bindings of different kinds have a precedence deﬁned on them:
+1. Deﬁnitions and declarations that are local, inherited, or made available by a
+package clause in the same compilation unit where the deﬁnition occurs have
+highest precedence.
+2. Explicit imports have next highest precedence.
+{quote}

@@ -1,0 +1,18 @@
+The following causes a compiler error (previously did not in 2.7):
+
+{code}
+scala> val x: Iterable[String] = List("3").toArray
+<console>:4: error: polymorphic expression cannot be instantiated to expected type;
+ found   : [B >: java.lang.String]Array[B]
+ required: Iterable[String]
+       val x: Iterable[String] = List("3").toArray
+{code}
+
+These variations do not:
+{code}
+scala> val x: Iterable[String] = List("3").toArray[String]
+x: Iterable[String] = Array(3)
+
+scala> val x = List("3").toArray
+x: Array[java.lang.String] = Array(3)
+{code}

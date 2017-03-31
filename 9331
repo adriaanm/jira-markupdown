@@ -1,0 +1,16 @@
+Before the commit in question:
+{code}
+% ./working/bin/scalac -Yinfer-debug -d /tmp /scala/trunk/test/files/pos/t7226.scala 
+[solve types] solving for A, B, C in ?A, ?B, ?C
+[infer method] solving for A, B, C in (ps: HK.this.Rep[C[(A, B)]])(HK.this.Rep[C[A]], HK.this.Rep[C[B]])
+  based on (HK.this.Rep[List[(T1, T2)]])(HK.this.Rep[C[A]], HK.this.Rep[C[B]])
+  (solved: A=T1, B=T2, C=List)
+{code}
+After:
+{code}
+% scalac3 -Yinfer-debug -d /tmp /scala/trunk/test/files/pos/t7226.scala 
+[solve types] solving for A, B, C in ?A, ?B, ?C
+[infer method] solving for A, B, C in (ps: HK.this.Rep[C[(A, B)]])(HK.this.Rep[C[A]], HK.this.Rep[C[B]])
+  based on (HK.this.Rep[List[(T1, T2)]])(HK.this.Rep[C[A]], HK.this.Rep[C[B]])
+  (solved: A=(T1, T2), C=List)
+{code}

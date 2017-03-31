@@ -1,0 +1,33 @@
+Wait, what's the point of specializing a single type parameter on AnyRef?
+
+If I make it realistic, it crashes 2.9, but works a little bit in trunk.
+{code}
+
+class C[@specialized(Int, AnyRef) A, @specialized(Int, AnyRef) B](v:A, w:B)                                                                                  
+                                                                                                                            
+object Test {                                                                                                               
+  def main(args:Array[String]) {                                                                                            
+    println(new C(123, 123).getClass.getName)                                                                                    
+    println(new C("abc", 123).getClass.getName)                                                                                  
+    println(new C(123, "abc").getClass.getName)                                                                                  
+    println(new C("abc", "abc").getClass.getName)
+  }                                                                                                                         
+}
+{code}
+{noformat}
+
+% scalac29 -d /tmp test/files/run/t5488.scala error: scala.tools.nsc.symtab.Types$TypeError: type mismatch;
+ found   : java.lang.String("abc")
+ required: A$sp
+	at scala.tools.nsc.typechecker.Contexts$Context.error(Contexts.scala:298)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.error(Infer.scala:207)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.typeError(Infer.scala:217)
+
+
+% scalac3 -d /tmp test/files/run/t5488.scala 
+$ scala3 -cp /tmp Test
+C$mcII$sp
+C
+C
+C
+{noformat}

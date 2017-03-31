@@ -1,0 +1,40 @@
+I think it might be related to the (mutable?) {{HashMap}}'s slowdown, but my benchmarks may be biased:
+
+Creating an {{i -> i}} mutable {{Map}} and requesting each one (and separately requesting the same number of missing values) shows a slowdown in {{2.11.8}} vs {{2.12.0}}, using latest JMH, in 10/10 runs and {{1026}} values.
+Again, not sure if this is the cause, as it turns out to be quite difficult for me to profile.
+{code:java}
+@Benchmark
+public void scala_persistent_some(Blackhole bh) {
+    for (int i = 0; i < CONTAINER_SIZE; i++) {
+        Option<Object> value = map.get(i);
+        assert !value.isEmpty();
+        bh.consume(value);
+    }
+}
+
+@Benchmark
+public void scala_persistent_none(Blackhole bh) {
+    for (int i = CONTAINER_SIZE; i < 2 * CONTAINER_SIZE; i++) {
+        Option<Object> value = map.get(i);
+        assert value.isEmpty();
+        bh.consume(value);
+    }
+}
+{code}
+
+resulting in:
+
+{code:java}
+2.11.8
+    Impl                       Score
+    scala_persistent_none  77,367.12
+    scala_persistent_some  47,659.77
+
+2.12.0
+    Impl                       Score
+    scala_persistent_none  47,823.76
+    scala_persistent_some  33,916.23
+
+{code}
+
+Note: the asserts were validated in a separate, non-benchmarked run!

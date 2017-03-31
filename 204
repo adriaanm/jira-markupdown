@@ -1,0 +1,43 @@
+Hi,
+
+nesting a java annotation inside a scala StaticAnnotation is not allowed (I'll have to improve the error message). The reason is that arguments to scala annotations are type checked just like any other code. So if you write
+
+{code}
+@ScalaAnnotation(new JavaAnnotation(arg1 = 1, arg2 = "two"))
+{code}
+
+you will get an error
+
+{code}
+"too many arguments for constructor JavaAnnotation"
+{code}
+
+which is correct; the java annotation class does not have such a constructor. The reason why it works for non-nested java annotations is that we "abuse" the constructor / named arguments syntax for creating java annotations, so we don't actually type check it as an ordinary constructor call in that case.
+
+We can't do the same special case for nested java annotations because we would have to generate an incorrect tree.
+
+Lukas
+
+
+
+Replying to [comment:20 julian.eberius]:
+> Hi. To me it seems that a special case of nested Annotations is still not working. It happens when a Scala annotation (i.e. a StaticAnnotation) contains a Java annotation, which contains named arguments (any annotation with more than one "value" argument)
+> {code}
+> class NestedAnnotationTest {
+>         // all of these work
+> 	@ComplexJavaAnnotation(nested= new NestedJavaAnnotation2(arg="test"))
+> 	@ComplexScalaAnnotation1(arg1=42, arg2="test")
+> 	@ComplexScalaAnnotation2(nested = new NestedJavaAnnotation1(23))
+> 	// this one throws "too many arguments for constructor NestedJavaAnnotation2"
+>         @ComplexScalaAnnotation2(nested = new NestedJavaAnnotation2(arg="test"))
+> 	val field:int = 3;
+> }
+> }}
+> Of course, NestedJavaAnnotation2 just looks like this
+> {code}
+> public @interface NestedJavaAnnotation2 {
+> 	public String arg();
+> }
+> }}
+> 
+> I tried to implement the TargetedAnnotation from SI-1846, but for this I need to put complex java annotations inside a scala annotation.

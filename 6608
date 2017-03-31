@@ -1,0 +1,11 @@
+Glad you were skeptical of my boneheadedness Paul!
+
+I have a new patch which is less-completely-broken. It should fix the handling of final/@inline (i.e. letting classes like C2$mcZ$sp keep final on apply and apply$mcZ$sp) as well as removing @inline when removing final (to prevent annoying warnings).
+
+Unfortunately, there are two other things that your example hits:
+
+1. The inferred type of your lazy vals and defs is "C2" which means that ultimately the call will be "C2.apply$mcZ$sp" which still cannot be final/@inline (because it's in C2 and not C2$mcZ$sp). I'm not sure how feasible it is to "re-type" methods/vals whose type is a specialized class.
+
+2. Even if you try doing new C2[Bool]()(true), which does correctly call C2$mcZ$sp.apply$mcZ$sp(true), it doesn't get inlined. Not sure why.
+
+Anyway, I think the patch should be ok, but didn't want you to think that I had "fixed" this whole issue. What do you see as the scope of SI-5005 anyway? It encompasses (at least) 3 separate bugs in specialization, IMO.

@@ -1,0 +1,28 @@
+The takeWhile method produces an Iterator which have border effect on the original one.
+
+Possibly other methods which produce an Iterator have the same.
+
+{code}
+var i = List(1, 2, 3, 4).iterator.buffered
+val j = i.takeWhile(_ < 3)
+println(i.head)
+println(i.head)
+j.next()
+println(i.head)
+j.next()
+println(i.head)
+
+Produces:
+
+1
+1
+2
+3
+{code}
+
+This is maybe intended, as are some issue with takeWhile eating the next element (even in BufferedIterator -> use span instead). 
+
+It is due that no clone() method are available, so the new Iterator has a direct reference to the first one, but still... should be documented!
+
+Regards,
+Louis Bliss

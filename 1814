@@ -1,0 +1,29 @@
+I suggest either using one of the seamless maven plugins for Eclipse (IAM or m2e) or configuring mvn eclipse:eclipse so that the Scala nature is not removed:
+
+{code}
+<plugin>
+ <groupId>org.apache.maven.plugins</groupId>
+ <artifactId>maven-eclipse-plugin</artifactId>
+ <configuration>
+  <classpathContainers>
+   <classpathContainer>
+    ch.epfl.lamp.sdt.launching.SCALA_CONTAINER
+   </classpathContainer>
+   <classpathContainer>
+    org.eclipse.jdt.launching.JRE_CONTAINER
+   </classpathContainer>
+  </classpathContainers>
+  <additionalProjectnatures>
+   <projectnature>
+    ch.epfl.lamp.sdt.core.scalanature
+   </projectnature>
+  </additionalProjectnatures>
+  <buildcommands>
+  <!--Use buildcommands instead of additionalBuildcommands because we don't want the Java builder to be included -->
+   <buildcommand>
+    ch.epfl.lamp.sdt.core.scalabuilder
+   </buildcommand>
+  </buildcommands>
+ </configuration>
+</plugin>
+{code}

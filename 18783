@@ -1,0 +1,30 @@
+I'm not sure if this is intentional, but it appears wrong. The {{<<}} operator (and likewise {{>>}},{{>>>}}) fails to promote from Int to Long when the right operand is Long but the left one is Int. This is contrary to the behavior of {{*}}, {{%}}, etc., and contrary to Python, which does promote in this circumstance. This leads to unexpected overflow.
+
+{code}
+scala> val x:Int = 5
+x: Int = 5
+
+scala> val y:Long = 32
+y: Long = 32
+
+scala> x*y
+res0: Long = 160
+
+scala> x%y
+res1: Long = 5
+
+scala> x<<y
+res2: Int = 0
+{code}
+
+Here is the Python equivalent:
+
+{code}
+Python 2.7.6 (default, Nov 18 2013, 15:12:51) 
+[GCC 4.2.1 Compatible Apple LLVM 5.0 (clang-500.2.79)] on darwin
+Type "help", "copyright", "credits" or "license" for more information.
+>>> x = 5
+>>> y = 32L
+>>> x << y
+21474836480L
+{code}

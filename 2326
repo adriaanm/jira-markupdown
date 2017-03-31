@@ -1,0 +1,39 @@
+I believe this is another failing example:
+
+
+object App {
+  object Extractor {
+    def unapply(s: List[String]): Option[Boolean] = {
+      if ( s == List("1", "2", "3") )
+        Some(true)
+      else
+        None
+    }
+  }
+  
+  def matcher1: PartialFunction[List[String], String] = {
+    case Extractor(_) => "GOOD"
+    case x @ List("foo") => "FOO"
+  }
+  
+  def matcher2: PartialFunction[List[String], String] = {
+    case x @ List("foo") => "FOO"
+    case Extractor(_) => "GOOD"
+  }
+
+  def main(args: Array[String]): Unit = {    
+    val x = List("1", "2", "3")
+    println(matcher1.isDefinedAt(x))
+    println(matcher2.isDefinedAt(x))
+  }
+}
+
+I expected the output to be:
+
+true
+true
+
+But, the output is: (on Scala 2.8.0 final)
+
+true
+false

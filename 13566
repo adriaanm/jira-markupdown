@@ -1,0 +1,90 @@
+Given:
+{code}
+scala> class Foo { trait Qux { val x = 42 } }
+defined class Foo
+
+scala> class Bar(arg : Int) { trait Qux { val x = arg } }
+defined class Bar
+
+scala> val x : Foo = null
+x: Foo = null
+
+scala> val y : Bar = null
+y: Bar = null
+{code}
+the following succeeds:
+{code}
+scala> val b = new x.type#Qux { };
+b: java.lang.Object with x.Qux = $$anon$$1@137e216
+{code}
+but the following fails:
+{code}
+scala> val b = new y.type#Qux { };
+java.lang.NullPointerException
+        at Bar$$Qux$$class.$$init$$(<console>:4)
+        at $$anon$$1.<init>(<console>:6)
+        at .<init>(<console>:6)
+        at .<clinit>(<console>)
+        at RequestResult$$.<init>(<console>:3)
+        at RequestResult$$.<clinit>(<console>)
+        at RequestResult$$result(<console>)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMeth...
+{code}
+
+Scala should be consistent in its operational behavior and both should fail with a NPE.  Otherwise, evolving classes can have unforeseen impacts elsewhere in your code.  The problem is not limited to using null, either: 
+{code}
+scala> object Wrapper {
+     |   lazy val x : Foo = x
+     |   lazy val y : Bar = y
+     | }
+defined module Wrapper
+
+scala> val b = new Wrapper.x.type#Qux { }
+b: java.lang.Object with Wrapper.x.Qux = $$anon$$1@671416
+
+scala> val b = new Wrapper.y.type#Qux { }
+java.lang.StackOverflowError
+        at Wrapper$$.y(<console>:10)
+        at Wrapper$$.y(<console>:10)
+        at Wrapper$$.y(<console>:10)
+        at Wrapper$$.y(<console>:10)
+        at Wrapper$$.y(<console>:10)
+        at Wrapper$$.y(<console>:10)
+        at Wrapper$$.y(<console>:10)
+        at Wrapper$$.y(<console>:10)
+        at Wrapper$$.y(<console>:10)
+        at Wrapper$$.y(<console>:10)
+        at Wrapper$$.y(<console>:10)
+        at Wrapper$$.y(<console>:10)
+        at Wrappe...
+{code}
+The problem is also not limited to merely to adding constructor arguments:
+{code}
+scala> trait Foo { trait Qux { val x = 42 } }
+defined trait Foo
+
+scala> trait Bar { val arg : Int; trait Qux { val x = arg } }
+defined trait Bar
+
+scala> val x : Foo = null
+x: Foo = null
+
+scala> val y : Bar = null
+y: Bar = null
+
+scala> val b = new x.type#Qux { };
+b: java.lang.Object with x.Qux = $$anon$$1@14e54d8
+
+scala> val b = new y.type#Qux { };
+java.lang.NullPointerException
+        at Bar$$Qux$$class.$$init$$(<console>:4)
+        at $$anon$$1.<init>(<console>:6)
+        at .<init>(<console>:6)
+        at .<clinit>(<console>)
+        at RequestResult$$.<init>(<console>:3)
+        at RequestResult$$.<clinit>(<console>)
+        at RequestResult$$result(<console>)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMeth...
+{code}

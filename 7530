@@ -1,0 +1,14 @@
+I don't think this is a bug. Class Bar exposes "val foo: Foo". The extra type information does not cross that boundary. If it were "val foo: Any", you wouldn't be surprised when you passed in a String and still couldn't use it as a String. This is the same.
+
+Both of these work:
+{code}
+// option 1, provide an avenue for more type information
+class Bar[F <: Foo](val foo: F) 
+
+// option 2, subclass and refine the type
+def newBar[T <: Foo](x: T) = {
+  class Bar1(override val foo: T = x) extends Bar(foo)
+  new Bar1(x)
+}
+{code}
+

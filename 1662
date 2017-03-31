@@ -1,0 +1,32 @@
+Notes in passing:
+
+https://github.com/scala/scala/blob/8c95273b/src/compiler/scala/tools/nsc/ast/parser/SymbolicXMLBuilder.scala#L216
+
+Elaborating on that comment, simply adding `toString` here would not preserve these:
+
+{code}
+scala> <a href={None}/>
+res6: scala.xml.Elem = <a/>
+
+scala> <a href={Some(new xml.Atom("xxx"))}/>
+res7: scala.xml.Elem = <a href="xxx"/>
+{code}
+
+The desugaring:
+
+{code}
+$ scala -Xprint:parser -e "<a b={1+1}>{1+1}</a>"
+
+              var $md: _root_.scala.xml.MetaData = _root_.scala.xml.Null;
+              $md = new _root_.scala.xml.UnprefixedAttribute("b", 1.$plus(1), $md);
+              new _root_.scala.xml.Elem(null, "a", $md, $scope, ({
+                val $buf = new _root_.scala.xml.NodeBuffer();
+                $buf.$amp$plus(1.$plus(1));
+                $buf
+              }: _*))
+{code}
+
+For elements, the implicit {{toString}} comes (eventually) because the added expressions are routed through {{NodeBuffer#&+}}.(https://github.com/scala/scala/blob/8c95273b/src/library/scala/xml/NodeBuffer.scala)
+
+But it's really hard to retrofit this for attributes without (theoretically) breaking existing code (in particular becase the constructor for `UnprefixedAttribute` is overloaded).
+

@@ -1,0 +1,35 @@
+Cut down:
+
+{code}
+object Bug {
+  def bar(ev: Any) {
+    trait X {
+      def qux = { () => ev }
+    }
+  }
+}
+{code}
+
+
+{noformat}
+== Expanded type of tree ==
+
+TypeRef(TypeSymbol(class Object extends ))
+
+No getter for value ev$1 in trait Bug$X$1
+	at scala.reflect.internal.SymbolTable.abort(SymbolTable.scala:46)
+	at scala.tools.nsc.Global.abort(Global.scala:249)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer$$anonfun$14.apply(Mixin.scala:1220)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer$$anonfun$14.apply(Mixin.scala:1220)
+	at scala.reflect.internal.Symbols$Symbol.orElse(Symbols.scala:2080)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer.scala$tools$nsc$transform$Mixin$MixinTransformer$$postTransform(Mixin.scala:1220)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer$$anonfun$transform$1.apply(Mixin.scala:1248)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer$$anonfun$transform$1.apply(Mixin.scala:1248)
+	at scala.reflect.internal.SymbolTable.enteringPhase(SymbolTable.scala:195)
+	at scala.reflect.internal.SymbolTable.exitingPhase(SymbolTable.scala:199)
+	at scala.tools.nsc.Global.exitingMixin(Global.scala:1058)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer.transform(Mixin.scala:1248)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer.transform(Mixin.scala:472)
+	at scala.reflect.internal.Trees$$anonfun$itransform$5.apply(Trees.scala:1181)
+	at scala.reflect.internal.Trees$$anonfun$itransform$5.apply(Trees.scala:1179)
+{noformat}

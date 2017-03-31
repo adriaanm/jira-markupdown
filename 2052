@@ -1,0 +1,11 @@
+Flaw is somewhere in the icode generation. The tree contains:
+{code}
+final <synthetic> class H$$$$anonfun$$1 [...] {
+  final def apply(x: O): O = [...]
+[...]
+}
+{code}
+but in the icode and in the resulting bytecode {{apply(x:O):O}} somehow becomes {{apply(x:Object):O}}:
+{code}
+  def apply(x: java.lang.Object (REFERENCE(java.lang.Object))): O
+{code}

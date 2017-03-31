@@ -1,0 +1,60 @@
+I think a2c870569c124c is something of a red herring. The test also crashes with {{import java.util /*!*/ }}.
+
+I believe something like the following is needed.
+
+{code}
+diff --git a/src/interactive/scala/tools/nsc/interactive/Global.scala b/src/interactive/scala/tools/nsc/interactive/Global.scala
+index dbdb2d0..a5e6d47 100644
+--- a/src/interactive/scala/tools/nsc/interactive/Global.scala
++++ b/src/interactive/scala/tools/nsc/interactive/Global.scala
+@@ -1036,10 +1036,12 @@ class Global(settings: Settings, _reporter: Reporter, projectName: String = "")
+   private def typeMembers(pos: Position): Stream[List[TypeMember]] = {
+     var tree = typedTreeAt(pos)
+
+-    // if tree consists of just x. or x.fo where fo is not yet a full member name
+-    // ignore the selection and look in just x.
+     tree match {
++      // if tree consists of just x. or x.fo where fo is not yet a full member name
++      // ignore the selection and look in just x.
+       case Select(qual, name) if tree.tpe == ErrorType => tree = qual
++      // Similarly, for import x. or x.fo
++      case Import(expr, sels) => tree = expr
+       case _ =>
+     }
+{code}
+
+What are the expected results from these cases?
+
+{code}
+import java./*!*/
+import java.u/*!*/
+import java.util/*!*/
+import java.{lang, u/*!*/}
+import j/*!*/
+{code}
+
+With the patch, for the first four, we get:
+
+{noformat}
+askTypeCompletion at Completions.scala(3,17)
+================================================================================
+[response] aksTypeCompletion at (3,17)
+retrieved 13 members
+[accessible:  true] `package appletjava.applet.type`
+[accessible:  true] `package awtjava.awt.type`
+[accessible:  true] `package beansjava.beans.type`
+[accessible:  true] `package iojava.io.type`
+[accessible:  true] `package langtype`
+[accessible:  true] `package mathjava.math.type`
+[accessible:  true] `package netjava.net.type`
+[accessible:  true] `package niojava.nio.type`
+[accessible:  true] `package rmijava.rmi.type`
+[accessible:  true] `package securityjava.security.type`
+[accessible:  true] `package sqljava.sql.type`
+[accessible:  true] `package textjava.text.type`
+[accessible:  true] `package utiljava.util.type`
+================================================================================
+{noformat}
+
+The last one is perhaps a separate problem.
+

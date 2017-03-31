@@ -1,0 +1,12 @@
+I haven't thought this through fully, but this looks like a workaround:
+
+{code}
+object Test {
+  class Ops[U <: scala.reflect.api.JavaUniverse](val g: U) {
+    def op[T: U#TypeTag] = ()
+  }
+  implicit def Ops(g: scala.reflect.api.JavaUniverse): Ops[g.type] = new Ops(g)
+  Ops(scala.reflect.runtime.universe).op[Int]
+  scala.reflect.runtime.universe.op[Int]
+}
+{code}

@@ -1,0 +1,13 @@
+The following test example, shows that the compiler is enforcing unreachable code errors, so my prior comments about needing a compiler flag is not necessary.
+
+{code}
+scala> def text(t : D[Int]) = t match {
+  case x: D[Int] => 1
+  case x: D[String] => 2
+}
+error: unreachable code
+         case x: D[String] => 2
+                              ^
+{code}
+
+I realized why the compiler can't reason that the Double case is unreachable. There is no way to extract the parameter of D[Int] with D[String] from DD[-A], without losing the contravariance that gives the semantics of the union of Int and String. The extraction of the field v from DD and D is a two step process calling get twice, and afaics there is no way to express such in Scala to maintain the invariants of the combination (the type combining DD and D) across those two deconstruction steps.

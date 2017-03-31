@@ -1,0 +1,19 @@
+This hangs reliably for me:
+
+{code}
+import scala.collection.parallel.immutable.ParSet
+
+object Test {
+  def main(args: Array[String]): Unit = {
+    for (i <- 1 to 10000) test()
+    println("")
+  }
+
+  def test() {
+    ParSet[Int]((1 to 10000): _*) foreach (x => ())
+    print(".")
+  }
+}  
+{code}
+
+I'm bisecting to find the point of regression.

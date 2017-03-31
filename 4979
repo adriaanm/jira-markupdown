@@ -1,0 +1,52 @@
+Here is a [solution|https://groups.google.com/d/msg/scala-user/lo_OXRluQEQ/oZSeNLsUWvMJ] given by Jason on the mailing-list, using macros in Scala 2.11:
+{code}
+import scala.reflect.macros.blackbox._
+import scala.language.experimental._
+
+object ToString {
+  def toStringWithNames: String = macro toStringWithNamesImpl
+  def toStringWithNamesImpl(c: Context): c.Tree = {
+    import c.universe._
+
+    
+// class for which we want to display toString
+
+    val klass = c.internal.enclosingOwner.owner
+
+    
+// we keep the getter fields created by the user
+
+    val fields: Iterable[c.Symbol] = klass.asClass.toType.decls
+      .filter(sym => sym.isMethod && sym.asTerm.isParamAccessor) // we should do more filtering here
+
+
+    // print one field as <name of the field>+"="+fieldName
+    def printField(field: Symbol) = {
+      val fieldName = field.name
+
+      q"""${fieldName.decoded.toString}+${"="}+this.$field"""
+    }
+    val params = fields.foldLeft(q"${""}")((res, acc) => q"${printField(acc)} + $res")
+
+    
+// print the class and all the parameters with their values
+
+    q"this.productPrefix + ${"("} + $params + ${")"}"
+  }
+}
+
+==> sandbox/test.scala <==
+case class Point(x: Int) {
+  
+override def toString = ToString.toStringWithNames
+}
+
+object Test extends App {
+  println(Some(Point(1)).toString)
+}
+% scalac-hash v2.11.2 sandbox/macro.scala && scalac-hash v2.11.2  sandbox/test.scala && scala-hash v2.11.2 Test
+warning: there was one deprecation warning; re-run with -deprecation for details
+one warning found
+Some(Point(x=1))
+
+{code}

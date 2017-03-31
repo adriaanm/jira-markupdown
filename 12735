@@ -1,0 +1,33 @@
+Aladdin: *[http://scala-webapps.epfl.ch/bugtracking/bugs/displayItem.do?id=1271 bug 1271], [http://scala-webapps.epfl.ch/bugtracking/contribs/display.do?id=724 contrib 724]_
+
+Currently it's possible to match using Seq, likewise:
+
+{code}
+<pre>s match {
+    case Seq(...) =>
+    ...
+}</pre>
+{code}
+
+But this forces the evaluation of the entire Stream. This is an undesired effect when using Streams.
+
+I would like something like..
+
+{code}
+s match {
+    case Stream(...) =>
+    ...
+}
+{code}
+
+This will pattern match against Stream(...) using regular Scala patterns, while forcing the evaluation of only the necessary number of elements. Thus for example,
+
+{code}
+s match {
+    case Stream(A, B, _*) => ...
+}
+{code}
+
+Would only force the evaluation of the first 2 elements in the stream
+
+For a patch, see the discussion at: [http://www.nabble.com/-scala--Better-matching-with-unapplySeq-tf4064610.html#a11548771]

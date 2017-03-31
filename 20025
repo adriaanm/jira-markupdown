@@ -1,0 +1,136 @@
+{{build.sbt}}
+{code}
+scalaVersion := "2.11.8"
+
+scalacOptions ++=
+  (List
+    ( "-deprecation"
+    , "-encoding", "UTF-8"       // yes, this is 2 args
+    , "-feature"
+    , "-language:existentials"
+    , "-language:higherKinds"
+    , "-language:implicitConversions"
+    , "-unchecked"
+    , "-Xfatal-warnings"
+    , "-Xlint"
+    , "-Yno-adapted-args"
+    , "-Ywarn-dead-code"        // N.B. doesn't work well with the ??? hole
+    , "-Ywarn-numeric-widen"
+    , "-Ywarn-value-discard"
+    , "-Xfuture"
+    , "-Ywarn-unused-import"     // 2.11 only
+    , "-Ybackend:GenBCode"
+    , "-Ydelambdafy:method"
+    , "-target:jvm-1.8"
+    )
+  )
+
+libraryDependency += "org.scala-lang.modules" %% "scala-java8-compat" % "0.7.0"
+{code}
+
+{{T.scala}}
+{code}
+import scala.tools.scalap.scalax.rules.scalasig._
+
+object Main {
+
+  def main(args: Array[String]): Unit = {
+    val byteCode = ByteCode.forClass(classOf[T])
+    ClassFileParser.parse(byteCode)
+    ()
+  }
+}
+
+case class T(s: String) {
+  def toInt: Option[Int] = scala.util.control.Exception.catching(classOf[Exception]).opt(s.toInt)
+}
+{code}
+
+Results in an exception at runtime
+{code}
+[error] (run-main-0) scala.MatchError: 15 (of class java.lang.Integer)
+scala.MatchError: 15 (of class java.lang.Integer)
+	at scala.tools.scalap.scalax.rules.scalasig.ClassFileParser$$anonfun$29.apply(ClassFileParser.scala:118)
+	at scala.tools.scalap.scalax.rules.scalasig.ClassFileParser$$anonfun$29.apply(ClassFileParser.scala:118)
+	at scala.tools.scalap.scalax.rules.Rule$$anonfun$flatMap$1.apply(Rule.scala:35)
+	at scala.tools.scalap.scalax.rules.Rule$$anonfun$flatMap$1.apply(Rule.scala:34)
+	at scala.tools.scalap.scalax.rules.Rule$$anonfun$mapResult$1.apply(Rule.scala:45)
+	at scala.tools.scalap.scalax.rules.Rule$$anonfun$mapResult$1.apply(Rule.scala:45)
+	at scala.tools.scalap.scalax.rules.Rules$DefaultRule.apply(Rules.scala:69)
+	at scala.tools.scalap.scalax.rules.Rules$DefaultRule.apply(Rules.scala:67)
+	at scala.tools.scalap.scalax.rules.StateRules$class.rep$1(Rules.scala:139)
+	at scala.tools.scalap.scalax.rules.StateRules$$anonfun$repeatUntil$1.apply(Rules.scala:145)
+	at scala.tools.scalap.scalax.rules.StateRules$$anonfun$repeatUntil$1.apply(Rules.scala:145)
+	at scala.tools.scalap.scalax.rules.Rules$DefaultRule.apply(Rules.scala:69)
+	at scala.tools.scalap.scalax.rules.Rules$DefaultRule.apply(Rules.scala:67)
+	at scala.tools.scalap.scalax.rules.Rule$$anonfun$flatMap$1.apply(Rule.scala:35)
+	at scala.tools.scalap.scalax.rules.Rule$$anonfun$flatMap$1.apply(Rule.scala:34)
+	at scala.tools.scalap.scalax.rules.Rule$$anonfun$mapResult$1.apply(Rule.scala:45)
+	at scala.tools.scalap.scalax.rules.Rule$$anonfun$mapResult$1.apply(Rule.scala:45)
+	at scala.tools.scalap.scalax.rules.Rules$DefaultRule.apply(Rules.scala:69)
+	at scala.tools.scalap.scalax.rules.Rules$DefaultRule.apply(Rules.scala:67)
+	at scala.tools.scalap.scalax.rules.Rule$$anonfun$mapResult$1.apply(Rule.scala:45)
+	at scala.tools.scalap.scalax.rules.Rule$$anonfun$mapResult$1.apply(Rule.scala:45)
+	at scala.tools.scalap.scalax.rules.Rules$DefaultRule.apply(Rules.scala:69)
+	at scala.tools.scalap.scalax.rules.Rules$DefaultRule.apply(Rules.scala:67)
+	at scala.tools.scalap.scalax.rules.Rule$$anonfun$flatMap$1.apply(Rule.scala:35)
+	at scala.tools.scalap.scalax.rules.Rule$$anonfun$flatMap$1.apply(Rule.scala:34)
+	at scala.tools.scalap.scalax.rules.Rule$$anonfun$mapResult$1.apply(Rule.scala:45)
+	at scala.tools.scalap.scalax.rules.Rule$$anonfun$mapResult$1.apply(Rule.scala:45)
+	at scala.tools.scalap.scalax.rules.Rules$DefaultRule.apply(Rules.scala:69)
+	at scala.tools.scalap.scalax.rules.Rules$DefaultRule.apply(Rules.scala:67)
+	at scala.tools.scalap.scalax.rules.Rule$$anonfun$mapResult$1.apply(Rule.scala:45)
+	at scala.tools.scalap.scalax.rules.Rule$$anonfun$mapResult$1.apply(Rule.scala:45)
+	at scala.tools.scalap.scalax.rules.Rules$DefaultRule.apply(Rules.scala:69)
+	at scala.tools.scalap.scalax.rules.Rules$DefaultRule.apply(Rules.scala:67)
+	at scala.tools.scalap.scalax.rules.Rule$$anonfun$mapResult$1.apply(Rule.scala:45)
+	at scala.tools.scalap.scalax.rules.Rule$$anonfun$mapResult$1.apply(Rule.scala:45)
+	at scala.tools.scalap.scalax.rules.Rules$DefaultRule.apply(Rules.scala:69)
+	at scala.tools.scalap.scalax.rules.Rules$DefaultRule.apply(Rules.scala:67)
+	at scala.tools.scalap.scalax.rules.Rule$$anonfun$mapResult$1.apply(Rule.scala:45)
+	at scala.tools.scalap.scalax.rules.Rule$$anonfun$mapResult$1.apply(Rule.scala:45)
+	at scala.tools.scalap.scalax.rules.Rules$DefaultRule.apply(Rules.scala:69)
+	at scala.tools.scalap.scalax.rules.Rules$DefaultRule.apply(Rules.scala:67)
+	at scala.tools.scalap.scalax.rules.Rule$$anonfun$mapResult$1.apply(Rule.scala:45)
+	at scala.tools.scalap.scalax.rules.Rule$$anonfun$mapResult$1.apply(Rule.scala:45)
+	at scala.tools.scalap.scalax.rules.Rules$DefaultRule.apply(Rules.scala:69)
+	at scala.tools.scalap.scalax.rules.Rules$DefaultRule.apply(Rules.scala:67)
+	at scala.tools.scalap.scalax.rules.Rule$$anonfun$mapResult$1.apply(Rule.scala:45)
+	at scala.tools.scalap.scalax.rules.Rule$$anonfun$mapResult$1.apply(Rule.scala:45)
+	at scala.tools.scalap.scalax.rules.Rules$DefaultRule.apply(Rules.scala:69)
+	at scala.tools.scalap.scalax.rules.Rules$DefaultRule.apply(Rules.scala:67)
+	at scala.tools.scalap.scalax.rules.Rule$$anonfun$flatMap$1.apply(Rule.scala:35)
+	at scala.tools.scalap.scalax.rules.Rule$$anonfun$flatMap$1.apply(Rule.scala:34)
+	at scala.tools.scalap.scalax.rules.Rule$$anonfun$mapResult$1.apply(Rule.scala:45)
+	at scala.tools.scalap.scalax.rules.Rule$$anonfun$mapResult$1.apply(Rule.scala:45)
+	at scala.tools.scalap.scalax.rules.Rules$DefaultRule.apply(Rules.scala:69)
+	at scala.tools.scalap.scalax.rules.Rules$DefaultRule.apply(Rules.scala:67)
+	at scala.tools.scalap.scalax.rules.Rule$$anonfun$mapResult$1.apply(Rule.scala:45)
+	at scala.tools.scalap.scalax.rules.Rule$$anonfun$mapResult$1.apply(Rule.scala:45)
+	at scala.tools.scalap.scalax.rules.Rules$DefaultRule.apply(Rules.scala:69)
+	at scala.tools.scalap.scalax.rules.Rules$DefaultRule.apply(Rules.scala:67)
+	at scala.tools.scalap.scalax.rules.Rule$$anonfun$mapResult$1.apply(Rule.scala:45)
+	at scala.tools.scalap.scalax.rules.Rule$$anonfun$mapResult$1.apply(Rule.scala:45)
+	at scala.tools.scalap.scalax.rules.Rules$DefaultRule.apply(Rules.scala:69)
+	at scala.tools.scalap.scalax.rules.Rules$DefaultRule.apply(Rules.scala:67)
+	at scala.tools.scalap.scalax.rules.Rule$$anonfun$mapResult$1.apply(Rule.scala:45)
+	at scala.tools.scalap.scalax.rules.Rule$$anonfun$mapResult$1.apply(Rule.scala:45)
+	at scala.tools.scalap.scalax.rules.Rules$DefaultRule.apply(Rules.scala:69)
+	at scala.tools.scalap.scalax.rules.Rules$DefaultRule.apply(Rules.scala:67)
+	at scala.tools.scalap.scalax.rules.Rule$$anonfun$mapResult$1.apply(Rule.scala:45)
+	at scala.tools.scalap.scalax.rules.Rule$$anonfun$mapResult$1.apply(Rule.scala:45)
+	at scala.tools.scalap.scalax.rules.Rules$DefaultRule.apply(Rules.scala:69)
+	at scala.tools.scalap.scalax.rules.Rules$DefaultRule.apply(Rules.scala:67)
+	at scala.tools.scalap.scalax.rules.Rule$$anonfun$mapResult$1.apply(Rule.scala:45)
+	at scala.tools.scalap.scalax.rules.Rule$$anonfun$mapResult$1.apply(Rule.scala:45)
+	at scala.tools.scalap.scalax.rules.Rules$DefaultRule.apply(Rules.scala:69)
+	at scala.tools.scalap.scalax.rules.Rules$DefaultRule.apply(Rules.scala:67)
+	at scala.tools.scalap.scalax.rules.Rule$$anonfun$mapResult$1.apply(Rule.scala:45)
+	at scala.tools.scalap.scalax.rules.Rule$$anonfun$mapResult$1.apply(Rule.scala:45)
+	at scala.tools.scalap.scalax.rules.Rules$DefaultRule.apply(Rules.scala:69)
+	at scala.tools.scalap.scalax.rules.Rules$DefaultRule.apply(Rules.scala:67)
+	at scala.tools.scalap.scalax.rules.Rules$$anonfun$expect$1.apply(Rules.scala:73)
+	at scala.tools.scalap.scalax.rules.scalasig.ClassFileParser$.parse(ClassFileParser.scala:97)
+	at Main$.main(T.scala:7)
+	at Main.main(T.scala)
+{code}

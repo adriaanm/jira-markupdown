@@ -1,0 +1,21 @@
+This is a side effect of the way the repl constructs objects, which inhibits methods from being jitted under some circumstances.  I feel safe in saying this based on the following.  It's the same code as above, but only 10000000 in the for loop so it would finish before I died.
+{code}
+% JAVA_OPTS="-Xint" scala ForLoopScala
+result = 9, time = 3.3298810000000003
+result = 9, time = 3.2232250000000002
+result = 9, time = 3.208788
+result = 9, time = 3.200161  
+{code}
+{code}
+% JAVA_OPTS="-Xint" scala 
+Welcome to Scala version 2.8.0.r22873-b20100901025938 (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_20).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> ForLoopScala.main(null)
+result = 9, time = 3.319741
+result = 9, time = 3.3183130000000003
+result = 9, time = 3.3227290000000003
+result = 9, time = 3.3129000000000004  
+{code}
+So this is not a bug per se.  It would be nice to avoid if we can, but patches will speak a lot more loudly than anything else: I don't have any personal ambition to soothe hotspot here.  Classifying as enhancement.

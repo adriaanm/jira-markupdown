@@ -1,0 +1,30 @@
+Additionally: are you sure TCO gets applied here? My tests show it not being. Here's some sample code to demonstrate:
+
+{code}
+package newstream;
+
+abstract class Stream[+T]{
+  def foreach(f : T => Unit) : Unit = if (empty) () else {f(head); tail.foreach(f)}
+  def head : T;
+  def tail : Stream[T];
+  def empty : Boolean;
+}
+
+class Cons[+T](val head : T, _tail : => Stream[T]) extends Stream[T]{
+  lazy val tail = _tail;
+  def empty = false;
+}
+
+object Empty extends Stream[Nothing]{
+  def head = error("Empty.head");
+  def tail = error("Empty.tail");
+  def empty = true;
+}
+
+object StreamTest extends Application{
+  def from(i : Int) : Stream[Int] = new Cons[Int](i, from(i + 1));
+  from(1).foreach(x => ());
+}
+{code}
+
+This will stack overflow. 

@@ -1,0 +1,27 @@
+Although I like the consistency of treating constructors as regular methods, I would prefer another correction in place of restricting even more methods (or, in this case, constructors) with default arguments. For instance, in C++ I can create multiple methods with default arguments if the language is able to distinguish one from another:
+
+{code}
+#include <iostream>
+using namespace std;
+
+class Foo {
+    public:
+    void foo(int foo = 10, int bar = 20) {
+        cout << "First method\n";
+    }
+    
+    void foo(string foo, int bar = 20) {
+        cout << "Second method\n";
+    }
+};
+
+int main(void) {
+    Foo f = Foo();
+    f.foo(10);  //Prints "First method"
+    f.foo("String"); //Prints "Second method"
+}
+{code}
+
+In Scala, as I have shown in my examples, this is almost working except that for some cases it detects double definitions. Is it possible to try to correct these double definitions, in place of putting even more restrictions over constructors?
+
+(Sorry for the trouble, but working in Scala it seems cumbersome to work with constructors the way it is implemented today, comparing it with another languages, that I don't think implementing even more restrictions is quite the way to go...)
