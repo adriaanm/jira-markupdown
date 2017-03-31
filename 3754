@@ -2,7 +2,7 @@ Replying to [comment:8 Villane]:
 > So it seems it has to do with removing an element from HashMap$$HashTrieMap.
 
 Here is why it happens.  This case statement, slightly snipped, lets EmptyHashMap fall through to the default.
-{code}
+```scala
         elems(i) match {
           case m: HashTrieMap[A,B] => // push current pos onto stack and descend
           case m: HashMap1[A,B] => m.ensurePair
@@ -10,5 +10,5 @@ Here is why it happens.  This case statement, slightly snipped, lets EmptyHashMa
             subIter = m.iterator
             subIter.next
         }
-{code}
+```
 I don't know the implementation well enough to confidently fix it right now, but I think tiark can fix it pretty easily.

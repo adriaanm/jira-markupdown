@@ -1,5 +1,5 @@
 I thought I was going to fix this, but I started getting pretty far afield so I'll open it.
-{code}
+```scala
 class A[+T] {
   val foo0 = {
     class AsVariantAsIWantToBe { def contains(x: T) = () }
@@ -19,7 +19,7 @@ object Test {
     // java.lang.NoSuchMethodException: A$AsVariantAsIWantToBe$1.contains(java.lang.String)
   }
 }
-{code}
+```
 
 My understand is as follows: the variance validator takes the position that you can use type parameters however you like if your owner is a term, like val foo0.  Though you are prohibited from declaring foo0 to have the unsound type ("Parameter type in structural refinement may not refer to an abstract type defined outside that refinement"), scala is still willing to infer it.  In this case, that it infers within A[T] that foo0 has type
 

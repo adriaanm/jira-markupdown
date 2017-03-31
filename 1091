@@ -1,23 +1,21 @@
 I scratched my head at this a bit, but ijuma on IRC helped me understand what gestalt probably meant.
 I think he means more like this:
-{code}
+```scala
 def foo(implicit value: Int) = println(value)
 
 for (implicit elem <- Array(1,2,3)) foo
-{code}
+```
 
 It would require, I suppose, changing the for-comprehension expansion from
-
-{code}
+```scala
 for (p <- e) e'
-{code} 
+```
 becoming
-{code}
+```scala
 e.foreach { case p => e' }
-{code}
+```
 
 to something like
-{code}
+```scala
 e.foreach { dummy => [implicit] val p = dummy ; e' }
-{code}
-
+```

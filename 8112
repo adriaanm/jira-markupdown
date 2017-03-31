@@ -1,17 +1,17 @@
 Note that if I define child in A2 like this:
-{code}
+```scala
 override def child(e: A2.super.Element):Unit = super.child(e)
-{code}
+```
 Then the signatures match and the override is fine, but we have a different and also true error:
-{noformat}
+```
 ./a.scala:18: error: class Element needs to be abstract, since method child in trait Elt of type (e: A2.this.Element)Unit is not defined
 (Note that A.this.Element does not match A2.this.Element)
   class Element extends super.Element {
         ^
 one error found
-{noformat}
+```
 ...because the method signature in A2#Element no longer matches the abstract signature defined in A#Elt. Just for fun I will call super.child from THAT method so we can see all the types at play. This compiles.
-{code}
+```scala
 trait A {
   type Element<:Elt
   trait Elt {
@@ -32,4 +32,4 @@ class A2 extends A1 {
     def child(e: A2.this.Element):Unit = super.child(e: A2.super.Element)
   }
 }
-{code}
+```

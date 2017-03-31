@@ -1,6 +1,5 @@
 Pinning this down consumed my last six hours. (Woe is me.) The actual manifestation was inside the compiler of course, and there were many confounders.  And who goes in thinking that changing the name of the package is going to do it? Anyway...
-
-{code}
+```scala
 // a.scala
 package p1.wumpus 
 
@@ -41,8 +40,8 @@ object Test {
   val x3 = new p1.wumpus.bippity.event.Bungle { }
   val y3 = new x3.EventModel { }
 }
-{code}
-{code}
+```
+```scala
 % scalac -d out a.scala 
 % scala -cp out -i test.scala
 Loading test.scala...
@@ -68,9 +67,9 @@ Exception in thread "main" java.lang.StackOverflowError
 	at scala.tools.nsc.transform.SpecializeTypes$$$$anonfun$$21.apply(SpecializeTypes.scala:882)
 	at scala.tools.nsc.symtab.SymbolTable.atPhase(SymbolTable.scala:104)
 [snip, more below]
-{code}
+```
 2.8.0 crashes the same as trunk.  2.7.7 notices the issue and emits an error, which is better than crashing I guess, but as far as I can see the ideal number of errors is zero.
-{code}
+```scala
 % scala27 -cp out -i test.scala 
 Loading test.scala...
 defined module Test
@@ -79,9 +78,9 @@ Loading test.scala...
 <console>:6: error: illegal cyclic inheritance involving class EventModel
          val y1 = new x1.EventModel { }
                   ^
-{code}
+```
 Here is the loop in the stack trace with the three lines at the beginning and the end representing the overlap.
-{code}
+```scala
 	at scala.collection.immutable.List.foreach(List.scala:45)
 	at scala.collection.TraversableLike$$class.map(TraversableLike.scala:206)
 	at scala.collection.immutable.List.map(List.scala:45)
@@ -100,4 +99,4 @@ Here is the loop in the stack trace with the three lines at the beginning and th
 	at scala.collection.immutable.List.foreach(List.scala:45)
 	at scala.collection.TraversableLike$$class.map(TraversableLike.scala:206)
 	at scala.collection.immutable.List.map(List.scala:45)
-{code}
+```

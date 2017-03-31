@@ -1,26 +1,23 @@
-There is a (way) simpler solution. The bug results from UnCurry not anticipating that the location of a try-catch will become non-statement after LambdaLift. That's because LambdaLift turns a statement-position try-catch into non-statement-position (by giving the enclosing RHS as argument to {{new OBjectRef(initialValue)}}. The only way to lower such {{New()}} is:
-
-{code}
+There is a (way) simpler solution. The bug results from UnCurry not anticipating that the location of a try-catch will become non-statement after LambdaLift. That's because LambdaLift turns a statement-position try-catch into non-statement-position (by giving the enclosing RHS as argument to `new OBjectRef(initialValue)`. The only way to lower such `New()` is:
+```scala
 NEW ObjectRef
 DUP
 ... instructions loading initialValue
 INVOKESPECIAL scala.runtime.ObjectRef.<init>(initialValue)
-{code}
+```
 
 Alternatively, if the above were lowered into:
-
-{code}
+```scala
 ... instructions loading initialValue
 INVOKESTATIC scala.runtime.ObjectRef.create(initialValue)
-{code}
+```
 
 then UnCurry wouldn't need to anticipate anything (no code resurrection, no code duplication, more compact code). For bonus points, it would be great to have:
-
-{code}
+```scala
 INVOKESTATIC scala.runtime.ObjectRef.zero()
-{code}
+```
 
-which returns an {{ObjectRef}} initialized to {{null}}. Similarly for the zeroes of {{IntRef}} and others.
+which returns an `ObjectRef` initialized to `null`. Similarly for the zeroes of `IntRef` and others.
 
-About binary compatibility, what if {{ObjectRef}} et al. had been designed from the start with the above in mind? It's never too late.
+About binary compatibility, what if `ObjectRef` et al. had been designed from the start with the above in mind? It's never too late.
 

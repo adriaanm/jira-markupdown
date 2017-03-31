@@ -1,13 +1,11 @@
 in the following scenario, a java.lang.VerifyError is thrown at runtime as soon as you try to reference LimboStage:
-
-{code}
+```scala
 abstract sealed class Stage( val transits: Set[ Stage ])
 case object IdleStage   extends Stage( Set.empty )
 case object LimboStage  extends Stage( Set( IdleStage, LimboStage ))
-{code}
-
-{code}
+```
+```scala
 Exception in thread "main" java.lang.VerifyError: (class: LimboStage$$, method: <init> signature: ()V) Expecting to find object/array on stack
 	at Test$$.main(Test.scala:7)
 	at Test.main(Test.scala)
-{code}
+```

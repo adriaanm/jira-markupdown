@@ -1,6 +1,5 @@
 Given:
-
-{code}
+```scala
 scala> sealed trait PowerSource 
 defined trait PowerSource
 
@@ -27,11 +26,10 @@ defined class Bus
 scala> case class Car(fuel: Int) extends Vehicle {
      |   type A = Petrol.type
      | }
-{code}
+```
 
 And now the `refuel` function. Observe that there's an `unreachable` code warning that's not true.
-
-{code}
+```scala
 scala> def refuel[P <: Petrol.type](vehicle: Vehicle {type A = P} ): Vehicle = vehicle match {
      |   case Car(_) => Car(100)
      |   case Bus(_) => Bus(100)
@@ -46,4 +44,4 @@ res6: Vehicle = Car(100)
 
 scala> refuel(Bus(5))
 res7: Vehicle = Bus(100)
-{code}
+```

@@ -1,18 +1,17 @@
-When using {{Map.filterKeys}}, the given predicate has to be a total function, instead of a function defined only on the keys. Otherwise {{get}} will fail.
+When using `Map.filterKeys`, the given predicate has to be a total function, instead of a function defined only on the keys. Otherwise `get` will fail.
 
 This might be unexpected.
 
  Current code in {{collection.MapLike.scala/FilteredKeys}} (line ~ 234):
-
-{code}
+```scala
     override def contains(key: A) = self.contains(key) && p(key)
     def get(key: A) = if (!p(key)) None else self.get(key)
-{code}
+```
 
-Note how {{contains}} first checks containment inside the map, and thus queries the predicate only for contained elements, thus preventing the unexpected behaviour.
+Note how `contains` first checks containment inside the map, and thus queries the predicate only for contained elements, thus preventing the unexpected behaviour.
 
-But {{get}} does not perform this check.
+But `get` does not perform this check.
 
 So decide upon the following:
 - either demand a total function as predicate in the documentation (and change {{contains}})
-- or go with predicates that are only defined on the elements of the map and change {{get}}.
+- or go with predicates that are only defined on the elements of the map and change `get`.

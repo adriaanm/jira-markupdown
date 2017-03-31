@@ -1,8 +1,7 @@
 When explicitly defining the companion object of a case class, the compiler does not add a `FunctionN` parent and does not override `toString`.
 
 working as expected:
-
-{code}
+```scala
 scala> object u { case class C(x: Int) }
 defined module u
 
@@ -13,12 +12,11 @@ scala> val f: Int => u.C = u.C
 f: (Int) => u.C = C
 
 scala> 
-
-{code}
+```
 
 
 unexpected:
-{code}
+```scala
 scala> object t { object C; case class C(x: Int) }
 defined module t
 
@@ -31,4 +29,4 @@ scala> val f: Int => t.C = t.C
  required: (Int) => t.C
        val f: Int => t.C = t.C
                              ^
-{code}
+```

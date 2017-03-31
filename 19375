@@ -1,6 +1,5 @@
-Scala Maps that are wrapped as Java Maps are not serializable because {{scala.collection.convert.Wrappers$MapWrapper}} is not serializable:
-
-{code}
+Scala Maps that are wrapped as Java Maps are not serializable because `scala.collection.convert.Wrappers$MapWrapper` is not serializable:
+```scala
 object Test extends App {
   import scala.collection.JavaConverters._
 
@@ -11,16 +10,15 @@ object Test extends App {
   ser(m)
   println("ok")
 }
-{code}
+```
 
 produces 
-
-{code}
+```scala
 java.io.NotSerializableException: scala.collection.convert.Wrappers$MapWrapper
 	at java.io.ObjectOutputStream.writeObject0(ObjectOutputStream.java:1183)
 	at java.io.ObjectOutputStream.writeObject(ObjectOutputStream.java:347)
 	at Test$.ser(Test.scala:5)
 	at Test$.delayedEndpoint$Test$1(Test.scala:8)
-{code}
+```
 
-This is related to SI-5974
+This is related to scala/bug#5974

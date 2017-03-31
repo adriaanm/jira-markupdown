@@ -5,16 +5,15 @@ Replying to [comment:1 prokopec]:
 > 
 > https://lampsvn.epfl.ch/trac/scala/ticket/3796#comment:22
 
-Actually, that was a different issue. The original {{RedBlack}} code, the one that went into 2.8.0 and 2.8.1, was broken. The temporary fix was O(n), but never got released (as far as I know -- unless it went into 2.8.1 after all).
+Actually, that was a different issue. The original `RedBlack` code, the one that went into 2.8.0 and 2.8.1, was broken. The temporary fix was O(n), but never got released (as far as I know -- unless it went into 2.8.1 after all).
 
 The problem referred to is here ({{scala.collection.immutable.TreeMap}}):
-
-{code}
+```scala
     val ntree = tree.range(from,until)
     new TreeMap[A,B](ntree.count, ntree)
-{code}
+```
 
 
 Specifically, that {{count}} on {{ntree}}. On the other hand, turning {{NonEmpty}}'s {{count}} into a {{val}} sounds reasonable. It can always be counted in constant time, because it only needs to add the counts of its (at most) two subtrees. And if those subtree's {{count}} have already been computed... And, of course, since the collection is immutable, there's no need to recompute.
 
-It _would_ make the memory footprint of {{RedBlack}} heavier. And if we went this way, I'd be much in favor of putting in a depth val too -- I missed it on {{range}}, and it usually helps with red&black algorithms.
+It *would* make the memory footprint of `RedBlack` heavier. And if we went this way, I'd be much in favor of putting in a depth val too -- I missed it on `range`, and it usually helps with red&black algorithms.

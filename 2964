@@ -6,19 +6,18 @@ Replying to [comment:4 dragos]:
 It erases to Object because Array[T] erases to Object and they aren't considered jointly.
 
 So I modified erasure to fix the intersection type, which fixed the NPE.  Then I tried this:
-{code}
+```scala
   class C[T](a: Array[T]) {
     a match { 
       case x: Array[Int]    => x(0)
       case x: Array[Double] => 5
     }
   }
-{code}
+```
 And that works, but returns type Any.  And I then realized that this isn't an erasure problem, it's a typing problem.  So I dug into infer and made it work a little harder.
 
 It goes without saying that when I try to tweak something like this I'm doing it totally wrong, but I'm proud of this one anyway because I got something working in an almost finite amount of time.  However I'm not going to check a change like this in without an endorsement.  (The example above returns Int, and the whole test suite passes.) Here is the alternative implemention of intersect (in Infer.scala), and that's the whole patch.
-
-{code}
+```scala
     def intersect(tp1: Type, tp2: Type): Type =
       if (tp1 <:< tp2) tp1
       else if (tp2 <:< tp1) tp2
@@ -34,4 +33,4 @@ It goes without saying that when I try to tweak something like this I'm doing it
           }
           intersectionType(List(tp1, reduced2))
       }
-{code}
+```

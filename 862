@@ -2,7 +2,7 @@ I'm apparently so fascinated with this bug that I will continue with this extend
 
 scalac a.scala compiles, but then scala -e 'T1053.x' induces an infinite loop in the typer: a sample of the stack trace shown below.
 scala a.scala works, and if I throw a println in there it's good to go:
-{code}
+```scala
 // source
 object T1053 {
   trait T[A] { 
@@ -19,10 +19,10 @@ println(T1053.x + " " + T1053.y)
 // run
 % scala a.scala 
 null Main$$$$anon$$2$$T1053$$$$anon$$1@77d2b01b
-{code}
+```
 
 And pasting into the repl crashes it with a similar type error to before:
-{code}
+```scala
  found   : $$iw.$$iw.T1053.T[_2.type(in value $$iw$$$$iw$$T1053$$T$$U$$$$$$outer)] where type _2.type(in value $$iw$$$$iw$$T1053$$T$$U$$$$$$outer) <: java.lang.Object{type V = $$iw.$$iw.T1053.T[this.type]} with Singleton
  required: $$iw.$$iw.T1053.T[_ <: java.lang.Object{type V = $$iw.$$iw.T1053.T[this.type]} with Singleton]
 	at scala.tools.nsc.typechecker.Contexts$$Context.error(Contexts.scala:273)
@@ -30,10 +30,10 @@ And pasting into the repl crashes it with a similar type error to before:
 	at scala.tools.nsc.typechecker.Infer$$Inferencer.typeError(Infer.scala:223)
 	at scala.tools.nsc.typechecker.Infer$$Inferencer.typeErrorTree(Infer.scala:238)
 ...
-{code}
+```
 
 The promise loop excerpt:
-{code}
+```scala
 	at scala.tools.nsc.symtab.Types$$TypeMap.mapOver(Types.scala:2931)
 	at scala.tools.nsc.symtab.Types$$TypeMap.mapOver(Types.scala:2924)
 	at scala.tools.nsc.symtab.Types$$TypeMap.mapOver(Types.scala:2869)
@@ -65,4 +65,4 @@ The promise loop excerpt:
 	at scala.tools.nsc.symtab.Types$$AsSeenFromMap.apply(Types.scala:3206)
 	at scala.tools.nsc.symtab.Types$$AsSeenFromMap.apply(Types.scala:3082)
 	at scala.tools.nsc.symtab.Types$$TypeMap$$$$anonfun$$18.apply(Types.scala:2934)
-{code}
+```

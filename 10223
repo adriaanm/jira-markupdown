@@ -1,16 +1,16 @@
 Sure.
-This can be solved easily by implementing {{getOrElseUpdate}} with a combination of {{get}} and {{putIfAbsent}}.
-The downside that the {{TrieMap}} might occasionally evaluate the call-by-name parameter even if it does not store it into the tree in the end.
+This can be solved easily by implementing `getOrElseUpdate` with a combination of `get` and `putIfAbsent`.
+The downside that the `TrieMap` might occasionally evaluate the call-by-name parameter even if it does not store it into the tree in the end.
 
 This bug report complains about exactly that - it expects 
-A real problem with {{getOrElseUpdate}} not addressed in this bug report is that there is currently no
+A real problem with `getOrElseUpdate` not addressed in this bug report is that there is currently no
 
 There are 4 solutions:
-1) Relax the contract of {{getOrElseUpdate}} to potentially allow evaluating the call-by-name parameter.
-2) Extract the {{getOrElseUpdate}} into another interface that concurrent maps do not inherit, but non-thread-safe maps like {{mutable.HashMap}} do.
-3) Have {{ParTrieMap}} throw an exception for {{getOrElseUpdate}}.
+1) Relax the contract of `getOrElseUpdate` to potentially allow evaluating the call-by-name parameter.
+2) Extract the `getOrElseUpdate` into another interface that concurrent maps do not inherit, but non-thread-safe maps like `mutable.HashMap` do.
+3) Have `ParTrieMap` throw an exception for `getOrElseUpdate`.
 4) There is a really dirty hack which involves modifying the Ctrie data-structure to be able to store call-by-name (or lazy, if you will) nodes that are evaluated the first time somebody hits them. Proper blocking synchronization in these nodes is a must. I don't like this.
 
 Thoughts?
 
-Btw, the proposed workaround with synchronized will fix the example in this bug report, but won't solve the issues, as there might exist other concurrent calls to e.g. {{put}}.
+Btw, the proposed workaround with synchronized will fix the example in this bug report, but won't solve the issues, as there might exist other concurrent calls to e.g. `put`.

@@ -1,5 +1,5 @@
 I have two clases, A and B that implement the operation "*:". The code for A just calls the operation on B:
-def *:(x: B): A = x *: this
+def **:(x: B): A = x **: this
 and the B class has the actual implementation. The compiler appears to transform this to the following java code:
 public A $times$colon(B x) { B localB = x; return $times$colon(localB); }
 The operation is now in the wrong order, resulting an infinite recursion.

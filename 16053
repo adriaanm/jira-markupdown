@@ -1,5 +1,5 @@
 One of those comments I have never understood.  In ConstantFolder:
-{code}
+```scala
   private def fold(tree: Tree, compX: => Constant): Tree =
     try {
       val x = compX
@@ -10,19 +10,19 @@ One of those comments I have never understood.  In ConstantFolder:
                                            // but that is better than the
                                            // compiler itself crashing
     }
-{code}
+```
 To me it seems like the compiler itself crashing would be better, a lot better.  Or just emitting an error would be fine.
 
 As it stands if we compile this class:
-{code}
+```scala
 import annotation._
 
 class bippy() {
   @elidable(55 / 0) def f() = 5
 }
-{code}
+```
 We get either a corrupt scala signature or one which showPickled needs to be educated about.
-{code}
+```scala
 37,190: TYPEname 8: elidable
 38,200: TREE 4:
 BAD ENTRY END: computed = 206, actual = 202, bytes = 49, 4, 31, 28, 39, 48
@@ -43,4 +43,4 @@ BAD ENTRY END: computed = 253, actual = 250, bytes = 49, 3, 37, 49, 50
 49,253: CONSTANTtpe 1: 50 29
 BAD ENTRY END: computed = 256, actual = 257, bytes = 15, 1, 50, 29
 50,256: LITERALint 1: 0
-{code}
+```

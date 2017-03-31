@@ -3,7 +3,7 @@ Removing them might be a tough sell, given that all three of the reasons to remo
 I don't know, I'm not the guy to weigh those tradeoffs. I think removing them entirely is probably unwise, but I doubt there are any hail marys coming to fix any of the issues before 2.11. I'll send a PR removing the access limitations.
 
 In case anyone is thinking they don't want to make those classes public because it increases the binary compatibility surface area, I have some bad news: thanks to the leaking of those supposed-to-be-internal types, they're already in the footprint.
-{code}
+```scala
 object Test {
   def f[A, CC[X]](xs: CC[A]) = xs
   def g = f(scala.collection.immutable.BitSet(1))
@@ -13,6 +13,6 @@ object Test {
 
 // public scala.collection.AbstractSet<java.lang.Object> g();
 //   Signature: ()Lscala/collection/AbstractSet;
-{code}
+```
 
 In other words there is no such thing as a private type.

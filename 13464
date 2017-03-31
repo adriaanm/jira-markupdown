@@ -1,15 +1,15 @@
 Compiler fails with this message (complete output attached):
-{code}
+```scala
 java.lang.AssertionError: assertion failed: subst(value a) is nulltest.scala
         at scala.Predef$$.assert(Predef.scala:92)
         at scala.tools.nsc.matching.ParallelMatching$$RepFactory.requestBody(ParallelMatching.scala:972)
         at scala.tools.nsc.matching.ParallelMatching$$VariableRule.tree(ParallelMatching.scala:134)
         at scala.tools.nsc.matching.ParallelMatching$$class.repToTree(ParallelMatching.scala:849)
         at scala.tools.nsc.transform.ExplicitOuter.repToTree(ExplicitOuter.scala:19)
-{code}
+```
 
 when compiling this code:
-{code}
+```scala
 object test {
     case class A(val a: String*)
     case class B(val b: Int, override val a: String*) extends A(a:_*)
@@ -19,4 +19,4 @@ object test {
         case A(a @ _*) => println("A")
     }
 }
-{code}
+```

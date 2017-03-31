@@ -1,23 +1,20 @@
 I ran across this problem when the compiler failed to process a @tailrec annotation on a method inside an anonymous Runnable class. I hadn't imported @tailrec and I got no compile-time warning about this at all - just a StackOverflowException at runtime.
 
 The Runnable was created like so:
-
-{noformat}
+```
 new Thread(new Runnable { ... @tailrec ... }).start()
-{noformat}
+```
 
 However I eventually realised the problem and found that I get a proper compile error when I rearranged the code like so.
-
-{noformat}
+```
 val t = new Thread(new Runnable { ... @tailrec ... })
 t.start()
-{noformat}
+```
 
-According to my investigation {{calling new Thread(...).start()}} means that annotations aren't processed. Note that the parens on the {{start()}} seem to be quite important for some reason.
+According to my investigation `calling new Thread(...).start()` means that annotations aren't processed. Note that the parens on the `start()` seem to be quite important for some reason.
 
 Simplified test case below.
-
-{noformat}
+```
 // CORRECT - complains about annotation
 // "not found: type nosuchannotation"
 // donothing has parens, returns unit, but not called
@@ -80,4 +77,4 @@ object Example5 {
     @nosuchannotation def method() {}
   }).donothing()
 }
-{noformat}
+```

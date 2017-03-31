@@ -1,6 +1,5 @@
 Implementing a specialized method with a synchronized block generates an improperly synchronized classfile. This only applies to whole-method synchronization, where the compiler emits the ACC_SYNCHRONIZED flag instead of generating explicit monitor code.
-
-{code}
+```scala
 trait Counter[@specialized +T] {
   def apply(): T
 }
@@ -12,9 +11,8 @@ class IntCounter(var state: Int) extends Counter[Int] {
     n
   }
 }
-{code}
-
-{code}
+```
+```scala
 Compiled from "Counter.scala"
 public class IntCounter implements Counter$mcI$sp {
   private int state;
@@ -53,4 +51,4 @@ public class IntCounter implements Counter$mcI$sp {
 
   // (snip)
 }
-{code}
+```

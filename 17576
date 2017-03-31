@@ -3,8 +3,7 @@ This is a regression from Scala 2.9.2 and it requires specialization and separat
 Given:
 
 bar/bar.scala
-
-{code:java}
+```java
 package bar
 
 abstract class IntBase[V] extends Base[Int, V]
@@ -24,10 +23,10 @@ abstract class Base[@specialized K, V] {
   def get(key: K): V = throw new RuntimeException
 
 }
-{code}
+```
 
 foo/foo.scala
-{code:java}
+```java
 package foo
 
 import bar._
@@ -45,20 +44,19 @@ object Test {
     new Wrapper(new DefaultIntBase)
   }
 }
-
-{code}
+```
 
 Steps to reproduce:
 
-# scalac bar/bar.scala 
-# scalac foo/foo.scala
-# scala foo.Test
+- scalac bar/bar.scala 
+- scalac foo/foo.scala
+- scala foo.Test
 
 Expected outcome: No output.
 
 Actual outcome:
-{quote}
+```
 java.lang.VerifyError: (class: foo/Wrapper, method: user signature: (I)Lfoo/FooProvider;) Incompatible object argument for function call
 	at foo.Test$.main(foo.scala:15)
 	at foo.Test.main(foo.scala)
-{quote}
+```

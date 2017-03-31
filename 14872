@@ -1,19 +1,19 @@
 Consider the following piece of code:
-{code}
+```scala
 val queue = new ReferenceQueue[Array[Byte]]
 val buf = new ArrayBuffer[SoftReference[Array[Byte]]]
 buf += new SoftReference(new Array[Byte](100), queue)
 // ...more element being added, and other things happening...
 buf.clear
-{code}
-This code works with a list of {{SoftReferences}} and when done, just clears the list to ged rid of them. This should have the following effect:
+```
+This code works with a list of `SoftReferences` and when done, just clears the list to ged rid of them. This should have the following effect:
 
-1. The {{SoftReferences}} are not referenced any more, so they eventually get freed by the garbage collector,
+1. The `SoftReferences` are not referenced any more, so they eventually get freed by the garbage collector,
 
 2. Subsequently, the byte arrays also get freed.
 
-So the {{buf.clear}} basically has the intended effect. However, this does not work with Scala's current {{ReferenceQueue}} implementation: Step 1 does not happen because the {{SoftReferences}} are still referenced through the map {{ReferenceQueue.wrappers}}. And so step 2 also will not happen, at least unless the VM runs out of memory, because there are still valid soft references for the byte arrays.
+So the `buf.clear` basically has the intended effect. However, this does not work with Scala's current `ReferenceQueue` implementation: Step 1 does not happen because the `SoftReferences` are still referenced through the map `ReferenceQueue.wrappers`. And so step 2 also will not happen, at least unless the VM runs out of memory, because there are still valid soft references for the byte arrays.
 
-As a workaround, one could call {{clear}} on all the {{SoftReferences}} (provided that SI-2852 gets fixed). But this should normally not be necessary and one might want to avoid it if the list {{buf}} is relatively large.
+As a workaround, one could call `clear` on all the `SoftReferences` (provided that scala/bug#2852 gets fixed). But this should normally not be necessary and one might want to avoid it if the list `buf` is relatively large.
 
 Scala version: 2.8.0.r20327-b20091231020112

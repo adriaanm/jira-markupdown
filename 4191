@@ -2,7 +2,7 @@ Hi Ross,
 
 the first problem you see is the following: for top-level object definitions the scala compiler generates two classes (two classfiles), on named "!ObjectName$$" (containing the actual implementation) and a "mirror class" named "!ObjectName" wich contains static methods that forward to the actual implementations. The second one is generated for Java compatibility only, to ease accessing object members from java.
 
-The scala compiler copies all annotations from the object to the mirror class, that's why Spring sees two classfiles with a {{@Repository("myBean")}} annotation. 
+The scala compiler copies all annotations from the object to the mirror class, that's why Spring sees two classfiles with a `@Repository("myBean")` annotation. 
 
 Do you think this is plausible?
 
@@ -12,4 +12,4 @@ Maybe we should just not add the annotations to the mirror classes, or make this
 ----
 
 
-The second (after changing it to be a class) is different issue. It looks like you're trying to annotate the field "id" with "@Id", but you're actually annotating the constructor parameter. In order to hit the field, you need to use the {{target.field}} meta-annotation, see https://codereview.scala-lang.org/fisheye/browse/scala-svn/scala/trunk/src/library/scala/annotation/target/field.scala?r=HEAD
+The second (after changing it to be a class) is different issue. It looks like you're trying to annotate the field "id" with "@Id", but you're actually annotating the constructor parameter. In order to hit the field, you need to use the `target.field` meta-annotation, see https://codereview.scala-lang.org/fisheye/browse/scala-svn/scala/trunk/src/library/scala/annotation/target/field.scala?r=HEAD

@@ -1,14 +1,14 @@
-This is essentially SI-7753, which is probably SI-6161, but it seems like something to fix. It's really amazing how hard it is to use the language which is advertised in the brochure.
+This is essentially scala/bug#7753, which is probably scala/bug#6161, but it seems like something to fix. It's really amazing how hard it is to use the language which is advertised in the brochure.
 
 One thing I noticed while debugging this is that the logic for comparing prefixes is completely borked. Watch isSameType assessing the equivalence of two types and rejecting them though they resolve to the same thing. Up close you can see it following logic with code like this:
-{code}
+```scala
 trait Trait { type Foo }
 object Stable extends Trait { type Foo = Int }
-{code}
-_scala, thinking_: Is *Stable.Foo* the same type as *scala.Int* ? Hmm, Foo has prefix "Stable.type" but Int has prefix "scala.type". Verdict: *REJECT*
+```
+*scala, thinking*: Is **Stable.Foo** the same type as **scala.Int** ? Hmm, Foo has prefix "Stable.type" but Int has prefix "scala.type". Verdict: **REJECT**
 
 This reduced manifestation:
-{code}
+```scala
 trait Thing { type A }
 object IntThing extends Thing { type A = Int }
 
@@ -28,4 +28,4 @@ package p2 {
 //   class SubView extends View[Int](IntThing)       { override def f(p: in.A): in.A = p }
 //                                                                  ^
 // one error found
-{code}
+```

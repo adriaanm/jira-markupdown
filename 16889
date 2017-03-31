@@ -1,6 +1,5 @@
 The compiler crashes with the following error in the backend (an overloaded type reaches backend):
-
-{code}
+```scala
 error: Unknown type: (x: Object, y: Object)Boolean <and> (x$1: Object)Boolean, (x: Object, y: Object)Boolean <and> (x$1: Object)Boolean [class scala.reflect.internal.Types$OverloadedType, class scala.reflect.internal.Types$OverloadedType] TypeRef? false
 error: 
      while compiling:  /Users/dragos/workspace/git/scala/src/library/scala/xml/pull/XMLEventReader.scala
@@ -62,9 +61,9 @@ error: fatal error:
      library version:  version 2.10.0-SNAPSHOT-20120319-00000000-78c15103d5
     compiler version:  version 2.10.0-SNAPSHOT-20120319-00000000-78c15103d5
   reconstructed args:  -classpath lib/fjbg.jar:lib/ant/ant.jar:lib/msil.jar -verbose -d /tmp
-{code}
+```
 
 The error appears and goes away depending on the order in which files are compiled. I can reproduce it by compiling together everything under 'src/library', in the order listed in the attached file. Run it with
-{{scalac -d /tmp @sources-lib}}.
+`scalac -d /tmp @sources-lib`.
 
 Sorry I cannot narrow it down more than this, but I hope it's enough to get someone to look at it. It's a blocker for anyone trying to build the Scala library in the IDE (or it may not, depending on the order in which it happens to build those files).

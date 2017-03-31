@@ -22,33 +22,30 @@ slippery thing, and always context-dependent.
 The key to speeding up a structural (that is, not identity-based) hash
 algorithm is to recognize it as a kind of fold. That is, you'd like to add to
 Product something like:
-
-{code}
+```scala
     def foldProductElementsLeft [B] (zero: B) (op: (B, Any) => B): B = {
       var x = zero
       for (a <- productIterator)
         x = op(x,a)
       x
     }
-{code}
+```
 
 and apply it to your favorite hash function (such as
 `(h: Int, x: Any) => h * 41 + (if (x == null) 0 else x.##)`,
 if you want the original case class hash function).
 
-However, if you make the _compiler_ generate
+However, if you make the *compiler* generate
 `foldProductElementsLeft` for each case class,
 it can unroll the loop. For example, for:
-
-{code}
+```scala
   case class C (
       z: Boolean, b: Byte, c: Char, s: Short, i: Int, l: Long, f: Float,
       d: Double, str: String)
-{code}
+```
 
 you could generate:
-
-{code}
+```scala
     def foldProductElementsLeft [B] (zero: B) (op: (B, Any) => B): B = {
       var x = zero
       x = op(x,z)
@@ -62,7 +59,7 @@ you could generate:
       x = op(x,str)
       x
     }
-{code}
+```
 
 For the unrolled version of `foldProductElementsLeft`,
 a sufficiently smart VM should
@@ -73,8 +70,7 @@ clever enough to unroll the loop.
 If you think your VM is dumb as a board and you want to lead it by the nose,
 you can explicitly eliminate boxing by reimagining a `Product` as a sequence of
 field hash codes:
-
-{code}
+```scala
     def foldProductHashCodesLeft (zero: Int) (op: (Int, Int) => Int): Int = {
       var x = zero
       x = op(x,z.##)
@@ -88,7 +84,7 @@ field hash codes:
       x = op(x,if (str == null) 0 else str.##)
       x
     }
-{code}
+```
 
 But this is screwy in several ways:
 
@@ -103,8 +99,7 @@ But this is screwy in several ways:
   wants its input in 96-bit chunks, not 32-bit.
 
 Addressing the first two problems yields something like:
-
-{code}
+```scala
     def foldProductRawBitsLeft (zero: Int) (op: (Int, Int) => Int): Int = {
       var x = zero
       x = op(x,(if (z) 1 << 16 else 0) | c)
@@ -119,7 +114,7 @@ Addressing the first two problems yields something like:
       x = op(x,if (str == null) 0 else str.##)
       x
     }
-{code}
+```
 
 I have no clue how to address the last problem in any kind of general way
 while avoiding object allocation. The best I can come up with is to generate

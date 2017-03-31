@@ -1,10 +1,9 @@
 In the following code example there exists a useless lower bound on method x:
-
-{code}
+```scala
 case class ~[-A, B]
 class X[+A, +B] {
   def x[A1 >: A, B1 >: B](implicit ev: A1 ~ B1) = ???
 }
-{code}
+```
 
 A1 is unnecessary because parameter A of class ~ is contravariant. It would be nice if the compiler could warn that the lower bounded type parameter A1 doesn't have any effect and one should use A instead.

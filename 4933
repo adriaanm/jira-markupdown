@@ -4,8 +4,7 @@ After figuring out the problem and the obvious fix, I've spent more than a day l
 
 The obvious fixr2 is to simply change the two occurrences of `processClassType(processInner(???.tpe))` in `sigToType`
 to `processClassType(processInner(transformedTpe(???)))`, with:
-
-{code}
+```scala
 // SI-3943
 // cls.tpe.prefix is the thisType of the enclosing class of cls's definition
 // later, we'll widen the this-type to the corresponding typeref (with type arguments that blindly refer
@@ -14,7 +13,7 @@ to `processClassType(processInner(transformedTpe(???)))`, with:
 // otherwise, cls.tpe.widen may refer to type parameters of its enclosing class, which are not in scope where sym is defined
 lazy val site = if(sym eq null) null else sym.enclClass.thisType
 def transformedTpe(cls: Symbol) = if((site eq null) || cls.isStatic) cls.tpe else site.memberType(cls)
-{code}
+```
 
 I've tried various approaches with LazyTypes, but the fact that these prefixes may occur in the super class type, method parameter types&result type,... makes it seem like an unlikely solution.
 
@@ -22,12 +21,12 @@ The only alternative I could think of was something like cooking raw types, but 
 
 
 r1 assertion failed: illegal class file dependency between 'object ListItr' and 'class ListItr'
-{code}
+```scala
 69.     assert(!busy.isDefined, {
           val (s1, s2) = (busy.get, root)
           if (s1 eq s2) "unsatisfiable cyclic dependency in '%s'".format(s1)
           else "illegal class file dependency between '%s' and '%s'".format(s1, s2)
         })
-{code}
+```
 
 r2 https://github.com/adriaanm/scala/commit/95bcc3f39705e87e2f877a84118cb8cb2b11c076

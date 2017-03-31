@@ -1,32 +1,31 @@
-The eager hardwiring of macro-processing in Analyzer makes an early call to Quasiquotes (in FastTrack), more specifically  making a 2.11 {{scala-reflect.jar}} mandatory on the classpath of a 2.11 typer run which requires {{scala-reflect.jar}}.
+The eager hardwiring of macro-processing in Analyzer makes an early call to Quasiquotes (in FastTrack), more specifically  making a 2.11 `scala-reflect.jar` mandatory on the classpath of a 2.11 typer run which requires `scala-reflect.jar`.
 
 To be more clear, you can run without scala-reflect on classpath, but if it's there, it needs to be the version that includes quasiquotes, i.e. 2.11.
 
-However, It would be enjoyable to run typer with a 2.10 {{scala-reflect.jar}} on classpath (specifically for typing 2.10 projects, possibly referring to scala.reflect, with a 2.11 compiler using the -Xsource flag).
+However, It would be enjoyable to run typer with a 2.10 `scala-reflect.jar` on classpath (specifically for typing 2.10 projects, possibly referring to scala.reflect, with a 2.11 compiler using the -Xsource flag).
 
-Perhaps the FastTrack optimization should be optional (depending on whether Quasiquotes are available), but more importantly, testing for the availability of the Quasiquotes Class in {{scala.reflect.Definitions}} should be more subtle than just testing if the reflection APi is there:
-
-{code}
+Perhaps the FastTrack optimization should be optional (depending on whether Quasiquotes are available), but more importantly, testing for the availability of the Quasiquotes Class in `scala.reflect.Definitions` should be more subtle than just testing if the reflection APi is there:
+```scala
     lazy val QuasiquoteClass = if (ApiUniverseClass != NoSymbol) getMember(ApiUniverseClass, tpnme.Quasiquote) else NoSymbol
-{code}
+```
 
-This throws a {{scala.reflect.internal.FatalError: class Universe does not have a member Quasiquote}} on any run that does not include the right {{scala-reflect.jar}} on classpath, despite those runs making sense.
+This throws a `scala.reflect.internal.FatalError: class Universe does not have a member Quasiquote` on any run that does not include the right `scala-reflect.jar` on classpath, despite those runs making sense.
 
-A stopgap fix would be to add a test for the Xsource setting (>= 2.11) in the condition above. But it would be better, I think,  to have the non-throwing version of {{getMember}} there, that returns {{NoSymbol}} if the quasiquotes member is not defined. I have fixes for both options ready to be pull-requested, just chime in with your vote.
+A stopgap fix would be to add a test for the Xsource setting (>= 2.11) in the condition above. But it would be better, I think,  to have the non-throwing version of `getMember` there, that returns `NoSymbol` if the quasiquotes member is not defined. I have fixes for both options ready to be pull-requested, just chime in with your vote.
 
 The formal reproduction details follow:
 
 Steps to reproduce :
-# Clone http://github.com/playframework/playframework
-# Cd to playframework/framework
-# Whip out your favorite fresh scala 2.11 compiler (e.g. nightly, RC-1) and delete the line that forces '-Dscala.usejavacp=true' from the end of the scalac runner script (9th line from the end on unix, only needed if your version doesn't have https://github.com/scala/scala/pull/3608 )
-# Locate your favorite 2.10 scala-reflect.jar and scala-library.jar
-# Run: (substituting for angled brackets)
-{code}
+- Clone http://github.com/playframework/playframework
+- Cd to playframework/framework
+- Whip out your favorite fresh scala 2.11 compiler (e.g. nightly, RC-1) and delete the line that forces '-Dscala.usejavacp=true' from the end of the scalac runner script (9th line from the end on unix, only needed if your version doesn't have https://github.com/scala/scala/pull/3608 )
+- Locate your favorite 2.10 scala-reflect.jar and scala-library.jar
+- Run: (substituting for angled brackets)
+```scala
 .<path-to-2.11>/bin/scalac -nobootcp -Dscala.usejavacp=false -Xsource:2.10 -Ystop-after:typer -Ylog-classpath -classpath <path-to-2.10>/scala-library.jar:<path-to-2.10>/scala-reflect.jar ./src/play-ws/src/main/scala/play/api/libs/oauth/package.scala
-{code}
-# Notice the following stack trace
-{code}
+```
+- Notice the following stack trace
+```scala
 error: scala.reflect.internal.FatalError: class Universe does not have a member Quasiquote
 	at scala.reflect.internal.Definitions$DefinitionsClass.scala$reflect$internal$Definitions$DefinitionsClass$$fatalMissingSymbol(Definitions.scala:1163)
 	at scala.reflect.internal.Definitions$DefinitionsClass.getMember(Definitions.scala:1180)
@@ -56,11 +55,11 @@ error: scala.reflect.internal.FatalError: class Universe does not have a member 
 	at scala.reflect.internal.Symbols$Symbol.info(Symbols.scala:1429)
 	at scala.reflect.internal.Symbols$Symbol.initialize(Symbols.scala:1576)
 	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:4918)
-{code}
-# Notice the contents of {{./src/play-ws/src/main/scala/play/api/libs/oauth/package.scala}}, namely
-{code}
+```
+- Notice the contents of `./src/play-ws/src/main/scala/play/api/libs/oauth/package.scala`, namely
+```scala
 package play.api.libs
 
 package object oauth
-{code}
-# run the scalac command line above, this time removing {{scala-reflect.jar}} from classpath. This time everything runs fine.
+```
+- run the scalac command line above, this time removing `scala-reflect.jar` from classpath. This time everything runs fine.

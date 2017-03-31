@@ -1,6 +1,6 @@
 Two design alternatives:
-# null-check and conditionally throwing NPE, takes 8 bytes in opcodes (snippet 1 below)
-# factoring out that functionality into a newly added {{ScalaRunTime.nullCheck(arg)}}, takes 3 bytes.
+- null-check and conditionally throwing NPE, takes 8 bytes in opcodes (snippet 1 below)
+- factoring out that functionality into a newly added `ScalaRunTime.nullCheck(arg)`, takes 3 bytes.
 
 I'm favoring the second alternative.
 
@@ -20,11 +20,11 @@ npeBlock.emit(DUP(REFERENCE(NPEClass)), instr.pos)
 npeBlock.emit(cmNPEInit,                instr.pos)
 npeBlock.emit(THROW(NPEClass),          instr.pos)
 npeBlock.close()
-{code}
+```scala
 
 {code:title=Addition_to_ScalaRunTime.scala|borderStyle=solid}
 def nullCheck(x: AnyRef) {
   if (x == null) throw new NullPointerException
 }
-{code}
+```
 

@@ -1,6 +1,5 @@
 The following code crashes the compiler (I've tested it against 2.7.7-r18779 and 2.8.0-r18925).
-
-{code}
+```scala
 object Test {
 
   trait Foo
@@ -16,10 +15,10 @@ object Test {
   }
 
 }
-{code}
+```
 
 Yields: 
-{code}
+```scala
 Exception in thread "main" scala.tools.nsc.symtab.Types$$TypeError: type mismatch;
  found   : p.baz.type (with underlying type object p.baz)
  required: Test.Bar#baz.type
@@ -32,7 +31,7 @@ Exception in thread "main" scala.tools.nsc.symtab.Types$$TypeError: type mismatc
 	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:3837)
 	at scala.tools.nsc.typechecker.Typers$$Typer.transformedOrTyped(Typers.scala:3910)
 ...
-{code}
+```
 
 My intuition is that this should typecheck, but even if it shouldn't, it shouldn't be crashing the compiler.
 

@@ -1,6 +1,5 @@
 There seems to be some inconsistent handling of varargs by Scala. Consider these two classes:
-
-{code}
+```scala
 class X {
   def f(x: AnyRef) = x.toString
   def f(x: AnyRef, y: AnyRef*) = y.mkString(x.toString)
@@ -10,11 +9,10 @@ class Y {
   def f(x: Int) = x.toString
   def f(x: Int, y: Int*) = y.mkString(x.toString)
 }
-{code}
+```
 
-The ambiguity with {{f}} is resolved differently:
-
-{code}
+The ambiguity with `f` is resolved differently:
+```scala
 scala> new X
 res0: X = X@442c76
 
@@ -34,6 +32,6 @@ res6: Y = Y@9ed91f
 
 scala> res6.f(5)
 res7: java.lang.String = 5
-{code}
+```
 
-This problem was brought to my attention by Mockito's {{org.mockito.stubbing.OngoingStubbing}} interface, which overloads the method {{thenReturn}} to accept either an {{Object}}, or both an {{Object}} and a vararg of them.
+This problem was brought to my attention by Mockito's `org.mockito.stubbing.OngoingStubbing` interface, which overloads the method `thenReturn` to accept either an `Object`, or both an `Object` and a vararg of them.

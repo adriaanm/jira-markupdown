@@ -7,7 +7,7 @@ abstract class Inter extends Foo[Int]
 class Baz extends Inter {
   def foo(x: Int) = x + 1
 }
-{code}
+```scala
 
 ./bin/scalac -d classes/ check-both.scala
 and we'll inspect methods in Baz:
@@ -20,7 +20,7 @@ public class Baz extends Inter{
     public java.lang.Object foo(java.lang.Object);
     public Baz();
 }
-{code}
+```
 
 Now let's compile the same code in two steps:
 
@@ -30,20 +30,19 @@ trait Foo[@specialized(Int) A] {
 }
 
 abstract class Inter extends Foo[Int]
-{code}
+```scala
 
 using ./bin/scalac -d classes/ check.scala
 and then:
-
-{code}
+```
 class Baz extends Inter {
   def foo(x: Int) = x + 1
 }
-{code}
+```scala
 
 using ./bin/scalac -cp classes/ -d classes/ check2.scala
 if we then inspect byte of Baz we'll see:
-{code}
+```
 Compiled from "check2.scala"
 public class Baz extends Inter{
     public int foo(int);

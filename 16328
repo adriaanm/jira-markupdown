@@ -1,6 +1,5 @@
 Consider following Scala code:
-
-{code}
+```scala
 package test.generic
 
 class C1[A] {
@@ -10,10 +9,10 @@ class C1[A] {
 trait T1[A] extends C1[A]
 
 class C2[A] extends T1[A] //defined for connivence 
-{code}
+```
 
 Once compiled, this will produce a broken signature in interface corresponding to T1:
-{code}
+```scala
 Compiled from "test-generic.scala"
 public interface test.generic.T1
   SourceFile: "test-generic.scala"
@@ -41,10 +40,10 @@ const #13 = class	#12;	//  java/lang/Object
 
 {
 }
-{code}
+```
 
 As a bonus, define Java code:
-{code}
+```scala
 
 import test.generic.*;
 
@@ -60,14 +59,14 @@ public class Foo {
   }
   
 }
-{code}
+```
 
 and compile it using javac. Once you run, you get:
-{code}
+```scala
 Exception in thread "main" java.lang.NoSuchMethodError: test.generic.T1.m1()V
 	at Foo.foo(Foo.java:6)
 	at Foo.main(Foo.java:11)
-{code}
+```
 
 Which means that javac got completely confused by broken signature and created a broken class file itself. Not very good.
 

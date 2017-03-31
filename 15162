@@ -1,5 +1,5 @@
 Compiling the following with -optimize
-{code}
+```scala
 class Base {
   @inline def foo(n: Int) = n
 }
@@ -9,17 +9,17 @@ object Test extends Base {
     println(foo(42))
   }
 }
-{code}
+```
 yields
-{code}
+```scala
 test2.scala:7: warning: Could not inline required method foo because bytecode was not available.
     println(foo(42))
                ^
-{code}
+```
 which is rather strange this since foo is defined right there.
 
 Here's the relevant piece of -Ydebug -Ylog:inliner output:
-{code}
+```scala
 [log inliner] CALL_METHOD TestBase.foo (dynamic) has actual receiver: singleton class Test
 [log inliner] 	looked up method: Base.foo
 [log inliner] shouldLoad: singleton class Test.method foo
@@ -33,6 +33,6 @@ test2.scala:7: warning: Could not inline required method foo because bytecode wa
 [log inliner] could not find icode
 	receiver: singleton class Test
 	method: method foo
-{code}
+```
 
 Also, shouldn't concreteMethod.isEffectivelyFinal be true? After all the receiver is a singleton object, ergo its class final. Declaring foo final doesn't change the behavior, though.

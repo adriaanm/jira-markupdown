@@ -1,6 +1,5 @@
 You are right at the reenter scene. I evaluated and thought the code again, and found the issue is from a ResetReq followed by a ShutdownReq, below is a test code:
-
-{code}
+```scala
 package interruptthread
 
 import scala.util.control.ControlException
@@ -40,6 +39,6 @@ object Main {
   class ResetReq extends Exception with ControlException
 
 }
-{code}
+```
 
 The above code won't stop. But the patched like code will stop properly.

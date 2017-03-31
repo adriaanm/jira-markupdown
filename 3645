@@ -1,5 +1,5 @@
 Is this type error intended? Here is a smaller example showing the situation:
-{code}
+```scala
 object test {
   def method() {
     class Foo extends AnyRef {
@@ -14,7 +14,7 @@ object test {
     new Foo
   }
 }
-{code}
+```
 Where does a name escape its scope? Within the method, Color and Blue are in scope. Outside of the method, neither is visible. Where is the escape?
 
 As a clue to what's happening, changing "new Foo" causes it to compile without error. Either deleting it or replacing it by "val x = new Foo" causes the type error to go away.
@@ -22,7 +22,7 @@ As a clue to what's happening, changing "new Foo" causes it to compile without e
 What seems to be happening is that Foo is temporarily inferred as the return type of the method's block. That's not desired, though, is it? The block should type check with an expected type of Unit. That means the last statement of the block should also type check with an expected type of Unit. Thus the type of new Foo should not ever make it out of the block's interior.
 
 If anyone wants to defend this situation, then please also say what is different about this example, which does not trigger an error:
-{code}
+```scala
 object test {
   def method() {
     class Foo extends AnyRef {
@@ -30,7 +30,7 @@ object test {
     new Foo
   }
 }
-{code}
+```
 In this example, type Foo escapes its method in the same way as my first example, but now there is no type error. Why should there be an error about Foo's members but not about Foo itself?
 
 If this needs to be fixed in the repl it can be. However, can the type checker's check for escaping values be made less aggressive? In this case it is raising a false alarm.

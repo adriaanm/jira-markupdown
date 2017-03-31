@@ -1,10 +1,9 @@
-In the following example (I'm afraid I haven't been able to significantly reduce it further), the equivalence of {{si.Out}} and {{si.instance.Out}} has been lost at the call sites of {{direct}} and {{indirect}}.
+In the following example (I'm afraid I haven't been able to significantly reduce it further), the equivalence of `si.Out` and `si.instance.Out` has been lost at the call sites of `direct` and `indirect`.
 
-Notice that in {{direct}} the type {{si.Out}} is known in the second parameter block at the call site, and so the expression typechecks. However in {{indirect}} the type {{si.instance.Out}} is unknown or, at least, is sufficiently opaque to prevent the second expression from typechecking. 
+Notice that in `direct` the type `si.Out` is known in the second parameter block at the call site, and so the expression typechecks. However in `indirect` the type `si.instance.Out` is unknown or, at least, is sufficiently opaque to prevent the second expression from typechecking. 
 
 {{si.Out}} is defined in terms of the implicitly summoned {{i}}, so if {{si.Out =:= i.Out}} is available at the call sites of {{direct}} and {{indirect}} then intuitively it seems that {{si.instance.Out =:= i.Out}} (where {{si.instance: i.type}}) should be available too.
-
-{code}
+```scala
 package si
 
 import scala.language.{ higherKinds, implicitConversions }
@@ -46,4 +45,4 @@ object Test {
   //   val i: Int = indirect(true)(23)
   //                               ^
 }
-{code}
+```

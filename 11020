@@ -2,7 +2,7 @@ well, it may be related to jdk8.
 
 one of its module requires jdk8, but you can disable it by changing related codes in https://github.com/retronym/slick-pg/blob/ticket/8556-repro/project/Build.scala,
 from
-{code}
+```scala
   lazy val slickPgProject = Project(id = "slick-pg", base = file("."),
     settings = Project.defaultSettings ++ commonSettings ++ slickPgSettings ++ Seq(
       name := "slick-pg",
@@ -11,10 +11,10 @@ from
     ) 
   ).dependsOn (slickPgCore)
    .aggregate (slickPgCore, slickPgJoda, slickPgJson4s, slickPgJts, slickPgPlayJson, slickPgSprayJson, slickPgThreeten, slickPgDate2)
-{code}
+```
 
 to
-{code}
+```scala
   lazy val slickPgProject = Project(id = "slick-pg", base = file("."),
     settings = Project.defaultSettings ++ commonSettings ++ slickPgSettings ++ Seq(
       name := "slick-pg",
@@ -23,7 +23,7 @@ to
     ) 
   ).dependsOn (slickPgCore)
    .aggregate (slickPgCore, slickPgJoda, slickPgJson4s, slickPgJts, slickPgPlayJson, slickPgSprayJson, slickPgThreeten)
-{code}
+```
 
 Here I removed the last slickPgDate2.
 

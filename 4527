@@ -1,6 +1,5 @@
 One solution is special-casing:
-
-{code}
+```scala
   @inline private def buildsThis[B, That](bf: CanBuildFrom[Stream[A], B, That]) = bf.isInstanceOf[Stream.StreamCanBuildFrom[_]]
   @inline private def ifTargetThis[B, That](bf: CanBuildFrom[Stream[A], B, That])(ifStream: => Stream[B])(notStream: => That): That =
     if (buildsThis(bf)) ifStream.asInstanceOf[That]
@@ -15,10 +14,8 @@ One solution is special-casing:
     }
     r
   }
-
-{code}
+```
 
 and refactoring it to extract common functionality for all collections with custom build rules.
 
 Or, change `breakOut` to disallow breaking out custom collections.
-

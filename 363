@@ -1,19 +1,17 @@
 There is a similar issue for `classOf[]`. Whereas the type of `getClass()` is currently too weak, the type of `classOf[]` is too strong:
-
-{code}
+```scala
 scala> classOf[List[int]]
 res4: java.lang.Class[List[int]] = class scala.List
 
 scala> classOf[List[String]]
 res5: java.lang.Class[List[String]] = class scala.List
-{code}
+```
 
 That is, the type system claims that the class object is a representation of a type application, even though there is no real run-time information about the type argument.
 
 I think it would be desirable for the property to hold that if `(a : Class[A]) eq (b : Class[B])`, then `A <: B <: A`. This is not currently true.
 
 So I suggest that `classOf` gets the same treatment as is suggested for `getClass`: let the type of `classOf[A]` be `Class[B]` where `B` is the "existential erasure" of A (or whatever is the upper bound of all types that share the erasure of A), i.e.:
-
-{code}
+```scala
 classOf[List[A]] : Class[List[T] forSome { type T }]
-{code}
+```

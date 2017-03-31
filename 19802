@@ -1,8 +1,7 @@
-After upgrading to Scala 2.11.7 on Windows, the REPL when started using {{sbt console}} does not display the user's input when typing anymore. Only after pressing ENTER, one can see the *result* of evaluating the input (but not the input itself).
+After upgrading to Scala 2.11.7 on Windows, the REPL when started using `sbt console` does not display the user's input when typing anymore. Only after pressing ENTER, one can see the **result** of evaluating the input (but not the input itself).
 
-I guess this problem is somehow related to [https://github.com/scala/scala/pull/4563], so I addded {{-Ydebug}} to {{scalacOptions}}. The output seems to confirm that the REPL cannot find the embedded JLine interpreter. 
-
-{noformat}
+I guess this problem is somehow related to [https://github.com/scala/scala/pull/4563], so I addded `-Ydebug` to `scalacOptions`. The output seems to confirm that the REPL cannot find the embedded JLine interpreter. 
+```
 > console
 [info] Starting scala interpreter...
 [info]
@@ -123,6 +122,6 @@ Impl.java:43)
         sbt.Logger$$anon$4.apply(Logger.scala:85)
         sbt.TrapExit$App.run(TrapExit.scala:248)
         java.lang.Thread.run(Thread.java:745)
-{noformat}
+```
 
-What is odd is that the same behavior occurs when starting the REPL directy by running {{scala}} inside Cygwin, but *not* when running {{scala}} inside the Windows command line (although the debug output looks the same), whereas the problem occurs under both environments when the REPL is launched from within SBT using {{console}}.
+What is odd is that the same behavior occurs when starting the REPL directy by running `scala` inside Cygwin, but **not** when running `scala` inside the Windows command line (although the debug output looks the same), whereas the problem occurs under both environments when the REPL is launched from within SBT using `console`.

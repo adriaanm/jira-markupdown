@@ -31,15 +31,15 @@ the rewrite probably isn't complete, but was validated by compiling against the 
 nevertheless, this commit includes a new scalacheck jar
 
 summary of the refactoring:
-* PolyType(List(), tp) or PolyType(Nil, tp) or PolyType(parms, tp) if params.isEmpty ==> NullaryMethodType(tp)
-* whenever there was a case PolyType(tps, tp) (irrespective of tps isEmpty), now need to consider the
+- PolyType(List(), tp) or PolyType(Nil, tp) or PolyType(parms, tp) if params.isEmpty ==> NullaryMethodType(tp)
+- whenever there was a case PolyType(tps, tp) (irrespective of tps isEmpty), now need to consider the
   case PolyType(tps, NullaryMethodType(tp)); just add a case NullaryMethodType(tp), since usually:
     - there already is a PolyType case that recurses on the result type,
     - the polytype case applied to empty and non-empty type parameter lists alike
-* tp.resultType, where tp was assumed to be a PolyType that represents a polymorphic nullary method type
+- tp.resultType, where tp was assumed to be a PolyType that represents a polymorphic nullary method type
   before, tp == PolyType(tps, res), now tp == PolyType(tps, NullaryMethodType(res))
 
-* got bitten again (last time was dependent-method types refactoring) by a TypeMap not being the identity when dropNonConstraintAnnotations is true (despite having an identity apply method). Since asSeenFrom is skipped when isTrivial, the annotations aren't dropped. The cps plugin relies on asSeenFrom dropping these annotations for trivial types though. Therefore, NullaryMethodType pretends to never be trivial. Better fix(?) in AsSeenFromMap: `if(tp.isTrivial) dropNonContraintAnnotations(tp) else ...`
+- got bitten again (last time was dependent-method types refactoring) by a TypeMap not being the identity when dropNonConstraintAnnotations is true (despite having an identity apply method). Since asSeenFrom is skipped when isTrivial, the annotations aren't dropped. The cps plugin relies on asSeenFrom dropping these annotations for trivial types though. Therefore, NullaryMethodType pretends to never be trivial. Better fix(?) in AsSeenFromMap: `if(tp.isTrivial) dropNonContraintAnnotations(tp) else ...`
 
 TODO: scalap and eclipse
 

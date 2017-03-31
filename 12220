@@ -1,12 +1,11 @@
 it turns out this is a bug in the DelayedInit transformation.
 
-The transformation moves constructor statements after the {{super}} call into a separate method. This generated method is always param-less ([see here|https://github.com/scala/scala/blob/96f230a0e9c254c45dc91c71b5929639e6add1f0/src/compiler/scala/tools/nsc/transform/Constructors.scala#L247]). The assumption is that the statements don't access any of the constructor's parameters, because for each of them there is in fact a field generated in the class, and the statements should be accessing those fields instead.
+The transformation moves constructor statements after the `super` call into a separate method. This generated method is always param-less ([see here|https://github.com/scala/scala/blob/96f230a0e9c254c45dc91c71b5929639e6add1f0/src/compiler/scala/tools/nsc/transform/Constructors.scala#L247]). The assumption is that the statements don't access any of the constructor's parameters, because for each of them there is in fact a field generated in the class, and the statements should be accessing those fields instead.
 
 (Side-note: a field is generated for every constructor param initially. If a fields ends up not being used because a constructor param is only accessed during the constructor body, the field is eliminated by the Constructors phase).
 
-The bug is that the above assumption is not correct in the case of the captured variable in the example above. Here's the {{-Xprint}} before {{constructors}}:
-
-{code}
+The bug is that the above assumption is not correct in the case of the captured variable in the example above. Here's the `-Xprint` before `constructors`:
+```scala
   class C extends Object {
     def <init>(): C = {
       C.super.<init>();
@@ -32,11 +31,10 @@ The bug is that the above assumption is not correct in the case of the captured 
       <synthetic> <stable> <artifact> def $outer(): C = $anon$1.this.$outer
     }
   }
-{code}
+```
 
-Note that the invocation {{$anon$1.this.$outer.b(symbol$1)}} refers to the constructor parameter {{symbol$1}}. After {{constructors}} which performs the DelayedInit transform:
-
-{code}
+Note that the invocation `$anon$1.this.$outer.b(symbol$1)` refers to the constructor parameter `symbol$1`. After `constructors` which performs the DelayedInit transform:
+```scala
   class C extends Object {
     def b(s: String): Null = null;
 
@@ -73,6 +71,6 @@ Note that the invocation {{$anon$1.this.$outer.b(symbol$1)}} refers to the const
       ()
     }
   }
-{code}
+```
 
-The access to {{symbol$1}} in the generated method {{anon$1$1}} is invalid.
+The access to `symbol$1` in the generated method `anon$1$1` is invalid.

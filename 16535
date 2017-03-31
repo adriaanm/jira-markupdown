@@ -1,8 +1,7 @@
 I discovered this issues while annotating some of scala traits with Jackson type annotations (http://jackson.codehaus.org/1.9.0/javadoc/org/codehaus/jackson/annotate/JsonTypeInfo.html).  The issues seems to be that the JsonTypeInfo annotation has two properties that reference inner non-static enumerations. The scala compiler appears to generate valid class files, but cannot load these class to compile other dependent source files.
 
 I've managed to reproduce the issue outside of Jackson:
-
-{noformat}
+```
 $ javac -version
 javac 1.6.0_26
 $ scalac -version
@@ -23,7 +22,7 @@ TestObject.scala:2: error: illegal inheritance; superclass TestTrait
 object TestObject extends TestTrait
                   ^
 three errors found
-{noformat}
+```
 
 The source (also attached):
 
@@ -39,12 +38,12 @@ public @interface TestAnnotation {
   public TestEnumTwo two();
   public String strVal();
 }
-{code}
+```scala
 
 {code:title=TestTrait.scala|borderStyle=solid}
 @TestAnnotation(one=TestAnnotation.TestEnumOne.A, two=TestAnnotation.TestEnumTwo.C, strVal="something")
 trait TestTrait
-{code}
+```
 
 {code:title=TestObject.scala|borderStyle=solid}
 object TestObject extends TestTrait

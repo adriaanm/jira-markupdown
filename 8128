@@ -1,6 +1,5 @@
 You can actually centralize this hack as follows:
-
-{code}
+```scala
 scala> implicit class RichFBoundBuilder[B[X <: B[X]]](val _builder: B[_]) {
   type B1 = X forSome { type X <: B[X] }
   def asScala: B1 = _builder.asInstanceOf[B1]
@@ -13,4 +12,4 @@ import javafx.scene.shape._
 
 scala> CircleBuilder.create.asScala.centerX(0).centerX(0).build()
 res0: javafx.scene.shape.Circle = Circle@6c60efe7
-{code}
+```

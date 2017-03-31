@@ -1,6 +1,5 @@
-Most of the time (but not every time), I'm getting a NullPointerException in Actor.resumeReceiver in my project.  I'm attaching my test case (actually, the whole project; it's only 1242 lines total).  run.bat SHOULD run on Linux and Windows (not sure about Mac).  In any case, the main class is named {{xus.testing.PeerTests}} and takes no arguments.  If you run it several times, you should eventually see this stack trace:
-
-{code}
+Most of the time (but not every time), I'm getting a NullPointerException in Actor.resumeReceiver in my project.  I'm attaching my test case (actually, the whole project; it's only 1242 lines total).  run.bat SHOULD run on Linux and Windows (not sure about Mac).  In any case, the main class is named `xus.testing.PeerTests` and takes no arguments.  If you run it several times, you should eventually see this stack trace:
+```scala
 Exception in thread "Thread-10" java.lang.NullPointerException
 	at scala.actors.Actor$$class.resumeReceiver(Actor.scala:431)
 	at xus.comm.Util$$$$anon$$1.resumeReceiver(Util.scala:153)
@@ -12,6 +11,6 @@ Exception in thread "Thread-10" java.lang.NullPointerException
 	at java.util.concurrent.ThreadPoolExecutor$$Worker.runTask(ThreadPoolExecutor.java:886)
 	at java.util.concurrent.ThreadPoolExecutor$$Worker.run(ThreadPoolExecutor.java:908)
 	at java.lang.Thread.run(Thread.java:619)
-{code}
+```
 
 The actor that is causing the exception is my Connection.selectorActor.  The problem happens because Reactor.searchMailbox is executing when continuation is null.  I noticed that the comment for Reactor.searchMailbox says "assume continuation has been set" and Actor.resumeReceiver has "assert continuation != null" commented out.

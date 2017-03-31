@@ -1,4 +1,4 @@
-{code}
+```scala
 sealed abstract class DeferredResult[+A] {
    def ! : A
 }
@@ -19,15 +19,14 @@ class Defer[+A](n: => DeferredResult[A]) extends DeferredResult[A] {
       case chain:Defer[_] => evaluate(chain.asInstanceOf[Defer[B]] next)
    }
 }
-{code}
+```
 
 Here are the trees after type checking (only the relevant part):
-
-{code}
+```scala
     final private def evaluate[B >: Nothing <: Any](x: DeferredResult[B]): B = x match {
       case (B)Return[B]((result @ _)) => result
       case (chain @ (_: Defer[_])) => Defer.this.evaluate[B](chain.asInstanceOf[Defer[B]].next).asInstanceOf[B]
     }
-{code}
+```
 
-The last call to {{asInstaceOf[B]}} seems useless, and prevents the tail call phase to rewrite the call to a jump.
+The last call to `asInstaceOf[B]` seems useless, and prevents the tail call phase to rewrite the call to a jump.

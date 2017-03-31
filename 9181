@@ -1,6 +1,5 @@
 One difference between Java and Scala that we have to consider is that we allow private access outside of the current compilation unit. So we have a few different scenarios wrt separate compilation. e.g. changing a member from public to private[pack] is currently binary compatible for call sites in that `pack`. (Admittedly, it is also BC for call sites outside of the package, so we have no runtime enforcement of access.)
-
-{noformat}
+```
 % qbin/scalac sandbox/{A,B}.scala
 % qbin/scalac sandbox/A-pack-private.scala
 % qbin/scala p.Test
@@ -12,7 +11,7 @@ public class p.C extends java.lang.Object{
     public int foo();
     public p.C();
 }
-{noformat}
+```
 
 If we compiled `foo` as private and provided an accessor, this would no longer be the case.
 

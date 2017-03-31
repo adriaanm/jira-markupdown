@@ -1,10 +1,10 @@
 A minor cosmetic issue.
 Both the compiler and the interpreter will get confused if Int (or Long, or Boolean, etc) are used as values. For instance, the following compiles successfully:
-{code}
+```scala
 object X extends Application { Int }
-{code}
+```
 but crashes at runtime:
-{code}
+```scala
 Exception in thread "main" java.lang.NoClassDefFoundError: scala/Int$$
 	at java.lang.Class.getDeclaredMethods0(Native Method)
 	at java.lang.Class.privateGetDeclaredMethods(Class.java:2395)
@@ -13,14 +13,13 @@ Exception in thread "main" java.lang.NoClassDefFoundError: scala/Int$$
 	at scala.tools.nsc.ObjectRunner$$.run(ObjectRunner.scala:70)
 	at scala.tools.nsc.MainGenericRunner$$.main(MainGenericRunner.scala:164)
 	at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
-{code}
+```
 
 Similarly, the interpreter will not print a regular error message, but will print instead:
-
-{code}
+```scala
 scala> Int
 <console>:4: error: value asInstanceOf is not a member of object Int
 ("" + "res0: Int.type = " +  (if(`res0`.asInstanceOf[AnyRef] != null)  { val tmp = `res0`.toString();  (if(tmp.contains('\n')) "\n" else "") + tmp + "\n"} else "null\n")
-{code}
+```
 
 This issue is clearly low-priority, but still something that would be nice to fix at some point.

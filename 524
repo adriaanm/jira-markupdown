@@ -8,9 +8,9 @@ We are aware of the problem, and this has been discussed several times on the ma
 {code}
 for (i <- Stream.from(2)) f
 {code} is translated to
-{code}
+```scala
 Stream.from(2).foreach(f)
-{code}
+```
 We'd like the GC to be able to collect memory while iterating through the stream, that means while inside `foreach`. That means the call stack contains `foreach`, `from(2)` and `main`, and `main` pushed a reference to the head of the stream before calling `from(2)`. That reference is a GC root. Additionally, each cell holds a reference to the value once it has been resolved (as each cell should be evaluated at most once). That leads to keeping everything in memory. I guess switching to a more functional design (in which these are not methods on Stream cells, but static methods) might help, but we'd lose for comprehensions.
 
 We are open for suggestions. :)

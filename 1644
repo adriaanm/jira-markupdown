@@ -1,7 +1,7 @@
 I think it is likely you are correct about the cause, as even mixing nearby versions of scala is liable to induce such troubles, so 2.7.2 and recent trunk is pretty much guaranteed to fail.  On that basis I'm closing this as invalid.
 
 I just wrote the code below to explore the idea of version checking, but I'm not sure about where I'd put it where it would be helpful when one wanted help but not when one didn't.  Here it is for posterity at least, and I'll see if we can find a useful integration point.  It highlights at least one other issue which needs fixing, as no mention of 'scala' appears in either the path to the properties files or the property key.
-{code}
+```scala
 val loader = ClassLoader.getSystemClassLoader
 
 def getProperty(file: String, key: String): Option[String] = {
@@ -19,4 +19,4 @@ def verifyVersionsMatch(): Boolean = {
   assert(c == l, "compiler/library version mismatch %s vs %s".format(c, l))
   true
 }
-{code}
+```

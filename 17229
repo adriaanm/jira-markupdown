@@ -1,17 +1,14 @@
 Spec:
-
-{quote}
+```
  Views are applied in three situations.
  [...]
  2. In a selection e.m with e of type T, if the selector m does not denote a member of T.
      In this case, a view v is searched [...]
-{quote}
+```
 
 However, the implementation also searches for an implicit conversion when m denotes a
 non-accessible member of T:
-
-
-{code}
+```scala
   scala> class A { protected def f = 101 }
   scala> class B { def f = "duckflow" }
   scala> object T {
@@ -21,16 +18,15 @@ non-accessible member of T:
        | }
   scala> T.t
   res0: String = duckflow
-{code}
+```
 
 Even worse, the same happens for constructors! An expression "new T()" is represented
 as a tree Apply(Selelct(New(T), <init>), ())
 
 If the constructor is private, an conversion to "?{def <init>: ?}" is searched! This generates
-invalid trees and crashes later phases, e.g. NamesDefaults, SI-5231, but also GenICode,
+invalid trees and crashes later phases, e.g. NamesDefaults, scala/bug#5231, but also GenICode,
 as in the following example:
-
-{code}
+```scala
   scala> class A private () { }
   scala> class B { }
   scala> object T {
@@ -49,4 +45,4 @@ as in the following example:
     at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$genLoadArguments$1.apply(GenICode.scala:1201)
     at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$genLoadArguments$1.apply(GenICode.scala:1199)
     at scala.collection.LinearSeqOptimized$class.foldLeft(LinearSeqOptimized.scala:111)
-{code}
+```

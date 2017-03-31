@@ -1,4 +1,4 @@
-{noformat}
+```
 % scalac-hash 35209fc sandbox/test.scala
 sandbox/test.scala:2: error: type mismatch;
  found   : Any
@@ -12,22 +12,20 @@ one error found
 object Test {
    f"${if (true) 2.5 else 2.5}%.2f"
 }
-{noformat}
+```
 
 Regressed in: https://github.com/scala/scala/commit/35209fc
 
 Might also be linked to the "boxity" of fast track macros.
 
 I reckon changing:
-
-{code}
+```scala
 def f(args: Any*): String = macro ???
-{code}
+```
 
 to:
-
-{code}
+```scala
 def f[A](args: A*): String = macro ???
-{code}
+```
 
 Might alter behaviour. We experienced similar subtleties with quasiquotes.

@@ -3,8 +3,7 @@ The problem here is that typechecking pattern requires a special typechecker mod
 There are multiple ways to addressing this problem. The first one involves exposing a number of specialized typeCheckXXX methods, e.g. typeCheckExpr, typeCheckType, typeCheckPattern, etc. The second one implies introducing Mode and passing it as a parameter to c.typeCheck. I don't feel very comfortable with either of them (the first one means a bunch of new methods, the second one means another class in the reflection API), so I would like to defer this decision to the reflection API revamp that is supposedly happening in 2.12.
 
 In the meanwhile, you can cast to internal APIs to work around the problem (please note that PATTERNmode requires a non-wildcard expected type - you can get it by typechecking the scrutinee of the pattern match):
-
-{code}
+```scala
 import scala.reflect.macros.Context
 import language.experimental.macros
 
@@ -33,6 +32,6 @@ object Test extends App {
 
 12:38 ~/Projects/Master/sandbox (master)$ scalac Macros.scala && scalac Test.scala
 (immutable.this.List.apply[Int](1),immutable.this.List.unapplySeq[Int](<unapply-selector>) <unapply> (1))
-{code}
+```
 
 Would that work for you?

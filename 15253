@@ -1,37 +1,32 @@
 This is with Scala 2.8 RC1. It is difficult to produce an isolated small lab case. However, it can be reproduced easily. The java class involved has a method with signature
-
-{code}
+```scala
 public void addColumn(String name, Class type)
-{code}
+```
 
 and the scala code is something like
-
-{code}
+```scala
 val label = "name"
 nodes.addColumn( label, label.getClass )
-{code}
+```
 
 resulting in the following compiler error:
-
-{code}
+```scala
 Error:Error:line (79)error: overloaded method value addColumn 
 with alternatives (x$$1: java.lang.String,x$$2: 
 prefuse.data.expression.Expression)Unit <and> (x$$1: 
 java.lang.String,x$$2: java.lang.String)Unit <and> (x$$1: 
 java.lang.String,x$$2: java.lang.Class)Unit cannot be applied to 
 (java.lang.String,java.lang.Class[?0])
-{code}
+```
 
-even when casting to Class[_] it is not possible to compile. it is possible to contruct an isolated case, where calling such a java method _is_ possible, so this is definitely a bug.
+even when casting to Class[_] it is not possible to compile. it is possible to contruct an isolated case, where calling such a java method *is* possible, so this is definitely a bug.
 
 Steps to reproduce:
 
 - Download prefuse from [http://sourceforge.net/projects/prefuse/files/prefuse/beta-20071021/prefuse-beta-20071021.zip/download here][[BR]]
 - Build using "ant all"[[BR]]
 - Compile the following scala code:
-
-
-{code}
+```scala
 import prefuse.data.Tree
 object Gugu {
     val t = new Tree()
@@ -39,6 +34,6 @@ object Gugu {
     val label = "name"
     nodes.addColumn( label, label.getClass )
 }
-{code}
+```
 
 attached is a binary of prefuse.jar

@@ -1,15 +1,13 @@
 With 2.6.1-final, compiling the following code, while it does contain a
 syntax error, does throw a java.util.NoSuchElementException.
-
-{code}
+```scala
 class Ref[T](var r : T)
 
 object Test extends Application {
   val r : Ref[Ref[T forSome { type T ]}] = new Ref(new Ref(new String))
 }
-{code}
-
-{code}
+```
+```scala
 test.scala:4: error: `=', `>:', or `<:' expected
   val r : Ref[Ref[T forSome { type T ]}] = new Ref(new Ref(new String))
                                      ^
@@ -72,4 +70,4 @@ Exception in thread "main" java.util.NoSuchElementException: None.get
         at scala.tools.nsc.Main$$.process(Main.scala:86)
         at scala.tools.nsc.Main$$.main(Main.scala:107)
         at scala.tools.nsc.Main.main(Main.scala)
-{code}
+```

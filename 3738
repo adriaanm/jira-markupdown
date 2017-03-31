@@ -1,6 +1,5 @@
 i am having the same problem here:
-
-{code}
+```scala
 trait Lala
 
 class Test[ T <% Lala ]( thunk: => T ) {
@@ -16,7 +15,7 @@ implicit def thunkToTest[ T <% Lala ]( thunk: => T ) = new Test( thunk )
 def rara( f: Test[ _ ]) : Int = f.test
 
 rara { println( "!!!" ); new Lala{} }
-{code}
+```
 
 obviously "!!!" is printed early and not the whole curly braces block treated as the thunk. i think this is counter-intuitive. someone suggested that a call rara({ println( "!!!" ); new Lala{} }) would work, but looks rather bad will confuse people in a DSL (where they will in all other cases make calls such as lulu { ... })
 

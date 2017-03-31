@@ -1,5 +1,5 @@
 This is a regression from 2.7.7, where the output was:
-{code}
+```scala
 scala> x.xCharData
 :1:1: '[' expected instead of '<'<foo/>^
 java.lang.RuntimeException: FATAL
@@ -8,6 +8,6 @@ java.lang.RuntimeException: FATAL
 	at scala.xml.parsing.ConstructingParser.xToken(ConstructingParser.scala:56)
 	at scala.xml.parsing.MarkupParser$$class.xToken(MarkupParser.scala:274)
 	at scala.xml.parsing.ConstructingParser.xToken(ConstructingParser.scala:56)
-{code}
+```
 
 The cause was the refactoring of !MarkupParser* in r20212, which dropped the error("FATAL") from the library version of xToken.  Attached is a patch with a sample fix.

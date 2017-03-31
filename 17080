@@ -1,8 +1,7 @@
 The merge function of scala.collections.immutable.HashMap can result in an inconsistent HashMap when there is a hash code collision. The easiest way to get this behavior is to merge two maps and defining a collision function. 
 
 But this also occasionally happens when no collision function is provided!
-
-{code}
+```scala
 
     import collection.immutable.HashMap
     val a = HashMap(1 -> "1")
@@ -15,16 +14,14 @@ But this also occasionally happens when no collision function is provided!
     val r = a.merge(b, collision)
     println(r)
     println(r(1))
-
-{code}
+```
 
 Output: 
-
-{code}
+```scala
     (1,2)
     Map(1 -> 2)
     1
-{code}
+```
 
 Explanation:
 
@@ -33,13 +30,12 @@ HashMap1 caches both the value and a key/value pair. As a result of the merge th
 Expected behavior:
 
 HashMap1.value and HashMap1.kv should never be able to become inconsistent. To fix this in HashMap1.updated0:
-
-{code}
+```scala
       if (hash == this.hash && key == this.key ) {
         val newKv = if (merger eq null) kv else merger(this.kv, kv)
         new HashMap1(key, hash, newKv ._2, newKv)
       } else {
         ...
-{code}
+```
 
 But there might be other places where this issue (inconsistency between kv and value) occurs.

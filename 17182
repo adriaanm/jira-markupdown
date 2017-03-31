@@ -1,11 +1,11 @@
 In 2.9, when the copy method had defaults for all parameter lists, having a repeated parameter in any of the lists would prevent the copy method from being generated, since repeated parameters and default arguments can't coexist (though this isn't explicitly spec'd, see SI-4783). Now that SI-5009 makes copy return a function type instead of being a multi-param list method, I don't see why it shouldn't be generated if parameter lists after the first one have repeated parameters.
 
 E.g.:
-{code}
+```scala
 case class Foo(a: Int)(b: String*)
-{code}
+```
 
 should get a method
-{code}
+```scala
 def copy(a: Int = this.a): (String*) => Foo
-{code}
+```

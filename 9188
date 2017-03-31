@@ -1,6 +1,5 @@
 If I apply the straightforward encoding into member types, this is what I get:
-
-{code}
+```scala
   trait A {
     type X
     protected[this] def f(x: X): X = x
@@ -10,16 +9,15 @@ If I apply the straightforward encoding into member types, this is what I get:
     type X <: B
     def kaboom = f(new B {})
   }
-{code}
+```
 
 This code does not typecheck - kaboom is ill typed. Interestingly, The dotc compiler does not use the straightforward encoding, but instead would type B as follows:
-
-{code}
+```scala
   trait B extends A {
     type X =+ B
     def kaboom = f(new B {})
   }
-{code}
+```
 
 The "=+" is not available in user code, and has no foundation in DOT. It means in effect something like "covariant alias binding". With this change, the code compiles, and exhibits the same unsoundness hole. 
 
@@ -32,13 +30,12 @@ So, this points to three possible ways forward, which should be investigated fur
 2. Get rid of protected[this]. Plaster lots of @uncheckedVariance annotations over collections to make them work. This is the least invasive change, but it casts in stone the variant alias concept and with it the difference between generics and member types.
 
 3. Declare the rebinding differently:
-
-{code}
+```scala
   trait B extends A {
     type T = B
     def kaboom = f(new B {})
   }
-{code}
+```
 
 This would then invalidate the definition of C. I believe this is what Paolo was proposing to also fix the GADT problem.
 Again, we'd have to check what we lose in expressiveness by doing this.

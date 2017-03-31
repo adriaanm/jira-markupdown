@@ -7,8 +7,7 @@ The suggestion that you should "just use foldLeft + reverse for large sequences"
 Incidentally, the standard library could use a version of foldRight where the operator is non-strict (this WOULD actually be a different computation model). Maybe I'll file a separate enhancement for that. :)
 
 Note that this was just done in the interactive prompt - I'm not sure if the classes compiled there will get JIT'ed, so more controlled tests should probably be done.
-
-{code}
+```scala
 scala> def foldRight[A,B](i: Iterable[A], z: B, op: (A,B) => B): B = {
      |   import scala.collection.mutable.ArrayStack
      |   val s = new ArrayStack[A]
@@ -62,4 +61,4 @@ res14: Double = 32.05078125
 
 scala> time((0 to N).foldRight(0)(_ + _))
 res15: Double = 41.5625
-{code}
+```

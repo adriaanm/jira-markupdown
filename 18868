@@ -1,6 +1,5 @@
 We've got regression (from Scala 2.10.2) where illegal cyclic reference is reported but previously was not. It can be seen when compiling scala-io:
-
-{code}
+```scala
 [info] Compiling 69 Scala sources to /Users/grek/tmp/play-deps/scala-io/core/target/scala-2.11.0-M8/classes...
 [error] /Users/grek/tmp/play-deps/scala-io/core/src/main/scala/scalax/io/LongTraversableLike.scala:49: illegal cyclic reference involving trait LongTraversableLike
 [error] trait LongTraversableLike[+A, +Repr <: LongTraversableLike[A, Repr]] extends TraversableLike[A, Repr] {
@@ -13,13 +12,13 @@ We've got regression (from Scala 2.10.2) where illegal cyclic reference is repor
 [trace] Stack trace suppressed: run last core/compile:compile for the full output.
 [error] (core/compile:compile) java.lang.IndexOutOfBoundsException: 0
 [error] Total time: 1 s, completed Feb 13, 2014 3:22:13 PM
-{code}
+```
 
 How to reproduce:
 
 1. Checkout scala-io from https://github.com/jesseeichar/scala-io at 67249e63c60ff4a7468992dbb8dea62bbc5361be
 2. Apply the following patch:
-{code}
+```scala
 diff --git a/project/Build.scala b/project/Build.scala
 index a367f19..c9a24c6 100644
 --- a/project/Build.scala
@@ -67,6 +66,6 @@ index 3695627..97d3438 100644
 +//addSbtPlugin("com.jsuereth" % "xsbt-gpg-plugin" % "0.6")
  
  // resolvers += "sbt-idea-repo" at "http://mpeltonen.github.com/maven/"
-{code}
+```
 
-3. Run {{compile}} in sbt console.
+3. Run `compile` in sbt console.

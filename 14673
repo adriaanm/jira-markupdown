@@ -1,32 +1,32 @@
 If we have a class called _bugs.hyper.Destination_ and it is defined in a file under a directory that does not correspond to the package's name (in our example _src/bugs/hyper/_) then hovering and hyperlinking do not work for that class.
 
-*Steps to reproduce the bug*
+**Steps to reproduce the bug**
 
 The below steps are similar to how I discovered the bug.
 
  1. Create a Scala project
  2. Create a package _bugs_ (by creating a directory)
  3. Inside the bugs directory create a class _Destination_ in its own file under the package bugs.hyper. For example:
-{code}
+```scala
 //file: src/bugs/Destination.scala
 package bugs
 package hyper {	
   class Destination(dest: String)
 }
-{code}
+```
  4. Create a class _Test_ under the package _bugs_ that references the _Destination_ class defined above. For example:
-{code}
+```scala
 //file: src/bugs/Test.scala
 package bugs
 class Test {
   val destination = new hyper.Destination("Athens")
 }
-{code}
+```
 
-Now when we hover over the constructor call of the _Destination_ class inside the _Test_ class two things can happen: 1)the _Destination_ is recognized as _javax.print.attribute.standard.Destination_ (see the attached screen-shot) or 2) not recognized at all (no hover appears).
+Now when we hover over the constructor call of the *Destination* class inside the *Test* class two things can happen: 1)the *Destination* is recognized as *javax.print.attribute.standard.Destination* (see the attached screen-shot) or 2) not recognized at all (no hover appears).
 
-When we Ctrl+Left-Click to visit the definition of Destination (via hyperlinking) three things can happen: 1) we are transfered to _javax.print.attribute.standard.Destination_, 2) nothing happens or 3) Eclipse hangs (see the attached thread dump).
+When we Ctrl+Left-Click to visit the definition of Destination (via hyperlinking) three things can happen: 1) we are transfered to *javax.print.attribute.standard.Destination*, 2) nothing happens or 3) Eclipse hangs (see the attached thread dump).
 
-Please note that if _hyper.Destination_ is in the same file with the Test class or under the directory _src/bugs/hyper_ (the directory that corresponds to the package name) then everything works as expected.
+Please note that if *hyper.Destination* is in the same file with the Test class or under the directory *src/bugs/hyper* (the directory that corresponds to the package name) then everything works as expected.
 
 I am using Eclipse 3.5.1 and SDT 2.8.0.r19410-b20091106040253

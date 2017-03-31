@@ -5,15 +5,14 @@ This keeps you consistent with the printed-out version of your doubles, but it d
 I recommend switching to purely non-string-based conversions wherever possible.
 
 Here's an example of the problem as it currently exists:
-
-{code}
+```scala
 val l = (1L << 62L)
 val d = l.toDouble
 l == d // true
 BigDecimal(l) == BigDecimal(d)  // false?!
 l == BigDecimal(l)  // true
 d == BigDecimal(d)  // false?!
-{code}
+```
 
 To recover transitivity of equals, it is necessary to switch away from taking the `doubleValue.toString` representation as the canonical one for initializing `BigDecimal`.
 

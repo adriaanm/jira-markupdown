@@ -1,7 +1,7 @@
 The problem seems to be still present in 2.7.3.
 
 If I have a JAX-RS ressource like
-{code}
+```scala
 package test.annotation
 
 import _root_.javax.ws.rs._
@@ -17,14 +17,13 @@ class Res1 {
   @Produces(Array("text/html"))
   def get() = <html><body>ctx is { ctx }</body></html>.toString
 }
-{code}
+```
 
 it will always have a !ServletContext injected, it displays something like
 "ctx is org.apache.catalina.core.!ApplicationContextFacade@299264e3".
 
 If I instead split it like this:
-
-{code}
+```scala
 package test.annotation
 
 import _root_.javax.ws.rs._
@@ -36,8 +35,8 @@ trait ResTrait {
   @Context var ctx :  ServletContext = _
 
 }
-{code}
-{code}
+```
+```scala
 package test.annotation
 
 import _root_.javax.ws.rs._
@@ -50,7 +49,7 @@ class Res2 extends ResTrait {
   @Produces(Array("text/html"))
   def get() = <html><body>ctx is { ctx }</body></html>.toString
 }
-{code}
+```
 
 the !ServletContext is injected into res2 after a clean compile,
 but if I just recompile Res2 and redeploy, the Context is not injected.

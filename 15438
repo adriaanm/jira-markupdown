@@ -1,5 +1,5 @@
 Discovered looking at inliner tickets.
-{code}
+```scala
 object Bop {
   class X(final var x: Int)  { }
   def f = new X(0).x += 1
@@ -7,15 +7,14 @@ object Bop {
     f
   }
 }
-{code}
+```
 
 Now if you turn on -Yinliner:
-{code}
+```scala
 public final int x;
-{code}
+```
 and the result:
-
-{code}
+```scala
 
 java.lang.IllegalAccessError
 	at Bop$$.main(finalvars.scala:6)
@@ -32,4 +31,4 @@ java.lang.IllegalAccessError
 	at scala.tools.nsc.ObjectRunner$$.run(ObjectRunner.scala:31)
 	at scala.tools.nsc.MainGenericRunner$$.main(MainGenericRunner.scala:83)
 	at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
-{code}
+```

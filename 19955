@@ -1,6 +1,5 @@
 Compiling:
-
-{code:scala}
+```scala
 case class Foo(bar: String, foo: String)
 case class Bar(bar: String)
 
@@ -10,16 +9,14 @@ object FooBar {
     val bar = Bar(foo.bar)
   }
 }
-{code}
+```
 
 causes the compiler to crash:
 
 Renaming {code}foo{code} into something else, changes the problem into issue [https://issues.scala-lang.org/browse/SI-5091]. Renaming {code}bar{code} into something else compiles fine.
 
 Compiler output:
-
-
-{noformat}
+```
 [info] [running phase parser on FooBar.scala]
 [info] [running phase namer on FooBar.scala]
 [info] [running phase packageobjects on FooBar.scala]
@@ -434,4 +431,4 @@ scala.reflect.internal.FatalError:
 [error]      5     val foo = Foo("foo", "bar").copy(foo = "foo")
 [error]      6     val bar = Bar(foo.bar)
 [error] Total time: 3 s, completed Jan 22, 2016 4:37:04 PM
-{noformat}
+```

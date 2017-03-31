@@ -1,6 +1,5 @@
 Compiling the following code:
-
-{code}
+```scala
 trait X {
     case class Foo();
     object Bar {
@@ -13,28 +12,26 @@ object Y extends X {
      case Bar() => println("matched bar!");
    }
 }
-{code}
+```
 
 produces a type mismatch with the following message:
-
-{code}
+```scala
 <console>:8: error: type mismatch;
 found   : Y.this.Foo
 required: X.this.Foo
      case Bar() => println("matched bar!");
           ^
-{code}
+```
 
 But if instead of an object, we make a subclass with the same exact code, as in:
-
-{code}
+```scala
 class Z extends X {
    val foo = Foo()
    foo match {
      case Bar() => println("matched bar!");
    }
 }
-{code}
+```
 
 It compiles and runs normally.
 

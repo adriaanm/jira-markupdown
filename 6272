@@ -6,8 +6,7 @@ As a result:
 - of the above, those methods additionally marked @inline are inlined too
 
 In the example
-
-{code}
+```scala
 trait T {
   @inline final def m(x: Int) {
     println(x)
@@ -18,13 +17,11 @@ class C {
     y.m(7)
   }
 }
+```
 
-{code}
 
-
-The resulting bytecode for {{host()}} is:
-
-{code}
+The resulting bytecode for `host()` is:
+```scala
 public void host(T);
   Code:
    Stack=2, Locals=3, Args_size=2
@@ -35,11 +32,10 @@ public void host(T);
    7:	invokestatic	#21; //Method scala/runtime/BoxesRunTime.boxToInteger:(I)Ljava/lang/Integer;
    10:	invokevirtual	#25; //Method scala/Predef$.println:(Ljava/lang/Object;)V
    13:	return
-{code}
+```
 
-Without the @inline annotation, the bytecode for {{host()}} looks like:
-
-{code}
+Without the @inline annotation, the bytecode for `host()` looks like:
+```scala
 public void host(T);
   Code:
    Stack=2, Locals=2, Args_size=2
@@ -47,14 +43,13 @@ public void host(T);
    1:	bipush	7
    3:	invokestatic	#15; //Method T$class.m:(LT;I)V
    6:	return
-{code}
+```
 
 
-With the current optimizer as we know the callsite to {{T.m(Int)}} is emitted as:
-
-{code}
+With the current optimizer as we know the callsite to `T.m(Int)` is emitted as:
+```scala
    3:	invokeinterface	#15,  2; //InterfaceMethod T.m:(I)V
-{code}
+```
 
 Here's how the new optimizer supports inlining of trait methods, documentation included:
 

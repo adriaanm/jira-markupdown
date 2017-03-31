@@ -1,5 +1,5 @@
 I have some code like this:
-{code}
+```scala
      if (ccy != null && rate != null) {
         ltub.settlement(ccy, rate.bigDecimal)                   //non-deterministic strangeness
         if (ltub.getDescriptor.getSettlementFxRate.isSet && ltub.getDescriptor.getSettlementFxRate.getValue == null) {
@@ -8,8 +8,8 @@ I have some code like this:
           println(a)
         }
       }
-{code}
-Within this block we are seeing a {{NullPointerException}} thrown at runtime on the indicated line. *This should obviously be impossible* because that can only happen if {{rate}} is {{null}} and yet the code is inside an if-block protected against that condition. I have the following observations:
+```
+Within this block we are seeing a `NullPointerException` thrown at runtime on the indicated line. **This should obviously be impossible** because that can only happen if `rate` is `null` and yet the code is inside an if-block protected against that condition. I have the following observations:
 
  # Failures are non-deterministic running from the same class files (sometimes the NPE is thrown, sometimes it  isn't)
  # The block is being invoked hundreds of thousands of times. Investigations have revealed sometimes there are no failures, sometimes a few thousand and sometimes many hundreds of thousands

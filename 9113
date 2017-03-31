@@ -1,6 +1,5 @@
-Paul pointed out my pull request that in Scala we allow polymorphic exceptions. This is not being handled properly by ClassfileParser probably with an assumption that since we are parsing exception declarations emitted by Java we'll never get polymorphic exceptions there. That assumption is wrong if you mix Scala and Java. The trick is to define polymorphic exception in Scala. Then declare it in {{throws}} declaration in Java class. See the following transcript:
-
-{code}
+Paul pointed out my pull request that in Scala we allow polymorphic exceptions. This is not being handled properly by ClassfileParser probably with an assumption that since we are parsing exception declarations emitted by Java we'll never get polymorphic exceptions there. That assumption is wrong if you mix Scala and Java. The trick is to define polymorphic exception in Scala. Then declare it in `throws` declaration in Java class. See the following transcript:
+```scala
 rm -rf classes/*
 Grzegorzs-MacBook-Pro:scala-throws grek$ cat Foo.scala
 package test
@@ -45,4 +44,4 @@ res3: List[$r.intp.global.Symbol] = List(type T)
 
 scala> exit
 warning: there were 1 deprecation warnings; re-run with -deprecation for details
-{code}
+```

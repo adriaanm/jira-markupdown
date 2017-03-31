@@ -1,10 +1,9 @@
-Fixing this means that {{Coll}} would be inferred differently for these two signatures, which look instead equivalent:
-
-{code}
+Fixing this means that `Coll` would be inferred differently for these two signatures, which look instead equivalent:
+```scala
 def f[T, Coll <: Traversable[T]](p0: String)(p1: Traversable[T]): (Coll => Traversable[T]) = ??? //Here Coll would be maximized.
 def f[T, Coll <: Traversable[T]](p0: String)(p1: Traversable[T])(p2: Coll): Traversable[T] = ??? //Here Coll would be minimized.
-{code}
+```
 
 This is if I get the new expected behavior right, which says that (ignoring mixed variance) a type argument must be minimized (made most specific) if it appears either:
-(a) _covariantly_ in the result type (per 4881), hence _covariantly_ in the method type or
-(b) _covariantly_ in argument types, hence _contravariantly_ in the method type.
+(a) *covariantly* in the result type (per 4881), hence *covariantly* in the method type or
+(b) *covariantly* in argument types, hence *contravariantly* in the method type.

@@ -1,31 +1,28 @@
 @Andrew:
 
-Indeed, scala-swing's dependency on scala-actors is an historical accident. I've raised SI-6441 to remedy this.
+Indeed, scala-swing's dependency on scala-actors is an historical accident. I've raised scala/bug#6441 to remedy this.
 
 Rather than depending on that actors JAR, you could change your code from:
-
-{code}
+```scala
 import scala.swing._
 import javax.swing.SwingWorker
 
 abstract class SwiWorker[T] extends SwingWorker[T,AnyRef] 
-{code}
+```
 
 To:
-
-{code}
+```scala
 import scala.swing._
 
 abstract class SwiWorker[T] extends javax.swing.SwingWorker[T,AnyRef] 
-{code}
+```
 
 This will stop the compiler from searching for `SwingWorker` under the wildcard import `scala.swing._`.
 
 This would also work:
-
-{code}
+```scala
 import scala.swing.{SwingWorker => _, _}
 import javax.swing.SwingWorker
 
 abstract class SwiWorker[T] extends SwingWorker[T,AnyRef] 
-{code}
+```

@@ -1,11 +1,10 @@
-{quote}
+```
 @paolo protected[this] is an important ingredient of the unsoundness scenario because it lets us write functions like f which have contravaraint occurrences of covariant parameters. Without it, I cannot come up with a crash scenario.
-{quote}
+```
 
 Sure, I just mean that from this POV the crash is the symptom, not the root cause.
-Without covariant aliases, the whole "variance checking" business becomes a matter of "user experience"/convenience, not of soundness. Take again the encoding without covariant aliases, but without {{protected\[this\]}} (because it was removed in the original code):
-
-{code}
+Without covariant aliases, the whole "variance checking" business becomes a matter of "user experience"/convenience, not of soundness. Take again the encoding without covariant aliases, but without `protected\[this\]` (because it was removed in the original code):
+```scala
 trait A {
   type X
   def f(x: X): X = x //We can totally accept this, even if it would violate variance checking!
@@ -15,6 +14,6 @@ trait B extends A {
   type X <: B
   def callF = f(exp) //Here, exp must have type Nothing!
 }
-{code}
+```
 So, variance violations only translate to "useless" code, not to soundness violations. (And in fact, it's not even useless, since you can set a lower bound later).
 Question: does this resemble more use-site variance than declaration-site variance? If so, do we want to keep the current checks just to keep the usability advantages of declaration-site variance? But those checks seem to restrict expressivity somewhat arbitrarily, so there's the risk of forcing people to switch to the encoding by hand.

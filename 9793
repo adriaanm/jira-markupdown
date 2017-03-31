@@ -3,8 +3,7 @@ The issue you describe also applies to continuations plugin phases in your examp
 I'll start a discussion on the ML for consensus before requesting a review, but I think it's straightforward for a phase (specifically, the SubComponent) to declare if it is enabled (sometimes that is just a setting). 
 
 Currently, I have:
-
-{code}
+```scala
 apm@mara:~/tmp$ skalac -Xshow-phases 
     phase name  id  description
     ----------  --  -----------
@@ -96,11 +95,10 @@ inlinehandlers  26  optimization: inline exception handlers
            dce  29  optimization: eliminate dead code
            jvm  30  generate JVM bytecode
       terminal  31  the last phase during a compilation run
-{code}
+```
 
 Under -Ydebug, you see all available components, with symbols for xx disabled and oo skipped.
-
-{code}
+```scala
 apm@mara:~/tmp$ skalac -Xshow-phases -Yskip:jvm -Ydebug
     phase name  id  description
     ----------  --  -----------
@@ -135,5 +133,5 @@ inlinehandlers  xx  optimization: inline exception handlers
            dce  xx  optimization: eliminate dead code
            jvm  oo  generate JVM bytecode
       terminal  23  the last phase during a compilation run
-{code}
+```
 

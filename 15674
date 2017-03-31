@@ -1,6 +1,5 @@
 The following code creates a VerifyError, in particular an Inconsistent stack height runtime error:
-
-{code}
+```scala
 object Broken {
   def byval[A](a: => A) = a
   def main(args: Array[String]) = {
@@ -8,18 +7,18 @@ object Broken {
     byval(n)
   }
 }
-{code}
+```
 
-This may be related to bug SI-2333 but demonstrates that the problem is not specific to lazy vals.  I cannot seem to figure out what the offending bytecode is, even after writing out what the stack should look like at each point.  Couldn't be a JVM bug, could it?!
+This may be related to bug scala/bug#2333 but demonstrates that the problem is not specific to lazy vals.  I cannot seem to figure out what the offending bytecode is, even after writing out what the stack should look like at each point.  Couldn't be a JVM bug, could it?!
 
 Note that
-{code}
+```scala
 def byref[A](a: A) = a
-{code}
+```
 does not cause the same problem, but
-{code}
+```scala
 def byfunc[A](a: () => A) = a()
-{code}
+```
 does.  Also, note that vals work fine, as does assigning to a temporary variable (even another var--though this is because the code is then excised into liftedTree$$1, I think).
 
 This code breaks in both 2.8.0.final and r23032.

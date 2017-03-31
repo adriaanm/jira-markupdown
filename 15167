@@ -1,8 +1,7 @@
 In the following code, map.isEmpty returns false (size = 10), the code proceeds to the else block and map.keys.head throws a NoSuchElementException (details below). This is with scala.library_2.8.0.r21304-b20100331111621.jar (from Eclipse nightly)
 
 A modified map (map - element) is passed to the function recursively.
-
-{code}
+```scala
   def recursivemethod(map: collection.immutable.Map[Participant, List[Role]], /* other args */): Unit = {
     if (map.isEmpty) {
       //...
@@ -11,9 +10,8 @@ A modified map (map - element) is passed to the function recursively.
       //...
     }
   }
-{code}
-
-{code}
+```
+```scala
 java.util.NoSuchElementException: next on empty iterator
 	at scala.collection.Iterator$$$$anon$$3.next(Iterator.scala:31)
 	at scala.collection.Iterator$$$$anon$$3.next(Iterator.scala:29)
@@ -23,6 +21,6 @@ java.util.NoSuchElementException: next on empty iterator
 	at scala.collection.MapLike$$$$anon$$3.next(MapLike.scala:178)
 	at scala.collection.IterableLike$$class.head(IterableLike.scala:103)
 	at scala.collection.MapLike$$DefaultKeySet.head(MapLike.scala:162)
-{code}
+```
 
 I will try to narrow this down if necessary.

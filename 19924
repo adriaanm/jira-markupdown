@@ -3,8 +3,7 @@ ScalaClassLoader.asContext highjacks the thread context classloader and causes c
 The thing I tried solving was running some runtime compilation that would allow some parts of my configuration be written in scala code (essentially the config is a function that maps stuff).
 
 To get that working this is what I did.
-
-{code:scala}
+```scala
 val factory = new IMain.Factory()
 val engine = factory.getScriptEngine().asInstanceOf[IMain]
 val cl = java.lang.Thread.currentThread.getContextClassLoader
@@ -16,10 +15,10 @@ engine.compileSources(sf)
 
 val fun = engine.eval(customConf.getString(GENERATOR_FUNCTION))
    .asInstanceOf[(java.util.Map[String, Object] => java.util.Map[String, Object])]
-{code}
+```
 
 This code worked in an isolated test program, but once I started combining the thing with real code everything broke down. Example issue:
-{code:text}
+```text
 Caused by: org.apache.velocity.exception.VelocityException: Failed to initialize an instance of org.apache.velocity.runtime.log.NullLogChute with the current runtime configuration.
     at org.apache.velocity.runtime.log.LogManager.createLogChute(LogManager.java:220)
     at org.apache.velocity.runtime.log.LogManager.updateLog(LogManager.java:269)
@@ -28,7 +27,7 @@ Caused by: org.apache.velocity.exception.VelocityException: Failed to initialize
 Caused by: org.apache.velocity.exception.VelocityException: The specified logger class org.apache.velocity.runtime.log.NullLogChute does not implement the org.apache.velocity.runtime.log.LogChute interface.
     at org.apache.velocity.runtime.log.LogManager.createLogChute(LogManager.java:181)
     ... 20 more
-{code}
+```
 
 Those two classes come from the same jar, so typing between them should not ever be a problem. To me it looked like a Classloader issue, and it was.
 
@@ -48,38 +47,38 @@ scala.reflect.internal.util.ScalaClassLoader.apply(cl: ClassLoader)
 
 These are the instresting bits
 scala.reflect.internal.util.ScalaClassLoader.asContext
-{code:scala}
+```scala
   def asContext[T](action: => T): T = {
     val saved = contextLoader
     try { setContext(this) ; action }
     finally setContext(saved)
   }
-{code}
+```
 
 scala.reflect.internal.util.ScalaClassLoader.contextLoader
-{code:scala}
+```scala
 def contextLoader = apply(Thread.currentThread.getContextClassLoader)
-{code}
+```
 
 scala.reflect.internal.util.ScalaClassLoader.apply(cl: ClassLoader)
-{code:scala}
+```scala
   implicit def apply(cl: JClassLoader): ScalaClassLoader = cl match {
     case cl: ScalaClassLoader => cl
     case cl: JURLClassLoader  => new URLClassLoader(cl.getURLs.toSeq, cl.getParent)
     case _                    => new JClassLoader(cl) with ScalaClassLoader
   }
-{code}
+```
 
 Now what happens here is:
-# When the context class loader happens to be a java URLClassloader, it gets stripped and repackaged in a scala URLClassloader, with reuse of the parent of the original loader
-# This destroys a meaningful parent relationship that should have been there, allowing commons stuff to be loaded by a common Classloader
-# It also replaces what is 'saved' in the asContext utility
-# Hence it is what is restored as thread context class loader once asContext is done
+- When the context class loader happens to be a java URLClassloader, it gets stripped and repackaged in a scala URLClassloader, with reuse of the parent of the original loader
+- This destroys a meaningful parent relationship that should have been there, allowing commons stuff to be loaded by a common Classloader
+- It also replaces what is 'saved' in the asContext utility
+- Hence it is what is restored as thread context class loader once asContext is done
 
 Which led to the breakage described above.
 
 With this insight I was able to build this workarround (it prepackages the context class loader as the fallback case does in the above code):
-{code:scala}
+```scala
   val t = java.lang.Thread.currentThread
   val cl = t.getContextClassLoader
   try {
@@ -103,6 +102,6 @@ With this insight I was able to build this workarround (it prepackages the conte
   } finally {
     t.setContextClassLoader(cl)
   }
-{code}
+```
 
 Though I'm glad I could work around it, I can't help at feel this smells like a bug.

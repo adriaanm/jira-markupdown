@@ -1,8 +1,7 @@
 This feels like a bug?
 
 Compare:
-
-{code}
+```scala
 object Bug {
   sealed case class Foo(e: Option[Int])
 
@@ -16,11 +15,10 @@ match may not be exhaustive.
 [warn]   def loop(t: Foo): Nothing = t match {
 [warn]                               ^
 */
-{code}
+```
 
 to this, which is also not exhaustive but produces no warning:
-
-{code}
+```scala
 object Bug {
   sealed case class Foo(e: Option[Int])
 
@@ -28,8 +26,8 @@ object Bug {
     case (Foo(Some(_)), _) => ???
   }
 }
-{code}
+```
 
-I know {{Tuple2}} isn't sealed, but that doesn't seem to explain it (problem occurs even using a custom sealed replacement for {{Tuple2}}, plus the stdlib tuples participate successfully in match exhaustivity checks in some other contexts).
+I know `Tuple2` isn't sealed, but that doesn't seem to explain it (problem occurs even using a custom sealed replacement for `Tuple2`, plus the stdlib tuples participate successfully in match exhaustivity checks in some other contexts).
 
 Any ideas?

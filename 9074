@@ -1,8 +1,7 @@
 There is another problem: the refutability checking in RefChecks, albeit somewhat ineffectual and now sometimes obviated by the (slightly overeager) checking in the parser, no longer works at all.
 
 It suffers from two problems:
-
-{code}
+```scala
      case Apply(
         Select(qual, nme.filter | nme.withFilter),
         List(Function(
@@ -12,7 +11,7 @@ It suffers from two problems:
             isIrrefutable(pat1, tpt.tpe) && (qual.tpe <:< tree.tpe)) =>
 
           transform(qual)
-{code}
+```
 
 It doesn't handle TypeApply, the sort of problem that is now easily solved with treeInfo.Applied.
 match nodes are eliminated by patmat under the new pattern matcher.

@@ -1,6 +1,5 @@
 A test class App loses line number specificity when exception is thrown from value class.  Both DelayedInit and AnyVal are required for symptom.
-
-{code}
+```scala
 object Test2 extends App {
   implicit class Averrable(val b: Boolean) extends AnyVal {
     def yes = assert(b)
@@ -21,11 +20,10 @@ object Test2 extends App {
   //at gline.Test2$.delayedEndpoint$gline$Test2$1(gline.scala:14)
   //at gline.Test2$delayedInit$body.apply(gline.scala:14)
 }
-{code}
+```
 
 And javap says:
-
-{code}
+```scala
   public final void delayedEndpoint$gline$Test2$1();
     flags: ACC_PUBLIC, ACC_FINAL
     Code:
@@ -43,4 +41,4 @@ And javap says:
         line 13: 0
         line 26: 3
         line 13: 8
-{code}
+```

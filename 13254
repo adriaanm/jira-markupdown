@@ -1,17 +1,14 @@
 In scalax.rules.Rule.scala I have the following method:
-
-{code}
+```scala
   /** Creates a rule that suceeds only if this rule would fail on the given context. */
   def unary_! = mapRule[In, _ <: In, Unit, Nothing] { 
     case Success(_, _) => in => Failure
     case _ => in => Success(in, ())
   }
-{code}
+```
 
 Everything works nicely when all code is compiled together, but if I compile the scalax jar and then try to use it I get the following exception:
-
-
-{code}
+```scala
 java.lang.RuntimeException: malformed Scala signature of ScalaParser at 14504; reference type _$$1 of method unary_! refers to nonexisting symbol.
 at scala.tools.nsc.symtab.classfile.UnPickler$$UnPickle.errorBadSignature(UnPickler.scala:755)
 at scala.tools.nsc.symtab.classfile.UnPickler$$UnPickle.scala$$tools$$nsc$$symtab$$classfile$$UnPickler$$UnPickle$$$$readSymbol(UnPickler.scala:172)
@@ -236,4 +233,4 @@ at org.eclipse.core.internal.events.BuildManager.build(BuildManager.java:337)
 at org.eclipse.core.internal.events.AutoBuildJob.doBuild(AutoBuildJob.java:137)
 at org.eclipse.core.internal.events.AutoBuildJob.run(AutoBuildJob.java:235)
 at org.eclipse.core.internal.jobs.Worker.run(Worker.java:55)
-{code}
+```

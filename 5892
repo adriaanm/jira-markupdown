@@ -1,10 +1,10 @@
-I will note that this bug is the main reason I avoid using structural types like the plague.  It is simply too hard to enforce consistency between using () and not using () in method definitions.  Relying upon interfaces like {{Closeable}} is way more reliable (i.e. it actually works, instead of actually not working most of the time).  (The second reason I avoid them is performance, but when, say, closing a resource that isn't really an issue.  Except some people chose {{close}} and some chose {{close()}}.)
+I will note that this bug is the main reason I avoid using structural types like the plague.  It is simply too hard to enforce consistency between using () and not using () in method definitions.  Relying upon interfaces like `Closeable` is way more reliable (i.e. it actually works, instead of actually not working most of the time).  (The second reason I avoid them is performance, but when, say, closing a resource that isn't really an issue.  Except some people chose `close` and some chose `close()`.)
 
 Observe:
-{code}
+```scala
 trait T { def x(): Int }
 class C extends T { def x = 5 }   // Works
 trait U { def y: Int }
 class D extends U { def y() = 5 } // Works
-{code}
+```
 But I'm supposed to keep these parens-or-not straight just so structural typing will work?  Not likely!

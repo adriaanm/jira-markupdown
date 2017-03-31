@@ -1,21 +1,21 @@
 I have the following case classes partially using Unicode:
-{code}
+```scala
 sealed abstract class Expr
 sealed abstract class LocationPath extends Expr
 case object Ʈ extends Ʈ()
 case class Ʈ(steps: Expr*) extends LocationPath
 case class π(steps: Expr*) extends LocationPath
-{code}
-Inside {{LocationPath}} I have methods like
-{code}
+```
+Inside `LocationPath` I have methods like
+```scala
 def ↘(pos: Int)
-{code}
+```
 for path construction.
 
-Now, I defined a map with key type {{LocationPath}}.
-{code}
+Now, I defined a map with key type `LocationPath`.
+```scala
 val m: Map[LocationPath, Message)
-{code}
+```
 The weird thing is the following:
 
   1. {{println(m isDefinedAt (Ʈ↘(1)↘(3)))}}
@@ -24,6 +24,6 @@ The weird thing is the following:
 Output of (1) is ``false_ but (2) outputs a Message object.
 
 Referring to a conversation with Paul Phillips:
-{{find}} on the keys just goes through them looking for one which returns equals, but {{isDefinedAt}} on the map will use the {{hashCode}} and only look in that bucket.  In other words, you have equal objects with unequal hashCodes.
+`find` on the keys just goes through them looking for one which returns equals, but `isDefinedAt` on the map will use the `hashCode` and only look in that bucket.  In other words, you have equal objects with unequal hashCodes.
 
-This is a not-too-surprising bug which I expect is related to unicode and the fact that {{productPrefix}} (the name of the case class) is used in the generation of the hash code.
+This is a not-too-surprising bug which I expect is related to unicode and the fact that `productPrefix` (the name of the case class) is used in the generation of the hash code.

@@ -1,5 +1,5 @@
 The issue here appears to be that there is a totally different bitmap layout if things are compiled with or without -Xcheckinit, and when code is compiled with -Xcheckinit it acts like everything else was as well.  Here is a diff of Global.scala compiled with and without -Xcheckinit, filtered to the lines mentioning bitmaps.
-{code}
+```scala
 < const SI-127 = Asciz	bitmap$$4;
 < const SI-128 = Asciz	bitmap$$5;
 < const SI-141 = NameAndType	SI-128:SI-22;//  bitmap$$5:I
@@ -18,13 +18,13 @@ The issue here appears to be that there is a totally different bitmap layout if 
 < const SI-607 = Field	SI-140.SI-606;	//  scala/tools/nsc/Global.bitmap$$4:I
 < const SI-888 = Asciz	allocate bitmaps, translate lazy vals into lazified defs;
 < const SI-889 = String	SI-888;	//  allocate bitmaps, translate lazy vals into lazified defs
-{code}
+```
 Notice bitmap$$6 and bitmap$$7 only appear when compiled with -Xcheckinit.
 
 So I think this brings us back around to the question of why Xcheckinit is sharing bitmaps with the lazy bits.
 
 Here is a more minimized version.
-{code}
+```scala
 import scala.tools.nsc._
 
 object Test {
@@ -38,4 +38,4 @@ object Test {
     new DryRun().compiler.test1
   }
 }
-{code}
+```

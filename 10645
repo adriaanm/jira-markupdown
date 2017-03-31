@@ -1,4 +1,4 @@
-{noformat}
+```
 scala> :paste
 // Entering paste mode (ctrl-D to finish)
 
@@ -35,14 +35,13 @@ sym: $r.intp.global.Symbol = method f
 
 scala> pre memberType sym
 res4: $r.intp.global.Type = ([A](x: A)(ev: _7.c.Foo[A])Int) forSome { val _7: p.Implicits[p.c.type] }
-{noformat}
+```
 
 Not overloading vs overloading governs whether this existential gets skolemized away in `adapt`.
-
-{code}
+```scala
   case tp if mode.typingExprNotLhs && isExistentialType(tp) =>
     adapt(tree setType tp.dealias.skolemizeExistential(context.owner, tree), mode, pt, original)
-{code}
+```
 
 Here's a crude demonstration that this remedies the problem:
 

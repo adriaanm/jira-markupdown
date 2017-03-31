@@ -1,7 +1,6 @@
 There seems to be an edge case left. If you give the GC enough to work on,
 everything looks fine. This seems to work in constant memory:
-
-{code}
+```scala
 scala> var x = 0                                                                              
 x: Int = 0
 
@@ -9,11 +8,10 @@ scala> def t(s: Stream[Int]) = s.map(_ => new Array[Int](10000000)).foreach(a =>
 t: (Stream[Int])Unit
 
 scala> t(Stream.from(1))
-{code}
+```
 
 But if you do not allocate enough, you run out of memory (this may be related to what David said above about the churn rate):
-
-{code}
+```scala
 scala> var x = 0
 x: Int = 0
 
@@ -31,11 +29,10 @@ java.lang.OutOfMemoryError: Java heap space
 	at scala.Stream.foreach(Stream.scala:370)
 	at .t(<console>:5)
 	at ....
-{code}
+```
 
 This is on 32bit i386 Linux with
 java version "1.6.0_10"
 Java(TM) SE Runtime Environment (build 1.6.0_10-b33)
 Java HotSpot(TM) Client VM (build 11.0-b15, mixed mode, sharing)
-
 

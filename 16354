@@ -1,10 +1,9 @@
 IMHO the PartialFunction object should receive these two additional members, which are helpful in a number of situations where PartialFunction composition requires a "neutral" element:
-
-{code}
+```scala
 private lazy val emptyPF = new PartialFunction[Any, Any] {
   def isDefinedAt(x: Any) = false
   def apply(x: Any) = throw new IllegalStateException("Cannot apply undefined PartialFunction")
 }
 
 def empty[A, B] = emptyPF.asInstanceOf[PartialFunction[A, B]]
-{code}
+```

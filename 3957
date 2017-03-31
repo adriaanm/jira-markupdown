@@ -1,14 +1,14 @@
 Trimming this a bit reveals some interesting bits.
-{code}
+```scala
 abstract class Automaton[@specialized T1, T2] {
   def finalWeight(s: T2): T1
   def allStates: Set[T2]
 
   def f = allStates map finalWeight
 }
-{code}
+```
 This fails with unexpected error:
-{code}
+```scala
 a.scala:5: error: Parameter type in structural refinement may not refer to an abstract type defined outside that refinement
   def f = allStates map finalWeight
                         ^
@@ -20,7 +20,7 @@ Exception in thread "main" scala.tools.nsc.symtab.Types$$TypeError: type mismatc
 	at scala.tools.nsc.typechecker.Infer$$Inferencer.typeError(Infer.scala:224)
 	at scala.tools.nsc.typechecker.Infer$$Inferencer.typeErrorTree(Infer.scala:239)
 	at scala.tools.nsc.typechecker.Typers$$Typer.adapt(Typers.scala:991)
-{code}
+```
 If you @specialize T2 it compiles, so it's an issue with mixing specialized and unspecialized parameters.
 
 [I trimmed some stack trace, it's not useful past the beginning especially when it's easy to reproduce.]

@@ -1,12 +1,12 @@
-For instance, take {{1L.abs}}:
+For instance, take `1L.abs`:
 
 Instead of just computing and returning the result (like it is done in {{RichInt}}), this is what happens:
 
-- {{RichLong}} inherits {{abs}} by extending {{ScalaNumberProxy\[T\]}}
-- {{ScalaNumberProxy\[T\]}} has an abstract {{protected implicit def num: Numeric\[T\]}}
-- This method is implemented in {{RichLong}} and points to {{scala.math.Numeric.LongIsIntegral}}
-- The actual method {{abs}} now calls {{num.abs(self)}}
+- `RichLong` inherits `abs` by extending `ScalaNumberProxy\[T\]`
+- `ScalaNumberProxy\[T\]` has an abstract `protected implicit def num: Numeric\[T\]`
+- This method is implemented in `RichLong` and points to `scala.math.Numeric.LongIsIntegral`
+- The actual method `abs` now calls `num.abs(self)`
 
-Same story for {{doubleValue}}, {{floatValue}}, {{longValue}}, {{intValue}}, {{byteValue}}, {{shortValue}}, {{min}}, {{max}}, {{signum}}.
+Same story for `doubleValue`, `floatValue`, `longValue`, `intValue`, `byteValue`, `shortValue`, `min`, `max`, `signum`.
 
 Rex benchmarked it and it seems to make a significant difference: https://groups.google.com/d/msg/scala-internals/t2DndCtkhlw/zkgl1lVStu4J

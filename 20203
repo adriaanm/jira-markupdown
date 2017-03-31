@@ -1,4 +1,4 @@
-{code:scala}
+```scala
 import scala.reflect.runtime.universe._
 import scala.tools.reflect.ToolBox
 
@@ -19,9 +19,9 @@ object HelloWorld {
     tb.typecheck(exp.tree)
   }
 }
-{code}
+```
 The typecheck in the last line fails with
-{code}
+```scala
 Exception in thread "main" scala.tools.reflect.ToolBoxError: reflective typecheck has failed: type mismatch;
  found   : HelloWorld.(some other)Foo(in object HelloWorld)
  required: HelloWorld.Foo(in object HelloWorld)
@@ -44,8 +44,8 @@ Exception in thread "main" scala.tools.reflect.ToolBoxError: reflective typechec
 	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
 	at java.lang.reflect.Method.invoke(Method.java:497)
 	at com.intellij.rt.execution.application.AppMain.main(AppMain.java:147)
-{code}
+```
 
-A workaround is to call {{tb.typecheck}} on a very simple tree after every call to {{tb.compile}}.
+A workaround is to call `tb.typecheck` on a very simple tree after every call to `tb.compile`.
 
-Note that this is a similar bug to https://issues.scala-lang.org/browse/SI-8637, but it is different.
+Note that this is a similar bug to scala/bug#8637, but it is different.

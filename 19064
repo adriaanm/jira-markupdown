@@ -1,8 +1,7 @@
-Calling {{interpret}} sets the current thread's context classloader, but fails to reset it to its previous state when returning from that method.
+Calling `interpret` sets the current thread's context classloader, but fails to reset it to its previous state when returning from that method.
 
 The following workaround illustrates the problem:
-
-{code}
+```scala
     val th = Thread.currentThread()
     val cl = th.getContextClassLoader
     try {
@@ -10,6 +9,6 @@ The following workaround illustrates the problem:
     } finally {
       th.setContextClassLoader(cl)
     }
-{code}
+```
 
 Jason Zaugg suggests that the following might be the regression: https://github.com/scala/scala/commit/3a30af1#diff-36a995091016ecd5cdb97e267764e05aL538

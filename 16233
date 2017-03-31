@@ -1,6 +1,5 @@
 I have an entry point wrapper that looks something like the trait listed below that is intended to expose a main for a java entry point if type T = Unit or an arbitrary return type T if the module is embedded:
-
-{code}
+```scala
 trait RunWrapper[T] {
   def run(args : Array[String]) : T;
   def main(args : Array[String]) : T = {
@@ -12,7 +11,7 @@ trait RunWrapper[T] {
 object A extends RunWrapper[Unit] {
   def run(args : Array[String]) { println("the end") }
 }
-{code}
+```
 Unfortunately, I get this bytecode from the compiler (the same for both 2.8.1 and 2.9.0.1):
 
 $ javap A
@@ -32,8 +31,7 @@ object B extends RunWrapper[Unit] {
 }
 
 I get this:
-
-{noformat}
+```
 $ javap B
 Compiled from "test.scala"
 public final class B extends java.lang.Object{
@@ -41,6 +39,6 @@ public final class B extends java.lang.Object{
     public static final void run(java.lang.String[]);
     public static final java.lang.Object main(java.lang.String[]);
 }
-{noformat}
+```
 
 So it seems override didn't override anything  and the compiler doesn't complain or warn about this.  Is this a boxing issue?

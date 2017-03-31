@@ -1,4 +1,4 @@
-{code}
+```scala
 object A extends App {
   def foo(o: Option[Int]): Int = {
     lazy val i: Int = o.getOrElse(return -1)
@@ -7,18 +7,17 @@ object A extends App {
        
   println(foo(None))
 }
-{code}
+```
 
 From v2.10.0..v2.10.1~232, this correctly prints `-1`
 
-After 4c86dbbc492 / SI-6358, it crashes the compiler:
-
-{noformat}
+After 4c86dbbc492 / scala/bug#6358, it crashes the compiler:
+```
 TypeRef(TypeSymbol(class IntRef extends Serializable))
 
 uncaught exception during compilation: java.lang.IllegalArgumentException
 error: java.lang.IllegalArgumentException: Could not find proxy for val nonLocalReturnKey1: Object in List(value nonLocalReturnKey1, value i$lzycompute$1, method foo, object A, package <empty>, package <root>) (currentOwner= method apply )
 	at scala.tools.nsc.transform.LambdaLift$LambdaLifter.scala$tools$nsc$transform$LambdaLift$LambdaLifter$$searchIn$1(LambdaLift.scala:303)
-{noformat}
+```
 
 More alarmingly, it has been reported that in the original code from which this was extracted, this pattern of code doesn't always crash the compiler, but can instead generate code in which the return only returns from the by-name expression, rather than the enclosing def.  I haven't been able to reproduce this.

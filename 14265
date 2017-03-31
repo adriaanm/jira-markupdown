@@ -1,8 +1,7 @@
 The following fails, but only in one direction.
 It be related to some Tuple2 specific magic since
 it works if you replace Tuple2 by a user defined class (see below).
-
-{code}
+```scala
 object test {
 
  case class MyPair[X, Y](val x: X, val y: Y) {
@@ -26,22 +25,21 @@ object test {
  x = y
  y = x
 }
-{code}
+```
 
 This fails to compile with:
-{code}
+```scala
 $$ scalac ~/test.scala
 /home/mahler/test.scala:22: error: no implicit argument matching
 parameter type (Int) => W was found.
  y = x
      ^
-{code}
+```
 I do not understand why this is an error.
 Surely W should bind to Int and and they identity conversion
 should be applied, as happens when you replace Tuple2 by a user defined MyTuple2.
 This works:
-
-{code}
+```scala
 object test {
 
  case class MyPair[X, Y](val x: X, val y: Y) {
@@ -70,4 +68,4 @@ object test {
  x = y
  y = x
 }
-{code}
+```

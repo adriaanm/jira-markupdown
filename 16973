@@ -1,4 +1,4 @@
-{code}
+```scala
 def concreteTypeTagToManifest[T](tag: ConcreteTypeTag[T]): Manifest[T] = {
   // todo. reproduce manifest generation code here. toolboxes are too slow.
   val implicitly = PredefModule.typeSignature.member(newTermName("implicitly"))
@@ -7,4 +7,4 @@ def concreteTypeTagToManifest[T](tag: ConcreteTypeTag[T]): Manifest[T] = {
   try mkToolBox().runExpr(materializer).asInstanceOf[Manifest[T]]
   catch { case ex: Throwable => Manifest.classType(tag.erasure).asInstanceOf[Manifest[T]] }
 }
-{code}
+```

@@ -10,8 +10,7 @@ on a class but shouldn't need a class instance.  I also want to limit the
 types of classes I want to introspect on, so I use Class[_ <: Foo].  But
 this prevents me from passing in a Foo class by using Foo.getClass()
 without a cast.
-
-{code}
+```scala
 trait IdlBase
 
 class IdlConcrete
@@ -28,16 +27,15 @@ object Test extends Application {
   val idl = new IdlConcrete
   reflect(idl.getClass)
 }
-{code}
-
-{code}
+```
+```scala
 test.scala:14: error: type mismatch;
  found   : java.lang.Class[?0] where type ?0
  required: Class[_$$1] forSome { type _$$1 <: IdlBase }
   reflect(idl.getClass)
               ^
 one error found
-{code}
+```
 
 There was a request for this and Martin responded:
 

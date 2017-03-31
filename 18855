@@ -1,6 +1,5 @@
 I just tried building sbt with Scala 2.11.0-M8 and I got:
-
-{code}
+```scala
 [error] /Users/grek/scala/xsbt/main/actions/src/main/scala/sbt/compiler/Eval.scala:362: value toArray is not a member of Eval.this.global.Range
 [error] 			defs += fragmentUnit(defString, range.toArray)
 [error] 			                                      ^
@@ -16,11 +15,10 @@ I just tried building sbt with Scala 2.11.0-M8 and I got:
 [error] 			lines ++= (range.end :: range.end :: Nil)
 [error] 			                              ^
 [error] four errors found
-{code}
+```
 
-I've been scratching my head for a while but then it became clear what happened. The code in {{Eval.scala}} refers to {{scala.Range}} (without any explicit import). Now, for reason I didn't identify yet there's Range class mixed into {{Global}} name space. Compare:
-
-{code}
+I've been scratching my head for a while but then it became clear what happened. The code in `Eval.scala` refers to `scala.Range` (without any explicit import). Now, for reason I didn't identify yet there's Range class mixed into `Global` name space. Compare:
+```scala
 // Scala 2.10.2
 scala> val globalTpe = typeOf[Global]
 globalTpe: $r.intp.global.Type = scala.tools.nsc.Global
@@ -37,6 +35,6 @@ res12: $r.intp.global.Symbol = class Range
 
 scala> res12.fullName
 res13: String = scala.reflect.internal.Positions.Range
-{code}
+```
 
-That class shadows (through {{globa._}} import) the one previously used.
+That class shadows (through `globa._` import) the one previously used.

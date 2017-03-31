@@ -1,27 +1,23 @@
 Seems lifted methods are implicitly converted more readily than Function1 or partial functions. For example, this works as expected:
-
-
-{code:scala}
+```scala
 scala> val vector2 = Vector(Some(1), None, Some(3), Some(4))
 vector2: scala.collection.immutable.Vector[Option[Int]] = Vector(Some(1), None, Some(3), Some(4))
 
 scala> vector2.flatMap { _.map(_*2) }
 res0: Vector[Int] = Vector(2, 6, 8)
-{code}
+```
 
 Using a method that gets lifted to a Function1 also works as expected:
-
-{code:scala}
+```scala
 scala> def times2a(v: Option[Int]): Option[Int] = v.map(_*2)
 times2a: (v: Option[Int])Option[Int]
 
 scala> vector2.flatMap { times2a }
 res1: scala.collection.immutable.Vector[Int] = Vector(2, 6, 8)}}
-{code}
+```
 
 However, attempting to use a Function1 instead of a method produces an error:
-
-{code:scala}
+```scala
 scala> val times2b: Option[Int] => Option[Int] = v => v.map(_*2)
 times2b: Option[Int] => Vector[Int] = $$Lambda$2080/2084932307@52da1357
 
@@ -31,31 +27,28 @@ res2: scala.collection.immutable.Vector[Int] = Vector(2, 6, 8)
  found   : Option[Int] => Option[Int]
  required: Option[Int] => scala.collection.GenTraversableOnce[?]
        vector2.flatMap { times2b }
-{code}
+```
 
 The error goes away if the result is converted to an iterator:
-
-{code:scala}
+```scala
 scala> val times2c: Option[Int] => Iterator[Int] = v => v.map(_*2).toIterator
 times2c: Option[Int] => Iterator[Int] = $$Lambda$2333/302275954@6bb2a28a
 
 scala> vector2.flatMap { times2c }
 res17: scala.collection.immutable.Vector[Int] = Vector(2, 6, 8)
-{code}
+```
 
 The error also goes away if monads are not mixed:
-
-{code:scala}
+```scala
 scala> val times2d: Option[Int] => Vector[Int] = v => v.map(_*2).toVector
 times2d: Option[Int] => Vector[Int] = $$Lambda$2279/8972378@230dd372
 
 scala> vector2.flatMap { times2d }
 res2: scala.collection.immutable.Vector[Int] = Vector(2, 6, 8)
-{code}
+```
 
 Attempting to use a partial function produces the same error as was encountered for Function1:
-
-{code:scala}
+```scala
 scala> val times2e: Option[Int] => Option[Int] = { case v: Option[Int] => v.map(_*2) }
 times2e: Option[Int] => Option[Int] = $$Lambda$2291/869051292@668ea404
 
@@ -64,26 +57,24 @@ scala> vector2.flatMap { times2e }
  found   : Option[Int] => Option[Int]
  required: Option[Int] => scala.collection.GenTraversableOnce[?]
        vector2.filter(_.isDefined).flatMap { times2d }
-{code}
+```
 
 Again, the error for the partial function can be avoided by converting to an Iterator.
-
-{code:scala}
+```scala
 scala> scala> val times2f: Option[Int] => Iterator[Int] = { case v: Option[Int] => v.map(_*2).toIterator }
 times2f: Option[Int] => Vector[Int] = $$Lambda$2301/119525506@6d50b8c2
 
 scala> vector2.flatMap { times2f }
 res10: scala.collection.immutable.Vector[Int] = Vector(2, 6, 8)
-{code}
+```
 
 Again, the error for the partial function can be avoided by not mixing monads.
-
-{code:scala}
+```scala
 scala> scala> val times2g: Option[Int] => Vector[Int] = { case v: Option[Int] => v.map(_*2).toVector }
 times2g: Option[Int] => Vector[Int] = $$Lambda$2301/119525506@6d50b8c2
 
 scala> vector2.flatMap { times2g }
 res10: scala.collection.immutable.Vector[Int] = Vector(2, 6, 8)
-{code}
+```
 
 Is this a bug?

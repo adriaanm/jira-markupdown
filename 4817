@@ -1,5 +1,5 @@
 Thanks for your quick review. Unfortunately I don't succeed eliminating more than a single line because to demonstrate, we do need two overloading and another two implicit methods:
-{code}
+```scala
 abstract class ImplicitRepeated[CC[N, R <: List[N]]] {
   def f[N, R <: List[_]](elems: Either[N,R]*) // alternative a)
   def f[N, R <: List[_]](props: String,
@@ -15,5 +15,5 @@ class Test[CC[N, R <: List[N]]] (c : ImplicitRepeated[CC]) {
   c.f( "A", 1, 2) // should be implicitly resolved to alternative b)
   c.f( 1, 2 )     // should be implicitly resolved to alternative a)
 }
-{code}
+```
 Maybe the key to resolve this problem is to find out, why any2R is considered for the applications of f, even if none of the arguments is of type <: List[_]. Should not the two above applications be valid irrespective of the presence of any2R?

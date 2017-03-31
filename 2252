@@ -1,34 +1,34 @@
 I think I have seen it again, but I failed to minimize it to a sensible code snippet. The general picture of my bug was:
 bug/A.java
-{code}
+```scala
 package bug;
 class A {
   public void addAction(bug.action.Action a) {
      ...
   }
 }
-{code}
+```
 
 bug/Display.java
-{code}
+```scala
 package bug;
 class Display {
   protected A sth;
 }
-{code}
+```
 
 bug/action/Action.java
-{code}
+```scala
 package bug.action;
 public abstract class Action {
   protected A sth;
   public abstract void run();
 }
-{code}
+```
 
 and scala code
 test/MyDisplay.scala
-{code}
+```scala
 package test;
 
 abstract class MyDisplay extends bug.Display {
@@ -43,7 +43,7 @@ abstract class MyDisplay extends bug.Display {
   }
   
 }
-{code}
+```
 
 The surprising thing is that, if I make ScalaAction a class (and change addAction(...) to addAction(new ScalaAction())) this thing works again.
 As I said, I have it reproducible but on a pretty large java and scala library. I will try to dig it more when I find some time.

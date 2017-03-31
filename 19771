@@ -1,7 +1,5 @@
-Using a similar type hierarchy to SI-9398, the following code produces a spurious exhaustiveness warning.
-
-
-{code:scala}
+Using a similar type hierarchy to scala/bug#9398, the following code produces a spurious exhaustiveness warning.
+```scala
   sealed abstract class TA
   sealed abstract class TB extends TA
   case object A extends TA
@@ -16,10 +14,10 @@ Using a similar type hierarchy to SI-9398, the following code produces a spuriou
     case CTA(_, B) =>
     case CTB(_, B) =>
   }
-{code}
+```
 produces
-{noformat}
+```
 match may not be exhaustive.
 It would fail on the following input: CTB(_, _)
     val test: C => Unit = {
-{noformat}
+```

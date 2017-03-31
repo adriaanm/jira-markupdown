@@ -3,11 +3,11 @@ I don't mean to defend any of the present code, it's just that either one accept
 To be clear, and despite the fact that (see below) the goal is not achieved, the hashcodes for these classes are not modified from the native ones for anything to do with efficiency.  There is only one reason: "equal objects must have equal hashcodes." So collision rates are beside the point.
 
 I checked, and we're not even doing the thing I talked about, so the thing I thought was a bad idea is already the way that it is, by which I mean:
-{code}
+```scala
 scala> BigDecimal(Long.MaxValue) == BigInt(Long.MaxValue)
 res9: Boolean = true
 
 scala> (BigDecimal(Long.MaxValue) pow 2) == (BigInt(Long.MaxValue) pow 2)
 res10: Boolean = false
-{code}
+```
 So it's not like there's any wonderful behavior to preserve here.  I'm not going to touch any of this, I'm only trying to illuminate it a little for whoever may attempt something.

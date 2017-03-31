@@ -1,6 +1,5 @@
 This crashes the compiler.
-
-{code}
+```scala
 package crasher {
   class Z[@specialized A, @specialized(AnyRef) B](var a: A, var b: B) { }
   object O {
@@ -8,13 +7,12 @@ package crasher {
       new Z(a0,b0)
   }
 }
-{code}
+```
 
 For the crash to occur, you need at least two specialized types, at least one has to be AnyRef, and there have to be at least two specialized types for at least one of the entries.
 
 The compiler complains:
-
-{code}
+```scala
 error: scala.tools.nsc.symtab.Types$TypeError: type mismatch;
  found   : B$sp(in method apply$mVTc$sp)
  required: B$sp(in class Z$mcVT$sp)
@@ -25,4 +23,4 @@ error: scala.tools.nsc.symtab.Types$TypeError: type mismatch;
 	at scala.tools.nsc.typechecker.Typers$Typer.adapt(Typers.scala:929)
 	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:4219)
         ...
-{code}
+```

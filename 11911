@@ -1,8 +1,7 @@
 I can reproduce the OOME with JVM heap sizes up to 1G. (The default is typically less, it depends on your platform).
 
 Increasing this to 2GB gets past the OOME, although it just gets as far as running into a JVM limitation about the size of a class:
-
-{noformat}
+```
 % scalac -version
 Scala compiler version 2.11.2 -- Copyright 2002-2013, LAMP/EPFL
 % scala -J-Xmx2G sandbox/test.scala
@@ -10,7 +9,7 @@ sandbox/test.scala:79: error: Could not write class All$ because it exceeds JVM 
 object All {
        ^
 one error found
-{noformat}
+```
 
 There is nothing the compiler can to to help out here. You might have more luck in writing code to read the parse the data from a CSV file, or otherwise you would need to artificially chunk the generated code.
 
@@ -19,7 +18,7 @@ Alternatively, you could provide the arguments in the parameter declaration orde
 For instance, this compiles without heap exhaustion or exceeding classfile limitations with default settings:
 
 ```
-{code}
+```scala
 object All {
   def newEvent(year: Int, month: Month, weekday: Weekday, day: Int, hour: Int, minute: Int, second: Int, timezone: Timezone, action: Action)
      = new Event (second, minute, hour, weekday, day, month, year, timezone, action);
@@ -28,4 +27,4 @@ newEvent ( year = 2014, month = Jul, weekday = Sun, day = 6, hour = 11, minute =
 newEvent ( year = 2014, month = Jul, weekday = Sun, day = 6, hour = 11, minute = 41, second = 13, timezone = BST, action = Paperwriting );
 newEvent ( year = 2014, month = Jul, weekday = Sun, day = 6, hour = 11, minute = 53, second = 35, timezone = BST, action = Break );
 ...
-{code}
+```

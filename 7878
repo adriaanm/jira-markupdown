@@ -1,37 +1,34 @@
-In total, the solution(s) to SI-4176 leave us in a situation where we can write:
-
-{code}
+In total, the solution(s) to scala/bug#4176 leave us in a situation where we can write:
+```scala
 object Repeater extends ((Int*) => Unit) {
   def apply(x: Int*) {}
 }
-{code}
+```
 
-but not do much more with it; it is treated as a subtype of {{Seq\[Int\] => Unit}}
+but not do much more with it; it is treated as a subtype of `Seq\[Int\] => Unit`
 
-More discussion over at SI-6016.
+More discussion over at scala/bug#6016.
 
-It might be prudent to disallow {{*}} in non method types altogether.
+It might be prudent to disallow `*` in non method types altogether.
 
-{{=>A}} hasn't suffered the same scrutiny. It remains expressible in function types (and it's pretty commonly used as such):
-
-{code}
+`=>A` hasn't suffered the same scrutiny. It remains expressible in function types (and it's pretty commonly used as such):
+```scala
 scala> def f(a: (=> Any) => Any) = a(???)
 f: (a: => Any => Any)Any
 
 scala> f(x => 0)
 res1: Any = 0
-{code}
+```
 
 
 Eta expansion retains the by-name-ness:
-
-{code}
+```scala
 scala> def foo(z: Any)(a: => Int) = z
 foo: (z: Any)(a: => Int)Any
 
 scala> (foo(0) _)(???)
 res2: Any = 0
-{code}
+```
 
-So I'm not sure where to take this. If we're going to follow through with the tough stance on {{*}}, we should do it completely. But we should also have a clear story about why we have different rules for {{=>}}.
+So I'm not sure where to take this. If we're going to follow through with the tough stance on `*`, we should do it completely. But we should also have a clear story about why we have different rules for `=>`.
 

@@ -1,5 +1,5 @@
 It seems that the self-type annotation shadows constructor arguments.
-{code}
+```scala
 $$ scala
 Welcome to Scala version 2.8.1.RC1 (Java HotSpot(TM) Client VM, Java 1.6.0_16).
 Type in expressions to have them evaluated.
@@ -12,21 +12,21 @@ scala> abstract class X(x: Int) { self: Y => x }
 <console>:6: error: not found: value x
        abstract class X(x: Int) { self: Y => x }
                                              ^
-{code}
+```
 
 Of course, without self-type annotation, there is no problem,
-{code}
+```scala
 scala> abstract class X(x: Int) { self => x }
 defined class X
-{code}
+```
 and curiously there is no problem with 'val',
-{code}
+```scala
 scala> abstract class X(val x: Int) { self: Y => x }
 defined class X
-{code}
+```
 
 This problem, for example, will cause the following unexpected result,
-{code}
+```scala
 scala> object X {
      |   val x: Int = 1
      |   trait Y
@@ -39,4 +39,4 @@ defined module X
 scala> X
 1
 res0: X.type = X$$@1df3082
-{code}
+```

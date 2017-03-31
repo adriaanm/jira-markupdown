@@ -1,5 +1,5 @@
 Now the method withFilter of scala.collection.immutable.Stream is defined in scala.collection.TraversableLike. This lead to some problems：
-{code}
+```scala
 scala> val nums = Stream.from(1)
 nums: scala.collection.immutable.Stream[Int] = Stream(1, ?)
 
@@ -19,11 +19,10 @@ java.lang.OutOfMemoryError: Java heap space
         at RequestResult$$.<clinit>(<console>)
         at RequestResult$$scala_repl_resul...
 scala>
-{code}
+```
 
 I think we should override withFilter in Stream like following(not test):
-
-{code}
+```scala
 abstract class Stream[+A] extends LinearSeq[A] 
                              with GenericTraversableTemplate[A, Stream]
                              with LinearSeqOptimized[A, Stream[A]] {
@@ -54,4 +53,4 @@ self =>
       new StreamFilter(x => p(x) && q(x))
   }
 }
-{code}
+```

@@ -1,8 +1,7 @@
-Sorry, my bad. It's related to that ticket, but not identical. It's actually another instance of https://issues.scala-lang.org/browse/SI-6948
+Sorry, my bad. It's related to that ticket, but not identical. It's actually another instance of scala/bug#6948
 
 It comes down to the way the Scala infers:
-
-{code}
+```scala
 object Test {
   def foo[M[_, _]](m: M[_, _]) = 0
   val x: (Option[Int], Int) = (None, 0)
@@ -10,9 +9,8 @@ object Test {
   type T[A, B] = (Option[A], B)
   foo(x: T[Int, Int])
 }
-{code}
-
-{noformat}
+```
+```
 % qbin/scalac -Xprint:typer sandbox/test.scala
 [[syntax trees at end of                     typer]] // test.scala
 package <empty> {
@@ -29,16 +27,15 @@ package <empty> {
     Test.this.foo[Test.T]((Test.this.x: Test.T[Int,Int]))
   }
 }
-{noformat}
+```
 
 Type constructor inference looks at stream of dealiased- and base-types for the argument in search for one of the right kind. By introducing the alias above, it infers `foo[T]` rather than `foo[Tuple2]`. In your example, this doesn't line up with the available implicits. No backtracking is tried to dealias.
 
 Workarounds are to provide implicit type class instances like `implicit def ValidationNELBifunctor: Bifunctor[ValidationNEL]`, or to manually provide type arguments.
 
 You could also use
-
-{code}
+```scala
 type ValidationNelString[A] = ValidationNel[String, A]
-{code}
+```
 
 This has a different kind, so it will be dealised when trying to unify `ValidationNelString[X]` with `M[A, B]`.

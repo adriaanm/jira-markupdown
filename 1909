@@ -1,5 +1,5 @@
-This is mostly a duplicate of SI-1352.  The issue is not that you can't override them, but that you can't widen the visibility to public.  This works:
-{code}
+This is mostly a duplicate of scala/bug#1352.  The issue is not that you can't override them, but that you can't widen the visibility to public.  This works:
+```scala
 class A {
   class B {
     private[A] def x = 0
@@ -11,9 +11,9 @@ class A {
     // override protected[A] def x = 1
   }
 }
-{code}
+```
 My "mostly" qualifier above is because it doesn't look like you can override def y in your first example, because A is not an enclosing class inside B:
-{code}
+```scala
 //   override protected[A] def y = 1
 a.scala:9: error: A is not an enclosing class
   override protected[A] def y = 1
@@ -26,4 +26,4 @@ a.scala:9: error: method y overrides nothing
 a.scala:9: error: method B$$$$y overrides nothing
   override protected[B] def y = 1
                             ^
-{code}
+```

@@ -1,13 +1,13 @@
 When Scala-IDE works and I'm patient enough for it (so, a lot of patience), a problem like this becomes easy to fix.
 
-The problems are calls to {{Types.explainTypes}} when {{context.reportErrors}} is false, for instance because they happen during implicit resolution.
+The problems are calls to `Types.explainTypes` when `context.reportErrors` is false, for instance because they happen during implicit resolution.
 
-{{Types.explainTypes}} should thus check {{reportErrors}} but has no access to {{context}}, and not all calls go through {{Infer.explainTypes}} (although they probably should?), so I have to check {{context.reportErrors}} in multiple locations. Which means that the only reliable way to fix this problem is to add {{-explaintypes}} to scalac flags for all pos tests, and while at it ensure there are neg tests using {{-explaintypes}} and checking that it does produce output.
+`Types.explainTypes` should thus check `reportErrors` but has no access to `context`, and not all calls go through `Infer.explainTypes` (although they probably should?), so I have to check `context.reportErrors` in multiple locations. Which means that the only reliable way to fix this problem is to add `-explaintypes` to scalac flags for all pos tests, and while at it ensure there are neg tests using `-explaintypes` and checking that it does produce output.
 
 Pull request for the first part coming up soon.
 
 The first problem is in c800d1fec5241ed8c29e5af30465856f9b583246, in particular in 
-{code}
+```scala
 +      def NotWithinBounds(tree: Tree, prefix: String, targs: List[Type],
 +                          tparams: List[Symbol], kindErrors: List[String]) = {
 +        if (settings.explaintypes.value) {
@@ -22,4 +22,4 @@ The first problem is in c800d1fec5241ed8c29e5af30465856f9b583246, in particular 
 +                " do not conform to " + tparams.head.owner + "'s type parameter bounds " +
 +                (tparams map (_.defString)).mkString("[", ",", "]"))
 +      }
-{code}
+```

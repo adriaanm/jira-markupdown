@@ -1,8 +1,7 @@
 I see a similar, unexpected behavior:
 
 With the scale source file
-
-{code}
+```scala
 package whf.scala.ui
 
 class ObjectWithSameNameConsoleReproducer {
@@ -14,7 +13,7 @@ class ObjectWithSameNameConsoleReproducer {
 object ObjectWithSameNameConsoleReproducer extends ObjectWithSameNameConsoleReproducer
 
 object ObjectWithDifferentNameForConsoleReproducer extends ObjectWithSameNameConsoleReproducer
-{code}
+```
 
 the Package Explorer shows four nodes, one for the source file and three children for the class and the two objects.
 
@@ -23,8 +22,7 @@ opens the Select Java Application Dialog with the pattern "**" (two asteriscs) a
 
 Selecting the class leads to an error dialog "Could not find the main class. Will exit."
 and this console message:
-
-{code}
+```scala
 java.lang.NoClassDefFoundError: whf/scala/ui/ObjectWithSameNameConsoleReproduce
 Caused by: java.lang.ClassNotFoundException: whf.scala.ui.ObjectWithSameNameConsoleReproduce
 	at java.net.URLClassLoader$$1.run(URLClassLoader.java:200)
@@ -39,21 +37,20 @@ Caused by: java.lang.ClassNotFoundException: whf.scala.ui.ObjectWithSameNameCons
 Note the missing "r" in the demo class.
 
 Selecting the synthetic class of the companion object with the _same_ name leads to an error dialog "Fatal exception ocurred. Program will exit." and this console output: 
-{code}
+```
 java.lang.NoSuchMethodError: main
 Exception in thread "main" 
-{code}
+```scala
 
 Selecting the synthetic class of the object with a _different_ name works as expected. In this example, it leads to the console output
-{code}
+```
 running
-{code}
+```scala
 
 Cleaning the project or closing/reopening the project has no effects.
 
 I started with a reproducer for a Swing App, with the same results. The positive case here is that the JFrame shows as expected.
-
-{code}
+```
 package whf.scala.ui
 
 import swing.{MainFrame, SimpleGUIApplication}
@@ -74,11 +71,11 @@ Workaround: For a main object, that is the object of a class with a main method,
 
 Issues with the current behaviour:
 
-1) Selecting a Scala source file, only the two objects should be shown as matching items. The class should _not_ be shown.
+1) Selecting a Scala source file, only the two objects should be shown as matching items. The class should *not* be shown.
 
 2) Selecting the object within the source file, it should be launched without a selection dialog.
 
-3) Selecting the class, the menu Run As > Scala Application should _not_ be shown.
+3) Selecting the class, the menu Run As > Scala Application should *not* be shown.
 
 4) If there are two runnable/launchable objects in a selection, there Scala names should be shown, not the synthetic Java names.
 

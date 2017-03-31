@@ -1,5 +1,5 @@
 One does not need an invariant class to trigger this, nor arrays. Here's a reduced version, inspired to what happens in Lightweight Modular Staging:
-{code}
+```scala
 object MinimalUnsoundness {
   trait Exp[+T]
   case class Const[+T](t: T) extends Exp[T] //Making Const invariant makes no difference.
@@ -20,12 +20,11 @@ Boolean
 
 scala> interp(new MyConst(""))
 java.lang.ClassCastException: java.lang.String cannot be cast to java.lang.Boolean
-{code}
-In the actual code, I want to prevent declaring classes like {{MyConst}}, so that {{interp}} is actually accepted, and making {{Const}} final is often not an option, but that's another story.
+```
+In the actual code, I want to prevent declaring classes like `MyConst`, so that `interp` is actually accepted, and making `Const` final is often not an option, but that's another story.
 
 A more complete example - an interpreter for embedded simply-typed lambda-calculus with subtyping:
-
-{code}
+```scala
 trait Lambda {
   trait Exp[+T]
   case class Const[T](t: T) extends Exp[T]
@@ -58,4 +57,4 @@ object Language extends Lambda with Interp {
     |you'll get a ClassCastException""".stripMargin)
   println("""Same for 'interp(new MyConst(""))'""")
 }
-{code}
+```

@@ -1,14 +1,13 @@
 There must be some truth in saying "better late than never", so almost 5 years after Martin's question, here are some thoughts:
 
-- the deeply nested class `C` is a member of object B, whose binary name is `A$B$`. However, the name module suffix (the last `$`) is added during bytecode generation. In the AST, one only sees the *flattened* name, which is `A$B`.
+- the deeply nested class `C` is a member of object B, whose binary name is `A$B$`. However, the name module suffix (the last `$`) is added during bytecode generation. In the AST, one only sees the **flattened** name, which is `A$B`.
 - using the flattened name as the outer name won't work, since the flattened name corresponds to a companion class, which may not exist (in this case, there isn't one). Emitting such a name migth break `getEnclosingClass`. The bytecode generator therefore uses the binary name for `outer_name` inside the `InnerClasses` attribute
 - since objects are "the equivalent of static" in the Java world, we wanted to make it easier for Java code to use static inner classes. When there's only one level of nesting, there's a guaranteed companion: every top-level object gets a mirror class (if there isn't one) that creates static forwarders to module methods (that's how one can run a `main` method defined inside an object). Therefore, a special case for one-level nesting: those classes use the flattened name (without a `$` suffix) as outer_name. So, Java code can say `new Outer.Inner`.
 
-The issue in this case is the inconsistency between the InnerClasses attribute and the binary name of the *inner* class. In Olivier's example, the flattened name of C is `A$B$C`, which ends up as the binary name of C. However, the JLS requires a separating `$` between the outer name and the inner name, which is missing in this case.
+The issue in this case is the inconsistency between the InnerClasses attribute and the binary name of the **inner** class. In Olivier's example, the flattened name of C is `A$B$C`, which ends up as the binary name of C. However, the JLS requires a separating `$` between the outer name and the inner name, which is missing in this case.
 
 The code that decides the binary name of C is this:
-
-{code}
+```scala
     override def name: TermName = {
       if (Statistics.hotEnabled) Statistics.incCounter(nameCount)
       if (!isMethod && needsFlatClasses) {
@@ -20,7 +19,7 @@ The code that decides the binary name of C is this:
       else rawname
     }
   }
-{code}
+```
 
 This code does not know about the logic of encoding `objects`, so it simply uses the flattened name of the owner followed by `$` and inner name (`A$B` + `$` + `C`). This misses a `$`, because the binary name of B (after code generation) is `A$B$`, and the InnerClasses attribute will use it too. At this point, the invariant that the JLS specifies in 13.1, `binary_name` == `outer_name` + `$` + `inner_name`, is broken.
 

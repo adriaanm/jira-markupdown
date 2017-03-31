@@ -1,6 +1,5 @@
 Given the following untyped swap macro:
-
-{code}
+```scala
 package macros
 
 import language.experimental.macros
@@ -27,11 +26,10 @@ trait Impl extends Macro {
     )
   }
 }
-{code}
+```
 
 It creates a fresh name for the temporary variable. But this doesn't always work. In the simplest case where a variable of the same name already exists it works fine:
-
-{code}
+```scala
 import macros.Macros.swap
 
 object Test extends App {
@@ -57,11 +55,10 @@ Block(List(ValDef(Modifiers(MUTABLE), TermName("a1"), TypeTree(), Ident(TermName
 (10,5)
 (5,10)
 */
-{code}
+```
 
 But if a value is created that has the same name as the generated one in the example above, it doesn't work anymore:
-
-{code}
+```scala
 import macros.Macros.swap
 
 object Test extends App {
@@ -87,4 +84,4 @@ Block(List(ValDef(Modifiers(MUTABLE), TermName("a1"), TypeTree(), Ident(TermName
 (10,5)
 (10,5)
 */
-{code}
+```

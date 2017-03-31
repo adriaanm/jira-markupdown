@@ -1,6 +1,5 @@
 If I have the following inheritance structure
-
-{code}
+```scala
 trait T
 
 trait TA
@@ -9,11 +8,10 @@ trait TB
 class A extends T with TA
 class B extends T with TB
 class AB extends T with TA with TB
-{code}
+```
 
-Matching on {{_: TA with TB}}
-
-{code}
+Matching on `_: TA with TB`
+```scala
 val li: Vector[T] = Vector(new A, new B, new AB)
 
 val matched = (for (l <- li) yield {
@@ -27,11 +25,10 @@ val matched = (for (l <- li) yield {
 println(matched)
 // prints
 // Vector(tab, tb, tab)
-{code}
+```
 
-Matching on {{_: T with TA with TB}}
-
-{code}
+Matching on `_: T with TA with TB`
+```scala
 val matched2 = (for (l <- li) yield {
   l match {
     case _: T with TA with TB => "tab"
@@ -48,10 +45,10 @@ println(matched2)
 println((new A).isInstanceOf[TA with TB]) // prints false
 println((new B).isInstanceOf[TA with TB]) // prints false
 println((new AB).isInstanceOf[TA with TB]) // prints true
-{code}
+```
 
 Running with -Xprint:typer, both match statements are identical (and the isInstanceOf clause is inferred to be [T with TA with TB] in both cases)
-{code}
+```scala
 private[this] val matched2: scala.collection.immutable.Vector[String] = $anon.this.li.map[String, scala.collection.immutable.Vector[String]]({
             @SerialVersionUID(0) final <synthetic> class $anonfun extends scala.runtime.AbstractFunction1[this.T,String] with Serializable {
               def <init>(): anonymous class $anonfun = {
@@ -97,12 +94,12 @@ private[this] val matched2: scala.collection.immutable.Vector[String] = $anon.th
             };
             new anonymous class $anonfun()
           })(immutable.this.Vector.canBuildFrom[String]);
-{code}
+```
 
 -Xprint:erasure however shows the difference:
 
-*matched*:
-{code}
+**matched**:
+```scala
 final def apply(l: T): String = {
       case <synthetic> val x1: T = l;
       case6(){
@@ -139,10 +136,10 @@ final def apply(l: T): String = {
         x
       }
     };
-{code}
+```
 
-*matched2*:
-{code}
+**matched2**:
+```scala
 final def apply(l: T): String = {
       case <synthetic> val x1: T = l;
       case6(){
@@ -179,6 +176,6 @@ final def apply(l: T): String = {
         x
       }
     };
-{code}
+```
 
-So, the check against TB is somehow missing when one writes {{\_: TA with TB}} but is included if it is written as {{\_: T with TA with TB}}.
+So, the check against TB is somehow missing when one writes `\_: TA with TB` but is included if it is written as `\_: T with TA with TB`.

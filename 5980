@@ -1,15 +1,13 @@
 Okay, I've looked at the code and it appears to be assuming that importing the implicit `Integral[Double]` methods in `DoubleAsIfIntegral`:
-
-{code}
+```scala
   trait DoubleAsIfIntegral extends DoubleIsConflicted with Integral[Double] {
     def quot(x: Double, y: Double): Double = (BigDecimal(x) / BigDecimal(y)).doubleValue
     def rem(x: Double, y: Double): Double = (BigDecimal(x) remainder BigDecimal(y)).doubleValue
   }
-{code}
+```
 
  will enable `BigDecimal` precision on the `NumericRange` `foreach` definition:
-
-{code}
+```scala
   override def foreach[U](f: T => U) {
     var count = 0
     var current = start
@@ -19,7 +17,7 @@ Okay, I've looked at the code and it appears to be assuming that importing the i
       count += 1
     }
   }
-{code}
+```
 
 But Integral does not have any impact on addition and therefore does nothing here.
 

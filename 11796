@@ -1,6 +1,5 @@
 That log output leads by to believe that we've got a codegen problem for method local lazy vals, and that we're getting multiple evaluation of `lazy val typeTest` in
-
-{code}
+```scala
       // example check: List[Int] <:< ::[Int]
       private def extractorStep(): TranslationStep = {
         def paramType = extractor.aligner.wholeType
@@ -25,13 +24,12 @@ That log output leads by to believe that we've got a codegen problem for method 
         val subBound = extractor.subBoundTrees
         TranslationStep(makers, subBound)
       }
-{code}
+```
 
 Changing the lazy val to a def exhibits the same failure mode (crash in  `genLoadIdent`) 100% of the time.
 
 Decompiling the lazy compute method suggests unbalanced monitors. 
-
-{code}
+```scala
 
     private final MatchTreeMaking.TreeMakers.TypeTestTreeMaker typeTest$lzycompute$1(ObjectRef typeTest$lzy$1, VolatileByteRef bitmap$0$1) {
         MatchTranslation.MatchTranslator.BoundTree boundTree = this;
@@ -44,9 +42,8 @@ Decompiling the lazy compute method suggests unbalanced monitors.
             return (MatchTreeMaking.TreeMakers.TypeTestTreeMaker)typeTest$lzy$1.elem;
         }
     }
-{code}
-
-{code}
+```
+```scala
   private final scala.tools.nsc.transform.patmat.MatchTreeMaking$TreeMakers$TypeTestTreeMaker typeTest$lzycompute$1(scala.runtime.ObjectRef, scala.runtime.VolatileByteRef);
     Code:
        0: aload_0
@@ -99,4 +96,4 @@ Decompiling the lazy compute method suggests unbalanced monitors.
     Exception table:
        from    to  target type
            4    68    76   any
-{code}
+```

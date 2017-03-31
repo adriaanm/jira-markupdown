@@ -5,8 +5,7 @@ I see two solutions to this limitation:
 - Remove the cyclic reference check and add a maximum type alias/projection depth similar to the template instantiation depth limit found in many C++ compilers (including GCC, -ftemplate-depth-n).
 
 - Enhance the cyclic reference checker, for example if the path contains A[Int]#Type and A[Float]#Type it shouldn't be considered a cyclic reference.
-
-{code}
+```scala
 object ProjTest {
   trait MInt { type Type[T <: MInt] }
   trait _0 extends MInt { type Type[T <: MInt] = Boolean }
@@ -19,4 +18,4 @@ object ProjTest {
   type X2 = _1#Type[_0]  // Ok
   type X3 = _2#Type[_2]  // Compiler error, illegal cyclic reference involving type Type
 }
-{code}
+```

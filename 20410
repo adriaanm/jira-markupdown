@@ -1,8 +1,7 @@
 Details came from https://youtrack.jetbrains.com/issue/SCL-4504#comment=27-1913754
 
 It compiles and runs with 'override implicit' or 'implicit override', but 'override implicit' should not be allowed based on the spec. https://www.scala-lang.org/files/archive/spec/2.11/05-classes-and-objects.html#class-definitions
-
-{code}
+```scala
 object HelloWorld {
 
   case class SomeInt(x: Int)
@@ -18,12 +17,11 @@ object HelloWorld {
     print(sample.path)
   }
 }
-{code}
-
-{quote}
+```
+```
 
 It looks like scalac doesn't follow language specification in this particular case:
 https://www.scala-lang.org/files/archive/spec/2.11/05-classes-and-objects.html#class-definitions
 
 implicit modifier relates to the whole class parameter clause, and override is part of a single class parameter. I would rather add an error highlighting to such usage.
-{quote}
+```

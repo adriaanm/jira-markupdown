@@ -1,5 +1,5 @@
 No, this isn't doing what you think.
-{code}
+```scala
 scala> class Do(f: => Unit) { 
      |   def exec() { f } 
      | } 
@@ -14,7 +14,7 @@ res0: Do = $$anon$$1@78c4f9e6
 // right way
 scala> new Do( { println("Hello"); println("There") })
 res1: Do = Do@4ebb21ab
-{code}
+```
 Your failure to use parentheses is turning the part between the curly braces into the body of an anonymous subclass of Do.  The argument to the by-name parameter is then beloved () since scalac will insert a Unit pretty much anytime you like.
 
 This is not a bug and is probably even in the spec, but I'll leave it open for the moment in case anyone wants to throw any good ideas around.

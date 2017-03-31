@@ -1,11 +1,11 @@
-The branch at [recoveringOptimizedStability|https://github.com/magarciaEPFL/scala/compare/recoveringOptimizedStability] solves some long standing issues:
+The branch at [recoveringOptimizedStability](https://github.com/magarciaEPFL/scala/compare/recoveringOptimizedStability) solves some long standing issues:
 
-# inliner now publicizes fields only when actually inlining, [af864b0d4fcc | https://github.com/magarciaEPFL/scala/commit/af864b0d4fcc8b9e312585e1357a9ec8f0bd3e91]
+- inliner now publicizes fields only when actually inlining, [af864b0d4fcc ](https://github.com/magarciaEPFL/scala/commit/af864b0d4fcc8b9e312585e1357a9ec8f0bd3e91)
   (because previously the inliner over-eagerly made fields public, even if inlining later failed for some reason)
-# avoids inlining getters and setters, [73054f8884754edc | https://github.com/magarciaEPFL/scala/commit/73054f8884754edc57547920f9086b191e22bc24]
+- avoids inlining getters and setters, [73054f8884754edc ](https://github.com/magarciaEPFL/scala/commit/73054f8884754edc57547920f9086b191e22bc24)
   As this results in exposing a private field, which may itself prevent inlining of the caller (at best) or
   {{IllegalAccessError}} at worst.
-# The commit above also contains a safety check to consider as private, for the purposes of inlining, a public field that is presumed synthetic (due to a dollar sign in its name). 
+- The commit above also contains a safety check to consider as private, for the purposes of inlining, a public field that is presumed synthetic (due to a dollar sign in its name). 
 
 A good thing of the approach above is that all the inlinings we care about (closures) are made.
 

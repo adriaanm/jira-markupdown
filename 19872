@@ -1,5 +1,5 @@
 Running this code
-{code}
+```scala
 import reflect.runtime.currentMirror
 
 trait Baz { self: Baz1 =>
@@ -19,9 +19,9 @@ object Foo {
     constr.apply()
   }
 }
-{code}
+```
 throws an exception:
-{code}
+```scala
 Exception in thread "main" java.lang.NoSuchMethodException: Baz$Bar.<init>(Baz)
 	at java.lang.Class.getConstructor0(Class.java:2902)
 	at java.lang.Class.getDeclaredConstructor(Class.java:2066)
@@ -44,6 +44,6 @@ Exception in thread "main" java.lang.NoSuchMethodException: Baz$Bar.<init>(Baz)
 	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
 	at java.lang.reflect.Method.invoke(Method.java:606)
 	at com.intellij.rt.execution.application.AppMain.main(AppMain.java:140)
-{code}
+```
 The reason is that the `Bar` constructor takes `Baz1` as the first argument instead of `Baz`.
 Removing the self-type makes it work, but isn't an acceptable workaround in my case.

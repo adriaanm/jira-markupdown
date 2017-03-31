@@ -1,9 +1,9 @@
 I apologize for non reducing the bug yet, I can do it if needed.
-*Scenario*: I mark a tail-recursive function with @tailrec, but when I compile it I get the wrong reason why it cannot be optimized: it complains that the base case (non-recursive) is a recursive call not in tail position! If I comment out this call and replace it with a value, I get a more reasonable error: this function in fact uses _polymorphic_ tail-recursion, which according to the error is not supported (which is kind-of fine, even though in principle it should be easy to support that case as well*).
+**Scenario**: I mark a tail-recursive function with @tailrec, but when I compile it I get the wrong reason why it cannot be optimized: it complains that the base case (non-recursive) is a recursive call not in tail position! If I comment out this call and replace it with a value, I get a more reasonable error: this function in fact uses *polymorphic* tail-recursion, which according to the error is not supported (which is kind-of fine, even though in principle it should be easy to support that case as well*).
 Making the call non-polymorphic fixes indeed the problem.
 
-*Example*: Concretely, the code is the following:
-{code}
+**Example**: Concretely, the code is the following:
+```scala
   @tailrec private def usesArgAtMostOnce[S, T](f: Fun[S, T], v: Exp[_]): Boolean = {
     f match {
       case FuncExpBody(FlatMap(ExpSeq(Seq(v2)), g)) if !v2.isOrContains(v) =>
@@ -14,23 +14,23 @@ Making the call non-polymorphic fixes indeed the problem.
         //false
       case _ => false
     }
-{code}
+```
 And the error is the following:
-{code}
+```scala
 /Users/pgiarrusso/Documents/Research/Sorgenti/linqonsteroids/src/main/scala/ivm/optimization/Optimization.scala:542: could not optimize @tailrec annotated method usesArgAtMostOnce: it contains a recursive call not in tail position
 [error]         occurrences.length == 1
 [error]                            ^
 [error] one error found
-{code}
+```
 When I remove the polymorphic recursion, that code is accepted, hence the warning is as wrong as it seems. If I comment out that code location and simply return 'false' there, I get instead:
-{code}
+```scala
 
 [error] /Users/pgiarrusso/Documents/Research/Sorgenti/linqonsteroids/src/main/scala/ivm/optimization/Optimization.scala:537: could not optimize @tailrec annotated method usesArgAtMostOnce: it is called recursively with different type arguments
 [error]         usesArgAtMostOnce(g, v)
 [error]         ^
 [error] one error found
-{code}
+```
 The errors are from 2.9.2, I got essentially the same behavior from 2.9.1.
 
 *Polymorphic tail-recursion should be easy to optimize. This optimization should happen after erasure, where type parameters are irrelevant; they can only become relevant through implicit parameters, but they can be treated equally to other parameters, so not even this case is a problem.
-I'm not sure whether there would be a problem before erasure, except that one would need to modify type arguments. But at least _defining_ tail recursion in F-omega-sub (F^omega_<: ) doesn't seem to be any different from a system without polymorphism (STLC or lambda_<: ).
+I'm not sure whether there would be a problem before erasure, except that one would need to modify type arguments. But at least *defining* tail recursion in F-omega-sub (F^omega_<: ) doesn't seem to be any different from a system without polymorphism (STLC or lambda_<: ).

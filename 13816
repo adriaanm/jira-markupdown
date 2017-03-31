@@ -1,5 +1,5 @@
 When I try to compile the following code:
-{code}
+```scala
   object O {
     implicit def a(s:String):String = error("")
     implicit def a(i:Int):String = error("")
@@ -12,9 +12,9 @@ When I try to compile the following code:
       2
     }
   }
-{code}
+```
 I get the following error:
-{code}
+```scala
   > scalac -version
   Scala compiler version 2.7.2.RC3 -- Copyright 2002-2008, LAMP/EPFL
   > scalac ImportOverloadedTest.scala
@@ -24,7 +24,7 @@ I get the following error:
       2
       ^
   one error found
-{code}
+```
 I would have expected the implicit function, a::Int->String (which is imported in the body of the v::String declaration) to be used to convert the literal value of 2 to a String.
 
 If I change the import statement to "import O._" and remove the b::Int -> String function, the code compiles. It also compiles if I just change the name of the a::String -> String function. 

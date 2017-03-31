@@ -1,4 +1,4 @@
-This is related to SI-5648, warnings on comparisons.
+This is related to scala/bug#5648, warnings on comparisons.
 
 There is one edge-casey bug: (new Kase() == kaseAlias) causes the "fresh object" warning.  It should be either no warning or "unrelated types" warning, depending on the types.
 
@@ -7,8 +7,7 @@ The similar comparison (finalKase == kaseAlias) will emit "always yield false" (
 The useful improvement would be to handle comparisons between case classes again, since if the case classes are different they can't satisfy the synthetic equals. (Some(1) == Thing(1))
 
 A couple of related improvements would be to tighten up "fresh object" warnings, of the form (new Some(1) == None).
-
-{code}
+```scala
 scala> :paste
 // Entering paste mode (ctrl-D to finish)
 
@@ -50,7 +49,6 @@ res1: Boolean = true
 
 scala> (Some(1) == Thing(1))  // could warn
 res2: Boolean = false
-
-{code}
+```
 
 I'll prepare a pull if I can type faster than Paul.

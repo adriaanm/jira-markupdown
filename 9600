@@ -1,6 +1,5 @@
 I can now see why this only crashes in SBT. SBT has a custom compiler phase to record the API fingerprint of each file.
-
-{code}
+```scala
 pool-4-thread-1@4427, prio=5, in group 'main', status: 'RUNNING'
 	  at scala.collection.MapLike$class.default(MapLike.scala:228)
 	  at scala.collection.AbstractMap.default(Map.scala:59)
@@ -74,11 +73,10 @@ pool-4-thread-1@4427, prio=5, in group 'main', status: 'RUNNING'
 	  at scala.collection.Iterator$class.foreach(Iterator.scala:743)
 	  at scala.collection.AbstractIterator.foreach(Iterator.scala:1174)
 	  at xsbt.API$ApiPhase.run(API.scala:34)
-{code}
+```
 
 At the stack trace above, it is enumerating the members of the type:
-
-{code}
+```scala
 java.util.Vector[E]#Itr
         with java.util.ListIterator[E] {
   final private[package util] val this$0: java.util.Vector[_]
@@ -90,9 +88,8 @@ java.util.Vector[E]#Itr
   def set(x$1: E): Unit
   def add(x$1: E): Unit
 }
-{code}
-
-{code}
+```
+```scala
     private class Itr implements Iterator<E> {
         int cursor;       // index of next element to return
         int lastRet = -1; // index of last element returned; -1 if no such
@@ -132,11 +129,10 @@ java.util.Vector[E]#Itr
                 throw new ConcurrentModificationException();
         }
     }
-{code}
+```
 
 Decompiled:
-
-{code}
+```scala
 class java.util.Vector$Itr extends java.lang.Object implements java.util.Iterator{
     int cursor;
     int lastRet;
@@ -158,19 +154,18 @@ class java.util.Vector$1 extends java.lang.Object implements java.util.Enumerati
     public boolean hasMoreElements();
     public java.lang.Object nextElement();
 }
-{code}
+```
 
-For reasons unknown to me, {{Itr}} accepts {{Vector$1}} as a constructor parameter.
+For reasons unknown to me, `Itr` accepts `Vector$1` as a constructor parameter.
 
-That's considered to be part of the API by SBT. The type ref {{java.util.Vector$1}} is normalized, which triggers its classfile to be read in order to see it has type parameters.
+That's considered to be part of the API by SBT. The type ref `java.util.Vector$1` is normalized, which triggers its classfile to be read in order to see it has type parameters.
 
 During classfile parsing, it encounters the signature: Ljava.lang.Object;Ljava.util.Enumeration<TE;>;
 
 We expect a type parameter named 'E'. None is available.
 
 Really strange. Is the bytecode for Vector* consistent?
-
-{code}
+```scala
 java.util.Vector$Itr(java.util.Vector, java.util.Vector$1);
   Code:
    Stack=2, Locals=3, Args_size=3
@@ -195,7 +190,6 @@ public class java.util.Vector extends java.util.AbstractList implements java.uti
     public java.util.Vector(int);
     public java.util.Vector();
     public java.util.Vector(java.util.Collection);
-
-{code}
+```
 
 What constructor is being called?

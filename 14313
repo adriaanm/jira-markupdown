@@ -1,13 +1,13 @@
 Running the following code (compiled with -optimise)
-{code}
+```scala
 class A extends Cloneable { @inline final def foo = clone() }
 object Test {
 val x = new A
 def main(args: Array[String]) = x.foo
 }
-{code}
+```
 produces this error:
-{code}
+```scala
 java.lang.IllegalAccessError: tried to access method java.lang.Object.clone()Ljava/lang/Object; from class Test$$
 	at Test$$.main(Test.scala:4)
 	at Test.main(Test.scala)
@@ -23,6 +23,5 @@ java.lang.IllegalAccessError: tried to access method java.lang.Object.clone()Lja
 	at scala.tools.nsc.ObjectRunner$$.run(ObjectRunner.scala:33)
 	at scala.tools.nsc.MainGenericRunner$$.main(MainGenericRunner.scala:138)
 	at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
-
-{code}
+```
 The problem seems to be that clone is protected (not private).

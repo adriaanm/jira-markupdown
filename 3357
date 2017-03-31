@@ -1,18 +1,18 @@
 Here are more issues.
-{code}
+```scala
 scala> new collection.mutable.ArraySeq[Float](5) mkString
 res0: String = nullnullnullnullnull
 
 scala> new collection.mutable.ArraySeq[Float](5) map (_.toString) mkString
 res1: String = 0.00.00.00.00.0
-{code}
-Looks impossible, doesn't it.  For the map the compiler creates a Float => String and then dutifully unboxes the nulls.  (Thus my "see also SI-602.")
-{code}
+```
+Looks impossible, doesn't it.  For the map the compiler creates a Float => String and then dutifully unboxes the nulls.  (Thus my "see also scala/bug#602.")
+```scala
 scala> scala.runtime.BoxesRunTime.unboxToFloat(null)
 res2: Float = 0.0
-{code}
+```
 What do we lose if the size of the collection is divorced from the length of the array such that primitive array elements don't exist until they're initialized? An ArraySeq[Float] is then defined as a sequence of non-null Floats and new ArraySeq[Float](10) has size 0, with some other field like "capacity" reflecting the size of the underlying array.  Seems to pretty much work for StringBuilder.
-{code}
+```scala
 scala> new StringBuilder("")
 res3: StringBuilder = StringBuilder()
 
@@ -21,4 +21,4 @@ res4: Int = 16
 
 scala> res3.size 
 res5: Int = 0
-{code}
+```

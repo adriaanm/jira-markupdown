@@ -1,6 +1,5 @@
 I see two problems here. Let's look at them with this minimization:
-
-{code}
+```scala
 trait ApiUniverse {
   protected trait TreePrinter
   protected def newCodePrinter: TreePrinter
@@ -23,13 +22,12 @@ trait Okay extends Global {
   override def newCodePrinter /*: super[InternalSymbolTable].TreePrinter !!! */
     = super.newCodePrinter
 }
-{code}
+```
 
 Firstly, CodePrinter is not designed for reuse in a virtual-class-like setup. It's a class, rather than a trait, and as such can never conform to `Global.this.TreePrinter`, which is a subclass of `SymbolTable.this.TreePrinter`.
 
 Secondly, return type inference based on inheritance lets you express a type that isn't expressible directly.
-
-{noformat}
+```
 qscalac -Xprint:typer -uniqid sandbox/t8777.scala 2>&1 | egrep 'Printer|trait|class' | grep -v init
  found   : Broke#7652.this.TreePrinter#14744
  required: Broke#7652.this.TreePrinter#15802
@@ -46,6 +44,6 @@ qscalac -Xprint:typer -uniqid sandbox/t8777.scala 2>&1 | egrep 'Printer|trait|cl
     override def newCodePrinter#15809: Broke#7652.this.TreePrinter#15802 = Broke#7652.super.<newCodePrinter: error>
   abstract trait Okay#7757 extends Global#7682 {
     override def newCodePrinter#25163: Okay#7757.this.TreePrinter#14744 = Okay#7757.super.newCodePrinter#14745
-{noformat}
+```
 
 Note the reference to `Okay#7757.this.TreePrinter#14744` in the last line above.

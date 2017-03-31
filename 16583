@@ -1,6 +1,5 @@
 The following crashes:
-
-{code}
+```scala
 object Client {
    sealed trait ConfigLike {
       def clientID:     Int
@@ -19,11 +18,10 @@ object Client {
       def build : Config = new Config( clientID )
    }
 }
-{code}
+```
 
 The crash is as follows:
-
-{code}
+```scala
 java.lang.AssertionError: assertion failed: Config.this.build(new Client.this.ConfigBuilder)
 	at scala.tools.nsc.typechecker.NamesDefaults$class.baseFunBlock$1(NamesDefaults.scala:228)
 	at scala.tools.nsc.typechecker.NamesDefaults$class.transformNamedApplication(NamesDefaults.scala:337)
@@ -283,10 +281,9 @@ java.lang.AssertionError: assertion failed: Config.this.build(new Client.this.Co
 	at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:196)
 	at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:188)
 	at java.awt.EventDispatchThread.run(EventDispatchThread.java:122)
-{code}
+```
 
 The actual mistake is that the private constructor of `ConfigBuilder` cannot be invoked, the corrected code would be
-
-{code}
+```scala
     final class ConfigBuilder private[Client] () extends ConfigLike ...
-{code}
+```

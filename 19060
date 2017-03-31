@@ -1,6 +1,5 @@
 From Eclipse Error Log:
-
-{code}
+```scala
 java.lang.AssertionError: assertion failed: 
      while compiling: E:\_My\git\CompStak-services\comps-input\src\test\scala\com\compstak\input\validation\validators\advanced\YearValidatorSpec.scala
         during phase: jvm
@@ -219,11 +218,10 @@ how can getCommonSuperclass() do its job if different class symbols get the same
 	at org.eclipse.ui.actions.BuildAction$1.runInWorkspace(BuildAction.java:305)
 	at org.eclipse.core.internal.resources.InternalWorkspaceJob.run(InternalWorkspaceJob.java:38)
 	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:53)
-{code}
+```
 
 This was caused by this file:
-
-{code}
+```scala
 // File comps-input/src/main/scala/com/compstak/input/entity/ex/package.scala
 package com.compstak.input.entity
 
@@ -232,7 +230,7 @@ package object ex {
 
   case class IncorrectSheetException(variance: SheetMappingVariance) extends Exception(variance.toString)
 }
-{code}
+```
 
 (where {{SheetMappingVariance}} in a member of package {{com.compstak.input.entity}})
 

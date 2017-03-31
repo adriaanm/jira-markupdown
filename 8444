@@ -1,12 +1,12 @@
 That's interesting.  I'm sorry to say there must be something is wrong, either in our line numbers, version string creation, correspondence to actual source code, or... any ideas?
-{noformat}
+```
 	at scala.reflect.internal.Symbols$Symbol.makeSerializable(Symbols.scala:1473)
 	at scala.tools.nsc.typechecker.Typers$Typer.typedModuleDef(Typers.scala:1705)
-{noformat}
+```
 In ffaa3cb89e, that call to makeSerializable is on line 1722, not 1705.
 
 If I chase it backward, it doesn't look like it has ever been at 1705, at least not in a long time.  This is the 2.10.x branch, it's similar on master.
-{code}
+```scala
 % for sha in $(git log --format=%h -n20 -- src/compiler/scala/tools/nsc/typechecker/Typers.scala) ; \
   do echo "$sha $(git show $sha:src/compiler/scala/tools/nsc/typechecker/Typers.scala |grep -n makeSerializable)"; \
   done
@@ -31,4 +31,4 @@ ea0d891f23 1708:              clazz.makeSerializable()
 e9c01dd1ce 1709:              clazz.makeSerializable()
 255e096f1a 1709:              clazz.makeSerializable()
 41dfb16121 1709:              clazz.makeSerializable()
-{code}
+```

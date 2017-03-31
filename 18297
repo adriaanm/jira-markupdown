@@ -1,6 +1,5 @@
 Scala Migrations [1] has the following snippet in Migration.scala [2]
-
-{code}
+```scala
   private def indexNameFor(tableName: String,
                            columnNames: Array[String],
                            options: IndexOption*): (String, List[IndexOption]) = {
@@ -22,15 +21,14 @@ Scala Migrations [1] has the following snippet in Migration.scala [2]
       opts = opts filter { _ ne opt }
       unique = true
     }
-{code}
+```
 
 2.11.0 gives the following warning:
-
-{code}
+```scala
 [warn] /var/lib/jenkins/tomcat7/jenkins/jobs/scala-migrations-gerrit/workspace/src/main/scala/com/imageworks/migration/Migration.scala:357: local var name in method addIndex is never set - it could be a val
 [warn]     var (name, opts) = indexNameFor(tableName, columnNames, options: _*)
 [warn]          ^
-{code}
+```
 
 Since `opts` is modified, I cannot make the `var` a `val` without other changes, such as copying `opts` to `os` and then modifying that.
 

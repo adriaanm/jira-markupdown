@@ -3,7 +3,7 @@ Well, I got it to work for the example, but can't figure out what to do for nest
 FWIW, here's my patch as-is (including debugging code)
 
 replace the original case for TypeApply(...) for isInstanceOf on Arrays in Erasure's preTransformer by:
-{code}
+```scala
           case Apply(fn @ TypeApply(instanceOfCall @ Select(qual, name), args @ List(arg)), List()) 
                 if (fn.symbol == Any_isInstanceOf || fn.symbol == Object_isInstanceOf) &&
                    unboundedGenericArrayLevel(arg.tpe) > 0 =>
@@ -24,4 +24,4 @@ replace the original case for TypeApply(...) for isInstanceOf on Arrays in Erasu
               }
             println(tree2)
             typedPos(tree.pos)(tree2)
-{code}
+```

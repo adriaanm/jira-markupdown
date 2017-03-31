@@ -1,5 +1,5 @@
 Compile this code with both keys "-optimise" and "-target:jvm-1.7":
-{code}
+```scala
 case class RichString[T](string: String, rich: List[(Int, T)]) {
   def apply(index: Int): (Char, T) =
     (string(index), rich.takeWhile(_._1 <= index).last._2)
@@ -8,11 +8,10 @@ object Main {
   def main(args: Array[String]): Unit =
     println(RichString("qwe", List((1, 1))));
 }
-{code}
+```
 
 Then run it and you get this error message:
-
-{noformat}
+```
 java.lang.VerifyError: Uninitialized object exists on backward branch 54
 Exception Details:
   Location:
@@ -55,7 +54,7 @@ Exception Details:
         at scala.tools.nsc.MainGenericRunner.process(MainGenericRunner.scala:94)
         at scala.tools.nsc.MainGenericRunner$.main(MainGenericRunner.scala:103)
         at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
-{noformat}
+```
 
 Scala version is 2.11.1.
 java -version is:

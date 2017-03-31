@@ -1,19 +1,19 @@
 A related problem (with respect to r22157) is that the definition of `TraversableLike.toStream` loops.
 
 It is defined as:
-{code}
+```scala
 def toStream: Stream[A] = Stream.empty[A] ++ thisCollection
-{code}
+```
 
 But, the definition of `Stream.++` is:
-{code}
+```scala
   def ++[...](that: TraversableOnce[B]) ... =
    if (isEmpty) that.toStream
    ...
-{code}
+```
 
 `IterableLike` overrides toStream to be Iterator.toStream, so I don't know where this would show up other than a custom subclass of Traversable:
-{code}
+```scala
 scala> class Empty extends Traversable[Nothing] { def foreach[T](f: Nothing => T) {} }
 defined class Empty
 
@@ -25,4 +25,4 @@ java.lang.StackOverflowError
         at scala.collection.immutable.Stream.$$plus$$plus(Stream.scala:143)
         at scala.collection.TraversableLike$$class.toStream(TraversableLike.scala:701)
         at Empty.toStream(<console>:5)
-{code}
+```

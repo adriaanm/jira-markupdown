@@ -1,6 +1,5 @@
 The fork join execution context loses fatal exceptions.  It should allow them to be handled by the threads uncaught exception handler, so that they can be logged.  But it doesn't, they get lost, not reported anywhere.  Here is an example in the repl:
-
-{noformat}
+```
 scala> import scala.concurrent._
 import scala.concurrent._
 
@@ -9,11 +8,10 @@ ec: scala.concurrent.ExecutionContextExecutor = scala.concurrent.impl.ExecutionC
 
 scala> val f = Future[Unit](throw new NotImplementedError())(ec)
 f: scala.concurrent.Future[Unit] = scala.concurrent.impl.Promise$DefaultPromise@3ec9e1f9
-{noformat}
+```
 
 Nothing happens.  What I expected is for my NotImplementedError to be at least handled by the uncaught exception handler, and logged.  Now, I know the uncaught exception handler is there and working:
-
-{noformat}
+```
 scala> val f = Future[Unit](Thread.currentThread.getUncaughtExceptionHandler.uncaughtException(Thread.currentThread, new NotImplementedError()))(ec)
 f: scala.concurrent.Future[Unit] = scala.concurrent.impl.Promise$DefaultPromise@4aac53a8
 Exception in thread "ForkJoinPool-1-worker-1" scala.NotImplementedError: an implementation is missing
@@ -27,11 +25,10 @@ Exception in thread "ForkJoinPool-1-worker-1" scala.NotImplementedError: an impl
 	at scala.concurrent.forkjoin.ForkJoinPool$WorkQueue.runTask(ForkJoinPool.java:975)
 	at scala.concurrent.forkjoin.ForkJoinPool.runWorker(ForkJoinPool.java:1478)
 	at scala.concurrent.forkjoin.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:104)
-{noformat}
+```
 
 And if I use a different execution context, such as a Java executor, it works as expected:
-
-{noformat}
+```
 scala> val es = java.util.concurrent.Executors.newSingleThreadExecutor
 es: java.util.concurrent.ExecutorService = java.util.concurrent.Executors$FinalizableDelegatedExecutorService@10cd508f
 
@@ -49,4 +46,4 @@ Exception in thread "pool-1-thread-1" scala.NotImplementedError: an implementati
 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1110)
 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:603)
 	at java.lang.Thread.run(Thread.java:722)
-{noformat}
+```

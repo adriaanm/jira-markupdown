@@ -7,15 +7,14 @@ Not sure what you did on this already, but here are some things I came up with.
 
 If `SI-4` is correct, there are two solutions:
  1. Users just have to put code where performance is important into a method due to the REPL's wrapping.  If we use the above definition of `cfor`, the following works fine:
-{code}
+```scala
 def x = { var sum = 0; cfor[Int](0, _<1000000000, _+1) { sum += _ }; sum }
 x
-{code}
+```
  2. The REPL puts everything in methods and lazy vals and never in a constructor.
 
 Here is the code I reduced it to for outside the REPL. `line4_object.res1` below can be changed to a `def` and then `1000000` can be changed to `1000000000` and it runs at the same speed as the other one.
-
-{code}
+```scala
 object line2_object {
   var sum = 0
 }
@@ -65,6 +64,6 @@ object Test
     printTime
   }
 }
-{code}
+```
 
 (If there is no `x`, `cfor` doesn't get run for some variations.)

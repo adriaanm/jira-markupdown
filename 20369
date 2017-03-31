@@ -1,8 +1,7 @@
 When one uses zipWithIndex on a TreeMap, and the latter was created using a non-default ordering, the resulting map again receives the default ordering (coming from the implicit parameter).
 
 The result is something unexpected, from the point of view of the end user: the map's ordering is suddenly lost. An artificial example from REPL which illustrates the issue.
-
-{noformat}
+```
 scala> val reversedIntOrdering = implicitly[Ordering[Int]].reverse
 reversedIntOrdering: scala.math.Ordering[Int] = scala.math.Ordering$$anon$4@2e38d44e
 
@@ -14,11 +13,10 @@ scala> treeMap.zipWithIndex.foreach(println)
 ((3,b),2)
 ((4,c),1)
 ((5,d),0)
-{noformat}
+```
 
 What is even funnier, if the map loses its TreeMap type, the result is "regular" again:
-
-{noformat}
+```
 scala> val anyMap: Map[Int, String] = treeMap
 anyMap: Map[Int,String] = Map(5 -> d, 4 -> c, 3 -> b, 2 -> a)
 
@@ -27,4 +25,4 @@ scala> anyMap.zipWithIndex.foreach(println)
 ((4,c),1)
 ((3,b),2)
 ((2,a),3)
-{noformat}
+```

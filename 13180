@@ -1,6 +1,5 @@
 The !SyncChannel implementation is broken. Consider the following program:
-
-{code}
+```scala
 import scala.concurrent._
 import scala.concurrent.ops._
 
@@ -8,7 +7,7 @@ object Program extends Application {
   val c = new SyncChannel[unit]
   par({ c.write(()) }, { Thread.sleep(1000); c.read })
 }
-{code}
+```
 
 The write call will wait forever.
 

@@ -1,6 +1,5 @@
 The bug is in the mechanism in the typechecker to defer macro expansion involving undetermined type parameters until the enclosing tree is typechecked and the type params are fully inferred.
-
-{code}
+```scala
   /** Performs macro expansion on all subtrees of a given tree.
    *  Innermost macros are expanded first, outermost macros are expanded last.
    *  See the documentation for `macroExpand` for more information.
@@ -20,9 +19,8 @@ The bug is in the mechanism in the typechecker to defer macro expansion involvin
           tree
       })
     }.transform(expandee)
-{code}
-
-{code}
+```
+```scala
   /** Without any restrictions on macro expansion, macro applications will expand at will,
    *  and when type inference is involved, expansions will end up using yet uninferred type params.
    *
@@ -38,6 +36,6 @@ The bug is in the mechanism in the typechecker to defer macro expansion involvin
   var hasPendingMacroExpansions = false
   private val forced = perRunCaches.newWeakSet[Tree]
   private val delayed = perRunCaches.newWeakMap[Tree, scala.collection.mutable.Set[Int]]()
-{code}
+```
 
 This code assumes that the enclosing expression contains the exact tree, not copies theroef. Names/defaults copies trees iirc

@@ -1,15 +1,15 @@
 Just upvoted this. It's been quiet for a long time now.
 Our example: We have XML like this:
-{code}
+```scala
 <dfdl:assert testKind="pattern"><![CDATA[(?x) # free form regex
 abc # and a comment
 #  more comment
 def # that's all
 </dfdl:assert>
-{code}
+```
 
 We have unit tests where that appears as literal XML text in a scala/junit-like test. 
-{code}
+```scala
  @Test def testRegexWithFreeFormAndComments3() = {
     val testSuite =
       <tdml:testSuite suiteName="theSuiteName" xmlns:tns={ tns } xmlns:tdml={ tdml } xmlns:dfdl={ dfdl } xmlns:xsd={ xsd } xmlns:xs={ xsd } xmlns:xsi={ xsi }>
@@ -40,10 +40,10 @@ abcd # a comment
     val ts = new DFDLTestSuite(testSuite)
     ts.runOneTest("testRegex")
   }
-{code}
+```
 Obviously this regex language, and many other embedded languages, must have the whitespace preserved (especially line endings).
 The workaround is to put PCData nodes in explicitly:
-{code}
+```scala
  @Test def testRegexWithFreeFormAndComments3() = {
     val cdataText = """(?x) # free form
 abcd # a comment
@@ -76,5 +76,5 @@ abcd # a comment
     val ts = new DFDLTestSuite(testSuite)
     ts.runOneTest("testRegex")
   }
-{code}
+```
 But.... then that fails because we pretty print these test suites to temp files, and the pretty printer doesn't preserve the contents of the PCData nodes either!

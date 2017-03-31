@@ -2,17 +2,13 @@ missing  scanLeft in Iterator (cf. scanLeft in TraversableLike)
 
 reduceLeft is not applicable e.g. if an Iterator is endless,
 but scanLeft could give an Iterator with intermediate results
-
-	 
-{code}
+```scala
 def scanLeft[B](z: B)(op: (B, A) => B):Iterator[B]
-{code}
+```
  
 
 Example: sum(1/k, k=1,.. )
-
-	
-{code}
+```scala
 // today
 
 val res0 = Iterator.from(1).map(1.0/_)
@@ -31,5 +27,4 @@ val scanLeft = Iterator.from(1).map(1.0/_).scanLeft(0.0)(_+_)
 
 // if this Iterator is endless, you can define
 def scanLeft[B](z:B)(op: (B, A) => B):Iterator[B] = Iterator.iterate(z)(op(_,next))
-
-{code}
+```

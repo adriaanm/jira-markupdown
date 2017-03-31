@@ -1,12 +1,12 @@
 It's the runner's usage of the boot classloader for speed.
-{noformat}
+```
 % scala3 TestClass
 Foo
 java.lang.ClassNotFoundException: Foo
 % scala3 -nobootcp TestClass
 Foo
 Foo
-{noformat}
+```
 The fact that it works under -optimise but fails without it highlights an interesting and heretofore unknown (at least, I've never heard anyone mention it) risk of inlining. If you inline code from one class into another class, and those classes wind up being loaded from different classloaders, you can change the meaning of the code. A call to Class.forName(name) will load from the classloader of the callee rather than the classloader of the caller.
 
 This means that the one-argument form of Class.forName must never be inlined; or it must first be expanded to the three argument form. I will open a separate ticket about this.

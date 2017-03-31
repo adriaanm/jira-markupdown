@@ -1,6 +1,6 @@
 I think it's a bug if x.dealias eq x on an AliasTypeRef; you shouldn't have to check at every call site that calling dealias on an alias makes progress. Which is not to say we should not play defense when necessary. But we should not be creating alias cycles.
 
 This line suggests that normalize should indeed be called, and it also doesn't look at all sensible to me that super.dealias when the condition is hit (which is not often, apparently.) By inspection, it looks like it will only mask bugs.
-{code}
+```scala
     override def dealias    = if (typeParamsMatchArgs) betaReduce.dealias else super.dealias
-{code}
+```

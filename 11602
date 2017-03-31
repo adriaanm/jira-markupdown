@@ -1,11 +1,10 @@
 I took a look at this one thinking it would be low-hanging fruit, but it is actually pretty subtle. 
-
-{code}
+```scala
       def typedPackageDef(pdef0: PackageDef) = {
         val pdef = treeCopy.PackageDef(pdef0, pdef0.pid, pluginsEnterStats(this, pdef0.stats))
         val pid1 = typedQualifier(pdef.pid).asInstanceOf[RefTree]
         assert(sym.moduleClass ne NoSymbol, sym)
-{code}
+```
 
 When we typecheck `p.free` with `typedQualifer`, we end up with a reference to `p.package.free`, a `Select` rather than `RefTree`.
 

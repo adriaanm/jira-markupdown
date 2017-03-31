@@ -1,6 +1,5 @@
 Indeed, this changed:
-
-{code}
+```scala
 package p {
   class Foo
   object `package` {
@@ -11,11 +10,10 @@ package p {
     def bar(implicit f: Foo): Any = implicitly[Foo]
   }
 }
-{code}
+```
 
 I think I remember why:
-
-{noformat}
+```
 % git show 9aa6ded8e01179e7d55144de273b39f3a0b2d3ec --statcommit 9aa6ded8e01179e7d55144de273b39f3a0b2d3ec
 Author: Jason Zaugg <jzaugg@gmail.com>
 Date:   Thu Nov 22 14:20:18 2012 +0100
@@ -74,8 +72,7 @@ package p {
     def bar(implicit f: p.Foo): Any = scala.this.Predef.implicitly[p.Foo](p.`package`.foo)
   }
 }
-
-{noformat}
+```
 
 Failing is a lesser WTF than 2.10.3 which fell back to the implicit in the companion-scope (which includes package objects of the prefixes of the sought type, unfortunately!)
 

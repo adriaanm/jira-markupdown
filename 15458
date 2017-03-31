@@ -1,8 +1,7 @@
 Reversing large strings with `StringBuilder` is quasi-broken.
 
 If we start a JVM with `-Xmx1G` and run the following:
-
-{code}
+```scala
 object TooMuch {
   def tooMuch(s: StringBuilder, n:Int) {
     println(n);
@@ -14,15 +13,14 @@ object TooMuch {
     tooMuch(sb,0)
   }
 }
-{code}
+```
 
 In 2.8.0.RC6, it dies at 23 for an initial string of length 7, and at 22 for length 8.  This means we can store and manipulate only strings of length 7*2^(23)^ = 56M when using reverse despite having 1G of memory.
 
 In contrast, in 2.7.7, it dies after 8*2^(25)^ = 256M (as we'd expect, since chars are length 2, and it has to double in size to get to 26).
 
 The problem is highlighted by the stack trace:
-
-{code}
+```scala
 Exception in thread "main" java.lang.OutOfMemoryError: Java heap space
   at java.lang.Integer.valueOf(Integer.java:625)
   at scala.runtime.BoxesRunTime.boxToInteger(Unknown Source)
@@ -34,11 +32,10 @@ Exception in thread "main" java.lang.OutOfMemoryError: Java heap space
   at TooMuch$$.tooMuch(TooMuch.scala:4)
   at TooMuch$$.main(TooMuch.scala:9)
   at TooMuch.main(TooMuch.scala)
-{code}
+```
 
 Zips and boxed integers on reverse are probably not something that should be used for high-performance string assembly.  I think the offending code is this (`StringBuilder.scala:514`)
-
-{code}
+```scala
     for ((i, j) <- 0 until half zip (count - 1 to half by -1)) {
       if (array(i).isSurrogate && array(i + 1).isSurrogate)
         surrogates += ((j - 1, j))
@@ -48,14 +45,12 @@ Zips and boxed integers on reverse are probably not something that should be use
       swap(i, j)
     }
     surrogates foreach (swap _).tupled
-        
-{code}
+```
 
 In addition to being inefficient, this code has a bug at the join point (i.e. if half-1 and half are the two parts of a surrogate, they'll be added twice).
 
 How about something like this (warning, only lightly tested):
-
-{code}
+```scala
     var i = 0
     var j = count-1
     var fixedL,fixedR = false
@@ -79,6 +74,6 @@ How about something like this (warning, only lightly tested):
       j -= 1
     }
     if (fixedL && fixedR && j<i) swap(i,j)
-{code}
+```
 
 `surrogates` and `half` would no longer be needed in the method; `mirror` is already left over from something else.

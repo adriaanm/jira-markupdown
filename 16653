@@ -1,4 +1,4 @@
-{code}
+```scala
 class CompilerHang {
   trait TC[M[_]]
   trait S[A]
@@ -7,11 +7,10 @@ class CompilerHang {
   def breakage[F[_] : TC] = 0
   breakage  // type checker doesn't terminate, should report inference failure
 }
-{code}
+```
 
 This gives SOE with the repeated section:
-
-{code}
+```scala
 	at scala.tools.nsc.Global$$anon$1.inferImplicit(Global.scala:401)
 	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$applyImplicitArgs$1.apply(Typers.scala:120)
 	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$applyImplicitArgs$1.apply(Typers.scala:115)
@@ -31,11 +30,10 @@ This gives SOE with the repeated section:
 	at scala.tools.nsc.typechecker.Implicits$ImplicitSearch.bestImplicit(Implicits.scala:1157)
 	at scala.tools.nsc.typechecker.Implicits$class.inferImplicit(Implicits.scala:67)
 	at scala.tools.nsc.Global$$anon$1.inferImplicit(Global.scala:401)
-{code}
+```
 
 Similar code without a type constructor as a type parmaeter reports the divergent implicit failure correctly:
-
-{code}
+```scala
 class DivergingImplicitReported {
   trait TC[M]
   trait S
@@ -44,6 +42,6 @@ class DivergingImplicitReported {
   def breakage[F: TC] = 0
   breakage // correct: diverging implicit expansion
 }
-{code}
+```
 
 It looks like a pathological case, but it's based on some real life implicits from Scalaz. Possibly the underlying problem of: https://scala-ide-portfolio.assembla.com/spaces/scala-ide/tickets/1000674

@@ -1,6 +1,5 @@
 This diff might lead the investigation in the right direction:
-
-{noformat}
+```
 git diff
 diff --git a/src/compiler/scala/tools/nsc/symtab/classfile/ICodeReader.scala b/src/compiler/scala/tools/nsc/symtab/classfile/ICodeReader.scala
 index bd1fa4e..e1583b1 100644
@@ -19,16 +18,15 @@ index bd1fa4e..e1583b1 100644
 -    sym
 +    sym.filter(_.isModule == module)
    }
-{noformat}
+```
 
 That gets as far as a new crash:
-
-{noformat}
+```
 Exception in thread "main" java.lang.AssertionError: assertion failed:
   Different class symbols have the same bytecode-level internal name:
      name: p1/Implicits$RichFunction1
    oldsym: p1.Implicits$RichFunction1
   tracked: p1.Implicits$RichFunction1
-{noformat}
+```
 
 The problem is that the module and the factory method from the implicit class have the same name.

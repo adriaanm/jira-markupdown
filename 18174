@@ -1,15 +1,13 @@
 This is a regression; it works fine in 2.10.0 but is broken in 2.10.1.
 
 Given this macro definition which does nothing but resetLocalAttrs and then typeCheck the result:
-
-{noformat}
+```
 def noop[A](expr: A): A = macro noopImpl[A]  
 def noopImpl[A](c: Context)(expr: c.Expr[A]): c.Expr[A] = c.Expr(c.typeCheck(c.resetLocalAttrs(expr.tree)))
-{noformat}
+```
 
 If you try to use it you'll get an error:
-
-{noformat}
+```
 scala> noop(List(1) match { case Nil => 0; case (x::xs) => x })
 error: exception during macro expansion:
 scala.reflect.macros.TypecheckException: not found: value _
@@ -28,6 +26,6 @@ scala.reflect.macros.TypecheckException: not found: value _
 	at scala.reflect.macros.runtime.Context.typeCheck(Context.scala:6)
 	at scala.reflect.macros.runtime.Context.typeCheck(Context.scala:6)
 	at monadsyntax.package$.noopImpl(package.scala:12)
-{noformat}
+```
 
-It looks like possibly related to SI-5464, but seems distinct in that it is a regression.
+It looks like possibly related to scala/bug#5464, but seems distinct in that it is a regression.

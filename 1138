@@ -1,22 +1,22 @@
 This no longer crashes:
-{code}
+```scala
 $$ scalac -Xcheck-null a.scala 
 a.scala:2: warning: potential null pointer dereference: x$$1.isInstanceOf
 case class CacheHit[+T](result : T) extends CacheLookupResult[T]
            ^
 one warning found
-{code}
+```
 I figured while I was here I might as well suppress warnings about null.isInstanceOf checks, so I implemented that (I'll check it in once it's fully tested.) Interestingly this revealed new warnings, perhaps because the search was pruned when it found the earlier one.
-{code}
+```scala
 $$ scalac -Xcheck-null a.scala 
 a.scala:2: warning: potential null pointer dereference: x$$0.result
 case class CacheHit[+T](result : T) extends CacheLookupResult[T]
            ^
-{code}
+```
 Turns out that's the synthetic unapply method, which I guess it's technically correct about even though in practice that's a spurious warning.
-{code}
+```scala
 scala> CacheHit.unapply(null)
 java.lang.NullPointerException
 	at CacheHit$$.unapply(a.scala:2)
-{code}
+```
 Should unapply methods be generated with if (x == null) None/false else { ... } up front? It looks like the pattern matcher has some logic to avoid NPE but that doesn't stop any direct unapply callers.

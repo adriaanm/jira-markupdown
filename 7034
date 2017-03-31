@@ -1,7 +1,7 @@
 That's slipperier than I'd thought.  Since there's a good chance that even if I come up with something it will not be quite what you want, I will table this for an opinion.
 
 The long and the short of it is that a subtype test is done with a nullary method type on the left and a refinement on the right.  The nullary result type is a subtype of the refined type, but the nullary method itself is not.  Poking around I tried letting those through; then the lub is correctly calculated and everything looks good for a while, until cleanup when it crashes here:
-{code}
+```scala
 
           val t: Tree = ad.symbol.tpe match {
             case MethodType(mparams, resType) =>
@@ -16,5 +16,5 @@ The long and the short of it is that a subtype test is done with a nullary metho
                 )
               }
           }
-{code}
+```
 With a match error because a TypeRef turns up.  In case that's interesting.

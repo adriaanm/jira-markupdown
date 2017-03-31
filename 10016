@@ -1,4 +1,4 @@
-{code}
+```scala
 def SI7269() {
   import scala.concurrent.{duration, future, Await, ExecutionContext}
   import scala.tools.nsc.Settings
@@ -11,6 +11,6 @@ def SI7269() {
   for(i <- 1 to tries * 10) System.setProperty(s"foo$i", i.toString)
   Await.result(compiler, duration.Duration.Inf)
 }
-{code}
+```
 
 In my particular case, it's really convenient to be able to spin up a compiler inside a process that's concurrently performing non-compiler work.  Given all of the possible usages of setProperty, this defect limits that capability.  Just looking around the JDK itself, something as simple as initializing a new java.util.Date might set a property ("user.timezone").

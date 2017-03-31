@@ -1,16 +1,15 @@
 An update of SeqLike.combinations. Now combinations(n) will return a Iterator whose elements are in lexicographical order.
 Note: the "lexicographical order" in here is not the same as general.
 For a sequence s0s1s2...s(n-1) (of type Seq[T]), without the assumption of type T is subclass of Ordered[T], we can define the weight of s(k) (0<=k<n) which determined by the sequence itself. i.e. 
-{code}
+```scala
 weight(s(k)) = 0 //if k = 0
              = weight(s(i)) if exists 0<= i < k such that s(i) == s(k)
              = max{ weight(s(i)), 0<=i <k } + 1 //else
-{code}
+```
 Then we can define a order of s(k) by weight. 
 .......
 Damn, my english is too poor to describe it clearly. Just go and see the code.
-
-{code}
+```scala
 trait SeqLike[+A, +Repr] extends IterableLike[A, Repr] { self =>
   
   /**
@@ -80,4 +79,4 @@ trait SeqLike[+A, +Repr] extends IterableLike[A, Repr] { self =>
     }
   }
 }
-{code}
+```

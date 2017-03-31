@@ -1,7 +1,6 @@
 I also notice that "currentRun.compiles(<sym>)" is broken for symbols of trees defined in annotations of top-level classes.
 class foo(x: Any) extends annotation.StaticAnnotation
-
-{code}
+```scala
 @foo({class C; ()}) trait A
 You can see the problem by calling `companionSymbolOf` during Namers:
 ~/code/scala git diff
@@ -33,7 +32,7 @@ index cac6bd2..89a2f2f 100644
 -    if (!currentRun.compiles(owner)) owner.initialize
 +    if (!owner.ownerChain.exists(_.isLocalDummy) && !currentRun.compiles(owner)) owner.init
      original.companionSymbol orElse {
-{code}
+```
 
 That diff also has an idea for a workaround for that case (which is being explored in the experimental Namer in macro paradise that calls this indirectly through `companionSymbolOf`.: 
 

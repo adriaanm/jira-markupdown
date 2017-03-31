@@ -1,5 +1,5 @@
 There are some annoying limitations in the current algorithm for applying implicit conversion, as this small example shows:
-{code}
+```scala
 scala> implicit def c1(i : Int) = new { def fn(i2 : Int) = i + i2 }
 c1: (Int)java.lang.Object{def fn(Int): Int}
 
@@ -16,5 +16,5 @@ Note that implicit conversions are not applicable because they are ambiguous:
  are possible conversion functions from Int to ?{val fn: ?}
        10.fn(3)
        ^
-{code}
+```
 Clearly this ambiguity can be resolved by taking into account the argument type in the call to "fn". Fixing this would improve the utility of implicit conversions and AFAICT it would not break any existing code. 

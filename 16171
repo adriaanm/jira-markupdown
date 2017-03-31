@@ -1,5 +1,5 @@
 The following code compiles:
-{noformat}
+```
 abstract class Power[G <: Global](intp: IMain) {
   val global: G
 }
@@ -7,9 +7,9 @@ object Power {
   def apply[G <: Global](intp: IMain { val global: G }) =
     new Power[G](intp) { val global: G = intp.global }
 }
-{noformat}
+```
 This variation, differing only by "val intp: Main" instead of "intp: Main", fails:
-{noformat}
+```
 abstract class Power2[G <: Global](val intp: IMain) {
   val global: G
 }
@@ -23,9 +23,9 @@ object Power2 {
 //     new Power2[G](intp) { val global: G = intp.global }
 //                                                ^
 // one error found
-{noformat}
+```
 As evidence, should any be needed, that there is no fundamental reason for it, this compiles:
-{noformat}
+```
 abstract class Power3[G <: Global](intp: IMain) {
   val global: G
   val intp2 = intp
@@ -34,4 +34,4 @@ object Power3 {
   def apply[G <: Global](intp: IMain { val global: G }) =
     new Power3[G](intp) { val global: G = intp.global }
 }
-{noformat}
+```

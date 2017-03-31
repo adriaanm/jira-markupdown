@@ -2,15 +2,14 @@ I'm having an issue in one of my applications where it is crashing about once ev
 
 After doing my best to reason about the problem, and still admittedly rather confused about the issue, this is the best hypothesis I can form:
 
-- There are several process-lifetime long instances of {{scala.reflect.runtime.ThreadLocalStorage$MyThreadLocalStorage}} allocated here: https://github.com/scala/scala/blob/v2.11.2/src/reflect/scala/reflect/runtime/SynchronizedTypes.scala#L53
+- There are several process-lifetime long instances of `scala.reflect.runtime.ThreadLocalStorage$MyThreadLocalStorage` allocated here: https://github.com/scala/scala/blob/v2.11.2/src/reflect/scala/reflect/runtime/SynchronizedTypes.scala#L53
 
-- Running any scala reflection code in a thread causes that thread to be permanently referenced as a key in the {{MyThreadLocalStorage}} {{ConcurrentLinkedHashMap}}: https://github.com/scala/scala/blob/v2.11.2/src/reflect/scala/reflect/runtime/ThreadLocalStorage.scala#L24
+- Running any scala reflection code in a thread causes that thread to be permanently referenced as a key in the `MyThreadLocalStorage` `ConcurrentLinkedHashMap`: https://github.com/scala/scala/blob/v2.11.2/src/reflect/scala/reflect/runtime/ThreadLocalStorage.scala#L24
 
-- After old threads worker threads die and new ones are spawned, references to the old are retained as keys in {{ConcurrentHashMap}} residing in {{ThreadLocalStorage$MyThreadLocalStorage}}; eventually, all memory is consumed and the JVM crashes.
+- After old threads worker threads die and new ones are spawned, references to the old are retained as keys in `ConcurrentHashMap` residing in `ThreadLocalStorage$MyThreadLocalStorage`; eventually, all memory is consumed and the JVM crashes.
 
-I did my best to capture a stack-trace of when these thread references are being inserted into the {{ThreadLocalStorage}}:
-
-{quote}
+I did my best to capture a stack-trace of when these thread references are being inserted into the `ThreadLocalStorage`:
+```
 promotion-api scala.reflect.runtime.ThreadLocalStorage$MyThreadLocalStorage.set(ThreadLocalStorage.scala:30)
 promotion-api scala.reflect.runtime.SynchronizedTypes$class.subsametypeRecursions_$eq(SynchronizedTypes.scala:55)
 promotion-api scala.reflect.runtime.JavaUniverse.subsametypeRecursions_$eq(JavaUniverse.scala:16)
@@ -64,11 +63,11 @@ promotion-api scala.concurrent.forkjoin.ForkJoinTask.doExec(ForkJoinTask.java:26
 promotion-api scala.concurrent.forkjoin.ForkJoinPool$WorkQueue.runTask(ForkJoinPool.java:1339)
 promotion-api scala.concurrent.forkjoin.ForkJoinPool.runWorker(ForkJoinPool.java:1979)
 promotion-api scala.concurrent.forkjoin.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:107)
-{quote}
+```
 
-(Line numbers for {{ThreadLocalStorage.scala}} are off because I'd added some code to help with debugging)
+(Line numbers for `ThreadLocalStorage.scala` are off because I'd added some code to help with debugging)
 
-It seems that {{ThreadLocalStorage}} should use a storage mechanism that allows for garbage collection of the keys, such as {{WeakHashMap}}.
+It seems that `ThreadLocalStorage` should use a storage mechanism that allows for garbage collection of the keys, such as `WeakHashMap`.
 
 I have pushed a suggested fix to github, here:
 

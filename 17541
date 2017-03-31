@@ -1,4 +1,4 @@
-{noformat}
+```
 import scala.annotation.tailrec
 
 class TailRec {
@@ -10,11 +10,10 @@ class TailRec {
     inner(0)
   } getOrElse 42
 }
-{noformat}
+```
 
-The {{inner}} function in the above code will be compiled into the following bytecode:
-
-{noformat}
+The `inner` function in the above code will be compiled into the following bytecode:
+```
   private final int inner$1(int);
     Code:
        0: aload_0       
@@ -23,10 +22,10 @@ The {{inner}} function in the above code will be compiled into the following byt
        3: iadd          
        4: invokespecial #23                 // Method inner$1:(I)I
        7: ireturn  
-{noformat}
+```
 
-Needless to say, {{invokevirtual}} != {{goto}}.  This was a _silent_ failure of the tailrec optimization.  No warnings were emitted by the compiler.  This bug was found against 2.9.2 and later reproduced against a fresh build of the 2.10.0-RC1 tag.
+Needless to say, `invokevirtual` != `goto`.  This was a *silent* failure of the tailrec optimization.  No warnings were emitted by the compiler.  This bug was found against 2.9.2 and later reproduced against a fresh build of the 2.10.0-RC1 tag.
 
-Hilariously, removing the {{getOrElse 42}} resolves the issue, and the compiler is able to compile the tail recursive call into a jump.
+Hilariously, removing the `getOrElse 42` resolves the issue, and the compiler is able to compile the tail recursive call into a jump.
 
-Given how _pervasive_ this "@tailrec inner function" idiom is within the standard library, akka, and myriads of code bases (including Precog), this seems like a very serious issue.  It basically implies that a lot of code that people _think_ is safe will actually explode for sufficiently large datasets.
+Given how *pervasive* this "@tailrec inner function" idiom is within the standard library, akka, and myriads of code bases (including Precog), this seems like a very serious issue.  It basically implies that a lot of code that people *think* is safe will actually explode for sufficiently large datasets.

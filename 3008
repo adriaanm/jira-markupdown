@@ -1,6 +1,5 @@
 After playing around a bit more, seems it might be something more basic about unification and existential types:
-
-{code}
+```scala
 // to help me see how scala is unifying two types
 scala> case class Unify[A](a : A, b : A)
 defined class Unify
@@ -17,15 +16,14 @@ y: X[java.lang.String] = X(a)
 // Let's try unify these types:
 scala> Unify(x, y)              
 res46: Unify[X[_ >: java.lang.String with Int]] = Unify(X(1),X(a))
-{code}
+```
 
 It has inferred an existential type here: X[A] forSome {type A >: String with Int}
 
 This seems wrong - the only possible value for 'type A >: String with Int' would be 'Any', and X[Any] is not a supertype of X[Int] or of X[String], since X has no variance.
 
 This is confirmed by the following errors:
-
-{code}
+```scala
 scala> Unify(x,y) : Unify[X[Any]]
 <console>:28: error: type mismatch;
  found   : X[Int]
@@ -41,13 +39,12 @@ scala> x : X[Any]
 <console>:15: error: type mismatch;
  found   : X[Int]
  required: X[Any]
-{code}
+```
 
 So why did it infer that type?
 
 If it wants to infer an existential type it seems that X[A] forSome {type A} should be a valid supertype for both. But if you try and give it a helping hand to infer this, it doesn't work:
-
-{code}
+```scala
 scala> val y : X[A] forSome {type A} = X("a")
 y: X[_] = X(a)
 
@@ -59,4 +56,4 @@ scala> Unify(x,y)
  found   : Unify[X[_ >: A(in object $$iw) with A]] where type A, type A(in object $$iw)
  required: Unify[X[_ >: A(in value res54) with A(in value res54)]] forSome { type A(in value res54); type A(in value res54) }
        val res54 = 
-{code}
+```

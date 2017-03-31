@@ -1,13 +1,12 @@
 The following code give this error when written in scala (while deploying) :
-
-{code}
+```scala
 org.hibernate.MappingException: Could not determine type for: GUID, at table: COM_MAPPING, for columns: [org.hibernate.mapping.Column(modified_by)]
-{code}
+```
 
 but not when written in Java, I assume the annotations are improperly handled by the compiler and thus at runtime hibernate gets confused. I tried several versions of Hibernate too (before I tried coding it in Java) and this happened with all the ones I tried (3.x). Here is the (simplified) Scala code :
 
 // Scala Start ----------------------------------------------------------------------
-{code}
+```scala
 @MappedSuperclass
 @TypeDef(name="GUID",typeClass=classOf[com.toto.persistence.GUIDAsStringType])
 trait RefDataEntity {
@@ -27,9 +26,8 @@ trait RefDataEntity {
   @BeanProperty
   var modifiedBy : GUID = null;
 }
-{code}
-
-{code}
+```
+```scala
 @Entity()
 @Table(name="COM_MAPPING")
 @NamedQueries(Array(
@@ -50,9 +48,8 @@ object ComEntity {
     val FIND_BY_SHORT_CODE = "ComEntity.FindByShortCode"
   }
 }
-{code}
-
-{code}
+```
+```scala
 @Entity()
 @Table(name="CUR_MAPPING")
 @NamedQueries(Array(
@@ -73,13 +70,13 @@ object CurEntity {
     val FIND_BY_SHORT_CODE = "CurEntity.FindByShortCode"
   }
 }
-{code}
+```
 // Scala End --------------------------------------------------------------------------
 
 And the Java code that does work:
 
 // Java Begin --------------------------------------------------------------------------
-{code}
+```scala
 @MappedSuperclass
 @TypeDef(name = "GUID", typeClass = com.toto.persistence.GUIDAsStringType.class)
 public abstract class RefDataEntityJ {
@@ -120,9 +117,8 @@ public abstract class RefDataEntityJ {
         this.modifiedBy = modifiedBy;
     }
 }
-{code}
-
-{code}
+```
+```scala
 @Entity()
 @Table(name = "COM_MAPPING")
 @NamedQueries({
@@ -147,9 +143,8 @@ public class ComEntityJ extends RefDataEntityJ {
         this.comName = comName;
     }
 }
-{code}
-
-{code}
+```
+```scala
 @Entity()
 @Table(name = "CUR_MAPPING")
 @NamedQueries({
@@ -174,5 +169,5 @@ public class CurEntityJ extends RefDataEntityJ {
         this.curName = curName;
     }
 }
-{code}
+```
 // Java End --------------------------------------------------------------------------

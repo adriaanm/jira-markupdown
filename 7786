@@ -1,5 +1,5 @@
 Oh yes, I can see it now. Annotating the code with return type reveals the true problem Paul refers to:
-{code}
+```scala
 scala> :paste
 // Entering paste mode (ctrl-D to finish)
 
@@ -13,6 +13,6 @@ trait LongTraversableLike[+A, +Repr <: LongTraversableLike[A, Repr]] extends Tra
 
 <console>:10: error: method toArray overrides nothing
          override def toArray[B >: A: ClassManifest]: Array[B] = super.toArray
-{code}
+```
 
 It's tricky issue because it seems like you want both ClassTag <: ClassManifest and ClassManifest <: ClassTag for different reasons.

@@ -1,6 +1,5 @@
-It appears this problem is related to that reported in ticket SI-816.  By removing all trace of repeated/sequence arguments, but keeping the case classes, one extending the other, I get a similar "consistency problem" error:
-
-{code}
+It appears this problem is related to that reported in ticket scala/bug#816.  By removing all trace of repeated/sequence arguments, but keeping the case classes, one extending the other, I get a similar "consistency problem" error:
+```scala
 object test {
     case class A(val a: String)
     case class B(val b: Int, override val a: String) extends A(a)
@@ -10,9 +9,8 @@ object test {
         case A(a) => println("A")
     }
 }
-{code}
-
-{code}
+```
+```scala
 error: consistency problem in target generation ! I have args ListBuffer(temp22) and need to jump to a label with fmls List()
 		case A(a) => println("A")
-{code}
+```

@@ -1,7 +1,7 @@
 It's a crime that this is still in play. It would be REALLY EASY to make the stupid AbstractFoo classes public. Especially since it seems type inference will never be fixed. Think of what this does to someone trying to write oh I don't know some collections.
 
 This is completely nuts! Do you really want to ship another major version which a) cannot figure out not to infer types which you can't access and b) does so reliably in common situations?
-{code}
+```scala
 
 scala> def f[A, CC[X]](xs: CC[A]) = xs
 warning: there were 1 feature warning(s); re-run with -feature for details
@@ -14,6 +14,6 @@ scala> var x: scala.collection.AbstractSet[Int] = res0
 <console>:21: error: class AbstractSet in package collection cannot be accessed in package collection
        var x: scala.collection.AbstractSet[Int] = res0
                                ^
-{code}
+```
 
 And again it's a regression from 2.9.

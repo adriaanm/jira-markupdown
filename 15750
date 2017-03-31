@@ -1,34 +1,33 @@
 Given the the following files:
 
 `p/J.java`
-{code}
+```scala
 package p;
 public class J {
     protected void m() { return; }
 }
-{code}
+```
 
 `p/q/S.scala`
-{code}
+```scala
 package p.q
 class S extends p.J {
   protected[p] override def m() { }
 }
-{code}
+```
 
 When compiling first the Java file and then the Scala file, things work as expected:
-{code}
+```scala
 lamppc11:bug2 luc$$ javac p/J.java 
 lamppc11:bug2 luc$$ ../../target/pack/bin/scalac p/q/S.scala 
 lamppc11:bug2 luc$$ 
-{code}
+```
 
 However, compiling them together with `scalac` gives an error message:
-
-{code}
+```scala
 lamppc11:bug2 luc$$ ../../target/pack/bin/scalac p/J.java p/q/S.scala 
 p/q/S.scala:4: error: method m overrides nothing
   protected[p] override def m() { }
                             ^
 one error found
-{code}
+```

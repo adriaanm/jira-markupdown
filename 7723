@@ -1,10 +1,9 @@
 Bad stuff happens, because in order to typecheck an expression, toolbox creates a fake typer:
-
-{code}
+```scala
 val ownerClass    = rootMirror.EmptyPackageClass.newClassSymbol(newTypeName("<expression-owner>"))
 build.setTypeSignature(ownerClass, ClassInfoType(List(ObjectClass.tpe), newScope, ownerClass))
 val owner         = ownerClass.newLocalDummy(expr.pos)
 var currentTyper  = typer.atOwner(expr, owner)
-{code}
+```
 
 This typer is good enough for the code without free variables, but its context is messed up, and it fails to find anything in scope.

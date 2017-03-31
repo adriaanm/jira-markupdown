@@ -1,5 +1,5 @@
-Consider the following class with the overloaded symbol {{foo}}:
-{code}
+Consider the following class with the overloaded symbol `foo`:
+```scala
 class B {
   object foo {
     def apply(x: Int) = 2
@@ -8,14 +8,14 @@ class B {
 class C extends B {
   def foo(x: Int) = 1
 }
-{code}
-Invocation of method {{foo}} with an integer argument returns 1:
-{code}
+```
+Invocation of method `foo` with an integer argument returns 1:
+```scala
 scala> new C().foo(42)
 res0: Int = 1
-{code}
-Invocation of {{resolveOverload}} on the term symbol {{foo}} however throws a {{ClassCastExceptipon}}. The reason is, that {{resolveOverload}} currently only expects method symbols in the alternatives, but this is not guaranteed.
-{code}
+```
+Invocation of `resolveOverload` on the term symbol `foo` however throws a `ClassCastExceptipon`. The reason is, that `resolveOverload` currently only expects method symbols in the alternatives, but this is not guaranteed.
+```scala
 scala> import scala.reflect.runtime.universe._
 import scala.reflect.runtime.universe._
 
@@ -99,7 +99,7 @@ java.lang.ClassCastException: object foo
         at scala.tools.nsc.MainGenericRunner$.main(MainGenericRunner.scala:101)
         at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala){code}
 In order to reproduce this bug use the following input:
-{code}
+```
 import scala.reflect.runtime.universe._
 import scala.reflect.runtime.{ currentMirror => cm }
 class B {

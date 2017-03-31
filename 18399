@@ -1,6 +1,5 @@
 This is used in a number of places in the compiler. You can see the effect of the bug in eta-expansion:
-
-{code}
+```scala
 scala> class C { def foo(a: Any)(b: Any) = a }; def c = new C
 defined class C
 c: C
@@ -24,8 +23,8 @@ res35: reflect.runtime.universe.Tree =
     ((b) => c.foo(c)(b))
   }))
 }
-{code}
+```
 
-The two references to the by-name closure parameter {{c}} should have been lifted out, as per the first example with a by-name method parameter.
+The two references to the by-name closure parameter `c` should have been lifted out, as per the first example with a by-name method parameter.
 
 See also my comments in https://github.com/scala/scala/commit/83ae74c.

@@ -1,4 +1,4 @@
-{code}
+```scala
 scala 2.12.0> val s = "abc"
 s: String = abc
 
@@ -11,13 +11,13 @@ You can make this conversion explicit by writing `replaceAllLiterally _` or `rep
 
 scala 2.12.0> s.replaceAllLiterally _ //print
    scala.Predef.augmentString($line3.$read.$iw.$iw.s).replaceAllLiterally // : <error>
-{code}
+```
 
-As diagnosed [on gitter|https://gitter.im/scala/contributors?at=5828ea7fdf5ae9664551a958].
-{quote}
+As diagnosed [on gitter](https://gitter.im/scala/contributors?at=5828ea7fdf5ae9664551a958).
+```
  Method conversion is represented by expr: () => <empty> (ie, a Typed node). The code that handles these in typedTyped typechecks expr by calling typed1, which just typechecks without also adapting the result to the pt/mode. However if typed1 itself calls recursively calls into typed (which does adapt), the mode is material.
-{quote}
-{code}
+```
+```scala
 diff --git a/src/compiler/scala/tools/nsc/typechecker/Typers.scala b/src/compiler/scala/tools/nsc/typechecker/Typers.scala
 index 0c2f512..a370265 100644
 --- a/src/compiler/scala/tools/nsc/typechecker/Typers.scala
@@ -27,11 +27,11 @@ index 0c2f512..a370265 100644
 -            typed1(suppressMacroExpansion(expr), mode, pt) match {
 +            typed1(suppressMacroExpansion(expr), mode.forFunMode, pt) match {
                case macroDef if treeInfo.isMacroApplication(macroDef) => MacroEtaError(macroDef)
-{code}
+```
 Test golf:
-{code}
+```scala
 trait C {
   implicit def convert: C => { def yo(a: Any): Any }
   this.yo _
 }
-{code}
+```

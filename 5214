@@ -1,16 +1,14 @@
-Seeing as this wasn't actually fixed, SI-4949 is actually a duplicate of this, so the example there can serve as a more reduced case for this one,
-
-{code}
+Seeing as this wasn't actually fixed, scala/bug#4949 is actually a duplicate of this, so the example there can serve as a more reduced case for this one,
+```scala
 object Bug {
   trait H[F[_]]
   def f[F[_], T, FT <: F[T]](h : H[F]) = 1
   f(new H[Set]{})
 }
-{code}
+```
 
 Which results in the following stacktrace (2.9.0-1, 2.9.1.RC4 and trunk),
-
-{code}
+```scala
 error: java.lang.Error: trying to do lub/glb of typevar ?FT
         at scala.reflect.internal.SymbolTable.abort(SymbolTable.scala:32)
         at scala.reflect.internal.Types$class.stripType$1(Types.scala:5438)
@@ -71,4 +69,4 @@ error: java.lang.Error: trying to do lub/glb of typevar ?FT
         at scala.tools.nsc.Driver.process(Driver.scala:52)
         at scala.tools.nsc.Driver.main(Driver.scala:65)
         at scala.tools.nsc.Main.main(Main.scala)
-{code}
+```

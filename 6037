@@ -1,6 +1,5 @@
 Here's what I ran into, which might make a nicer test case than Hadoop because all the required classes come with the JDK:
-
-{code}
+```scala
 package something.weird
 
 import javax.xml.bind.annotation.adapters.{XmlAdapter,XmlJavaTypeAdapter}
@@ -18,13 +17,12 @@ class Adapter extends XmlAdapter[Intermediate, Original] {
     def marshal(o: Original) : Intermediate = null
     def unmarshal(i: Intermediate) : Original = null
 }
-{code}
+```
 
 Compiles in 2.8.1, fails in 2.9.0 with 
-
-{code}
+```scala
 [error] jaxb.scala:11: type mismatch;
 [error]  found   : java.lang.Class[something.weird.Adapter](classOf[something.weird.Adapter])
 [error]  required: java.lang.Class[_ <: javax.xml.bind.annotation.adapters.XmlAdapter]
 [error] @XmlJavaTypeAdapter(classOf[Adapter]) class Original(val foo: String, val bar: String) {
-{code}
+```

@@ -1,28 +1,27 @@
 Using version of the Scala compiler that ships with the latest nightly build of the Eclipse plugin (version 2.7.1.r15371-b20080614010057), the following code should compile but does not:
-
-{code}
+```scala
 object Bug {
   val list = 1 to 5 toList
   println(list)
 }
-{code}
+```
 
 with the following errors:
-{code}
+```scala
 recursive value list needs type
 type mismatch;
  found   : Unit
  required: Int
-{code}
+```
 
 If a blank line is added as follows:
-{code}
+```scala
 object Bug {
   val list = 1 to 5 toList
 
   println(list)
 }
-{code}
+```
 then it compiles fine, which would seem to indicate that the problem lies with the algorithm used to determine if the end of the line is the end of the statement.
 
 Both examples compile with version 2.7.1-final of the Scala compiler.

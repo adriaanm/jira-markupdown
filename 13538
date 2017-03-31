@@ -1,6 +1,5 @@
 Compiling the following code,
-
-{code}
+```scala
 trait T[U] {
   def x: T[V] forSome { type V <: U }
 }
@@ -12,12 +11,10 @@ object T {
 def f[W](t: T[W]) = t match {
   case T(T(_)) => ()
 }
-{code}
+```
 
 has the compiler crash with the following stack trace.
-
-
-{code}
+```scala
 Exception in thread "main" java.lang.AssertionError: assertion failed: T(_) ==> Test.this.T.unapply[Nothing](<unapply-selector>) <unapply> (_), pt = Test.T[?] forSome { type V <: W }
 	at scala.Predef$$.assert(Predef.scala:92)
 	at scala.tools.nsc.typechecker.Typers$$Typer.doTypedApply(Typers.scala:1837)
@@ -29,7 +26,7 @@ Exception in thread "main" java.lang.AssertionError: assertion failed: T(_) ==> 
 	at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$typedArgs$$2.apply(Typers.scala:1607)
 	at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$typedArgs$$2.apply(Typers.scala:1607)
 	...
-{code}
+```
 
 The crash is not reproducible when case classes are used.
 

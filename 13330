@@ -1,7 +1,5 @@
 Following patch duplicates Iterable.partition into RandomAccessSeq, changing the return type to be a tuple of RandomAccessSeqs, as a convenience to users wanting to partition a RandomAccessSeq into two entities that retain O(1) element access.
-
-
-{code}
+```scala
 --- RandomAccessSeq.scala       (revision 14761)
 +++ RandomAccessSeq.scala       (working copy)
 @@ -171,7 +171,24 @@
@@ -30,7 +28,7 @@ Following patch duplicates Iterable.partition into RandomAccessSeq, changing the
    override def ++[B >: A](that: Iterable[B]): RandomAccessSeq[B] = that match {
      case that: RandomAccessSeq[b] =>
        val ret = new Array[B](length + that.length)
-{code}
+```
 
 
 Perhaps this code should just call the version in Iterable, but cast the return values to RandomAccessSeq?

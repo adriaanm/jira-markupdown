@@ -1,12 +1,10 @@
 In a macro implementation, a dependent type x.T maps to c.Expr[x.value.T]. But presently, applying a dependent type to some type constructor C[x.T] does not map to c.Expr[C[x.value.T]]. SIP 16 defines the type transformation as follows:
-
-{quote}
+```
 σ is a substitution that maps every type parameter of MI to the corresponding type argument in the body of the macro call, and that maps every value parameter x of MD to x’.value, where x’ is the corresponding value parameter in MI (which is also named x).
-{quote}
+```
 
 Should this transformation apply recursively to type parameters and type refinements of macro argument and return types? Intuitively, it seems like it should. I'm unclear as to whether the notation in the spec implies this. The compiler currently behaves as follows:
-
-{code}
+```scala
 class X { type T }
 
 object X {
@@ -22,9 +20,8 @@ object X {
   def baz(x: X)(xs: List[x.T]): Unit = macro bazImpl
   def bazImpl(c: Context)(x: c.Expr[X])(xs: c.Expr[List[x.value.T]]): c.Expr[Unit] = ???
 }
-{code}
-
-{noformat}
+```
+```
 macro implementation has wrong shape:
  required: (c: scala.reflect.macros.Context)(x: c.Expr[X], y: c.Expr[X]): c.Expr[(x.T, y.T)]
  found   : (c: scala.reflect.macros.Context)(x: c.Expr[X], y: c.Expr[X]): c.Expr[(x.value.T, y.value.T)]
@@ -37,6 +34,6 @@ macro implementation has wrong shape:
 type mismatch for parameter xs: c.Expr[List[x.T]] does not conform to c.Expr[List[x.value.T]]
   def baz(x: X)(xs: List[x.T]): Unit = macro bazImpl
                                              ^
-{noformat}
+```
 
 Tested with Scala-2.10.0-SNAPSHOT dated 2012-9-26.

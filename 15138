@@ -4,9 +4,7 @@ It is currently very difficult to see which methods in the collections library a
 Then here is a concrete case: scala.immutable.Vector.last is very inefficient, it falls back to TraversableLike and hence iterates over all elements. A quick workaround is to use takeRight( 1 ).head instead.
 
 There are probably more methods that need revision, e.g. splitAt is also going back to TraversableLike.
-
-
-{code}
+```scala
 scala> var x = collection.immutable.Vector[ Int ]()
 x: scala.collection.immutable.Vector[Int] = Vector()
 
@@ -21,8 +19,7 @@ scala> val t1 = System.currentTimeMillis; x.takeRight( 1 ).head; val t2 = System
 0
 t1: Long = 1269285905613
 t2: Long = 1269285905613
-
-{code}
+```
 
 one could argue whether this should be classified as enhancement or defect, but i think since one would expect Vector to perform 'last' in O(1), that is appropriate to classify as defect.
 

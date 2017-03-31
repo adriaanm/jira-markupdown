@@ -1,5 +1,5 @@
 Reduced:
-{code}
+```scala
 object A {
   def filter(x: String)(p: String => Boolean): List[String] = Nil
 
@@ -14,13 +14,13 @@ class B {
 [paulp@leaf 3431]$$ scalac -optimise -d out -cp out d.scala
 error: Missing dependency 'object A', required by out/A$$.class
 one error found
-{code}
+```
 
 Or put A in a package and have B import it, then you can see the crash:
-{code}
+```scala
 Exception in thread "main" java.lang.AssertionError: assertion failed: class A.$$anonfun$$f2$$1 linkedModule: object AList(method f2, method f1, (etc))
 	at scala.Predef$$.assert(Predef.scala:92)
 	at scala.tools.nsc.symtab.classfile.ClassfileParser$$innerClasses$$.innerSymbol$$1(ClassfileParser.scala:1185)
 	at scala.tools.nsc.symtab.classfile.ClassfileParser$$innerClasses$$.classSymbol(ClassfileParser.scala:1197)
 	at scala.tools.nsc.symtab.classfile.ClassfileParser.classNameToSymbol(ClassfileParser.scala:442)
-{code}
+```

@@ -1,6 +1,5 @@
 This problem arises from the desugaring of val patterns.
-
-{code}
+```scala
  cat sandbox/client.scala
 trait Client extends Test {
   def test() {
@@ -25,13 +24,12 @@ package <empty> {
     }
   }
 }
-{code}
+```
 
-A similar problem is evident in SI-8468 (case classes with > 22 fields.)
+A similar problem is evident in scala/bug#8468 (case classes with > 22 fields.)
 
 It would be nice if we could desugar them to vars:
-
-{code}
+```scala
   var x$1: ? = _
   var x$2: ? = _
   var x$3: ? = _
@@ -45,8 +43,8 @@ It would be nice if we could desugar them to vars:
   val condp = x$1
   val elsep = x$2
   val thenp = x$3
-{code}
+```
 
 But we would then need to give those symbols a magic type that took on the type of the RHS of the first assignment. Which sounds like too much magic. We'd also have a problem creating unwanted fields if this was part of a class.
 
-So maybe we'd need to resurrect [~moors] patch to optimize away the TupleN creation / destruction after the fact.
+So maybe we'd need to resurrect @adriaanm patch to optimize away the TupleN creation / destruction after the fact.

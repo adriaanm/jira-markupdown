@@ -1,20 +1,19 @@
 note that this particular issue is fixed, but the test case includes a Scala method that could be given a more precise java generic sig
 
 currently, the `withFilter` method in `HashMap`:
-{code}
+```scala
 trait TraversableLike[+A, +Repr] {
   class WithFilter(p: A => Boolean)
   def withFilter(p: A => Boolean): WithFilter = new WithFilter(p)
 }
 
 class HashMap[K, +V] extends TraversableLike[(K, V), HashMap[K, V]]
-{code}
+```
 
 becomes:
-
-{code}
+```scala
 public class HashMap<K, V> implements TraversableLike<Tuple2<K, V>, HashMap<K, V>>, ScalaObject {
   public TraversableLike.WithFilter withFilter(Function1 p) { return TraversableLike.class.withFilter(this, p);
-{code} 
+```
 
 a more precise type would obviously include type params for `TraversableLike` and `Function1`

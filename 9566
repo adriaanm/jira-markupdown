@@ -1,8 +1,7 @@
 It seems to be that this is a regression, as this works in Scala 2.10.0, however it does not work in any newer bugfix 2.10 version (i.e. 2.10.1, 2.10.2, 2.10.3 and 2.10.4-RC2). I believe that as this works in 2.10.0, it should work in all 2.10.x versions.
 
 My test case is not as elegant as the one initially posted, but for completeness, here it is:
-
-{code:scala}
+```scala
 object Blah extends App {
 
   trait ArgProvider {
@@ -25,14 +24,13 @@ object Blah extends App {
   val rule = InRule(ColumnReference("Column1"))
   rule.valid()
 }
-{code}
+```
 
 I have been suggested the workaround of defining the `InRule` class as:
-
-{code:scala}
+```scala
 case class InRule(inValue: ArgProvider) extends Rule("in", Seq(inValue): _*) {
   ...
 }
-{code}
+```
 
 Whilst the workaround helps me, I still have to modify my code to move onward from 2.10.0 to 2.10.1+ which is not ideal.

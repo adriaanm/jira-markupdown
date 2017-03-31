@@ -1,9 +1,8 @@
-Lukas, what you propose fixes this problem, but we have to additionally make sure that all the objects that see {{Outer}}, agree on the *same instance* of the nested object {{attr}}.
-If we are deserializing only an {{Outer}} instance along with its {{attr}} object, then this will indeed be the case.
+Lukas, what you propose fixes this problem, but we have to additionally make sure that all the objects that see `Outer`, agree on the **same instance** of the nested object `attr`.
+If we are deserializing only an `Outer` instance along with its `attr` object, then this will indeed be the case.
 
-However, there might be multiple instances of the {{attr}} object created per an {{Outer}} class instance if some other code invokes the {{attr()}} method between the time when the proposed {{attr.readResolve}} returns {{this}} and the time when {{Outer}} class is fully deserialized. The only situation where this could happen (that I can think of) is if the nested object has a custom {{readObject}} method:
-
-{code}
+However, there might be multiple instances of the `attr` object created per an `Outer` class instance if some other code invokes the `attr()` method between the time when the proposed `attr.readResolve` returns `this` and the time when `Outer` class is fully deserialized. The only situation where this could happen (that I can think of) is if the nested object has a custom `readObject` method:
+```scala
 class Outer extends Serializable {
   def foo = attr
   object attr extends Serializable {
@@ -36,18 +35,17 @@ dro begin
 dro done
 Ctor!
 res11: Outer = Outer - attr(default)
-{code}
+```
 
-To avoid this situation, the {{readResolve}} method should set the {{attr$module}} field the first time that the singleton instance is used:
-
-{code}
+To avoid this situation, the `readResolve` method should set the `attr$module` field the first time that the singleton instance is used:
+```scala
 def readResolve() = {
   if ($outer.attr$module == null) {
     $outer.attr$module = this
     this
   } else $outer.attr$module
 }
-{code}
+```
 
 I would avoid synchronization here, since it could result in subtle deadlocks, but does not buy you much.
-In fact, if the field checked by the {{attr()}} accessor is really not a volatile, then the initialization of the nested object is not thread-safe already.
+In fact, if the field checked by the `attr()` accessor is really not a volatile, then the initialization of the nested object is not thread-safe already.

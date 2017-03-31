@@ -1,8 +1,7 @@
-Note the workaround is not a solution for all cases, because this bug infects function definition sites that I can't edit, e.g. the {{apply}} method of {{object Array}}.
+Note the workaround is not a solution for all cases, because this bug infects function definition sites that I can't edit, e.g. the `apply` method of `object Array`.
 
-I was attempting to code with reduced noise and reduced tsuris of *unboxed* disjunctions.
-
-{code}
+I was attempting to code with reduced noise and reduced tsuris of **unboxed** disjunctions.
+```scala
 scala> val test = Array[DD[D[Int] with D[Option[Nothing]]]](None, 1, 2, None, 3)
 error: type mismatch;
  found   : None.type (with underlying type object None)
@@ -16,11 +15,10 @@ error: type mismatch;
  required: DD[D[Option[Nothing]] with D[Int]]
        val test = Array[DD[D[Option[Nothing]] with D[Int]]](None, 1, 2, None, 3)
                                                                   ^
-{code}
+```
 
 I can avoid the bug by verbosely forcing the choice of implicit, thus verifying that this bug is culpable.
-
-{code}
+```scala
 type None = Option[Nothing]
 
 val test = Array[DD[D[None] with D[Int] with D[String]]]( None, 1 : DD[D[Int]], "two" : DD[D[String]] )
@@ -44,9 +42,9 @@ scala> test(1).get match {
   }
 }
 res1: Int = 2
-{code}
+```
 
-And even if I could edit the {{apply}} method, the sequence {{T*}} subsumes to {{Any}} before the implicit for the workaround is applied. So only the bug fix can help.
+And even if I could edit the `apply` method, the sequence `T*` subsumes to `Any` before the implicit for the workaround is applied. So only the bug fix can help.
 
 {code}def apply[T](xs: T*)(implicit d: DD[D[T]] <:< DD[D[Int] with D[String]]) = xs
 

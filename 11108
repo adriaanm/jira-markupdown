@@ -1,6 +1,5 @@
 minimized (this one needs to be compiled without {{-optimise}} otherwise the bug is optimized away, but with {{-target:jvm-1.7}})
-
-{code}
+```scala
 class C {
   def apply(x: Boolean) = new Tuple2(null, {
     while (x) { }
@@ -11,11 +10,10 @@ class C {
 object Main {
   def main(args: Array[String]): Unit = println(new C())
 }
-{code}
+```
 
 gives
-
-{noformat}
+```
   public scala.Tuple2<scala.runtime.Null$, scala.runtime.Null$> apply(boolean);
     Signature: (Z)Lscala/Tuple2;
     Code:
@@ -27,6 +25,6 @@ gives
        9: aconst_null   
       10: invokespecial #16                 // Method scala/Tuple2."<init>":(Ljava/lang/Object;Ljava/lang/Object;)V
       13: areturn       
-{noformat}
+```
 
-the {{ifne}} is not allowed, because it jumps to a previous location, and the stack at this location contains an uninitialized object (the Tuple2 reference has been created with {{new}}, but its constructor has not yet been invoked). See last paragraph in http://docs.oracle.com/javase/specs/jvms/se7/html/jvms-4.html#jvms-4.10.2.4.
+the `ifne` is not allowed, because it jumps to a previous location, and the stack at this location contains an uninitialized object (the Tuple2 reference has been created with `new`, but its constructor has not yet been invoked). See last paragraph in http://docs.oracle.com/javase/specs/jvms/se7/html/jvms-4.html#jvms-4.10.2.4.

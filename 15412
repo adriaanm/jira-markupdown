@@ -1,44 +1,41 @@
 The Numeric (+ Integral and Fractional) and Ordering traits include implicit conversions to allow operators to be used. Eg.
-
-{code}
+```scala
 def testOrdering[T](a: T, b: T)(implicit ev: Ordering[T]) = { 
   import ev._
   a < b
 }
-{code}
+```
 
 However, if a context bound is used instead of an explicit implicit (!?) parameter, this becomes more difficult:
-
-{code}
+```scala
 def testOrderingCtx[T: Ordering](a: T, b: T) = { 
   val ord = implicitly[Ordering[T]]               
   import ord._ 
   a < b
 }
-{code}
+```
 
 If the following method is added to the Ordering companion object
-{code}
+```scala
 object Ordering {
   implicit def ops[A: Ordering](a: A) = implicitly[Ordering[A]].mkOrderingOps(a)
 }
-{code}
+```
 this can be written more simply as
-
-{code}
+```scala
 def testOrderingCtx2[T: Ordering](a: T, b: T) = { 
   import Ordering.ops 
   a < b
 }
-{code}
+```
 
 Similarly, the following could be added to the Numeric, Fractional and Integral companion objects respectively
-{code}
+```scala
 implicit def ops[A : Numeric](a: A) = implicitly[Numeric[A]].mkNumericOps(a)
-{code}
-{code}
+```
+```scala
 implicit def ops[A : Fractional](a: A) = implicitly[Fractional[A]].mkNumericOps(a)
-{code}
-{code}
+```
+```scala
 implicit def ops[A : Integral](a: A) = implicitly[Integral[A]].mkNumericOps(a)
-{code}
+```

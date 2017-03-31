@@ -1,6 +1,5 @@
 Just like in real life if we get a little lazier it causes new problems:
-
-{code}
+```scala
 [paulp@jon bug]$$ scala28
 Welcome to Scala version 2.8.0.r0-b20090202153935 (Java HotSpot(TM) Client VM, Java 1.5.0_16).
 Type in expressions to have them evaluated.
@@ -12,15 +11,15 @@ Exception in thread "main" java.lang.NullPointerException
 	at scala.tools.nsc.symtab.SymbolTable.Select(SymbolTable.scala:12)
 	at scala.tools.nsc.transform.Mixin$$MixinTransformer$$$$anonfun$$6.apply(Mixin.scala:655)
 	at scala.tools.nsc.transform.Mixin$$MixinTransformer$$$$anonfun$$6.apply(Mixin.scala:647)
-{code}
+```
 
 Furthermore if we attempt to use the result rather than merely assigning it, we get another crash:
-{code}
+```scala
 scala> val x = 5 + { lazy val y = 10 ; y }
 Exception in thread "main" java.lang.Error: symbol variable bitmap$$0$$1 does not exist in line2$$object$$$$iw$$$$iw.<init>
 	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:918)
 	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.genLoadArguments(GenICode.scala:1109)
-{code}
+```
 Note that the first crasher differs on 2.7 and trunk; in 2.7 it's another bitmap error, in 2.8 the NPE.
 
-See also: SI-1535.
+See also: scala/bug#1535.

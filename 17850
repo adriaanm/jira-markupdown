@@ -1,18 +1,18 @@
-This example is taken from my comments in SI-5189:
-{code}
+This example is taken from my comments in scala/bug#5189:
+```scala
 trait Covariant[+A]
 val arr = Array("abc")
 case class Invariant[A](xs: Array[A]) extends Covariant[A]
 def f[A](v: Covariant[A]) = v match { case Invariant(xs) => xs }
 f(Invariant(arr): Covariant[Any])(0) = Nil
-{code}
+```
 That is a soundness hole in every version of scala. It is interesting to note however that through scala 2.9.2, you could write f in either of these ways, and it would still compile unsoundly:
-{code}
+```scala
 def f[A](v: Covariant[A]) = v match { case Invariant(xs) => (xs: Array[A]) }
 def f[A](v: Covariant[A]): Array[A] = v match { case Invariant(xs) => xs }
-{code}
+```
 In scala 2.10 those versions no longer compile, BUT the unsound type could still be inferred! My certainty that this is not the only example of that motivates this separate ticket.
-{code}
+```scala
 // scala 2.10
 scala> def f[A](v: Covariant[A]): Array[A] = v match { case Invariant(xs) => xs }
 <console>:10: error: type mismatch;
@@ -24,4 +24,4 @@ You may wish to investigate a wildcard type such as `_ <: A`. (SLS 3.2.10)
                                                                              ^
 scala> def f[A](v: Covariant[A]) = v match { case Invariant(xs) => xs }
 f: [A](v: Covariant[A])Array[A]
-{code}
+```

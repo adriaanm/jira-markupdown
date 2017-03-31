@@ -1,6 +1,5 @@
-Aside from the question of honouring uncheckedVariance in alias RHS, which can be done by preserving annotations through type maps as Paul's experiment has confirmed, we should also pause to ask the broader question: after the fix for SI-6566, which restores variance checking of the RHS of type aliases, is checking expansions redundant or somehow still material to prevent unsoundness.
-
-{noformat}
+Aside from the question of honouring uncheckedVariance in alias RHS, which can be done by preserving annotations through type maps as Paul's experiment has confirmed, we should also pause to ask the broader question: after the fix for scala/bug#6566, which restores variance checking of the RHS of type aliases, is checking expansions redundant or somehow still material to prevent unsoundness.
+```
 % cat sandbox/test.scala
 trait C[-I] {
   type X = C[I]
@@ -35,15 +34,14 @@ sandbox/test.scala:3: error: contravariant type I occurs in covariant position i
   def f2(b: X): Unit
          ^
 two errors found
-{noformat}
+```
 
-If we omit the checks on the RHS because the alias is sufficiently private, we clearly *must* check expansions. For example, the following is unsound but was allowed in Scala 2.7:
-
-{code}
+If we omit the checks on the RHS because the alias is sufficiently private, we clearly **must** check expansions. For example, the following is unsound but was allowed in Scala 2.7:
+```scala
 trait C[-I] {
   private[this] type X = C[I]
   def f2(b: X): Unit
 }
-{code}
+```
 
 Intuitively, I think we only need to check in one place. But I'll give it some more thought.

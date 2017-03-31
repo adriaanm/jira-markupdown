@@ -1,7 +1,6 @@
 Range returns empty Collection when using Int boundaries and large power of 2 as step size.  
 When converting to a list or vector, the collection is still allegedly empty, while converting to an Array yields presumably correct values.
-
-{code:java}
+```java
 Welcome to Scala version 2.10.4 (Java HotSpot(TM) 64-Bit Server VM, Java 1.7.0_75).
 Type in expressions to have them evaluated.
 Type :help for more information.
@@ -18,18 +17,18 @@ res2: List[Int] = List()
 scala> (Int.MinValue to Int.MaxValue by 65536*128).toArray
 res3: Array[Int] = Array(-2147483648, -2139095040, -2130706432, -2122317824, -2113929216, -2105540608, -2097152000, -2088763392, -2080374784, -2071986176, 
 ...
-{code}
+```
 
 The range is non-empty, presumably correct, when step size is smaller than 2^23:
-{code:java}
+```java
 scala> (Int.MinValue to Int.MaxValue by 65536*64)
 res4: scala.collection.immutable.Range = Range(-2147483648, -2143289344, -2139095040, -2134900736, -2130706432, -2126512128, -2122317824, -2118123520, -2113929216, 
 ...
-{code}
+```
 
 The range is also presumably correct when not using a power of 2 as the step size:
-{code:java}
+```java
 scala> (Int.MinValue to Int.MaxValue by 65536*129)
 res9: scala.collection.immutable.Range = Range(-2147483648, -2139029504, -2130575360, -2122121216, -2113667072, -2105212928, -2096758784, -2088304640, -2079850496, 
 ...
-{code}
+```

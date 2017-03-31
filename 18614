@@ -1,6 +1,5 @@
 The following code will give a ClassCast exception.
-
-{code}
+```scala
 package test
 object patternUnsoundness extends App {
 
@@ -19,7 +18,7 @@ object patternUnsoundness extends App {
 
   val z: String = x.s // ClassCast exception
 }
-{code}
+```
 
 Unfortunately, it looks like a difficult fix, because the obvious fix (require that the type parameter S is determined uniquely) would break all :: patterns, because List is declared to be covariant whereas :: is declared to be non-variant. Of course :: could and should have been declared covariant so there's no unsoundness problem for Lists themselves.
 

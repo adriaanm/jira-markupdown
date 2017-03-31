@@ -1,18 +1,17 @@
-I talk about {{jvm/manifests.scala}}, since it behaves the same as {{pos/manifest1.scala}} when compiling, and additionally shows problems on execution (and the distilled code is the same)
+I talk about `jvm/manifests.scala`, since it behaves the same as `pos/manifest1.scala` when compiling, and additionally shows problems on execution (and the distilled code is the same)
 
 Here's a reduced example:
-
-{code}
+```scala
 import scala.reflect.Manifest
 object Test extends Application {
   def print[T](x: T)(implicit m: Manifest[T]) { }
   print(())
 }
-{code}
+```
 
  - compiling on 1.4 or 1.5 (target 1.5) and running on jvm5 works
  - compiling on 1.5 with {{-target:jvm-1.4}} breaks:
-{code}
+```scala
 manifests.scala:5: error:
 overloaded method value classType with alternatives
 
@@ -25,10 +24,10 @@ overloaded method value classType with alternatives
 (Class[Unit])scala.reflect.Manifest[Unit]
 
 cannot be applied to (java.lang.Class)
-{code}
+```
 
  - compiling on 1.4 with {{-target:jvm-1.4}} does not crash, but running then on 1.4 crashes:
-{code}
+```scala
 java.lang.ExceptionInInitializerError
         at Test.main(manifests.scala)
         at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
@@ -53,4 +52,4 @@ Caused by: java.lang.ClassNotFoundException: scala.Unit
         at Test$$.<init>(manifests.scala:5)
         at Test$$.<clinit>(manifests.scala)
         ... 10 more
-{code}
+```

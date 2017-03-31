@@ -3,8 +3,7 @@ The following code fails to compile.
 The failure happens when a method has a default parameter, has a return type depending on one of its parameters; when the method itself is not called from a stable identifier.
 
 See code below, the failure pattern is the same for all Scala version affected.
-
-{code:scala}
+```scala
 trait Container[S <: Seq[Int] with Singleton] {
   val s: S
 }
@@ -42,4 +41,4 @@ object Test {
   val works8: Container[seq.type] = Builder.instance2.withDefault(seq, 0)
   val fails: Container[seq.type] = Builder.instance2.withDefault(seq)
 }
-{code}
+```

@@ -3,36 +3,36 @@ Using Scala version 2.8.0.r19995-b20091203110322 (Java HotSpot(TM) Server VM, Ja
 -make:transitive does not track new source dependencies.
 
 Given A.scala, B.scala
-{code}
+```scala
 object A {
   val x = 3
 }
 object B {
   val y = 5
 }
-{code}
+```
 
 Compile with:
-{code}
+```scala
 scalac -make:transitive *.scala
-{code}
+```
 
 `.scala_dependencies` looks like:
-{code}
+```scala
 A.scala -> A.scala
 B.scala -> B.scala
-{code}
+```
 
 Change B.scala to be
-{code}
+```scala
 object B {
   val y = A.x
 }
-{code}
+```
 
 Recompile with:
-{code}
+```scala
 scalac -make:transitive *.scala
-{code}
+```
 
 `.scala_dependencies` is unchanged.  This can be confirmed by modifying A (for example, remove `'val x'`) and noting that only A.scala is recompiled.

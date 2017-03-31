@@ -1,7 +1,7 @@
 Taking a quick look at this:
 
 A slightly leaner test case:
-{code}
+```scala
 trait SelfTyped {
   type Self
 }
@@ -34,10 +34,10 @@ object ProofOfConcept {
 object Test extends App {
   ProofOfConcept.processContainer(Example(ConcreteNode()))
 }
-{code}
+```
 
 Internally, I think the failure comes from our imprecise LUB/GLB computation:
-{noformat}
+```
 this = {scala.tools.nsc.transform.patmat.MatchTranslation$MatchTranslator$BoundTree@3642}"x1: <empty>.this.SelfTyped{type Self <: container.ChildSelf} with <empty>.this.ConcreteNode{} (binder: <empty>.this.SelfTyped{type Self <: container.ChildSelf}) @ (_: <empty>.this.ConcreteNode)"
 
 // private def typeTestStep(sub: Symbol, subPt: Type)     = step(TypeTestTreeMaker(sub, binder, subPt, glbWith(subPt))(pos))()
@@ -46,6 +46,6 @@ glb(
   SelfTyped{type Self <: container.ChildSelf} with ConcreteNode{},
   container.Child
 ) = Null	
-{noformat}
+```
 
 A workaround is to upcast the scrutinee of the pattern match to `Any` before the type test on `_: ConcreteNode`.

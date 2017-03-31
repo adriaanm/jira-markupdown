@@ -10,7 +10,7 @@ import java.lang.annotation.RetentionPolicy;
 public @interface A {
     Class<?> subInterface();
 }
-{code}
+```scala
 
 {code:title=p/T.scala}
 package p
@@ -22,7 +22,7 @@ trait T {
 object T {
   private[p] trait S extends T { }
 }
-{code}
+```
 
 {code:title=p/Foo.scala}
 package p
@@ -33,16 +33,14 @@ object Foo {
 {code}
 
 Now compile them, in order, one at a time.
-
-{noformat}
+```
 javac p/A.java
 scalac p/T.scala
 scalac p/Foo.scala
-{noformat}
+```
 
 The last command should give you an internal error.
-
-{noformat}
+```
 error: error while loading T, illegal class file dependency between 'object T' and 'class T'
 warning: Caught: java.lang.AssertionError: assertion failed:
      while compiling: p\Foo.scala
@@ -79,4 +77,4 @@ DefDef( // def bar: <?> in object Foo
 } while parsing annotations in .\p\T.class
 one warning found
 one error found
-{noformat}
+```

@@ -1,5 +1,5 @@
 Noting for the record that I reverted this patch after martin reported it changed the behavior of this snippet, because Byte doesn't have the static type of Char:
-{code}
+```scala
 val buf: Array[Byte]
 
 def processVerbatim(i: Int, end: String): Int = {
@@ -10,6 +10,5 @@ def processVerbatim(i: Int, end: String): Int = {
           case END if startsWith(i, end) =>
             // return
 }                                                                               
-    
-{code}
+```
 Interestingly I can't reproduce this in a simple example, but I did reproduce the behavior in verbfilterScala.scala, and I did verify that reverting the patch for this ticket restored the original matching behavior.

@@ -1,15 +1,13 @@
-Making implicitly, classManifest, and optManifest macros is unlikely to break code because their argument is implicit and the compiler generates a straightforward, predictable tree for it (as far as I know).  However, users can put any Scala code in the argument of locally.  Because of this, a benefit of making these macros is it will find bugs like SI-6187.  That might also make it somewhat risky, though.
+Making implicitly, classManifest, and optManifest macros is unlikely to break code because their argument is implicit and the compiler generates a straightforward, predictable tree for it (as far as I know).  However, users can put any Scala code in the argument of locally.  Because of this, a benefit of making these macros is it will find bugs like scala/bug#6187.  That might also make it somewhat risky, though.
 
 For identity, it might be more complicated because it is partially applied in practice.  The gain will be that the anonymous class looks like:
-
-{code}
+```scala
 def apply(t: T) = t
-{code}
+```
 
 instead of:
-
-{code}
+```scala
 def apply(t: T) = identity(t)
-{code}
+```
 
 Presumably the real benefit is when the higher order function accepting the partially applied identity is itself a macro or is inlined.

@@ -1,5 +1,5 @@
 It is probable that the compiler does something differently for traits that have no definitions.  Consequently, removing the only definition in the trait could just cause this to go away.  For example, doing the following also avoids the crash:
-{code}
+```scala
 object Test {
   trait T[A] {
     trait U { type W = A; val x : Int }
@@ -7,5 +7,5 @@ object Test {
   val x : ({ type V = T[this.type] })#V = null
   val y = new (x.type)#U { val x = 3 }
 }
-{code}
+```
 I did some additional testing and, indeed, if a trait does not contain any definitions, only declarations, it appears that the compiler will only generate a Java interface instead of both an interface and a Java class.  The problem probably arises in trying to generate the Java class.

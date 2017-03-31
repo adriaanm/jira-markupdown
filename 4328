@@ -1,16 +1,16 @@
 The signature is the right one, in my opinion.  You could add an overload on Seq[T], but you can't have overloaded methods with defaults and even if you could, you are restricting yourself to one level of nesting.
 
 Rather, the caller could define an implicit like:
-{code}
+```scala
 implicit def views[T](x: Seq[T])(implicit view: T => Seq[Node]): Seq[Node] =
   x flatMap view
-{code}
+```
 
 With that you can nest arbitrarily:
-{code}
+```scala
 scala> val xs = Seq(3,4) map (new Xmlable(_))
 xs: Seq[Xmlable] = List(Xmlable@6d172f8f, Xmlable@d338d3d)
                                 
 scala <x>{Seq(xs,xs)}</x>
 res4: scala.xml.Elem = <x>i = 3i = 4i = 3i = 4</x>
-{code}
+```

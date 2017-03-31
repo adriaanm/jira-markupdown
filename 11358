@@ -1,7 +1,7 @@
 Perhaps you've already found this, but there are two errors in the code. One of them leads to the compiler cycle in reporting the other.
 
 Here, you have a type error:
-{code}
+```scala
 /code/scala-struct git diff
 diff --git a/src/main/scala/com/buransky/struct/StructBuilder.scala b/src/main/scala/com/buransky/struct/StructBuilder.scala
 index 49d0ca8..8b97b83 100644
@@ -16,13 +16,12 @@ index 49d0ca8..8b97b83 100644
      }
    }
  }
-{code}
+```
 
 The compiler first tries to find an implicit from Unit => Builder[Struct[A], StructBuffer[A]].
 
 When I added the ??? to make this typecheck, the compiler reports:
-
-{noformat}
+```
 /code/scala/qbin/scalac -d /tmp $(find . -name '*.scala')
 ./src/main/scala/com/buransky/struct/StructBuilder.scala:10: error: illegal inheritance;
  class StructBuffer inherits different type instances of trait GenericTraversableTemplate:
@@ -50,13 +49,12 @@ class StructBufferFactory[T](struct: Struct[T]) extends SeqFactory[StructBuffer]
       case sa: Struct[A] => new GrowingBuilder(new StructBuffer(sa))
                                 ^
 7 errors found
-{noformat}
+```
 
 Somehow this illegal inheritance means we end up with an infiinite sequence of "parts of a type" being considred by implicit search when looking for the companion object implicits.
 
 Here's a standalone reproduction:
-
-{code}
+```scala
 import collection.mutable._
 import collection.generic._
 
@@ -72,4 +70,4 @@ abstract class StructBuffer[A](struct: Struct[A]) extends AbstractBuffer[Struct[
 object Test {
   implicitly[StructBuffer[Int]]
 }
-{code}
+```

@@ -1,7 +1,5 @@
 The current implementation of mapConserve in  scala.collection.immutable.List is not tail recursive.  Here's an alternate implementation.
-
-
-{code}
+```scala
   /** Like xs map f, but returns <code>xs</code> unchanged if function
    *  <code>f</code> maps all elements to themselves (wrt ==).
    */
@@ -29,14 +27,14 @@ The current implementation of mapConserve in  scala.collection.immutable.List is
       }
     loop(null, this, this)
   }
-{code}
+```
 
 
 
 Here's simple test showing that the stack no longer overflows:-
-{code}
+```scala
   var xs: List[String] = Nil
   for (i <- 0 until 200000)
       xs = "X" :: xs
   xs.mapConserve2(_.toLowerCase)
-{code}
+```

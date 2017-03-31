@@ -2,7 +2,7 @@ This report is the result of a posted question on the lift mailing list at http:
 
 I am trying to write a generic function to do a on-to-one join between
 mapper objects in memory using a scala Map. The function is as follows:
-{code}
+```scala
   def oneToOneJoin[PType <: LongKeyedMapper[PType] with IdPK,
                    CType <: LongKeyedMapper[CType] with IdPK,
                    CMetaType <: CType with LongKeyedMetaMapper
@@ -15,18 +15,18 @@ FKType ):
           ByList(metaMapper.id, parents.map {p => keyGetter
 (p).is.longValue } ))
           ) {(accum, v) => accum + (v.id.longValue -> v) }
-{code}
+```
 
 This function compiles fine, but I can't use it! Here is the call
 site:
-{code}
+```scala
 Util.oneToOneJoin(runs, TestSubject, (tr: TestRun) => tr.testSubject
-{code}
+```
   where runs is of type List[TestRun]
 
 Here are the relevant class and object definitions.
 Each test run has one test subject.
-{code}
+```scala
   class TestSubject extends LongKeyedMapper[TestSubject] with IdPK
   object TestSubject extends TestSubject with LongKeyedMetaMapper
 [TestSubject]
@@ -36,10 +36,10 @@ TestSubject)
    }
   object TestRun extends TestRun with LongKeyedMetaMapper[TestRun]
 with CRUDify[Long, TestRun] {
-{code}
+```
 I get an error that I've copied below. Scala is inferring CType as Nothing, which is definitely not
 what I want.
-{code}
+```scala
 error: inferred type arguments
 [com.test_results.model.TestRun,Nothing,object
 com.test_results.model.TestSubject,object
@@ -52,31 +52,31 @@ net.liftweb.mapper.LongKeyedMetaMapper[CType],FKType <:
 net.liftweb.mapper.MappedLongForeignKey[PType,CType]]
     Util.oneToOneJoin(runs, TestSubject, (tr: TestRun) =>
 tr.testSubject)
-{code}
+```
 I cannot find any way to get the class of the TestSubject companion
 object, So I changed things slightly to create a MetaTestSubject class and
 then tried to explicitly specify the type parameters to the
 oneToOneJoin function as shown below. MetaTestSubject is the supertype
 for the TestSubject companion object so that I can reference it's type
 explicitly.
-{code}
+```scala
   Util.oneToOneJoin[TestRun,
                     TestSubject,
                     MetaTestSubject,
                     (TestRun) => MappedLongForeignKey[TestRun,
 TestSubject]
   ](runs, TestSubject, (tr: TestRun) => tr.testSubject)
-{code}
+```
   where MetaTestSubject and TestSubject are now defined as
-{code}
+```scala
     class MetaTestSubject extends TestSubject with LongKeyedMetaMapper
 [TestSubject]
     object TestSubject extends MetaTestSubject {
-{code}
+```
 When I specify the types to the oneToOneJoin function explicitly,
 Scala then just plain tells me that the types don't match with this
 error.
-{code}
+```scala
  error: type arguments
 [com.test_results.model.TestRun,com.test_results.model.TestSubject,com.test_results.model.MetaTestSubject,
 (com.test_results.model.TestRun) =>
@@ -89,7 +89,7 @@ net.liftweb.mapper.IdPK,CType <: net.liftweb.mapper.LongKeyedMapper
 net.liftweb.mapper.LongKeyedMetaMapper[CType],FKType <:
 net.liftweb.mapper.MappedLongForeignKey[PType,CType]]
       Util.oneToOneJoin[TestRun,
-{code}
+```
 The types look like they line up to me. TestRun is a LongKeyedMapper
 of the right type with IdPK, and so is TestSubject. MetaTestSubject
 inherits from TestSubject with LongKeyedMetaMapper[TestSubject]. The
@@ -97,4 +97,3 @@ third value parameter is a function that takes a type TestRun and returns a
 MappedLongForeignKey[TestRun, TestSubject].
 
 The conclusion from the mailing list post is that while Scala's type inferencer may simply not be good or thorough enough to infer the type arguments in situation 1, situation 2 where I explicitly specify the type parameters and the still code won't compile is indeed a bug. I see the same problem in both 2.7.4-final and 2.7.5-final. 
-

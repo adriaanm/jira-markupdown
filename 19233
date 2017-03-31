@@ -3,8 +3,7 @@ Compiling a small Swing application which uses scala.swing.ComboBox.peer.setMode
 If the line containing peer.setModel() is removed, the code compiles fine. 
 
 Code snippet to reproduce: 
-
-{code:scala}
+```scala
 package test
 
 import scala.swing._
@@ -19,19 +18,17 @@ class DdgVisualizer extends GridBagPanel  {
     selector.peer.setModel(ComboBox.newConstantModel(comboBoxItems))
   }
 }
-{code}
+```
 
 Commands to reproduce in Scala shell: 
-
-{code:scala}
+```scala
 import swing.ComboBox
 val comboBox = new ComboBox(1 to 10)
 comboBox.peer.setModel(ComboBox.newConstantModel(1 to 20))
-{code}
+```
 
 Full stack trace: 
-
-{code}
+```scala
 java.lang.IndexOutOfBoundsException: 0
 	at scala.collection.LinearSeqOptimized$class.apply(LinearSeqOptimized.scala:51)
 	at scala.collection.immutable.List.apply(List.scala:83)
@@ -202,4 +199,4 @@ root/compile:compile
 [debug] 	binary dep: Set()
 [debug] 	external source: Set()
 [debug] All initially invalidated sources: Set()
-{code}
+```

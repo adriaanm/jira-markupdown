@@ -1,25 +1,22 @@
 It seems that in order to use a (compiled) Regex instance to split a string, you have to call java.util.regex.Pattern.split, that's wrapped inside Regex:
-
-{code}
+```scala
 scala> val wSplit = "[ \"',./-]+".r
 wSplit: scala.util.matching.Regex = [ "',./-]+
 
 scala> wSplit.pattern.split("Split me-into words")
 res0: Array[java.lang.String] = Array(Split, me, into, words)
-{code}
+```
 
 I'd like to suggest to either add a split method directly to Regex, or to overload !RichString's split method to accept a Regex instance (and not only a String or Char).  (Following the above example, that would mean making "Split me".split(wSplit) possible).
 
 I guess it would merely involve adding something like
-
-{code}
+```scala
 def split(s: String): Array[String] = pattern.split(s)
-{code}
+```
 to Regexp and/or
-
-{code}
+```scala
 def split(r: Regexp) : Array[String] = r.pattern.split(self)
-{code}
+```
 to !RichString.
 
 (I know it's only a very marginal improvement, but I think it would be nice to have, for instance when writing small text processing scripts.)

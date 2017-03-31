@@ -1,30 +1,28 @@
 Just to clarify, my motivation with this issue is to let folks use the common Java IoC frameworks like Spring/Guice/JSR250/JSR330/JSR299 in a natural way with Scala's fields/getters/setters with minimal noise & boiler plate code. So I'd like developers to be able to write Scala code like this...
-
-{code}
+```scala
  class MyComponent {
     @Autowired var service = _
   }
-{code}
+```
 
 where @Autowired could be replaced by a number of other IoC annotations from the various frameworks such as @Resource or @Inject from Guice/JSR330 - there's about say 10 common well used annotations).
 
 How's this for a really simple mechanism which would solve this problem very easily - as well as provide a simple mechanism folks can adapt and extend...
 
 
-When adding annotations to fields/getters/setters in Scala, the compiler loads the 'annotation defaults' configuration. To do this it loads the default properties file from somewhere (these are the out of the box defaults which tries to do the right thing for most common IoC frameworks) - say at _META-INF/services/scala/compiler-annotations.default.properties_
+When adding annotations to fields/getters/setters in Scala, the compiler loads the 'annotation defaults' configuration. To do this it loads the default properties file from somewhere (these are the out of the box defaults which tries to do the right thing for most common IoC frameworks) - say at *META-INF/services/scala/compiler-annotations.default.properties*
 
-Then it loads __all__ of the custom files (letting users overload the out of the box defaults) it can find at the URI _META-INF/services/scala/compiler-annotations.properties_
+Then it loads **all** of the custom files (letting users overload the out of the box defaults) it can find at the URI *META-INF/services/scala/compiler-annotations.properties*
 
 It loads the defaults into a Properties object then overwrites entries with any custom extensions it can find on the classpath. (It could maybe warn if 2 extension properties files have conflicting entries).
 
 The properties file should look like this...
-
-{code}
+```scala
 javax.annotation.Resource = setter
 org.springframework.beans.factory.annotation.Autowired = setter
 com.google.inject.Inject = setter
 javax.inject.Inject = setter
-{code}
+```
 
 The above supports JSR330, JSR250 and Guice - with a little bit of Spring. A few more entries and all of Spring/Guice/JSR250/JSR330/JSR299 would be supported too.
 

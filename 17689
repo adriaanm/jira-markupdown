@@ -1,37 +1,33 @@
 Compiling the attached Test.scala class (against 2.10.0-RC2) with the -Xprint:jvm flag indicates that the AST for the null comparisons is:
-
-{code}
+```scala
 final def apply(): Object = {
   scala.this.Predef.println(scala.Boolean.box(scala.Int.unbox(null).==(0)));
   scala.this.Predef.println(scala.Boolean.box(null.==(null)));
   ...
-{code}
+```
 
 Decompiling the resulting Test.class (using Jad v1.5.8g [1]) shows that the actual runtime calls are:
-
-{code}
+```scala
 public final Object apply() {
   Predef$.MODULE$.println(BoxesRunTime.boxToBoolean(BoxesRunTime.unboxToInt(null) == 0));
   Object _tmp = null;
   Predef$.MODULE$.println(BoxesRunTime.boxToBoolean(null == null));
   ...
-{code}
+```
 
 However, scala.Int.unbox [2] and BoxesRunTime.unboxToInt [3] differ in their behaviour with respect to null. scala.Int.unbox behaves like Java Integer-to-int unboxing and throws a NullPointerException, whereas BoxesRunTime.unboxToInt converts null to 0.
-
-{code}
+```scala
 def unbox(x: java.lang.Object): Int = x.asInstanceOf[java.lang.Integer].intValue()
-{code}
+```
 
 vs
-
-{code}
+```scala
 public static int unboxToInt(Object i) {
   return i == null ? 0 : ((java.lang.Integer)i).intValue();
 }
-{code}
+```
 
-SI-602 contains a discussion on whether the runtime behaviour is actually desired; this issue simply suggests amending the definition of scala.Int.unbox to match runtime behaviour and to document the method's behaviour on null input.
+scala/bug#602 contains a discussion on whether the runtime behaviour is actually desired; this issue simply suggests amending the definition of scala.Int.unbox to match runtime behaviour and to document the method's behaviour on null input.
 
 [1] http://www.varaneckas.com/jad/jad158g.win.zip
 [2] https://github.com/scala/scala/blob/master/src/library/scala/Int.scala#L622

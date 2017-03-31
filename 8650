@@ -1,19 +1,18 @@
 I can reproduce it in the debugger (but no stand-alone test yet). All I need is a class that defines an annotation with a default parameter, this is enough:
-
-{code}
+```scala
 class HippyAnnotation[T <: Throwable](cause: String = "") extends scala.annotation.StaticAnnotation {
   def this(clazz: Class[T]) = this()
 }
-{code}
+```
 
 It all boils down to this code in Namers.scala:
-{code}
+```scala
       // if default getters (for constructor defaults) need to be added to that module, here's the namer
       // to use. clazz is the ModuleClass. sourceModule works also for classes defined in methods.
       val module = clazz.sourceModule
       for (cda <- module.attachments.get[ConstructorDefaultsAttachment]) {
         cda.companionModuleClassNamer = templateNamer
       }
-{code}
+```
 
 The `sourceModule` call assumes it will get something other than `NoSymbol`, but that's not the case: `clazz` is the class symbol for the annotation, and therefore does not have a moduleClass. It follows that the namer is not assigned to the attachment, that stays null.

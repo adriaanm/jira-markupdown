@@ -1,13 +1,13 @@
 Since HashMap.values returns an iterator that does not implement Iterable it's very hard to map some variables to those HashMap values.
 
 Here's an example:
-{code}
+```scala
 var list = List(
   HashMap( 0 -> "a" ),
   HashMap( 2 -> "c" )
 )
 
 print( list.flatMap( x => x.values ) )
-{code}
+```
 
 The compilation fails because flatMap expects Iterable objects but no Iterators. There are several other methods that expect the same input type. But this could be easily fixed: Iterator just needs to implement Iterable and should return itself.

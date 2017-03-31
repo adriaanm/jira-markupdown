@@ -1,24 +1,22 @@
-{code}
+```scala
 import scala.reflect.macros.Context
 
 object Impls {
   def impl(c: Context) = c.literalUnit
 }
-{code}
-
-{code}
+```
+```scala
 import language.experimental.macros
 
 object Test extends App {
   val macros = new { def foo = macro Impls.impl }
   macros.foo
 }
-{code}
-
-{code}
+```
+```scala
 00:27 ~/Projects/Kepler_typemacros/sandbox (paradise/macros)$ scalac Test.scala 
 Test.scala:4: error: recursive macro method foo needs result type
   val macros = new { def foo = macro Impls.impl }
                ^
 one error found
-{code}
+```

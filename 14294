@@ -1,8 +1,7 @@
 The lexer in trunk does not allow dot-invoking methods on ints that start with a "d". This is a regression from 2.7.x.
 
 Example code:
-
-{code}
+```scala
 class RichInt(n: Int) {
   def days = 1000*60*60*24*n
 }
@@ -10,18 +9,16 @@ class RichInt(n: Int) {
 implicit def RichInt(n: Int): RichInt = new RichInt(n)
 
 10.days
-{code}
+```
 
 Produces:
-
-{code}
+```scala
 error: Invalid literal number
        10.days
        ^
-{code}
+```
 
 A workaround is to invoke the method without a dot.
-
-{code}
+```scala
 10 days
-{code}
+```

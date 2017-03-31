@@ -1,6 +1,5 @@
 Objects and lazy vals defined inside of a method are not thread-safe. Consider the following code:
-
-{code}
+```scala
 object Main {
   def main(args: Array[String]) {
     object Singleton {
@@ -17,19 +16,18 @@ object Main {
     }
   }
 }
-{code}
+```
 
 I would expect the Singleton object to be initialized once, from one thread. However, running the code produces:
-
-{code}
+```scala
 Initializing singleton from: Thread-3
 Initializing singleton from: Thread-2
 Initializing singleton from: Thread-1
 Initializing singleton from: Thread-0
-{code}
+```
 
-The same result is observed if instead of {{object Singleton { ... } }} I define {{class Singleton { ... }; lazy val Singleton = new Singleton}}.
+The same result is observed if instead of `object Singleton { ... } ` I define `class Singleton { ... }; lazy val Singleton = new Singleton`.
 
-If the definition of {{Singleton}} (either object or lazy val) is pulled out of the {{main}} method (that is, put in the body of the {{Main}} class or in the top-level) then the code behaves correctly.
+If the definition of `Singleton` (either object or lazy val) is pulled out of the `main` method (that is, put in the body of the `Main` class or in the top-level) then the code behaves correctly.
 
 This was verified on both 2.7.7 and 2.8.0.Beta1.

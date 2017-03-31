@@ -1,21 +1,18 @@
 File foo.scala:
-
-{code}
+```scala
 object Foo {
   object X { def unapply(x : Int)(y : Option[Int] = None) = None }
   42 match { case _ X _ => () }
 }
-{code} 
+```
 
 Trying to compile this with
-
-{code}
+```scala
 scalac foo.scala
-{code}
+```
 
 causes the compiler to crash with an assertion error:
-
-{code}
+```scala
 error: java.lang.AssertionError: assertion failed: transformCaseApply: name = X tree = X / class scala.reflect.generic.Trees$$Ident
         at scala.Predef$$.assert(Predef.scala:100)
         at scala.tools.nsc.typechecker.RefChecks$$RefCheckTransformer$$$$anonfun$$2.apply$$mcV$$sp(RefChecks.scala:1400)
@@ -145,8 +142,7 @@ Exception in thread "main" java.lang.AssertionError: assertion failed: transform
         at scala.tools.nsc.Main$$.process(Main.scala:106)
         at scala.tools.nsc.Main$$.main(Main.scala:123)
         at scala.tools.nsc.Main.main(Main.scala)
-
-{code}
+```
 
 This is the simplest such example I can find.
 
@@ -157,8 +153,7 @@ This certainly happens using the following:
   - Operating system: Gentoo Linux
 
 It seems like the same problem also happens with Scala 2.8.1 final, with the following output:
-
-{code}
+```scala
 TREE: X(_, _)
 TREE: case X(_, _) => ()
 TREE: 42 match {
@@ -293,5 +288,4 @@ Exception in thread "main" java.lang.AssertionError: assertion failed: X(_, _)
         at scala.tools.nsc.Main$$.process(Main.scala:106)
         at scala.tools.nsc.Main$$.main(Main.scala:120)
         at scala.tools.nsc.Main.main(Main.scala)
-
-{code}
+```

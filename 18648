@@ -1,6 +1,5 @@
-With {{-Xstrict-inference}} per SI-6680:
-
-{code}
+With `-Xstrict-inference` per scala/bug#6680:
+```scala
 scala> sealed abstract class IBox[A]
 defined class IBox
 
@@ -13,11 +12,10 @@ scala> def mapbox[A, B](fa: IBox[A])(f: A => B): IBox[B] = fa match {case ICBox(
  required: A
        def mapbox[A, B](fa: IBox[A])(f: A => B): IBox[B] = fa match {case ICBox(a) => ICBox(f(a))}
                                                                                               ^
-{code}
+```
 
-It's great that {{a}} has the {{A}} from {{ICBox}} in this case, but here it's sound to crush it up to {{A}} from {{mapbox}} at the point I'm using it.  Similarly with covariant box:
-
-{code}
+It's great that `a` has the `A` from `ICBox` in this case, but here it's sound to crush it up to `A` from `mapbox` at the point I'm using it.  Similarly with covariant box:
+```scala
 scala> sealed abstract class Box[+A]
 defined class Box
 
@@ -30,4 +28,4 @@ scala> def mapbox[A, B](fa: Box[A])(f: A => B): Box[B] = fa match {case CBox(a) 
  required: A
        def mapbox[A, B](fa: Box[A])(f: A => B): Box[B] = fa match {case CBox(a) => CBox(f(a))}
                                                                                           ^
-{code}
+```

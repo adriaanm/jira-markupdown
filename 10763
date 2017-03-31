@@ -1,6 +1,5 @@
 If we remove the `ArrayBuffer` vs `ArrayList` noise and just profile lambda vs anon functions against `ArrayList`
-
-{code}
+```scala
 /*
  * Copyright (c) 2005, 2013, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
@@ -54,9 +53,8 @@ public class MyBenchmark {
         testValues.forEach(action);
     }
 }
-{code}
-
-{noformat}
+```
+```
 % (export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0.jdk/Contents/Home/; $JAVA_HOME/bin/java -version )
 
 java version "1.8.0-ea"
@@ -68,6 +66,6 @@ Java HotSpot(TM) 64-Bit Server VM (build 25.0-b66, mixed mode)
 Benchmark                     Mode   Samples         Mean   Mean error    Units
 o.s.MyBenchmark.anonClass    thrpt       200     1656.678        7.368   ops/ms
 o.s.MyBenchmark.lambda       thrpt       200     1627.326        9.527   ops/ms
-{noformat}
+```
 
 I suspect the slight win for the lambda is the fact it is statically hoisted, as it doesn't close over any free variables.

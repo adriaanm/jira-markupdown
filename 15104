@@ -6,7 +6,7 @@ We already have type functions, aka type aliases.  We can use them for looping b
 
 I suggest allowing types to be called recursively.  It would allow for tremendously cleaner metaprogramming.  As an example, look at the attached #Add function in UnrelatedToNum.  I can now define a new looping construct outside of Add, and without having to have access to the Num source code.  Obviously this construct would allow undecidable type statements, so an option to allow undecidable types is probably prudent.
 
-This is similar to the request SI-1291 however even with -Yrecursion it either produces the error:
+This is similar to the request scala/bug#1291 however even with -Yrecursion it either produces the error:
 
 Meta.scala:25: error: illegal cyclic reference involving type Add
   type Add[A<:Num,B<:Num] = A#IsZero#If[B,Succ[Add[A#Pre,B]]]

@@ -1,19 +1,17 @@
 With Scala version 2.10.0-20120430-094203-cfd037271e (OpenJDK 64-Bit Server VM, Java 1.6.0_24) in file test/files/pos/bug1279a.scala:
-
-{code}
+```scala
 // TODO!!! fix this bug for real, it compiles successfully, but weird types are inferred
     def all4Impl[U](first: M {type T <: U}): Stream[M {type T <: U}] = Stream.cons(first, all4Impl(first.next))
-{code}
+```
 
 results in
-
-{code}
+```scala
 <console>:34: error: type mismatch;
  found   : first.selfType
     (which expands to)  M{type T <: first.T}
  required: M{type T <: Nothing}
            def all4Impl[U](first: M {type T <: U}): Stream[M {type T <: U}] = Stream.cons(first, all4Impl(first.next))
                                                                                                                 ^
-{code}
+```
 
 Does this change the status of the bug?

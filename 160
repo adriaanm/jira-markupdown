@@ -1,16 +1,14 @@
 Ahhh, I see. Mmm. I don't know; it's not as if it's incorrect to have the rewriting at the call site when necessary and also in the method in all cases, just a bit wasteful.
 
 Also, consider eta-expansion:
-
-{code}
+```scala
 def foo(lazy a: Int) = { a; a }
 val f = foo _
-{code}
+```
 
 f should have type (=> Int) => Int (I think; unless we're reforming how call-by-name types work), but the lazy semantics should be preserved so that a is evaluated only once. Either the rewrite is internal, or the eta-expansion gets complicated.
 
 Similarly, can we allow anonymous functions to have lazy arguments, given that we already permit them to have call-by-name?
-
-{code}
+```scala
 val f: (=> Int) => Int = (lazy a) => { a; a }
-{code}
+```

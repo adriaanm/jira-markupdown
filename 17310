@@ -1,7 +1,7 @@
 When compiling the following snippet with and without -optimize, I get varying semantics and presumably wrong bytecode.
 
 Given:
-{code:java}
+```java
 import scala.util.Success
 
 object Test {
@@ -11,17 +11,17 @@ object Test {
    println(res)
  }
 }
-{code}
+```
 
 The expected output is:
-{code}
+```scala
 Failure(java.lang.Exception: this is an exception)
-{code}
+```
 
 (This is indeed what I get when running after compiling without -optimize)
 
-When running after compiling _with_ -optimize, the exception is incorrectly thrown:
-{code}
+When running after compiling *with* -optimize, the exception is incorrectly thrown:
+```scala
 java.lang.Exception: this is an exception
        at Test$.main(opt-bug.scala:5)
        at Test.main(opt-bug.scala)
@@ -42,13 +42,13 @@ java.lang.Exception: this is an exception
        at scala.tools.nsc.MainGenericRunner.process(MainGenericRunner.scala:92)
        at scala.tools.nsc.MainGenericRunner$.main(MainGenericRunner.scala:101)
        at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
-{code}
+```
 
 
 In inspecting the bytecode, it seems that the optimizer completely removes the flatMap invocation in the above snippet.
 
 Bytecode without optimize (*CORRECT*):
-{code}
+```scala
 public final class Test$ extends java.lang.Object{
 public static final Test$ MODULE$;
 
@@ -82,10 +82,10 @@ public void main(java.lang.String[]);
   40:        return
 
 }
-{code}
+```
 
 Bytecode with optimize (*INCORRECT*):
-{code}
+```scala
 public final class Test$ extends java.lang.Object{
 public static final Test$ MODULE$;
 
@@ -112,10 +112,10 @@ public void main(java.lang.String[]);
   23:        athrow
 
 }
-{code}
+```
 
 The diff between the two:
-{code}
+```scala
 --- without-opt        2012-08-05 11:32:04.000000000 +0200
 +++ with-opt        2012-08-05 11:32:17.000000000 +0200
 @@ -20,16 +20,9 @@
@@ -137,4 +137,4 @@ The diff between the two:
 +   23:        athrow
 
 }
-{code}
+```

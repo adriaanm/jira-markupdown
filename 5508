@@ -1,6 +1,5 @@
 Scala Language Spec �4.2:
-
-{code}
+```scala
 A variable definition var x : T = _ can appear only as a member of a template. It
 introduces a mutable field with type T and a default initial value. The default value
 depends on the type T as follows:
@@ -12,19 +11,19 @@ depends on the type T as follows:
    false     if T is Boolean,
    {}        if T is Unit,
    null      for all other types T.
-{code}
+```
 
 The spec agrees with the occurring behaviour, but it seems inconsistent because Nothing might be considered an uninhabited type and 
-{code}
+```scala
 var n: Nothing = null
-{code}
+```
 is also refused and
-{code}
+```scala
 var n: Nothing = _
-{code}
+```
 behaves more like
-{code}
+```scala
 var n: Nothing = throw new NullPointerException
-{code}
+```
 
 Maybe it would make sense to add a line to explain what happens with Nothing?

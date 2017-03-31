@@ -1,5 +1,5 @@
 I have a ContinuationizedParallelIterable.scala:
-{code}
+```scala
 import scala.annotation._
 import scala.util.continuations._
 import java.util.concurrent.atomic._
@@ -91,15 +91,15 @@ final class ContinuationizedParallelIterable[+A](
         }
       })
 }
-{code}
+```
 
 Then I compiled it by scalac:
-{code}
+```scala
 scalac -P:continuations:enable ContinuationizedParallelIterable.scala
-{code}
+```
 
 I got stderr:
-{code}
+```scala
 error: scala.tools.nsc.symtab.Types$TypeError: type mismatch;
  found   : (java.lang.String, Int) => scala.util.continuations.ControlContext[Boolean,Unit,Unit]
  required: scala.util.continuations.ControlContext[Boolean,Unit,Unit]
@@ -497,10 +497,10 @@ Exception in thread "main" scala.tools.nsc.symtab.Types$TypeError: type mismatch
 	at scala.tools.nsc.Main$.process(Main.scala:106)
 	at scala.tools.nsc.Main$.main(Main.scala:123)
 	at scala.tools.nsc.Main.main(Main.scala)
-{code}
+```
 
 And I got stdout:
-{code}
+```scala
 exception when traversing ((check$ifrefutable$1: (java.lang.String, Int)) => (check$ifrefutable$1: (java.lang.String, Int) @unchecked) match {
   case (_1: java.lang.String, _2: Int)(java.lang.String, Int)((location @ _), (accessors @ _)) => package.this.shiftUnitR[Boolean, Unit]((check$ifrefutable$1: (java.lang.String, Int) @unchecked) match {
     case (_1: java.lang.String, _2: Int)(java.lang.String, Int)((location @ _), (accessors @ _)) => true
@@ -644,4 +644,4 @@ exception when traversing {
   };
   (new anonymous class $anonfun(): () => scala.util.continuations.ControlContext[Unit,Unit,Unit])
 }
-{code}
+```

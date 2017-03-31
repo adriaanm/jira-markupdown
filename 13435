@@ -1,4 +1,4 @@
-{code}
+```scala
 scala> null + ""
 <console>:5: error: value + is not a member of Null
        null + ""
@@ -21,11 +21,10 @@ java.lang.NullPointerException
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.j...
 scala> "" + null
 res2: java.lang.String = null
-{code}
+```
 
 I'm not sure why null + "" doesn't work. It probably should, but I don't care that much. But the real issue here is that a null in the first argument doesn't work. In particular this makes + for strings non-associative, as:
-
-{code}
+```scala
 scala> "foo" + (foo + "bar") 
 java.lang.NullPointerException
 	at scala.runtime.StringAdd.$$plus(StringAdd.scala:26)
@@ -38,4 +37,4 @@ java.lang.NullPointerException
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.j...
 scala> ("foo" + foo) + "bar"
 res6: java.lang.String = foonullbar
-{code}
+```

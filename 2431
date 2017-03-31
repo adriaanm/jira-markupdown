@@ -1,9 +1,9 @@
 Replying to [comment:6 dragos]:
-> Thanks for coming up with such a small example. This look similar to SI-2175 (an undeclared local variable is used in the pattern match translation). 
+> Thanks for coming up with such a small example. This look similar to scala/bug#2175 (an undeclared local variable is used in the pattern match translation). 
 
 I don't think 2429B has anything to do with the pattern matcher.  The synthetic e$$1 which is crashing it doesn't make its first appearance until lambdalifter, right here:
-{code}
+```scala
     def item(text: Bug2429B#TSeq): Bug2429B#TSeq = Bug2429B.this.TSeq.fromSeq(immutable.this.Nil.map({
       (new anonymous class $$anonfun$$item$$1(e$$1): Function1)
     }, immutable.this.List.builderFactory()).$$asInstanceOf[Seq]());
-{code}
+```

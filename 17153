@@ -1,6 +1,5 @@
 The following code worked flawlessly on 2.9:
-
-{code}
+```scala
 object japi {
 @deprecated("Do not use this directly, use subclasses of this", "2.0")
   class UnitFunctionBridge[-T] extends (T ⇒ BoxedUnit) {
@@ -22,11 +21,10 @@ abstract class Foreach[-T] extends japi.UnitFunctionBridge[T] {
   @throws(classOf[Throwable])
   def each(result: T): Unit
 }
-{code}
+```
 
 And then from Java:
-
-{code}
+```scala
  @Test
   public void mustBeAbleToForeachAFuture() throws Throwable {
     final CountDownLatch latch = new CountDownLatch(1);
@@ -42,11 +40,10 @@ And then from Java:
     assertTrue(latch.await(5000, TimeUnit.MILLISECONDS));
     assertEquals(Await.result(f, timeout), "foo");
   }
-{code}
+```
 
 However, using Scala 2.10-M4 javac spits this in mah face:
-
-{code}
+```scala
 [error] /Users/viktorklang/Documents/workspace/akka/akka/akka-actor-tests/src/test/java/akka/dispatch/JavaFutureTests.java:117: apply$mcLJ$sp(long) in akka.dispatch.japi.UnitFunctionBridge cannot implement apply$mcLJ$sp(long) in scala.Function1; attempting to use incompatible return type
 [error] found   : java.lang.Object
 [error] required: scala.runtime.BoxedUnit
@@ -55,13 +52,12 @@ However, using Scala 2.10-M4 javac spits this in mah face:
 [error] 1 error
 [error] {file:/Users/viktorklang/Documents/workspace/akka/akka/}akka-actor-tests/test:compile: javac returned nonzero exit code
 [error] Total time: 125 s, completed Jun 25, 2012 1:27:58 PM
-{code}
+```
 
 
 
 This steps around it... But I think it has a certain kind of smell:
-
-{code}
+```scala
   @deprecated("Do not use this directly, use subclasses of this", "2.0")
   class UnitFunctionBridge[-T] extends (T ⇒ BoxedUnit) {
     final def apply$mcLJ$sp(l: Long): BoxedUnit = { internal(l.asInstanceOf[T]); BoxedUnit.UNIT }
@@ -72,4 +68,4 @@ This steps around it... But I think it has a certain kind of smell:
     override final def apply(t: T): BoxedUnit = { internal(t); BoxedUnit.UNIT }
     protected def internal(result: T): Unit = ()
   }
-{code}
+```

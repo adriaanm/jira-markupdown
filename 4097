@@ -1,6 +1,5 @@
-This is quite tricky to fix. Redefining the use case won't work, and I tried getting the correct type back in [891769fa|https://github.com/scala/scala/commit/891769fae541513d68ce7a8e84b7213472c333c9]:
-
-{code}
+This is quite tricky to fix. Redefining the use case won't work, and I tried getting the correct type back in [891769fa](https://github.com/scala/scala/commit/891769fae541513d68ce7a8e84b7213472c333c9):
+```scala
 /**
  * @define Coll Iterable
  */
@@ -17,8 +16,8 @@ class Iterable[T] {
 class Map[A, B] extends Iterable[(A,B)] {
   protected type D1[_] = Map[A, B]
 }
-{code}
+```
 
-But that won't work well, as the return type of function {{f}} is not constrained to be {{(A,B) => (C,D)}}.
+But that won't work well, as the return type of function `f` is not constrained to be `(A,B) => (C,D)`.
 
-So, I'll close this bug as won't fix, and I created bug SI-6128 about making the use case generation fully automatic.
+So, I'll close this bug as won't fix, and I created bug scala/bug#6128 about making the use case generation fully automatic.

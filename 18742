@@ -2,13 +2,13 @@ Calling .getClass.getSimpleName for an object results in a java.lang.InternalErr
 
 To reproduce:
 
-# Fire up Scala REPL.
-# Enter {noformat}scala> object Test{noformat}
-# REPL replies with {noformat}defined module Test{noformat}
-# Enter {noformat}scala> Test.getClass{noformat}
-# REPL replies with {noformat}res0: Class[_ <: Test.type] = class Test${noformat}
-# Enter {noformat}scala> Test.getClass.getSimpleName{noformat}
-# REPL reports exception: {noformat}java.lang.InternalError: Malformed class name
+- Fire up Scala REPL.
+- Enter {noformat}scala> object Test{noformat}
+- REPL replies with {noformat}defined module Test{noformat}
+- Enter {noformat}scala> Test.getClass{noformat}
+- REPL replies with {noformat}res0: Class[_ <: Test.type] = class Test${noformat}
+- Enter {noformat}scala> Test.getClass.getSimpleName{noformat}
+- REPL reports exception: {noformat}java.lang.InternalError: Malformed class name
         at java.lang.Class.getSimpleName(Class.java:1190)
         at .<init>(<console>:9)
         at .<clinit>(<console>)
@@ -40,4 +40,4 @@ To reproduce:
         at scala.tools.nsc.MainGenericRunner$.main(MainGenericRunner.scala:105)
         at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala){noformat}
 
-This issue seems similar to SI-4863 and SI-2034, but I'm raising it as a separate bug because the exception I'm seeing doesn't match the descriptions of those issues.
+This issue seems similar to scala/bug#4863 and scala/bug#2034, but I'm raising it as a separate bug because the exception I'm seeing doesn't match the descriptions of those issues.

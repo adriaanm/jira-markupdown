@@ -1,6 +1,5 @@
 I have tried to dig in the problem but felt lost in collections jungle. On this way I have found strange code fragment in swing/BufferWrapper.scala:
-
-{code}
+```scala
 protected[swing] abstract class BufferWrapper[A] extends Buffer[A] { outer =>
     def clear { for (i <- 0 to length) remove(0) }
     def update(n: Int, a: A) {
@@ -10,5 +9,5 @@ protected[swing] abstract class BufferWrapper[A] extends Buffer[A] { outer =>
 ...
 ...
 }
-{code}
+```
 I mean '0' instead of 'n' in 'remove(0)' call. OTOH, I still didn't found any relation of this possible typo with the bug (I have tried to replace '0' with 'n' with the same CCE as a result).

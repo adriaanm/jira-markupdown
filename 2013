@@ -1,10 +1,10 @@
-I have not read all the details of this thread, but in any case {{readlink}} won't help much in that position: it will fail if the argument is a real dir rather than a link and your {{pwd}} will return the home dir :-). However, changing the {{pwd}} to {{pwd -P}} will resolve all the symbolic links, which is probably what you want. This should work:
-{code}
+I have not read all the details of this thread, but in any case `readlink` won't help much in that position: it will fail if the argument is a real dir rather than a link and your `pwd` will return the home dir :-). However, changing the `pwd` to `pwd -P` will resolve all the symbolic links, which is probably what you want. This should work:
+```scala
   SCALA_HOME="$$(cd "$$(cd $$(dirname "$$SOURCE"); pwd -P)"/..; pwd)"
-{code}
+```
 or, in simpler steps:
-{code}
+```scala
   SCALA_HOME=`dirname "$$SOURCE"`
   SCALA_HOME=`cd "$$SCALA_HOME"; pwd -P`
   SCALA_HOME=`cd "$$SCALA_HOME"/..; pwd`
-{code}
+```

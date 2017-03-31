@@ -3,7 +3,7 @@ In the upper or lower bound of a type parameter for an inherited member, an ance
 You can see this in the standard library API documentation in several places.  For example, in the ++, copyTo*, grouped, and other methods of [http://www.scala-lang.org/api/current/scala/xml/pull/ProducerConsumerIterator.html ProducerConsumerIterator], there is a type variable 'A' as the lower bound of a new type parameter.  This 'A' is probably the unreplaced type parameter of the 'Iterator' ancestor.  It should be 'T'.  Or, there is [http://www.scala-lang.org/api/current/scala/collection/BitSet.html BitSet], which should have Int substituted for 'A' for those methods.
 
 A test case is:
-{code}
+```scala
 trait A[Q] {
   def ret: List[Q]
   def ret2[Z >: Q](z: Z): Z
@@ -11,7 +11,7 @@ trait A[Q] {
   type X >: Q
 }
 trait B[T] extends A[T]
-{code}
+```
 
 In the generated documentation for B, Q should be replaced by T.  This is the case for the Q in the return type of 'ret', but not in the bounds of 'ret2', 'ret3', or 'X'.
 

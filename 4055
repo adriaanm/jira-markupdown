@@ -3,7 +3,7 @@ I want to get this straight as well, but you seem to prefer talking 'in private'
 Unfortunately, I don't get what you mean by 'works' and 'doesn't work'. None of the examples crash; some of them issue warnings, but using your example, 'works' does not mean 'no warning'. Moreover, there are no warnings for your second example. So I will try to explain what happens, hoping I am clearer this time.
 
 Here's the output of running (trunk) scalac on your examples:
-{code}
+```scala
 doubledef.scala:5: warning: type T is unused or used in non-specializable positions.
   def fn1[@specialized T](t : T => Int) : Int = 1
       ^
@@ -14,10 +14,9 @@ doubledef.scala:14: warning: type T is unused or used in non-specializable posit
   def fn4[@specialized(Int) T, @specialized U](fn1 : T => Int, fn2 : U => T, u : U) : Int = 1
       ^
 three warnings found
-{code}
+```
 When a warning is issued, the compiler strips `@specialized` from the unused type parameters, and tries to specialize again. So, if you want, the SID is correct in saying 'specialized versions are created when at least one parameter is specialized'. For example, `fn4` generates the following definitions (notice partial specialization on type U):
-
-{code}
+```scala
     <specialized> def fn4$$mVc$$sp[T >: Nothing <: Any](fn1: (T) => Int, fn2: (Unit) => T, u: Unit): Int = 1;
     <specialized> def fn4$$mZc$$sp[T >: Nothing <: Any](fn1: (T) => Int, fn2: (Boolean) => T, u: Boolean): Int = 1;
     <specialized> def fn4$$mBc$$sp[T >: Nothing <: Any](fn1: (T) => Int, fn2: (Byte) => T, u: Byte): Int = 1;
@@ -27,7 +26,7 @@ When a warning is issued, the compiler strips `@specialized` from the unused typ
     <specialized> def fn4$$mLc$$sp[T >: Nothing <: Any](fn1: (T) => Int, fn2: (Long) => T, u: Long): Int = 1;
     <specialized> def fn4$$mFc$$sp[T >: Nothing <: Any](fn1: (T) => Int, fn2: (Float) => T, u: Float): Int = 1;
     <specialized> def fn4$$mDc$$sp[T >: Nothing <: Any](fn1: (T) => Int, fn2: (Double) => T, u: Double): Int = 1
-{code}
+```
 
 I agree that it's not intuitive/too restrictive to not specialize when a `@specialized` type parameter is used at a specialized position in a type constructor (in this case, `Function1`), and we plan to change that, but it's not yet implemented.
 

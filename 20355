@@ -1,9 +1,8 @@
 this code causes OOME
-
-{code:scala}
+```scala
   def stream = Stream.continually(new Array[Byte](1024 * 1024))
   stream.tails.take(100000).foreach{_ => }
-{code}
+```
 
 generated Iterator has reference to underlying stream via calling `newBuilder`
 https://github.com/scala/scala/blob/v2.12.1/src/library/scala/collection/TraversableLike.scala#L806

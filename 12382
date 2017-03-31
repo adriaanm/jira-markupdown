@@ -1,9 +1,9 @@
 There's weird behavior exhibited by isAsSpecific in Infer.scala: https://github.com/scala/scala/blob/ccfa36071f0623d64474f37b12d40a838aac1b4e/src/compiler/scala/tools/nsc/typechecker/Infer.scala#L808.
 
 In particular, it thinks that:
-{code}
+```scala
 isAsSpecific((x: Int => Int)Nothing, (x: MyFunction1[Int,Int])Nothing) = true
-{code}
+```
 
 In order to check specificity, isAsSpecific calls isCompatible (https://github.com/scala/scala/blob/ccfa36071f0623d64474f37b12d40a838aac1b4e/src/compiler/scala/tools/nsc/typechecker/Infer.scala#L294) passing Int => Int and MyFunction1[Int, Int] as arguments to that method.
 

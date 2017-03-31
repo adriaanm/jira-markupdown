@@ -3,8 +3,7 @@ I'm getting a stack overflow exception in 2.7.3 and the nighly scala-2.8.0.r1718
 http://google-collections.googlecode.com/files/google-collect-snapshot-20090211.zip
 
 I compiled this code:
-
-{code}
+```scala
 import com.google.common.collect.MapMaker
 
 abstract class AbstractEntityCache[C,E]
@@ -27,22 +26,20 @@ abstract class AbstractEntityCache[C,E]
       .makeComputingMap(computer)
   }
 }
-{code}
+```
 
-with {{scalac -classpath google-collect-snapshot-20090211.jar}}
+with `scalac -classpath google-collect-snapshot-20090211.jar`
 
 With 2.7.3 I get
-
-{code}
+```scala
 Exception in thread "main" java.lang.StackOverflowError
         at scala.tools.nsc.symtab.Types$$commonOwnerMap$$.apply(Types.scala:3140)
         at scala.tools.nsc.symtab.Types$$commonOwnerMap$$.apply(Types.scala:3136)
         at scala.tools.nsc.symtab.Types$$TypeMap.mapOver(Types.scala:2420)
-{code}
+```
 
 and with 2.8.0.r17185 I get:
-
-{code}
+```scala
 exception when typing computer, pt = com.google.common.base.Function[_ >: ?, _ <: ?]
 exception when typing new MapMaker().softValues().makeComputingMap(computer), pt = ?
 exception when typing {
@@ -104,4 +101,4 @@ Exception in thread "main" java.lang.StackOverflowError
         at scala.tools.nsc.symtab.Types$$commonOwnerMap$$.apply(Types.scala:3167)
         at scala.tools.nsc.symtab.Types$$commonOwnerMap$$.apply(Types.scala:3163)
         at scala.tools.nsc.symtab.Types$$TypeMap.mapOver(Types.scala:2445)
-{code}
+```

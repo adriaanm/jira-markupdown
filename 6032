@@ -1,8 +1,7 @@
 (comment by extempore):
 
 This is induced by the use of a type constructor as a bound. Much simplified:
-
-{code}
+```scala
 
 // J.java
 public class J<T> {
@@ -19,12 +18,11 @@ object Test {
     J.f(classOf[S])
   }
 }
-{code}
+```
 
 
 This results in:
-
-{code}
+```scala
 
 S.scala:5: error: type mismatch;
  found   : java.lang.Class[S](classOf[S])
@@ -32,12 +30,11 @@ S.scala:5: error: type mismatch;
     J.f(classOf[S])
                ^
 one error found
-{code}
+```
 
 
 I don't immediately see how to work around it from the scala side alone, because scala is picky about how we express these things.
-
-{code}
+```scala
 
 // nope
 J.f(classOf[S]: Class[_ <: J[_]])
@@ -68,4 +65,4 @@ S.scala:5: error: class J takes type parameters
     J.f(classOf[S]: Class[J])
                           ^
 one error found
-{code}
+```

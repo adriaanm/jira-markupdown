@@ -1,7 +1,7 @@
 retronym: regarding the ill-scoped x in that output, I'm having trouble making sense of it. Is it the type of the expression which is carrying an explicit type ascription, before the type ascription has been applied? In which case you're really seeing an implementation artifact.
 
 I say that because the types look right when I do good old -Xprint:typer for both these cases. Looking at the positions where Singleton is shown for f, I see no way x could possibly be escaping. And in g it is given the correct existential type.
-{code}
+```scala
 object Test {
   def f = { val x = ""; x: x.type }: Singleton
   def g = { val x = "" ; identity[x.type] _ }
@@ -16,4 +16,4 @@ object Test {
 //     ((x: x.type) => scala.this.Predef.identity[x.type](x))
 //   }
 // }
-{code}
+```

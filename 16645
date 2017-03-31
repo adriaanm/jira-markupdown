@@ -1,8 +1,7 @@
 CPS compilation gives a warning for certain match statements, and can also cause runtime ClassCastExceptions due to failed transformation.
 
 e.g. The following code gives a compile warning and a runtime error.
-
-{noformat}
+```
 import scala.util.continuations._
 
 object Test {
@@ -23,9 +22,8 @@ object Test {
   }
 
 }
-{noformat}
-
-{noformat}
+```
+```
 $ ~/opt/scala-2.10.0.dev-1302-g6a33a20/bin/scala -P:continuations:enable matchY.scala 
 /p/scala/bugs/matchY.scala:12: warning: expression () of type Unit @scala.util.continuations.cpsPlus @util.continuations.package.cps[Unit] is not expected to have a cps type
       case None => ()
@@ -72,4 +70,4 @@ java.lang.ClassCastException: scala.runtime.BoxedUnit cannot be cast to scala.ut
 	at scala.tools.nsc.MainGenericRunner.process(MainGenericRunner.scala:92)
 	at scala.tools.nsc.MainGenericRunner$.main(MainGenericRunner.scala:101)
 	at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
-{noformat}
+```

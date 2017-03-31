@@ -3,8 +3,7 @@ Another case study by hejfelix (https://github.com/scala/scala/issues/1723):
 I am using scala in the eclipse plugin version 2.1.0.m2 and I am getting problems when using the reflection API in a concurrent setting.
 
 I have a big framework using MPJ-Express as the backend and running applications in multi-core mode. When I use the reflection api, I get random occurences of the runtime eror displayed below:
-
-{code}
+```scala
 java.lang.reflect.InvocationTargetException
 at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
@@ -34,6 +33,6 @@ at it.vigtig.thesis.env.package$.parallelize(package.scala:59)
 at it.vigtig.thesis.test.NGridTest$.main(NGridTest.scala:14)
 at it.vigtig.thesis.test.NGridTest.main(NGridTest.scala)
 ... 6 more
-{code}
+```
 
 I am not sharing any reflection knowledge or objects between threads, so this behaviour must be a bug. The parts I am using from reflection are TypeTags and ClassTags as implicit arguments.

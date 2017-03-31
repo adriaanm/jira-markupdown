@@ -8,7 +8,7 @@ object Prestest {
     def meth = 5
   }
 }
-{code}
+```scala
 
 {code:scala|title=ops.scala}
 package com.whatever
@@ -22,23 +22,21 @@ object Utils {
     def implicitMethod: Int = 42
   }
 }
-{code}
+```
 
 I get the following error when typechecking the second file:
-
-{code}
+```scala
 ops.scala:10: error: not found: type Root
   implicit class rootOps(root: Root) {
                                ^
-{code}
+```
 
-The problem disappears when I move the import statement outside of {{Utils}} object.
+The problem disappears when I move the import statement outside of `Utils` object.
 
 I did a {{git-bisect}} and found out that the regression was introduced in [7664e25eed8ae4547f1cfd774b62a7b6a4baf8b5|https://github.com/retronym/scala/commit/7664e25eed8ae4547f1cfd774b62a7b6a4baf8b5] (fix for SI-8941).
 
 Here's a full source of test case that I was running:
-
-{code:scala}
+```scala
 import scala.reflect.internal.util.BatchSourceFile
 import scala.tools.nsc.{interactive, Settings}
 import scala.tools.nsc.reporters.ConsoleReporter
@@ -104,4 +102,4 @@ object Test {
   }
 
 }
-{code}
+```

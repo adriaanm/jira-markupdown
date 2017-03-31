@@ -1,6 +1,5 @@
 The following code crashes the pickler:
-
-{code}
+```scala
 object Test extends Application {
   
   trait C[T] {
@@ -14,13 +13,12 @@ object Test extends Application {
   }
   
 }
-{code}
+```
 
 It seems that type inference does not calculate a valid type for `c` (it has type `?`) which confuses the pickler.
 
 Stack trace is as follows:
-
-{code}
+```scala
 scala.tools.nsc.FatalError: bad type: ?(class scala.tools.nsc.symtab.Types$$WildcardType$$)
 	at scala.tools.nsc.symtab.classfile.Pickler$$Pickle.scala$$tools$$nsc$$symtab$$classfile$$Pickler$$Pickle$$$$putType(Pickler.scala:196)
 	at scala.tools.nsc.symtab.classfile.Pickler$$Pickle.scala$$tools$$nsc$$symtab$$classfile$$Pickler$$Pickle$$$$putType(Pickler.scala:189)
@@ -44,11 +42,10 @@ scala.tools.nsc.FatalError: bad type: ?(class scala.tools.nsc.symtab.Types$$Wild
 	at scala.tools.nsc.symtab.classfile.Pickler$$PicklePhase.apply(Pickler.scala:63)
 	at scala.tools.nsc.Global$$GlobalPhase.applyPhase(Global.scala:301)
         ...
-{code}
+```
 
 And printing the compilation tree after typer yields the following:
-
-{code}
+```scala
 package <empty> {
   final object Test extends java.lang.Object with Application with ScalaObject {
     def this(): object Test = {
@@ -64,14 +61,12 @@ package <empty> {
     }
   }
 }
+```
 
-{code}
-
-*Original report* edited.
+**Original report** edited.
 
 Using a shell:
-
-{code}
+```scala
 Welcome to Scala version 2.7.2.final (Java HotSpot(TM) Client VM, Java 1.5.0_16).
 Type in expressions to have them evaluated.
 Type :help for more information.
@@ -86,6 +81,5 @@ scala> val f = stringConst match {
      |    case None => java.io.File.createTempFile("test", "")    
      | }                                                           
 Exception in thread "main" scala.tools.nsc.FatalError: bad type: ?(class scala.tools.nsc.symtab.Types$$WildcardType$$)
-{code}
+```
 It error out and then exited the shell!
-

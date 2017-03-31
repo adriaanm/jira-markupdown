@@ -1,20 +1,20 @@
-you can operate on lists {{List[A]}} like on a database
+you can operate on lists `List[A]` like on a database
 
-"select" can be simulated by the method {{map((A)=>B):List[B]}},
-"where" clause can be simulated by the method {{filter((A)=>Boolean):List[A]}},
+"select" can be simulated by the method `map((A)=>B):List[B]`,
+"where" clause can be simulated by the method `filter((A)=>Boolean):List[A]`,
 
 But what about "group by"?
-It's a generalization of the method {{partition((A)=>Boolean):(List[A], List[A])}},
+It's a generalization of the method `partition((A)=>Boolean):(List[A], List[A])`,
 which generates a pair of two disjunct lists.
 Here are the declarations:
 
-{{def groupBy[B](f:A=>B):Map[B,List[A]]}} and
+`def groupBy[B](f:A=>B):Map[B,List[A]]` and
 
-{{def groupCount[B](f:A=>B):Map[B,Int]}}
+`def groupCount[B](f:A=>B):Map[B,Int]`
 
 
 An example:
-{code}
+```scala
     class Customer(val zipCode:Int, val name:String) {
         override def toString = name
     }
@@ -30,6 +30,6 @@ An example:
 
     db.groupCount(_.zipCode)
     //  yields Map(321 -> 1, 123 -> 2)
-{code}
+```
 
 Attached there is an example implementation of the two methods.

@@ -1,20 +1,19 @@
 Actually, I do understand the Spec differently (might be misunderstanding it though):
 
-The translation scheme is as follows. In a first step, every generator {{p <- e}}, where
-p *is not irrefutable* (�8.1) for the type of e is replaced by
+The translation scheme is as follows. In a first step, every generator `p <- e`, where
+p **is not irrefutable** (�8.1) for the type of e is replaced by
   {{ p <- e .filter { case p => true; case _ => false } }}
 
-A pattern p *is irrefutable* for a type T, if one of the following applies:
+A pattern p **is irrefutable** for a type T, if one of the following applies:
 
-*3. p is a constructor pattern c(p 1 , . . . , p n ), the type T is an instance of class c, the primary constructor (�5.3) of type T has argument types T1 , . . . , Tn , and p i is irrefutable for Ti .*
+**3. p is a constructor pattern c(p 1 , . . . , p n ), the type T is an instance of class c, the primary constructor (�5.3) of type T has argument types T1 , . . . , Tn , and p i is irrefutable for Ti .**
 
 Isn't Tuple2 irrefutable, but filter is only used for non-irrefutable types?  
 
 
 Everything else I would consider a performance bug as the following would copy the array by calling its filter method:
-
-{code}
+```scala
 val pairs : Array[(Int,Int)] = ...
 
 for((first,second) <- pairs) printf("First: %4d\t Second: %4d\n", first, second)
-{code}
+```

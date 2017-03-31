@@ -1,5 +1,5 @@
 That's very interesting.  Here is the function really at fault, in UIElement.  It has a bounded type parameter, nothing from which to infer what it's supposed to be, and then casts something to that inferred type.  Very dangerous for it to exist, and it shouldn't if there's any other way to do whatever it's doing.  I see it called a bunch of places without a specified type parameter and I'm not sure why all those don't throw CCEs.
-{code}
+```scala
   private[swing] def cachedWrapper[C>:Null<:UIElement](c: java.awt.Component): C = {
     val w = c match {
       case c: javax.swing.JComponent => c.getClientProperty(ClientKey)
@@ -7,4 +7,4 @@ That's very interesting.  Here is the function really at fault, in UIElement.  I
     }
     try { w.asInstanceOf[C] } catch { case _ => null }
   }
-{code}
+```

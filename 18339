@@ -1,14 +1,13 @@
-Under certain circumstances, queriying {{knownDirectSubclasses}} from a sealed trait from within a macro yields an empty list. It seems to be related to compilation order. Perhaps related to SI-7567, SI-7046.
+Under certain circumstances, queriying `knownDirectSubclasses` from a sealed trait from within a macro yields an empty list. It seems to be related to compilation order. Perhaps related to scala/bug#7567, scala/bug#7046.
 
 Minimised test case, to reproduce:
 
-- {{git clone -b knownDirectSubclasses git@github.com:Sciss/play-json-sealed.git}}
-- {{cd play-json-sealed}}
-- {{sbt clean compile}}
+- `git clone -b knownDirectSubclasses git@github.com:Sciss/play-json-sealed.git`
+- `cd play-json-sealed`
+- `sbt clean compile`
 
-*Observed behaviour:* Compilation fails with
-
-{code}
+**Observed behaviour:** Compilation fails with
+```scala
 [info] Compiling 3 Scala sources to /Users/hhrutz/Documents/devel/play-json-sealed/test/target/scala-2.10/classes...
 [error] exception during macro expansion: 
 [error] java.lang.IllegalArgumentException: requirement failed: Did not find sub classes for type trait SelectionSize
@@ -20,6 +19,6 @@ Minimised test case, to reproduce:
 [error] 	at foo.Checker$.applyImpl(Checker.scala:13)
 [error] two errors found
 [error] (test/compile:compile) Compilation failed
-{code}
+```
 
-*Expected behaviour:* Should find the respective sub classes.
+**Expected behaviour:** Should find the respective sub classes.

@@ -1,13 +1,13 @@
 Well, a Char is a 16-bit unsigned number and a Byte is an 8-bit signed number, so it won't be a bijection in general.   But in this case it was not the map operations that caused the numerical change, but rather it was the fact that you wrote the file using a java.io.OutputStream, which deals with raw bytes, but read the file using scala.io.Source (or java.io.FileReader), which deals with character data.   
 
-By convention, Chars in Java and Scala are treated as Unicode [UTF-16|http://en.wikipedia.org/wiki/UTF-16/UCS-2] code units (see [java.lang.Character|http://download.oracle.com/javase/6/docs/api/java/lang/Character.html] for more info on the java side).  So under the hood, scala.io.Source interprets the file using some default encoding and _translates_ it to UTF-16.  On OS X, the JVM apparently defaults to [MacRoman|http://en.wikipedia.org/wiki/Mac_OS_Roman] and if you dig through the character tables, you'll find that 233 in MacRoman is the same character as 200 in Unicode.
+By convention, Chars in Java and Scala are treated as Unicode [UTF-16](http://en.wikipedia.org/wiki/UTF-16/UCS-2) code units (see [java.lang.Character](http://download.oracle.com/javase/6/docs/api/java/lang/Character.html) for more info on the java side).  So under the hood, scala.io.Source interprets the file using some default encoding and *translates* it to UTF-16.  On OS X, the JVM apparently defaults to [MacRoman](http://en.wikipedia.org/wiki/Mac_OS_Roman) and if you dig through the character tables, you'll find that 233 in MacRoman is the same character as 200 in Unicode.
 
 Here are a few tips for avoiding some of these character-encoding issues:
 
 1.  When working with raw binary data, use Bytes and Byte-based APIs.
 2.  When working with text, use Chars and Char-based APIs.
-3.  When doing Character-based IO, keep in mind that some (possibly implicit) character encoding will be used to convert between the text and the raw bytes being written or read.  This conversion _need not_ preserve numerical values of the Chars or of the raw bytes.
-4.  It's usually better to explicitly specify an encoding rather than relying on the platform's default.   See [this article|http://illegalargumentexception.blogspot.com/2009/05/java-rough-guide-to-character-encoding.html#javaencoding_encodings] for some reasons why.
+3.  When doing Character-based IO, keep in mind that some (possibly implicit) character encoding will be used to convert between the text and the raw bytes being written or read.  This conversion *need not* preserve numerical values of the Chars or of the raw bytes.
+4.  It's usually better to explicitly specify an encoding rather than relying on the platform's default.   See [this article](http://illegalargumentexception.blogspot.com/2009/05/java-rough-guide-to-character-encoding.html#javaencoding_encodings) for some reasons why.
 
 
 

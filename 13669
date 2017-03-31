@@ -1,5 +1,5 @@
 fails if scalac is passed both source files:
-{code}
+```scala
   ~/newbug> cat J.java 
 enum J { j1 }
   ~/newbug> cat S.scala 
@@ -20,15 +20,15 @@ java.lang.NoSuchFieldError: MODULE$$
 	at scala.tools.nsc.ObjectRunner$$.run(ObjectRunner.scala:74)
 	at scala.tools.nsc.MainGenericRunner$$.main(MainGenericRunner.scala:164)
 	at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
-{code}
+```
 
 but succeeds if javac comes first and scalac only sees the Java class file:
-{code}
+```scala
   ~/newbug> rm *.class
   ~/newbug> javac J.java 
   ~/newbug> ~/scala/dists/latest/bin/scalac S.scala 
   ~/newbug> ~/scala/dists/latest/bin/scala S              
 j1
-{code}
+```
 
 I'm running r15799.

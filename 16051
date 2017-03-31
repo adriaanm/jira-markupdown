@@ -4,8 +4,7 @@ The following code is part of a larger project. Alone it will compile without er
 The class Pixel in question has a protected constructor. If the protected modifier is removed the compiler seems to go into an infinite loop. I included a stacktrack and a snapshot from VisualVM while the compiler was running in case there are some clues there.
 
 The problems was discovered while upgrading from 2.8.0 to 2.9.0.rc1. All library dependencies was recompiled to 2.9.0.rc1.
-
-{code}
+```scala
 package test
 
 class Pixel[@specialized T] protected (var x: Int, var y: Int, var v: T) {
@@ -33,7 +32,7 @@ object Pixel {
 	def Pixel1i(v: Int): Pixel1i = new Pixel1i(0, 0, v)
 	def Pixel1i(): Pixel1i = new Pixel1i(0, 0, 0)
 }
-{code} 
+```
 
 
 
@@ -43,8 +42,7 @@ Standard compiler error message explaining origin and reason for error.
 
 === What do you see instead? ===
 Compiler error when Pixel constructor is protected:
-
-{code}
+```scala
    java.lang.Thread.State: RUNNABLE
 	at scala.tools.nsc.symtab.Scopes$$class.scala$$tools$$nsc$$symtab$$Scopes$$$$newScopeEntry(Scopes.scala:40)
 	at scala.tools.nsc.symtab.Scopes$$Scope.enter(Scopes.scala:126)
@@ -143,10 +141,10 @@ Compiler error when Pixel constructor is protected:
 	at org.apache.tools.ant.Project.executeTargets(Project.java:1189)
 	at org.eclipse.ant.internal.launching.remote.InternalAntRunner.run(InternalAntRunner.java:423)
 	at org.eclipse.ant.internal.launching.remote.InternalAntRunner.main(InternalAntRunner.java:137)
-{code}
+```
 
 Threaddump from looping compiler when Pixel contructor is public:
-{code}
+```scala
 "main" prio=6 tid=0x01aab400 nid=0xeb8 runnable [0x01a5c000]
    java.lang.Thread.State: RUNNABLE
 	at scala.tools.nsc.symtab.Symbols$$Symbol.getFlag(Symbols.scala:661)
@@ -302,7 +300,7 @@ Threaddump from looping compiler when Pixel contructor is public:
 
    Locked ownable synchronizers:
 	- None
-{code}
+```
 
 === Additional information ===
 (for instance, a link to a relevant mailing list discussion)

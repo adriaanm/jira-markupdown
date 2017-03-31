@@ -1,17 +1,15 @@
 > probably caused by two symbols for the same class, coming from different compiler runs
 
-GenASM clears it maps at the end of {{GenASM.AsmPhase.run()}}, once all classes have been processed (that's also where `bytecodeWriter.close()` takes place).
+GenASM clears it maps at the end of `GenASM.AsmPhase.run()`, once all classes have been processed (that's also where `bytecodeWriter.close()` takes place).
 
-Looks like {{GenASM.javaNameCache}} should also be cleared there. That should take care of clearing it properly. Regarding populating it properly, that can be achieved upon:
-
-{noformat}
+Looks like `GenASM.javaNameCache` should also be cleared there. That should take care of clearing it properly. Regarding populating it properly, that can be achieved upon:
+```
   /** Create a new phase */
   override def newPhase(p: Phase): Phase = new AsmPhase(p)
-{noformat}
+```
 
-by just moving the following two maps from their current location {{}} into {{GenASM.AsmpPhase}}:
-
-{noformat}
+by just moving the following two maps from their current location `` into `GenASM.AsmpPhase`:
+```
   val javaNameCache = new mutable.WeakHashMap[Symbol, Name]() ++= List(
     NothingClass        -> binarynme.RuntimeNothing,
     RuntimeNothingClass -> binarynme.RuntimeNothing,
@@ -24,9 +22,9 @@ by just moving the following two maps from their current location {{}} into {{Ge
     binarynme.RuntimeNothing.toString() -> RuntimeNothingClass, // RuntimeNothingClass is the bytecode-level return type of Scala methods with Nothing return-type.
     binarynme.RuntimeNull.toString()    -> RuntimeNullClass
   )
-{noformat}
+```
 
-The above can't fail, even if holding for too long onto instances of {{GenASM}}, {{GenASM.AsmPhase}}, etc.
+The above can't fail, even if holding for too long onto instances of `GenASM`, `GenASM.AsmPhase`, etc.
 
-[~dragos], can you confirm whether it works for you?
+@dragos, can you confirm whether it works for you?
 

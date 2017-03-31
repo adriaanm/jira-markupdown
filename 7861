@@ -1,8 +1,7 @@
 As far as I can tell, this is really related to the other ticket. Here is what happens without specialization.
 
 Scala:
-
-{code}
+```scala
 import scala.runtime.BoxedUnit
 
 object japi {
@@ -30,12 +29,11 @@ abstract class Foreach[-T] extends japi.UnitFunctionBridge[T] {
   @throws(classOf[Throwable])
   def each(result: T): Unit
 }
-{code}
+```
 
 
 Java:
-
-{code}
+```scala
 public class Test {
     
     public void mustBeAbleToForeachAFuture() throws Throwable {
@@ -46,12 +44,11 @@ public class Test {
     }
     
 }
-{code}
+```
 
 
 Result after running:
-
-{code}
+```scala
 
 java.lang.NoSuchMethodException: Test.main([Ljava.lang.String;)
 	at java.lang.Class.getMethod(Class.java:1622)
@@ -65,6 +62,6 @@ java.lang.NoSuchMethodException: Test.main([Ljava.lang.String;)
 	at scala.tools.nsc.MainGenericRunner.process(MainGenericRunner.scala:92)
 	at scala.tools.nsc.MainGenericRunner$.main(MainGenericRunner.scala:101)
 	at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
-{code}
+```
 
 I would reassign this.

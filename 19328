@@ -3,22 +3,22 @@ See attached file.
 1. With lines 19 and 27 commented out, the file compiles just fine.
 
 2. When method foo(String)(String) is overridden in class FooImpl (uncommenting line 15), I get the compiler error:
-{noformat}
+```
 PossibleBugTest.scala:22: error: ambiguous reference to overloaded definition,
 both method foo in class FooImpl of type (s: String)(bar: String)String
 and  method foo in class FooImpl of type (s: String)String
 match argument types (String)
     assertThat(fooImpl.foo("foo"), is("foo"))
-{noformat}
+```
 
 3. When line 23 is uncommented (line 15 commented out again), I get the really strange compiler error:
-{noformat}
+```
 PossibleBugTest.scala:23: error: type mismatch;
  found   : String("bar")
  required: Int
     assertThat(fooImpl.foo("foo")("bar"), is("foobar"))
                                   ^
-{noformat}
+```
 
 4. With lines 15 and 23 uncommented but line 22 commented out, I also get the "ambiguous reference" error.
 

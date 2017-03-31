@@ -1,6 +1,5 @@
 Shouldn't Scala's type inferencer be able to deduce the type argument �String� for type parameter �A� in the following scenario:
-
-{code}
+```scala
 package listFun
 object listFun extends Application {
     def mapFun[A, B](xs: List[A], func: A => B): List[B] =
@@ -10,16 +9,15 @@ object listFun extends Application {
         name.charAt(0).toUpper + name.substring(1)
     )))
 }
-{code}
+```
 
 I would expect the Scala compiler to deduce for function parameter type �A� the argument type �String� because of List[String].
 
 Instead the following function application is necessary to make the example compile successfully:
-
-{code}
+```scala
 ...
     println("Capitalized names: " + mapFun(names, ((name: String) =>
         name.charAt(0).toUpper + name.substring(1)
     )))
 ...
-{code}
+```

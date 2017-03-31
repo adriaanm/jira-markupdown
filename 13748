@@ -1,6 +1,5 @@
 This code blows up with an ArrayStoreException when run:
-
-{code}
+```scala
 object Test{
   def main(args : Array[String]){
     val it : Array[Array[Int]] = Array(Array(1, 2, 3));
@@ -8,6 +7,6 @@ object Test{
     println(that);
   }
 }
-{code}
+```
 
 Basically, toArray[Collection[Int]] on an Array[Array[Int]] will try to System.arraycopy into the new Array. Unfortunately the new array is an Array[Collection[Int]] and Array[Int] isn't actually a Collection, so the JVM will throw an ArrayStoreException. Sadness ensues. 

@@ -1,6 +1,5 @@
 Your sample project compiles with Scala 2.12.1 if you explicitly declare a dependency on scala-compiler.jar.
-
-{noformat}
+```
 % sbt
 > set libraryDependencies += "org.scala-lang" % "scala-compiler" % scalaVersion.value
 [info] Defining *:libraryDependencies
@@ -8,11 +7,10 @@ Your sample project compiles with Scala 2.12.1 if you explicitly declare a depen
 [info] Reapplying settings...
 [info] Set current project to compiler-crash-demo (in build file:/Users/jason/code/compiler-crash-demo/)
 > compile
-{noformat}
+```
 
 It also compiles with the latest version of PR 5671:
-
-{noformat}
+```
 % sbt
 [info] Loading global plugins from /Users/jason/.sbt/0.13/plugins
 [info] Set current project to compiler-crash-demo (in build file:/Users/jason/code/compiler-crash-demo/)
@@ -32,11 +30,10 @@ It also compiles with the latest version of PR 5671:
 [info] Done updating.
 [info] Compiling 1 Scala source to /Users/jason/code/compiler-crash-demo/target/scala-2.12/classes...
 [success] Total time: 13 s, completed 03/02/2017 11:00:34 PM
-{noformat}
+```
 
 Compiling with `-Ydebug` gives some small hint as to the reference to the missing symbol:
-
-{noformat}
+```
 [warn] !!! creating stub symbol to defer error: missing or invalid dependency detected while loading class file 'MacroHelper.class'.
 [warn] Could not access term tools in package class scala,
 [warn] because it (or its dependencies) are missing. Check your build definition for
@@ -44,15 +41,14 @@ Compiling with `-Ydebug` gives some small hint as to the reference to the missin
 [warn] A full rebuild may help if 'MacroHelper.class' was compiled against an incompatible version of scala.
 [warn] !!! creating stub symbol to defer error: missing or invalid dependency detected while loading class file 'MacroHelper.class'.
 [warn] Could not access term nsc in class scala.tools,
-{noformat}
+```
 
 I suspect the reference to the compiler internal class leaks into MacroHelper.class due a poor interaction of `TypeTag`-s and existential types, but I haven't dug in. You might try replacing:
-
-{code}
+```scala
 core/src/main/scala/com/tomergabel/accord/transform/ValidationTransform.scala:  private val validatorType = typeOf[ Validator[_] ]
 core/src/main/scala/com/tomergabel/accord/transform/ValidationTransform.scala:    private val descriptorTerm = typeOf[ dsl.Descriptor[_] ].typeSymbol.name.toTermName
 core/src/main/scala/com/tomergabel/accord/transform/ValidationTransform.scala:    private val contextualizerTerm = typeOf[ dsl.Contextualizer[_] ].typeSymbol.name.toTermName
 core/src/main/scala/com/tomergabel/accord/transform/ValidationTransform.scala:    val vtype = TypeTree( appliedType( validatorType.typeConstructor, weakTypeOf[ T ] :: Nil ) )
-{code}
+```
 
 with non existental types, such as `typeOf[Validator[Any]` to see if that avoids the initial bug in the Scala reflection.

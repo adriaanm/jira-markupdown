@@ -1,12 +1,11 @@
-{code}
+```scala
 package test
 
 class Separate {
   for (i <- 1 to 10) println(i)
 }
-{code}
-
-{code}
+```
+```scala
 import scala.reflect.runtime.universe._
 import scala.reflect.runtime.{currentMirror => cm}
 import scala.tools.reflect.ToolBox
@@ -16,9 +15,8 @@ object Test extends App {
   val code = tb.parse("{ val x: test.Separate$$anonfun$1 = null; x }")
   println(tb.eval(code))
 }
-{code}
-
-{code}
+```
+```scala
 14:36 ~/Projects/210x/sandbox (2.10.x)$ scalac Separate.scala && scalac Test.scala && scala Test
 scala.tools.reflect.ToolBoxError: reflective compilation has failed:
 
@@ -55,4 +53,4 @@ type Separate$$anonfun$1 is not a member of package test
 	at scala.tools.nsc.MainGenericRunner.process(MainGenericRunner.scala:96)
 	at scala.tools.nsc.MainGenericRunner$.main(MainGenericRunner.scala:105)
 	at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
-{code}
+```

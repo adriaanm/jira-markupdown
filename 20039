@@ -1,6 +1,5 @@
 Given
-
-{code:scala}
+```scala
 trait StringVal extends Any { def value: String ; final override def toString = value }
 
 final case class Foo(value: String) extends AnyVal with StringVal
@@ -8,11 +7,10 @@ final case class Bar(value: String) extends AnyVal { override def toString = val
 
 def foo(x: Foo) = println(x.toString)
 def bar(x: Bar) = println(x.toString)
-{code}
+```
 
-{{javap}} shows a difference in bytecode:
-
-{code:scala}
+`javap` shows a difference in bytecode:
+```scala
   public void foo(java.lang.String);
     descriptor: (Ljava/lang/String;)V
     flags: ACC_PUBLIC
@@ -50,7 +48,7 @@ def bar(x: Bar) = println(x.toString)
             0      14     1     x   Ljava/lang/String;
       LineNumberTable:
         line 13: 0
-{code}
+```
 
 For more context see https://gitter.im/scala/scala?at=56fd99f0d9b73e635f6823bb where I discovered this with @ichoran.
 

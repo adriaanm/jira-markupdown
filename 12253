@@ -1,15 +1,15 @@
 > The implementation, however, seems to be based on the expected function type, so that overload resolution works as expected for the Int case:
 
 Nope. It works for Int by coincidence. Eta-expanding an overloaded method gets you the first one it happens to find.
-{code}
+```scala
 scala> math.round _
 res3: Long => Long = <function1>
 
 scala> math.max _
 res4: (Int, Int) => Int = <function2>
-{code}
+```
 Similarly,
-{code}
+```scala
 scala> List[Char]('5') map math.round
 <console>:12: error: type mismatch;
  found   : Long => Long
@@ -18,4 +18,4 @@ scala> List[Char]('5') map math.round
                                 ^
 scala> List[Char]('5') map (x => math.round(x))
 res0: List[Long] = List(53)
-{code}
+```

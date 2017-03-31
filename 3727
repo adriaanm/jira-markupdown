@@ -1,5 +1,5 @@
 After spending all day today cozy with the inliner, I can't help but know what's up with this ticket.  What I don't know is what the intention is.  As an illustration of what the problem is and not a proposed implementation, here's a small diff which makes this test case work.
-{code}
+```scala
 -    def lookupIMethod(meth: Symbol, receiver: Symbol): Option[IMethod] =
 -      icodes.icode(receiver).get lookupMethod meth
 +    def lookupIMethod(meth: Symbol, receiver: Symbol): Option[IMethod] = {
@@ -7,4 +7,4 @@ After spending all day today cozy with the inliner, I can't help but know what's
 +      
 +      (target lookupMethod meth) orElse lookupIMethod(meth, target.symbol.superClass)
 +    }
-{code}
+```

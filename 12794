@@ -1,8 +1,7 @@
 Currently class name of anonymous function contains only name of containing class, but does not contain owner method name.
 
 So it is hard to read stack traces: people cannot find where anonymous function (shown as $$anonfun) is declared. Example:
-
-{code}
+```scala
         at java.lang.Thread.dumpStack(Thread.java:1158)
         at scala.tools.nsc.transform.LambdaLift$$LambdaLifter$$$$anonfun$$5.apply(LambdaLift.scala:254)
         at scala.tools.nsc.transform.LambdaLift$$LambdaLifter$$$$anonfun$$5.apply(LambdaLift.scala:246)
@@ -24,13 +23,12 @@ So it is hard to read stack traces: people cannot find where anonymous function 
         at scala.tools.nsc.ScriptRunner.runScript(ScriptRunner.scala:362)
         at scala.tools.nsc.MainGenericRunner$$.main(MainGenericRunner.scala:165)
         at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
-{code}
+```
 
-It is not clear, what is {{Global$$GlobalPhase$$$$anonfun$$2}}.
+It is not clear, what is `Global$$GlobalPhase$$$$anonfun$$2`.
 
 I'm attaching patch that adds function name to the class name of anonymous function. With patch applied stack trace becomes:
-
-{code}
+```scala
 java.lang.Exception: Stack trace
         at java.lang.Thread.dumpStack(Thread.java:1158)
         at scala.tools.nsc.transform.LambdaLift$$LambdaLifter$$computeFreeVars$$anonfun$$2.apply(LambdaLift.scala:254)
@@ -53,13 +51,12 @@ java.lang.Exception: Stack trace
         at scala.tools.nsc.ScriptRunner.runScript(ScriptRunner.scala:362)
         at scala.tools.nsc.MainGenericRunner$$.main(MainGenericRunner.scala:165)
         at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
-{code}
+```
 
-That anonymous function — {{Global$$GlobalPhase$$run$$anonfun$$1}} — is declared in method run.
+That anonymous function — `Global$$GlobalPhase$$run$$anonfun$$1` — is declared in method run.
 
 Another illustration is list of classes generated for Seq.scala. Original:
-
-{code}
+```scala
 Seq.class
 Seq$$.class
 Seq$$class.class
@@ -75,11 +72,10 @@ Seq$$Projection.class
 Seq$$Projection$$class.class
 Seq$$Projection$$ComputeSize.class
 Seq$$Projection$$MapProjection.class
-{code}
+```
 
 With patch applied:
-
-{code}
+```scala
 Seq.class
 Seq$$.class
 Seq$$class.class
@@ -96,7 +92,7 @@ Seq$$Projection.class
 Seq$$Projection$$class.class
 Seq$$Projection$$ComputeSize.class
 Seq$$Projection$$MapProjection.class
-{code}
+```
 
 I've rebuilt scala itself with patch applied with patch applied, but didn't run tests.
 

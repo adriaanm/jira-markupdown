@@ -1,23 +1,22 @@
 Fix:
 
 Change (in method treatEscapes, line 146 of File StringContext.scala)
-{code}
+```scala
     def output(ch: Char) = {
       bldr append str substring (start, cur)
       bldr append ch
       start = idx
     }
-{code}
+```
 
 to
-
-{code}
+```scala
     def output(ch: Char) = {
       bldr append str.substring (start, cur)
       bldr append ch
       start = idx
     }
-{code}
+```
 
-Explanation: in the current version, {{str}} is appended to the buffer, and then on the buffer {{substring}} is called (which has no effect), i.e. without sugar: 
-{{bldr.append(str).subsring(start, cur)}}
+Explanation: in the current version, `str` is appended to the buffer, and then on the buffer `substring` is called (which has no effect), i.e. without sugar: 
+`bldr.append(str).subsring(start, cur)`

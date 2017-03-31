@@ -1,8 +1,7 @@
 immutable.BitSet's builder uses an immutable.BitSet inside, and every time a new element is added to the builder it copies this BitSet. This makes methods like BitSet.++, which use the builder, run in O(N^2) rather than O(N) time, which makes creating immutable.BitSets with large sets very difficult.
 
 Here is a new implementation that solves this problem:
-
-{code}
+```scala
   /** A builder that takes advantage of mutable BitSets. */
   def newBuilder: Builder[Int, BitSet] = new Builder[Int, BitSet] with Proxy {
     val self = new mutable.BitSet
@@ -10,4 +9,4 @@ Here is a new implementation that solves this problem:
     def clear() = {self.clear}
     def result: BitSet = self.toImmutable
   }
-{code}
+```

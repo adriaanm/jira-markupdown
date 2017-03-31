@@ -1,13 +1,12 @@
 Basically I don't think we can eliminate any local stores to reference types because of gc and/or weak/phantom observability. For instance
-
-{code}
+```scala
 def foo = {
   var x = new HumungoObject
   // use x
   x = new SmallObject
   blah()
 }
-{code}
+```
 
 The reassignment to x frees up the reference to the HumungoObject, making it elligible for gc and freeing up memory for blah() to work.
 

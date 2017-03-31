@@ -1,6 +1,5 @@
 Similar useless assert exists in !ZipArchive.load method:
-
-{code}
+```scala
 Index: io/ZipArchive.scala
 ===================================================================
 --- io/ZipArchive.scala	(revision 14868)
@@ -15,14 +14,13 @@ Index: io/ZipArchive.scala
        if (entry.isDirectory()) {
          val dir: DirEntry = getDir(dirs, path)
          assert(dir.entry eq null, this.toString() + " - " + path)
-{code}
+```
 
 !ZipArchive.load() works 300ms for rt.jar, while simple
-
-{code}
+```scala
 while (entries.hasMoreElements) {
   entries.nextElement()
 }
-{code}
+```
 
 works 30ms for rt.jar. Seems like there is something inside !ZipArchive.load() that can be sped up.

@@ -1,7 +1,7 @@
-I'm also experiencing this with iMain.compile. Before iMain.compile the thread context CL is {{sun.misc.Launcher$AppClassLoader@368239c8}} and afterwards it is {{scala.reflect.internal.util.ScalaClassLoader$URLClassLoader@39094bde}}.
+I'm also experiencing this with iMain.compile. Before iMain.compile the thread context CL is `sun.misc.Launcher$AppClassLoader@368239c8` and afterwards it is `scala.reflect.internal.util.ScalaClassLoader$URLClassLoader@39094bde`.
 
 This happened in tests (scalatest), where in consequence other tests that try to create an ActorSystem fail because in akka some components are created via reflection relying on the thread context CL:
-{code}
+```scala
     sbt.ForkMain$ForkError: interface akka.actor.Scheduler is not assignable from class akka.actor.LightArrayRevolverScheduler
             at akka.actor.ReflectiveDynamicAccess$$anonfun$getClassFor$1.apply(DynamicAccess.scala:69)
             at akka.actor.ReflectiveDynamicAccess$$anonfun$getClassFor$1.apply(DynamicAccess.scala:66)
@@ -25,11 +25,10 @@ This happened in tests (scalatest), where in consequence other tests that try to
             at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
             at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
             at java.lang.Thread.run(Thread.java:745)
-{code}
+```
 
-I can reproduce this with this App run from sbt with {{runMain foo.Main}}:
-
-{code}
+I can reproduce this with this App run from sbt with `runMain foo.Main`:
+```scala
 package foo
 
 import javax.script.ScriptEngineManager
@@ -47,6 +46,6 @@ object Main extends App {
   println(Thread.currentThread().getContextClassLoader)
 
 }
-{code}
+```
 
 scala version is 2.11.6

@@ -1,32 +1,27 @@
 Given the following Java class:
-
-{code}
+```scala
 package jfiles;
 public abstract class DataView<T> { protected DataView(T id) { } }
-{code}
+```
 
 When trying to extend this class in Scala with
-
-{code}
+```scala
 package sfiles
 import jfiles.DataView
 class myDataView extends DataView( "String" )
-{code}
+```
 
 I get the following error:
-
-{code}
+```scala
 sfiles/myDataView.scala:3: error: constructor DataView cannot be accessed in package sfiles
 class myDataView extends DataView( "String" )
-{code}
+```
 
 If the Java class has a public constructor, this works without a problem!
 
 To get the above Scala source compiling with the protected version, I need to give a hint on the type:
-
-{code}
+```scala
 package sfiles
 import jfiles.DataView
 class myDataView extends DataView[String]( "String" )
-{code}
-
+```

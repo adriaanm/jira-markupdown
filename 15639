@@ -1,10 +1,9 @@
-{code}
+```scala
 public interface Processor {
   Object process(Object request); 
 }
-{code}
-
-{code}
+```
+```scala
 class P1 extends Processor{
   //error: overriding method process in trait Processor of type (x$$1: Any)java.lang.Object; method process has incompatible type
   def process(request: Any   ) : Any = error("error")
@@ -22,10 +21,10 @@ class P4 extends Processor{
   //error: overriding method process in trait Processor of type (x$$1: Any)java.lang.Object; method process has incompatible type
   def process(request: Object) : Any = error("error")
 }
-{code}
+```
 
 bug location:
-{code}
+```scala
 final def matchesType(tp1: Type, tp2: Type, alwaysMatchSimple: Boolean): Boolean =    
   tp1 match {
     case mt1 @ MethodType(params1, res1) =>
@@ -38,4 +37,4 @@ private def matchingParams(syms1: List[Symbol], syms2: List[Symbol], syms1isJava
 // fudge Object == Any into the relation:
    syms1isJava && tp2.typeSymbol == ObjectClass && tp1.typeSymbol == AnyClass ||
    syms2isJava && tp1.typeSymbol == ObjectClass && tp2.typeSymbol == AnyClass
-{code}
+```

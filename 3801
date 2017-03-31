@@ -1,9 +1,8 @@
 Replying to [comment:9 SethTisue]:
-> this discussion is difficult to follow. Eastsun proposes a fix, but what bug does it fix? I'm not clear on why this is a separate ticket from SI-2634.
+> this discussion is difficult to follow. Eastsun proposes a fix, but what bug does it fix? I'm not clear on why this is a separate ticket from scala/bug#2634.
 > 
 > is there something short I can type into the REPL to see for myself that Stream.iterator needs to be "more lazy"?
-
-{code}
+```scala
 scala> val num1: Stream[Int] = 1 #:: num1.map{ _+1 }
 num1: Stream[Int] = Stream(1, ?)
 
@@ -28,10 +27,10 @@ java.lang.StackOverflowError
         at scala.collection.Iterator$$class.toStream(Iterator.scala:1011)
         at scala.collection.Iterator$$$$anon$$19.toStream(Iterator.scala:367)
         at $$anonfun$$1.apply(<...
-{code}
+```
 
 And with lazy iterator:
-{code}
+```scala
 scala> def lazyItr[A](xs: Stream[A]): Iterator[A] = new Iterator[A] {
      |
      |     class LazyCell(st: => Stream[A]){ lazy val v = st }
@@ -53,5 +52,4 @@ num1: Stream[Int] = Stream(1, ?)
 
 scala> num3.take(10).toList
 res0: List[Int] = List(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
-{code}
-
+```

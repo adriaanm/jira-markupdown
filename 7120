@@ -1,14 +1,13 @@
-What is this doing in {{GenericTraversableTemplate}} then?
-
-{code}
+What is this doing in `GenericTraversableTemplate` then?
+```scala
   def flatten[B](implicit asTraversable: A => /*<:<!!!*/ GenTraversableOnce[B]): CC[B] = {                      
     val b = genericBuilder[B]                                                                                   
     for (xs <- sequential)                                                                                      
       b ++= asTraversable(xs).seq                                                                               
     b.result                                                                                                    
   }   
-{code}
+```
 
-The method does show up looking the ScalaDoc for it too, but if I click on {{List}} in the list of subclasses and search again, it has disappeared.
+The method does show up looking the ScalaDoc for it too, but if I click on `List` in the list of subclasses and search again, it has disappeared.
 
 And it does show up on 2.9.1, where scaladoc hasn't gone through the use case changes.

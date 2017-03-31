@@ -1,6 +1,5 @@
 I wrote following code and saved it as 'a.scala'.
-
-{code}
+```scala
 object A {
   def f :Int = {
     class B {
@@ -14,13 +13,12 @@ object A {
     f
   }
 }
-{code}
+```
 
 It compiles successfully(scala 2.7.1.final, Windows XP Service Pack 2, Java 6).
 
 However, compiled code causes java.lang.VerifyError with following stack trace:
-
-{code}
+```scala
 java.lang.VerifyError: (class: A$$B$$1, method: <init> signature: ()V) Wrong return type in function
 	at A$$.f(a.scala:7)
 	at A$$.main(a.scala:11)
@@ -34,27 +32,25 @@ java.lang.VerifyError: (class: A$$B$$1, method: <init> signature: ()V) Wrong ret
 	at scala.tools.nsc.ObjectRunner$$.run(ObjectRunner.scala:74)
 	at scala.tools.nsc.MainGenericRunner$$.main(MainGenericRunner.scala:161)
 	at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
-{code}
+```
 
 It seems that Because the constructor(a special method returning void in JVM) of A has 'ireturn' opcode, compiled code causes VerifyError.  Incidentally, the same problem occurs even if I replace
-
-{code}
+```scala
     class B {
       println("B")
       return 10
     }
     new B
     20
-{code}
+```
 
 with
-
-{code}
+```scala
     object B {
       println("B")
       return 10
     }
     B
     20    
-{code}
+```
 .  I don't know whether it should be compilation error or not.  But it is bug because java.lang.VerifyError is caused.

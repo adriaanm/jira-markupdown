@@ -1,7 +1,6 @@
 The issue occurs when an actor sends a message using !? in certain scenarios. One example is given in the code.
 An unhandled timeput exception is thrown in the following code. See screenshot of the run. 
-
-{noformat}
+```
 package test
 import scala.actors.Actor
 object Run { 
@@ -15,13 +14,13 @@ object A1 extends Actor {
   this.start
   def act = loop { react { case any => A2 !? (1000, any) } } 
 }
-{noformat}
+```
 
 Save above code into a file test.scala and use following to run: Assume Scala 2.9.0.1 is installed in C:\scala-2.9.0.1
-{noformat}
+```
 scalac test.scala
 java -cp .;c:\scala-2.9.0.1\lib\scala-library.jar test.Run
-{noformat}
+```
 
 Exception thrown is:
 {noformat}

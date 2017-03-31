@@ -1,6 +1,5 @@
 Just to say that I've just run into this problem too on the Scala 2.8 beta 1, while implementing a (I thought simple) tokeniser of some input. I doubt it helps, but just in case it does, my code follows, with as much pulled out as possible in order to reproduce the problem:
-
-{code}
+```scala
 import scala.util.matching.Regex
 
 object Tokeniser {
@@ -27,11 +26,10 @@ object Tokeniser {
     case StreamRegex(on) => ""
   }
 }
-{code}
+```
 
 And the exception I get is:
-
-{code}
+```scala
 Exception in thread "main" java.lang.Error: ch.epfl.lamp.fjbg.JCode$$OffsetTooBigException: offset to
 o big to fit in 16 bits: 55087
         at ch.epfl.lamp.fjbg.JFieldOrMethod.writeTo(JFieldOrMethod.java:114)
@@ -56,6 +54,6 @@ Caused by: ch.epfl.lamp.fjbg.JCode$$OffsetTooBigException: offset too big to fit
         at ch.epfl.lamp.fjbg.JMethod.freeze(JMethod.java:81)
         at ch.epfl.lamp.fjbg.JFieldOrMethod.writeTo(JFieldOrMethod.java:111)
         ... 14 more
-{code}
+```
 
 If I remove any of the cases, it works fine, so I will try to break it up as suggested. I did have a lot more cases to add too :)

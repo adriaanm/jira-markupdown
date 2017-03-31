@@ -1,17 +1,15 @@
 The following code snippet causes 2.9.2 compiler to crash:
-
-{code}
+```scala
 object Test extends App {
   private class Matcher[T](aParam: Option[T] = None) extends (AnyVal => String) {
     def apply(t: AnyVal) = "foo"
   }
   private val stringMatcher = new Matcher[String]
 }
-{code}
+```
 
 It's the param that's seems to be the problem.
-
-{code}
+```scala
 > last compile:compile
 [debug] 
 [debug] Initial source changes: 
@@ -132,4 +130,4 @@ java.lang.AssertionError: assertion failed: Invalid getter Test$Matcher for modu
 	at java.util.concurrent.ThreadPoolExecutor$Worker.runTask(ThreadPoolExecutor.java:886)
 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:908)
 	at java.lang.Thread.run(Thread.java:680)
-{code}
+```

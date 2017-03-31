@@ -1,6 +1,5 @@
 I have got the following Actor code:
-
-{code}
+```scala
 case class Document(file: Path, info: Map[String, Any])
 
 object Matcher {
@@ -29,11 +28,10 @@ trait Index extends Actor {
       sender ! Result(SortedSet.empty(ordering) | index)
   }
 }
-{code}
+```
 
 This actor is used to create an index of documents by using context become indexed(index + doc). But instead of getting an updated SortedSet/TreeSet, NullPointerExceptions are thrown.
-
-{code}
+```scala
 [ERROR] [12/19/2013 12:36:55.091] [morph-akka.actor.default-dispatcher-5] [akka://morph/user/morph/$a] null
 java.lang.NullPointerException
     at scala.collection.immutable.RedBlackTree$.upd(RedBlackTree.scala:129)
@@ -50,6 +48,6 @@ java.lang.NullPointerException
     at scala.concurrent.forkjoin.ForkJoinPool$WorkQueue.runTask(ForkJoinPool.java:1339)
     at scala.concurrent.forkjoin.ForkJoinPool.runWorker(ForkJoinPool.java:1979)
     at scala.concurrent.forkjoin.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:107)
-{code}
+```
 
 I can't find an error in my code, so I think it might be in the implementation of RedBlackTree.

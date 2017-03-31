@@ -1,13 +1,12 @@
 Rather comically, this exception is a null pointer dereference caused by the attempt to log the[[BR]]
 incorrect detection of a not-actually-possible null pointer dereference. In Typers.scala:[[BR]]
-
-{code}
+```scala
           if (!global.phase.erasedTypes && settings.Xchecknull.value &&
               !sym.isConstructor &&
               !(qual.tpe <:< NotNullClass.tpe) && !qual.tpe.isNotNull)
               unit.warning(tree.pos, "potential null pointer dereference: 
               "+tree)
-{code}
+```
 
 In the synthesized equals method for case classes, the passed argument has .isInstanceOf[AnyRef][[BR]]
 called on it. Since the argument is not first checked for null, the compiler believes this is a possible null[[BR]]
@@ -15,14 +14,13 @@ pointer dereference, even though null.isInstanceOf[...] simply returns false. It
 unit.warning, even though unit is in this case (and others) null, thus throwing the exception.[[BR]]
 
 That exception is then swallowed and rendered mysterious in ParallelMatching:
-{code}
+```scala
       try { ...
       } catch {
         case e =>
           throw new FatalError("EXCEPTION: "+e.getMessage())
       }
-
-{code}
+```
 
 Independently of the fix for this bug, I have several observations:
 
@@ -37,5 +35,5 @@ e.getMessage() instead (which in this case was null) is less than helpful.
 null before calling unit.warning.
 
 4) The fact that unit is treated like a safe value when in fact it can be null underlies a number of[[BR]]
-open bugs. See at least SI-1308 and SI-1087 but based on my brief inspections of many open bugs I am sure[[BR]]
+open bugs. See at least scala/bug#1308 and scala/bug#1087 but based on my brief inspections of many open bugs I am sure[[BR]]
 there are others.

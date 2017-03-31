@@ -1,24 +1,21 @@
 I thought a bit about this and it seems clear that the current behavior is wrong because it violates the expectation that 
-
-{code}
+```scala
 (test { println("Test" } _)()
-{code}
+```
 
 has the same result as
-
-{code}
+```scala
 test { println("Test" }()
-{code}
+```
 
 I.e. that you can either apply a function piece-wise partially or directly with all arguments and get the same result.
 
 I think the solution as given by Matt is pretty good: at eta-expansion by-name parameters are lifted to vals of a thunk value (of type () => T). However, this is not a valid type to pass as a by-name argument so the application has to change from x1 to x1.apply() as well. If you do this naively the compiler will then (in uncurry) create another redundant thunk out of this application. I therefore propose another change where an expression f.apply() with f being an instance of Function0 in by-name-argument position isn't thunked but instead the application is removed and f passed directly. This should be a safe optimization in all cases because the generated thunk never does more than simple thunking.
 
 The hard part of producing proper legalese for the scripture maybe isn't so hard at all because we have a precedent by now. This already is in "§6.6 Function Applications":
-
-{quote}
+```
 The behavior of by-name parameters is preserved if the application is transformed into a block due to named or default arguments. In this case, the local value for that parameter has the form val y_i = () => e and the argument passed to the function is y_i ().
-{quote}
+```
 
 We just have to amend the first sentence by "or eta-expansion". Problem solved.
 

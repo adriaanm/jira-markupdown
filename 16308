@@ -1,20 +1,18 @@
 in scala console
 
 following code works correctly:
-
-{noformat}
+```
 scala> val e = <ns:elems xmlns:ns="http://">{List(1, 2, 3).map(x => <ns:elem>{x}</ns:elem>) ++ List(4, 5, 6).map(x => <ns:elem>{x}</ns:elem>)}</ns:elems>
 e: scala.xml.Elem = <ns:elems xmlns:ns="http://"><ns:elem>1</ns:elem><ns:elem>2</ns:elem><ns:elem>3</ns:elem><ns:elem>4</ns:elem><ns:elem>5</ns:elem><ns:elem>6</ns:elem></ns:elems>
 
 scala> e \\ "elem"
 res0: scala.xml.NodeSeq = NodeSeq(<ns:elem xmlns:ns="http://">1</ns:elem>, <ns:elem xmlns:ns="http://">2</ns:elem>, <ns:elem xmlns:ns="http://">3</ns:elem>, <ns:elem xmlns:ns="http://">4</ns:elem>, <ns:elem xmlns:ns="http://">5</ns:elem>, <ns:elem xmlns:ns="http://">6</ns:elem>)
-{noformat}
+```
 
 namespace is correct in each child node.
 
 while if using method call, namespace gets lost:
-
-{noformat}
+```
 scala> def f(l: List[Int]) = l.map(x => <ns:elem>{x}</ns:elem>)
 f: (l: List[Int])List[scala.xml.Elem]
 
@@ -23,4 +21,4 @@ e: scala.xml.Elem = <ns:elems xmlns:ns="http://"><ns:elem>1</ns:elem><ns:elem>2<
 
 scala> e \\ "elem"
 res2: scala.xml.NodeSeq = NodeSeq(<ns:elem>1</ns:elem>, <ns:elem>2</ns:elem>, <ns:elem>3</ns:elem>, <ns:elem>4</ns:elem>, <ns:elem>5</ns:elem>, <ns:elem>6</ns:elem>)
-{noformat}
+```

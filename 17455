@@ -1,16 +1,14 @@
 Consider this code:
-
-{code}
+```scala
 object Broken {
   case class Foo(x: Int)
   private val unused = Foo(1).copy(x = 2)
   val x = (f: Foo, i: Int) => f.copy(x = i)
 }
-{code}
+```
 
-This code works, but if {{unused}} is removed or made {{private[this]}}, compilation fails:
-
-{code}
+This code works, but if `unused` is removed or made `private[this]`, compilation fails:
+```scala
 object Broken {
   case class Foo(x: Int)
   //private val unused = Foo(1).copy(x = 2)
@@ -19,9 +17,8 @@ object Broken {
 <console>:10: error: not found: value i
 val x = (f: Foo, i: Int) => f.copy(x = i)
 ^
-{code}
-
-{code}
+```
+```scala
 object Broken {
   case class Foo(x: Int)
   private[this] val unused = Foo(1).copy(x = 2)
@@ -30,22 +27,20 @@ object Broken {
 <console>:10: error: not found: value i
 val x = (f: Foo, i: Int) => f.copy(x = i)
 ^
-{code}
+```
 
 It also starts working without the named argument:
-
-{code}
+```scala
 object Broken {
   case class Foo(x: Int)
   val x = (f: Foo, i: Int) => f.copy(i)
 }
-{code}
+```
 
 Additionally, other methods with named arguments also work:
-
-{code}
+```scala
 object Broken {
   case class Foo(x: Int) { def bar(y: Int) = null }
   val x = (f: Foo, i: Int) => f.bar(y = i)
 }
-{code}
+```

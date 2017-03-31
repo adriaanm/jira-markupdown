@@ -1,21 +1,21 @@
 This looks to be a bug in the array-related changes to cleanup, which deals with reflective calls.  Below is a distilled crasher.  You can work around it in scalacheck by not doing this:
-{code}
+```scala
   lazy val property = new {
     def update(propName: String, p: Prop) = props += ((name+"."+propName, p))
   }
-{code}
+```
 
 Instead something more like this:
-{code}
+```scala
   class PropertySpecifier() {
     def update(propName: String, p: Prop) = props += ((name+"."+propName, p))
   }    
   lazy val property = new PropertySpecifier()
-{code}
+```
 ...which you should be doing anyway, the tiny savings in typing is not worth slower and sketchier.
 
 Small crasher:
-{code}
+```scala
 object o {  
   val props = new scala.collection.mutable.ListBuffer[(String,String)]
   lazy val property = new {
@@ -23,4 +23,4 @@ object o {
   }
   def crash = property("a") = "b"
 }
-{code}
+```

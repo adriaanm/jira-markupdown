@@ -1,6 +1,5 @@
 Why don't we provide a most simplistic version for the common use cases like
-
-{noformat}
+```
 case class MyRange(from: Int, to: Int) {
   def foreach(f: Int => Unit): Unit = {
     var i = from
@@ -21,12 +20,10 @@ case class MyRange(from: Int, to: Int) {
    }
    sum
  }
-
-{noformat}
+```
 
 Rerunning the caliper benchmark from the mailing list (on my machine, without -optimize):
-
-{noformat}
+```
 [info]  0% Scenario{vm=java, trial=0, benchmark=ForLoop} 19535.70 ns; σ=78.04 ns @ 3 trials
 [info] 33% Scenario{vm=java, trial=0, benchmark=MyRange} 5091.66 ns; σ=19.43 ns @ 3 trials
 [info] 67% Scenario{vm=java, trial=0, benchmark=WhileLoop} 5099.48 ns; σ=93.54 ns @ 10 trials
@@ -38,12 +35,12 @@ Rerunning the caliper benchmark from the mailing list (on my machine, without -o
 [info] 
 [info] vm: java
 [info] trial: 0
-{noformat}
+```
 
-I don't think {{-optimize}} will win the fight against hotspot when it comes to inlining. Without looking at the output of {{-XX:+PrintAssembly}}, you will never be sure what is possible on HotSpot.
+I don't think `-optimize` will win the fight against hotspot when it comes to inlining. Without looking at the output of `-XX:+PrintAssembly`, you will never be sure what is possible on HotSpot.
 
 For example for the for loop example, here's what hotspot produces (but only after 10 secs and having tried other optimizations first):
-{noformat}
+```
 
  # {method} 'timeForLoop' '(I)J' in 'Test$'
   0x00007f8d79168100: callq  0x00007f8d7d91c1d0  ;   {runtime_call}
@@ -293,6 +290,6 @@ For example for the for loop example, here's what hotspot produces (but only aft
                                                 ; - scala.collection.immutable.Range::foreach$mVc$sp@23 (line 75)
                                                 ; - Test$::timeForLoop@36 (line 18)
                                                 ;   {runtime_call}
-{noformat}
+```
 
-There's so much stuff in there, mainly that there are still calls remaining to {{last}}, {{length}}, etc. What it boils down to IMO is that Range is much too complicated for the common cases.
+There's so much stuff in there, mainly that there are still calls remaining to `last`, `length`, etc. What it boils down to IMO is that Range is much too complicated for the common cases.

@@ -1,8 +1,7 @@
 This might be a separate issue, but changing a type alias that is used in a method signature does not cause clients of that method to be recompiled.  This is in r20598.
 
 Given A.scala, B.scala:
-
-{code}
+```scala
 trait A {
     type T = Int
     def x: T
@@ -10,22 +9,22 @@ trait A {
 object B {
   def x(a: A): Int = a.x
 }
-{code}
+```
 
  1. Compile
  1. Change A.scala to:
-{code}
+```scala
 trait A {
     type T = Long
     def x: T
 }
-{code}
+```
  1. Mark A.scala modified, build manager misses error by not recompiling B.scala.
  1. Recompiling B.scala gives:
-{code}
+```scala
 B.scala:2: error: type mismatch;
  found   : a.T
  required: Int
   def x(a: A): Int = a.x
                        ^
-{code}
+```

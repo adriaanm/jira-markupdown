@@ -1,11 +1,11 @@
 Unfortunately this is one of those things which ought to be trivial but is made somewhat difficult by the implementation. I guess the easiest thing to do would be a peephole optimization pass right before genasm gets down to emitting bytecode. It will have to have (at least) a four instruction window, looking for sequences like this, where the locals have the same symbol and the second argument to add is constant and fits in a short.
-{code}
+```scala
 LOAD_LOCAL(variable idx)
 CONSTANT(1)
 CALL_PRIMITIVE(Arithmetic(ADD,INT))
 STORE_LOCAL(variable idx)
-{code}
+```
 Given the local's index and the constant increment, asm has a method to do the rest:
-{code}
+```scala
 jmethod.visitIincInsn(idx, inc)
-{code}
+```

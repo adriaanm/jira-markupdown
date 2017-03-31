@@ -1,5 +1,5 @@
 Is this issue being worked on? I just hit this issue while trying to inline collection operations. I have another example where specialization doesn't work with inlining:
-{code}
+```scala
 class SimpleCol[A](x: A) {
   @inline
   final def filter(p: A => Boolean): SimpleCol[A] = if (p(x)) this else null
@@ -15,6 +15,6 @@ class A(xs: SimpleCol[A], val a: Int) {
 
   def foo() = filter(x => x.a > 0)
 }
-{code}
+```
 
 I you compile it with `-no-specialization` then everything will get inlined into `foo` and closure will get eliminated. Otherwise the `p(this)` will remain (it's specialized apply) not inlined and the whole closure allocation is not eliminated.

@@ -1,6 +1,5 @@
 Shouldn't it be possible to make types declared inside a class also available in the constructor? Consider the following snippets:
-
-{code}
+```scala
 class X[T](var value: T) {
   def out(): T = value
   def in(t: T) = value = t
@@ -8,11 +7,10 @@ class X[T](var value: T) {
 
 val x: X[_] = new X(???)
 x.in(x.out()) //ERROR
-{code}
+```
 
 this can be solved by using the pattern described at https://stackoverflow.com/questions/27959606, like this:
-
-{code}
+```scala
 class X[T](var value: T) {
   type TT = T
 
@@ -23,7 +21,7 @@ class X[T](var value: T) {
 val x: X[_] = new X(???)
 x.in(x.out())
 x.in(x.value) //ERROR
-{code}
+```
 
 but it leaves the problem that `value` is still of type `T`. This is relevant especially for case classes, where main constructor parameters are always public.
 

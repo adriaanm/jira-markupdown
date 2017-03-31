@@ -1,6 +1,5 @@
-Hi [~retronym], [~asloane]. The failing file is {{library/src/org/kiama/example/lambda2/LambdaTests.scala}}. As a reduced version, replace the content of the file by the follwing, it triggers the same error.
-
-{code}
+Hi @retronym, [~asloane]. The failing file is `library/src/org/kiama/example/lambda2/LambdaTests.scala`. As a reduced version, replace the content of the file by the follwing, it triggers the same error.
+```scala
 package org.kiama
 package example.lambda2
 
@@ -15,14 +14,14 @@ class LambdaTests {
         def canons: Strategy = rule[Var] { case Var (n) => Var (n) } + canons
     }
 }
-{code}
+```
 
-The fishy thing is that {{Strategy.+}} is a macro, and I could not reproduce the failure without the macro call. So it's possible that the assertion doesn't fail on compiler-generated code.
+The fishy thing is that `Strategy.+` is a macro, and I could not reproduce the failure without the macro call. So it's possible that the assertion doesn't fail on compiler-generated code.
 
 However, the implementation of {{isDelambdafyFunction}} (as well as {{isAnonymousFunction}}) is not robust at all against false positives:
-{code}
+```scala
     final def isAnonymousFunction = isSynthetic && (name containsName tpnme.ANON_FUN_NAME)
     final def isDelambdafyFunction = isSynthetic && (name containsName tpnme.DELAMBDAFY_LAMBDA_CLASS_NAME)
-{code}
+```
 
-So an {{assert(!sym.isDelambdafyFunction)}} is unsafe. I think for now we should just remove the assertion, longer term there should be a better implementation of the above.
+So an `assert(!sym.isDelambdafyFunction)` is unsafe. I think for now we should just remove the assertion, longer term there should be a better implementation of the above.

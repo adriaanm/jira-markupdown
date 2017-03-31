@@ -1,7 +1,7 @@
 Verified on 2.9.0.r24431-b20110311020115 with this minimized example:
 
 Mega.scala
-{code}
+```scala
 trait MappedField[T <: Any, O <: Mapper[O]] {
   def validate = Nil
 }
@@ -9,16 +9,15 @@ trait MappedField[T <: Any, O <: Mapper[O]] {
 trait Mapper[T <: Mapper[T]] { self : T => }
 
 class MappedString[T <: Mapper[T]](val owner: T, val maxLen: Int) extends MappedField[String, T]
-{code}
+```
 
 MappedEmail.scala
-{code}
+```scala
 class MappedEmail[T <: Mapper[T]](owner: T, maxLen: Int) extends MappedString[T](owner, maxLen) {
   override def validate = super.validate
 }
-{code}
-
-{code}
+```
+```scala
 scalac -Xresident -deprecation
 
 nsc> test3/Mega.scala test3/MappedEmail.scala
@@ -141,4 +140,4 @@ Exception in thread "main" java.lang.AssertionError: assertion failed: method va
 	at scala.tools.nsc.Main$$.process(Main.scala:99)
 	at scala.tools.nsc.Main$$.main(Main.scala:123)
 	at scala.tools.nsc.Main.main(Main.scala)
-{code}
+```

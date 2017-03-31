@@ -1,8 +1,7 @@
 When object is of the same name as a type alias in the same package, object can only be used once. 
 
 For instance:
-
-{code}
+```scala
     scala> import alias._
     import alias._
 
@@ -13,25 +12,25 @@ For instance:
     <console>:11: error: alias.Foo.type does not take parameters
                   Foo(1)
                      ^
-{code}
+```
 
-h4. Expected
+#### Expected
 Either compilation fails, or you can use the object the second time, same as the first.
 Also, some useful error message, the actual behaviour has very little to do with the cause.
 
-h4. Reproducible
+#### Reproducible
 Always, under both Scala 2.10.4 and 2.11.4
 
 To reproduce simply run sbt console and then the above.
 
-h4. Notes
+#### Notes
 The type alias is otherwise unused.
 
-h4. Workaround
+#### Workaround
 Declare the object inside a trait and have the package object extend the trait
 
-h4. Related
-This bug appears related but not identical: https://issues.scala-lang.org/browse/SI-5031
+#### Related
+This bug appears related but not identical: scala/bug#5031
 
-h4. Code to reproduce 
+#### Code to reproduce 
 https://bitbucket.org/jwesleysmith/scala-alias-bug

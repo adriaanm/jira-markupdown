@@ -1,6 +1,5 @@
-When SI-5937 was fixed, that is in this https://github.com/scala/scala/commit/d8fbd9a54d commit, a new problem was introduced:
-
-{code}
+When scala/bug#5937 was fixed, that is in this https://github.com/scala/scala/commit/d8fbd9a54d commit, a new problem was introduced:
+```scala
 scala> import collection.generic.CanBuildFrom
 import collection.generic.CanBuildFrom
 
@@ -12,26 +11,24 @@ cbf1: ... = scala.collection.immutable.Vector$VectorReusableCBF@106ac20f
 
 scala> val cbf2 = implicitly[CanBuildFrom[IIdxSeq[Int],Int,IIdxSeq[Int]]]
 cbf2: ... = scala.collection.generic.GenTraversableFactory$ReusableCBF@583dfc8b
-{code}
+```
 
 With {{cbf2}}, the check in {{Vector}}'s methods {{updated}}, {{\+:}}, and {{:+}} for optimised O(1) algorithms *fails*.
 
 -----
 
-The suggested solution is as follows: the default implementation of {{collection.IndexedSeq}} is {{collection.immutable.IndexedSeq}}, and that in turn gives {{Vector}}. {{Vector}} can thus safely call the optimised methods when the builder target is {{ndexedSeq}}. The long-term solution probably is to introduce an {{IndexedSeqFactory}}. The direct fix is to move the newly introduced builder factory instance {{VectorReusableCBF}} from the {{Vector}} module to the {{IndexedSeq}} module.
+The suggested solution is as follows: the default implementation of `collection.IndexedSeq` is `collection.immutable.IndexedSeq`, and that in turn gives `Vector`. `Vector` can thus safely call the optimised methods when the builder target is `ndexedSeq`. The long-term solution probably is to introduce an `IndexedSeqFactory`. The direct fix is to move the newly introduced builder factory instance `VectorReusableCBF` from the `Vector` module to the `IndexedSeq` module.
 
-Indeed, I think it would be sufficient, instead of creating a new class, to ensure a fresh instance of {{ReusableCBF}}, e.g.
-
-{code}
+Indeed, I think it would be sufficient, instead of creating a new class, to ensure a fresh instance of `ReusableCBF`, e.g.
+```scala
 object IndexedSeq extends SeqFactory[IndexedSeq] {
   override lazy val ReusableCBF: GenericCanBuildFrom[Nothing] = new ReusableCBF // ensure a fresh instance
   ...
 }
-{code}
+```
 
-Then, instead of checking the class using pattern matching, one could simply use {{eq}}:
-
-{code}
+Then, instead of checking the class using pattern matching, one could simply use `eq`:
+```scala
   @inline override def :+[B >: A, That](elem: B)(implicit bf: CanBuildFrom[Vector[A], B, That]): That = {
     if(bf eq IndexedSeq.ReusableCBF) {
       appendBack(elem).asInstanceOf[That] // just ignore bf
@@ -39,9 +36,9 @@ Then, instead of checking the class using pattern matching, one could simply use
       super.:+(elem)(bf)
     }
   }
-{code}
+```
 
-Of course, if you prefer a class type check, you may just move {{VectorReusableCBF}} to {{IndexedSeq}} and keep the pattern match as {{case _: IndexedSeq.VectorReusableCBF => ...}}
+Of course, if you prefer a class type check, you may just move `VectorReusableCBF` to `IndexedSeq` and keep the pattern match as `case _: IndexedSeq.VectorReusableCBF => ...`
 
 -----
 

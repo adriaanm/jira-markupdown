@@ -4,14 +4,14 @@ import ExecutionContext.Implicits.global
 
 Future.traverse(1 to    3)( Future.successful ) // compiles
 Future.traverse(1 until 3)( Future.successful ) // compile error
-{code}
+```scala
 
 {code:title=error message}
 error: Cannot construct a collection of type scala.collection.AbstractSeq[Int] 
 with elements of type Int based on a collection of type scala.collection.AbstractSeq[Int].
    Future.traverse(1 until 3)( Future.successful )
                              ^
-{code}
+```
 
 Is there a problem with generic.CanBuildFrom and Range ?
 
@@ -20,7 +20,7 @@ def traverse[A,M[_]](list: M[A]) = 1
 
 traverse(1 to    3)  // compiles
 traverse(1 until 3)  // compiles!
-{code}
+```scala
 
 Now the same example, but with generic.CanBuildFrom
 (copied out off the source of scala.concurrent.Future.traverse)
@@ -39,4 +39,4 @@ traverse[Int,Seq](1 until 3) // does compile!
 // the other way round
 val incl: Range = 1 to 3
 traverse( incl ) // does not compile!
-{code}
+```

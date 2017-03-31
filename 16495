@@ -1,5 +1,5 @@
 This is in all versions of scala, it's not a regression or anything.
-{code}
+```scala
 class Cell[T](x0: T) {
   type U = T
   var x1: U = x0
@@ -17,5 +17,5 @@ object Test {
 // java.lang.ClassCastException: java.lang.Object cannot be cast to java.lang.String
 //	at Test$.main(a.scala:12)
 //	at Test.main(a.scala)
-{code}
+```
 The inferred lub of the list is List[Cell[_ >: Int with String]], which seems fine, except that this existential can't be simplified to "Any" because it leads directly back to the setter for x1.  It's hard for me to see how an abstract type declared to be the same as a type parameter can be safely allowed fewer restrictions than the type parameter.

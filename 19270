@@ -1,7 +1,7 @@
 In the current version of Scala, pattern matching on tuples results in extra objects being created at runtime.
 
 Consider the following MWE:
-{code}
+```scala
 object Test {
 
   def slow(x: Int, y: Int): String = (x, y) match {
@@ -19,11 +19,11 @@ object Test {
   }
 
 }
-{code}
-where the method {{faster}} in the above is some attempt to hand-optimise the implementation of the {{slow}} method. (I know that I will now have a duplicated case in the generated code, but you get the idea: the pair {{(x,y)}} has been eliminated.)
+```
+where the method `faster` in the above is some attempt to hand-optimise the implementation of the `slow` method. (I know that I will now have a duplicated case in the generated code, but you get the idea: the pair `(x,y)` has been eliminated.)
 
-Compiling with {{scalac -print}} we see that the pattern matcher generates a Tuple2 when generating the bytecode for {{slow}}:
-{noformat}
+Compiling with `scalac -print` we see that the pattern matcher generates a Tuple2 when generating the bytecode for `slow`:
+```
 package <empty> {
   object Test extends Object {
     def slow(x: Int, y: Int): String = {
@@ -70,7 +70,7 @@ package <empty> {
     }
   }
 }
-{noformat}
+```
 
 Reading the generated code, we can see that the Tuple generation is unnecessary.
 

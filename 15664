@@ -1,5 +1,5 @@
 Code to reproduce:
-{code}
+```scala
 package test
 
 object ClassNameProblem {
@@ -11,10 +11,10 @@ object ClassNameProblem {
 		println( classOf[scala.swing.Action.Trigger.Wrapper].getSimpleName() )
 	}
 }
-{code}
+```
 
 This leads to the following output (and error):
-{code}
+```scala
 scala.swing.Action$$Trigger
 scala.swing.Action$$Trigger$$
 scala.swing.Action$$Trigger$$Wrapper
@@ -22,7 +22,7 @@ Exception in thread "main" java.lang.InternalError: Malformed class name
 	at java.lang.Class.getSimpleName(Class.java:1133)
 	at test.ClassNameProblem$$.main(ClassNameProblem.scala:9)
 	at test.ClassNameProblem.main(ClassNameProblem.scala)
-{code}
+```
 
 The problem for `scala.swing.Action.Trigger.Wrapper` seems to be, that there is no "$$" as separator between the name of the enclosing class and its simple name. But this is expected by `java.lang.Class#getSimpleName`, which therefore throws the Exception.
 

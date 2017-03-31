@@ -1,7 +1,7 @@
-When the editor contains code that has an anonymous inner class passed as a parameter to a method and the anonymous inner class has certain compilation errors, the editor fails to save the file with a _NullPointerException_.
+When the editor contains code that has an anonymous inner class passed as a parameter to a method and the anonymous inner class has certain compilation errors, the editor fails to save the file with a *NullPointerException*.
 
 Setup code:
-{code}
+```scala
 object Helper {
   def accept(a: Any) { }
 }
@@ -9,10 +9,10 @@ object Helper {
 trait Translator {
   def translate(a: AnyRef): AnyRef
 }
-{code}
+```
 
-The Scala editor fails to save the following classes with a _NullPointerException_
-{code}
+The Scala editor fails to save the following classes with a *NullPointerException*
+```scala
 class SaveErrorWhenUndefinedCallerMethod {
   doesNotExist(new Translator() {
     def translate(a: AnyRef): AnyRef = {
@@ -20,9 +20,8 @@ class SaveErrorWhenUndefinedCallerMethod {
     }
   })
 }
-{code}
-
-{code}
+```
+```scala
 class SaveErrorWhenUndefinedMethodInBody {
   Helper.accept(new Translator() {
     def translate(a: AnyRef): AnyRef = {
@@ -31,18 +30,16 @@ class SaveErrorWhenUndefinedMethodInBody {
     }
   })
 }
-{code}
-
-{code}
+```
+```scala
 class SaveErrorWhenLastExpressionDoesNotHaveTheCorrectType {
   Helper.accept(new Translator() {
     def translate(a: AnyRef): AnyRef = {
     }
   })
 }
-{code}
-
-{code}
+```
+```scala
 class SaveErrorWhenWrongMethodSignatureWithParameterThatDoesNotExist {
   Helper.accept(new Translator() {
     def translate(a: DoesNotExist): AnyRef = {
@@ -50,9 +47,8 @@ class SaveErrorWhenWrongMethodSignatureWithParameterThatDoesNotExist {
     }
   })
 }
-{code}
-
-{code}
+```
+```scala
 class SaveErrorWhenWrongMethodSignatureWithExtraParameterThatDoesNotExist {
   Helper.accept(new Translator() {
     def translate(a: AnyRef, b: DoesNotExist): AnyRef = {
@@ -60,6 +56,6 @@ class SaveErrorWhenWrongMethodSignatureWithExtraParameterThatDoesNotExist {
     }
   })
 }
-{code}
+```
 
 Tested with eclipse 3.5.1 and sdt 2.8 r19920

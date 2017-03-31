@@ -1,31 +1,29 @@
 To clarify, the bug report is in response to 2.11.0-M8 announcement requesting examples of code that does not compile but compiled with 2.10. 
 
 The code that does not compile looks like this
-
-{code:scala}
+```scala
 import scalafx.beans.property.ObjectProperty
 
 def skin: ObjectProperty[javafx.scene.control.Skin[_]] = delegate.skinProperty
-{code}
-[skinProperty|http://docs.oracle.com/javafx/2/api/javafx/scene/control/Skinnable.html#skinProperty%28%29] is a JavaFX method of {{javafx.scene.control.Skinnable}} with returning type {{ObjectProperty<javafx.scene.control.Skin<?>>}}, so the type parameters do match here. I think the problem is that [javafx.scene.control.Skin|http://docs.oracle.com/javafx/2/api/javafx/scene/control/Skin.html] is defined as 
+```
+[skinProperty](http://docs.oracle.com/javafx/2/api/javafx/scene/control/Skinnable.html#skinProperty%28%29) is a JavaFX method of `javafx.scene.control.Skinnable` with returning type `ObjectProperty<javafx.scene.control.Skin<?>>`, so the type parameters do match here. I think the problem is that [javafx.scene.control.Skin](http://docs.oracle.com/javafx/2/api/javafx/scene/control/Skin.html) is defined as 
 {code:java}
 Interface Skin<C extends Skinnable>
 {code}. 
-This may be a bug in JavaFX API, most likely {{skinProperty}} should be returning  {{ObjectProperty<javafx.scene.control.Skin<C extends Skinnable>>}}. Or maybe it is defined as is to avoid some type parametrization cycle: {{Skin}} defined in terms {{Skinnable}}, and {{Skinnable}} in terms of {{Skin}}. This somehow type-checks in Java and Scala 2.10.
+This may be a bug in JavaFX API, most likely `skinProperty` should be returning  `ObjectProperty<javafx.scene.control.Skin<C extends Skinnable>>`. Or maybe it is defined as is to avoid some type parametrization cycle: `Skin` defined in terms `Skinnable`, and `Skinnable` in terms of `Skin`. This somehow type-checks in Java and Scala 2.10.
 A work around, in this case, is to force type-cast:
-{code:scala}
+```scala
 import scalafx.beans.property.ObjectProperty
 
 def skin: ObjectProperty[jfxsc.Skin[_ <: jfxsc.Skinnable]] = {
    val p = delegate.skinProperty
    p.asInstanceOf[javafx.beans.property.ObjectProperty[jfxsc.Skin[_ <: jfxsc.Skinnable]]]
 }
-{code}
+```
 though it is quite ugly.
 
-Note that there is an implicit conversion from {{javafx.beans.property.ObjectProperty}} to {{scalafx.beans.property.ObjectProperty}}, which may or may not be involved somehow:
-
-{code:scala}
+Note that there is an implicit conversion from `javafx.beans.property.ObjectProperty` to `scalafx.beans.property.ObjectProperty`, which may or may not be involved somehow:
+```scala
 package scalafx.beans.property
 
 object ObjectProperty {
@@ -33,7 +31,7 @@ object ObjectProperty {
   implicit def sfxObjectProperty2jfx[T <: Any](op: ObjectProperty[T]) = op.delegate
 ...
 }
-{code}
-where {{op.delegate}} is of type {noformat}javafx.beans.property.ObjectProperty[T]{noformat}.
+```
+where `op.delegate` is of type {noformat}javafx.beans.property.ObjectProperty[T]{noformat}.
 
 I did not find yet workarounds for the other compilation errors shown in the original report. The third error is a bit similar. But the second is reporting some type invariance issues, it may be a different thing.

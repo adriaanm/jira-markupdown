@@ -1,17 +1,15 @@
-Compiling the following code with {{-Xcheck-null}}
-
-{code}
+Compiling the following code with `-Xcheck-null`
+```scala
 sealed abstract class CacheLookupResult[+T]
 case class CacheHit[+T](result : T) extends CacheLookupResult[T]
 case class CacheMiss extends CacheLookupResult[Nothing]
 {
   var cache_result = true
 }
-{code}
+```
 
 generates the following stack trace:
-
-{code}
+```scala
 scala.tools.nsc.FatalError: EXCEPTION:null
         at scala.tools.nsc.matching.ParallelMatching$$MixTypes.tree(ParallelMatching.scala:842)
         at scala.tools.nsc.matching.ParallelMatching$$class.repToTree(ParallelMatching.scala:850)
@@ -107,4 +105,4 @@ exception when transforming CacheHit.this.eq(x$$1).||(x$$1 match {
   case (Any)CacheHit[Any]((result$$1 @ _)) if x$$1.==(result()) => true
   case _ => false
 })
-{code}
+```

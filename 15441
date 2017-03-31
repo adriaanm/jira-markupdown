@@ -1,7 +1,7 @@
 introduced in r17182, but it seems they were never finished
 
 here's an example (inspired by scala-debate: http://permalink.gmane.org/gmane.comp.lang.scala.debate/4896)
-{code}
+```scala
 abstract class Peano2 extends {type MyType} with Object { self: MyType =>
  type MyType <: Peano2{type MyType = self.MyType}
 
@@ -12,14 +12,14 @@ abstract class Peano2 extends {type MyType} with Object { self: MyType =>
    else count(n-1).succ  // f-bounded MyType
  }
 }
-{code}
+```
 
 or could we squeeze it all in the same line?
-{code}
+```scala
 abstract class Peano2 extends {x => type MyType <: Peano2{type MyType = x.MyType}} with Object { self: MyType =>
-{code}
+```
 
 using type parameters (this works now)
-{code}
+```scala
 abstract class Peano2[MyType <: Peano2[MyType]] { self: MyType =>
-{code}
+```

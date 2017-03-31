@@ -1,6 +1,5 @@
 Take the following example:
-
-{code}
+```scala
 {
   sealed trait V
   sealed trait T
@@ -16,20 +15,20 @@ Take the following example:
   }
 
 }
-{code}
+```
 
 Here we have a sealed trait T with three concrete subtypes (VA, VB, and TA). VA and VB are both also subtypes of V. Thus, the pattern match on an instance of T where we match V should not issue a "missing combination" warning, since V will cover the cases of VA and VB.
 
-*Expected*:
+**Expected**:
 The compiler should not issue a warning.
 
-*Actual*:
+**Actual**:
 The compiler issues the following warning:
-{code}
+```scala
 missing combination             VA
 missing combination             VB
 
   def f(t: T) = t match {
                 ^
 one warning found
-{code}
+```

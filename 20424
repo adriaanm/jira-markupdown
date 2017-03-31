@@ -1,6 +1,5 @@
-As per [this Stackoverflow question|http://stackoverflow.com/questions/42423441/compile-error-with-implicit-class-method-named-clone], following fails to compile:
-
-{code:scala}
+As per [this Stackoverflow question](http://stackoverflow.com/questions/42423441/compile-error-with-implicit-class-method-named-clone), following fails to compile:
+```scala
 class Foo(val bar: String)
 
 object Foo {
@@ -13,10 +12,8 @@ object Main extends App {
   val foo = new Foo("hello")
   println(foo.clone(1, 2))    // <- does not compile
 }
-{code}
-
-
-{code:scala}
+```
+```scala
 -Ytyper-debug bonkers immediately after finding a suitable candidate upon subsequent search:
 
 ```
@@ -46,24 +43,22 @@ Main.scala:6: error: method clone in class Object cannot be accessed in my.aweso
  prefix type my.awesome.pkg.Foo does not conform to
  object Main in package pkg where the access take place
     foo.clone(1, 2) // <- does not compile
-{code}
+```
 
-Perhaps indirectly related to [SI-6760|https://issues.scala-lang.org/browse/SI-6760] but overloaded method had different signature than `Object.clone`.
+Perhaps indirectly related to [SI-6760](https://issues.scala-lang.org/browse/SI-6760) but overloaded method had different signature than `Object.clone`.
 
 This does compile under 2.10.6. Biggest difference I see in the type tree is that 2.10.6 tried to cook the method parameters while 2.11.8 doesn't:
 
 2.11.8:
-
-{code:scala}
+```scala
 DefDef( // def clone(x: Int,y: Int): Int in class Enrich
  <method>
  "clone"
-{code}
+```
 
 2.10.6:
-
-{code:scala}
+```scala
 DefDef( // def clone(x: Int,y: Int): Int in class Enrich
  <method> <triedcooking>
   "clone"
-{code}
+```

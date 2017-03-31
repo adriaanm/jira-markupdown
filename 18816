@@ -1,6 +1,5 @@
 The dotty compiler crashed with an "ArrayIndexOutofBounds" exception in "getOrElseUpdate" on an AnyRefMap. I could not minimize it, but think I know where the failure comes from. Here's the code of getOrElseUpdate:
-
-{code}
+```scala
   override def getOrElseUpdate(key: K, defaultValue: => V): V = {
     val h = hashOf(key)
     val i = seekEntryOrOpen(h, key)
@@ -17,13 +16,12 @@ The dotty compiler crashed with an "ArrayIndexOutofBounds" exception in "getOrEl
     }
     else _values(i).asInstanceOf[V]
   }
-{code}
+```
 
 The error happens if the defaultValue computation causes a size increase and rehash of the map. In that case the value of `i` seems to be no longer valid.
 The actual call causing the error was:
-
-{code}
+```scala
     typedTree.getOrElseUpdate(expanded(tree), typer.typed(tree, pt))
-{code}
+```
 
 Indeed the default value expression `typer.typed(tree, pt)` could easily create enough new `typedTree` entries to cause a rehash.

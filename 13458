@@ -1,6 +1,5 @@
 The attached file generates a ClassCastException when run with the error:
-
-{code}
+```scala
 java.lang.ExceptionInInitializerError
         at test.Main.main(interpretertest.scala)
         at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
@@ -25,7 +24,6 @@ Caused by: java.lang.ClassCastException: test.Foo cannot be cast to test.Foo
         at binder0$$.set(<script>:1)
         at binder0.set(<script>)
         ... 17 more
-
-{code}
+```
 
 Presumably what's happening is that the interpreter is loading the class test.Foo again rather than correctly delegating to its parent ClassLoader? Regardless, it results in interpreter.bind being very not useful because you can't bind anything outside of the standard library. 

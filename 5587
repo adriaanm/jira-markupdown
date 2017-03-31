@@ -2,8 +2,7 @@ I just verified it with BigInt too.
 The check fails for inclusive ranges where end == -(start+1). 
 
 The bug is in NumericRange.count:
-
-{code}
+```scala
 193	    val longCount: Long =
 194	      if (start == end) { if (isInclusive) 1 else 0 }
 195	      else if (end > start != step > zero) 0
@@ -17,4 +16,4 @@ The bug is in NumericRange.count:
 203	   
 204	    if (longCount > scala.Int.MaxValue || longCount < 0L)
 205	      throw new IllegalArgumentException("Seqs cannot contain more than Int.MaxValue elements.")
-{code}
+```

@@ -1,6 +1,5 @@
 Using 2.7.2, it is possible to compile the following sources:
-
-{code}
+```scala
 import scala.util.parsing.combinator.RegexParsers
 
 trait MyLexer extends RegexParsers {
@@ -16,11 +15,10 @@ object Driver {
     MyParser
   }
 }
-{code}
+```
 
 However, at runtime, executing Driver produces the following exception:
-
-{code}
+```scala
 java.lang.ClassFormatError: Repetitive method name/signature in class file MyParser$$
 	at java.lang.ClassLoader.defineClass1(Native Method)
 	at java.lang.ClassLoader.defineClass(ClassLoader.java:675)
@@ -44,7 +42,7 @@ java.lang.ClassFormatError: Repetitive method name/signature in class file MyPar
 	at scala.tools.nsc.ObjectRunner$$.run(ObjectRunner.scala:74)
 	at scala.tools.nsc.MainGenericRunner$$.main(MainGenericRunner.scala:164)
 	at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
-{code}
+```
 
 The problem is the whiteSpace member is duplicated within the MyParser$$ class (as shown by javap).
 

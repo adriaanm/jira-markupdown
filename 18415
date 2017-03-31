@@ -1,6 +1,5 @@
 The following compiles in 2.10.2 and 2.11.0-M1, but not in M2 and later:
-
-{code}
+```scala
 import scala.reflect.macros._
 
 class A[C <: Context with Singleton](position: C#Position)
@@ -8,10 +7,10 @@ class A[C <: Context with Singleton](position: C#Position)
 object A {
   def apply(c: Context)(in: c.Tree): A[c.type] = new A(in.pos)
 }
-{code}
+```
 
 The error message is:
-{code}
+```scala
 A.scala:6: error: no type parameters for constructor A: (position: C#Position)A[C] exist so that it can be applied to arguments (c.universe.Position)
  --- because ---
 argument expression's type is not compatible with formal parameter type;
@@ -27,4 +26,4 @@ A.scala:6: error: type mismatch;
   def apply(c: Context)(in: c.Tree): A[c.type] = new A(in.pos)
                                                           ^
 two errors found
-{code}
+```

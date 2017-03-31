@@ -1,7 +1,7 @@
 This is issue exist for a while, I just tested it on recent Scala 2.8.0.r18542:
 
 Here's the test case:
-{code}
+```scala
 object Application {
   
   def test: String = {
@@ -12,10 +12,10 @@ object Application {
 
 class B {
 }
-{code}
+```
 
 Where b.a should be detected as a error select, since `a` is not a member of B, but this error cannot be detected before phase 'icode', and will cause compiler crash:
-{code}
+```scala
 java.lang.Error: Unknown type: <error>, <error>[class scala.tools.nsc.symtab.Types$$ErrorType$$, class scala.tools.nsc.symtab.Types$$ErrorType$$] TypeRef? false, false
         at scala.tools.nsc.Global.abort(Global.scala:188)
         at scala.tools.nsc.backend.icode.TypeKinds$$class.toTypeKind(TypeKinds.scala:455)
@@ -72,7 +72,6 @@ java.lang.Error: Unknown type: <error>, <error>[class scala.tools.nsc.symtab.Typ
         at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
 error: fatal error (server aborted): Unknown type: <error>, <error>[class scala.tools.nsc.symtab.Types$$ErrorType$$, class scala.tools.nsc.symtab.Types$$ErrorType$$] TypeRef? false, false
 one error found
-{code}
+```
 
 It's a very bad condition, since the compiler cannot detect an obvious error, which may cause a lot of time for the developer to find why?
-

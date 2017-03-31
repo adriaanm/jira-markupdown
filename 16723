@@ -1,5 +1,5 @@
 Reproduce Code:
-{code}
+```scala
 import scala.reflect.mirror._
 import scala.reflect.Code
 import scala.tools.nsc.reporters._
@@ -24,23 +24,23 @@ package scala.collection.slick{
     q.filter(_.sales > 5)
   }
 }
-{code}
+```
 
 Code compiles fine, but fails at runtime during reflective type checking.
 
 Expected result:
-{code}
+```scala
 Exception in thread "main" scala.NotImplementedError: an implementation is missing
 	[...]
 	at scala.collection.slick.Test2$delayedInit$body.apply(Bug.scala:22)
 	[...]
-{code}
+```
 
 Actual result:
-{code}
+```scala
 Exception in thread "main" scala.reflect.internal.Types$TypeError: type mismatch;
  found   : scala.collection.slick.Test2.CoffeesTable => Boolean
  required: scala.collection.slick.Test2#CoffeesTable => Boolean	at 	[...]
 	at scala.collection.slick.Test2$delayedInit$body.apply(Bug.scala:21)
 	[...]
-{code}
+```

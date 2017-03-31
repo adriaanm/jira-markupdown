@@ -3,10 +3,10 @@ Replying to [comment:2 lexn82]:
 > There is no hint on Array[Object] anywhere in the code, not in the bound, and certanly not in the cast. Therefore the casting is broken.
 
 The casting is not broken.  Array[Object] is the erasure of Array[AnyVal], which is the inferred type of the pattern match.  You are letting it be boxed and then trying to cast the boxed array.  Here is a version which works, and it's really not cool to use trac for support.
-{code}
+```scala
   def mkArray[T <: A](atype: Int): T#AType = {
     atype match {
       case 1  => new Array[Int](10).asInstanceOf[T#AType]
       case 2  => new Array[Float](10).asInstanceOf[T#AType]
     }
-{code}
+```

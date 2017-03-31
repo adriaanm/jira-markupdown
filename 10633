@@ -1,5 +1,5 @@
 If you're looking for 2.10 code which doesn't compile, another many-time offender is:
-{code}
+```scala
  -  implicit def Byte(implicit S: Random): Arbitrary[Byte] = new RandomByte
  +  implicit def Byte(implicit S: Random): Arbitrary[Byte] = new RandomByte()(S)
 
@@ -11,11 +11,11 @@ If you're looking for 2.10 code which doesn't compile, another many-time offende
 
  -  def ByteBetween(lower: Byte, upper: Byte)(implicit S: Random): Arbitrary[Byte] = new RandomByteBetween(lower, upper)
  +  def ByteBetween(lower: Byte, upper: Byte)(implicit S: Random): Arbitrary[Byte] = new RandomByteBetween(lower, upper)(S)
-{code}
+```
 I already WTFed that on one of the mailing lists when I first discovered it.
 
 Because otherwise,
-{code}
+```scala
 [error] /s/basis/stat/src/main/scala/basis/stat/Arbitrary.scala:61: ambiguous implicit values:
 [error]  both method Random in package stat of type => basis.stat.Random
 [error]  and value S of type basis.stat.Random
@@ -23,4 +23,4 @@ Because otherwise,
 [error]   def PositiveByte(implicit S: Random): Arbitrary[Byte] = new RandomPositiveByte
 [error]                                                           ^
 [error] one error found
-{code}
+```

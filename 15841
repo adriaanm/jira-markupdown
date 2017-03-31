@@ -1,5 +1,5 @@
 I'm trying to provide a This type to certain classes which is always the same as the static type of the object we're dealing with, but is more permissive than this.type (which for instance wouldn't let me return a perfect clone of the current object. I cam up with this:
-{code}
+```scala
 trait Base[+S <: Base[S]] {
   type This = S
   def makeClone: This
@@ -12,14 +12,13 @@ class Derived0 extends Base[Derived0] {
 class Derived1 extends Derived0 with Base[Derived1] {
   def derived1Method = ()
 }
-{code} 
+```
 
 I would have expected the compiler to complain about the missing makeClone method in Derived1, but it accepts it without a problem. If I then try
-
-{code}
+```scala
 val d = new Derived1
 d.makeClone.derived1Method
-{code}
+```
 
 then I get a java.lang.!ClassCastException: Derived0 cannot be cast to Derived1. If I override makeClone in Derived1 to return a new Derived1 instance, it sure works.
 

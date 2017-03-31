@@ -1,11 +1,11 @@
 When using a "hidden" attribute, by passing in None:Option[Seq[Node]] or null:String as the value:
-{code}
+```scala
 scala> <elem attr={None} />
 res0: scala.xml.Elem = <elem ></elem>
-{code}
+```
 
 It breaks XML equality by throwing an NPE in one direction:
-{code}
+```scala
 scala> res0 == <elem />
 java.lang.NullPointerException
 	at scala.xml.NodeSeq.iterator(NodeSeq.scala:51)
@@ -44,12 +44,12 @@ java.lang.NullPointerException
 	at scala.tools.nsc.interpreter.Line$$anonfun$1.apply$mcV$sp(Line.scala:43)
 	at scala.tools.nsc.io.package$$anon$2.run(package.scala:25)
 	at java.lang.Thread.run(Thread.java:662)
-{code}
+```
 
 And by returning false in the other direction:
-{code}
+```scala
 scala> <elem /> == res0
 res2: Boolean = false
-{code}
+```
 
 Thus rendering the == function useless or inaccurate for those objects.

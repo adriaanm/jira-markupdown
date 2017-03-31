@@ -1,7 +1,7 @@
 See Friday morning (2012-09-07), Scala IDE fails with a compilation error when build against Scala 2.10 nightly. The same code can successfully be build with the previous build (2012-09-06).
 
-The errors are in [ScalaPresentationCompiler, line 151|https://github.com/scala-ide/scala-ide/blob/master/org.scala-ide.sdt.core/src/scala/tools/eclipse/ScalaPresentationCompiler.scala#L151]:
-{code}
+The errors are in [ScalaPresentationCompiler, line 151](https://github.com/scala-ide/scala-ide/blob/master/org.scala-ide.sdt.core/src/scala/tools/eclipse/ScalaPresentationCompiler.scala#L151):
+```scala
 [ERROR] /localhome/jenkinside/workspace/scala-ide-nightly-master-trunk/scala-ide/org.scala-ide.sdt.core/src/scala/tools/eclipse/ScalaPresentationCompiler.scala:151: error: not found: value InvalidCompanions
 [ERROR]           case e @ InvalidCompanions(c1, c2) =>
 [ERROR]                    ^
@@ -12,10 +12,10 @@ The errors are in [ScalaPresentationCompiler, line 151|https://github.com/scala-
 [ERROR]         case e: InvalidCompanions => NoSymbol
 [ERROR]                 ^
 [ERROR] three errors found
-{code}
+```
 
-The full trace is available [in jenkins|https://jenkins.scala-ide.org:8496/jenkins/job/scala-ide-nightly-master-trunk/568/console]
+The full trace is available [in jenkins](https://jenkins.scala-ide.org:8496/jenkins/job/scala-ide-nightly-master-trunk/568/console)
 
 I was unable to reduce the test case. Simple tests with the same code structure work fine.
 
-The problem is not from the usage of the {{case .. @ .. =>}} pattern. I rewrote the code without it, and it failed the same way.
+The problem is not from the usage of the `case .. @ .. =>` pattern. I rewrote the code without it, and it failed the same way.

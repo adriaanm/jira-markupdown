@@ -1,19 +1,19 @@
-Wile constructing Tuple6 inside lambda I'm observing *null* value passing into the Tuple instead on *not null* value. This issue occurs only on "warmed-up" JVM after hot spots compilations, which is resulting in hardly trackable, not always reproducible bugs.
+Wile constructing Tuple6 inside lambda I'm observing **null** value passing into the Tuple instead on **not null** value. This issue occurs only on "warmed-up" JVM after hot spots compilations, which is resulting in hardly trackable, not always reproducible bugs.
 
 Code snippet which causes issue is below:
-{code:java}
+```java
 private Set<Tuple6<Long, Long, Byte, String, Byte, String>> doStuff(List<String> demoIds,
                 long programId, long date, TimeShiftingViewingPeriod viewingPeriod, Contribution contribution, String marketBreak) {
             Set<Tuple6<Long, Long, Byte, String, Byte, String>> res = new HashSet<>();
             demoIds.forEach(demoId -> res.add(new Tuple6<>(date, programId, viewingPeriod.getId(), demoId, contribution.getId(), marketBreak)));
             return res;
         }
-{code}
-The issue is that in resulting Set we may get Tuples with *null* values on third position, which is not possible since viewingPeriod is enum, where id is always *not null*  value specified in constructor, and not modifiable.
-*Note*:  Issue is not reproduced if replace Collection.forEach with old style for expression.
-*Note*:  Issue is not reproduced if we replace Tuple with any Java Parametrized collection (Map for example)
-*Note*:  Issue is not reproduced if we disable JIT
-*Note*:  Issue is reproduced in random manner, and we noticed it is more often reproduced in case computer is running under load caused by some other tasks. We started build process for our project in parallel.
+```
+The issue is that in resulting Set we may get Tuples with **null** values on third position, which is not possible since viewingPeriod is enum, where id is always **not null**  value specified in constructor, and not modifiable.
+**Note**:  Issue is not reproduced if replace Collection.forEach with old style for expression.
+**Note**:  Issue is not reproduced if we replace Tuple with any Java Parametrized collection (Map for example)
+**Note**:  Issue is not reproduced if we disable JIT
+**Note**:  Issue is reproduced in random manner, and we noticed it is more often reproduced in case computer is running under load caused by some other tasks. We started build process for our project in parallel.
 Test project: both sources and executable jar is in attachment.
 
 How issue could be observed:

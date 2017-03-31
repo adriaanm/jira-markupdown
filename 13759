@@ -1,6 +1,5 @@
 Source code:
-
-{code}
+```scala
 trait A {
   type T <: { type S[_] }
   val x : T
@@ -12,13 +11,12 @@ object B extends A {
   val x : T = new { type S = Int } 
   val y : x.S = throw new Exception
 }
-{code}
+```
 
 Compiler version: 2.7.2.RC2
 
 Result:
-
-{code}
+```scala
 Exception in thread "main" java.lang.Error: TypeBounds TypeRef(ThisType(package scala),trait Nothing,List()),TypeRef(ThisType(package scala),class Any,List())
 	at scala.tools.nsc.symtab.Types$$class.appliedType(Types.scala:2096)
 	at scala.tools.nsc.symtab.SymbolTable.appliedType(SymbolTable.scala:12)
@@ -70,4 +68,4 @@ Exception in thread "main" java.lang.Error: TypeBounds TypeRef(ThisType(package 
 	at scala.tools.nsc.Main$$.process(Main.scala:84)
 	at scala.tools.nsc.Main$$.main(Main.scala:98)
 	at scala.tools.nsc.Main.main(Main.scala)
-{code}
+```

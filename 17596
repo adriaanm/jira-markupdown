@@ -2,13 +2,11 @@ the pickler "localizes" a refinement class's owner,
 so when a refinement type is loaded from pickled information the owner structure will be different than when it's type checked from source
 
 the following will demonstrate this, assuming you log the creation of RefinedTypes:
-
-{code}
+```scala
   final class RefinedType0(parents: List[Type], decls: Scope, clazz: Symbol) extends RefinedType(parents, decls) {
     println("RefinedType"+(clazz.ownerChain, parents, decls)) // logging
-{code}
-
-{code}
+```
+```scala
 // A.scala
 package test
 
@@ -20,24 +18,21 @@ trait B { self: A with C =>
     def b = B.this
   }
 }
-{code}
-
-{code}
+```
+```scala
 // Impl.scala
 package test
 
 class Impl extends B with A with C
-{code}
-
-{code}
+```
+```scala
 scalac A.scala Impl.scala > all
 scalac Impl.scala > single
 diff -u all single
-{code}
+```
 
 yields (snipped)
-
-{code}
+```scala
 -RefinedType(List(test, package test, package <root>),List(test.B, test.A, test.C),Scope{
 +RefinedType(List(B, trait B, package test, package <root>),List(test.B, test.A with test.C),Scope{
-{code}
+```

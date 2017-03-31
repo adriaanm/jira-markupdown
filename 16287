@@ -1,8 +1,7 @@
 Scala 2.9.0:
 
 Compiler crash inside REPL when executing following code:
-
-{quote}
+```
 scala> val Seq(x, xs*) = Seq(1,2,3,4,5)
 <console>:12: warning: No binding
        val Seq(x, xs*) = Seq(1,2,3,4,5)
@@ -73,21 +72,19 @@ java.lang.Error: symbol value xs does not exist in $line44.$read$$iw$$iw$$iw$$iw
 	at scala.tools.nsc.MainGenericRunner.process(MainGenericRunner.scala:80)
 	at scala.tools.nsc.MainGenericRunner$.main(MainGenericRunner.scala:89)
 	at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
-
-{quote}
+```
 
 Whereas following code works as expected:
-
-{quote}
+```
 scala> val Seq(x, xs@_*) = Seq(1,2,3,4,5)
 x: Int = 1
 xs: Seq[Int] = List(2, 3, 4, 5)
-{quote}
+```
 
 Compiled with scalac the same error occurs too:
-{quote}
+```
 x.scala:2: warning: No binding
   val Seq(x, xs*) = Seq(1,2,3,4,5)
 
 <stack trace>
-{quote}
+```

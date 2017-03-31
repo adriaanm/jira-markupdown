@@ -1,23 +1,23 @@
 Consider this implementation of applyDynamic:
-{code}
+```scala
 object Dyn extends Dynamic {
   def applyDynamic(s: String)(xs: Any*): Dyn.type = {
     println(s + xs.map(_.toString).mkString("(", ", ", ")"))
     Dyn
   }
 }
-{code}
+```
 
 This works as expected:
-{noformat}
+```
   Dyn.foo(1, 2)              // prints "foo(1, 2)"
   Dyn.foo(3).bar(4, 5)       // prints "foo(3)", then "bar(4, 5)"
   Dyn(6).bar(7)              // prints "apply(6)", then "bar(7)"
   Dyn.foo(8)(9)              // prints "foo(8)", then "apply(9)"
-{noformat}
+```
 
 This somewhat analogous macro implementation works in all but the last case:
-{code}
+```scala
 class DynMacro extends Dynamic {
   def applyDynamic(s: String)(xs: Any*): DynMacro =
     macro DynMacro.applyDynamicMacro
@@ -31,15 +31,14 @@ object DynMacro extends DynMacro {
     c.Expr(q"println(${ n + args }); ${c.prefix.tree}")
   }
 }
-{code}
-
-{noformat}
+```
+```
   DynMacro.foo(1, 2)         // prints "foo(1, 2)"
   DynMacro.foo(3).bar(4, 5)  // prints "bar(4, 5)", then "foo(3)"
   DynMacro(6).bar(7)         // prints "bar(7)", then "apply(6)"
   DynMacro.foo(8)(9)         // Fails!
-{noformat}
+```
 
-The last case results in an unhandled AssertionError {{"assertion failed: DynMacro.foo(8)(9)"}} somewhere in {{SuperAccessors}}, but the actual error probably happens much earlier.
+The last case results in an unhandled AssertionError `"assertion failed: DynMacro.foo(8)(9)"` somewhere in `SuperAccessors`, but the actual error probably happens much earlier.
 
-This may or may not be related to SI-7059.
+This may or may not be related to scala/bug#7059.

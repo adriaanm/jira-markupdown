@@ -1,15 +1,14 @@
 Stephane and I had some more fun with this bug. The minimal version is
-{code}
+```scala
 object Bug42 {
   def getClause[T](x: T): Option[T] = {
     val f = { () => return Some(x) }
     f()
   }
 }
-{code}
+```
 What happens is that after refcheck, the T used in the non-local return changes (note the T3745 and the T3746).
-
-{code}
+```scala
 [[syntax trees at end of refchecks]]// Scala source: gkl.scala
 package <empty> {
   final class Bug42SI-7 extends java.lang.ObjectSI-1041 with ScalaObjectSI-534 {
@@ -23,5 +22,4 @@ package <empty> {
     }{NothingSI-1191}
   }
 }
-
-{code}
+```

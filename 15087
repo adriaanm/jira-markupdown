@@ -1,8 +1,7 @@
  SLS 5.3 says that "Members of final classes or objects are implicitly also final, so the final modifier is redundant for them." But observe the different bytecode generated below.
 
-There's already a ticket SI-1458, "non-final vals on objects will not be inlined for use in case statements", but that ticket is in the context of "case", and was consolidated under SI-2398, which is also only about "case". But the same issue exists elsewhere.
-
-{code}
+There's already a ticket scala/bug#1458, "non-final vals on objects will not be inlined for use in case statements", but that ticket is in the context of "case", and was consolidated under scala/bug#2398, which is also only about "case". But the same issue exists elsewhere.
+```scala
   ~> cat S.scala                                               
 object S1 {
   final val x = 3
@@ -37,8 +36,8 @@ public int x();
   Code:
    0:	iconst_3
    1:	ireturn
-{code}
+```
 
 Note not only is different bytecode generated in S1, but the difference is propagated to S2.
 
-This seems odd at best, wrong at worst (given the SLS wording), and anyway I'm guessing the difference wasn't intended, based on extempore's comment in SI-1458: "The usage of isFinal vs. hasFlag FINAL... should be investigated throughout the compiler."
+This seems odd at best, wrong at worst (given the SLS wording), and anyway I'm guessing the difference wasn't intended, based on extempore's comment in scala/bug#1458: "The usage of isFinal vs. hasFlag FINAL... should be investigated throughout the compiler."

@@ -3,7 +3,7 @@ Since all Readers provider by parser combinators framework use PagedSeq inside, 
 For example, consider the scenario of parsing 1GB file, from which you need only a portion of information (you may want to skip headers, comments, etc.). PagedSeq will hold on the whole 1GB until the parsing finishes and GC would step in.
 
 Example code:
-{code}
+```scala
 import collection.immutable.PagedSeq
 import util.parsing.combinator._
 import util.parsing.input._
@@ -39,5 +39,5 @@ def parser = new RegexParsers {
   def go(in: java.io.Reader) = parseAll(tt.*, in).get.size
 }
 println(parser.go(in))
-{code}
+```
 If you would look at memory usage using something like jvisualvm, you would notice that running this process consumes about 800Mb of RAM just to parse 400kb worth of characters.

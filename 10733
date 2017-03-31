@@ -1,25 +1,23 @@
 Adding this implicit conversion:
-
-{code}
+```scala
   implicit def convertGenSetToCombinableNothing[ERR, X, SET[e] <: GenSet[e]]
     (xs: SET[X with (Nothing Or Every[ERR])])
     (implicit cbf: CanBuildFrom[SET[X with (Nothing Or Every[ERR])], Nothing, SET[Nothing]]): Combinable[Nothing, ERR, SET] =
     new Combinable[Nothing, ERR, SET] { def combined: SET[Nothing] Or Every[ERR] = ??? }
-{code}
+```
 
 Makes things compile again. 
 
 Background: In uses like:
-
-{code}
+```scala
 Set(Bad(One("oops"))).combined
-{code}
+```
 
 The inferred type is `Set[Nothing Or Every[String]]`. Scala's type inference has a few rough edges when you actually want a type argument (G) to be inferred as `Nothing`.
 
 So even the explicit call to that converter fails:
-{code}
+```scala
 convertGenSetToCombinable(Set(Bad(One("oops")))).combined
-{code}
+```
 
 After our patch, the implicit view fails in the same way as the explicit way in all cases.

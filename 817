@@ -1,14 +1,13 @@
 (prewarning: I understand nothing in an Eclipse plugins development)
 
 Digging in the plugin code and call chains  (with multiple printlns and rebuildings), I have found (at least I think so) the place causing the bug. The call chain is:
-
-{code}
+```scala
 TypersPresentations 'def hyperlink' 
 TypersPresentations decode(symbol : Symbol)
 ScalaPlugin fileFor(sym : Symbol)
 ScalaPlugin findFileFor(file : PlainFile)
-{code}
+```
 
-In the last method finding takes place again *workspace* root dir. 
+In the last method finding takes place again **workspace** root dir. 
 
 Hope, it will move the bug to trivial issue :-)

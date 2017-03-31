@@ -1,31 +1,29 @@
 The problem is the implementation of the plugin's Phase:
-
-{code}
+```scala
 def newPhase(prev: Phase) = new Phase(prev) {
   [...]
 }
-{code}
+```
 
 if you look at Phase.scala, you see that the method "erasedTypes" always yields false. As soon as you try to run the phase after erasure, erasedTypes should of course return true.
 
 The solution: make your phase extend SubComponent.StdPhase (PluginComponent extends SubComponent, so you have that available). The StdPhase itself extends GlobalPhase, which contains the important piece of code:
-
-{code}
+```scala
 abstract class GlobalPhase(prev: Phase) extends Phase(prev) {
   [...]
   private val isErased = prev.name == "erasure" || prev.erasedTypes
   override def erasedTypes: Boolean = isErased
   [...]
 }
-{code}
+```
 
 In the case of your plugin, you should do
-{code}
+```scala
 def newPhase(prev: Phase) = new StdPhase(prev) {
   def apply(unit: global.CompilationUnit) {
     println("Done running "+phaseName+" after "+runsAfter+".")
   }
 }
-{code}
+```
 
 There should absolutely be some documentation about that, and the examples at [http://www.scala-lang.org/node/140] and [http://lampsvn.epfl.ch/trac/scala/browser/scala/trunk/docs/examples/plugintemplate] should be updated.

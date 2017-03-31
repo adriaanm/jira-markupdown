@@ -1,8 +1,7 @@
-The problem is with type argument inference, rather than with unification. AFAIK, scalac *never* infers a partially applied type constructor, even if it is handed to it on a plate, as in your example.
+The problem is with type argument inference, rather than with unification. AFAIK, scalac **never** infers a partially applied type constructor, even if it is handed to it on a plate, as in your example.
 
-So probably a duplicate of SI-2712, although Adriaan will be the final arbiter of that.
-
-{code}
+So probably a duplicate of scala/bug#2712, although Adriaan will be the final arbiter of that.
+```scala
 trait TypeWithHKParam[D[_]]
 
 def function[D[_]](t: TypeWithHKParam[D]) = 1
@@ -11,6 +10,6 @@ function(null: TypeWithHKParam[Option]) //okay
 
 //Does not compile
 function(null: TypeWithHKParam[({type l[a] = (Int, a)})#l])
-{code}
+```
 
 Very nicely reported bug, BTW.

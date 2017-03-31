@@ -1,11 +1,11 @@
 I think it's pretty reasonable to expect to be able to write a method like this:
-{code}
+```scala
 def f[A](xs: Thing[_, A]): A = xs.bippy
-{code}
+```
 If Thing's first type argument is kind *, you can. If it isn't, then god help you. There's no way most people will ever come up with this. The usual surrender probably involves adding an otherwise pointless type parameter to method f. This is not always an option and definitely shouldn't be mandated.
 
 Here are a few things one might try before hitting upon the syntax which actually works.
-{code}
+```scala
 scala> trait Foo[CC[+X], +A]
 defined trait Foo
 
@@ -31,14 +31,13 @@ type CC's expected parameters:
 type X is invariant, but type X (in trait Foo) is declared covariant
        trait Foo[CC[+X], +A] ; def f[A](x: Foo[CC forSome { type CC[X] }, A]): A = ???
                                            ^
-{code}
+```
 
 Colonel Mustard in the conservatory:
-
-{code}
+```scala
 // Nice, three feature warnings for the only way to write it.
 scala> trait Foo[CC[+X], +A] ; def f[A](x: Foo[CC forSome { type CC[+X] }, A]): A = ???
 warning: there were 3 feature warning(s); re-run with -feature for details
 defined trait Foo
 f: [A](x: Foo[CC forSome { type CC[+X] <: Any },A])A
-{code}
+```

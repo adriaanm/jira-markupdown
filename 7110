@@ -5,27 +5,27 @@ I agree that scalac can't determine the result of all "if" guards at compile tim
 I think that scalac should treat all "if" guards as possibly-false at compile time, and adjust the exhaustiveness checks accordingly.
 
 So code like:
-{code}
+```scala
 x match {
   case Some(n) if n % 2 == 0 => "even"
   case None => "nothing"
 }
-{code}
+```
 would give an exhaustiveness warning, and users would know that they need to do either:
-{code}
+```scala
 x match {
   case Some(n) if n % 2 == 0 => "even"
   case Some(n) => "odd"
   case None => "nothing"
 }
-{code}
+```
 or
-{code}
+```scala
 x match {
   case Some(n) if n % 2 == 0 => "even"
   case _ => "not even"
 }
-{code}
+```
 to fix the warning.
 
 > our key design goal is not to have spurious warnings

@@ -1,7 +1,6 @@
 The following code are compiled without error.
 However, if the line "implicitly[Bar](Bar.bar)" is commented out, I get a error "could not find implicit value for parameter e: Bar".
-
-{code}
+```scala
 class Foo {
   def foo {
     implicitly[Bar](Bar.bar)
@@ -14,11 +13,10 @@ class Bar
 object Bar {
   implicit val bar = new Bar
 }
-{code}
+```
 
 Inspecting an output of -Xprint:typer, the accessor method for implicit value Bar.bar is not generated.
-
-{code}
+```scala
   ...
   final object Bar extends java.lang.Object with ScalaObject {
     def this(): object Bar = {
@@ -28,11 +26,10 @@ Inspecting an output of -Xprint:typer, the accessor method for implicit value Ba
     private[this] val bar: Bar = new Bar()
   }
   ...
-{code}
+```
 
 When explicitly declare the type of Bar.bar, it is compiled without error.
-
-{code}
+```scala
 class Foo {
   def foo {
     implicitly[Bar]
@@ -44,11 +41,10 @@ class Bar
 object Bar {
   implicit val bar: Bar = new Bar
 }
-{code}
+```
 
 However, the following code cannot be compiled.
-
-{code}
+```scala
 class Foo {
   def foo {
     implicitly[Bar]
@@ -61,11 +57,10 @@ object Bar {
   val b: Bar = new Bar
   implicit val bar = b
 }
-{code}
+```
 
 Moreover, when reordering class definition, the code is compiled.
-
-{code}
+```scala
 class Bar
 
 object Bar {
@@ -77,6 +72,6 @@ class Foo {
     implicitly[Bar]
   }
 }
-{code}
+```
 
 Is this intented behavior?

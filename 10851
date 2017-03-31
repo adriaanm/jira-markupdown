@@ -1,7 +1,7 @@
-Just to show it's not just {{setWriter}} that's borked; {{setAttribute}} doesn't work either. SI-7916 asserts {{get/setBndings}} is toast too :
+Just to show it's not just `setWriter` that's borked; `setAttribute` doesn't work either. scala/bug#7916 asserts `get/setBndings` is toast too :
 
-in {{sbt console}}
-{noformat}
+in `sbt console`
+```
 import javax.script._
 val engine = new ScriptEngineManager().getEngineByName("scala")
 val iMain = engine.asInstanceOf[scala.tools.nsc.interpreter.IMain]
@@ -25,9 +25,9 @@ c.setWriter(w)
 engine.setContext(c)
 engine.eval("println(foo)")
 w
-{noformat}
+```
 gets
-{noformat}
+```
 <console>:8: error: not found: value foo
               println(foo)
                       ^
@@ -36,4 +36,4 @@ javax.script.ScriptException: compile-time error
   at scala.tools.nsc.interpreter.IMain.eval(IMain.scala:1047)
   at javax.script.AbstractScriptEngine.eval(AbstractScriptEngine.java:264)
   ... 43 elided
-{noformat}
+```

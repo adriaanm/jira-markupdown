@@ -4,7 +4,7 @@ During erasure, the compiler lubs the two branches of the if, and ends up callin
 
 
 https://github.com/scala/scala/blob/1d67fe/src/reflect/scala/reflect/internal/Symbols.scala#L1439
-{code}
+```scala
 
 // in Type#elimAnonymousClass($anon#10194)
 
@@ -26,11 +26,10 @@ info.decls // Scope{
 // Egads!
 addMember(Object#1815, Object#1815, blerg#10196)
 addMember(Object#1815, Object#1815, repro$CausesProblems$$anon$$$outer#11591)
-{code}
+```
 
-I tracked this down by adding this to {{Scope#enter}}:
-
-{code}
+I tracked this down by adding this to `Scope#enter`:
+```scala
 
       try {
         if (e.sym.name.containsName("blerg") && this == definitions.ObjectClass.info.decls) {
@@ -44,6 +43,6 @@ I tracked this down by adding this to {{Scope#enter}}:
       } catch {
         case x: Throwable => // ignore
       }
-{code}
+```
 
 I'm not sure about the right way to avoid this.

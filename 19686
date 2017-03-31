@@ -2,7 +2,7 @@ Future.sequence is failing when one of the Future is failed.
 This is very useful but sometimes you want to ignore the failed futures and just get the list of successful futures.
 
 The method to filter the successes only can be easily written :
-{noformat}
+```
  def sequenceSuccess[A, M[X] <: TraversableOnce[X]](in: M[Future[A]])(implicit cbf: CanBuildFrom[M[Future[A]], A, M[A]], executor: ExecutionContext) = {
   	in.foldLeft((Future.successful(cbf(in)))) {
       (fr, fa) =>
@@ -11,7 +11,7 @@ The method to filter the successes only can be easily written :
       }
     } map (_.result())
     }  
-{noformat}
+```
 
 An extension of this feature would be another method that returns the following Tuple
 {noformat}(successes : Future[Seq[A]], failures : Future[Seq[Throwable]]){noformat}.

@@ -1,8 +1,8 @@
 Putting 2+2 together, I keep running across this code and thinking "how can this be right?" but I forgot I'd opened this bug.  I can't follow the logic at a glance, but this unlikely treatment of intersection types feels relevant.
-{code}
+```scala
 // if at least one of the types in an intersection is checkable, use the checkable ones
 // this avoids problems as in run/matchonseq.scala, where the expected type is `Coll with scala.collection.SeqLike`
 // Coll is an abstract type, but SeqLike of course is not
 case RefinedType(ps, _) if ps.length > 1 && (ps exists infer.isCheckable) =>
   None
-{code}
+```

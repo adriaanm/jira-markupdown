@@ -1,6 +1,5 @@
 This is how this problem manifests itself in shapeless:
-
-{noformat}
+```
 import shapeless._ 
 object Test extends App { 
   implicitly[Generic.Aux[(Int, Char), Int :: Char :: HNil]] 
@@ -9,15 +8,14 @@ object Test extends App {
 [error] ~/Projects/shapeless-test/Test.scala:3: could not find implicit value for parameter e: shapeless.Generic.Aux[(Int, Char),shapeless.::[Int,shapeless.::[Char,shapeless.HNil]]] 
 [error] implicitly[Generic.Aux[(Int, Char), Int :: Char :: HNil]] 
 [error] ^ 
-{noformat}
+```
 
-This happens because of [matchesPt|https://github.com/scala/scala/blob/9f0594c57716ed551918e15be6da843982e8ba12/src/compiler/scala/tools/nsc/typechecker/Implicits.scala#L486] discarding [Generic.product|https://github.com/milessabin/shapeless/blob/dddf09f9d37aa29cbee90ef93c7fb57c0eed25af/core/src/main/scala/shapeless/generic.scala#L40] as an implicit candidate for a lookup for [Generic\[T1\] \{ type Repr = T2 \}|https://github.com/milessabin/shapeless/blob/dddf09f9d37aa29cbee90ef93c7fb57c0eed25af/core/src/main/scala/shapeless/generic.scala#L25] with both T1 and T2 being ground types:
-
-{noformat}
+This happens because of [matchesPt](https://github.com/scala/scala/blob/9f0594c57716ed551918e15be6da843982e8ba12/src/compiler/scala/tools/nsc/typechecker/Implicits.scala#L486) discarding [Generic.product](https://github.com/milessabin/shapeless/blob/dddf09f9d37aa29cbee90ef93c7fb57c0eed25af/core/src/main/scala/shapeless/generic.scala#L40) as an implicit candidate for a lookup for [Generic\[T1\] \{ type Repr = T2 \}](https://github.com/milessabin/shapeless/blob/dddf09f9d37aa29cbee90ef93c7fb57c0eed25af/core/src/main/scala/shapeless/generic.scala#L25) with both T1 and T2 being ground types:
+```
 matchesPt(
   => Generic[?]{type Repr <: HList},                     // signature of Generic.product
   Generic.Aux[(Int, Char), ::[Int, ::[Char, HNil]]], Nil // expected type
 ) == false
-{noformat}
+```
 
 This is quite reasonable, because the Repr type member ruins the subtyping check underlying matchesPt. Repr's counterpart, the T type parameter of Generic, gets wildcarded for the matchesPt check (denoted by the question mark in the printout), whereas Repr does not.

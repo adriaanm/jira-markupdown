@@ -1,17 +1,17 @@
 desugars to:
-{code}
+```scala
 Source.fromFile(file).getLines().flatMap(line => getStr(line).map(item => item))
-{code}
+```
 which gives the same error, as does the more simplified form:
-{code}
+```scala
 def foo(it: Iterator[String]) = it.flatMap(Some(_))
-{code}
+```
 if you wanted to report this as a bug, this would be the proper line of code to put in a minimal bug report.
 
 however it's not a bug; this is working as designed. Iterator.flatMap expects a function of type  A => Iterator[B], but you're giving it an A => Option[B].  There is an implicit conversion from Option to Iterable, but there is no implicit conversion from Option to Iterator.
 
 to get back to your original example, I'd suggest writing:
-{code}
+```scala
 for { line <- Source.fromFile(file).getLines(); item <- getStr(line).iterator } yield item
-{code}
+```
 if you want the result of the whole expression to be an Iterator.

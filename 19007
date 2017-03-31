@@ -1,14 +1,13 @@
-{code}
+```scala
 class C {
   def test {
     reflect.runtime.universe.typeOf[_67.u.TermName forSome { val _67: AnyRef{val u: reflect.runtime.universe.type} }]
   }
 }
-{code}
+```
 
-running that tree through {{showCode}}
-
-{code}
+running that tree through `showCode`
+```scala
 class C {
   def test: scala.Unit = {
     scala.reflect.runtime.`package`.universe.typeOf[(_67.u.TermName forSome {
@@ -19,11 +18,10 @@ class C {
     ()
   }
 }
-{code}
+```
 
 Applying this patch:
-
-{noformat}
+```
 diff --git a/src/compiler/scala/tools/nsc/Global.scala b/src/compiler/scala/tools/nsc/Global.scala
 index 35eab94..5cfeb9b 100644
 --- a/src/compiler/scala/tools/nsc/Global.scala
@@ -62,11 +60,10 @@ index fcc377b..809b46d 100644
              case Function(List(), EmptyTree) => print("(", expr, " _)") //func _
              // parentheses required when (a match {}) : Type
              case _ => print("((", expr, "): ", tp, ")")
-{noformat}
+```
 
 Gives the desired output:
-
-{noformat}
+```
 qbin/scalac -Xprint:patmat -Dscala.print.code sandbox/test.scala
 [[syntax trees at end of                    patmat]] // test.scala
 class C {
@@ -100,6 +97,6 @@ class C {
     ()
   }
 }
-{noformat}
+```
 
 PS: bonus marks on this ticket for making CodePrinter available under `-Xprint`. It is important that we keep to old style printing avialable, however, so we can diff the output of this from Scala 2.10 and 2.11. So we'll need to be able to control this from the command line.

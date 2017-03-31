@@ -1,6 +1,5 @@
 Yes, it does look like a conscious design decision. Here's the code at the moment.
-
-{code}
+```scala
 class Channel[Msg] extends InputChannel[Msg] with OutputChannel[Msg] {
 
   private[actors] var recv: Actor = {
@@ -14,11 +13,10 @@ class Channel[Msg] extends InputChannel[Msg] with OutputChannel[Msg] {
     this()
     this.recv = recv
   }
-{code}
+```
 
-The "obvious" alternative (to me) would be to use {{Actor.self}} instead of accessing the {{ThreadLocal}} directly.
-
-{code}
+The "obvious" alternative (to me) would be to use `Actor.self` instead of accessing the `ThreadLocal` directly.
+```scala
 class Channel[Msg] extends InputChannel[Msg] with OutputChannel[Msg] {
 
   private[actors] var recv: Actor = Actor.self
@@ -29,28 +27,26 @@ class Channel[Msg] extends InputChannel[Msg] with OutputChannel[Msg] {
     this()
     this.recv = recv
   }
-{code}
+```
 
-This would solve my problem. _However_, it would also mean that {{Actor.self}} is initialised - even when we don't need it. i.e. Even when an actor is explicitly passed in the constructor: {{new Channel(anotherActor)}}. I can see why this might be undesirable, because it could cause an {{ActorProxy}} to be created unnecessarily.
+This would solve my problem. *However*, it would also mean that `Actor.self` is initialised - even when we don't need it. i.e. Even when an actor is explicitly passed in the constructor: `new Channel(anotherActor)`. I can see why this might be undesirable, because it could cause an `ActorProxy` to be created unnecessarily.
 
 A way to avoid that problem would be to switch the constructors around like so.
-
-{code}
+```scala
 class Channel[Msg](recv: Actor) extends InputChannel[Msg] with OutputChannel[Msg] {
 
   def receiver: Actor = recv
 
   def this() = this(Actor.self)
-{code}
+```
 
-This means that {{Actor.self}} is no longer called by default.
+This means that `Actor.self` is no longer called by default.
 
-Of course you can tidy it up a bit more: making {{receiver}} into a val, etc.
-
-{code}
+Of course you can tidy it up a bit more: making `receiver` into a val, etc.
+```scala
 class Channel[Msg](val receiver: Actor) extends InputChannel[Msg] with OutputChannel[Msg] {
 
   def this() = this(Actor.self)
-{code}
+```
 
 What do you think? It might still be a good idea to get Philipp's opinion on this one.

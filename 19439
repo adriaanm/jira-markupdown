@@ -1,4 +1,4 @@
-{code}
+```scala
 class Base {
   type N
 
@@ -13,11 +13,10 @@ class Derived extends Base {
     case y: Tree[_] => y // fails in both scalac and dotc
   }
 }
-{code}
+```
 
 Here's a patch that makes this typecheck:
-
-{noformat}
+```
 diff --git a/src/compiler/scala/tools/nsc/typechecker/Typers.scala b/src/compiler/scala/tools/nsc/typechecker/Typers.scala
 index a182a2e..dffed83 100644
 --- a/src/compiler/scala/tools/nsc/typechecker/Typers.scala
@@ -35,6 +34,6 @@ index a182a2e..dffed83 100644
                }
                if (asym != null && asym.isAbstractType) {
                  arg match {
-{noformat}
+```
 
 Related discussion in dotty: https://github.com/lampepfl/dotty/pull/232

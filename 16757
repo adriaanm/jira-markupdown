@@ -1,11 +1,11 @@
 I've stumbled upon a compiler crash. Here are two sample programs (Yes, the programs are invalid - I was looking for the @_*):
-{code}
+```scala
 object scalacrash extends App {
 	val reg = "regex".r
 	val reg(a*) = "input"
 }
-{code}
-{code}
+```
+```scala
 object scalacrash extends App {
 	class c {
 		def unapplySeq(s:String) = Some(List(s))
@@ -13,10 +13,10 @@ object scalacrash extends App {
 	val foo = new c
 	val foo(bar*) = "input"
 }
-{code}
+```
 
 This is the compiler output
-{code}
+```scala
 scalacrash.scala:4: warning: No binding
 	val reg(a*) = "input"
                 ^
@@ -79,4 +79,4 @@ error: scala.reflect.internal.FatalError: symbol value a does not exist in scala
 	at scala.tools.nsc.Main.main(Main.scala)
 
 error: fatal error: symbol value a does not exist in scalacrash$delayedInit$body.apply
-{code}
+```

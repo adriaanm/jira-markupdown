@@ -1,6 +1,6 @@
 Got it (I think this is the same bug but maybe I am wrong):
 bug/Global.java
-{code}
+```scala
 package bug;
 
 import bug.action.Action;
@@ -30,10 +30,10 @@ public class Global {
     }
   }
 }
-{code}
+```
 
 bug/Display.java
-{code}
+```scala
 package bug;
 
 public class Display {
@@ -43,10 +43,10 @@ public class Display {
     m_glob.runActions();
   }
 }
-{code}
+```
 
 bug/action/Action.java
-{code}
+```scala
 package bug.action;
 
 import bug.Global;
@@ -68,10 +68,10 @@ public abstract class Action {
     m_glob = g;
   }
 }
-{code}
+```
 
 test/ScalaActivity.scala
-{code}
+```scala
 package test
 
 import bug.Display
@@ -90,10 +90,10 @@ abstract class Outer extends Display {
     }
   }
 }
-{code}
+```
 
 test/Test.scala
-{code}
+```scala
 package test
 
 import bug.Global
@@ -109,6 +109,6 @@ object Test {
 class Main extends Outer {
   m_glob = new Global()
 }
-{code}
+```
 
 Making ScalaAction a class instead of an object fixed the problem. Closure in run method is necessary to trigger the illegal access error.

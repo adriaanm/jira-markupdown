@@ -3,20 +3,19 @@ No don't close it as invalid -- they're not actually in different locations, the
 `/path/to/bin-dir/../lib` always works in the case where bin and lib are stored together, as they always would be after unpacking the scala distribution;
 
 I can't think of any reasonable case where `/path/to/bin-dir-link/../lib` (the current behavior) would be what you want.  It would mean some structure like:
-
-{code}
+```scala
 /path/to/link/bin -> /path/to/scala/bin
 /path/to/link/lib -> /path/to/scala/lib   
 # why are you rebuilding all the root level links?
-{code}
+```
 or
-{code}
+```scala
 /path/to/link/bin -> /path/to/scala/bin
 /path/to/link/lib  (physical directory)
 or 
 /path/to/link/lib -> /path/to/otherscala/lib
 # mixing and matching different bin and lib dirs??
-{code}
+```
 Even if you are trying to mix and match different components, just put them in the same physical directory, and `/path/to/chimera-scala/bin/../lib` will still work fine.
 
 The reason I noticed this at all is that at my school, where we have a single home directory shared across machines of varied platforms (irix/sunos/solaris/redhat/ubuntu) which generally can't share binaries, I have an unusual setup where my path is built based on symlinks in the filesystem:
@@ -25,15 +24,15 @@ The reason I noticed this at all is that at my school, where we have a single ho
 where `<arch>` is selected according to the current machine architecture
 
 for example:
-{code}
+```scala
 <path>/eclipse-3.4-x86_64 -> /net/hc295/arya/links/hd22-home/software/eclipse/eclipse-3.4-x86_64
 <path>/jdk1.6.0_03 -> /net/hd22/pfunk/devtools/jdk1.6.0_03/bin/
 <path>/scala-2.8 -> /net/hc295/arya/scala-2.8.0.r18093-b20090624020115/bin/
-{code}
+```
 I know it's a weird situation, but scala is the first program I've run into trouble with on this.  i.e. eclipse and javac both find their respective libraries fine.
 
-Specifically, javac *is* looking for its libraries relative to the physical path to itself.  Maybe the right fix is to look in both paths as you suggested (I'm not sure), but as long as we only support one or the other, I suggest switching it up, like Sun has.  See:
-{code}
+Specifically, javac **is** looking for its libraries relative to the physical path to itself.  Maybe the right fix is to look in both paths as you suggested (I'm not sure), but as long as we only support one or the other, I suggest switching it up, like Sun has.  See:
+```scala
 [arya@drfunkenstein tmp4]$$ ls -l
 total 0
 lrwxrwxrwx 1 arya stud 24 2009-06-30 12:41 bin -> ../tmp3/jdk1.6.0_03/bin/
@@ -48,4 +47,4 @@ drwxr-xr-x 2 arya pfunk 72 2007-11-03 20:25 lib
 [arya@drfunkenstein tmp4]$$ bin/javac -version
 Exception in thread "main" java.lang.NoClassDefFoundError: com/sun/tools/javac/Main
 [arya@drfunkenstein tmp4]$$
-{code}
+```

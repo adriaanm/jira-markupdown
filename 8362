@@ -1,8 +1,7 @@
 (Comments originally lodged, accidentally, on SI-6337)
 
 A play-by-play in the REPL:
-
-{code}
+```scala
 scala> class X[T](val i: T) extends AnyVal
 defined class X
 
@@ -15,11 +14,10 @@ t: Int = 0
 scala> val t = (a: {def y[T](x: X[T]): T}).y(new X(0))
 warning: there were 1 feature warnings; re-run with -feature for details
 java.lang.ClassCastException: X cannot be cast to java.lang.Integer
-{code}
+```
 
 A very similar problem: methods with erased value classes as parameters can't be invoked with reflection.
-
-{code}
+```scala
 scala> class X[T](val i: T) extends AnyVal
 defined class X
 
@@ -40,12 +38,11 @@ res10: reflect.runtime.universe.MethodMirror = method mirror for a.y[T](x: X[T])
 scala> res10(new X(0))
 java.lang.NoClassDefFoundError: no Java class corresponding to ErasedValueType(X[T]) found
 	at scala.reflect.runtime.JavaMirrors$JavaMirror.typeToJavaClass(JavaMirrors.scala:1160)
-{code}
+```
 
 
 Currently, method signatures that accept value classes are compiled to accept the unboxed type:
-
-{code}
+```scala
 scala> class X(val i: Int) extends AnyVal
 defined class X
 
@@ -58,25 +55,23 @@ public class C1 extends java.lang.Object{
     public int foo(int);
     public C1();
 }
-{code}
+```
 
 The compiler unboxes the X at the call site (and eliminates allocation of a new X, where possible). But for reflective callers, this never happens.
 
 It seems to me that both problems would be solved if we left the signatures unmolested, and created a shadow method that accepts the unboxed value:
-
-{code}
+```scala
 public class C1 extends java.lang.Object{
     public int foo(X)
     public int foo$unboxed(int);
     public C1();
 }
-{code}
+```
 
 The first method would delegate to the second, and the compiler would endeavour to call the second directly where possible. This would parallel the way that a specialized method can still be called from a generic call site.
 
 It would also avoid double definition errors like:
-
-{code}
+```scala
 
 scala> class C3 { def foo(x: X) = x.i * 2; def foo(i: Int) = i * 2 }
 <console>:11: error: double definition:
@@ -85,4 +80,4 @@ method foo:(x: X)Int at line 11
 have same type after erasure: (i: Int)Int
        class C3 { def foo(x: X) = x.i * 2; def foo(i: Int) = i * 2 }
                                                ^
-{code}
+```

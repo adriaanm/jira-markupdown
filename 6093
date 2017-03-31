@@ -7,17 +7,15 @@ The "delayed manifest search" interpretation would be more complicated to implem
 The implicit search for `Manifest[T]` and `Z[T]` are different in the sense that the `qq` implicit determines the `T` type parameter, whereas the manifest cannot be determined until the `x` method call has been type checked fully.
 
 Concretely, the version with the manifest is more precisely approximated by
-
-{code}
+```scala
  case class Z[T](t: T)
  implicit def qq[T]: Z[T] = error("")
   
  case class A[T: Z](t: String)
-{code}
+```
 
 As a workaround, can you push down the manifest bound to the definition of `x` and `C`?
-
-{code}
+```scala
 object Test {
  case class A[T](t: String)
  case class V[T](t: T)
@@ -28,11 +26,10 @@ object Test {
 
  A("a") x V(3)
 }
-{code}
+```
 
 
 ps: I don't think your covariant variant achieves what you hoped for:
-
-{code}
+```scala
 Test.this.aToB[T](Test.this.A.apply[Nothing]("a")(reflect.this.Manifest.Nothing)).x[Any](Test.this.V.apply[Int](3))
-{code}
+```

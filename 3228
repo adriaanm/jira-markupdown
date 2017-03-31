@@ -1,11 +1,11 @@
 Now that's an interesting one.  format is overloaded like this:
-{code}
+```scala
   def format(args : Any*): String =
     java.lang.String.format(toString, args map unwrapArg: _*)
 
   def format(l: java.util.Locale, args: Any*): String =
     java.lang.String.format(l, toString, args map unwrapArg: _*)
-{code}
+```
 And if the first varargs argument is null, it chooses the second overload because null is a member of Locale.
 
 Not sure the best way to address.

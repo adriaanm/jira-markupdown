@@ -1,6 +1,5 @@
 The following code crashes the compiler:
-
-{code}
+```scala
 object Example extends App {
   type Tag[X] = {type Tag = X}
   type TaggedArray[T] = Array[T] with Tag[Any]
@@ -9,7 +8,7 @@ object Example extends App {
 
   method(Array(1, 2).asInstanceOf[TaggedArray[Int]], 1)
 }
-{code}
+```
 
 Sympton:
 [error] uncaught exception during compilation: RuntimeException("scala.Array.update : Object, Object, Any") @ scala.sys.
@@ -29,4 +28,4 @@ java.lang.RuntimeException: scala.Array.update : Object, Object, Any
 
 My theory is that the presence of the "with Tag" on the Array type disrupts the usual process of resolving the correct primitive type when generating operations on the Array.
 
-Note this is the (greatly simplified) cause of SI-6975, which I reported. I will close the other issue now.
+Note this is the (greatly simplified) cause of scala/bug#6975, which I reported. I will close the other issue now.

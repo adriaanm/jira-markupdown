@@ -1,20 +1,20 @@
 Given the code below
-{code}
+```scala
 object toto extends Application {
   @remote trait Foo {}
   object foo extends java.rmi.server.UnicastRemoteObject with Foo {
   }
 }
-{code}
+```
 the Scala compiler generates the class files:
-{code}
+```scala
 toto.class
 toto$$.class
 toto$$foo$$.class
 toto$$Foo.class
-{code}
+```
 and the RMI compiler (Java 5 or 6) produces the following error:
-{code}
+```scala
 > rmic -classpath $$SCALA_HOME/lib/scala-library.jar:/tmp -d /tmp toto\$$foo\$$
 error: An error has occurred in the compiler; please file a bug report (http://java.sun.com/cgi-bin/bugreport.cgi).
 sun.tools.java.CompilerError: getInnerClassField
@@ -30,10 +30,9 @@ sun.tools.java.CompilerError: getInnerClassField
     at sun.rmi.rmic.Main.compile(Main.java:148)
     at sun.rmi.rmic.Main.main(Main.java:785)
 1 error
-{code}
+```
 The problem lies in the name mangling of Scala classes which terminates class names with a '$$'.
 
 Workarounds with current naming scheme:[[BR]]
 1) move `foo` to the top-level in the Scala source or[[BR]]
 2) comment out the addition of the `InnerClass` section in the generated class file.
-

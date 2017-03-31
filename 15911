@@ -1,10 +1,9 @@
 === What steps will reproduce the problem? ===
 
 There is some code in the Scala library which uses code like
-
-{code}
+```scala
   public String toString() { return "" + foo; }
-{code} 
+```
 
 The problem is that this creates an useless StringBuilder instance which is a waste of time and memory and greatly increases the amount bytecode.
 
@@ -12,16 +11,14 @@ The problem is that this creates an useless StringBuilder instance which is a wa
 === What is the expected behavior? ===
 
 Either:
-
-{code}
+```scala
   public String toString() { return String.valueOf(foo); } // Except for foo of type Array[Char]
-{code}
+```
 
 or (if you want to avoid a layer of indirection for value types):
-
-{code}
+```scala
   public String toString() { return java.lang.<PRIMITIVE_TYPE>.toString(foo) }
-{code}
+```
 
 === Additional information ===
 Patch: https://github.com/soc88/scala/commit/34c6043a97a39a93eea184fd8e6eabdcd0901322

@@ -1,6 +1,5 @@
 I get the following exception in the IDE when opening certain files. I couldn't nail it down to a specific file yet, but git archeology suggests an existing workaround was removed with the belief that the NPE can't happen anymore:
-
-{code}
+```scala
 module.attachments.get[ConstructorDefaultsAttachment] match {
   // by martin: the null case can happen in IDE; this is really an ugly hack on top of an ugly hack but it seems to work
   // later by lukas: disabled when fixing SI-5975, i think it cannot happen anymore
@@ -8,9 +7,8 @@ module.attachments.get[ConstructorDefaultsAttachment] match {
     val p = (cda.classWithDefault, cda.companionModuleClassNamer)
     moduleNamer = Some(p)
     p
-{code}
-
-{code}
+```
+```scala
 java.lang.NullPointerException
 	at scala.tools.nsc.typechecker.Namers$Namer$$anonfun$addDefaultGetters$2$$anonfun$apply$14.apply(Namers.scala:1169)
 	at scala.tools.nsc.typechecker.Namers$Namer$$anonfun$addDefaultGetters$2.apply(Namers.scala:1102)
@@ -56,4 +54,4 @@ java.lang.NullPointerException
 	at scala.tools.nsc.util.InterruptReq.execute(InterruptReq.scala:26)
 	at scala.tools.nsc.interactive.Global.pollForWork(Global.scala:331)
 	at scala.tools.nsc.interactive.PresentationCompilerThread.run(PresentationCompilerThread.scala:22)
-{code}
+```

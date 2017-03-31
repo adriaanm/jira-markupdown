@@ -1,9 +1,9 @@
 I simply derived a candidate solution from a problem statement, a solution that passes certain criteria. Perhaps we don't agree on the problem statement, the criteria, or there's a counterexample showing not passing the criteria. To recap:
 
-# Problem: Accessing a private member at runtime, defined in a library L, from a library C (for Client), where C was compiled against L', an optimized version of L. 
+- Problem: Accessing a private member at runtime, defined in a library L, from a library C (for Client), where C was compiled against L', an optimized version of L. 
 The only such members are fields, either synthetic or isParamAccessor, and thus having a dollar sign in their name (the accesibility of methods and constructors isn't touched by the inliner).
-# Criteria: Compile C (either optimized or not) against any of L or L', so that it runs with either L or L' (in particular, compiled against L' and runs with L).
-# The candidate solution I mention makes the inliner test for dollar signs when compiling C, to be on the safe side. A dollar sign being present results in taking a conservative action (no inlining, thus not trying to access that field at runtime, thus no IllegalAccessError). 
+- Criteria: Compile C (either optimized or not) against any of L or L', so that it runs with either L or L' (in particular, compiled against L' and runs with L).
+- The candidate solution I mention makes the inliner test for dollar signs when compiling C, to be on the safe side. A dollar sign being present results in taking a conservative action (no inlining, thus not trying to access that field at runtime, thus no IllegalAccessError). 
 
 In case you can find a counterexample, please let me know. For the time being the solution looks ok to me (given the problem statement, etc.)
 

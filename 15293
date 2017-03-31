@@ -1,7 +1,7 @@
-With 2.8.0.r21826.  From the call to transpose in the stack trace, it might be related to SI-3397.  The fix for that doesn't help, though.  Speculating, it might be because transpose is being called on an irregular "matrix".
+With 2.8.0.r21826.  From the call to transpose in the stack trace, it might be related to scala/bug#3397.  The fix for that doesn't help, though.  Speculating, it might be because transpose is being called on an irregular "matrix".
 
 The code:
-{code}
+```scala
 object Nats {
     sealed trait Nat {
         // fold right on N, N-1, ..., 1
@@ -26,10 +26,10 @@ object Nats {
     type _1 = Succ[_0]
     implicitly[ Add[_1, _1] =:= _1]
 }
-{code}
+```
 
 First part of the exception (can provide the full trace if it is useful)
-{code}
+```scala
 
 java.lang.IndexOutOfBoundsException: 1                                                                                                             
         at scala.collection.immutable.Vector.checkRangeConvert(Vector.scala:105)                                                                   
@@ -93,4 +93,4 @@ java.lang.IndexOutOfBoundsException: 1
         at scala.tools.nsc.typechecker.Typers$$Typer.typedStat$$1(Typers.scala:2036)                                                                 
         at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$20.apply(Typers.scala:2104)                                                           
         at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$20.apply(Typers.scala:2104)
-{code}
+```

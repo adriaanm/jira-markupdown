@@ -5,7 +5,7 @@ I ran the scala program with java -cp myscalapgm.jar;spark-assembly-1.4.1-hadoop
 Maybe thats not a good approach but it works on Windows. Now I have moved all the jars to z/OS (Bigendian platform) and get the exception below. A hello world scala works with no problem, but the Spark seams more complex in terms of scala usage.
 
 During execution on z/OS I get the following stacktrace:
-{noformat}
+```
  java.lang.ExceptionInInitializerError
   at java.lang.J9VMInternals.ensureError(J9VMInternals.java:134)
   at java.lang.J9VMInternals.recordInitializationFailure(J9VMInternals.java:123)
@@ -53,11 +53,11 @@ During execution on z/OS I get the following stacktrace:
   at org.apache.spark.sql.types.StringType$.<init>(StringType.scala:49)
   at org.apache.spark.sql.types.StringType$.<clinit>(StringType.scala)
   ... 19 more
-{noformat}
+```
 
 
 This is the source code, the crash happens at sqlContext.read...
-{code}
+```scala
 import org.apache.spark.SparkConf
 import org.apache.spark.SparkContext
 
@@ -79,15 +79,15 @@ optionsStokStat.put("url", "jdbc:ims://172.16.36.226:5559/class://com.ibm.ims.db
 optionsStokStat.put("dbtable", "STOKSTAT");
 
 val stokStat = sqlContext.read.format("jdbc").options(optionsStokStat).load();    
-{code}
+```
 
 I have opened a problem for the IBM JDK on z/OS and they state that the problem happens in the unpickleClass method:
-{noformat}
+```
   at scala.reflect.runtime.JavaMirrors$JavaMirror.unpickleClass(JavaMirrors.scala:584)
-{noformat}
+```
 
-For whatever reason value 45.0 is returned, although the {{javap -verbose}} output shows the following:
-{noformat}
+For whatever reason value 45.0 is returned, although the `javap -verbose` output shows the following:
+```
 public final class scala.package                                                
   SourceFile: "package.scala"                                                   
   InnerClasses:                                                                 
@@ -110,7 +110,7 @@ Constant pool:
     #5 = Utf8               package.scala                                       
     #6 = Utf8               Lscala/reflect/ScalaSignature;                      
     #7 = Utf8               bytes                                               
-{noformat}
+```
 ...
 So I don't really think its an endianess problem, but it seams only to occur on z/OS and I have no idea how to fix it, if its a JVM bug on z/OS I need something that I can give the IBM JDK support to work with, e.g. a Bytearrayinputstream with 2 more bytes in it or something like that. The must be a reason, that the unpickleClass does not return the 5 as its shown by the javap command.
 

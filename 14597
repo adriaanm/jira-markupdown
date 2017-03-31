@@ -1,26 +1,23 @@
 Hi,
 
 Given:
-
-{code}
+```scala
 class SimpleDSL extends JavaTokenParsers{
 	def greetingParser = stringLiteral
 }
-{code}
+```
 
 and
-
-{code}
+```scala
 val parser = new SimpleDSL()
 parser.parseAll(parser.greetingParser, "hello") match{
 				case parser.Success(_,_) => ()
 				case x => fail(x.toString)
 			}
-{code}
+```
 fail(...) is a part of Scalatest that just dumps its argument as a test failure
 should this happen?
-
-{code}
+```scala
 
 
 org.scalatest.TestFailedException: [1.1] failure: string matching regex `"([^"\p{Cntrl}\\]|\\[\\/bfnrt]|\\u[a-fA-F0-9]{4})*"' expected but `h' found
@@ -61,7 +58,6 @@ hello
 	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.runTests(RemoteTestRunner.java:683)
 	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.run(RemoteTestRunner.java:390)
 	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.main(RemoteTestRunner.java:197)
-
-{code}
+```
 
 something screwy with the !RegEx I wager

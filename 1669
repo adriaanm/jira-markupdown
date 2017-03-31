@@ -1,5 +1,5 @@
 I was thinking something like this:
-{code}
+```scala
 class Channel[Msg](val receiver: Actor) extends InputChannel[Msg] with OutputChannel[Msg] {
   /** Warning:  If there is no active actor this call will fail.
    *  If you want an ActorProxy to be created, use Channel[Msg](Actor.self) instead.
@@ -8,7 +8,7 @@ class Channel[Msg](val receiver: Actor) extends InputChannel[Msg] with OutputCha
     this(Actor.tl.get)
     if (receiver eq null) throw new IllegalStateException("no actor is currently active")
   }
-{code}
+```
 This keeps the semantics closer to what they are now, only it fails fast instead of when you try to use the Channel.  If the user wants an ActorProxy to be created if there isn't an active actor, then the user has to specifically code it.
 
 That being said, I think your way is more intuitive.  ActorProxy's aren't heavy, so creating one doesn't hurt much, and they are created all over the place already.  It seems odd that they aren't here.

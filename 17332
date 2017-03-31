@@ -1,6 +1,5 @@
 Compiler throws an error trying to compile the declaration line of a scala subclass of a java super class.
-
-{noformat}
+```
 [ant:scalac] java.lang.Error: Unexpected tree in genLoad: DynamicBooleanProperty.super/class scala.reflect.generic.Trees$Super at: source-/Users/gorzell/dev/git/oss/archaius-gorzell/archaius-scala/src/main/scala/com/netflix/config/scala/DynamicBooleanProperty.scala,line-8,offset=105
 [ant:scalac] 	at scala.tools.nsc.symtab.SymbolTable.abort(SymbolTable.scala:34)
 [ant:scalac] 	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$backend$icode$GenICode$ICodePhase$$genLoad(GenICode.scala:1126)
@@ -46,10 +45,10 @@ Compiler throws an error trying to compile the declaration line of a scala subcl
 [ant:scalac] 	at scala.tools.nsc.Global$Run.compile(Global.scala:1038)
 [ant:scalac] 	at scala.tools.ant.Scalac.executeInternal(Scalac.scala:629)
 [ant:scalac] 	at scala.tools.ant.Scalac.execute(Scalac.scala:577)
-{noformat}
+```
 
 Java Class
-{code:java}
+```java
 public class DynamicStringProperty extends PropertyWrapper<String> {
 
     DynamicStringProperty(String propName, String defaultValue) {
@@ -68,13 +67,13 @@ public class DynamicStringProperty extends PropertyWrapper<String> {
         return get();
     }
 }
-{code}
+```
 
 Scala Class:
-{code:scala}
+```scala
 class DynamicStringProperty(property: String, defaultVal: String)
   extends com.netflix.config.DynamicStringProperty(property, defaultVal) {
 
   def apply(): Option[String] = Option(get())
 }
-{code}
+```

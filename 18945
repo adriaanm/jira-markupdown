@@ -3,8 +3,7 @@ Scala 2.11.0-RC1 exhibits absurd errors while compiling classes named java.lang.
 The following source "minimizes" the problem, but with enough meat to show that other classes of exceptions do work. Keeping only either of the three broken classes still produces the error.
 
 Compiling the following with Scala 2.11.0-RC1 (just Scala, no need to have the Scala.js plugin to break it):
-
-{code:scala}
+```scala
 package java.lang
 
 class Throwable(s: String, private var e: Throwable) extends Object with java.io.Serializable {
@@ -77,11 +76,10 @@ class InterruptedException(s: String) extends Exception(s) {
 class NullPointerException(s: String) extends RuntimeException(s) {
   def this() = this(null)
 }
-{code}
+```
 
 produces the following 3 absurd errors:
-
-{noformat}
+```
 [error] /home/doeraene/temp/bug/Throwables.scala:3: self constructor arguments cannot reference unconstructed `this`
 [error] class Throwable(s: String, private var e: Throwable) extends Object with java.io.Serializable {
 [error]                                                              ^
@@ -92,16 +90,16 @@ produces the following 3 absurd errors:
 [error] class InterruptedException(s: String) extends Exception(s) {
 [error]                                               ^
 [error] three errors found
-{noformat}
+```
 
 It worked fine with 2.11.0-M8.
 
 If you want to reproduce in the context of Scala.js, you can clone the branch scala-2.11.0-RC1 in my fork:
 https://github.com/sjrd/scala-js/tree/scala-2.11.0-RC1
 and in sbt:
-{noformat}
+```
 > ++2.11.0-RC1
 > scalajs-javalib/compile
-{noformat}
+```
 
 I want to stress that this is a blocker for Scala.js. I just can't build Scala.js for RC1.

@@ -1,6 +1,5 @@
 The best way to explain what is going on is to present the following REPL transcript:
-
-{code}
+```scala
 Welcome to Scala version 2.10.0 (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_43).
 Type in expressions to have them evaluated.
 Type :help for more information.
@@ -43,10 +42,10 @@ res3: $r.intp.global.Type = Outer.Inner{type Xyz = Int}
 
 scala> res3.member("Xyz": TypeName).flags
 res4: Long = 2
-{code}
+```
 
 There are couple of observations:
-1. Both {{dealias}} and {{normalize}} return types with newly allocted symbols for refinements. This can be verified by running with -uniqid. Do they have to do that in this case?
-2. In this particular case dealias and normalize probably should return exactly the same types but they don't. The flags differ for symbols referred by those types. The {{dealias}} is right here.
+1. Both `dealias` and `normalize` return types with newly allocted symbols for refinements. This can be verified by running with -uniqid. Do they have to do that in this case?
+2. In this particular case dealias and normalize probably should return exactly the same types but they don't. The flags differ for symbols referred by those types. The `dealias` is right here.
 
 This inconsistency causes spurious recompilations in sbt for projects with code structure as presented above.

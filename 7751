@@ -1,17 +1,16 @@
 I agree, that's what I meant in the previous comment.
 
-We just have to prevent cyclic inheritance. I haven't extracted a small test case to demonstrate this yet, but you can see it with this branch of Scalala [1]. This is raised as a type error, and not caught by the {{isCyclicOrErroneous}} check in implicit search. 
+We just have to prevent cyclic inheritance. I haven't extracted a small test case to demonstrate this yet, but you can see it with this branch of Scalala [1]. This is raised as a type error, and not caught by the `isCyclicOrErroneous` check in implicit search. 
 
-But the root problem seems to be incorrect scoping -- {{b2s}} should not be in {{implicitss}} when typing the annotation in this example:
-
-{code}
+But the root problem seems to be incorrect scoping -- `b2s` should not be in `implicitss` when typing the annotation in this example:
+```scala
 class annot(a: String) extends StaticAnnotation
 class A[@annot(false) X] {
   implicit def b2s(b: Boolean): String = ""
 }
-{code}
+```
 
-I tried to set {{Context#isSelfSuperCall}} [2] when typing class type parameters to achieve this, but the annotation was typed with a different context, that of the typer in Namers.
+I tried to set `Context#isSelfSuperCall` [2] when typing class type parameters to achieve this, but the annotation was typed with a different context, that of the typer in Namers.
 
 
 [1] https://github.com/retronym/Scalala/tree/d6fccf4bfeb55cb931499098b8047a25ca8b16a5

@@ -1,30 +1,26 @@
 Just ran into this in a real-life example writing a unit test using Mockito:
-
-{code:java}
+```java
         when(serviceReference.getProperty("name")).thenReturn(name)
-{code}
+```
 
 Results in the compilation error:
-
-{code}
+```scala
 scala: ambiguous reference to overloaded definition,
 both method thenReturn in trait OngoingStubbing of type (x$1: Object, x$2: <repeated...>[Object])org.mockito.stubbing.OngoingStubbing[Object]
 and  method thenReturn in trait OngoingStubbing of type (x$1: Object)org.mockito.stubbing.OngoingStubbing[Object]
 match argument types (String)
         when(serviceReference.getProperty("name")).thenReturn(name)
                                                    ^
-{code}
+```
 
 And to fix this, I have to be explicit in typing the instance of OngoingStubbing:
-
-{code:java}
+```java
         when(serviceReference.getProperty("name")).asInstanceOf[OngoingStubbing[String]].thenReturn(name)
-{code}
+```
 
 Which can get pretty ridiculous, depending on the thing I'm stubbing:
-
-{code:java}
+```java
         when(bundleContext.getService(serviceReference)).asInstanceOf[OngoingStubbing[LoginHandler[AuthData, User, String]]].thenReturn(handler)
-{code}
+```
 
 It's not Friday yet, but I guess it is time to get beer and/or pray.

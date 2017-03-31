@@ -1,5 +1,5 @@
 = problem =
-{code}
+```scala
 scala> throw new Exception
 java.lang.Exception
 	at .<init>(<console>:12)
@@ -16,20 +16,20 @@ java.lang.Exception
 	at scala.tools.nsc.interpreter.Line$$$$anonfun$$1.apply$$mcV$$sp(Line.scala:43)
 	at scala.tools.nsc.io.package$$$$anon$$2.run(package.scala:12)
 	at java.lang.Thread.run(Thread.java:636)
-{code}
+```
 
 = analysis =
 At least 9 lines have nothing to do with the actual code, but with how the REPL manages and runs the code internally.
 
 = enhancement recommendation =
 Leave out the superfluous lines by default, e. g.:
-{code}
+```scala
 scala> throw new Exception
 java.lang.Exception
 	at .<init>(<console>:12)
 	at .<clinit>(<console>)
 	at .<init>(<console>:11)
 	at .<clinit>(<console>)
-{code}
+```
 
 There could also be an REPL option which restores the old behavior, if necessary.

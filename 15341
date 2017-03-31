@@ -1,5 +1,5 @@
 It seems SeqLike#lastIndexOfSlice will not work correctly on scala 2.8RC2,
-{code}
+```scala
 $$ scala
 Welcome to Scala version 2.8.0.RC2 (Java HotSpot(TM) Client VM, Java 1.6.0_16).
 Type in expressions to have them evaluated.
@@ -10,17 +10,17 @@ res0: Int = -1
 
 scala> "axxb" lastIndexOfSlice("xx", "axxb".length)
 res1: Int = 1
-{code}
+```
 
 That method has been defined as followsr1,
-{code}
+```scala
 def lastIndexOfSlice[B >: A](that: Seq[B]): Int = lastIndexOfSlice(that, that.length)
-{code}
+```
 
 I guess the following change will fix it.
-{code}
+```scala
 def lastIndexOfSlice[B >: A](that: Seq[B]): Int = lastIndexOfSlice(that, length)
-{code}
+```
 
 
 r1 https://lampsvn.epfl.ch/trac/scala/browser/scala/trunk/src/library/scala/collection/SeqLike.scala#L511

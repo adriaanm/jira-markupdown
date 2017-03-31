@@ -1,12 +1,12 @@
 The implementation of `MarkupParsers.xCharRef` was delegated to `Utility.parseCharRef` in commit `a14eb241e1663883532dadb23ae568117bf5ed66`.  The case handling `SU` got dropped:
-{code}
+```scala
 -          case SU =>
 -            throw TruncatedXML
-{code}
+```
 so `parseCharRef` loops on SU, continually adding error messages to a buffer until the OOME.
 
 With this case restored, there are 6 error messages, but since this was the behavior in 2.7.7, I guess it is expected:
-{code}
+```scala
 A.scala:1: error: in XML literal: hex char not allowed in decimal char ref
 Did you mean to write &#x ?
 class A { val a = <a>&SI-203c;</a> }
@@ -29,4 +29,4 @@ A.scala:2: error: input ended while parsing XML
 
 ^
 6 errors found
-{code}
+```

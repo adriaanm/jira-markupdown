@@ -1,23 +1,21 @@
 Ok, the full bug-report again but in better Wiki-formatting:
 
 Example of the bug in action:
-
-{code}
+```scala
  scala> new xml.dtd.PublicID(
       |      "-//W3C//DTD XHTML 1.0 Transitional//EN",
       |      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd")
 
  res0: scala.xml.dtd.PublicID = PublicID(-//W3C//DTD XHTML 1.0
  Transitional//EN,http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd)
-{code}
+```
 
 This SHOULD have result in:
-
-{code}
+```scala
  res0: scala.xml.dtd.PublicID=PUBLIC "-//W3C//DTD XHTML 1.0
  Transitional//EN" SYSTEM
  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"
-{code}
+```
 
 This causes the dependent scala.xml.XML.write and .saveFull methods to
 write the docType erroneously, when given a PublicID as DocType parameter.
@@ -31,8 +29,7 @@ Temporary work-around for the end-programmer:[[BR]]
 Provide the missing toString() method by an anonymous subclass, simply
 delegating to it's (correct) toString(StringBuilder) variant method, as
 follows: (example for the standard 'xhtml-transitional' doctype):
-
-{code}
+```scala
  new xml.dtd.PublicID(
       "-//W3C//DTD XHTML 1.0 Transitional//EN",
       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd")
@@ -42,6 +39,4 @@ follows: (example for the standard 'xhtml-transitional' doctype):
        toString(sb);
        sb.toString;
    }
-
-{code}
-
+```

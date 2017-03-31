@@ -7,8 +7,7 @@ Discussion and example that illustrates the problem can be found here: https://g
 [edit] Reproducing the example here:
 
 Indeed, variance validation seems to dealias, which thwarts the attempt to indirect through an unchecked alias.
-
-{code}
+```scala
 scala> trait F1[/* - */T, /* + */ R]; import scala.annotation.unchecked._; type VariantF1[-T, +R] = F1[T @uncheckedVariance, R @uncheckedVariance]
 defined trait F1
 import scala.annotation.unchecked._
@@ -18,11 +17,10 @@ scala> trait C[+T] { def foo: VariantF1[Any, T] }
 <console>:27: error: covariant type T occurs in invariant position in type => VariantF1[Any,T] of method foo
        trait C[+T] { def foo: VariantF1[Any, T] }
                          ^
-{code}
+```
 
 Contrast with:
-
-{code}
+```scala
 scala> trait F1[/* - */T, /* + */ R]; import scala.annotation.unchecked._; trait VariantF1[-T, +R] extends F1[T @uncheckedVariance, R @uncheckedVariance]
 defined trait F1
 import scala.annotation.unchecked._
@@ -41,7 +39,7 @@ defined object O
 
 scala> trait C[+T] { def foo: O.VariantF1[Any, T] }
 defined trait C
-{code}
+```
 
 I'm not sure whether or not subclassing or using a upper bounded type declaration would work for your use case.
 

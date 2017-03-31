@@ -1,16 +1,14 @@
 Here is a reduced testcase
-
-{code}
+```scala
 package test;
 class TestCase3() {
   def this( groups: (String, Int)*) = this()
   def this( groups: String*) = this()
 }
-{code}
+```
 
 Compilation suceeds, but when run:
-
-{code}
+```scala
 Exception in thread "main" java.lang.ClassFormatError: Repetitive method name/signature in class file test/TestCase3
 	at java.lang.ClassLoader.defineClass1(Native Method)
 	at java.lang.ClassLoader.defineClass(ClassLoader.java:675)
@@ -29,17 +27,15 @@ Exception in thread "main" java.lang.ClassFormatError: Repetitive method name/si
 	at scala.tools.nsc.ObjectRunner$$.classExists(ObjectRunner.scala:42)
 	at scala.tools.nsc.MainGenericRunner$$.main(MainGenericRunner.scala:155)
 	at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
-{code}
+```
 
 I believe behaviour should be as with methods:
-
-{code}
+```scala
 error: double definition:
 method this:(String*)TestCase3 and
 method this:((String, Int)*)TestCase3 at line 3
 have same type after erasure: (Seq)TestCase3
   def this( groups: String*) = this()
       ^
-{code}
-
+```
 

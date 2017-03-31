@@ -1,6 +1,5 @@
 Define the following:
-
-{code}
+```scala
 trait Factory[T] { def apply: T }
 
 trait Builder[C[_]] { def build[T](x: T): C[T] }
@@ -12,18 +11,16 @@ implicit val listBuilder: Builder[List] = new Builder[List] { def build[T](x: T)
 implicit def containerFactory[C[_],T](implicit b: Builder[C], f: Factory[T]): Factory[C[T]] = new Factory[C[T]] { def apply = b.build(f.apply) }
 
 def create[T](implicit f: Factory[T]): T = f.apply
-{code}
+```
 
 Now we can use the `create` method:
-
-{code}
+```scala
 scala> create[Int]
 res9: Int = 42
-{code}
+```
 
 But if we try to create a `List[Int]` we run into problems:
-
-{code}
+```scala
 scala> create[List[Int]]
 <console>:19: error: no implicit argument matching parameter type Factory[List[Int]] was found.
        create[List[Int]]
@@ -36,6 +33,6 @@ scala> create[List[Int]](containerFactory)
 
 scala> create[List[Int]](containerFactory[List,Int])
 res14: List[Int] = List(42, 42)
-{code}
+```
 
 The error message in the second call to `create` indicates that this is not just lacking type inference, but something seems wrong since `Builder[List[Int]]` is not even a legal type. 

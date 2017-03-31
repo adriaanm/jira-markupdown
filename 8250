@@ -1,6 +1,5 @@
-While the workaround compiles, it triggers a {{VerifyError}}
-
-{code}
+While the workaround compiles, it triggers a `VerifyError`
+```scala
  RUNNER=scala scala-hash v2.10.0 -nc 
 [info] v2.10.0 => /Users/jason/usr/scala-v2.10.0-0-g18481ce
 Welcome to Scala version 2.10.0-20121205-112020-18481cef9b (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_27).
@@ -29,12 +28,10 @@ defined module Obj
 scala> Obj
 java.lang.VerifyError: (class: Obj$InVal$2$, method: <init> signature: ()V) Expecting to find object/array on stack
 	at Obj$.InVal$1$lzycompute(<console>:13)
-{code}
+```
 
-With my in-progress patch for SI-6666:
-
-
-{code}
+With my in-progress patch for scala/bug#6666:
+```scala
 ticket/6666 ~/code/./build/quick/bin/scalac test/files/run/t6259b.scala
 test/files/run/t6259b.scala:9: error: Implementation restriction: anonymous class $anon requires premature access to object InVal.
     object InVal extends A[String]
@@ -64,6 +61,6 @@ test/files/run/t6259b.scala:9: error: Implementation restriction: anonymous clas
     object InVal extends A[String]
                          ^
 one error found
-{code}
+```
 
-We could make this problem go away by allowing {{moduleClassOf[Companion.type]}}.
+We could make this problem go away by allowing `moduleClassOf[Companion.type]`.

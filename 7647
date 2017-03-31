@@ -1,27 +1,23 @@
 Least upper bounds were a red herring. The example can be distilled further.
 
 The following two functions can be defined in the REPL without error:
-
-{code}
+```scala
 def ex1[T1 <: Term, FunctionalTerm[T1] <: Term](t1: FunctionalTerm[T1]): Term = sys.error("TODO: ex1")
 def ex2[T2 <: Term, FunctionalTerm[T2] <: Term](t2: FunctionalTerm[T2]): Term = ex1(t2)
-{code}
+```
 
 Introducing the extra parameter X seems to cause the problem. I can define the following in the REPL:
-
-{code}
+```scala
 def ex3[T1 <: Term, FunctionalTerm[T1] <: X, X <: Term](t1: FunctionalTerm[T1]): Term = sys.error("TODO: ex3")
-{code}
+```
 
 But attempting to subsequently define:
-
-{code}
+```scala
 def ex4[T2 <: Term, FunctionalTerm[T2] <: X, X <: Term](t2: FunctionalTerm[T2]): Term = ex3(t2)
-{code}
+```
 
 gives the error:
-
-{code}
+```scala
 error: inferred type arguments [T2,FunctionalTerm,Nothing] do not conform to method ex3's type parameter bounds [T1 <: Term,FunctionalTerm[T1] <: X,X <: Term]
        def ex4[T2 <: Term, FunctionalTerm[T2] <: X, X <: Term](t2: FunctionalTerm[T2]): Term = ex3(t2)
                                                                                                ^
@@ -30,6 +26,6 @@ error: type mismatch;
  required: FunctionalTerm[T1]
        def ex4[T2 <: Term, FunctionalTerm[T2] <: X, X <: Term](t2: FunctionalTerm[T2]): Term = ex3(t2)
                                                                                                    ^
-{code}
+```
 
 So, I problem should be restated as: Why does the parameter X unused in the signature have this effect?

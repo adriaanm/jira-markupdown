@@ -1,18 +1,16 @@
 Scalac manages to parse both of the following expressions:
-
-{code:scala}
+```scala
 scala> a.b(c).d(e) //print
    a.b(c).d(e) // : <error>
 
 scala> a b(c).d(e) //print
    a.b(c.d(e)) // : <error>
-{code}
+```
 
 I think it is pretty clear that the second one will almost always be because of a wrong keystroke or an oversight. But scalac manages to parse it, and completely ignores the parenthesis to the right of `c`, resulting in something that the author probably didn't intend (or he would have written it that way).
 
 Some convoluted example to show this can lead to unexpected results:
-
-{code:scala}
+```scala
 scala> object a { def b(x: Any) = hasD }; object hasD { def d(x: Any) = x }; object e; val c = hasD
 defined object a
 defined object hasD
@@ -24,6 +22,6 @@ res1: hasD.type = hasD$@4bb2ee58
 
 scala> a.b(c).d(e)
 res2: Any = e$@756c6202
-{code}
+```
 
 Example it can lead to very confusing compiler errors: http://stackoverflow.com/questions/41600172/scala-multiple-type-parameter-that-are-defined-later

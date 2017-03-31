@@ -1,6 +1,5 @@
-You probably would label this as an enhancement rather than a defect, but it bit me really hard in conjunction with SI-4377.
-
-{code}
+You probably would label this as an enhancement rather than a defect, but it bit me really hard in conjunction with scala/bug#4377.
+```scala
 trait Cap
 trait Op[C <: Cap] {
   type Result
@@ -21,11 +20,10 @@ error: inferred type arguments [Nothing,this.ReadOp[Int]] do not conform to meth
 exec(new ReadOp[Int])
 ^
 */
-{code}
+```
 
 The first thing that comes to mind is to make Op's C a type member:
-
-{code}
+```scala
 trait Cap
 trait Op {
   type C <: Cap
@@ -43,11 +41,10 @@ final class ReadOp[A] extends Op {
 def exec[O <: Op](op: O): Exec[O#C, O#Result] = null
 
 exec(new ReadOp[Int])
-{code}
+```
 
 Which works, until you need to bound Op#C (see SI-4377):
-
-{code}
+```scala
 trait Ops { list =>
   type C <: Cap
   def seq: Seq[Op { type C >: list.C <: Cap }]
@@ -64,11 +61,10 @@ error: type mismatch;
   def seq = Seq[O](op)
                   ^
 */
-{code}
+```
 
 My best shot so far is to keep both type parameter and type member, use bounds-friendly [C <: Cap, O <: Op[C]] internally and expose inference-friendly [O <: Op[_ <: Cap]] to the users:
-
-{code}
+```scala
 trait Cap
 trait Op[C <: Cap] { op =>
   final type CC = C
@@ -97,6 +93,6 @@ def inject[O <: Op[_ <: Cap]](op: O) =
   new Ops1[O#CC, O#Self[O]](op.self[O])
 
 inject(new ReadOp[Int])
-{code}
+```
 
 Frustration achieved with 2.8.1 and 2.10.0.r24524-b20110321020039

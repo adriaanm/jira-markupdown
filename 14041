@@ -1,30 +1,27 @@
 I have this piece of code:
-
-{code}
+```scala
   override def equals(x: Any): Boolean = {
     x match {
       case other: PoSet[T] => other.equals(this)
       case _ => false
     }
   }
-{code}
+```
 
 It causes a warning:
-{code}
+```scala
 C:\Users\vpatryshev\cat\scala\src>scalac math\cat\*.scala -unchecked
 math\cat\PoSet.scala:36: warning: non variable type-argument T in type pattern i
 s unchecked since it is eliminated by erasure
       case other: PoSet[T] => other.equals(this)
                   ^
 one warning found
-{code}
+```
 And sure thing if I remove [T] in that line, I'm getting an error:
-
-{code}
+```scala
 C:\Users\vpatryshev\cat\scala\src>scalac math\cat\*.scala -unchecked
 math\cat\PoSet.scala:36: error: class <nop>PoSet takes type parameters
       case other: PoSet => other.equals(this)
                   ^
 one error found
-{code}
-
+```

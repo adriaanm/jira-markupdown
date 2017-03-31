@@ -1,6 +1,5 @@
-As it stands, I don't think this warning is bogus, because {{unsafeCoerce}} can be derived in a couple ways from testing singleton types by trusting {{equals}}:
-
-{code}
+As it stands, I don't think this warning is bogus, because `unsafeCoerce` can be derived in a couple ways from testing singleton types by trusting `equals`:
+```scala
 package test.sixtysevenninetyone
 
 object UCs {
@@ -28,11 +27,10 @@ object UCs {
   def oops = (uc1[String, ClassLoader]("twenty-one"),
               uc2[String, ClassLoader]("forty-two"))
 }
-{code}
+```
 
-Yielding session (excluding uninteresting warnings about subclassing tuple; the basic principle of getting {{equals}} to lie has wide application):
-
-{code}
+Yielding session (excluding uninteresting warnings about subclassing tuple; the basic principle of getting `equals` to lie has wide application):
+```scala
 [warn] 6791.scala:12: non-variable type argument Nothing in type pattern test.sixtysevenninetyone.UCs.Ooh[Nothing] is unchecked since it is eliminated by erasure
 [warn]     aa match {case ano: no.type => ano.phantom}
 [warn]                           ^
@@ -48,6 +46,6 @@ Type :help for more information.
 
 scala> test.sixtysevenninetyone.UCs.oops
 res0: (ClassLoader, ClassLoader) = (twenty-one,forty-two)
-{code}
+```
 
 Also as in 2.10.3.

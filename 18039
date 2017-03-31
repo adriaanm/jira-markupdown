@@ -1,16 +1,15 @@
-{{partest}} compares raw output from Runner invocation, including warnings from the VM potentially unrelated to the test being run. This can result in false positives.
+`partest` compares raw output from Runner invocation, including warnings from the VM potentially unrelated to the test being run. This can result in false positives.
 
-For example, if my system-wide {{_JAVA_OPTIONS}} includes {{-XX:+UseLargePages}}, it is to be expected that partest's parallel invocations will exhaust the reserved space for large pages on my system, triggering an [ENOSPC|http://www.ioplex.com/~miallen/errcmp.html]. Here is one output of {{partest --show-diff   --presentation}}
-
-{code}
+For example, if my system-wide `_JAVA_OPTIONS` includes `-XX:+UseLargePages`, it is to be expected that partest's parallel invocations will exhaust the reserved space for large pages on my system, triggering an [ENOSPC](http://www.ioplex.com/~miallen/errcmp.html). Here is one output of `partest --show-diff   --presentation`
+```scala
 testing: [...]/files/presentation/ide-bug-1000349                     [  OK  ]
 testing: [...]/files/presentation/callcc-interpreter                  [  OK  ]
 testing: [...]/files/presentation/hyperlinks                          [FAILED]
 1d0
 < Java HotSpot(TM) 64-Bit Server VM warning: Failed to reserve shared memory (errno = 28).
-{code}
+```
 
 Problems:
-- this is a head scratcher until run with {{--show-diff}}
-- while {{+UseLargePages}} is of limited use with {{partest}}, [it has its use cases|http://zzzoot.blogspot.ch/2009/02/java-mysql-increased-performance-with.html] as a system-wide setting, as do many other edgy options.
-- in general, we may not want to let VM _warnings_ fail tests by themselves.
+- this is a head scratcher until run with `--show-diff`
+- while `+UseLargePages` is of limited use with `partest`, [it has its use cases](http://zzzoot.blogspot.ch/2009/02/java-mysql-increased-performance-with.html) as a system-wide setting, as do many other edgy options.
+- in general, we may not want to let VM *warnings* fail tests by themselves.

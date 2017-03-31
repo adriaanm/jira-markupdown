@@ -1,7 +1,6 @@
 === What steps will reproduce the problem ===
 Compile, under Scala 2.9.0.RC4 (and presumably earlier)
-
-{code}
+```scala
 object SubList {
        implicit def sublistable[A](x: List[A]) = new SubListable(x)
        class SubListable[A](x: List[A]) {
@@ -13,7 +12,7 @@ object SubList {
          }
        }
 }
-{code}
+```
 
 === What is the expected behavior? ===
 Some sort of error (e.g. along the lines of "recursive method isSubListOf requires a return type") presented to the user.
@@ -21,8 +20,7 @@ Some sort of error (e.g. along the lines of "recursive method isSubListOf requir
 
 === What do you see instead? ===
 The compiler crashes with an AssertionError, e.g.
-
-{code}
+```scala
 java.lang.AssertionError: assertion failed: y.indexOf(h).$$plus(1)
        at scala.Predef$$.assert(Predef.scala:103)
        at scala.tools.nsc.typechecker.SuperAccessors
@@ -45,7 +43,7 @@ $$SuperAccTransformer.transform(SuperAccessors.scala:237)
 $$anonfun$$transformArgs$$1.apply(SuperAccessors.scala:50)
 [...]
 Error during sbt execution: java.lang.AssertionError: assertion failed: y.indexOf(h).$$plus(1)
-{code}
+```
 
 === Additional information ===
 Originally posted at http://groups.google.com/group/scala-user/browse_thread/thread/42b042969c15a0a0

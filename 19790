@@ -1,8 +1,7 @@
 As reported by Daniel Armak on the mailing list:
 
 I encountered this error trying to compile code that uses the shapeless ~?> typeclass with the toolbox, and simplified it to this:
-
-{code}
+```scala
 import scala.reflect.runtime.currentMirror
 import scala.tools.reflect.ToolBox
 
@@ -20,13 +19,12 @@ val source = """{
 
 val tree = tb.parse(source)
 tb.typecheck(tree).tpe
-{code}
+```
 
 This fails with:
-
-{noformat}
+```
 Exception in thread "main" scala.MatchError: <tree with deferred refcheck> (of class scala.tools.nsc.ast.Trees$TypeTreeWithDeferredRefCheck)
     at scala.reflect.internal.Importers$StandardImporter.recreateTree(Importers.scala:309)
-{noformat}
+```
 
-Importers doesn't deal with the extra AST node types introduced in nsc.Global, namely {{TypeTreeWithDeferredRefCheck}}
+Importers doesn't deal with the extra AST node types introduced in nsc.Global, namely `TypeTreeWithDeferredRefCheck`

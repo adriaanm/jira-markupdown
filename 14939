@@ -1,14 +1,14 @@
 I think this was introduced in r20628. To reproduce, use the r20633 nightly and:
 
-* Create two projects, each with a single object with a main method.
-* Use the Run As Scala action with both and notice that it works fine.
-* Close one of the projects
-* Try Run as Scala action on the one that is still open and notice the error in the error logr1.
+- Create two projects, each with a single object with a main method.
+- Use the Run As Scala action with both and notice that it works fine.
+- Close one of the projects
+- Try Run as Scala action on the one that is still open and notice the error in the error logr1.
 
 If one reopens the closed project, deletes the file in it, and uses "Run As Scala" application on the remaining file, then a different error is shownr2. For the record, my files were called Foo and Bar and the projects test and test2. That should help with the error messages.
 
 r1
-{code}
+```scala
 Java Model Exception: Java Model Status [test2 does not exist]
 at org.eclipse.jdt.internal.core.JavaElement.newJavaModelException(JavaElement.java:502)
 at org.eclipse.jdt.internal.core.Openable.generateInfos(Openable.java:246)
@@ -81,10 +81,10 @@ at java.lang.reflect.Method.invoke(Method.java:597)
 at org.eclipse.equinox.launcher.Main.invokeFramework(Main.java:559)
 at org.eclipse.equinox.launcher.Main.basicRun(Main.java:514)
 at org.eclipse.equinox.launcher.Main.run(Main.java:1311)
-{code}
+```
 
 r2
-{code}
+```scala
 Java Model Exception: Java Model Status [Bar.scala [in test [in src [in test2]]] does not exist]
 	at org.eclipse.jdt.internal.core.JavaElement.newJavaModelException(JavaElement.java:502)
 	at org.eclipse.jdt.internal.core.Openable.generateInfos(Openable.java:246)
@@ -150,4 +150,4 @@ Java Model Exception: Java Model Status [Bar.scala [in test [in src [in test2]]]
 	at org.eclipse.equinox.launcher.Main.invokeFramework(Main.java:559)
 	at org.eclipse.equinox.launcher.Main.basicRun(Main.java:514)
 	at org.eclipse.equinox.launcher.Main.run(Main.java:1311)
-{code}
+```

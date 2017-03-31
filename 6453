@@ -1,6 +1,5 @@
 I see this too with 2.9.1.final:
-
-{noformat}
+```
 Welcome to Scala version 2.9.1.final (OpenJDK 64-Bit Server VM, Java 1.6.0_20).
 Type in expressions to have them evaluated.
 Type :help for more information.
@@ -14,11 +13,10 @@ res0: scala.tools.nsc.interpreter.package.IR.Result = Success
 
 scala> n.valueOfTerm("r")
 res1: Option[AnyRef] = None
-{noformat}
+```
 
 The underlying cause of this is that ReadEvalPrint.call throws an exception if you try to access the evaluated value:
-
-{noformat}
+```
 Welcome to Scala version 2.9.1.final (OpenJDK 64-Bit Server VM, Java 1.6.0_20).
 Type in expressions to have them evaluated.
 Type :help for more information.
@@ -61,8 +59,8 @@ java.lang.RuntimeException: Internal error: eval object class $line1.$eval,
 	at scala.tools.nsc.interpreter.Line$$anonfun$1.apply$mcV$sp(Line.scala:43)
 	at scala.tools.nsc.io.package$$anon$2.run(package.scala:25)
 	at java.lang.Thread.run(Thread.java:636)
-{noformat}
+```
 
 IMain.valueOfTerm ultimately calls ReadEvalPrint.callEither which swallows that exception and eventually a None bubbles up and gets returned. I haven't done any more digging as to why that exception is thrown, will report more details if I find them.
 
-Are there any known workarounds for this? We're embedding the Scala REPL and trying to customize the Print stage to dump the contents of any eval'ed collection or iterator in [Gremlin|https://github.com/tinkerpop/gremlin] and this bug is impeding progress.
+Are there any known workarounds for this? We're embedding the Scala REPL and trying to customize the Print stage to dump the contents of any eval'ed collection or iterator in [Gremlin](https://github.com/tinkerpop/gremlin) and this bug is impeding progress.

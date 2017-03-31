@@ -1,6 +1,5 @@
 The point in the current implementation that checks this:
-
-{code}
+```scala
       case mt1 @ MethodType(params1, res1) =>
         tp2 match {
           case mt2 @ MethodType(params2, res2) =>
@@ -8,13 +7,13 @@ The point in the current implementation that checks this:
             mt1.isImplicit == mt2.isImplicit &&
             matchingParams(params1, params2, mt1.isJava, mt2.isJava) &&
             matchesQuantified(params1, params2, res1, res2)
-{code}
+```
 
 Originally introduced in 2005 by Martin: https://github.com/scala/scala/commit/0baff37#L30R834
 
 The spec is silent:
-{quote}
+```
 Two method types(§3.3.1) are equivalent if they have equivalent resulttypes, both have the same number of parameters, and corresponding parameters have equivalent types. Note that the names of parameters do not matter for method type equivalence.
-{quote}
+```
 
 Assigning to Martin for clarification; it seems to me like it's intentional and the spec needs an update.

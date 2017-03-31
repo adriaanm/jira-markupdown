@@ -1,9 +1,8 @@
 This bug is not related to the particular type error happening here, but a generic bug in error reporting. It makes debugging type errors impossible when it happens as the errors won't show. Regression and probably easily fixed.
-
-{code}
+```scala
 class ResultTable[E]( query : Either[_,E] )( columns : Int )
 new ResultTable(Left(5):Either[_,_])(5){}
-{code}
+```
 
 leads to a type error in 2.9.2 but crashes the typer with a NullPointerException in 2.10.2 and 2.11 snapshot.
 
@@ -22,7 +21,7 @@ leads to a type error in 2.9.2 but crashes the typer with a NullPointerException
  required: $anon(in value res0) forSome { type $anon(in value res0) <: ResultTable[_$3]; type _$3 }
        val res0 =
            ^
-{noformat}
+```
 
 {noformat:title="2.10.2"}
 <console>:10: error: illegal inheritance;
@@ -226,4 +225,4 @@ java.lang.NullPointerException
 	at scala.tools.nsc.MainGenericRunner.process(MainGenericRunner.scala:96)
 	at scala.tools.nsc.MainGenericRunner$.main(MainGenericRunner.scala:105)
 	at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
-{noformat}
+```

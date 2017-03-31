@@ -1,17 +1,15 @@
 {code}new Array(...){code}
 with more than one dimension is not supported anymore:
-
-{code}
+```scala
 new Array(1,1)
 error: too many arguments for constructor Array: (_length: Int)Array[T]
               new Array(1,1)
               ^
-{code}
+```
 
 
 But RefChecks still checks for it:
-
-{code}
+```scala
       case Apply(Select(New(tpt), name), args) 
       if (tpt.tpe.typeSymbol == ArrayClass && args.length >= 2) =>
         unit.deprecationWarning(tree.pos, 
@@ -31,6 +29,6 @@ But RefChecks still checks for it:
         }
         currentApplication = tree
         newResult
-{code}
+```
 
 This looks like dead code to me.

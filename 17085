@@ -1,16 +1,16 @@
 I spent a good half a day trying to work out a VerifyError, which I eventually tracked back to this:
-{code}
+```scala
 scala> def f[QVC: ClassTag] = typeTag[QVC]
 f: [QVC](implicit evidence$1: ClassTag[QVC])TypeTag[QVC]
 
 scala> f[List[Int]]
 res0: TypeTag[List[Int]] = TypeTag[QVC]
-{code}
+```
 I sure hope it's intended to act like this:
-{code}
+```scala
 
 scala> def f[QVC: TypeTag] = classTag[QVC]
 <console>:7: error: No ClassTag available for QVC
        def f[QVC: TypeTag] = classTag[QVC]
                                      ^
-{code}
+```

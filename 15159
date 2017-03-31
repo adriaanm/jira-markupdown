@@ -5,8 +5,7 @@ The issue is it uses a method called 'with' in Java; which obviously clashes wit
 Strangely - this error only occurs when there is a loop around the use of `with`.
 
 This scala causes the error. Note that any Servlet class could be used...
-
-{code}
+```scala
 import _root_.com.google.inject.servlet.ServletModule
 import _root_.org.fusesource.scalate.servlet.TemplateEngineServlet
 
@@ -18,21 +17,20 @@ class ScalaModuleTest extends ServletModule {
     }
   }
 }
-{code}
+```
 
 removing the loop and using...
-
-{code}
+```scala
   override def configureServlets = {
     serve("*.ssp").`with`(classOf[TemplateEngineServlet])
   }
-{code}
+```
 
 is fine
 
 
 Here's the error...
-{code}
+```scala
 [INFO] java.lang.reflect.InvocationTargetException
 [INFO]  at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 [INFO]  at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -60,4 +58,4 @@ Here's the error...
 [INFO]  at scala.collection.TraversableLike$$class.map(TraversableLike.scala:238)
 [INFO]  at scala.collection.immutable.List.map(List.scala:46)
 [INFO]  at scala.tools.nsc.typechecker.Typers$$Typer.typedArgs(Typers.scala:2181)
-{code}
+```

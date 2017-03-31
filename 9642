@@ -1,6 +1,6 @@
-It seems that a call to `cookJavaRawInfo` during typechecking in erasure is responsible for the unwanted existential. It considers the erased result type of the constructor to be a raw, expands it to the existential, and then calls {{setInfo}} (via {{modifyInfo}}, which is rather a destructive thing to do, as it discards the symbols type history.
+It seems that a call to `cookJavaRawInfo` during typechecking in erasure is responsible for the unwanted existential. It considers the erased result type of the constructor to be a raw, expands it to the existential, and then calls `setInfo` (via `modifyInfo`, which is rather a destructive thing to do, as it discards the symbols type history.
 
-I still can't *quite* trace out why the old code was immune to this effect. But I can see a few ways that we can remedy this:
+I still can't **quite** trace out why the old code was immune to this effect. But I can see a few ways that we can remedy this:
 
  - don't cook raw types if {{phase.erasedTypes}}. This seems like a clear win to me.
  - use {{updateInfo}} rather than {{modifyInfo}}. It seems like we should treat any calls to {{modify/setInfo}} with some suspicion. Are there cases when they are necessary for correctness?

@@ -1,8 +1,7 @@
-In Java, {{Double.Nan == Double.NaN}} (comparison of primitives) returns false, as per the IEEE spec. However, in order that Object.equals behaves wrt the law x.equals\(x\) for all x, {{Double.valueOf(Double.NaN).equals(Double.valueOf(Double.NaN))}} returns true!
+In Java, `Double.Nan == Double.NaN` (comparison of primitives) returns false, as per the IEEE spec. However, in order that Object.equals behaves wrt the law x.equals\(x\) for all x, `Double.valueOf(Double.NaN).equals(Double.valueOf(Double.NaN))` returns true!
 
 In scala, we can get ourselves into trouble because:
-
-{noformat}
+```
 scala> List(Double.NaN) == List(Double.NaN)
 res52: Boolean = false
 
@@ -11,9 +10,9 @@ l: List[Double] = List(NaN)
 
 scala> l == l
 res53: Boolean = true
-{noformat}
+```
 This gets worse!
-{noformat}
+```
 scala> java.lang.Double.valueOf(Double.NaN) == java.lang.Double.valueOf(Double.NaN)
 res57: Boolean = true
 
@@ -25,5 +24,5 @@ d: java.lang.Double = NaN
 
 scala> List(d) == List(d)
 res59: Boolean = true
-{noformat}
+```
 To be honest, I'm not at all clear as to what can be done here; other than provide for the fact that in the == comparison, if the left hand side and right hand side are collections of type Double, we cannot use identity as a case for returning true

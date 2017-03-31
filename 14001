@@ -1,24 +1,22 @@
 This was reported by Hemant Kumar in #scala.
 
 The method implementation:
-
-{code}
+```scala
   /** Clears the buffer contents.
    */
   def clear() {
     size0 = 0
   }
-{code}
+```
 
 This means that it unnecessarily holds on to memory. It should also do java.util.Arrays.fill(array, null) or something equivalent (e.g. a manual loop if the j.u dependency is undesirable). Note that this is what java.util.ArrayList.clear does, so there is a precedent.
 
 A similar issue occurs with ResizableArray.reduceToSize:
-
-{code}
+```scala
   /** remove elements of this array at indices after <code>sz</code> 
    */
   def reduceToSize(sz: Int) {
     if (sz > size0) throw new IllegalArgumentException
     size0 = sz
   }
-{code}
+```

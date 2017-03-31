@@ -1,6 +1,5 @@
 Compiling
-
-{code}
+```scala
 class Arr[T](private val underlying: scala.Array[T]) extends AnyVal
 
 trait SeqMonoTransforms[+A, +Repr] extends Any {
@@ -15,18 +14,17 @@ object Test {
   def main(args: Array[String]) =
     println(new ArrOps(new Arr(Array(1, 2, 3))).fromIterableWithSameElemType)
 }
-{code}
+```
 
 we get:
-
-{code}
+```scala
 iarray.scala:10: error: bridge generated for member method fromIterableWithSameElemType: ()Arr[A] in class ArrOps
 which overrides method fromIterableWithSameElemType: ()Repr in trait SeqMonoTransforms
 clashes with definition of the member itself;
 both have erased type ()Object
   def fromIterableWithSameElemType(): Arr[A] = xs
       ^
-{code}
-The error makes no sense. No bridge should have been generated, as the erasures of both {{fromIterableWithSameElemType}} methods  have the same type {{()Object}}
+```
+The error makes no sense. No bridge should have been generated, as the erasures of both `fromIterableWithSameElemType` methods  have the same type `()Object`
 
 This is a blocker for any attempt to add immutable arrays to the collection strawman. 

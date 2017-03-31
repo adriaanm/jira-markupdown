@@ -1,6 +1,5 @@
 The members of `akka.http.scaladsl.model.MediaTypes` have different types. Some are of type `MediaType.WithOpenCharset` while others are of type `MediaType.WithFixedCharset`. Using them in isolation works fine, but when scalac is asked to calculate the LUB of both types, it blows up in the most peculiar way. This can be worked around by declaring the type explicitly.
-
-{code}
+```scala
 Welcome to Scala version 2.11.7 (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_45).
 Type in expressions to have them evaluated.
 Type :help for more information.
@@ -23,7 +22,7 @@ A full rebuild may help if 'MediaType.class' was compiled against an incompatibl
 
 scala> val works = Seq[MediaType](a, b)
 works: Seq[akka.http.scaladsl.model.MediaType] = List(application/xml, application/json)
-{code}
+```
 
 Here is a repo with a tiny reproducer https://github.com/rklaehn/invaliddependency
 

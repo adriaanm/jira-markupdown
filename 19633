@@ -1,28 +1,26 @@
 Compiling 
-
-{code}
+```scala
 def s = "bad escape: \z"
-{code} 
+```
 
 produces a compile-time error like:
-{code}
+```scala
 error: invalid escape character
        def s = "bad escape: \z"
                              ^
-{code}
+```
 
 The standard s"" and f"" string interpolators use the same escape sequences as normal double quoted strings.  Like double quoted strings the f"" interpolator reports bad sequences at compile time.
 
 Inconsistently, the s"" string interpolator reports bad escape sequences at runtime by throwing an exception. 
 
 For example, compiling the following code succeeds:
-
-{code}
+```scala
 def f = s"bad escape: \z"
-{code}
+```
 
 At run time invoking f will produce an exception:
-{code}
+```scala
 scala.StringContext$InvalidEscapeException: invalid escape '\z' not one of [\b, \t, \n, \f, \r, \\, \", \'] at index 12 in "bad escape: \z". Use \\ for literal \.
   at scala.StringContext$.loop$1(StringContext.scala:234)
   at scala.StringContext$.replace$1(StringContext.scala:244)
@@ -33,6 +31,6 @@ scala.StringContext$InvalidEscapeException: invalid escape '\z' not one of [\b, 
   at scala.StringContext.standardInterpolator(StringContext.scala:122)
   at scala.StringContext.s(StringContext.scala:94)
   at .f(<console>:7)
-{code}
+```
 
 I would prefer that the s"" interpolator report bad escape errors as early as possible, consistent with standard double quoted strings and f"" interpolated strings.

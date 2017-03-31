@@ -1,7 +1,7 @@
 I am not using any encryption. I don't think it has something to do with the length of the file paths. 
 
 I find it very strange that this doesn't work:
-{code}
+```scala
 for {
      _ <- markerUtil.uploadingStarted(source, destPath, files.map(_.path)) // Try[Unit]
      inputStream <- createInputStream(files) // Try[InputStream]
@@ -10,10 +10,10 @@ for {
      _ <- deleteFiles(files) // Try[Unit]
      _ <- markerUtil.uploadedDone(source) // Try[Unit]
    } yield UploadResult(inputSize, destPath)
-{code}
+```
 
 while this works:
-{code}
+```scala
 val result = for {
      _ <- markerUtil.uploadingStarted(source, destPath, files.map(_.path))
      inputStream <- createInputStream(files)
@@ -23,4 +23,4 @@ val result = for {
      _ <- markerUtil.uploadedDone(source)
    } yield UploadResult(inputSize, destPath)
 result
-{code}
+```

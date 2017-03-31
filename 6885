@@ -1,9 +1,9 @@
 The patch that was committed doesn't interact well with the edge case in which the elided method call is the right-hand of an assignment.  Now the compiler silently elides the call by emitting nothing, but the resulting class results in a VerifyError.
-{code}
+```scala
 $ spalac -version
 Scala compiler version v2.10.0-M1-378-g63d9ae6dc4 -- Copyright 2002-2011, LAMP/EPFL
 $ spala elysian.ElysianFields
 java.lang.VerifyError: (class: elysian/ElysianFields, method: greeting signature: ()Ljava/lang/String;) Unable to pop operand off an empty stack
-{code}
-This is related to SI-5051.  The old transform would turn the expr into a BoxedUnit, which is something.
+```
+This is related to scala/bug#5051.  The old transform would turn the expr into a BoxedUnit, which is something.
 

@@ -1,4 +1,4 @@
-{code:scala}
+```scala
 class MyIterable[+A] {
     def flatMap[B](f: A => MyIterable[B]): MyIterable[B] = ???
     def map[B](f: A => B): MyIterable[B] = ???
@@ -13,10 +13,10 @@ class MyIterable[+A] {
     i <- new MyIterable[A]()
     j: A <- new MySet[A]() // must have a typecheck patmat here to trigger this bug
   } yield (i, j)
-{code}
+```
 
 This code snippet results in compiler failure.
-{code}
+```scala
 java.lang.NullPointerException
 	at scala.tools.nsc.transform.patmat.MatchTranslation$MatchTranslator$class.translateMatch(MatchTranslation.scala:223)
 	at scala.tools.nsc.transform.patmat.PatternMatching$OptimizingMatchTranslator.translateMatch(PatternMatching.scala:89)
@@ -187,4 +187,4 @@ java.lang.NullPointerException
 	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
 	at java.lang.reflect.Method.invoke(Method.java:497)
 	at com.martiansoftware.nailgun.NGSession.run(NGSession.java:319)
-{code}
+```

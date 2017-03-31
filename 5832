@@ -1,8 +1,7 @@
-The problem is the {{def this() = this()}}. Removing it  does away with the {{VerifyError}}. 
+The problem is the `def this() = this()`. Removing it  does away with the `VerifyError`. 
 
 Rephrasing the example: 
-
-{code}
+```scala
 trait A
 
 class B(val x: Int) {
@@ -14,20 +13,18 @@ class B(val x: Int) {
 object C extends B(2) with A  {
   def main(args: Array[String]) {  }
 }
-{code}
+```
 
 we get the runtime error: 
-
-{code}
+```scala
 C:\temp\>java -verify -Xbootclasspath/a:Z:\scala-library.jar C
 Exception in thread "main" java.lang.VerifyError: (class: B, method: <init> signature: ()V) Expecting to find unitialized object on stack
         at C.main(bt4.scala)
-{code}
+```
 
 
-Regarding classfile {{B}}, the difference between including or not {{def this() = this()}} is the {{public B();}} below:
-
-{code}
+Regarding classfile `B`, the difference between including or not `def this() = this()` is the `public B();` below:
+```scala
 C:\temp\>javap -c B
 Compiled from "bt4.scala"
 public class B extends java.lang.Object implements scala.ScalaObject{
@@ -44,12 +41,10 @@ public B();
    6:   return
 
 }
-{code}
+```
 
 Classfile {{C}} (with or without {{def this() = this()}}) is: 
-
-
-{code}
+```scala
 C:\temp\>javap -c C
 Compiled from "bt4.scala"
 public final class C extends java.lang.Object{
@@ -67,4 +62,4 @@ public static final int x();
    6:   ireturn
 
 }
-{code}
+```

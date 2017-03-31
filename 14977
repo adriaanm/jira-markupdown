@@ -1,9 +1,8 @@
 The following code compiles and runs without error with Scala 2.7.7.
 With Scala 2.8.0.Beta1 and 2.8.0.r20723, it compiles but throws ClassCastException when run.
 
-It appears to be the same exception as SI-2381, but the code required to trigger the crash is now more complicated (the abstract type T, later instantiated to Int, is needed).
-
-{code}
+It appears to be the same exception as scala/bug#2381, but the code required to trigger the crash is now more complicated (the abstract type T, later instantiated to Int, is needed).
+```scala
 trait A {
   type T
   def m(a: Array[T]): Unit
@@ -23,9 +22,8 @@ object C extends A with B {
     m2(Array(1))
   }
 }
-{code}
-
-{code}
+```
+```scala
 $$ scala C
 java.lang.ClassCastException: [Ljava.lang.Object; cannot be cast to [I
 	at C$$.m(A.scala:15)
@@ -44,4 +42,4 @@ java.lang.ClassCastException: [Ljava.lang.Object; cannot be cast to [I
 	at scala.tools.nsc.util.ScalaClassLoader$$URLClassLoader.run(ScalaClassLoader.scala:61)
 	at scala.tools.nsc.MainGenericRunner$$.main(MainGenericRunner.scala:153)
 	at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
-{code}
+```

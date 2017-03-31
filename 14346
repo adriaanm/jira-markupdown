@@ -1,6 +1,5 @@
 The following code fails to run on both 2.7.4 and with 2.8.0 trunk:
-
-{code}
+```scala
 class Test
 {
   @volatile val s = ""
@@ -13,9 +12,8 @@ object Test
     new Test
   }
 }
-{code}
-
-{code}
+```
+```scala
 $$ scala Test
 Exception in thread "main" java.lang.ClassFormatError: Illegal field modifiers in class Test: 0x52
 	at java.lang.ClassLoader.defineClass1(Native Method)
@@ -35,7 +33,7 @@ Exception in thread "main" java.lang.ClassFormatError: Illegal field modifiers i
 	at scala.tools.nsc.ObjectRunner$$.classExists(ObjectRunner.scala:42)
 	at scala.tools.nsc.MainGenericRunner$$.main(MainGenericRunner.scala:149)
 	at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
-{code}
+```
 
 Without having thought too much about this, I think having a @volatile val
 maybe useful if there's internal state in the val reference that you would

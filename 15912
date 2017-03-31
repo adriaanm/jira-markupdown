@@ -1,38 +1,35 @@
 === What steps will reproduce the problem (please be specific and use wikiformatting)? ===
-
-{code}
+```scala
   List(1, 1, 1, 1).scanRight(0)(_+_)
-{code} 
+```
 
 
 
 === What is the expected behavior? ===
 
 As in Haskell:
-
-{code}
+```scala
 Hugs> scanr (+) 0 [1, 1, 1, 1]
 [4,3,2,1,0]
-{code}
+```
 
 
 === What do you see instead? ===
-
-{code}
+```scala
 scala> List(1,1,1,1).scanRight(0)(_+_)
 res1: List[Int] = List(0, 1, 2, 3, 4)
-{code}
+```
 
 
 === Additional information ===
 
-{{scanRight}} is implemented at {{TraversableLike}} and also at {{TraversableViewLike}}, {{TraversableProxyLike}} and {{ParSeqViewLike}}, though all of these just reference {{TraversableLike}}.
+`scanRight` is implemented at `TraversableLike` and also at `TraversableViewLike`, `TraversableProxyLike` and `ParSeqViewLike`, though all of these just reference `TraversableLike`.
 
 No other part of Scala's source make use of it, but it has been available since Scala 2.8.0, and merits a migration warning.
 
 The present documentation is not very clear about the direction of the result, though I personally think it describes how it is presently working, not how it should (IMO) work.
 
-Unfortunately, neither {{reduceRight}} nor {{foldRight}} serve as a parameter, since neither produce collections as result.
+Unfortunately, neither `reduceRight` nor `foldRight` serve as a parameter, since neither produce collections as result.
 
 === What versions of the following are you using? ===
   - Scala: 2.9.0.r0-b20101218005140

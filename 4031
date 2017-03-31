@@ -1,6 +1,5 @@
 Your example kind of obscures the issue by introducing a type parameter named "Bar".  The failure seems to be where constraints meet refinements in the land of erasure.  You can have a refinement without altering the constraint, or change the constraint if you're not in a refinement.  Illustrating, here are two variations which work:
-
-{code}
+```scala
   // don't change the constraint - any alteration crashes
   val y = new A {
     def foo[T <: Foo] { println("A.foo[Bar]") }
@@ -11,4 +10,4 @@ Your example kind of obscures the issue by introducing a type parameter named "B
   val y: A = new A {
     def foo[T <: AnyRef] { println("A.foo[Bar]") }
   }
-{code}
+```

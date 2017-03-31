@@ -1,6 +1,5 @@
 Also interesting for comparison:
-
-{code}
+```scala
 sealed abstract class B;
 case object True extends B;
 case object False extends B;
@@ -16,9 +15,8 @@ object Test2 {
     case _      =>
   }
 }
-{code}
-
-{noformat}
+```
+```
 reachable:
  -V1=null#1  /\
    V2=Y#3
@@ -30,11 +28,10 @@ under prefix:
      -V2=X#2      \/   -V2=null#6   \/     /\
  -V2=True.type#5  \/   -V2=null#6   \/     /\
     V1=null#1     \/    -V2=X#2     \/     via Map(V2=Y#3 -> true, V2=False.type#4 -> true, V2=X#2 -> false, V1=null#1 -> false, V2=null#6 -> false)
-{noformat}
+```
 
 Compare with the unsatisfiable model for:
-
-{code}
+```scala
 object Test {
   val X, Y = true
   (null: Tuple1[Boolean]) match {
@@ -43,9 +40,8 @@ object Test {
     case _      =>
   }
 }
-{code}
-
-{noformat}
+```
+```
 unreachable:
  -V1=null#1  /\
    V2=Y#3
@@ -58,4 +54,4 @@ under prefix:
  -V2=false#5 \/ -V2=true#4   /\
    -V2=Y#3   \/ -V2=true#4   /\
   V1=null#1  \/   -V2=X#2
-{noformat}
+```

@@ -1,7 +1,7 @@
 Commit r25230 reveals some problem in scalac that results in broken class signature emitted for GenTraversableFactory. As for now, scala library from trunk is completely unusable for Eclipse users.
 
 In order to see the problem it's enough to create a following file in Eclipse:
-{code}
+```scala
 import scala.collection.immutable.List;
 import scala.collection.immutable.List$;
 
@@ -10,7 +10,7 @@ public class Test {
     Object x = List$.MODULE$;
   }
 }
-{code}
+```
 
 Eclipse will complain about the first import with following error message:
 Multiple markers at this line
@@ -21,7 +21,7 @@ Multiple markers at this line
 
 
 A bit more involved example exposes this issue with javac:
-{code}
+```scala
 mac-grek:src grek$ cat scala/collection/Test.java
 package scala.collection;
 
@@ -43,17 +43,17 @@ class file for scala.collection.generic.GenTraversableFactory$ReusableCBF not fo
     x.ReusableCBF();
                  ^
 1 error
-{code}
+```
 
 so javac doesn't crash but fails to find a method that is defined in class file:
-{code}
+```scala
 mac-grek:generic grek$ javap GenTraversableFactory | grep Reusable
     public volatile scala.collection.generic.GenTraversableFactory$ReusableCBF$ ReusableCBF$module;
     public final scala.collection.generic.GenTraversableFactory$ReusableCBF$ ReusableCBF();
-{code}
+```
 
 Iulian proposed following work-around:
-{code}
+```scala
 mac-grek:scalagwt-scala grek$ git diff
 diff --git a/src/library/scala/collection/generic/GenTraversableFactory.scala b/src/library/scala/collection/generic/GenTraversableFactory.scala
 index 4695f7b..c5c9525 100644
@@ -72,6 +72,6 @@ index 4695f7b..c5c9525 100644
  
    /** A generic implementation of the `CanBuildFrom` trait, which forwards
     *  all calls to `apply(from)` to the `genericBuilder` method of
-{code}
+```
 
 I can confirm that it works.

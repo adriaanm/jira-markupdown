@@ -1,4 +1,4 @@
-{noformat}
+```
 % cat sandbox/test.scala
 
 class C {
@@ -109,11 +109,10 @@ Unspecified value parameter e.
     implicitly[reflect.runtime.universe.TypeTag[String]]
               ^
 two errors found
-{noformat}
+```
 
 I suspect this is the first culprit:
-
-{noformat}
+```
 git diff head -- src/compiler/scala/reflect/
 diff --git a/src/compiler/scala/reflect/reify/codegen/GenUtils.scala b/src/compiler/scala/reflect/reify/codegen/GenUtils.scala
 index b5b0f93..242e5d6 100644
@@ -128,4 +127,4 @@ index b5b0f93..242e5d6 100644
 
    def scalaFactoryCall(name: String, args: Tree*): Tree =
      scalaFactoryCall(TermName(name), args: _*)
-{noformat}
+```

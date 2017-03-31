@@ -1,5 +1,5 @@
 For 2.10.1, simply reverting dce6b34c is an option, but the drawback is, it would reintroduce the original thread safety issue.
 
-An alternative would be to change the InheritableThreadLocal to a regular ThreadLocal (this would require using ThreadLocal directly, instead of scala.util.DynamicVariable) and provide an explicit cleanup method that calls {{remove()}} and/or sets {{lastNoSuccessVar.value}} to None, so I don't have to do so via reflection.
+An alternative would be to change the InheritableThreadLocal to a regular ThreadLocal (this would require using ThreadLocal directly, instead of scala.util.DynamicVariable) and provide an explicit cleanup method that calls `remove()` and/or sets `lastNoSuccessVar.value` to None, so I don't have to do so via reflection.
 
 Either solution would make me and my code happy. I don't have a strong opinion about the "best" solution. But I guess I lean towards simply reverting, since ThreadLocal is notoriously error-prone and leak-prone, and since the original thread safety issue is of long standing. This ticket was never closed, so the issue was never advertised as fixed in 2.10.

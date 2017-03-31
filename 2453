@@ -1,13 +1,13 @@
-This seems related to SI-2425. I'm guessing they both unexpectedly fail the subtyping test in adapt around line 942:
-{code}
+This seems related to scala/bug#2425. I'm guessing they both unexpectedly fail the subtyping test in adapt around line 942:
+```scala
           if (tree1.tpe <:< pt) adapt(tree1, mode, pt, original)
-{code}
+```
 
 I would say that the following should hold:
-{code}
+```scala
 p.baz.type <:< Test.Bar#baz.type
-{code}
+```
 
 since `p : Test.Bar`
 
-Similarly, in SI-2425, somehow, `Boolean` seems not to be a subtype of `java.lang.Object`
+Similarly, in scala/bug#2425, somehow, `Boolean` seems not to be a subtype of `java.lang.Object`

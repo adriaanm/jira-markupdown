@@ -3,19 +3,17 @@ I now see how many bugs you few core guys are handling, thus apologies for not m
 The unchecked warning is appearing with my prior code, so no need to open a separate bug report.
 
 Thanks for catching the type hole that D[Any] was an allowable input to size. I fixed that below.
-
-{code}
+```scala
 scala> size(new D[Any](5 : Any))
 error: type mismatch;
  found   : D[Any]
  required: DD[D[Int] with D[String]]
        size(new D[Any](5 : Any))
             ^
-{code}
+```
 
 Also, I was able to eliminate the unchecked warnings as follows.
-
-{code}
+```scala
 scala> class D[-A] (v: A) {
   def get = (v : Any)
 }
@@ -37,7 +35,7 @@ scala> def size(t: DD[D[Int] with D[String]]) = t.get match { case x: D[_] =>
   }
 }
 size: (t: DD[D[Int] with D[String]])Int
-{code}
+```
 
 Why can't the compiler reason that the Double case above is unreachable?
 

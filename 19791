@@ -1,6 +1,5 @@
-Here is another case where the optimizer in scala {{2.11.x}} is generating incorrect code:
-
-{code:scala}
+Here is another case where the optimizer in scala `2.11.x` is generating incorrect code:
+```scala
 class Bust(val x: Long) {
   def sameDirection(y: Long): Boolean = 
     (y == 0 || x == 0 || ((y > 0) == (x > 0)))
@@ -12,8 +11,8 @@ object Bust {
     assert(!b.sameDirection(-1L))
   }
 }
-{code}
+```
 
-This should clearly run without error, but the assertion fails in {{2.11.x}} when {{-optimise}} is specified. It works fine if {{-optimise}} is left off, and it works fine in scala {{2.10.x}}.
+This should clearly run without error, but the assertion fails in `2.11.x` when `-optimise` is specified. It works fine if `-optimise` is left off, and it works fine in scala `2.10.x`.
 
 I also tried this with the latest scala nightly build ({{scala-2.11.8-7492bda-nightly}}), but it still fails.

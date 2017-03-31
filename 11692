@@ -1,6 +1,5 @@
 Here's another simpler repro that shows the same underlying problem. Notice the unwanted SAM.
-
-{noformat}
+```
 % cat sandbox/test.scala
 trait Sam { def apply(): Unit }
 abstract class Test {
@@ -56,7 +55,7 @@ package <empty> {
     <stable> <accessor> def f: Sam = Test.this.f
   }
 }
-{noformat}
+```
 
 In a context that does not allow a method type, when typechecking an expression like `qual.foo` where `foo` is a method with a single, empty parameter list, the compiler tries, in order:
   - eta expansion, if the expected type if a function type (or a SAM under -Xexperimental)
@@ -65,8 +64,7 @@ In a context that does not allow a method type, when typechecking an expression 
 In these examples, we don't get to the second measure.
 
 Here's a analagous situation with plain-old-functions:
-
-{code}
+```scala
 object Test {
   def foo(): () => String = () => ""
   val f: () => Any = foo
@@ -75,8 +73,8 @@ object Test {
     println(f()) // <function0>
   }
 }
-{code}
+```
 
 So even though SAMs are behaving consistently with functions, they introduce a pretty subtle source incompatibility.
 
-I've updated the bug title to reflect the essence of the problem. I'll leave it to [~apm] to craft a puzzler around this.
+I've updated the bug title to reflect the essence of the problem. I'll leave it to @som-snytt to craft a puzzler around this.

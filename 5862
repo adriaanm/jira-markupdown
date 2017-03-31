@@ -1,12 +1,11 @@
 Thank you for the very detailed bug report, and nice script to reproduce it.
 
 As you noticed, Java can get away with it because the language is a bit simpler. In this case, the type checker needs to compute the least-upper bound of the two branches in the if, for it to infer the return type of the method. Moreover, in Scala you have refinement types, and they can be inferred from such code. Therefore, the compiler needs access to the members of a type, and their types, and so on. If you simplify a bit the code, you can make it compile. For instance, this succeeds:
-
-{code}
+```scala
 class Project3(val project2: Project2)  {
 	def works = project2
 	def fails(b: Boolean): Project2 = if (b) project2 else works
 }
-{code}
+```
 
 I doubt there is anything we can do about it, so I have to mark this as won't fix.

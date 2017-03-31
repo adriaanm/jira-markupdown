@@ -1,24 +1,22 @@
 The header example is
-
-{code:scala}
+```scala
 class FilterMapImpl[A, Repr](val r: GenTraversableLike[A, Repr]) {
   final def filterMap[B, That](f: A => Option[B])(implicit cbf: CanBuildFrom[Repr, B, That]): That =
     r.flatMap(f(_).toSeq)
 }
 implicit def filterMap[Repr, A](r: Repr)(implicit fr: IsTraversableOnce[Repr]): FilterMapImpl[fr.A,Repr] =
   new FilterMapImpl(fr.conversion(r))
-{code}
+```
 
 But it won't compile. The implicit parameter `fr` should be of type `IsTraversableLike`. Furthermore, type parameter `A` in `filterMap` is not used and just confusing. It should be removed:
-
-{code:scala}
+```scala
 class FilterMapImpl[A, Repr](val r: GenTraversableLike[A, Repr]) {
   final def filterMap[B, That](f: A => Option[B])(implicit cbf: CanBuildFrom[Repr, B, That]): That =
     r.flatMap(f(_).toSeq)
 }
 implicit def filterMap[Repr](r: Repr)(implicit fr: IsTraversableLike[Repr]): FilterMapImpl[fr.A,Repr] =
   new FilterMapImpl(fr.conversion(r))
-{code}
+```
 
 ------
 

@@ -3,8 +3,7 @@ Here's the path the compiler takes. The problem is that right after the Namer cr
 I don't know why the cycle only happens in scaladoc, but not when compiling. I guess it's because of a lucky / unlucky order of compilation units.
 
 I'm not sure what the right fix is, where should we break this cycle?
-
-{code}
+```scala
 source code of classes involved:
 
   package scala {
@@ -39,4 +38,4 @@ search for "AnyRef" in "package object scala"
            (Type "object package").member("AnyRef") => baseClasses.head.info.decls => // baseClasses.head is "trait ScalaObject"
 
   === cycle ===>  (Symbol "trait ScalaObject").info
-{code}
+```

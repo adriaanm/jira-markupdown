@@ -5,7 +5,7 @@ Let us stop pursuing the madness of a centralized, adjunct toString method which
 To summarize for anyone new to the game: there are two major issues with toString which cannot be dealt with without a different method.  One is that no sane language would either a) force everyone to do a null check on every call to toString or b) throw NPEs just because you're trying to print a null reference.  But here we are.
 
 There are three abstract methods in class Any where we inherit implementations from java: equals, hashCode, and toString.  Here is where we stand with those methods and their issues.  Drink in the symmetry.  Also, this one would have far less impact than the other two.
-{code}
+```scala
   // not null-safe, some classes give insensible scala answers
   // solution: def ==(other: Any): Boolean
   def equals(other: Any): Boolean
@@ -17,19 +17,19 @@ There are three abstract methods in class Any where we inherit implementations f
   // not null-safe, some classes give insensible scala answers
   // solution: Coming Soon!
   def toString(): String
-{code}
+```
 The insensible answers for equals and hashCode come from the boxed types: 1L == 1, but new Long(1).equals(new Integer(1)) is false.  So we said "let us do better" and we did.
 
 The insensible answers for toString come from Array, possibly among other things.  I'm sure a non-overridable, non-delegatable, non-interceptible toString method for Arrays which prints a meaningless jumble of characters seemed like a good idea at the time.  Here we see Array through the eyes of the repl, followed by its true, horrifying visage.
-{code}
+```scala
 scala> Array(1)
 res1: Array[Int] = Array(1)
 
 scala> println(Array(1))
 [I@f0d797f
-{code}
+```
 But it is not enough to intercept Array's toString, because anything which is composed of the strings of smaller elements will eventually arrive at Array and print that stupid squiggle.
-{code}
+```scala
 scala> List(Array(1))
 res2: List[Array[Int]] = List(Array(1))
 
@@ -37,7 +37,7 @@ res2: List[Array[Int]] = List(Array(1))
 // Set, List, and Array
 scala> (Set(List(Array(1))), List(Array(List(1))))
 res3: (scala.collection.immutable.Set[List[Array[Int]]], List[Array[List[Int]]]) = (Set(List(Array(1))),List(Array(List(1))))
-{code}
+```
 When one does not have the luxury of a repl environment which rewrites all one's code not to use toString, this system breaks down.
 When one has a collection which wants to fully control its own printing, this system breaks down.  (Witness recent lobbying by author of Graph classes for changes in stringOf.)
 

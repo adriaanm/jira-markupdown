@@ -1,6 +1,5 @@
 Oh, I suppose that `latestUserDefinedLoader` skips the classloader that provides `TreeMap` because it is provided by the bootstrap classloader.
-
-{code}
+```scala
     /**
      * Returns the first non-null class loader (not counting class loaders of
      * generated reflection implementation classes) up the execution stack, or
@@ -14,12 +13,11 @@ Oh, I suppose that `latestUserDefinedLoader` skips the classloader that provides
      */
     // REMIND: change name to something more accurate?
     private static native ClassLoader latestUserDefinedLoader();
-{code}
-
-{code}
+```
+```scala
 scala> classOf[java.util.TreeMap[_, _]].getClassLoader
 res1: ClassLoader = null
-{code}
+```
 
 So you can have scala-library.jar in the boot class loader, or in one that has access to the classes you want to put in your collection, but you can't have it in between.
 

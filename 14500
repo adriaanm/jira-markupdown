@@ -1,10 +1,10 @@
-{code}
+```scala
 var xs: Array[AnyRef] = new Array(0)
 var ys: Array[Int] = new Array(0)
 xs eq ys
-{code}
+```
 I agree it might not be good programming practice, but it shouldn't produce this wonderful exception:
-{code}
+```scala
 Exception in thread "main" java.lang.Error: Uncomparbale type kinds: REFERENCE with INT
 	at scala.tools.nsc.Global.abort(Global.scala:186)
 	at scala.tools.nsc.backend.icode.TypeKinds$$REFERENCE.maxType(TypeKinds.scala:265)
@@ -19,5 +19,5 @@ Exception in thread "main" java.lang.Error: Uncomparbale type kinds: REFERENCE w
 	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.getMaxType(GenICode.scala:1659)
 	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.genComparisonOp$$1(GenICode.scala:1342)
 	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.genCond(GenICode.scala:1374)
-{code}
+```
 Casting one of the arrays to AnyRef makes it work.

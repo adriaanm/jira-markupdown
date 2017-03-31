@@ -1,5 +1,5 @@
 You'd be hard pressed to reason your way to why this doesn't compile.
-{code}
+```scala
 object Thing {
   implicit class ThingOps1(val x: String) extends AnyVal {
     def fn[A] : Ordering[A] = new Ordering[A] {
@@ -21,22 +21,22 @@ object Thing {
 //     def fn: Ordering[A] = new Ordering[A] {
 //                               ^
 // two errors found
-{code}
+```
 Remove the "extends AnyVals" and both compile. It's specific to generics:. This compiles:
-{code}
+```scala
 implicit class ThingOps1(val x: String) extends AnyVal {
   def fn: Ordering[Boolean] = new Ordering[Boolean] {
     def compare(x1: Boolean, x2: Boolean): Int = ???
   }
 }
-{code}
+```
 As a workaround you can do something like 
-{code}
+```scala
   class Ord[A](f: (A, A) => Int) extends Ordering[A] { 
     def compare(x1: A, x2: A): Int = f(x1, x2)
   }
   implicit class ThingOps1(val x: String) extends AnyVal {
     def fn[A] : Ordering[A] = new Ord[A]((x1, x2) => ???)
   }
-{code}
+```
 How this has not yet been reported I don't know.

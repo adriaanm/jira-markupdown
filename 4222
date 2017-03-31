@@ -1,6 +1,5 @@
 making the types more explicit to show where it all goes wrong:
-
-{code}
+```scala
 class A {
   object b {
     object c
@@ -16,7 +15,7 @@ object Test {
   mani/*[object _1.b.c]*/(c) // kaboom in manifestOfType / TreeGen.mkAttributedQualifier
   // --> _1 is not in scope here...
 }
-{code}
+```
 
 Sorry, Martin, I have to re-assign this one to you.
 I [http://github.com/adriaanm/scala/commit/f1997169a504f877dcef1827a56001ce79865410 tried] to add some "deskolemization" logic to `solve` in Types so that we get `Test.this.mani[object _1.b.c forSome { val _1: A }](Test.this.c)`

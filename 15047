@@ -1,13 +1,11 @@
 scanLeft is similar to foldLeft but it collects all intermediate results. For instance a list of cumulative sums can be calculated simply:
-
-{code}
+```scala
 scala> List(2, 4, 1, 8, 5).scanLeft(0)(_+_)
 res0: List[Int] = List(0, 2, 6, 7, 15, 20)
-{code}
+```
  
 Example implementation + scalacheck property:
-
-{code}
+```scala
   def scanLeft[B, That](z: B)(op: (B, A) => B)(implicit bf: CanBuildFrom[Repr, B, That]): That = {
     val (_, b) = foldLeft(z, bf(repr) += z) { (acc, x) =>
       val next = op(acc._1, x)
@@ -20,6 +18,6 @@ Example implementation + scalacheck property:
     val sums = xs.scanLeft(z)(_ + _)
     sums.zip(sums.tail).map(x => x._2 - x._1) == xs
   }}
-{code}
+```
 
 scanRight would be useful too but it is surprisingly tricky to implement it in TraversableLike (if possible at all?).

@@ -1,7 +1,7 @@
 If a macro reports an error (e.g. using {{c.abort}}), then it seems, that the macro is evaluated twice.
 
 Example Macro:
-{code}
+```scala
 object Bug {
   def mf(): Int = macro mf_impl
   def mf_impl(c: Context)(): c.Expr[Int] = {
@@ -10,21 +10,21 @@ object Bug {
     null
   }
 }
-{code}
+```
 If the following program is compiled
-{code}
+```scala
 object Bug2 extends App {
   println(Bug.mf())
 }
-{code}
+```
 the compiler reports
-{code}
+```scala
 macro called
 macro called
 Bug2.scala:4: error: oops
   println(Bug.mf())
                 ^
 one error found
-{code}
+```
 
 It is not a problem for me, but I do not see why the compiler gives the code a second chance.

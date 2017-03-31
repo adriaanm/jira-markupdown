@@ -6,34 +6,33 @@ In the first case you present, (without the {{val}}) the error message is to be 
 
 In the second case, you've removed the one error (you've made {{id}} a field of {{Person}}), which enables the compiler to attempt to resolve the other error for you. That is, upon finding that you've passed multiple arguments to \+=, the compiler first attempts to typecheck both arguments (which is now successful since {{id}} is a field), and at the very last step, it attempts to "auto-tuple" your multiple arguments into a single tuple argument. In this case, the transformation is successful and your code compiles. This auto-tupling is indeed expected behavior.
 
-I think the issue here also relates to the documentation for {{ParHashMap}} (and other {{HashMap}} variants), which in the 2.9.2 API docs says only:
-{code}
+I think the issue here also relates to the documentation for `ParHashMap` (and other `HashMap` variants), which in the 2.9.2 API docs says only:
+```scala
 def +=(kv: (K, V)): ParHashMap.this.type
-{code}
+```
 
 Applying your example to the API comments, you could write:
-
-{code}
+```scala
 val pair = (person.get.id, person.get)
 users += pair // you don't need parentheses in this case because it's clear that there's a single parameter here
-{code}
+```
 
 Which is the same as:
-{code}
+```scala
 users += ((person.get.id, person.get)) 
-{code}
+```
 
-In the case where {{id}} wasn't a {{val}}, you'd get the error you expected. In the other case, this would compile without issue.
+In the case where `id` wasn't a `val`, you'd get the error you expected. In the other case, this would compile without issue.
 
 The way it relates to the docs is that if there was a usage example, you probably would not have had to encounter any auto-tupling.
 
-I can clarify the API documentation to add usage examples to illustrate the following two recommended ways to use the {{+=}} on {{HashMaps}}:
-{code}
+I can clarify the API documentation to add usage examples to illustrate the following two recommended ways to use the `+=` on `HashMaps`:
+```scala
 users += ((person.get.id, person.get))
 users += (person.get.id -> person.get)
-{code}
+```
 
-Here, the second example is a shorthand for tuples, e.g. {{val pair = person.get.id -> person.get}} is the same as writing {{val pair = (person.get.id, person.get)}}.
+Here, the second example is a shorthand for tuples, e.g. `val pair = person.get.id -> person.get` is the same as writing `val pair = (person.get.id, person.get)`.
 
 Hope this helps to clear up any confusion.
 

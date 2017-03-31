@@ -1,5 +1,5 @@
 Miguel, here's the relevant bytecode (with Alex's fix applied):
-{code}
+```scala
 Compiled from "check.scala"
 public abstract class Inter extends java.lang.Object implements Foo$mcI$sp
 public int foo$mcI$sp(int);
@@ -9,10 +9,8 @@ public int foo$mcI$sp(int);
    1:	iload_1
    2:	invokestatic	#11; //Method Foo$class.foo$mcI$sp:(LFoo;I)I
    5:	ireturn
-
-{code}
-
-{code}
+```
+```scala
 Compiled from "check.scala"
 public abstract class Foo$class extends java.lang.Object
 
@@ -25,9 +23,8 @@ public static int foo$mcI$sp(Foo, int);
    5:	invokeinterface	#18,  2; //InterfaceMethod Foo.foo:(Ljava/lang/Object;)Ljava/lang/Object;
    10:	invokestatic	#22; //Method scala/runtime/BoxesRunTime.unboxToInt:(Ljava/lang/Object;)I
    13:	ireturn
-{code}
-
-{code}
+```
+```scala
 Compiled from "check2.scala"
 public class Baz extends Inter
 public int foo$mcI$sp(int);
@@ -37,7 +34,7 @@ public int foo$mcI$sp(int);
    1:	iconst_1
    2:	iadd
    3:	ireturn
-{code}
+```
 
 as you can see Inter just forward to Foo$class that in turns forwards to abstract, specialized method and takes care of boxing and unboxing.
 

@@ -1,7 +1,7 @@
 At present, custom {{AnnotationChecker}}s can modify the subtyping relation between annotated types (by overriding {{annotationsConform}}), but the modifications are not reflected well in inferred types.
 
-For example, here is a custom {{AnnotationChecker}}:
-{code}
+For example, here is a custom `AnnotationChecker`:
+```scala
     object checker extends AnnotationChecker {
 
       /** Check annotations to decide whether tpe1 <:< tpe2 */
@@ -9,25 +9,25 @@ For example, here is a custom {{AnnotationChecker}}:
         tpe1.attributes.forall(a1 => tpe2.attributes.forall(a2 => a1.atp <:< a2.atp))
       }
     }
-{code}
+```
 
 and here is some test code:
-{code}
+```scala
     class posingAs[A] extends TypeConstraint
     
     def resolve[A,B](x: A @posingAs[B]): B = x.asInstanceOf[B]
     
     val x = resolve(7: @posingAs[Any])
-{code}
+```
 
-which refuses to compile (with or without the custom {{AnnotationChecker}} installed):
-{code}
+which refuses to compile (with or without the custom `AnnotationChecker` installed):
+```scala
 <console>:10: error: type mismatch;
  found   : Int(7) @posingAs[Any]
  required: Int @posingAs[Nothing]
            val x = resolve(7: @posingAs[Any])
                                ^
-{code}
-If the {{AnnotationChecker}} is present, this is definitely not the desired behavior (whether it should compile without it is another question).
+```
+If the `AnnotationChecker` is present, this is definitely not the desired behavior (whether it should compile without it is another question).
 
 The reason is that when unbound type refs are instantiated to type variables in an annotated type, only the underlying type will be treated (but not the annotations). Thus, occurences inside the annotations are overlooked and will not get instantiated.

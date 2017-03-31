@@ -1,19 +1,19 @@
-There has been a lot of effort to reduce the size of {{Predef}} and the amount of classes in {{scala.\*}}, but we have not evaluted the third default import, {{java.lang.\*}}.
+There has been a lot of effort to reduce the size of `Predef` and the amount of classes in `scala.\*`, but we have not evaluted the third default import, `java.lang.\*`.
 
 There are multiple issues why having this import by default is not worthwhile:
 
-- Many of the classes in {{java.lang.\*}} are useless in Scala ({{java.lang.Void}}, {{java.lang.Deprecated}}, {{java.lang.Override}}, ...) or are just not implemented ({{java.lang.Compiler}})
-- Many are just not important enough to be imported by default ({{java.lang.Process}}, {{java.lang.ProcessBuilder}}, {{java.lang.StackTraceElement}}, {{java.lang.StrictMath}}, ...)
-- Many of them are shadowed by types in {{scala.\*}} anyway, but still manage to create havoc in the REPL ({{java.lang.Byte}}, {{java.lang.Long}}, ...)
-- It eats up valuable naming options (like {{Number}}, {{Package}}, {{Compiler}}, ...)
+- Many of the classes in `java.lang.\*` are useless in Scala ({{java.lang.Void}}, `java.lang.Deprecated`, `java.lang.Override`, ...) or are just not implemented ({{java.lang.Compiler}})
+- Many are just not important enough to be imported by default ({{java.lang.Process}}, `java.lang.ProcessBuilder`, `java.lang.StackTraceElement`, `java.lang.StrictMath`, ...)
+- Many of them are shadowed by types in `scala.\*` anyway, but still manage to create havoc in the REPL ({{java.lang.Byte}}, `java.lang.Long`, ...)
+- It eats up valuable naming options (like `Number`, `Package`, `Compiler`, ...)
 - It can confuse users ({{java.lang.Iterable}} vs. {{scala.collection.Iterable}}, {{StringBuilder}} is {{scala.collection.mutable.StringBuilder}} but {{StringBuffer}} is {{java.lang.StringBuffer}})
-- Most of the useful ones are aliased into the {{scala.\*}} namespace anyway ({{String}}, {{Class}}, {{Exception}}, ...)
-- Oracle keeps adding new classes, making the whole import a version-dependent moving target ({{java.lang.ClassValue}}, {{java.lang.AutoCloseable}}, both new in Java 7)
+- Most of the useful ones are aliased into the `scala.\*` namespace anyway ({{String}}, `Class`, `Exception`, ...)
+- Oracle keeps adding new classes, making the whole import a version-dependent moving target ({{java.lang.ClassValue}}, `java.lang.AutoCloseable`, both new in Java 7)
 
 The proposed plan is as follows:
 
-- 2.11: Start emitting warnings if people use types from {{java.lang.\*}} without qualifying or importing them.
-- 2.12: Stop importing {{java.lang.\*}}.
+- 2.11: Start emitting warnings if people use types from `java.lang.\*` without qualifying or importing them.
+- 2.12: Stop importing `java.lang.\*`.
 
 To ease the transition, it might be worthwhile to
 
@@ -23,14 +23,14 @@ To ease the transition, it might be worthwhile to
 One minor issue is that we can alias the type, but not the value, because Java doesn't have companion objects.
 
 Paul's proposal concerning this:
-{quote}
+```
 We could always stop punishing ourselves, and synthesize it.
 
 // Rather than taunt us with "object java.lang.String is not a value", this could
 // give us what we want. It knows exactly what this would mean, as it shows us
 // when it allows "import java.lang.String._".
 val String = java.lang.String
-{quote}
+```
 
 Specification: In §9.1 Compilation Units, remove “the package java.lang, ” from “Implicitly imported into every compilation unit are, in that order : the package java.lang, the package scala, and the object scala.Predef.”
 

@@ -2,7 +2,7 @@ Martin, I propose to fix this as follows, assuming this time I understood correc
 So, I think the original rawToExistential is wrong. 
 
 add to Symbol:
-{code}
+```scala
 +    /** Modify term symbol's type so that a raw type C is converted to an existential C[_]
 +     *
 +     * This is done in checkAccessible and overriding checks in refchecks
@@ -43,15 +43,15 @@ add to Symbol:
 +          if (sym2 hasFlag JAVA)
 +            cook(sym2)
 +    }
-{code}
+```
 
 in TypeRef, isHigherKinded is now again:
-{code}
+```scala
 override def isHigherKinded = (args.isEmpty && !typeParamsDirect.isEmpty)
-{code}
+```
 
 checkAccessible in Infer becomes:
-{code}
+```scala
 ...
          if (sym1 == NoSymbol) {
 ...
@@ -62,14 +62,14 @@ checkAccessible in Infer becomes:
            var owntype = try{ 
              pre.memberType(sym1)
            } catch {
-{code}
+```
 
 and checkOverride must also cook:
-{code}
+```scala
 ....
           } else if (other.isTerm) {
             other.cookJavaRawInfo() // SI-2454
 ...
-{code}
+```
 
 I'm not sure if this is what you had in mind. Please advise and re-assign.

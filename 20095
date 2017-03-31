@@ -1,7 +1,7 @@
 Following code looks perfectly fine, but scalac 2.11.8 generates an error message.
 
 Code:
-{code:Scala}
+```Scala
 case class A(v: Int)
 class B(v: Int) extends A(v)
 
@@ -9,16 +9,16 @@ object Test {
   val a = new B(1)
   a match { case A(_) => 1 }
 }
-{code}
+```
 
 Error:
-{code:Scala}
+```Scala
 error: constructor cannot be instantiated to expected type;
  found   : A
  required: B
   a match { case A(_) => 1 }
                  ^
 one error found
-{code}
+```
 
 However, if we annotate `a` with `val a:A = new B(1)`, everything is fine.

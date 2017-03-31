@@ -1,14 +1,14 @@
 It looks like this goes all the way back to 2.11.0, based on https://groups.google.com/forum/#!topic/scala-internals/trzjEv-D53U
 
 The log is no longer available, but from the thread I infer it was using af7cf11:
-{code}
+```scala
 From af7cf11f07581bf92628c82b7bf2cf3cca3e32c9 Mon Sep 17 00:00:00 2001
 From: Adriaan Moors <adriaan.moors@typesafe.com>
 Date: Fri, 14 Feb 2014 14:08:01 -0800
 Subject: [PATCH] Merge pull request #3533 from adriaanm/t8283
 
 SI-8283 mutation-free bound inference for existentials
-{code}
+```
 
 The oldest actual log I could find is at https://scala-webapps.epfl.ch/jenkins/job/scala-nightly-main-2.11.x/81/, for 50167e3f1d (2.11.2-ish).
 
@@ -18,8 +18,7 @@ The oldest actual log I could find is at https://scala-webapps.epfl.ch/jenkins/j
 
 
 I grepped the jenkins logs on scala-ci (the new CI). It occurs in the core build job as well as the test suite, both in quick and locker. Scrolling will reveal URLs etc:
-
-{code}
+```scala
 symbol value x2 does not exist in scala.tools.nsc.typechecker.Contexts$Context.implicitss                                                                                                                                                                                                     https://scala-ci.typesafe.com/job/scala-2.11.x-validate-publish-core/789/consoleText  [locker.compiler]
 symbol value x2 does not exist in scala.tools.nsc.typechecker.Contexts$Context.implicitss                                                                                                                                                                                                     https://scala-ci.typesafe.com/job/scala-2.11.x-validate-publish-core/789/consoleText  [locker.compiler]
 symbol value x2 does not exist in scala.tools.nsc.typechecker.Implicits$ImplicitSearch.isImpossibleSubType                                                                                                                                                                                    https://scala-ci.typesafe.com/job/scala-2.11.x-validate-test/435/consoleText          [quick.compiler] 
@@ -40,7 +39,7 @@ symbol value x5 does not exist in scala.tools.nsc.typechecker.DestructureTypes$D
 symbol value x5 does not exist in scala.tools.nsc.typechecker.DestructureTypes$DestructureType$$anonfun$apply$1.apply                                                                                                                                                                         https://scala-ci.typesafe.com/job/scala-2.11.x-validate-publish-core/760/consoleText  [quick.compiler] 
 symbol value x5#781214 does not exist in scala.tools.nsc.transform.patmat.MatchTranslation$MatchTranslator$PatternBoundToUnderscore.unapply, which contains locals variable eqEqTemp$4#1279646,value x#781237,variable eqEqTemp$3#1279642,value x2#781208,value x1#781206,value pat#484460    https://scala-ci.typesafe.com/job/scala-2.11.x-validate-test/588/consoleText          [quick.compiler] 
 symbol value x5#781214 does not exist in scala.tools.nsc.transform.patmat.MatchTranslation$MatchTranslator$PatternBoundToUnderscore.unapply, which contains locals variable eqEqTemp$4#1279646,value x#781237,variable eqEqTemp$3#1279642,value x2#781208,value x1#781206,value pat#484460    https://scala-ci.typesafe.com/job/scala-2.11.x-validate-test/588/consoleText          [quick.compiler] 
-{code}
+```
 
 2.11.6: https://scala-ci.typesafe.com/job/scala-2.11.x-validate-publish-core/789/consoleText
 
@@ -48,8 +47,7 @@ symbol value x5#781214 does not exist in scala.tools.nsc.transform.patmat.MatchT
 It occurs on EPFL's CI as well, so not some freaky VM thing only seen on EC2: https://scala-webapps.epfl.ch/jenkins/job/scala-checkin/9771/consoleFull  d7835d62cf, 2.11.3ish
 
 I checked all scala-checkin builds older than 9771 and could find no mention of "symbol value .* does not exist in", so it must have been introduced in that period.*
-
-{code}
+```scala
 /data/tomcat/.hudson/jobs/scala-checkin/builds$ grep "symbol value .* does not exist in" 10???/log
 10239/log:[locker.compiler] error: symbol value x3 does not exist in scala.tools.nsc.typechecker.Infer$Inferencer.isAsSpecific
 10239/log:[locker.compiler] error: scala.reflect.internal.FatalError: symbol value x3 does not exist in scala.tools.nsc.typechecker.Infer$Inferencer.isAsSpecific
@@ -63,15 +61,14 @@ I checked all scala-checkin builds older than 9771 and could find no mention of 
 10333/log:[quick.compiler] error: scala.reflect.internal.FatalError: symbol value x2#802590 does not exist in scala.tools.nsc.typechecker.EtaExpansion$class.liftoutPrefix$1, which contains locals value x#802614,value x1#802587,value tree1#516629,value typer$1#1192802,value unit$1#1192801,value defs$1#1192800,value cnt$1#1192799,value tree#516627,value $this#1242702
 10394/log:[locker.compiler] error: symbol value x5 does not exist in scala.tools.nsc.typechecker.DestructureTypes$DestructureType$$anonfun$apply$1.apply
 10394/log:[locker.compiler] error: scala.reflect.internal.FatalError: symbol value x5 does not exist in scala.tools.nsc.typechecker.DestructureTypes$DestructureType$$anonfun$apply$1.apply
-{code}
+```
 
 Here are some older builds of other jobs
   - https://scala-webapps.epfl.ch/jenkins/job/scala-release-2.11.x/298/console  841389bc6f (between 2.11.5 and 2.11.6)
-
-{code}
+```scala
 /data/tomcat/.hudson/jobs/scala-nightly-main-2.11.x/builds$ grep "symbol value .* does not exist in" */log
 296/log:[strap.compiler] error: symbol value x2 does not exist in scala.tools.nsc.transform.patmat.Solving$Solver$class.findTseitinModelFor
 296/log:[strap.compiler] error: scala.reflect.internal.FatalError: symbol value x2 does not exist in scala.tools.nsc.transform.patmat.Solving$Solver$class.findTseitinModelFor
 81/log:[strap.compiler] error: symbol value x4 does not exist in scala.tools.nsc.transform.patmat.MatchOptimization$SwitchEmission$SwitchMaker.scala$tools$nsc$transform$patmat$MatchOptimization$SwitchEmission$SwitchMaker$$patternImplies
 81/log:[strap.compiler] error: scala.reflect.internal.FatalError: symbol value x4 does not exist in scala.tools.nsc.transform.patmat.MatchOptimization$SwitchEmission$SwitchMaker.scala$tools$nsc$transform$patmat$MatchOptimization$SwitchEmission$SwitchMaker$$patternImplies
-{code}
+```

@@ -1,6 +1,5 @@
 [~fommil] - I don't see any evidence that ZipFileSystem is faster than simply ZipFile, and it's only slightly faster than ZipInputStream.  In comparing
-
-{code}
+```scala
 def zipsumA(p: java.nio.file.Path) = {
   import java.nio.file._
   val fs = FileSystems.newFileSystem(p, null)
@@ -20,11 +19,10 @@ def zipsumA(p: java.nio.file.Path) = {
   fs.close
   (n, l)
 }
-{code}
+```
 
 with older-style
-
-{code}
+```scala
 def zipsumB(p: java.nio.file.Path) = {
   import java.util.zip._
   val zf = new ZipFile(p.toFile)
@@ -46,11 +44,10 @@ def zipsumB(p: java.nio.file.Path) = {
   zf.close
   (n, l)
 }
-{code}
+```
 
 and
-
-{code}
+```scala
 def zipsumC(p: java.nio.file.Path) = {
   import java.util.zip._
   val zis = new ZipInputStream(new java.io.FileInputStream(p.toFile))
@@ -74,7 +71,7 @@ def zipsumC(p: java.nio.file.Path) = {
   zis.close
   (n, l)
 }
-{code}
+```
 
 I see that ZipFileSystem (method A) is about 6% slower than ZipFile (method B) and 5% faster than ZipInputStream (method C).
 

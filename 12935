@@ -1,27 +1,27 @@
-*Code*
-{code}
+**Code**
+```scala
 class Fatal {
   object o
   import o.foo._
 
   implicit def i(tree: Object) = new Object
 }
-{code}
+```
 
-The import on the third line obviously fails, but if it is followed by an implicit method definition, this causes a fatal error when executing scalac. The version of scalac used is _Scala compiler version 2.6.1.13465.20071206-172552 -- (c) 2002-2007 LAMP/EPFL_.
+The import on the third line obviously fails, but if it is followed by an implicit method definition, this causes a fatal error when executing scalac. The version of scalac used is *Scala compiler version 2.6.1.13465.20071206-172552 -- (c) 2002-2007 LAMP/EPFL*.
 
-*What happened*
+**What happened**
 
 When compiling with scalac, this code results in 
-{code}
+```scala
 $$ scalac src/Fatal.scala
 src/Fatal.scala:5: error: illegal cyclic reference involving value <import>
         implicit def i(tree: Object) = new Object
                                            ^
 error: fatal error: symbol value <import> has bad type: <error>
-{code}
+```
 When compiling with ant, this code results in
-{code}
+```scala
 $$ ant
 Buildfile: build.xml
 
@@ -136,8 +136,8 @@ BUILD FAILED
 .../build.xml:22: Compile failed because of an internal compiler error (symbol value <import> has bad type: <error>); see the error output for details.
 
 Total time: 3 seconds
-{code}
+```
 
-*Expected*
+**Expected**
 
 A meaningful error message instead of a fatal error.

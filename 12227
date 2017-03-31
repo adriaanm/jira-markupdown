@@ -1,36 +1,28 @@
 okay. It's probably not your job to do this, but another thing that looks like a bug is this:
-
-
-{code:java}
+```java
 macro implementation has incompatible shape:
 [error]  required: (c: scala.reflect.macros.blackbox.Context)(x: c.Expr[=> T]): c.Expr[T]
-{code}
+```
 
 
 ^ It says that I can have a macro with that type signature, but when I copy and paste the type signature, I get
-
-
-{code:java}
+```java
 identifier expected but '=>' found.  c.Expr[=> T]
-{code}
+```
 
 
 ^ They should really remove the arrow from the warning in the type signature because you can't actually have a type signature like that. I ended up having to do:
-
-
-{code:java}
+```java
 def impl[T](c: scala.reflect.macros.blackbox.Context)(x: c.Expr[T]): c.Expr[T]
-{code}
+```
 
 
 instead.
 
 Side side note: WRITING AND TESTING MACRO CODE IS A HUGE PAIN IN THE ASS. I mean If I have to write like 50 macros and each macro needs test cases and I need to keep adjusting the macros and re-writing them, I keep getting:
-
-
-{code:java}
+```java
 macro implementation not found: apply
 [error] (the most common reason for that is that you cannot use macro implementations in the same compilation run that defines them)
-{code}
+```
 
 ^ I ended up having to put all my macro tests into one huge file and comment the whole thing out for every single compile.

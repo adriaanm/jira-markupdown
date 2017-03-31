@@ -1,24 +1,24 @@
 Every look-up in a HashMap (mutable or immutable) creates a Some object to wrap the result.  Event when calling apply as:
-{code}
+```scala
 map(key)
-{code}
+```
 the Some is created and then immediately removed.  This means doing lots of HashMap look-ups in a loop will lead to GC needing to run and a significant slowdown.
 
 It would be great if the HashMap (and maybe others) could override apply to not do any object creation and only create a Some when using get.
 
 If you run:
-{code}
+```scala
 JAVA_OPTS="-Xaprof" scala
-{code}
+```
 
 and then:
-{code}
+```scala
 val b = scala.collection.immutable.HashMap.newBuilder[Int,Int]
 b += 1 -> 2
 val sihm = b.result
 for (_ <- 1 to 1000000) {
   sihm(1)
 }
-{code}
+```
 
 And look at the output, you will see a huge number of totally unnecessary scala.Some objects being created.

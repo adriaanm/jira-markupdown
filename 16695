@@ -1,6 +1,5 @@
 Something is amiss with deserialization of ListBuffer, as shown here:
-
-{noformat}
+```
 import collection.mutable.ListBuffer
 import java.io._
 val baos = new ByteArrayOutputStream
@@ -12,6 +11,6 @@ val lb = ois.readObject.asInstanceOf[ListBuffer[Int]]
 val lb2 = ListBuffer[Int]() ++= lb
 lb2 ++= List(1)  // All okay
 lb ++= List(1)  // Throws an exception for me
-{noformat}
+```
 
 Not sure whether this is related to other deserialization bugs (e.g. #SI-5262).

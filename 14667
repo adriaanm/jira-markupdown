@@ -1,7 +1,7 @@
 When compiling scala code using the -optimise flag that calls static java methods with enums as one of the parameters the compiler crashes with: java.lang.Error: Unknown type: <notype>.  This does not occur if the optimise flag is not on. This affects both 2.7.x and 2.8.  Code to reproduce and full stack traces can be found below.  The hadoop dependency can be downloaded from: [http://cs.berkeley.edu/~marmbrus/files/hadoop-core-w-deps-0.20.0.jar hadoop jar]
 
 bug.scala
-{code}
+```scala
 import org.apache.hadoop.io.SequenceFile
 
 object BugRepro {
@@ -9,11 +9,10 @@ object BugRepro {
 		SequenceFile.createWriter(null, null, null, null, SequenceFile.CompressionType.NONE, null);
 	}
 }
-{code}
+```
 
 Result from Scala version 2.7.5.final (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_15):
-
-{code}
+```scala
 $$ scalac -optimise -cp hadoop-core-w-deps-0.20.0.jar bug.scala 
 ############# Caught exception: java.lang.Error: Unknown type: <notype> #################
 
@@ -130,10 +129,10 @@ Exception in thread "main" java.lang.Error: Unknown type: <notype>
 	at scala.tools.nsc.Main$$.process(Main.scala:73)
 	at scala.tools.nsc.Main$$.main(Main.scala:87)
 	at scala.tools.nsc.Main.main(Main.scala)
-{code}
+```
 
 With 2.8-trunk:
-{code}
+```scala
 scalac -optimise -cp hadoop-core-w-deps-0.20.0.jar bug.scala 
 Exception in thread "main" java.lang.Error: Unknown type: <notype>, <notype>[class scala.tools.nsc.symtab.Types$$NoType$$, class scala.tools.nsc.symtab.Types$$NoType$$] TypeRef? false, false
 	at scala.tools.nsc.Global.abort(Global.scala:186)
@@ -177,4 +176,4 @@ Exception in thread "main" java.lang.Error: Unknown type: <notype>, <notype>[cla
 	at scala.tools.nsc.Main$$.process(Main.scala:91)
 	at scala.tools.nsc.Main$$.main(Main.scala:105)
 	at scala.tools.nsc.Main.main(Main.scala)
-{code}
+```

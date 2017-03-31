@@ -1,16 +1,14 @@
 When I try to compile oauth.scalar1 with the command:
-
-{code}
+```scala
 ~/Download/scala/scala-2.7.3.r17424/bin/scalac -cp oauth-core-20090408.jar:. oauth.scala
-{code}
+```
 
 I get:
-
-{code}
+```scala
 error: error while loading OAuthClient, class file 'oauth-core-20090408.jar(net/oauth/client/OAuthClient.class)' is broken
 (class java.util.Map$$Entry not found.)
 one error found
-{code}
+```
 
 The command above was for the latest (r17424) of the 2.7.x branch (soon to be 2.7.4-rc1). I also tried 2.7.3 and r17458 from trunk with the same results.
 
@@ -23,7 +21,7 @@ I will try to produce a reduced set of Java files that can cause this behaviour,
 It seems like the issue is caused by the the loading order. When the example was a bit larger, removing OAuthMessage from the parameter would cause things to work fine even though the class considered broken was referenced.
 
 r1 oauth.scala
-{code}
+```scala
 package test
 
 import net.oauth.OAuthMessage
@@ -31,4 +29,4 @@ import net.oauth.OAuthMessage
 class OAuthClassBroken {
   def createOAuthAccessor(message: OAuthMessage) = null
 }
-{code}
+```

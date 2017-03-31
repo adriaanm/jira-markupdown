@@ -1,6 +1,5 @@
 The type of scala.collection.immutable.ListMap.keys is collection.Iterable[A].  However, the underlying implementation returns a Set[A]:
-
-{code}
+```scala
 scala> import scala.collection.immutable.ListMap
 import scala.collection.immutable.ListMap
 
@@ -9,16 +8,15 @@ m: scala.collection.immutable.ListMap[String,String] = Map(a -> 1, b -> 2, c -> 
 
 scala> m.keys
 res0: Iterable[String] = Set(a, b, c, d, e)
-{code}
+```
 
 This causes inconsistent behavior between ListMap's map() and foreach() and ListMap.keys' map() and foreach():
-
-{code}
+```scala
 scala> val ks = m.keys.toList
 ks: List[String] = List(a, b, c, d, e)
 
 scala> val upper = m.keys.map(_.toUpperCase).toList
 upper: List[String] = List(E, A, B, C, D)  // WTF???
-{code}
+```
 
 It seems it would be best if ListMap had an override of keys to instead provide a List at run time.

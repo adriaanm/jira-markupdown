@@ -1,22 +1,22 @@
 Here's the difference from recently working variation to now.
 These signatures should not be in there.
-{code}
+```scala
   < signature: TE;
   < signature: ()Lscala/collection/mutable/DefaultEntry<TA;TB;>;
   < signature: (Lscala/collection/mutable/DefaultEntry<TA;TB;>;)V
-{code}
+```
 The type variable E is the clunker.  It is defined here:
-{code}
+```scala
 trait HashEntry [A, E] {
   val key: A
   var next: E = _
 }
-{code}
+```
 Then DefaultEntry extends that.
-{code}
+```scala
 final class DefaultEntry[A, B](val key: A, var value: B)
   extends HashEntry[A, DefaultEntry[A, B]] with Serializable
-{code}
+```
 But DefaultEntry#next's signature refers to E instead of DefaultEntry<TA;TB;>.
 
 This is perhaps related to next being a var (having a getter.)

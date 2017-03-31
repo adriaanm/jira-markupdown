@@ -1,8 +1,7 @@
-Amazing. Unlike I said, using an invariant class (here, arrays, which *force* {{Invariant}} to be invariant) makes a difference.
+Amazing. Unlike I said, using an invariant class (here, arrays, which **force** `Invariant` to be invariant) makes a difference.
 
-Usually, to fix the bug I mentioned, the compiler should deduce not {{?A1 <: A}} (as in your error, which I repasted below) but {{?A1 >: A}}. But because arrays are involved, it's not clear whether the compiler can deduce a constraint between {{?A1}} and {{A}}. On pen and paper, I could only deduce that if the most specific solution for {{v}} is {{Covariant[A2]}}, then {{A2 <: ?A1}} and {{A2 <: A}}. You can only set {{A2 = ?A1}}, giving {{?A1 <: A}}, if you forbid the definition of {{Bad}}, as done by one sentence in the paper on case classes and extractors, "Matching objects with patterns", ECOOP 2007, by Burak Emir, Martin Odersky and John Williams. However, forbidding that definition will break valid code that doesn't care about pattern matching.
-
-{code}
+Usually, to fix the bug I mentioned, the compiler should deduce not `?A1 <: A` (as in your error, which I repasted below) but `?A1 >: A`. But because arrays are involved, it's not clear whether the compiler can deduce a constraint between `?A1` and `A`. On pen and paper, I could only deduce that if the most specific solution for `v` is `Covariant[A2]`, then `A2 <: ?A1` and `A2 <: A`. You can only set `A2 = ?A1`, giving `?A1 <: A`, if you forbid the definition of `Bad`, as done by one sentence in the paper on case classes and extractors, "Matching objects with patterns", ECOOP 2007, by Burak Emir, Martin Odersky and John Williams. However, forbidding that definition will break valid code that doesn't care about pattern matching.
+```scala
 // scala 2.10
 scala> def f[A](v: Covariant[A]): Array[A] = v match { case Invariant(xs) => xs }
 <console>:10: error: type mismatch;
@@ -12,4 +11,4 @@ Note: ?A1 <: A, but class Array is invariant in type T.
 You may wish to investigate a wildcard type such as `_ <: A`. (SLS 3.2.10)
        def f[A](v: Covariant[A]): Array[A] = v match { case Invariant(xs) => xs }
                                                                              ^
-{code}
+```

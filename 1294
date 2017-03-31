@@ -1,16 +1,14 @@
 I don't see any reasonable way to make this work in the current compiler implementation.
 
-The type completer for {{c}} types the RHS:
-
-{code}
+The type completer for `c` types the RHS:
+```scala
  { new $anon { def moduleDemands(): Module = owner :: a :: Nil }; new $anon }
-{code}
+```
 
-We don't have a mechanism to do this that defers type checking the RHS of {{moduleDemands}}.
+We don't have a mechanism to do this that defers type checking the RHS of `moduleDemands`.
 
-But the workaround is pretty straight forward: annotate the type of {{b}} or {{c}}:
-
-{code}
+But the workaround is pretty straight forward: annotate the type of `b` or `c`:
+```scala
 abstract class Module {
   def moduleDemands(): List[Module]
 }
@@ -35,4 +33,4 @@ object Test {
     }
   }
 }
-{code}
+```

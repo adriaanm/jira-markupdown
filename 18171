@@ -3,7 +3,7 @@ There are several methods on List that will compile when called from Java, but f
 object SomeScala {
   def list = List(1, 2, 3) 
 }
-{code}
+```scala
 {code:title=src-java/Main.java}
 public class Main {
     public static void main(String[] args) {
@@ -12,26 +12,26 @@ public class Main {
         System.out.println(SomeScala.list().init());
     }
 }
-{code}
+```
 
 All 3 of those methods will fail at runtime:
 list().tail():
-{noformat}
+```
 Exception in thread "main" java.lang.NoSuchMethodError: scala.collection.immutable.List.tail()Lscala/collection/Traversable;
 	at Main.main(Main.java:3)
-{noformat}
+```
 
 list().par()
-{noformat}
+```
 Exception in thread "main" java.lang.NoSuchMethodError: scala.collection.immutable.List.par()Lscala/collection/parallel/ParIterable;
 	at Main.main(Main.java:4)
-{noformat}
+```
 
 list().init()
-{noformat}
+```
 Exception in thread "main" java.lang.NoSuchMethodError: scala.collection.immutable.List.init()Lscala/collection/Traversable;
 	at Main.main(Main.java:5)
-{noformat}
+```
 
 The runtime type of the list is scala.collection.immutable.$colon$colon. If you were to cast it to that type, then tail() will compile and run:
 

@@ -1,5 +1,5 @@
 Hey, interesting.  Last time I tried something like this (it was a while ago) the type system would not cooperate.  But now this works, at least in limited testing.
-{code}
+```scala
 implicit def IterableSubclass[CC[X] <: Iterable[X], T: Ordering] : Ordering[CC[T]] = {
   new Ordering[CC[T]] {
     val ord = implicitly[Ordering[T]]
@@ -16,11 +16,11 @@ implicit def IterableSubclass[CC[X] <: Iterable[X], T: Ordering] : Ordering[CC[T
     }
   }
 }  
-{code}
-{code}
+```
+```scala
 scala> List(List(1,2,5),List(1,2,10),List(1,2),List(3,1,249,4)).sorted
 res0: List[List[Int]] = List(List(1, 2), List(1, 2, 5), List(1, 2, 10), List(3, 1, 249, 4))
 
 scala> Seq(Seq(1, 2, 5), Seq(5, 4, 3), Seq( 1, 2)).sorted
 res1: Seq[Seq[Int]] = List(List(1, 2), List(1, 2, 5), List(5, 4, 3))  
-{code}
+```

@@ -1,5 +1,5 @@
 I think I see what's going on.  Look at the distance between the allocation of the IntRef and the call to its constructor.
-{code}
+```scala
    0:    new    SI-31; //class scala/runtime/IntRef
    3:    dup
    4:    iconst_0
@@ -17,14 +17,13 @@ I think I see what's going on.  Look at the distance between the allocation of t
    26:    istore_3
    27:    iload_3
    28:    invokespecial    SI-49; //Method scala/runtime/IntRef."<init>":(I)V
-{code} 
+```
 The vm spec says:
 
 "A valid instruction sequence must not have an uninitialized object [...] in a local variable in code protected by an exception handler or a finally clause."
-
-{code}
+```scala
   Exception table:
    from   to  target type
      6    24    24   any
-{code}
+```
 I think the invokespecial instruction at 28 is supposed to be executed before the try block begins, and this process is derailed by the by-name parameter also trying to get involved in lifting n.

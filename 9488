@@ -1,8 +1,7 @@
-I think a2c870569c124c is something of a red herring. The test also crashes with {{import java.util /*!*/ }}.
+I think a2c870569c124c is something of a red herring. The test also crashes with `import java.util /*!*/ `.
 
 I believe something like the following is needed.
-
-{code}
+```scala
 diff --git a/src/interactive/scala/tools/nsc/interactive/Global.scala b/src/interactive/scala/tools/nsc/interactive/Global.scala
 index dbdb2d0..a5e6d47 100644
 --- a/src/interactive/scala/tools/nsc/interactive/Global.scala
@@ -21,21 +20,19 @@ index dbdb2d0..a5e6d47 100644
 +      case Import(expr, sels) => tree = expr
        case _ =>
      }
-{code}
+```
 
 What are the expected results from these cases?
-
-{code}
+```scala
 import java./*!*/
 import java.u/*!*/
 import java.util/*!*/
 import java.{lang, u/*!*/}
 import j/*!*/
-{code}
+```
 
 With the patch, for the first four, we get:
-
-{noformat}
+```
 askTypeCompletion at Completions.scala(3,17)
 ================================================================================
 [response] aksTypeCompletion at (3,17)
@@ -54,7 +51,7 @@ retrieved 13 members
 [accessible:  true] `package textjava.text.type`
 [accessible:  true] `package utiljava.util.type`
 ================================================================================
-{noformat}
+```
 
 The last one is perhaps a separate problem.
 

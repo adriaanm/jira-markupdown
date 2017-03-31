@@ -1,9 +1,9 @@
 The !TraversableOnce documentation says:
-{code}
+```scala
 This trait is composed of those methods which can be implemented solely in terms of foreach
-{code}
-However, you have to implement many more methods than just {{foreach}} to get a !TraversableOnce:
-{code}
+```
+However, you have to implement many more methods than just `foreach` to get a !TraversableOnce:
+```scala
 scala> val travOnce = new TraversableOnce[Int] { def foreach[U](f: Int => U) = f(1) }
 <console>:5: error: object creation impossible, since:
 method copyToArray in trait TraversableOnce of type [B >: Int](xs: Array[B],start: Int,len: Int)Unit is not defined
@@ -16,13 +16,13 @@ method toIterator in trait TraversableOnce of type => Iterator[Int] is not defin
 method isTraversableAgain in trait TraversableOnce of type => Boolean is not defined
 method hasDefin...
        val travOnce = new TraversableOnce[Int] { def foreach[U](f: Int => U) = f(1) }
-{code}
-I see that there's a comment above the {{forall}} declaration in !TraversableOnce.scala that says:
-{code}
+```
+I see that there's a comment above the `forall` declaration in !TraversableOnce.scala that says:
+```scala
 Presently these are abstract because the Traversable versions use
 breakable/break, and I wasn't sure enough of how that's supposed to
 function to consolidate them with the Iterator versions.
-{code}
+```
 So I gather it's a known issue, but I didn't see an issue tracking this problem, and this is the third time that it's bitten me, so I figured I should report this.
 
-I guess the immediate solution for Scala 2.8 is to fix the documentation so that it says that many other things are required to define a !TraversableOnce, but it sure would be nice to only have to define {{foreach}} to get a !TraversableOnce like the documentation currently claims.
+I guess the immediate solution for Scala 2.8 is to fix the documentation so that it says that many other things are required to define a !TraversableOnce, but it sure would be nice to only have to define `foreach` to get a !TraversableOnce like the documentation currently claims.

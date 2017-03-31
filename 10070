@@ -5,36 +5,36 @@ The modification must be done on each .bat file under the "scala\bin" directory,
 
 On every file, right click then choose "Edit".
 At the bottom of every file you will find these two subroutines:
-{{:add_cpath}} and {{:set_home}}
+`:add_cpath` and `:set_home`
 
-In {{:add_cpath}} change
-{quote}
+In `:add_cpath` change
+```
     if "%_TOOL_CLASSPATH%"=="" (
         set _TOOL_CLASSPATH={color:red}%~1{color}
     ) else (
         set _TOOL_CLASSPATH={color:red}%_TOOL_CLASSPATH%;%~1{color}
     )
-{quote}
+```
 into
-{quote}
+```
     if "%_TOOL_CLASSPATH%"=="" (
         set _TOOL_CLASSPATH={color:red}"%~1"{color}
     ) else (
         set _TOOL_CLASSPATH={color:red}"%_TOOL_CLASSPATH%;%~1"{color}
     )
     {color:red}set _TOOL_CLASSPATH=%_TOOL_CLASSPATH:~1,-1%{color}
-{quote}
-And in {{:set_home}} change
-{quote}
+```
+And in `:set_home` change
+```
     set _BIN_DIR=
     for %%i in ({color:red}%~sf0{color}) do set _BIN_DIR=%_BIN_DIR%%%~dpsi
     set _SCALA_HOME=%_BIN_DIR%..
-{quote}
+```
 into
-{quote}
+```
     set _BIN_DIR=
     for %%i in ({color:red}"%~sf0"{color}) do set _BIN_DIR=%_BIN_DIR%%%~dpsi
     set _SCALA_HOME=%_BIN_DIR%..
-{quote}
+```
 Save them all, then try to run Scala and...
 Voila! There's your fix.

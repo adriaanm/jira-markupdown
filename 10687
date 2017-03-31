@@ -1,8 +1,7 @@
 No. I compiled those scalatest tests with `-Ydebug -Ylog:all` and grepped for `undolog`. That turns on logging in the `clear()` method those shows the length of the log when it is cleared. That is done after each compilation unit. 
 
 It never shows more than 17k entries.
-
-{noformat}
+```
 ...
 [info] [log typer] Clearing 0 entries from the undoLog.
 [info] [log typer] Clearing 0 entries from the undoLog.
@@ -22,26 +21,24 @@ It never shows more than 17k entries.
 [info] [log typer] Clearing 0 entries from the undoLog.
 [info] [log typer] Clearing 10822 entries from the undoLog.
 [info] [log typer] Clearing 506 entries from the undoLog.
-{noformat}
+```
 
 So its a bit of a mystery how you saw such a long path the GC root. Did it pass through `undoLog` itself? 
 
 Looking around through comments, it seems we are really confused as to when we can clear the log. It is cleared eagerly when we actually have something to undo (when a type relation <:< or =:= returns false). But otherwise, the comments tell us:
-
-{code}
+```scala
 } finally {
     subsametypeRecursions -= 1
     // XXX AM TODO: figure out when it is safe and needed to clear the log -- the commented approach below is too eager (it breaks #3281, #3866)
     // it doesn't help to keep separate recursion counts for the three methods that now share it
     // if (subsametypeRecursions == 0) undoLog.clear()
   }
-{code}
+```
 
-To me, the natural place to clear the log is when we finish a type inference session. But I reckon any such attempt *might* run into the same underlying problem as SI-7782 / bce786f070afe383d203c4d809ef69803330b340, which is that we've got a single undolog per global, which is shared by interleaved typechecking that happens with source-completers. It might be interesting to see if you could move undolog to `Context`. That's were we store another, similar sort of undo-log:
-
-{code}
+To me, the natural place to clear the log is when we finish a type inference session. But I reckon any such attempt **might** run into the same underlying problem as scala/bug#7782 / bce786f070afe383d203c4d809ef69803330b340, which is that we've got a single undolog per global, which is shared by interleaved typechecking that happens with source-completers. It might be interesting to see if you could move undolog to `Context`. That's were we store another, similar sort of undo-log:
+```scala
   class Context {
     ...
     /** Saved type bounds for type parameters which are narrowed in a GADT. */
     var savedTypeBounds: List[(Symbol, Type)] = List()
-{code}
+```

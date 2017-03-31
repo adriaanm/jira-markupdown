@@ -5,7 +5,7 @@ The most interesting thing about it is that the method `foo` and the macro seem 
 You can also see the problem in the REPL.
 
 a.scala:
-{code}
+```scala
 import language.experimental.macros
 import scala.reflect.macros._
 object X {
@@ -14,15 +14,15 @@ object X {
   def extractorMacro(c: blackbox.Context): c.Expr[Any] =
     c.universe.reify(new { def something(data: Any) = ??? })
 }
-{code}
+```
 
 b.scala:
-{code}
+```scala
 object Test { X.extractor }
-{code}
+```
 
 output:
-{code}
+```scala
 > scalac a.scala && scalac b.scala
 b.scala:1: error: ambiguous implicit values:
  both value StringCanBuildFrom in object Predef of type => scala.collection.generic.CanBuildFrom[String,Char,String]
@@ -31,4 +31,4 @@ b.scala:1: error: ambiguous implicit values:
 object Test { X.extractor }
                 ^
 one error found
-{code}
+```

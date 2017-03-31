@@ -1,22 +1,20 @@
 I did some debugging with this and here's a slightly altered test case:
-
-{code:scala}
+```scala
 object T9745 {
   var i = 0
   def f(i: Unit)(j: Int): Int = ???
   val g = x => f(i += 1)(x)
 }
-{code}
+```
 
-From what I could understand, the problem is that the typer, when typing the function value in {{g}} does these steps:
-
-{noformat}
+From what I could understand, the problem is that the typer, when typing the function value in `g` does these steps:
+```
 |    |-- ((x) => f(i.$plus$eq(1))(x)) EXPRmode (site: value g  in T9745) 
 |    |    |-- f(i.$plus$eq(1)) : pt=(x$1: ?)? BYVALmode-EXPRmode-FUNmode-POLYmode (silent: value $anonfun in T9745) 
 … lots of typing and transform i += 1 to i = i + 1
 |    |    |-- f(i.<$plus$eq: error>(1))(x) : pt=Int EXPRmode (site: value $anonfun in T9745) 
 … and so forth
-{noformat}
+```
 
 where the assignment transformation from the first argument list gets discarded but the error remains in the tree which causes the assignment transformation not to be applied again when doing typing with the second parameter list included.
 

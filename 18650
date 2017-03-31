@@ -1,4 +1,4 @@
-This is a follow up to SI-7280.
+This is a follow up to scala/bug#7280.
 
 As stated in the previous ticket, vals and vars available through an import are returned by the scope completion, but they are filtered out by Scala IDE, and not displayed to the user.
 
@@ -7,7 +7,7 @@ The reason the IDE filters them is because they are always marked as non-accessi
 If they can be accessed through the synthetic getters, they should not be mark non-accessible, as referencing them at the location of the completion is valid in code.
 
 Test case:
-{code:scala}
+```scala
 object Cont {
   val someVal = 2
   private val somePrivateVal = 3
@@ -22,4 +22,4 @@ class ImportOut {
             // but `someVal` is marked as inaccessible.
   }
 }
-{code}
+```

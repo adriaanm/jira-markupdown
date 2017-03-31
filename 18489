@@ -1,6 +1,5 @@
 I am using Spring Security in a Scala project. The following code causes the Scala compiler to crash with a cyclic type dereferencing error. An equivalent Java code compiles just fine. I tried using 2.10.2, 2.10.3-RC1, and 2.11.0.M4; all crashed in an identical manner. I get the same crash in Scala IDE (latest nightly) as well.
-
-{code}
+```scala
 package com.example.cyclic_type
 
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -11,12 +10,12 @@ class SecurityConfig {
     http.authorizeRequests()
   }
 }
-{code}
+```
 
 See the attached simplest code that I can get to crash (just do 'sbt compile' to reproduce the crash). SecurityConfigJava that is equivalent to the Scala class is also included.
 
 The crash:
-{code}
+```scala
 [error] 
 [error]   last tree to typer: Ident(http)
 [error]               symbol: value http (flags: <param> <triedcooking>)
@@ -165,4 +164,4 @@ java.lang.AssertionError: cyclic type dereferencing
 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:615)
 	at java.lang.Thread.run(Thread.java:722)
 [error] (compile:compile) java.lang.AssertionError: cyclic type dereferencing
-{code}
+```

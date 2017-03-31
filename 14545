@@ -1,13 +1,13 @@
 I found this problem when -optimise building Scala project that calls an inner declared Java enum. The original code in scala/tools/nsc/symtab/Constants.scala is
-{code}
+```scala
 case EnumTag    => symbolValue.owner.linkedClassOfClass.tpe
-{code}
+```
 
 It seems when this issue happens, both symbolValue.owner.linkedClassOfModule and 
 ymbolValue.owner.linkedModuleOfClass are "NoSymbol"
 
 This will cause -optimise compiling Scala code throws exception like:
-{code}
+```scala
    [scalac] java.lang.Error: Unknown type: <notype>, <notype>[class scala.tools.nsc.symtab.Types$$NoType$$, class scala.tools.nsc.symtab.Types$$NoType$$] TypeRef? false, false
    [scalac] 	at scala.tools.nsc.Global.abort(Global.scala:188)
    [scalac] 	at scala.tools.nsc.backend.icode.TypeKinds$$class.toTypeKind(TypeKinds.scala:457)
@@ -91,10 +91,10 @@ This will cause -optimise compiling Scala code throws exception like:
    [scalac] 	at org.apache.tools.ant.Main.startAnt(Main.java:217)
    [scalac] 	at org.apache.tools.ant.launch.Launcher.run(Launcher.java:257)
    [scalac] 	at org.apache.tools.ant.launch.Launcher.main(Launcher.java:104)
-{code}
+```
 
 A quick fix is set:
-{code}
+```scala
 case EnumTag    => symbolValue.tpe.underlying
-{code}
+```
 But we still need to know why Symbol with EnumTag returns NoSymbol linkedClassOfClass

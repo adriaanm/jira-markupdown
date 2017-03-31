@@ -1,6 +1,5 @@
 Not sure whether this is a new bug, or whether I'm missing something here:
-
-{code}
+```scala
 import scala.{ specialized => spec }
 
 object Example {
@@ -16,19 +15,17 @@ object Example {
     println(foo3(0, 1).getClass.getName)
   }
 }
-{code}
+```
 
 Output:
-
-{code}
+```scala
 Example$Bar$mcI$sp
 Example$Bar
 Example$Bar
-{code}
+```
 
 Surprisingly,
-
-{code}
+```scala
 object Example {
   class Bar[@spec(Int) X] {}
 
@@ -46,14 +43,13 @@ object Example {
     println(foo3(0, 1).getClass.getName)
   }
 }
-{code}
+```
 
 yields
-
-{code}
+```scala
 Example$Bar$mcI$sp
 Example$Bar$mcI$sp
 Example$Bar
-{code}
+```
 
 I would have expected Example$Bar$mcI$sp in all three cases in both examples.

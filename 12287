@@ -1,6 +1,5 @@
 Removing the f-bound lets us see this difference in action:
-
-{code}
+```scala
 object Test {
   trait A[-T]
   trait B[-T]
@@ -8,15 +7,14 @@ object Test {
   def AfromB[T <: B[_]]: A[T] = null
   AfromB : A[C]
 }
-
-{code}
+```
 
 scalac:
-{code}
+```scala
 (Test.this.AfromB[Test.B[_]]: Test.A[Test.C])
-{code}
+```
 
 dotc:
-{code}
+```scala
 Test.AfromB[Test.C']: Test.A[Test.C]
-{code}
+```

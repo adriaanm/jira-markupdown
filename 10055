@@ -1,6 +1,5 @@
 To motivate fixing this bug, consider the following - automatically converting nullable types to Option:
-
-{code}
+```scala
 case class AuthorizationRequest(
   val sid: String,
   val oid: Option[String],
@@ -20,12 +19,11 @@ object AuthorizationClient {
     }
   }
 }
-{code}
+```
 
-The intermediate {{Request}} type just adds verbosity, so the {{authorize}} method on {{AuthorizationExts}} makes it easy to call {{authorize}}. But {{authorize}} is long enough (and its arguments have the same type) that it would be nice to call it with named arguments:
-
-{code}
+The intermediate `Request` type just adds verbosity, so the `authorize` method on `AuthorizationExts` makes it easy to call `authorize`. But `authorize` is long enough (and its arguments have the same type) that it would be nice to call it with named arguments:
+```scala
 auth.authorize(sid ="foo", oid = "bar", o_class = "bif", etc.) 
-{code}
+```
 
 This also makes it impossible to omit parameters and use defaults instead.  Self-contained example in my next comment.

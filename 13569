@@ -1,4 +1,4 @@
-{code}
+```scala
 trait  Foo {
   val a: Option[String] = None
   def withA(anA:String):Foo = new Foo {
@@ -9,10 +9,10 @@ trait  Foo {
 class Bar extends Foo
 
 (new Bar()).withA("quux")
-{code}
+```
 
 The code above compiles fine, but throws this exception when we run it:
-{code}
+```scala
 java.lang.ClassFormatError: Duplicate method name&signature in class file Main$$$$anon$$2$$Foo$$$$anon$$1
 	at java.lang.ClassLoader.defineClass1(Native Method)
 	at java.lang.ClassLoader.defineClass(ClassLoader.java:620)
@@ -30,11 +30,10 @@ java.lang.ClassFormatError: Duplicate method name&signature in class file Main$$
 	at Main$$$$anon$$2.<init>((virtual file):14)
 	at Main$$.main((virtual file):4)
 	at Main.main((virtual file))
-{code}
+```
 
 The generated class `Test$$Foo$$$$anon$$1` looks very sucpicious when printed after cleanup.
-
-{code}
+```scala
 final <synthetic> class Test$$Foo$$$$anon$$1 extends java.lang.Object with Test$$Foo {
   final <stable> <accessor> def a(): Option = Test$$Foo$$$$anon$$1.this.a;
   private[this] val a: Option = _;
@@ -44,5 +43,4 @@ final <synthetic> class Test$$Foo$$$$anon$$1 extends java.lang.Object with Test$
   override <stable> <bridge> def a(): Option = Test$$Foo$$$$anon$$1.this.a();
   ...
 }
-{code}
-
+```

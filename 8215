@@ -3,14 +3,13 @@ Hi, I think you're misunderstanding the machinery here.
 You'll want to be looking at the bytecode for the Foo$mcI$sp class if you want to see Foo specialized on Int.
 
 When I do that, I see:
-
-{code}
+```scala
 public int barA$mcI$sp(int);
   Code:
    0:   aload_0
    1:   iload_1
    2:   invokevirtual   #18; //Method Foo.barB$mIc$sp:(I)I
    5:   ireturn
-{code}
+```
 
 So it looks to me like Foo[Int] does have a correct specialized implementation. Of course, since the Foo class is the "generic version" of the class, it has to call the generic version of the method as well in the specialized case (the case where someone calls barA$mcI$sp on a Foo which itself boxes).

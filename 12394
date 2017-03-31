@@ -1,18 +1,16 @@
 Hmm, now I'm wondering.... are you actually saying your original code should compile, or are you just reporting that the error message is confusing?
 
 The error message is confusing, I'll give you that. But I very much doubt that your code is correct. I think you may have an incorrect idea of what it means to "override" a type in a type alias. Scala will let you write e.g.:
-
-{code:scala}
+```scala
 trait A { type T = Int ; def f: T = 3 }
 type U = A { type T = String }
-{code}
+```
 
 but that doesn't mean that in U, you have somehow changed the type of f. The type of f is still Int.
 
 By the same token, in your code you write:
-
-{code:scala}
+```scala
 type Self = W { type F = outer.F }
-{code}
+```
 
 but that doesn't mean that if I have a value w of type Self, def w.selfF is constrained to be outer.F!

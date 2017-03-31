@@ -10,22 +10,19 @@ Although we support many (even peculiar) looping scenarios, there is no way to c
 Researched here are a few ways of expressing the repeat construct:
 
 [http://stackoverflow.com/questions/5764049/most-elegant-repeat-loop-in-scala]
-
-{code}
+```scala
 List.fill(10)(println("hi"))
-{code}
-
-{code}
+```
+```scala
 (1 to 10).foreach(_ => println("hi"))
-{code}
-
-{code}
+```
+```scala
 def rep[A](n: Int)(f: => A) { if (n > 0) { f; rep(n-1)(f) } }
 rep(5) { println("hi") }
-{code}
+```
 
 However the one that seems by far most elegant and consistent the following:
-{code}
+```scala
 class Rep(n: Int) {
   def times[A](f: => A) { loop(f, n) }
   private def loop[A](f: => A, n: Int) { if (n > 0) { f; loop(f, n-1) } }
@@ -34,10 +31,10 @@ implicit def int2Rep(i: Int): Rep = new Rep(i)
 
 // use it with
 10.times { println("hi") }
-{code}
+```
 
 My propositions is to add the 
-{code}
+```scala
 def times[A](f: => A)
-{code}
+```
 method to RichInt class.

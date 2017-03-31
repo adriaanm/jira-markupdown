@@ -5,13 +5,12 @@ As weird as this seems, it is actually according to the Spec.
 Private fields are not inherited. So you can't select them from a value of the derived type. 
 
 You can upcast and select the member, however.
-
-{code}
+```scala
 object A extends A
 class A {
   private var a: Boolean = false
   def run { (A: A).a = true }
 }
-{code}
+```
 
-This was changed under SI-7475. We double checked with Martin, and with the behaviour of Javac, which does the same thing. (Java doesn't have companions, but you can emulate the same thing with nested classes)
+This was changed under scala/bug#7475. We double checked with Martin, and with the behaviour of Javac, which does the same thing. (Java doesn't have companions, but you can emulate the same thing with nested classes)

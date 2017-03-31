@@ -1,42 +1,37 @@
-The error message was similar to SI-2316, which I encountered recently porting Scalaz to 2.8. As such, I thought the recent fix for that bug may have triggered this one. As it turns out, they are unrelated.
+The error message was similar to scala/bug#2316, which I encountered recently porting Scalaz to 2.8. As such, I thought the recent fix for that bug may have triggered this one. As it turns out, they are unrelated.
 
 First step is to enable extra logging from scalac (-Ylog:all). This might tell you which file was being compiled at the time of the error. Also very useful is -Xprint:<phase>, which shows you the program tree after a specified compiler phase. This can be too much information before you have a single file test case.
 
 This didn't help in this case, so I set a breakpoint in the compiler where the error was thrown.
 
 The attached patch (lift-debug-scalac.patch) modifies the Lift pom-s to enable remote debugging of scalac, and also to add scala-compiler.jar as a dependency. This makes it very easy debug with IntelliJ. I used the latest Maia EAP r1 and Scala plugin nightly r2. Feel free to use the debugger of your choice at this stage.
-
-{code}
+```scala
 - File -> Open Project -> .../liftweb/pom.xml
 - Grab a coffee while the indexing completes...
 - Maven Projects Tool Window -> 'Download Sources'
 - Finish your coffee
-{code}
+```
 
 You should be able to see sources for the compiler then, assuming they were avaiable on scala-tools maven repo. Verify this with:
-
-{code}
+```scala
 - CTRL-N -> 'Symbols'
 - Set a breakpoint at line 1870, click in the gutter on the left side...
-{code}
+```
 
 As a short digression, I shared your pet peeve about not seeing the .scala files in IntelliJ and fixed this a couple months ago. But it is not on by default:
-
-{code}
+```scala
 - File -> Settings -> Code Style -> Scala -> Others -> Show Files in Project View. 
-{code}
+```
 
 Kick of the build:
-
-{code}
+```scala
 - Maven Projects Tool Window -> lift -> install  (or use command line.)
-{code}
+```
 
 When Scalac starts, it should pause with a message like 'Waiting for a connection on port 5005'.
-
-{code}
+```scala
 - Run -> Edit Configurations -> '+' -> Remote, -> Name = "Scalac", OK. Choose this configuration, click debug, and wait for the break point.
-{code}
+```
 
 Work back up the stack trace to find which line of code, method, and file was being processed. Next step is to isolate and minimise the test case. I created stub implementations of everything referenced in the method in question to reproduce the compile error in standalone file, then pruned it back. 
 

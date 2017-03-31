@@ -1,6 +1,5 @@
 Attempting to use the Guava cache package without the JSR-305 and JSR-330 annotations in the classpath results in some rather strange error messages:
-
-{noformat}
+```
 warning: Class javax.annotation.Nullable not found - continuing with a stub.
 warning: Caught: java.lang.NullPointerException while parsing annotations in /home/users/alex/.m2/repository/com/google/guava/guava/14.0.1/guava-14.0.1.jar(com/google/common/cache/LocalCache.class)
 error: error while loading LocalCache, class file '/home/users/alex/.m2/repository/com/google/guava/guava/14.0.1/guava-14.0.1.jar(com/google/common/cache/LocalCache.class)' is broken
@@ -21,10 +20,10 @@ warning: Class javax.annotation.Nullable not found - continuing with a stub.
 warning: Caught: java.lang.NullPointerException while parsing annotations in /home/users/alex/.m2/repository/com/google/guava/guava/14.0.1/guava-14.0.1.jar(com/google/common/base/Function.class)
 error: error while loading Function, class file '/home/users/alex/.m2/repository/com/google/guava/guava/14.0.1/guava-14.0.1.jar(com/google/common/base/Function.class)' is broken
 (class java.lang.RuntimeException/bad constant pool index: 0 at pos: 479)
-{noformat}
+```
 
 At a minimum, the compiler should explain that compilation against Java class files with missing annotations is not allowed, and not emit all of those other strange messages.
 
 It would be preferable, however, for the compiler to proceed without the missing annotations, like the Java compiler does.
 
-It seems that [others have run into this problem as well|http://stackoverflow.com/questions/13856266/class-broken-error-with-joda-time-using-scala], but I couldn't find any mention of it in the issue tracker.
+It seems that [others have run into this problem as well](http://stackoverflow.com/questions/13856266/class-broken-error-with-joda-time-using-scala), but I couldn't find any mention of it in the issue tracker.

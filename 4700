@@ -1,8 +1,7 @@
-I have looked at it, and this is not related to SI-2849, except to the extent that the patch I submitted had a few sanity checks, which were triggered here.
+I have looked at it, and this is not related to scala/bug#2849, except to the extent that the patch I submitted had a few sanity checks, which were triggered here.
 
-The problem is solely with the naive implementation of {{range}}. Before calling that method, the tree is balanced:
-
-{code}
+The problem is solely with the naive implementation of `range`. Before calling that method, the tree is balanced:
+```scala
 scala> res49
 res54: scala.collection.immutable.RedBlack[Int]#BlackTree[Int] = BlackTree(17,(),BlackTree(14,(),BlackTree(10,(),RedTree(6,(),Empty,Empty),RedTree(12,(),Empty,Empty)),BlackTree(16,(),Empty,Empty)),BlackTree(21,(),BlackTree(19,(),Empty,Empty),RedTree(24,(),BlackTree(22,(),Empty,Empty),BlackTree(29,(),Empty,Empty))))
 
@@ -11,11 +10,10 @@ res57: scala.collection.immutable.RedBlack[Int]#Tree[Int] = BlackTree(14,(),Blac
 
 scala> res49.right
 res58: scala.collection.immutable.RedBlack[Int]#Tree[Int] = BlackTree(21,(),BlackTree(19,(),Empty,Empty),RedTree(24,(),BlackTree(22,(),Empty,Empty),BlackTree(29,(),Empty,Empty)))
-{code}
+```
 
-Now, when {{range(Some(16), Some(30))}} is called on it, all the conditions at the start are false, so the code path beginning with {{val newLeft = left.range(from, None)}} is taken:
-
-{code}
+Now, when `range(Some(16), Some(30))` is called on it, all the conditions at the start are false, so the code path beginning with `val newLeft = left.range(from, None)` is taken:
+```scala
 176	   override def range(from: Option[A], until: Option[A]): Tree[B] = {
 177	      if (from == None && until == None) return this
 178	      if (from != None && isSmaller(key, from.get)) return right.range(from, until);
@@ -28,17 +26,15 @@ Now, when {{range(Some(16), Some(30))}} is called on it, all the conditions at t
 185	      else if (newRight eq Empty) newLeft.upd(key, value);
 186	      else mkTree(isBlack, key, value, newLeft, newRight)
 187	    }
-{code}
+```
 
-None of the conditions following it are true either, so {{mkTree}} is called, which simply creates a new tree with the branches as indicated. However, the branches returned by {{newLeft}} and {{newRight}} are not balanced:
-
-{code}
+None of the conditions following it are true either, so `mkTree` is called, which simply creates a new tree with the branches as indicated. However, the branches returned by `newLeft` and `newRight` are not balanced:
+```scala
 scala> res49.left.range(Some(16), None)
 res55: scala.collection.immutable.RedBlack[Int]#Tree[Int] = BlackTree(16,(),Empty,Empty)
 
 scala> res49.right.range(None, Some(30))
 res56: scala.collection.immutable.RedBlack[Int]#Tree[Int] = BlackTree(21,(),BlackTree(19,(),Empty,Empty),RedTree(24,(),BlackTree(22,(),Empty,Empty),BlackTree(29,(),Empty,Empty)))
-{code}
+```
 
-In fact, such a thing could happen for trees of any depth, which makes me doubtful such a join can be easily and efficiently done. The {{append}} on {{del}} depends on both subtrees having the same depth. However, I haven't researched it beyond identifying the bug.
-
+In fact, such a thing could happen for trees of any depth, which makes me doubtful such a join can be easily and efficiently done. The `append` on `del` depends on both subtrees having the same depth. However, I haven't researched it beyond identifying the bug.

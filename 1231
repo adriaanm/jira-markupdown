@@ -1,8 +1,8 @@
 The current bahvior is even worse -- we get a compiler crash. I think it's fine to forbid private[this] accesses in case classes. Hubert, do you want to give it a try?
 Probably in Namers.scala, method validate, add something along the lines:
-{code}
+```scala
 if (owner.isClass && owner.hasFlag(CASE) && sym.hasFlag(LOCAL)) {
   context.error(sym.pos, "private[this] not allowed for case class parameters"
   sym.resetFlag(LOCAL)
 }
-{code}
+```

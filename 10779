@@ -1,6 +1,5 @@
-[~moors] Regrarding the oddly positioned error message, looks like its a bug in the parser:
-
-{noformat}
+@adriaanm Regrarding the oddly positioned error message, looks like its a bug in the parser:
+```
 % cat sandbox/Throwable.scala
 package java.lang
 
@@ -24,11 +23,10 @@ class Throwable
     }
   }
 }
-{noformat}
+```
 
 Regarding "why does this only happen for a (scala-defined!) class with this special name?", I believe this is because the compiler forces loading of those symbols from the Java class-files during typechecking, e.g. with:
-
-{code}
+```scala
 // TreeInfo.scala
 private def isSimpleThrowable(tp: Type): Boolean = tp match {
     case TypeRef(pre, sym, args) =>
@@ -37,4 +35,4 @@ private def isSimpleThrowable(tp: Type): Boolean = tp match {
     case _ =>
       false
   }
-{code}
+```

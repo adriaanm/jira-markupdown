@@ -1,6 +1,5 @@
-Since https://github.com/scala/scala/pull/2954 we omit null checks when generating {{SomeModule == x}}. This is incorrect, a module dereference may return null.
-
-{code}
+Since https://github.com/scala/scala/pull/2954 we omit null checks when generating `SomeModule == x`. This is incorrect, a module dereference may return null.
+```scala
 class C {
   println(s"O is $O")
   val r = O == ("hi": AnyRef)
@@ -12,11 +11,10 @@ object Test {
     println((new C).r)
   }
 }
-{code}
+```
 
 runs as
-
-{noformat}
+```
 O is null
 java.lang.NullPointerException
 	at C.<init>(Test.scala:10)
@@ -25,7 +23,7 @@ java.lang.NullPointerException
 	at C.<init>(Test.scala:9)
 	at Test$.main(Test.scala:16)
 	at Test.main(Test.scala)
-{noformat}
+```
 
 Related to https://github.com/scala/scala-dev/issues/8#issuecomment-142548225
 

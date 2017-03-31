@@ -1,6 +1,5 @@
 Workaround (with long syntax--could skip the `meets` and just have `def ensure[A](f: => A)(p: A => Boolean): A`
-
-{code}
+```scala
 class EnsureSyntax[A](private val underlying: () => A) extends AnyVal {
   def meets(p: A => Boolean): A =
     try {
@@ -16,11 +15,10 @@ class EnsureSyntax[A](private val underlying: () => A) extends AnyVal {
 }
 
 def ensure[A](f: =>A): EnsureSyntax[A] = new EnsureSyntax(() => f)
-{code}
+```
 
 In action:
-
-{code}
+```scala
 
 scala> def foo: Int = ensure { return 4; 4 } meets { _ == 5 }
 foo: Int
@@ -30,4 +28,4 @@ java.lang.Exception: Non-local escape from ensure block
   at EnsureSyntax$.meets$extension(<console>:20)
   at .foo(<console>:13)
   ... 33 elided
-{code}
+```

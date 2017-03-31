@@ -1,6 +1,5 @@
 When compiling a case class with 22 arguments, the compiler runs out of memory on the default settings.
-
-{code}
+```scala
 case class Columns(foo0: Option[String], bar0: Option[Int],
 		   foo1: Option[String], bar1: Option[Int],
 		   foo2: Option[String], bar2: Option[Int],
@@ -12,17 +11,16 @@ case class Columns(foo0: Option[String], bar0: Option[Int],
 		   foo8: Option[String], bar8: Option[Int],
 		   foo9: Option[String], bar9: Option[Int],
 		   foo10: Option[String], bar10: Option[Int])
-{code}
+```
 
 The compiler terminates on java.lang.OutOfMemoryError: Java heap space
 
 This appears to be a memory consumption issue wrt. case class processing, since compilation completes if EITHER of the following conditions are met: 1) the argument count goes down to 20, 2) more memory is allocated to the compiler VM, or 3) we remove the "case" qualifier, making it a regular class (this also makes the compilation considerably faster).
 
 Reproducible on 2.8.0 and 2.8.0.RC3. Appears to have been fixed in the latest 2.9 nightly, following this checkin:
-
-{code}
+```scala
   http://github.com/scala/scala/commit/fea2a1c2988e821
-{code}
+```
 
 Since it appears to be fixed for 2.9, I am filing this as an "enhancement" request, hoping to get the fix back-ported to the 2.8.0 compiler.
 

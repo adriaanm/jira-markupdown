@@ -1,18 +1,18 @@
 We can write:
-{code}
+```scala
 object Obj extends Clss[T forSome { type T }]
-{code}
+```
 but we cannot write:
-{code}
+```scala
 object Obj extends (Clss[T] forSome { type T })
-{code}
+```
 Why? Is it correct that the first works while the second doesn't? The error is:
-{code}
+```scala
 <console>:5: error: illegal inheritance;
  self-type Obj.type does not conform to Clss[T] forSome { type T }'s selftype Clss[T]
-{code}
+```
 which I frankly admit I don't understand. If, following my only hunch, I try this:
-{code}
+```scala
 object Obj extends Clss[T forSome { type T }] with (Clss[T] forSome { type T })
-{code}
+```
 then the compiler crashes.

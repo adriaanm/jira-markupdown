@@ -1,7 +1,7 @@
 As shown below, ListBuffer.prependToList breaks List's immutabilitity.
 
 Example in REPL:
-{code}
+```scala
 scala> val buf = new collection.mutable.ListBuffer[Int]
 buf: scala.collection.mutable.ListBuffer[Int] = ListBuffer()
 
@@ -16,19 +16,19 @@ res1: List[Int] = List(1, 2, 3, 4, 5, 6)
 
 scala> l
 res2: List[Int] = List(1, 2, 3, 4, 5, 6)
-{code}
+```
 
 I propose the following fixes.
 
 before)
-{code}
+```scala
   def prependToList(xs: List[A]): List[A] =
     if (start.isEmpty) xs
     else { last0.tl = xs; toList }
-{code}
+```
 
 after)
-{code}
+```scala
   def prependToList(xs: List[A]): List[A] =
     if (start.isEmpty) xs
     else {
@@ -36,4 +36,4 @@ after)
       last0.tl = xs
       toList
     }
-{code}
+```

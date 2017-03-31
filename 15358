@@ -1,8 +1,7 @@
 I ran into this in a codebase that was translated from Java to Scala via jatran and then fixed to compile. I was able to reduce it to a self-contained test, although it may be possible to reduce it further.
 
 The issue occurs with 2.8.0.RC2 and the latest nightly (r22026). JAVA_OPTS was set to "-Xmx2048m -XX:MaxPermSize=256m -Xss1m" and I confirmed via JConsole that there was plenty of free memory. The following command never terminates in my machine and I let it run for several minutes:
-
-{code}
+```scala
 /opt/scala-2.8.0.r22026-b20100525020146/bin/scalac -Ylog:clos -optimise test/NodeInputPanel.scala 
 [log closelim] Analyzing test.NodeInputType.ADD
 [log closelim] Added point: 1
@@ -184,11 +183,10 @@ Stack: List()
 [log closelim] considering unused outer at position 0 in List(test.NodeInputPanel, test.NodeEvent)
 [log closelim] considering unused outer at position 0 in List(test.NodeInputPanel, test.NodeEvent)
 [log closelim] considering unused outer at position 0 in List(test.NodeInputPanel, test.NodeEvent)
-{code}
+```
 
 A stacktrace snapshot:
-
-{code}
+```scala
 Name: main
 State: RUNNABLE
 Total blocked: 0  Total waited: 0
@@ -252,5 +250,4 @@ scala.tools.nsc.Global$$Run.compile(Global.scala:813)
 scala.tools.nsc.Main$$.process(Main.scala:108)
 scala.tools.nsc.Main$$.main(Main.scala:122)
 scala.tools.nsc.Main.main(Main.scala)
-
-{code}
+```

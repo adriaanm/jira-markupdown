@@ -1,5 +1,5 @@
 When trying to run scalac with target:msil I get the following exception:
-{code}
+```scala
 PS C:\Scala-playground\hello.net> ..\scala-2.8.0.final\bin\scalac.bat -target:msil -Xassem-extdirs ..\scala-2.8.0.final\lib .\test.scala
 scala.tools.nsc.MissingRequirementError: class scala.runtime.VolatileBooleanRef not found.
         at scala.tools.nsc.symtab.Definitions$$definitions$$.getModuleOrClass(Definitions.scala:513)
@@ -13,7 +13,7 @@ scala.tools.nsc.MissingRequirementError: class scala.runtime.VolatileBooleanRef 
         at scala.tools.nsc.Main$$.main(Main.scala:122)
         at scala.tools.nsc.Main.main(Main.scala)
 error: fatal error: class scala.runtime.VolatileBooleanRef not found.
-{code}
+```
 
 I have tried against mscorlib.dll versions 4.0, 2.0 and 1.1. All give the same error.
 
@@ -21,7 +21,7 @@ I have tried against mscorlib.dll versions 4.0, 2.0 and 1.1. All give the same e
 Below follow a full desription of what I did:
 
 I started by downloading Scala 2.8.0-final as a zip file (), and unpacking it to my scala playground directory. That gave me:
-{code}
+```scala
 PS C:\Scala-playground\scala-2.8.0.final> tree
 Folder PATH listing for volume OSDisk
 Volume serial number is 00690066 6A5B:A532
@@ -78,17 +78,17 @@ C:.
 �           +---plugin
 �           +---syntax
 +---src
-{code}
+```
 I then went on to install the Scala msil extension (i.e. the scala .NET compiler and runtime) as follows:
-{code}
+```scala
 PS C:\Scala-playground\scala-2.8.0.final> bin/sbaz.bat install scala-msil
-{code}
+```
 Then, following the "official" instructions on running scala on .NET (http://www.scala-lang.org/node/168), I copied mscorlib.dll to the scala lib folder:
-{code}
+```scala
 PS C:\Scala-playground\scala-2.8.0.final> copy C:\Windows\Microsoft.NET\Framework\v4.0.30319\mscorlib.dll .\lib
-{code}
+```
 I was now ready to try to compile something. E.g. this very simple hello world program using a little bit of .NET, namely 
-{code}
+```scala
 Console.WriteLine:
 
 import System.Console
@@ -96,9 +96,9 @@ import System.Console
 object test extends Application {
   Console.WriteLine("Hello world!")
 }
-{code}
+```
 I tried to compile it like this:
-{code}
+```scala
 PS C:\Scala-playground\hello.net> ..\scala-2.8.0.final\bin\scalac.bat -target:msil .\test.scala
 
 but got this error:
@@ -114,9 +114,9 @@ scala.tools.nsc.MissingRequirementError: class scala.runtime.VolatileBooleanRef 
         at scala.tools.nsc.Main$$.main(Main.scala:122)
         at scala.tools.nsc.Main.main(Main.scala)
 error: fatal error: class scala.runtime.VolatileBooleanRef not found.
-{code}
+```
 I tried like this to point out where mscorlib and the scala runtime dlls are:
-{code}
+```scala
 PS C:\Scala-playground\hello.net> ..\scala-2.8.0.final\bin\scalac.bat -target:msil -Xassem-extdirs ..\scala-2.8.0.final\lib .\test.scala
 scala.tools.nsc.MissingRequirementError: class scala.runtime.VolatileBooleanRef not found.
         at scala.tools.nsc.symtab.Definitions$$definitions$$.getModuleOrClass(Definitions.scala:513)
@@ -130,5 +130,5 @@ scala.tools.nsc.MissingRequirementError: class scala.runtime.VolatileBooleanRef 
         at scala.tools.nsc.Main$$.main(Main.scala:122)
         at scala.tools.nsc.Main.main(Main.scala)
 error: fatal error: class scala.runtime.VolatileBooleanRef not found.
-{code}
+```
 ..same error.

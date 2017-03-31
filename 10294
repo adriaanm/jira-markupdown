@@ -1,6 +1,5 @@
 Oh man, this one depends on compilation order: this works:
-
-{code}
+```scala
 class A[K[L[_]]]
 class B[K[L[_]]]
 
@@ -9,11 +8,10 @@ object Test {
     case a: A[k] => new B[k]()
   }
 }
-{code}
+```
 
 The condition in question:
-
-{code}
+```scala
 if (!isComplete)
 	args mapConserve (typedHigherKindedType(_, mode))
 	// if symbol hasn't been fully loaded, can't check kind-arity
@@ -21,4 +19,4 @@ else map2Conserve(args, tparams) { (arg, tparam) =>
 	//@M! the polytype denotes the expected kind
 	typedHigherKindedType(arg, mode, GenPolyType(tparam.typeParams, AnyTpe))
 }
-{code}
+```

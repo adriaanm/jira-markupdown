@@ -1,10 +1,10 @@
 The humorous-to-me ticket title obscures that actually this is just an -optimise+@specialize bug: no @inline or final needed.  I can't believe there are crashers this easy to hit which haven't been reported...
-{code}
+```scala
 class C2[@specialized(Boolean) U]() {
   def f(x: U): U = x
 }
-{code}
-{noformat}
+```
+```
 
 % scalac3 -optimise a.scala 
 % scalac3 -optimise a.scala 
@@ -18,4 +18,4 @@ error: Companions 'class C2$mcZ$sp' and 'object C2$mcZ$sp' must be defined in sa
 	at scala.reflect.internal.Symbols$Symbol.companionSymbol(Symbols.scala:1530)
 	at scala.tools.nsc.symtab.SymbolLoaders$SymbolLoader.complete(SymbolLoaders.scala:128)
 	at scala.reflect.internal.Symbols$Symbol.info(Symbols.scala:859)
-{noformat}
+```

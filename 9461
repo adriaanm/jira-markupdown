@@ -1,6 +1,5 @@
 This looks like a problem with non-wildcard existentials. Simplified version without implicits:
-
-{code}
+```scala
 trait Foo
  
 trait TC[A]
@@ -18,11 +17,10 @@ object Test7342 {
   bar(b => (b.c, b.c))(tc2) // fails
   bar(b => (b.c: Foo, b.c))(tc2) // ok
 }
-{code}
+```
 
 `A` in `bar` is inferred from the first argument only, so it comes down to typechecking `tc2` with the expected type. Minimized version:
-
-{code}
+```scala
 trait TC[A] // works with +A
 
 class Bar { trait X }
@@ -33,6 +31,6 @@ object Test7342 {
   tc2: TC[(b.X forSome { val b: Bar }, b.X forSome { val b: Bar })] // ok
   tc2: TC[(b.X, b.X) forSome { val b: Bar }] // fails
 }
-{code}
+```
 
 IMHO this not a bug but a limitation of Scala's type system because there is no way to express a type application of `tc2` with a common existential quantification over both type arguments.

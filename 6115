@@ -8,8 +8,7 @@ return type of a method, etc. A refactoring could easily lead to
 runtime failures."
 
 The complaint is not that the compiler does not use its knowledge of what "1" is, but rather that it doesn't use its knowledge of what Tuple2 is.  Any unintended widening of the static type on the right-hand side could lead to runtime failure.  Here's a more realistic example (although it fails the simplicity test):
-
-{code}
+```scala
 class Character(name: String)
 case class Player(name: String, age: Int, gender: Gender) extends Character(name)
 case class NPC(name: String, species: Species, language: Lang) extends Character(name)
@@ -18,12 +17,12 @@ case class NPC(name: String, species: Species, language: Lang) extends Character
 // to return a Character. After the change, the following line of 
 // code will still compile but may fail at runtime.  
 val Player(_, a, g) = getCharacter("Dingus")
-{code}
+```
 
 The original developer intended his code as shorthand for
-{code}
+```scala
 val c = getCharacter("Dingus")
 val a = c.age
 val g = c.gender
-{code}
-which _would_ fail to compile after the change in `getCharacter`.
+```
+which *would* fail to compile after the change in `getCharacter`.

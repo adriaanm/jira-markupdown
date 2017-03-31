@@ -1,7 +1,7 @@
 You know, if I could get through one freaking day without some all-new bug paralyzing development for an hour or two at least, it would be some wonderful dream. I'm not even asking not to discover new compiler bugs every single day, I'm not greedy. I'd just like to enjoy the occasional day when I don't have to whittle down a few hundred lines of code to find out why sbt freezes every time I try to run the tests, or whatever the day's manifestation is.
 
 This freezes in typer.
-{code}
+```scala
 trait M[F[_]]
 
 trait P[A] {
@@ -12,11 +12,11 @@ trait P[A] {
 trait Other {
   def g[A](p: A => Boolean): P[A] => M[P] = _ f p
 }
-{code}
+```
 It's a regression. It compiles in 2.9 and 2.10.0, freezes in 2.10.1 and 2.11.0-M7.
 
 Here's the last gasp via -Ytyper-debug
-{noformat}
+```
 |    |    |-- _root_.scala.Function1[A, Boolean] TYPEmode (site: value p in Other)
 |    |    |    |-- Boolean TYPEmode (site: value p in Other)
 |    |    |    |    \-> Boolean
@@ -36,4 +36,4 @@ Here's the last gasp via -Ytyper-debug
 |    |    |    |    |-- p : pt=A => Boolean BYVALmode-EXPRmode (silent: value $anonfun in Other)
 |    |    |    |    |    \-> A => Boolean
 |    |    |    |    \-> M[x$1.CC]
-{noformat}
+```

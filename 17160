@@ -1,16 +1,16 @@
 When translating the scala macros Getting Started example
 http://scalamacros.org/documentation/gettingstarted.html
 in line
-{noformat}
+```
 val stats = evals ++ refs.map(ref => c.reify(print(Expr(ref).eval)).tree)
-{noformat}
+```
 into
-{noformat}
+```
 val stats = evals ++ refs.map(ref => c.reify(print(c.Expr(ref).splice)).tree) 
-{noformat} 
+```
 
 I got an error message:
-{noformat}
+```
 Cannot materialize scala.this{scala.type}.Predef.print{(x: Any)Unit} 
 (c.Expr{[T](tree: c.Tree)(implicit evidence$1: 
 c.AbsTypeTag[T])c.Expr[T]} 
@@ -70,17 +70,17 @@ $m: $u.Mirror = $m$untyped.asInstanceOf{<null>}[$u.Mirror]
  $typecreator4{<null>}{<null>}(){<null>} }{<null>}){<null>}){<error>} } 
 {<null>} because: scala.reflect.internal.Types$TypeError: Predef is 
  not an enclosing class 
-{noformat}
+```
 
 Workaround is to hint the type inferencer explicitly with [String]:
 change
-{noformat}
+```
 c.Expr(ref).splice
-{noformat}
+```
 into
-{noformat}
+```
 c.Expr[String](ref).splice
-{noformat}
+```
 
 see also:
 http://groups.google.com/group/scala-user/browse_thread/thread/ca4e92ff977ec6a8

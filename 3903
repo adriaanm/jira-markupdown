@@ -1,8 +1,7 @@
 I'm not sure I've got this one right, but it seems to me that in 2.7.7. GC collects the Stream while length is computed, since the only reference to the original stream was consumed from the stack when `length` is invoked in the example above. This doesn't happen in 2.8.
 
 The difference I see between 2.8 and 2.7.7. is the `length` method. Adding:
-
-{code}
+```scala
   override def length: Int = {
     var len = 0
     var left = this
@@ -12,17 +11,16 @@ The difference I see between 2.8 and 2.7.7. is the `length` method. Adding:
     }
     len
   }
-{code}
+```
 
 to `Stream` solves the problem, it seems - I no longer get the out of memory exception.
 
 I am unable to completely discern why this solves the problem. New `Stream`s have the `length` method defined in `LinearSeqOptimized` which uses a reference to `self`, that is, the head of the stream. Looking over the bytecode:
-
-{code}
+```scala
   public static int length(scala.collection.LinearSeqOptimized $$this);
      0  aload_0 [$$this]
      1  astore_1 [these]
      ...
-{code}
+```
 
 reveals that `$$this`, or that is, `self` is being kept on the stack all the while. Presumably, this caused the error.

@@ -1,5 +1,5 @@
 Boy, I scratched my head a while before realizing there must be a macro involved. That is pretty uncool that it can so easily masquerade as normal source (although I guess that's a "feature".) The bug is in the macro code. When the compiler is inferring type arguments it widens anonymous classes for exactly this reason. 
-{code}
+```scala
 object Generic extends LowPriorityGeneric {
   type Aux[T, Repr0] = Generic[T] { type Repr = Repr0 }
 
@@ -7,4 +7,4 @@ object Generic extends LowPriorityGeneric {
   // a proof that the resulting Repr <: HList
   implicit def product[T <: Product]: Generic[T] = macro GenericMacros.materializeForProduct[T]
 }
-{code}
+```

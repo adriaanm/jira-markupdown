@@ -6,8 +6,7 @@ Using Scala 2.7.5.final, on my machine I find that:
 This is a problem because it means that files written with, for example, java.io.PrintWriter with the (Java) default encoding, will throw an exception if read in by scala.io.Source using the (Scala) default encoding.
 
 For example, the following is the error I got due to this mismatch:
-
-{code}
+```scala
 Exception in thread "main" java.nio.BufferUnderflowException
 	at java.nio.Buffer.nextGetIndex(Unknown Source)
 	at java.nio.HeapCharBuffer.get(Unknown Source)
@@ -19,11 +18,11 @@ Exception in thread "main" java.nio.BufferUnderflowException
 	at scala.Iterator$$class.foreach(Iterator.scala:414)
 	at scala.Iterator$$$$anon$$14.foreach(Iterator.scala:265)
         ...
-{code}
+```
 Note that the error message doesn't give any clue that this is an encoding problem. I'm not sure why that's true...
 
 Anyway, my current workaround is to look up and specify the Java default encoding whenever I use Scala io, e.g.:
-{code}
+```scala
 val encoding = System.getProperty("file.encoding");
 val lines = Source.fromFile(path, encoding).getLines;
-{code}
+```

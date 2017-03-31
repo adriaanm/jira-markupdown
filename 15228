@@ -1,9 +1,7 @@
 Problem: defining 'case' clauses in a match expression where the pattern matches against a structural type is equivalent as matching against Object, rendering the case clause useless.
 
 I don't know if the problem is related to the Scala compiler or the Scala runtime, but the following code demonstrates the problem:
-
-
-{code}
+```scala
 type Problematic = { def toJSON():Object }
 println("Should return null: " + (Set[String]() match {
     // This clause will always match, raising a NoSuchMethodException
@@ -12,11 +10,10 @@ println("Should return null: " + (Set[String]() match {
     case _ =>
         null
 }))
-{code}
+```
 
 and here is the traceback:
-
-{code}
+```scala
 >> scala match-problem.scala                                                                                                                   
 warning: there were unchecked warnings; re-run with -unchecked for details
 one warning found
@@ -45,4 +42,4 @@ java.lang.NoSuchMethodException: scala.collection.immutable.Set$$EmptySet.toJSON
 	at scala.tools.nsc.ScriptRunner$$.runScript(ScriptRunner.scala:353)
 	at scala.tools.nsc.MainGenericRunner$$.main(MainGenericRunner.scala:161)
 	at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
-{code}
+```

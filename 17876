@@ -1,6 +1,5 @@
 the non-nullary method in question is in Java source code, so there isn't any way for me to make it nullary to make the warning go away.
-
-{noformat}
+```
 % cat S.scala
 trait T { def foo: Int }
 class S extends J with T
@@ -9,6 +8,6 @@ class J { public int foo() { return 0; } }
 % /usr/local/scala-2.10.0/bin/scalac -Xlint S.scala J.java
 J.java:1: warning: non-nullary method overrides nullary method
 class J { public int foo() { return 0; } }
-{noformat}
+```
 
 in my particular codebase I was able to work around it by changing "class J" to "abstract class J extends T". but it does seem like a bug.

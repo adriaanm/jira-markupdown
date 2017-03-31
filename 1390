@@ -1,7 +1,7 @@
-I superficially understand this bug and have implemented a workaround; however the workaround should probably be considered too ghastly to use.  Clearly it would be better to fix the underlying issue, which I believe is the inconsistent treatment of Nothing as I partially described in comments in SI-1572.
+I superficially understand this bug and have implemented a workaround; however the workaround should probably be considered too ghastly to use.  Clearly it would be better to fix the underlying issue, which I believe is the inconsistent treatment of Nothing as I partially described in comments in scala/bug#1572.
 
 When type parameters are used in certain positions, and then an object is parameterized on Nothing (as scala.None is) then in those positions the type parameter remains in the method signature, causing the bad class file.  To work around this I added bridges to None which explicitly state the type parameter and then call the same method in Option.
-{code}
+```scala
   override def foreach(f: Nothing => Unit) = super.foreach(f)
   override def toLeft[X](right: => X) = super.toLeft(right)
   override def toRight[X](left: => X) = super.toRight(left)
@@ -10,12 +10,12 @@ When type parameters are used in certain positions, and then an object is parame
   override def map[B](f: Nothing => B): Option[B] = super.map(f)
   override def flatMap[B](f: Nothing => Option[B]): Option[B] = super.flatMap(f)
   override def filter(p: Nothing => Boolean): Option[Nothing] = super.filter(p)  
-{code}
+```
 Once this is done it can be used from java.
 
 Here is an example method signature (filter) before and after these changes:
-{code}
+```scala
 const SI-67 = Asciz	(Lscala/Function1<TA;Ljava/lang/Boolean;>;)Lscala/Option<TA;>;;
 const SI-29 = Asciz	(Lscala/Function1<Lscala/Nothing;Ljava/lang/Boolean;>;)Lscala/Option<Lscala/Nothing;>;;
-{code}
-Notice however that after these changes scala/Nothing is in the bytecode, which as I understand it is supposed to be represented as scala.runtime.Nothing$$, and having that non-existent class referenced in classfiles causes at least the trouble described in SI-1572.
+```
+Notice however that after these changes scala/Nothing is in the bytecode, which as I understand it is supposed to be represented as scala.runtime.Nothing$$, and having that non-existent class referenced in classfiles causes at least the trouble described in scala/bug#1572.

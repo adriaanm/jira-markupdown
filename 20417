@@ -1,6 +1,5 @@
-There are several bugs reported already regarding "illegal cyclic reference", the closest one probably being SI-7642. What might be special about this one is that it involves a type member of a constructor argument ({{foo.A}} below). What seems to confuse the type checker is the fact that the constructor argument also overrides a {{val}}.
-
-{code:scala}
+There are several bugs reported already regarding "illegal cyclic reference", the closest one probably being scala/bug#7642. What might be special about this one is that it involves a type member of a constructor argument ({{foo.A}} below). What seems to confuse the type checker is the fact that the constructor argument also overrides a `val`.
+```scala
 trait Foo {
   type A
 }
@@ -19,4 +18,4 @@ class Bar2(val foo0: Foo) extends Bar {
   type B = foo0.A // OK
   val foo = foo0  // OK
 }
-{code}
+```

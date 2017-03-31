@@ -1,6 +1,5 @@
 This is from mailing list, but i haven't seen anyone file a ticket, so I create one here.
-
-{code}
+```scala
 //file: demo.scala
 val b = Array(null)
 println(b.deepToString)
@@ -27,6 +26,6 @@ java.lang.NullPointerException
     at scala.tools.nsc.ScriptRunner$$.runScript(ScriptRunner.scala:409)
     at scala.tools.nsc.MainGenericRunner$$.main(MainGenericRunner.scala:179)
     at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
-{code}
+```
 
 Looking at the library-src, scala/runtime/BoxedArray.scala:133, the method _deepToString should check for null value before calling x.toString. "x" in this case is the null element in Array, and thus generated NPE.

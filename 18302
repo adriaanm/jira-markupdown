@@ -1,5 +1,5 @@
 I'm going to fix this.
-{code}
+```scala
 trait Base[A]
 
 trait Ord1[-A] extends Base[A1 forSome { type A1 >: A }]  // fails
@@ -7,8 +7,8 @@ trait Ord2[-A, A1 >: A] extends Base[A1]                  // compiles
 
 trait Ord3[+A] extends Base[A1 forSome { type A1 <: A }]  // fails
 trait Ord4[+A, A1 <: A] extends Base[A1]                  // compiles
-{code}
-{noformat}
+```
+```
 a.scala:3: error: contravariant type A occurs in invariant position in type [-A]Base[A1 forSome { type A1 >: A }] of trait Ord1
 trait Ord1[-A] extends Base[A1 forSome { type A1 >: A }]  // fails
       ^
@@ -16,4 +16,4 @@ a.scala:6: error: covariant type A occurs in invariant position in type [+A]Base
 trait Ord3[+A] extends Base[A1 forSome { type A1 <: A }]  // fails
       ^
 two errors found
-{noformat}
+```

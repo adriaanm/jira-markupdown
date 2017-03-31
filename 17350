@@ -1,23 +1,23 @@
 Yet another bug with protected access. Stopped working in M3.
 
 t1/Base.java
-{code}
+```scala
 package t1;
 
 public class Base {
   protected Vis inner;
 }
-{code}
+```
 
 t1/Vis.java
-{code}
+```scala
 package t1;
 
 public class Vis { }
-{code}
+```
 
 Foo.scala
-{code}
+```scala
 import t1.Vis
 
 abstract class Foo extends t1.Base {
@@ -27,12 +27,12 @@ abstract class Foo extends t1.Base {
     }
   }
 }
-{code}
+```
 
 Changing trait to class fixes the problem.
 
 Crash:
-{code}
+```scala
 exception when typing Nested$class.this.Foo$Nested$$$outer().Foo$$super$inner()/class scala.reflect.internal.Trees$Apply
 t1.Vis does not take parameters in file erasureCrash.scala
 scala.reflect.internal.Types$TypeError: t1.Vis does not take parameters
@@ -246,4 +246,4 @@ Apply( // val Foo$Nested$$$outer(): Foo in trait Nested, tree.tpe=Foo
 )
 
 unrecoverable error
-{code}
+```

@@ -1,5 +1,5 @@
 I'm baffled why this won't pass the compiler:
-{code}
+```scala
 object Tester {
   implicit def pimpMyIterableInt(it: Iterable[Int]) =  
     new { def sum = it.foldLeft(0)(_ + _) }
@@ -8,22 +8,21 @@ object Tester {
     triangles.take(10).toList
   }
 }
-{code}
+```
 the error I get is:
-{code}
+```scala
 % scalac Tester.scala
 Tester.scala:5: error: value sum is not a member of Range.Inclusive
     val triangles:Stream[Int] = Stream.from(1).map(n => (1 to n).sum)
                                                                  ^
 one error found
-{code}
+```
 
 if I pull the definition of triangles out of the enclosing definition, then the compiler likes it fine, like this:
-{code}
+```scala
 object Tester {
   implicit def pimpMyIterableInt(it: Iterable[Int]) =  
     new { def sum = it.foldLeft(0)(_ + _) }
   val triangles:Stream[Int] = Stream.from(1).map(n => (1 to n).sum)
 }
-{code}
-
+```

@@ -1,31 +1,28 @@
 what happens: when converting the expresson with default arguments, we create a valdef
-
-{code}
+```scala
 val x$$1: () => Int = () => { val List(_*)=List(0); 1 }
-{code}
+```
 
 the righthand side of the function is already type-checked, but it needs to be re-type-checked (that was fix of SI-2290). for some reason, the first type-checking it changed that tree from
-
-{code}
+```scala
 {
   List(0): @scala.unchecked match {
     case List((_)*) => ()
   };
   1
 }
-{code}
+```
 
 to
-
-{code}
+```scala
 {
   (immutable.this.List.apply[Int](0): List[Int] @unchecked) match {
     case immutable.this.List.unapplySeq[Int](<unapply-selector>) <unapply> ((_)*) => ()
   };
   1
 }
-{code}
+```
 
-so we try to re-typecheck the second tree, wich fails, the typer does not go to STARmode for the {{(_)*}} thing.
+so we try to re-typecheck the second tree, wich fails, the typer does not go to STARmode for the `(_)*` thing.
 
 i don't know much about type-checking patterns, so i guess i'm a bit stuck on this one..

@@ -1,5 +1,5 @@
 here's the failure when using mixing:
-{code}
+```scala
   ~/newbug> cat p/J.java 
 package p;
 public class J {
@@ -24,18 +24,17 @@ java.lang.IllegalAccessError: tried to access field p.J.foo from class S$$
 	at scala.tools.nsc.ObjectRunner$$.run(ObjectRunner.scala:74)
 	at scala.tools.nsc.MainGenericRunner$$.main(MainGenericRunner.scala:164)
 	at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
-{code}
+```
 
 and here's it succeeding if scalac sees the class instead of the source:
-{code}
+```scala
   ~/newbug> rm *.class p/*.class
   ~/newbug> javac p/J.java                                  
   ~/newbug> ~/scala/dists/latest/bin/scalac S.scala 
   ~/newbug> ~/scala/dists/latest/bin/scala S       
 0
-{code}
+```
 
 I'm running r15827.
 
 The obvious workaround, of changing "foo" to "foo()" in S.scala, works.
-

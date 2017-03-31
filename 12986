@@ -1,19 +1,18 @@
 Because of the way !RichInt implements 'to' with 'until', it gives the wrong results for negative steps:
-
-{code}
+```scala
 scala> 3 to 1 by -1
 res34: Range = Range(3)
 
 scala> 1 to 1 by -1
 res35: Range = Range()
-{code}
+```
 
 if !RichInt.to is changed from:
-{code}
+```scala
   def to(end: Int) = until(end + 1)
-{code}
+```
 to:
-{code}
+```scala
     def to(end: int) =
       if (start < end) until(end + 1)
       else if (start > end) until(end - 1)
@@ -21,7 +20,7 @@ to:
         override def by(step: int) = this // ignore any step changes
         override def stringPrefix = "RangeS" // 'S' for singleton
       }
-{code}
+```
 it fixes the issue, though with a somewhat ugly start == end case.
 
 By the way, do you want a ticket for something this trivial?  Or is there somewhere more appropriate (perhaps one of the lists)?

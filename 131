@@ -1,5 +1,5 @@
 The problem comes from the comparison operators together with NaN, eg.
-{code}
+```scala
 object test extends Application {
   println(java.lang.Double.isNaN(0.0/0.0))
   println
@@ -9,9 +9,9 @@ object test extends Application {
   println(0.0/0.0 <= 0.0/0.0)
   println(java.lang.Double.compare(0.0/0.0, 0.0/0.0) <= 0)
 }
-{code}
+```
 is translated to:
-{code}
+```scala
   scala.this.Predef.println(scala.Boolean.box(java.lang.Double.isNaN(NaN)));
   scala.this.Predef.println();
   scala.this.Predef.println(scala.Boolean.box(false));
@@ -21,9 +21,9 @@ is translated to:
   scala.this.Predef.println(scala.Boolean.box(false));
   scala.this.Predef.println(
     scala.Boolean.box(java.lang.Double.compare(NaN,NaN).<=(0)));
-{code}
+```
 and produces the following output:
-{code}
+```scala
 true
 
 false
@@ -31,4 +31,4 @@ true
 
 false
 true
-{code}
+```

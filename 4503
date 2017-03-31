@@ -1,4 +1,4 @@
-{code}
+```scala
 import scala.collection._
 import scala.collection.generic._
 
@@ -8,19 +8,18 @@ trait MyLike[A] extends Seq[A] with GenericTraversableTemplate[A, MyColl] with S
 
 trait MyColl[A] extends MyLike[A] 
 object MyColl extends SeqFactory[MyColl]
-{code}
+```
 
 To diagnose the problem, I surrounded `BaseTypeSeq`'s `apply` method with a try/catch:
-{code}
+```scala
       case CyclicInheritance =>
         println("BaseTypeSeq error"+ (parents, elems.mkString("\n"), i))
         Thread.dumpStack()
         NoType
-{code}
+```
 
 output:
-
-{code}
+```scala
 aseTypeSeq error(List(java.lang.Object, MyLike[A]),MyColl[A]
 MyLike[A]
 Seq[A]
@@ -58,4 +57,4 @@ object MyColl extends SeqFactory[MyColl]
 object MyColl extends SeqFactory[MyColl]
                       ^
 two errors found
-{code}
+```

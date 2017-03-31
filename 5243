@@ -3,16 +3,16 @@ Hi Prokopec,
 it seems you fixed ++, but missed update.
 
 As far as I understand, either overriding update from MapLike with
-{code}
+```scala
 override def updated [B1 >: B](key: A, value: B1): TreeMap[A, B1] = updated(key, value)
-{code}
+```
 or copying it from updated like this
-{code}
+```scala
 override def update [B1 >: B](key: A, value: B1): TreeMap[A, B1] = {
   val newsize = if (tree.lookup(key).isEmpty) size + 1 else size
   TreeMap.make(newsize, tree.update(key, value))
 } 
-{code}
+```
 should work.
 
 "update" is deprecated, but I guess that small fix won't hurt until the method is removed completely, considering that it might still be heavily used until that happens.

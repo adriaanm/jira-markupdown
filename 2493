@@ -3,8 +3,7 @@ Just FYI, I think the following is another concrete example of this bug (or simi
 This is a code that use Google Mpas API in Android. In Google Maps API, MapView class has a static inner class witch extends from android.view.ViewGroup.LayoutParams which in turns another static inner class of ViewGroup.
 
 Here is the sample code:
-
-{code}
+```scala
 import android.os.Bundle
 import android.widget.LinearLayout
 
@@ -21,18 +20,18 @@ class TestMap extends MapActivity
         val mapView: MapView = null // This line also crash compiler
     }
 }
-{code}
+```
 
 When using the following commands to compile
-{code}
+```scala
 /opt/scala-svn/bin/scalac -cp android.jar:maps.jar Test.scala
-{code}
+```
 
 The compiler will complain 
-{code}
+```scala
 error: error while loading MapView, Missing dependency 'class android.view.ViewGroup$$LayoutParams', required by /opt/android-sdk-update-manager/add-ons/google_apis-7_r01/libs/maps.jar(com/google/android/maps/MapView.class)
 error: error while loading LayoutParams, Missing dependency 'class android.view.ViewGroup$$LayoutParams', required by /opt/android-sdk-update-manager/add-ons/google_apis-7_r01/libs/maps.jar(com/google/android/maps/MapView$$LayoutParams.class)
 two errors found
-{code}
+```
 
 The scala compiler version is svn trunk at 2010-03-26

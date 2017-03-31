@@ -1,47 +1,45 @@
-I guess I should be more clear about what I'm trying to accomplish - it seems that I reduced the code too much. Paul, your idea works in this example, but in the full code {{T}} must be bound in the body, so your workaround is not general enough. Thanks anyway!
+I guess I should be more clear about what I'm trying to accomplish - it seems that I reduced the code too much. Paul, your idea works in this example, but in the full code `T` must be bound in the body, so your workaround is not general enough. Thanks anyway!
 
 Why do I need {{T}}? I'm unable to explain that without a slightly more complex example from my research project, which I present in the rest of this comment. Sorry for the length, I already spent some time trying to simplify the code. Feel free to skip the rest.
 
 [Some of you, say Adrian Moors, will recognize below some similarities with Lightweight Modular Staging, Delite, Scala Integrated Query and all that stuff; I have a paper draft which discusses the differences, should you care.]
 
-In my project, among tons of other things I manipulate ASTs representing programs on collection. The above code derives from the AST node representing {{Traversable.view}}.
-Let's try to represent an AST node for a {{map}} operation; it should also contain ASTs for its subnodes, so that clients can examine the whole expressions. An AST for an expression of type {{T}} has type {{Exp\[T\]}} in this setup. To keep it simple, I'll first show such a node on lists, where binding {{T}} is already required. Also, let's make things more interesting: these nodes should be well-typed, and I want to write an interpreter for them; moreover I want to use the Scala typesystem to also prove that this interpreter is type-correct.
-{code}
+In my project, among tons of other things I manipulate ASTs representing programs on collection. The above code derives from the AST node representing `Traversable.view`.
+Let's try to represent an AST node for a `map` operation; it should also contain ASTs for its subnodes, so that clients can examine the whole expressions. An AST for an expression of type `T` has type `Exp\[T\]` in this setup. To keep it simple, I'll first show such a node on lists, where binding `T` is already required. Also, let's make things more interesting: these nodes should be well-typed, and I want to write an interpreter for them; moreover I want to use the Scala typesystem to also prove that this interpreter is type-correct.
+```scala
 trait Exp[+T] {
   def interpret(): T
 }
 case class ListMapNode[T, U](coll: Exp[List[T]], mapping: Exp[T => U]) extends Exp[List[U]] {
   def interpret(): List[U] = coll.interpret() map mapping.interpret()
 }
-{code}
-Note that mapping can be applied to the collection only because {{T}} appears in both. Otherwise, I'd need to use casts which might fail at runtime.
+```
+Note that mapping can be applied to the collection only because `T` appears in both. Otherwise, I'd need to use casts which might fail at runtime.
 
-Writing the code above is not a problem since it is restricted to lists, but that restriction is stupid: I want to manipulate programs using any collection, I want a single node to represent {{map}} on all of them, and I want the result to be as precise. The type of this node will therefore be at least as complex as the type of {{map}}; here's the minimal version:
-{code}
+Writing the code above is not a problem since it is restricted to lists, but that restriction is stupid: I want to manipulate programs using any collection, I want a single node to represent `map` on all of them, and I want the result to be as precise. The type of this node will therefore be at least as complex as the type of `map`; here's the minimal version:
+```scala
 case class MapNode[T, Repr <: TraversableLike[T, Repr],
                    U, That](base: Exp[Repr], f: Exp[T => U])
                           (implicit val c: CanBuildFrom[Repr, U, That]) extends Exp[That] {
   def interpret() = base.interpret() map f.interpret()
   def copy(base: Exp[Repr], f: Exp[T => U]) = MapNode[T, Repr, U, That](base, f)
 }
-{code}
-\[The {{copy}} method is needed for transformations.\]
-This example requires both {{T}} and {{Repr}} in its body, even to typecheck {{interpret()}}. If I use wildcards instead of {{T}}, I get this code, which is rightfully rejected by the REPL - the two wildcards might refer to different types, so they aren't compatible.
-
-{code}
+```
+\[The `copy` method is needed for transformations.\]
+This example requires both `T` and `Repr` in its body, even to typecheck `interpret()`. If I use wildcards instead of `T`, I get this code, which is rightfully rejected by the REPL - the two wildcards might refer to different types, so they aren't compatible.
+```scala
 case class MapNode[Repr <: TraversableLike[_, Repr],
                    U, That](base: Exp[Repr], f: Exp[_ => U])
                           (implicit val c: CanBuildFrom[Repr, U, That]) extends Exp[That] {
   def interpret() = base.interpret() map f.interpret()
 }
-{code}
-
-{code}
+```
+```scala
 <console>:25: error: type mismatch;
  found   : _$2 => U where type _$2
  required: Any => ?
          def interpret() = base.interpret() map f.interpret()
                                                            ^
-{code}
-If I now try to write type-safe transformations on these ASTs, this bug gets even more annoying, but I won't go into the details. I'll just say that it's because of those details that [my code|https://github.com/ps-mr/LinqOnSteroids/blob/38cc30e58dc1910fe3c099f25061adf69ea2bb4b/src/main/scala/ivm/expressiontree/traversableOperators.scala#L21] is even crazier.
-If you want to see what I try to write as client code, take a look at [this attempt to write a type-safe transformation|https://github.com/ps-mr/LinqOnSteroids/blob/cd4a9a0a062117ad44328b5365824e7eaebd4c3f/src/test/scala/ivm/expressiontree/TypeTests.scala#L149]; in the end I managed, but only with a lot of manual type annotations.
+```
+If I now try to write type-safe transformations on these ASTs, this bug gets even more annoying, but I won't go into the details. I'll just say that it's because of those details that [my code](https://github.com/ps-mr/LinqOnSteroids/blob/38cc30e58dc1910fe3c099f25061adf69ea2bb4b/src/main/scala/ivm/expressiontree/traversableOperators.scala#L21) is even crazier.
+If you want to see what I try to write as client code, take a look at [this attempt to write a type-safe transformation](https://github.com/ps-mr/LinqOnSteroids/blob/cd4a9a0a062117ad44328b5365824e7eaebd4c3f/src/test/scala/ivm/expressiontree/TypeTests.scala#L149); in the end I managed, but only with a lot of manual type annotations.

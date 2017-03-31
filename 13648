@@ -1,15 +1,15 @@
 J.java:
-{code}
+```scala
 class J { static void foo(Class c) { } }
-{code}
+```
 
 S.scala:
-{code}
+```scala
 object S { J.foo(null) }
-{code}
+```
 
 transcript showing separate compilation with javac works and the error when you try to pass both files to scalac:
-{code}
+```scala
   ~/newbug> javac J.java
   ~/newbug> ~/scala/dists/latest/bin/scalac S.scala       
   ~/newbug> rm *.class                             
@@ -18,8 +18,8 @@ J.java:1: error: class Class takes type parameters
 class J { static void foo(Class c) { } }
                           ^
 one error found
-{code}
+```
 
 I'm running r15724.
 
-This bug is especially toxic at the moment because the obvious workaround of changing Class to Class<?> tends (for me, at least) to trigger bug SI-1176. The only reason I even discovered this bug was because I was trying to work around SI-1176.
+This bug is especially toxic at the moment because the obvious workaround of changing Class to Class<?> tends (for me, at least) to trigger bug scala/bug#1176. The only reason I even discovered this bug was because I was trying to work around scala/bug#1176.

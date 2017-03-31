@@ -1,6 +1,5 @@
 I don't know if this is the right place to report it, but this code demonstrates an issue when path dependent types are used as type parameters for generic types:
-
-{code}
+```scala
 	trait SubtypeOf[+T] {
 		type Type <: T
 	}
@@ -24,6 +23,6 @@ I don't know if this is the right place to report it, but this code demonstrates
 	def fails(o :Owned[Owner.type]) :Owned[Owner.type] = o.next.get.next.get
 
 	def fix(o :Owned[Owner.type]) :Owned[Owner.type] = (o.next.get :Owned[Owner.type]).next.get
-{code}
+```
 
 This is not as academic as it might look, the code is derived from an attempt to create 'type boxes' grouping declarations of related types. So Owned is in fact a couple of dozen classes forming a component tree, where properties of those classes can be of types declared by passed Owner. This way one can duplicate a component hierarchy to add minor changes by simply overriding a type definition in Owner. SubtypeOf is a workaround to allow 'overridable covariant type declarations', so that adding a new component hierarchy would require only overriding changed types, instead of defining all types from scratch.

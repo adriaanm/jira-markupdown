@@ -12,7 +12,7 @@ class Bar {
 }
 {code}
 
-I've debugged the problem inside the Scala IDE, and the reason why this happen is that `askTypeAt` returns the enclosing `foo` DefDef method symbol, instead of the expected Select `Bar.bar` node. The enclosing method is returned becuase all Trees inside the method block have a *TransparentPosition*, all the way down. The impelmentation of `askTypeAt` relies on `RangePositions.Locator.traverse` to return the deepest, non-transparent, tree that includes the passed position. And, because all positions are transparent inside the `foo` method's body, then the `foo` symbol is returned.
+I've debugged the problem inside the Scala IDE, and the reason why this happen is that `askTypeAt` returns the enclosing `foo` DefDef method symbol, instead of the expected Select `Bar.bar` node. The enclosing method is returned becuase all Trees inside the method block have a **TransparentPosition**, all the way down. The impelmentation of `askTypeAt` relies on `RangePositions.Locator.traverse` to return the deepest, non-transparent, tree that includes the passed position. And, because all positions are transparent inside the `foo` method's body, then the `foo` symbol is returned.
     
 An additional interesting fact is that it looks like one of the transformation
 happening during typechecking is to blame for updating the Tree with the wrong kind of positions. In fact, if the source file isn't typechecked, the correct symbol is returned.

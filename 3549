@@ -1,5 +1,5 @@
 Sorry, I was going to open this, hadn't gotten to it.  Here is the issue.  Observe these classes:
-{code}
+```scala
 public class J1 {
   public class Inner1 { }
   public static class Inner2 { }
@@ -11,12 +11,12 @@ public class J2 {
 public class Q {
   public void passInner(J1.Inner1 myInner) {}
 }
-{code}
+```
 When scala parses the method signatures in J2, it treats them as member selections.  In scala we write J1.Inner1 for the static version and J1#Inner1 for the instance, but java offers no such crutch.  The reason I couldn't dash off an easy fix is that at the parsing stage it doesn't yet know which it is.
 
 In JavaParsers I could do this:
-{code}
+```scala
 - Select(qual, name.toTypeName)
 + SelectFromTypeTree(convertToTypeId(qual), name.toTypeName)
-{code}
+```
 and in fact that fixes this bug, but then breaks anything that needed the guess to go the other way.  So I will need some input on how to defer it long enough to obtain the type information.

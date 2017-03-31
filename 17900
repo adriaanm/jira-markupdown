@@ -1,6 +1,5 @@
 The following session of power REPL shows the problem. See comments below.
-
-{code}
+```scala
 scala
 Welcome to Scala version 2.10.0 (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_37).
 Type in expressions to have them evaluated.
@@ -30,6 +29,6 @@ res2: $r.intp.global.Symbol = type T
 
 scala> res2.getClass
 res3: Class[_ <: $r.intp.global.Symbol] = class scala.reflect.internal.Symbols$AbstractTypeSymbol
-{code}
+```
 
 Last few lines verify that this is not printing problem. The type of annotation has type argument that is not determined. One could think that type inference does not happen for polymorphic annotations but Adriaan checked that and it turns out that we properly type the annotation (including performing correct type inference) but somehow that tree doesn't get back to DefDef node.

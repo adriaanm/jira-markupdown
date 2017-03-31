@@ -1,6 +1,5 @@
 This is not specific to macro annotations. For example, this will also spuriously fail to compile:
-
-{code}
+```scala
 import scala.reflect.macros.Context
 import scala.language.experimental.macros
 
@@ -11,6 +10,6 @@ class qqq(count: Int) {
 object qqq {
   def qqqImpl(c: Context)(annottees: c.Expr[Any]*):c.Expr[Any] = ???
 }
-{code}
+```
 
 The key here is that the object that defines a macro impl has a companion with a constructor that takes a primitive. If you rename either the object or its companion, everything will start working again.

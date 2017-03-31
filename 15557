@@ -1,7 +1,5 @@
 Given this code:
-
-
-{code}
+```scala
 object CompilerBreak {
   def main(args: Array[String]) {
     val break = BreakImpl(1)
@@ -17,11 +15,10 @@ trait Break {
 }
 
 case class BreakImpl(protected val break: Int) extends Break
-{code}
+```
 
 the compiler crashes with:
-
-{code}
+```scala
 scala.tools.nsc.symtab.Types$$TypeError: value break$$1 cannot be accessed in BreakImpl
 	at scala.tools.nsc.typechecker.Contexts$$Context.error(Contexts.scala:273)
 	at scala.tools.nsc.typechecker.Infer$$Inferencer.error(Infer.scala:213)
@@ -136,16 +133,14 @@ scala.tools.nsc.symtab.Types$$TypeError: value break$$1 cannot be accessed in Br
 	at scala.tools.nsc.Global$$GlobalPhase.run(Global.scala:252)
 	at scala.tools.nsc.Global$$Run.compileSources(Global.scala:733)
 	at scala.tools.nsc.Global$$Run.compile(Global.scala:813)
-{code}
+```
 
 Defining the same classes and executing the code using the REPL succeeds.  Changing the implementation of BreakImpl to
-
-
-{code}
+```scala
 case class BreakImpl(break2: Int) extends Break {
   override protected val break = break2
 }
-{code}
+```
 
 also seems to compile correctly.
 

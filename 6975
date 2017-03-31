@@ -1,15 +1,13 @@
 But how common is the case that code does not get inlined because of this? I worry because a very common and simple and often micro-benchmarked case is suffering precisely because of the issues I mentioned. Consider this code:
-
-{code}
+```scala
 class XXS {
   private val array = Array.range(0, 100)                                                                              
   def tst = { var sum = 0; for (i <- 0 until array.length) sum += array(i); sum }       
 }
-{code}
+```
 
 The method tst is compiled like this:
-
-{code}
+```scala
 public int tst();
   Code:
    0:	new	#15; //class scala/runtime/IntRef
@@ -76,7 +74,7 @@ public int tst();
    122:	iadd
    123:	istore	8
    125:	goto	59
-{code}
+```
 
 The overheads here are:
 
@@ -88,4 +86,4 @@ The overheads here are:
 
 65-92: the duplicated apply that you have mentioned.
 
-Now, eliminating Range seems very hard. Eliminating RichInt seems difficult. But IntRef... it was *created* because of the Closure that got eliminated. Can't the process that created it be reversed during or after ClosureElimination?
+Now, eliminating Range seems very hard. Eliminating RichInt seems difficult. But IntRef... it was **created** because of the Closure that got eliminated. Can't the process that created it be reversed during or after ClosureElimination?

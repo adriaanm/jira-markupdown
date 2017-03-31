@@ -1,5 +1,5 @@
 The following code (on r20623) causes the compiler to crash:
-{code}
+```scala
 object Foo {
   def test(s: String) = {
     (s: Seq[Char]) match {
@@ -12,12 +12,12 @@ object Foo {
     }
   }
 }
-{code}
+```
 
 Removing one white space in the second pattern or not using rest2 in action seems to fix the problem.
 
 The error:
-{code}
+```scala
 Exception in thread "main" java.lang.Error: symbol value rest2 does not exist in Foo.test
 	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:844)
 	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:496)
@@ -82,4 +82,4 @@ Exception in thread "main" java.lang.Error: symbol value rest2 does not exist in
 	at scala.tools.nsc.Main$$.process(Main.scala:110)
 	at scala.tools.nsc.Main$$.main(Main.scala:124)
 	at scala.tools.nsc.Main.main(Main.scala)
-{code}
+```

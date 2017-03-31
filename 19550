@@ -1,6 +1,5 @@
-[~roland.kuhn] reported a hang in the IDE which I believe is due to the following:
-
-{noformat}
+@rkuhn reported a hang in the IDE which I believe is due to the following:
+```
 % scala-hash v2.11.5
 Welcome to Scala version 2.11.5-20150101-184742-3fafbc204f (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_65).
 Type in expressions to have them evaluated.
@@ -37,11 +36,10 @@ scala> NoSymbol.outerClass # hangs
     at scala.reflect.internal.Symbols$Symbol.outerClass(Symbols.scala:2059)
     at $line13.$read$$iw$$iw$$iw$$iw$$iw$$iw$$iw$$iw$$iw$$iw$$iw$$iw$$iw$$iw$$iw$$iw$$iw$$iw$.<init>(<console>:34)
     at $line13.$read$$iw$$iw$$iw$$iw$$iw$$iw$$iw$$iw$$iw$$iw$$iw$$iw$$iw$$iw$$iw$$iw$$iw$$iw$.<clinit>(<console>)
-{noformat}
+```
 
 In the IDE crash, we got to `outerClass` via:
-
-{noformat}
+```
 at scala.reflect.internal.Symbols$Symbol.outerClass(Symbols.scala:2057)
 at scala.tools.nsc.transform.ExplicitOuter.scala$tools$nsc$transform$ExplicitOuter$$isInner(ExplicitOuter.scala:43)
 at scala.tools.nsc.transform.ExplicitOuter.transformInfo(ExplicitOuter.scala:177)
@@ -56,4 +54,4 @@ at scala.tools.nsc.transform.Erasure$$anonfun$javaSig$1.apply(Erasure.scala:191)
 at scala.reflect.internal.SymbolTable.enteringPhase(SymbolTable.scala:235)
 at scala.tools.nsc.transform.Erasure.javaSig(Erasure.scala:191)
 at org.scalaide.core.internal.compiler.JavaSig$JavaSignature$$anonfun$1.apply(JavaSig.scala:63)
-{noformat}
+```

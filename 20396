@@ -1,14 +1,11 @@
 I have the following code (where {{ownerRef}} is of type {{AtomicReference[Either[TrieMap[Thread, NestingLevel], (Thread, NestingLevel)]]}}):
-
-{code:java}
+```java
 			val maybeBlockingTxn = ownerRef.get.fold(_.values.headOption,{pair => Some(pair._2)})
-{code}
+```
 
 
-I expect that when the {{Left}} branch of the {{fold}} is taken, the return value will be of type {{Option[NestingLevel]}}. Instead, with high-frequency in the application I am running, I get an exception whose stack trace bottoms out as follows:
-
-
-{code:java}
+I expect that when the `Left` branch of the `fold` is taken, the return value will be of type `Option[NestingLevel]`. Instead, with high-frequency in the application I am running, I get an exception whose stack trace bottoms out as follows:
+```java
 [error] (run-main-0) java.util.NoSuchElementException: next on empty iterator
 java.util.NoSuchElementException: next on empty iterator
 	at scala.collection.Iterator$$anon$2.next(Iterator.scala:39)
@@ -20,7 +17,7 @@ java.util.NoSuchElementException: next on empty iterator
 	at scala.collection.AbstractIterable.head(Iterable.scala:54)
 	at scala.collection.TraversableLike$class.headOption(TraversableLike.scala:412)
 	at scala.collection.AbstractTraversable.headOption(Traversable.scala:104)
-{code}
+```
 
 
 The exception originates in the line of code reproduced above.

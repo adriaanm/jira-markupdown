@@ -1,4 +1,4 @@
-{code}
+```scala
 class ImplicitNotFound {
 
   def main(arguments: Array[String]) {
@@ -18,7 +18,7 @@ class ImplicitNotFound {
     }
   }
 }
-{code}
+```
 
 I think this is a bug, because:
  # {{val seq: Seq[Int] = view(1)}} is valid.
@@ -26,9 +26,9 @@ I think this is a bug, because:
  # {{val seq: Seq[Int] = 1}} should be converted to {{val seq: Seq[Int] = view(1)}}, but it's not.
 
 Workaround:
-{code}
+```scala
 type InvariantSeq[A] = Seq[A]
 implicit def view[A: Manifest](a: Int): InvariantSeq[A] = ???
 val invariantSeq: InvariantSeq[Int] = 1 // OK
 val seq: Seq[Int] = invariantSeq // OK
-{code}
+```

@@ -1,25 +1,22 @@
 This works:
-
-{code:scala}
+```scala
 class Foo {
   var i = 0
   val func = Seq { i = i + 1; i } apply _
   val func2 = Seq { i += 1; i } apply (_: Int)
 }
-{code}
+```
 
 This crashes the compiler:
-
-{code:scala}
+```scala
 class Foo {
   var i = 0
   val func = Seq { i += 1; i } apply _
 }
-{code}
+```
 
 This affects both 2.12.0-M4 and 2.11.8.
-
-{noformat}
+```
 error: java.lang.AssertionError: assertion failed:
   transformCaseApply: name = i tree = i / class scala.reflect.internal.Trees$Ident
      while compiling: foo.scala
@@ -296,15 +293,14 @@ Exception in thread "main" java.lang.AssertionError: assertion failed:
 	at scala.tools.nsc.Driver.process(Driver.scala:55)
 	at scala.tools.nsc.Driver.main(Driver.scala:68)
 	at scala.tools.nsc.Main.main(Main.scala)
-{noformat}
+```
 
 The following fails with a Bad superClass error in 2.12.0-M4 and with a NullPointerException in 2.11.8:
-
-{code:scala}
+```scala
 class Foo {
   val func = Seq { var i = 0; i += 1; i } apply _
 }
-{code}
+```
 
 {noformat:title=2.12.0-M4}
 java.lang.AssertionError: assertion failed: Bad superClass for class <error>: <none>
@@ -370,7 +366,7 @@ java.lang.AssertionError: assertion failed: Bad superClass for class <error>: <n
 error: Error while emitting foo.scala
 assertion failed: Bad superClass for class <error>: <none>
 one error found
-{noformat}
+```
 
 {noformat:title=2.11.8}
 error: java.lang.NullPointerException
@@ -697,4 +693,4 @@ Exception in thread "main" java.lang.NullPointerException
 	at scala.tools.nsc.Driver.process(Driver.scala:51)
 	at scala.tools.nsc.Driver.main(Driver.scala:64)
 	at scala.tools.nsc.Main.main(Main.scala)
-{noformat}
+```

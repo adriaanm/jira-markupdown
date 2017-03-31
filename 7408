@@ -1,6 +1,5 @@
-The failure mode changed in 2.10.0. In https://github.com/scala/scala/pull/826, the return type of the synthetic copy method was inferred, rather than explicitly provided. If the type parameter is named {{_}}, it is inferred as {{CaseClass[Any]}}.
-
-{code}
+The failure mode changed in 2.10.0. In https://github.com/scala/scala/pull/826, the return type of the synthetic copy method was inferred, rather than explicitly provided. If the type parameter is named `_`, it is inferred as `CaseClass[Any]`.
+```scala
 ~/code/scala2 scala210
 Welcome to Scala version 2.10.0-20121024-085118-2c554249fd (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_27).
 Type in expressions to have them evaluated.
@@ -38,20 +37,18 @@ x: CaseTest[Any] = CaseTest()
 
 scala> x.copy
                                                def copy[_](someData: String): CaseTest[Any]  
-{code}
+```
 
 I figured I'd be able to trip up Value Classes with this, but while we can generate some funny looking signatures, they seem to go unnoticed.
-
-{code}
+```scala
 scala> class CCC[_](val value: String) extends AnyVal { def foo[_]: Option[`_`] = None }
 ...
           final def foo$extension[_ >: Nothing <: Any, _ >: Nothing <: Any]($this: CCC[_]): Option[Any] = scala.None;
-{code}
+```
 
 That sort of signature comes up without the _, of course, but seems to be innocuous as everything is symful by that stage.
-
-{code}
+```scala
 scala> class C[A](val value: String) extends AnyVal { def foo[A] = this }
 ...
           final def foo$extension[A >: Nothing <: Any, A >: Nothing <: Any]($this: C[A]): C[A] = $this;
-{code}
+```

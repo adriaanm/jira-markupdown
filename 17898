@@ -1,6 +1,5 @@
 This REPL session explains it the best:
-
-{code}
+```scala
 Welcome to Scala version 2.10.0 (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_37).
 Type in expressions to have them evaluated.
 Type :help for more information.
@@ -13,10 +12,10 @@ res0: reflect.runtime.universe.Symbol = method invoke
 
 scala> res0.annotations
 res1: List[reflect.runtime.universe.Annotation] = List()
-{code}
+```
 
-The relevant piece of code is in [JavaMirrors|https://github.com/scala/scala/blob/master/src/reflect/scala/reflect/runtime/JavaMirrors.scala#L1107]:
-{code}
+The relevant piece of code is in [JavaMirrors](https://github.com/scala/scala/blob/master/src/reflect/scala/reflect/runtime/JavaMirrors.scala#L1107):
+```scala
 private def jmethodAsScala1(jmeth: jMethod): MethodSymbol = {
       val clazz = sOwner(jmeth)
       val meth = clazz.newMethod(newTermName(jmeth.getName), NoPosition, toScalaMethodFlags(jmeth.getModifiers))
@@ -29,6 +28,6 @@ private def jmethodAsScala1(jmeth: jMethod): MethodSymbol = {
       if ((jmeth.getModifiers & JAVA_ACC_VARARGS) != 0) meth.setInfo(arrayToRepeated(meth.info))
       meth
     }
-{code}
+```
 
 It forgets to load information about thrown exceptions and synthesize the right annotations.

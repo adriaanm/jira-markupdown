@@ -1,6 +1,5 @@
 Here is a code sample in which this exception occurs. I have attached the full exception output.
-
-{code}
+```scala
 trait Foo[@specialized(Int) A] {
   def fun[@specialized(Int) B](init: B)(f: (B, A) => B): B
 }
@@ -11,14 +10,14 @@ class Bar(values: Array[Int]) extends Foo[Int] {
     f(init, arr(0))
   }
 }
-{code}
+```
 
 The exception starts: 
-{code}
+```scala
 [error] uncaught exception during compilation: java.lang.IllegalArgumentException
 java.lang.IllegalArgumentException: Could not find proxy for val arr: Array[Int] in List(value arr, method fun$mcI$sp, class Bar, package <empty>, package <root>) (currentOwner= method fun$mIcI$sp )
 	at scala.tools.nsc.transform.LambdaLift$LambdaLifter.scala$tools$nsc$transform$LambdaLift$LambdaLifter$$searchIn$1(LambdaLift.scala:303)
 	at scala.tools.nsc.transform.LambdaLift$LambdaLifter$$anonfun$scala$tools$nsc$transform$LambdaLift$LambdaLifter$$searchIn$1$2.apply(LambdaLift.scala:308)
 	at scala.tools.nsc.transform.LambdaLift$LambdaLifter$$anonfun$scala$tools$nsc$transform$LambdaLift$LambdaLifter$$searchIn$1$2.apply(LambdaLift.scala:308)
 	at scala.Option.getOrElse(Option.scala:120)
-{code}
+```

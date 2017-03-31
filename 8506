@@ -1,5 +1,5 @@
 That compiles if it's private\[this\], which is how you can tell it's the correspondence between getter and field. With vars it's even more booched thanks to the setter. See also the old comment of mine which retronym brought up in some other ticket recently.
-{code}
+```scala
     case class Getter(tree: ValDef) extends BaseGetter(tree) {
       override def derivedSym = if (mods.isDeferred) basisSym else basisSym.getter(enclClass)
       private def derivedRhs  = if (mods.isDeferred) EmptyTree else fieldSelection
@@ -23,4 +23,4 @@ That compiles if it's private\[this\], which is how you can tell it's the corres
       }
       override def derivedTree: DefDef = newDefDef(derivedSym, derivedRhs)(tpt = derivedTpt)
     }
-{code}
+```

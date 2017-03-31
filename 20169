@@ -1,6 +1,5 @@
 Scala 2.9:
-
-{noformat}
+```
 scala> val m = collection.mutable.ListMap[Int, Int]()
 m: scala.collection.mutable.ListMap[Int,Int] = Map()
 
@@ -24,11 +23,10 @@ res5: m.type = Map(5 -> 5, 4 -> 4, 3 -> 3, 2 -> 2, 1 -> 1)
 
 scala> m -= 3
 res6: m.type = Map(5 -> 5, 4 -> 4, 2 -> 2, 1 -> 1)
-{noformat}
+```
 
 but Scala 2.10.6 scrambles the order:
-
-{noformat}
+```
 scala> val m = collection.mutable.ListMap[Int, Int]()
 m: scala.collection.mutable.ListMap[Int,Int] = Map()
 
@@ -52,7 +50,7 @@ res5: m.type = Map(4 -> 4, 2 -> 2, 1 -> 1, 3 -> 3, 5 -> 5)
 
 scala> m -= 3
 res6: m.type = Map(1 -> 1, 2 -> 2, 4 -> 4, 5 -> 5)
-{noformat}
+```
 
 The intent that either ListMap should preserve insertion order wasn't explicit in the doc until https://github.com/scala/scala/pull/4788 and https://github.com/scala/scala/pull/4994, and there's some confusion at http://stackoverflow.com/questions/7539924/why-do-mutable-and-immutable-listmaps-have-different-orders-in-scala and https://twitter.com/travisbrown/status/735201036873400321 about what the behavior should properly be.
 

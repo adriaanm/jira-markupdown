@@ -1,10 +1,10 @@
 scalatest has a problem with high memory consumption again:
 https://github.com/scalatest/scalatest/pull/235#issuecomment-35303871
 
-It requires about 2GB to compile its tests. I was digging into it a little bit by capturing memory snapshot at the end of typer. Yourkit suggests that we are leaking memory through {{undoLog}}. Specifically, it shows two things:
+It requires about 2GB to compile its tests. I was digging into it a little bit by capturing memory snapshot at the end of typer. Yourkit suggests that we are leaking memory through `undoLog`. Specifically, it shows two things:
 
 1. UndoLog is a class at the top of the list of classes with the highest memory retention (right after Global, ::,  etc.)
-2. Object with biggest distance from GC root is {{TypeConstraint}} and its distance from GC root is 3 897 019. That is through series of {{::}} objects that contain {{Tuple2}}.
+2. Object with biggest distance from GC root is `TypeConstraint` and its distance from GC root is 3 897 019. That is through series of `::` objects that contain `Tuple2`.
 
 I can't imagine that we would go almost 4m deep in undoLog stack for any single compilation unit so it seems like we are leaking memory somehow. 
 

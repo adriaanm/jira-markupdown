@@ -1,6 +1,5 @@
 As of r22631, the REPL in quick is broken/misconfigured in some way. For example, try:
-
-{code}
+```scala
 build$$ quick/bin/scala
 
 import scala.xml._
@@ -9,16 +8,15 @@ def x(n: Node): Node =
     case <d>{_}</d> => <d>abc</d>
     case other => other
   }
-{code}
+```
 
 The result is a pretty exotic crash involving typer errors and exceptions. In the middle appears the following:
-
-{code}
+```scala
 Exception in thread "main" java.io.IOException: class file needed by ParIterableLike is missing.
 reference value forkjoin of package concurrent refers to nonexisting symbol.
         at scala.reflect.generic.UnPickler$$Scan.errorMissingRequirement(UnPickler.scala:754)
         at scala.tools.nsc.symtab.classfile.UnPickler$$CompileScan.errorMissingRequirement(UnPickler.scala:43)
         at scala.tools.nsc.symtab.classfile.UnPickler$$CompileScan.errorMissingRequirement(UnPickler.scala:28)
-{code}
+```
 
 In all likelihood, forkjoin is simply missing from a path somewhere.

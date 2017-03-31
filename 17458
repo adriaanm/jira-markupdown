@@ -9,7 +9,7 @@ NOTE: These scripts can not be included in partest since partest does not have a
 
 Including scripts here for convenience.
 Checking for the same file name:
-{code}
+```scala
 ( (sys.props("java.class.path") split ':').toList
     flatMap (p => new scala.tools.nsc.io.Jar(p).iterator)
     map (_.getName) 
@@ -18,11 +18,10 @@ Checking for the same file name:
     collect { case (k, vs) if vs.size > 1 => f"$k%30s -> $vs" }
     foreach println
 ) 
-{code}
+```
 
 Checking that a package is not split between two jars:
-
-{code}
+```scala
 val jars = (sys.props("java.class.path") split ':').toList
 
 val jarPackages = jars.map(j => j.toString.drop(j.toString.lastIndexOf("/") + 1)).
@@ -40,5 +39,5 @@ jarPackages.foreach {case (n1, j) =>
     }
   }
 }
-{code}
+```
 

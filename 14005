@@ -1,22 +1,22 @@
-I was working on bug SI-84 and the first thing I noticed was that it doesn't do that.  So I thought someone had fixed it, but investigation revealed that fsc never reused a compiler instance even on identical consecutive commands, so of course stale cache entries were not a problem.
+I was working on bug scala/bug#84 and the first thing I noticed was that it doesn't do that.  So I thought someone had fixed it, but investigation revealed that fsc never reused a compiler instance even on identical consecutive commands, so of course stale cache entries were not a problem.
 
 The reason is this: before reusing a compiler instance, CompileServer verifies that the settings are identical by calling the custom equals method in Settings, which does this:
-{code}
+```scala
 List.forall2 (this.allSettings, s.allSettings)(_==_)
-{code}
+```
 This is a very interesting trap, because all the relevant fields of all the settings are indeed equal, but this still always returns false -- in fact no two settings ever compare equal.  The reason is that the logic of the equals methods looks like this:
-{code}
+```scala
     override def equals(that: Any) = that match {
       case bs: BooleanSetting => this.name == bs.name && this.value == bs.value
       case _ => false
     }
-{code}
+```
 The individual Setting (singular) objects being compared were born in two different Settings (plural) objects, so they are not the same class, and the case bs: BooleanSetting always fails.  It should instead look like this:
-{code}
+```scala
     override def equals(that: Any) = that match {
       case bs: Settings#BooleanSetting => this.name == bs.name && this.value == bs.value
       case _ => false
     }
-{code}
+```
 
-I have attached a patch against trunk that fixes this issue -- and with that applied I'm "happy" to say that bug SI-84 is still a valid bug.  This took me a long time to figure out and seems like a very easy trap to fall into, so I wonder if anyone has ideas as to how to make it harder to burn yourself this way.
+I have attached a patch against trunk that fixes this issue -- and with that applied I'm "happy" to say that bug scala/bug#84 is still a valid bug.  This took me a long time to figure out and seems like a very easy trap to fall into, so I wonder if anyone has ideas as to how to make it harder to burn yourself this way.

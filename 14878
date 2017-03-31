@@ -1,11 +1,9 @@
 I don't think this problem is directly related to delimited continuations except that the plugin is generating some code that causes the lambda lift phase to crash.  I have a workaround below.
-
-{code}
+```scala
 $$ scalac -version
 Scala compiler version 2.8.0.r20331-b20100101020206 -- Copyright 2002-2010, LAMP/EPFL
-{code}
-
-{code}
+```
+```scala
 $$ cat test.scala
 object ShiftReset {
   import scala.continuations.ControlContext._
@@ -20,9 +18,8 @@ object ShiftReset {
       }
    }
 }
-{code}
-
-{code}
+```
+```scala
 $$ scalac -classpath ./build/build.library -Xplugin:./build/pack/selectivecps-plugin.jar -Xprint:selectivecps test.scala
 [[syntax trees at end of selectivecps]]// Scala source: test.scala
 package <empty> {
@@ -344,11 +341,10 @@ Exception in thread "main" java.lang.Error: no-symbol does not have owner
 	at scala.tools.nsc.Main$$.process(Main.scala:110)
 	at scala.tools.nsc.Main$$.main(Main.scala:124)
 	at scala.tools.nsc.Main.main(Main.scala)
-{code}
+```
 
 I do have a work around by moving the second shift into a named function
-
-{code}
+```scala
 $$ cat test2.scala
 object ShiftReset {
   import scala.continuations.ControlContext._
@@ -364,9 +360,8 @@ object ShiftReset {
       }
    }
 }
-{code}
-
-{code}
+```
+```scala
 $$ scalac -classpath ./build/build.library -Xplugin:./build/pack/selectivecps-plugin.jar -Xprint:selectivecps test2.scala
 [[syntax trees at end of selectivecps]]// Scala source: test2.scala
 package <empty> {
@@ -390,11 +385,9 @@ package <empty> {
     })
   }
 }
-{code}
-
-{code}
+```
+```scala
 $$ scala -classpath ./build/build.library:. ShiftReset
 400
-{code}
-
+```
 

@@ -1,6 +1,5 @@
-unapply methods used in patterns are allowed implicit arguments. However they're not allowed type parameters, which makes this not all that useful. For example, when helping Jan Kriesten with SI-882 I tried the following solution:
-
-{code}
+unapply methods used in patterns are allowed implicit arguments. However they're not allowed type parameters, which makes this not all that useful. For example, when helping Jan Kriesten with scala/bug#882 I tried the following solution:
+```scala
 import scala.reflect.Manifest;
 
 object isClass{
@@ -11,14 +10,12 @@ object isClass{
 classOf[String] match {
   case isClass[String] => "foo"
 }
-{code}
+```
 
 Gives the error
-
-{code}
+```scala
 <console>:2: error: '=>' expected but '[' found.
          case isClass[String] => "foo"
-
-{code}
+```
 
 The code works if you specialise T to a String instead, so the implicits are working fine, but the inability to specify a type parameter on the pattern makes this not so useful.

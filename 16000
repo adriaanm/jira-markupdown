@@ -1,4 +1,4 @@
-{code}
+```scala
 // compiles
 interface J1 extends scala.collection.Traversable { }
 
@@ -11,16 +11,16 @@ interface J3 extends scala.collection.Traversable<Object> { }
 // J.java:6: types scala.collection.Traversable<java.lang.Object> and scala.collection.Traversable<java.lang.Object> are incompatible; both define newBuilder(), but with unrelated return types
 // interface J3 extends scala.collection.Traversable<Object> { }
 // ^
-{code}
+```
 The signatures of the inherited newBuilder() interface methods differ only in a type parameter.
-{code}
+```scala
 const SI-14 = Asciz	()Lscala/collection/mutable/Builder;;
 const SI-15 = Asciz	()Lscala/collection/mutable/Builder<TA;TRepr;>;;
 const SI-16 = Asciz	()Lscala/collection/mutable/Builder;;
 const SI-17 = Asciz	()Lscala/collection/mutable/Builder<TA;TCC;>;;
-{code}
+```
 If one tries to do the same thing in java, it is disallowed:
-{code}
+```scala
 import java.util.*;
 
 interface J1<A, CC> { public Map<A, CC> foo(); }
@@ -31,9 +31,9 @@ abstract class J3 implements J1<String, List>, J2<String, Map> { }
 // abstract class J3 implements J1<String, List>, J2<String, Map> { }
 //          ^
 // 1 error  
-{code}
+```
 I thought perhaps overriding in Traversable would solve it by generating a signature there.  It does generate a signature, but the failure remains.
-{code}
+```scala
 trait Traversable[+A] extends TraversableLike[A, Traversable[A]] 
                          with GenericTraversableTemplate[A, Traversable] {
   def companion: GenericCompanion[Traversable] = Traversable
@@ -54,5 +54,5 @@ trait Traversable[+A] extends TraversableLike[A, Traversable[A]]
 // interface J3 extends scala.collection.Traversable<Object> { }
 // ^
 // 2 errors
-{code}
+```
 Any thoughts? I don't know how big a deal this is, but it seems like a bad thing.

@@ -1,6 +1,5 @@
 Using : _* to pass a Scala List to a Java varargs method causes a ClassCastException
-
-{code}
+```scala
 scala> def foo(msf: String, o: AnyRef, os: AnyRef*) = 
      |   println( String.format(msf, (o :: os.toList) : _* ))
 foo: (String,AnyRef,AnyRef*)Unit
@@ -15,18 +14,16 @@ java.lang.ClassCastException: scala.$$colon$$colon cannot be cast to scala.runti
 	at RequestResult$$result(<console>)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invo...
-{code}
+```
 
 The workaround is to force to an array
-
-{code}
+```scala
 scala> def foo(msf: String, o: AnyRef, os: AnyRef*) = 
      |   println( String.format("%s: " + msf, (o :: os.toList).toArray : _* ))
 foo: (String,AnyRef,AnyRef*)Unit
 
 scala> foo("%s and %s", "Required", "A", "B")                                 
 Required: A and B
-{code}
+```
 
 Expected: either a compile time error due to incompatible types or a compiler generated fix to coerce the List to an array.
-

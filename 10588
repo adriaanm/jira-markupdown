@@ -3,7 +3,7 @@ As an observation, there appears to be to be a massive and devastating conflatio
 A type alias like 'type Foo = Bar', how can it be right that there is not even a distinction drawn between it and some nutty type function involving variance and partial type application and nested type members and dependent this and that. And yet, within the compiler pretty much without exception the check which is performed will lump all type aliases into the same bucket. Which means even if one restricts oneself to using type aliases in the soundest and most straightforward fashion, one is treated by the compiler like a type criminal who might rip off the sound system at any moment.
 
 Another example of the consequences of all the bundling scala does with its features: say you're staring at some code like this:
-{code}
+```scala
 trait Something[+A]
 trait SomethingElse[+B]
 trait Foo[+A, B] {
@@ -11,32 +11,32 @@ trait Foo[+A, B] {
   def filter(p: A => Boolean): Something[A] with SomethingElse[B]
   def partition(p: A => Boolean): (Something[A] with SomethingElse[B], Something[A] with SomethingElse[B])
 }
-{code}
+```
 Now any sane person will want to rewrite that something like
-{code}
+```scala
 trait Foo[+A, B] {
   private[this] type This = Something[A] with SomethingElse[B]
   def reverse: This
   def filter(p: A => Boolean): This
   def partition(p: A => Boolean): (This, This)
 }
-{code}
+```
 Naturally it has to be private\[this\] or you fail the variance check:
-{code}
+```scala
 <console>:11: error: covariant type A occurs in invariant position in type Something[A] with SomethingElse[B] of type This
          private type This = Something[A] with SomethingElse[B]
                       ^
-{code}
+```
 Now lucky you are taking on the whole universe of bugs which accompany private\[this\] for something which has nothing to do with access, members, inheritance. I fully expected it to reject the attempt within a value class because "there is no this there" - maybe it's even a bug that it didn't. But when one just wants less trivially compressible code, all of this is simply language failure.
 
 Between that sort of thing and the many bugs like this one which come with type aliases, I honestly believe using the C preprocessor wherever possible would deliver an overall improvement. That's a pretty sad statement. In scala, separate things are never kept separate; many different intentions are multiplexed through the same lossy facilities; static analysis becomes hopeless.
 
 Here's a bug I discovered while writing this, in case it's not already among the 1600+ open tickets.
-{code}
+```scala
 scala> final class Foo[+A, B](val x: A) extends AnyVal { private[this] def reverse = ??? }
 scala.reflect.internal.Types$TypeError: method reverse$extension in object Foo cannot be accessed in object Foo
 	at scala.tools.nsc.typechecker.Contexts$Context.issueCommon(Contexts.scala:547)
 	at scala.tools.nsc.typechecker.Contexts$Context.issue(Contexts.scala:552)
 	at scala.tools.nsc.typechecker.Infer$Inferencer.issue(Infer.scala:201)
 	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$normalTypedApply$1$1$$anonfun$apply$48.apply(Typers.scala:4465)
-{code}
+```

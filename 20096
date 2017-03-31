@@ -13,8 +13,7 @@ We did a little more thinking about what might be going on here:
 https://github.com/twitter/util/issues/162#issuecomment-220800665
 
 We were able to construct a reproduction case which succeeds on 2.11, but fails on 2.12.
-
-{code}
+```scala
 trait Updatable[T] {
   def update(t: T): Unit
 }
@@ -31,11 +30,10 @@ object C {
   val x: Any => Unit = A(println(_)) // fails
   val y: Int => Unit = A({ num => num + 2 }) // fails
 }
-{code}
+```
 
 The output on 2.12 is:
-
-{code}
+```scala
 [error] /Users/moses/projects/reproduce/src/main/scala/com/mosesn/reproduce/Driver.scala:14: missing parameter type for expanded function ((x$1: <error>) => println(x$1))
 [error]   val x: Any => Unit = A(println(_)) // fails
 [error]                                  ^
@@ -45,6 +43,6 @@ The output on 2.12 is:
 [error] two errors found
 [error] (compile:compile) Compilation failed
 [error] Total time: 4 s, completed May 29, 2016 8:06:20 AM
-{code}
+```
 
 Under 2.11, it compiles successfully.

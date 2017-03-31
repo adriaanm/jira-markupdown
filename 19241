@@ -1,7 +1,7 @@
 So, this is fun:
 
 First, a test file:
-{code}
+```scala
 class Test {
   type T = Long {type Tag = Nothing}
   type S = String {type Tag = Nothing}
@@ -9,23 +9,22 @@ class Test {
   def bar(t: T): Int = 0
   def baz(s: S): List[Int] = Nil
 }
-{code}
+```
 
 Now the output of javap:
-
-{code}
+```scala
 public class Test {
   public scala.collection.immutable.List<java.lang.Object> foo(java.lang.Object);
   public int bar(long);
   public scala.collection.immutable.List<java.lang.Object> baz(java.lang.String);
   public Test();
 }
-{code}
+```
 
 Note the bytecode parameter types of each method. Weird.
 
 What's weirder is:
-{code}
+```scala
 $ scalac -Xprint:erasure Test.scala
 [[syntax trees at end of                   erasure]] // Test.scala
 package <empty> {
@@ -39,6 +38,6 @@ package <empty> {
     def baz(s: String): List = immutable.this.Nil
   }
 }
-{code}
+```
 
 Anyway, actually fixing this seems like it would break binary compatibility, so I don't think this can be fixed in 2.11.x.

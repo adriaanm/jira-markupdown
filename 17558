@@ -5,8 +5,7 @@ The breeze-math code base crashes when compiling against 2.10.0-RC1.
 (Branch here: https://github.com/dlwh/breeze/tree/scala-2.10.0RC1, sbt clean compile should do it.)
 
 The error is:
-
-{code}
+```scala
 java.lang.NegativeArraySizeException
         at scala.tools.asm.Frame.merge(Unknown Source)
         at scala.tools.asm.MethodWriter.visitMaxs(Unknown Source)
@@ -20,8 +19,8 @@ java.lang.NegativeArraySizeException
         at scala.tools.nsc.Global$Run.compileUnits(Global.scala:1548)
         at scala.tools.nsc.Global$Run.compileSources(Global.scala:1544)
         at scala.tools.nsc.Global$Run.compile(Global.scala:1654)
-{code}
+```
 
 It claims it's in the file math/src/main/scala/breeze/util/Terminal.scala, but that file compiles fine on its own in its own project. Also, significant changes to the file don't seem to matter.
 
-NB, *with specialization disabled* breeze-math compiles fine. There are other miscellaneous compile errors if you get passed this project, but nothing that generates compiler stack traces.
+NB, **with specialization disabled** breeze-math compiles fine. There are other miscellaneous compile errors if you get passed this project, but nothing that generates compiler stack traces.

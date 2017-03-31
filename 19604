@@ -1,5 +1,5 @@
 scala.concurrent.duration.Duration.Inf is a specific instance - i.e. 
-{code:scala}
+```scala
 val Inf: Infinite = new Infinite {
     override def toString = "Duration.Inf"
     def compare(other: Duration) = other match {
@@ -10,11 +10,11 @@ val Inf: Infinite = new Infinite {
     def unary_- : Duration = MinusInf
     def toUnit(unit: TimeUnit): Double = Double.PositiveInfinity
   }
-{code}
-This all works brilliantly unless you send it from one VM to another (say via a remote Akka call). If you do, it creates a *new* "Duration.Inf" instance, so now it is no longer a singleton in the receiving VM.
+```
+This all works brilliantly unless you send it from one VM to another (say via a remote Akka call). If you do, it creates a **new** "Duration.Inf" instance, so now it is no longer a singleton in the receiving VM.
 
 If you then pass this new Duration.Inf into Await.result or something you receive a MatchError in scala.concurrent.impl.Promise.tryAwait(...)  here:
-{code:scala}
+```scala
     /** Try waiting for this promise to be completed.
      */
     protected final def tryAwait(atMost: Duration): Boolean = if (!isCompleted) {
@@ -37,6 +37,6 @@ If you then pass this new Duration.Inf into Await.result or something you receiv
 
       isCompleted
     } else true // Already completed
-{code}
+```
 
 i.e. It attempts to match the Duration.Inf instances and fails because they are different - and you end up with a confusing error saying "MatchError: Duration.Inf" even though there is clearly a match case for it.

@@ -1,18 +1,18 @@
-BTW, {{mapValues}} seems somehow slated for renaming: http://www.scala-lang.org/news/roadmap-next.
+BTW, `mapValues` seems somehow slated for renaming: http://www.scala-lang.org/news/roadmap-next.
 
 > Realistically, I think nothing will ever be done about this because it would break too much existing code that relies on the lazy behavior.
 
-One could still change the return type to be more specific, like MapView (which somebody should write) or sth. like FilterMonadic — that would *add* a force method, and this would help for instance for SI-7005.
+One could still change the return type to be more specific, like MapView (which somebody should write) or sth. like FilterMonadic — that would **add** a force method, and this would help for instance for scala/bug#7005.
 
 > So maybe the best way forward would be to add eager methods with a similar name?
 
 That's something which is possible in addition, and much easier because it wouldn't require implementing MapView.
 
 It takes more time to write tests than actually making this right:
-{code}
+```scala
 Map[K, A] ... {
 def mapValuesNow(f: A => B): Map[K, B] = map { case (a, b) => (a, f(b)) }
 }
-{code}
+```
 Or Rüdiger, are you thinking of something more efficient?
 If so, I suspect it should apply also to immutable.Map, since it is rather close to immutable.HashMap (I never understood the point of the difference, since a Map with size > 4 is a HashMap anyway, and before they follow the same structure).

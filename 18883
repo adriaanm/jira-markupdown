@@ -1,8 +1,7 @@
-Since {{scala}} doesn't seem to have a means to pass in a Scala string to be executed (unlike Python, Ruby, Perl, etc), I was hoping named pipes would do the job, but apparently the script runner is expecting a real file. I don't however think it should be necessary because this is the interpreter not compiler so it doesn't need to emit {{.class}} files side by side with the source file.
+Since `scala` doesn't seem to have a means to pass in a Scala string to be executed (unlike Python, Ruby, Perl, etc), I was hoping named pipes would do the job, but apparently the script runner is expecting a real file. I don't however think it should be necessary because this is the interpreter not compiler so it doesn't need to emit `.class` files side by side with the source file.
 
-Or maybe this is because the {{.scala}} extension is missing—not sure.
-
-{code}
+Or maybe this is because the `.scala` extension is missing—not sure.
+```scala
     $ scala <(echo 'println("Hello")')
     java.io.IOException: no such file: /dev/fd/63
             at scala.tools.nsc.ScriptRunner.runScript(ScriptRunner.scala:190)
@@ -11,4 +10,4 @@ Or maybe this is because the {{.scala}} extension is missing—not sure.
             at scala.tools.nsc.MainGenericRunner.process(MainGenericRunner.scala:96)
             at scala.tools.nsc.MainGenericRunner$.main(MainGenericRunner.scala:105)
             at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
-{code}
+```

@@ -1,19 +1,19 @@
 Can't believe I'm still finding things out about the language...
-{code}
+```scala
 An assignment ~\lstinline@$$f$$($$\args\,$$) = $$e$$@~ with a function application to the
 left of the `\lstinline@=@' operator is interpreted as 
 ~\lstinline@$$f.$$update($$\args$$, $$e\,$$)@, i.e.\
 the invocation of an \code{update} function defined by $$f$$.
-{code}
+```
 (I don't know how to get a readable excerpt from the spec so I'm pasting the latex.)
 
 So apparently this means (intentionally? I think so, but not sure) that you should "inline args" so that:
-{code}
+```scala
 // the obvious one for which there are examples
 x(a) = b  // x.update(a, b)
 // less obvious
 x(a, b) = c // x.update(a, b, c)
 // less obvious still
 x() = a  // x.update(a)
-{code}
+```
 There are no conditions under which one would first expect that f.update(args, e) means that update is variable-arity from 1-N, so I think such a thing should be very explicit and have at least one example of both the "x() = a" sort and "x(a, b) = c" sort.  Even if it might technically be derivable from the language which is present.

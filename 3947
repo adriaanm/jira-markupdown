@@ -1,5 +1,5 @@
-In addition to the above behavior (compile and then new M[Int] in the repl) if you define M in the repl and then try to instantiate it, you crash with a stack trace like that shown in SI-3432.
-{code}
+In addition to the above behavior (compile and then new M[Int] in the repl) if you define M in the repl and then try to instantiate it, you crash with a stack trace like that shown in scala/bug#3432.
+```scala
 scala> val m = new M[Int]()
 Exception in thread "main" java.lang.Error: Unknown type: <notype>, <notype>[class scala.tools.nsc.symtab.Types$$NoType$$, class scala.tools.nsc.symtab.Types$$NoType$$] TypeRef? false, false
 	at scala.tools.nsc.symtab.SymbolTable.abort(SymbolTable.scala:33)
@@ -13,5 +13,5 @@ Exception in thread "main" java.lang.Error: Unknown type: <notype>, <notype>[cla
 	at scala.collection.immutable.List.foldLeft(List.scala:45)
 	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.genStat(GenICode.scala:155)
 	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:868)
-{code}
+```
 Kicking back to reviewer because I don't think this is a repl bug per se.

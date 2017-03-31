@@ -1,28 +1,24 @@
 The following code fails under 2.7.1 (using the new Eclipse plugin integrated compiler):
-
-{code}
+```scala
   case class CovariantClass[+T](wrap: Class[_ >: T])
-{code}
+```
 
 The following errors result:
-
-{code}
+```scala
 covariant type T occurs in contravariant position in type [+T](Conversions.this.CovariantClass[T])Some[java.lang.Class[_$$1]] forSome { type _$$1 >: T } of method unapply
-{code}
+```
 
 and
-
-{code}
+```scala
 covariant type T occurs in contravariant position in type => Class[_$$1] forSome { type _$$1 >: T } of value wrap
-{code}
+```
 
 When testing in 2.7.0, the code successfully compiles:
-
-{code}
+```scala
 scala> case class CovariantClass[+T](wrap: Class[_ >: T])
 defined class CovariantClass
 
 scala>
-{code}
+```
 
 The constraints are theoretically sound, so I would certainly expect Scala to handle this properly.  Incidentally, if I flip the constraint to a lower-bound, it compiles just fine under both 2.7.0 and 2.7.1.

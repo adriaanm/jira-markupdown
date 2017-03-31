@@ -1,20 +1,18 @@
 === What steps will reproduce the problem ===
-
-{code}
+```scala
 def x[N[_]] = ()
 
 trait ExistT[M[_]] {
   x[M]
 }
-{code} 
+```
 
 === What is the expected behavior? ===
 
 Compiles okay, as per 2.8.1
 
 === What do you see instead? ===
-
-{code}
+```scala
 java.lang.AssertionError: assertion failed
 	at scala.Predef$$.assert(Predef.scala:85)
 	at scala.tools.nsc.transform.Mixin.transformInfo(Mixin.scala:375)
@@ -44,7 +42,7 @@ java.lang.AssertionError: assertion failed
 	at scala.tools.nsc.transform.Mixin$$MixinTransformer.transform(Mixin.scala:1212)
 	at scala.tools.nsc.ast.Trees$$Transformer.transformUnit(Trees.scala:877)
 	at scala.tools.nsc.transform.Transform$$Phase.apply(Transform.scala:30)
-{code}
+```
 
 === Additional information ===
 
@@ -53,8 +51,7 @@ No crash after s/trait/class/.
 I was actually trying to reproduce the following spurious compile error from the scalaz branch for Scala 2.9.x, from this tree: https://github.com/scalaz/scalaz/tree/3a58739500416eeda09d5150a2f3f7d1db2ad86e
 
 I plan to isolate it further and lodge a separate ticket.
-
-{code}
+```scala
 [error] /home/scalatools/hudson/.hudson/jobs/scalaz/workspace/http/src/main/scala/scalaz/http/response/Response.scala:50: kinds of the type arguments (OUT) do not conform to the expected kinds of the type parameters (type OUT).
 [error] OUT's type parameters do not match type OUT's expected parameters: <none>'s bounds <notype> are stricter than type _'s declared bounds >: Nothing <: Any
 [error]   def apply(l: StatusLine) = response[OUT](l, headers, body)
@@ -62,7 +59,7 @@ I plan to isolate it further and lodge a separate ticket.
 [error] /home/scalatools/hudson/.hudson/jobs/scalaz/workspace/http/src/main/scala/scalaz/http/request/Request.scala:36: kinds of the type arguments (IN) do not conform to the expected kinds of the type parameters (type IN).
 [error] IN's type parameters do not match type IN's expected parameters: <none>'s bounds <notype> are stricter than type _'s declared bounds >: Nothing <: Any
 [error]   def apply(h: RequestHeader, v: NonEmptyList[Char]) = request[IN](line, (h, v) :: headers, body)
-{code}
+```
 
 === What versions of the following are you using? ===
   - Scala: 2.9.0.r24073-b20110124174250

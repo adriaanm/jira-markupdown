@@ -1,6 +1,5 @@
 Consider the following code:
-
-{code}
+```scala
 case class annot[T] extends StaticAnnotation
 
 // type inference should infer @annot[Nothing] instead of @annot[T]
@@ -8,6 +7,6 @@ case class annot[T] extends StaticAnnotation
 class Foo[@annot U] {
   val x = new Foo
 }
-{code}
+```
 
 Compilation succeeds, but crashes if I pass `-Ycheck:ref` to scalac. If you wonder about a use case, it's for `@specialized`, which I'd like to be able to use with no type arguments.

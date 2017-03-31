@@ -1,6 +1,5 @@
 simplified version of the DeliteDSL example:
-
-{code}
+```scala
   abstract class <~<[-From, +To] extends (From => To)
   implicit def trivial[A]: A <~< A = error("")
 
@@ -11,11 +10,10 @@ simplified version of the DeliteDSL example:
   def headProxy[P <: Forcible[Int]](implicit w: Int <~< P): P = error("")
   
   headProxy 
-{code}
+```
 
 this should compile, but instead complains about ambiguous implicits:
-
-{code}
+```scala
 error: ambiguous implicit values:
  both value forcibleInt in object Test of type => Test.<~<[Int,Test.Forcible[Int]]
  and method trivial in object Test of type [A]Test.<~<[A,A]
@@ -23,13 +21,12 @@ error: ambiguous implicit values:
   headProxy
   ^
 one error found
-{code}
+```
 
 They match the expected type, but only one of them will lead to a successful instantiation of headProxy's type parameter. trivial[Int] should not be considered a valid implicit, since w would have type Int <~< Int,  and headProxy's type parameter P cannot be instantiated to Int
 
 there's an easy fix: simply do a checkBounds in typedImplicit0: 
-
-{code}
+```scala
           if (itree2.tpe.isError) SearchFailure
           else if (hasMatchingSymbol(itree1)) {
             val tvars = undetParams map freshVar
@@ -49,8 +46,7 @@ there's an easy fix: simply do a checkBounds in typedImplicit0:
               // println("RESULT = "+itree+"///"+itree1+"///"+itree2)//DEBUG
               result
             } else {
-
-{code}
+```
 
 Martin, please re-assign to me if you agree with the proposed fix.
 

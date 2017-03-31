@@ -1,8 +1,7 @@
 Martin, you gave two reasons - performance and "confusion of the computation model". I addressed both in my response (I think - still not really sure what you mean by the latter). If you really think the issue is settled, well, I guess we will have to agree to disagree. :)
 
 One thing in your latest response that did not make sense to me and makes me think we are not on the same page - you say it won't work for Streams? Why not? Since the operator of foldRight is strict in its second argument, it cannot be computed in constant space even if the collection is non-strict:
-
-{code}
+```scala
 Stream.from(1).foldRight(Stream[Int]())(Stream.cons(_,_))
 java.lang.StackOverflowError
         at scala.Stream$$.from(Stream.scala:168)
@@ -13,7 +12,7 @@ java.lang.StackOverflowError
         at scala.Stream.foldRight(Stream.scala:433)
         at scala.Stream.foldRight(Stream.scala:433)
         at scala.Stream...
-{code}
+```
 
 So there's really no reason why the default implementation I gave wouldn't work for Streams. As I mentioned earlier, the standard lib could use a version of foldRight where the operator is non-strict in its second argument. This could be computed in constant space for collections with efficient head and tail methods.
 

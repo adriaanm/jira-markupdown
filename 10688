@@ -1,5 +1,5 @@
-I just selected {{log}} field of UndoLog and asked yourkit to show me all objects retained by it. I get:
-_(I tried to include the image inline but JIRA is hopeless, it doesn't respect DPI information in PNG file :-/)_
+I just selected `log` field of UndoLog and asked yourkit to show me all objects retained by it. I get:
+*(I tried to include the image inline but JIRA is hopeless, it doesn't respect DPI information in PNG file :-/)*
 https://issues.scala-lang.org/secure/attachment/15810/yourkit-undolog-retained.png
 
 I think this does suggest we leak memory. I know that this is a transitive closure, so maybe it's not undolog that retain that object directly but indirectly through some TypeRefs. I find this to be very unlikely especially if you look at how many Tuple2 are being retained. Maybe we blow up within single compilation run when there no clearing of undolog performed? I took memory snapshot in the middle of type checking.

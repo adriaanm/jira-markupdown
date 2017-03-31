@@ -1,6 +1,5 @@
 The following code results in a VerifyError:
-
-{code}
+```scala
 object Bug {
   class C(pf: PartialFunction[Any, Any])
   case class D() extends C({ case e => e })
@@ -8,21 +7,19 @@ object Bug {
     D() // VerifyError
   }
 }
-{code}
+```
 
 Here is the exception trace:
-
-{code}
+```scala
 java.lang.VerifyError: (class: Bug$D, method: <init> signature: ()V) Expecting to find object/array on stack
 	at Bug$.main(Bug.scala:5)
 	at Bug.main(Bug.scala)
-{code}
+```
 
 The cause of the bug is that {{D}}'s {{<init>}} passes {{this}} to the constructor of the anonymous subclass of {{PartialFunction}} before the {{<init>}} method of the superclass {{C}} is invoked.
 
-Here is the bytecode for {{D()}}:
-
-{code}
+Here is the bytecode for `D()`:
+```scala
 public Bug$D();
   Code:
    Stack=4, Locals=1, Args_size=1
@@ -35,8 +32,8 @@ public Bug$D();
    12:	aload_0
    13:	invokestatic	#84; //Method scala/Product$class.$init$:(Lscala/Product;)V
    16:	return
-{code}
+```
 
-The VerifyError occurs at the {{invokespecial}} at instruction 6, caused by the {{aload_0}} at instruction 5.
+The VerifyError occurs at the `invokespecial` at instruction 6, caused by the `aload_0` at instruction 5.
 
-Note that the PartialFunction does not refer to {{this}}, so passing it in is unnecessary.
+Note that the PartialFunction does not refer to `this`, so passing it in is unnecessary.

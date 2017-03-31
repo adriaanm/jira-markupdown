@@ -1,21 +1,18 @@
 
 Example error:
-
-{noformat}
+```
 java.lang.NoSuchMethodError: scala.xml.parsing.MarkupHandler.xToken(C)V
   at scala.xml.parsing.MarkupParser$class.element(MarkupParser.scala:543)
-{noformat}
+```
 
 That method is defined in trait MarkupParserCommon, which MarkupParser extends.  It may be relevant that MarkupParserCommon is private[scala].  The MarkupHandler target must be taken from MarkupParser's self type, which is
-
-{noformat}
+```
   self: MarkupParser with MarkupHandler =>
-{noformat}
+```
 
 But MarkupHandler by itself does not define any xToken method.
 
 In the current working version, the generated call is
-
-{noformat}
+```
          6: invokeinterface #183,  2          // InterfaceMethod scala/xml/parsing/MarkupParserCommon.xToken:(C)V
-{noformat}
+```

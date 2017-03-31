@@ -1,6 +1,6 @@
-[~retronym], thanks for sharing your benchmarks.
-It seems you were able to reproduce the {{get}} slowdown.
-I usually prefer exhaustive benchmarks (i.e. one, which consumes all elements), otherwise weird biases may arise (e.g. you're not testing not-found elements, or same-bucket ones - needed, especially since the {{equals2}} appeared as hotspot also).
+@retronym, thanks for sharing your benchmarks.
+It seems you were able to reproduce the `get` slowdown.
+I usually prefer exhaustive benchmarks (i.e. one, which consumes all elements), otherwise weird biases may arise (e.g. you're not testing not-found elements, or same-bucket ones - needed, especially since the `equals2` appeared as hotspot also).
 
 A viable fix would be to change {{getOrElseUpdate}} (which has a weird name ... if the map doesn't have the element, it's not an {{update}} anymore, it's a {{put}}) to calculate the index only once, and don't check for availability the second time - but this may need some interface changes also.
 I would gladly create a PR for it, but I may need some guidance :)

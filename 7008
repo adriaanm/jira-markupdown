@@ -1,7 +1,7 @@
 Since you worked on similar code, here's a question: have you tried doing map fusion - that is, rewrite "coll map f map g" to "coll map (f andThen g)"? That's the example I linked to at the end, and making that typecheck is surprisingly hard. And that's the simplest optimization I have, so I've given up on typechecking for now.
 
 Your solution looks interesting - I thought for a second that it would work on vanilla Scala, but it doesn't (not on 2.9.2, nor on the latest 2.10 snapshot I have, from mid-June):
-{code}
+```scala
 scala> def f[A, CC[X] <: Traversable[X], Coll <: CC[A]](xs: Coll) = xs
 f: [A, CC[X] <: Traversable[X], Coll <: CC[A]](xs: Coll)Coll
 
@@ -10,10 +10,10 @@ scala> f(List(1))
 List[Int]'s type parameters do not match type CC's expected parameters: class List has one type parameter, but type CC has one
               f(List(1))
               ^
-{code}
-If you have a Scalac compiler supporting such crazy code, I'd be delighted to try it out :-). The error message above also seems related to SI-5075/SI-2712.
-Still, I'll probably need to have {{TraversableLike}} in the bound. Why? Code like this is (subtly?) wrong:
-{code}
+```
+If you have a Scalac compiler supporting such crazy code, I'd be delighted to try it out :-). The error message above also seems related to scala/bug#5075/scala/bug#2712.
+Still, I'll probably need to have `TraversableLike` in the bound. Why? Code like this is (subtly?) wrong:
+```scala
 def f[A, CC[X] <: Traversable[X], Coll <: CC[A], That](xs: Coll)(implicit cbf: CanBuildFrom[Coll, A, That]): That = xs map (x => x)
-{code}
-Unless you have {{TraversableLike}} in your bound ({{Coll <: TraversableLike[A, Coll]}}), the result type will be in fact {{Traversable[A]}} - the typechecker is right about that. Writing {{CC[X]}} also doesn't fit so nicely with non-unary constructors, say {{Map[K, V]}}: {{CC}} would be {{Iterable}} there (if Scalac manages to find the solution), and {{Coll != CC[A]}} is rather annoying.
+```
+Unless you have `TraversableLike` in your bound ({{Coll <: TraversableLike[A, Coll]}}), the result type will be in fact `Traversable[A]` - the typechecker is right about that. Writing `CC[X]` also doesn't fit so nicely with non-unary constructors, say `Map[K, V]`: `CC` would be `Iterable` there (if Scalac manages to find the solution), and `Coll != CC[A]` is rather annoying.

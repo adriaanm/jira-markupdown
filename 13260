@@ -1,5 +1,5 @@
-The class {{scala.util.parsing.input.StreamReader}} that ships with 2.7.0 does not work when back-tracking after a line has been read. This is due to its incorrect usage of a stateful {{java.io.BufferedReader}} to implement something that should really be purely functional. The following program illustrates the problem:
-{code}
+The class `scala.util.parsing.input.StreamReader` that ships with 2.7.0 does not work when back-tracking after a line has been read. This is due to its incorrect usage of a stateful `java.io.BufferedReader` to implement something that should really be purely functional. The following program illustrates the problem:
+```scala
 import java.io.{File,StringReader}
 
 import scala.util.parsing.combinator.Parsers
@@ -24,11 +24,11 @@ object Main {
     Console.println(tstParsers.p(r2))
   }
 }
-{code}
+```
 Running it produces the following output:
-{code}
+```scala
 [paine tmp]% /tmp/scala-2.7.0-final/bin/scala -cp classes Main
 [3.2] parsed: List(2, 2, 2)
 [3.1] parsed: List(2, 2)
-{code}
-which shows that the same parser applied to the same input seen through two different readers produces different results. The first one is correct, the second isn't because of the bug of {{StreamReader}}.
+```
+which shows that the same parser applied to the same input seen through two different readers produces different results. The first one is correct, the second isn't because of the bug of `StreamReader`.

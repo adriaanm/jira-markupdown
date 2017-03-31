@@ -1,6 +1,5 @@
-The root error stems from the fact that inference of parent type arguments (in {{typedParentTypes}} happens twice: first during type completion ({{Namer#classSig}}), and second during type checking ({{typedClassDef}}). To get a better look at it, compile with {{-uniqid}} and trace the following code in {{typedPrimaryConstrBody}}:
-
-{code}
+The root error stems from the fact that inference of parent type arguments (in `typedParentTypes` happens twice: first during type completion ({{Namer#classSig}}), and second during type checking ({{typedClassDef}}). To get a better look at it, compile with `-uniqid` and trace the following code in `typedPrimaryConstrBody`:
+```scala
 val cbody2 = { // called both during completion AND typing.
             val typer1 = newTyper(cscope)
             // XXX: see about using the class's symbol....
@@ -8,7 +7,7 @@ val cbody2 = { // called both during completion AND typing.
             typer1.namer.enterValueParams(vparamss map (_.map(_.duplicate)))
             typer1.typed(cbody1)
           }
-{code}
+```
 
 
 I'm not sure how to fix that.

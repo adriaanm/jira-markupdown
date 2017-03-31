@@ -1,20 +1,20 @@
 Scala Swing appears to assume that JFrames come with menu bars by default, which they don't.
 
 currently:
-{code}
+```scala
   def menuBar: MenuBar = Component.wrapperFor(peer.getJMenuBar)
-{code}
+```
 
 suggested fix:
-{code}
+```scala
   def menuBar: MenuBar = peer.getJMenuBar match {
     case null => null
     case jmenuBar => Component.wrapperFor(jmenuBar)
   }
-{code}
+```
 
 Expression in Summary produces the following:
-{code}
+```scala
 java.lang.NullPointerException
 	at scala.swing.Component$$.wrapperFor(Component.scala:18)
 	at scala.swing.Frame.menuBar(Frame.scala:34)
@@ -35,4 +35,4 @@ java.lang.NullPointerException
 	at scala.tools.nsc.ScriptRunner$$.runScript(ScriptRunner.scala:413)
 	at scala.tools.nsc.MainGenericRunner$$.main(MainGenericRunner.scala:168)
 	at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
-{code}
+```

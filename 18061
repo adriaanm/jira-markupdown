@@ -1,6 +1,5 @@
 Using this very simple piece of code
-    
-{code}
+```scala
     import java.util.Properties
 
     class MyProperties extends Properties
@@ -12,11 +11,10 @@ Using this very simple piece of code
         def anotherMethod(): MyProperties = new MyProperties
     
     }
-{code}
+```
 
 the `get()` method is missing in the compiled code; a Java decompilation of the `MyProperties` class yields (scala signature omitted)
-
-{code}
+```scala
     import java.util.Properties;
     import scala.reflect.ScalaSignature;
 
@@ -27,13 +25,12 @@ the `get()` method is missing in the compiled code; a Java decompilation of the 
         return MyProperties..MODULE$.anotherMethod();
       }
     }
-{code}
+```
 
 If `MyProperties` does not extend `java.util.Properties` however, the `get()` method is generated.
 
 `java.util.Properties` inherits the `public V get(Object key)` from `java.util.Dictionary` but that is a non static method with a different signature and this "works" in Java
-
-{code}
+```scala
     import java.util.Properties;
 
     public class MyPropertiesjava extends Properties {
@@ -50,11 +47,10 @@ If `MyProperties` does not extend `java.util.Properties` however, the `get()` me
     	    return new MyProperties();
         }
     }
-{code}
+```
 
 A suggested workaround using `type` (author Régis Jean-Gilles) is stated below, but there does not seem to be a JVM related reason no to generate the `get` method
-
-{code}
+```scala
     import java.util.Properties
 
     type MyProperties = MyPropertiesImpl
@@ -65,7 +61,7 @@ A suggested workaround using `type` (author Régis Jean-Gilles) is stated below,
         def get(): MyProperties = new MyPropertiesImpl
         def anotherMethod(): MyProperties = new MyPropertiesImpl
     }
-{code}
+```
 
 (sorry for the lack of rendered formatting)
 

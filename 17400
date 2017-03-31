@@ -11,8 +11,7 @@ Waiting at a prompt, my preference would be:
 With a foreground task running, ideally Ctrl-C should kill the task and return control to the REPL.  I guess this implies running each command in a separate thread from the REPL itself, so it can be forcibly stopped—but of course, this doesn't necessarily imply **starting a new thread for each command**—we could just keep one of them around to run user code in—until it dies, only then we start a new one.
 
 As for the mechanics of stopping the task, so long as we're baking pie in the sky...
-
-{code:java}
+```java
 while (!thread.isDead) {
   thread.youShouldExitNow() // presumably this is a custom thread class
   thread.interrupt()
@@ -24,7 +23,7 @@ while (!thread.isDead) {
     } 
   }
 }
-{code}
+```
 
 If anything is running in the background, may FSM have mercy on its soul. Out of scope. :)
 

@@ -1,30 +1,27 @@
 The attached source code triggers non-deterministic behavior in the compiler. Trying to compile it has three possible results (not equally likely but all easily reproducible with a few dozen runs at most):
 
 1. The code compiles as excepted (~80% of the time):
-
-{code}
+```scala
 $ rm *.class 2>/dev/null; time ~/scala/scala-2.11.0-M7/bin/scalac HListBench.scala
 
 real	0m4.678s
 user	0m8.699s
 sys	0m0.205s
-{code}
+```
 
 2. The compiler does not terminate (in ~10% of the runs):
-
-{code}
+```scala
 $ rm *.class 2>/dev/null; time ~/scala/scala-2.11.0-M7/bin/scalac HListBench.scala
 ^C
 real	0m22.536s
 user	0m25.562s
 sys	0m0.214s
-{code}
+```
 
 -Ystatistics confirms that it's stuck in the typer (the last output is the summary for phase parser).
 
 3. The compiler aborts with a spurious type error (apparently a failure to find the required implicit conversion) (~10% of cases):
-
-{code}
+```scala
 $ rm *.class 2>/dev/null; time ~/scala/scala-2.11.0-M7/bin/scalac HListBench.scala
 HListBench.scala:65: error: type mismatch;
  found   : HCons[Column[Int],HCons[Column[Int],HCons[Column[Int],HCons[Column[Int],HCons[Column[Int],HCons[Column[Int],HCons[Column[Int],HCons[Column[Int],HCons[Column[Int],HCons[Column[Int],HCons[Column[Int],HCons[Column[Int],HCons[Column[Int],HCons[Column[Int],HCons[Column[Int],HCons[Column[Int],HCons[Column[Int],HCons[Column[Int],HCons[Column[Int],HCons[Column[Int],HCons[Column[Int],HCons[Column[Int],HCons[Column[Int],HCons[Column[Int],HCons[Column[Int],HCons[Column[Int],HCons[Column[Int],HNil.type]]]]]]]]]]]]]]]]]]]]]]]]]]]
@@ -37,8 +34,8 @@ one error found
 real	0m4.406s
 user	0m7.618s
 sys	0m0.172s
-{code}
+```
 
-This is possibly related to SI-4539. I tried to minimize the test case further but any attempt tipped the scales in one direction or the other, making it harder to reproduce all three cases reliably.
+This is possibly related to scala/bug#4539. I tried to minimize the test case further but any attempt tipped the scales in one direction or the other, making it harder to reproduce all three cases reliably.
 
 (@moors, this is the issue I told you about last week)

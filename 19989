@@ -6,11 +6,11 @@ The precision of DecimalFormat with Scala BigDecimal seems lower than that of De
 This was an unexpected difference, but the precision of the underlying value doesn't seem to have been lost, just the String representation.
 
 Tested in Scala 2.11.7 in OpenJDK 8 on Debian.
-{noformat}
+```
 val df = new DecimalFormat()
 df.setMaximumFractionDigits(2)
 df.setMinimumFractionDigits(2)
 println(df.format(BigDecimal("70368744177664.09",MathContext.UNLIMITED).underlying())) -> 70,368,744,177,664.09
 println(df.format(BigDecimal("70368744177664.09",MathContext.UNLIMITED))) -> 70,368,744,177,664.10
-{noformat}
+```
 

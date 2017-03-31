@@ -1,17 +1,15 @@
-Here's the tiny switch as of {{-Xprint:cleanup}} . Besides loading the scrutinee's value onto the stack, it consists of just the default case:
-
-{noformat}
+Here's the tiny switch as of `-Xprint:cleanup` . Besides loading the scrutinee's value onto the stack, it consists of just the default case:
+```
     def broken(): Unit = scala.this.Predef.println({
       case <synthetic> val x1: Int = 1;
       (x1: Int) match {
         case _ => scala.Int.box(x1)
       }
     });
-{noformat}
+```
 
-In more detail ( {{-Yshow-trees}} ) the argument to {{println}} looks like:
-
-{noformat}
+In more detail ( `-Yshow-trees` ) the argument to `println` looks like:
+```
   Block( // tree.tpe=Object
     ValDef( // case val x1: Int
       case <synthetic> <triedcooking>
@@ -33,11 +31,10 @@ In more detail ( {{-Yshow-trees}} ) the argument to {{println}} looks like:
       )
     )
   )
-{noformat}
+```
 
-The {{VerifyError}} manifests only with {{-Yinline}} , although nothing gets inlined (confirm with {{-Ylog:inline}} ). Instead, malformed code emerges from {{IMethod.normalize()}} . Here's before:
-
-{noformat}
+The `VerifyError` manifests only with `-Yinline` , although nothing gets inlined (confirm with `-Ylog:inline` ). Instead, malformed code emerges from `IMethod.normalize()` . Here's before:
+```
   def broken(): Unit {
   locals: value x1
   startBlock: 1
@@ -61,11 +58,10 @@ The {{VerifyError}} manifests only with {{-Yinline}} , although nothing gets inl
     3	RETURN(UNIT)
     
   }
-{noformat}
+```
 
-And here's after. There's a {{LOAD_LOCAL}} too many, because the {{SWITCH}} instruction was simply elided as if it were an unconditional jump and the scrutinee was left on the stack.
-
-{noformat}
+And here's after. There's a `LOAD_LOCAL` too many, because the `SWITCH` instruction was simply elided as if it were an unconditional jump and the scrutinee was left on the stack.
+```
   // methods
   def broken(): Unit {
   locals: value x1
@@ -84,11 +80,10 @@ And here's after. There's a {{LOAD_LOCAL}} too many, because the {{SWITCH}} inst
     3	RETURN(UNIT)
     
   }
-{noformat}
+```
 
-An assertion in {{IMethod.normalize()}} would have saved the day: {{bb.removeLastInstruction}} works under the assumption that {{bb.lastInstruction.isInstanceOf\[JUMP\]}} . The following covers corner cases:
-
-{noformat}
+An assertion in `IMethod.normalize()` would have saved the day: `bb.removeLastInstruction` works under the assumption that `bb.lastInstruction.isInstanceOf\[JUMP\]` . The following covers corner cases:
+```
     val lastInstr = bb.lastInstruction
     /* Ticket SI-5672
      * Besides removing the control-flow instruction at the end of `bb` (usually a JUMP), we have to pop any values it pushes.
@@ -106,11 +101,10 @@ An assertion in {{IMethod.normalize()}} would have saved the day: {{bb.removeLas
       exh foreach { e => e.covered = e.covered - succ }
 
     nextBlock -= bb
-{noformat}
+```
 
-The end result after {{-optimize}} is clutter free:
-
-{noformat}
+The end result after `-optimize` is clutter free:
+```
 public void broken();
   Code:
    Stack=2, Locals=1, Args_size=1
@@ -119,5 +113,5 @@ public void broken();
    4:   invokestatic    #27; //Method scala/runtime/BoxesRunTime.boxToInteger:(I)Ljava/lang/Integer;
    7:   invokevirtual   #31; //Method scala/Predef$.println:(Ljava/lang/Object;)V
    10:  return
-{noformat}
+```
 

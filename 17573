@@ -1,8 +1,7 @@
 I have been experience problems converting between an Option of a Java BigDecimal to an Option of a Scala BigDecimal.
 
 For example, the following assertion fails:
-
-{code}
+```scala
 import java.math.{BigDecimal => JBigDecimal}
 
 object BigDecimalBug extends App {
@@ -10,13 +9,12 @@ object BigDecimalBug extends App {
   val x: Option[BigDecimal] = Option(nullJavaBigDecimal)
   assert(x == None)
 }
-{code}
+```
 
 The variable x is not actually None but a Some of the Scala BigDecimal object. The Scala BigDecimal object is incorrectly formed with the internal data structure set to null.
 
 I have resolved this using the following implicit conversion, but wanted to highlight this in case this is perceived as an issue with the BigDecimal conversion logic.
-
-{code}
+```scala
 object BigDecimalBug extends App {
   implicit def convertJBigDecimalOption(javaBigDecimal: JBigDecimal): Option[BigDecimal] = 
     Option(javaBigDecimal) map { x => BigDecimal(x.toString) }
@@ -25,4 +23,4 @@ object BigDecimalBug extends App {
   val y: Option[BigDecimal] = nullJavaBigDecimal
   assert(y == None)
 }
-{code}
+```

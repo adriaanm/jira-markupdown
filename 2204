@@ -1,12 +1,12 @@
-The java parser adds an annotation {{@AnnotationDefaultATTR}} to the method {{parameter()}}.
+The java parser adds an annotation `@AnnotationDefaultATTR` to the method `parameter()`.
 
 The problem is that the
-{code}
+```scala
 lazy val AnnotationDefaultAttr: Symbol = newClass(RootClass, nme.AnnotationDefaultATTR)
-{code}
-in Definitions is not yet initialized when type checking the {{@AnnotationDefaultATTR}} annotation, so the class symbol is not yet created, thus the
-{code}
+```
+in Definitions is not yet initialized when type checking the `@AnnotationDefaultATTR` annotation, so the class symbol is not yet created, thus the
+```scala
 error: type AnnotationDefault is not a member of package <root>
-{code}
+```
 
-I'm not sure where's the correct place to force the initialization. Doing it in {{typedAnnotation}} works but is maybe not ideal.
+I'm not sure where's the correct place to force the initialization. Doing it in `typedAnnotation` works but is maybe not ideal.

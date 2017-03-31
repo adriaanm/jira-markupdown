@@ -1,11 +1,10 @@
 Not able to generate a custom failure message in the parser combinator library. For a rule like ..
-
-{code}
+```scala
 def buy_sell: Parser[BuySell] =
   "to" ~> "buy" ^^^ BUY      |
   "to" ~> "sell" ^^^ SELL     |
   failure("buy or sell expected")
-{code}
+```
 
 
 If the input has something (say "bought") other than "buy" or "sell", then the message that gets printed is the default one ..
@@ -13,8 +12,7 @@ If the input has something (say "bought") other than "buy" or "sell", then the m
 ``sell_ expected but identifier bought found
 
 The main parse call is like the following :-
-
-{code}
+```scala
 val str = //.. the string to parse
 val tokens = new lexical.Scanner(str)
 phrase(order)(tokens) match {
@@ -23,6 +21,6 @@ phrase(order)(tokens) match {
   case Failure(msg, _) => println("Failure: " + msg)
   case Error(msg, _) => println("Error: " + msg)
 }
-{code}
+```
 
 I posted this to scala-user and Martin Odersky responded here - [http://thread.gmane.org/gmane.comp.lang.scala.user/24426/focus=24510] and asked to file a ticket.

@@ -1,5 +1,5 @@
 The following code does not compile:
-{code}
+```scala
 val np = Array(1, 2, 1, 1, 0, 0)
 var sum = 0
 val lpp = np map {n => sum += n; sum}
@@ -10,13 +10,13 @@ error: missing parameter type for expanded function ((x0$$1) => x0$$1 match {
 })
        val li = lpp.toArray.zipWithIndex.map({case (pos, i) => (pos == i)})
                                              ^
-{code}
+```
 However, calling toArray before the assignment to lpp works just fine:
-{code}
+```scala
 val np = Array(1, 2, 1, 1, 0, 0)
 var sum = 0
 val lpp = np map {n => sum += n; sum} toArray
 val li = lpp.zipWithIndex.map({case (pos, i) => (pos == i)})
 
 li: Array[Boolean] = Array(false, false, false, false, false, true)
-{code}
+```

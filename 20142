@@ -1,5 +1,4 @@
-
-{quote}
+```
 trait Tag
 class IntersectionValueIsFine(val wrapped: Int with Tag) extends AnyVal
 //class CorrectlyWontCompile(val wrapped: PrimitiveWrapper) extends AnyVal
@@ -11,17 +10,16 @@ val intersectionWrapped =
 
 new FailsAtRuntime(
     intersectionWrapped.asInstanceOf[IntersectionValueIsFine with Tag])
-{quote}
+```
 
 this fails
-{quote}
+```
 java.lang.ClassCastException: cmd26$IntersectionValueIsFine cannot be cast to java.lang.Integer
   scala.runtime.BoxesRunTime.unboxToInt(BoxesRunTime.java:101)
   cmd29$.<init>(Main.scala:110)
   cmd29$.<clinit>(Main.scala:-1)                  
-
-{quote}
+```
 
 This looks suspiciously similar to 
-https://issues.scala-lang.org/browse/SI-6337
-https://issues.scala-lang.org/browse/SI-6385
+scala/bug#6337
+scala/bug#6385

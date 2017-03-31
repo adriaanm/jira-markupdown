@@ -1,8 +1,7 @@
 Even though in Scala's type system, java.lang.Object is an alias for scala.AnyRef, when reading a classfile coming from Java, the Scala compiler maps Object to Any. Why? Probably to simplify Java interop. Discussed here on SO: http://stackoverflow.com/questions/24819225/why-does-scala-map-java-lang-object-parameters-of-java-defined-methods-to-scala
 
 Now, the Scala compiler does NOT map Object varargs in Java classfiles to Any varargs.
-
-{code}
+```scala
 public class Test {
   public void f(Object o) {
     System.out.println("obj");
@@ -23,4 +22,4 @@ scala> t.g(1) // Scala compiler thinks g: (AnyRef): Unit
 <console>:9: error: the result type of an implicit conversion must be more specific than AnyRef
               t.g(1)
                   ^
-{code}
+```

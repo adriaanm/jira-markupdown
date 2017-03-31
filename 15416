@@ -24,20 +24,16 @@ Where it is safe to do so (when there is no externally visible side-effect other
 
 Example:
 Given the following scala code (a contrived example):
-
-
-{code}
+```scala
 object MyObject {
   var field = 0
   def method = field * 2
 }
-{code}
+```
 
 
 Would be compiled into the following:
-
-
-{code}
+```scala
 public final class MyObject {
   public static int field = 0;
   public static int field() { return field; }
@@ -53,37 +49,32 @@ public final class MyObject$$ extends ScalaObject {
   void field_eq$$(int value) { MyObject.field_eq$$(value); }
   int method() { return MyObject.method(); }
 }
-{code}
+```
 
 
 And, the following client code which uses MyObject:
-
-{code}
+```scala
 object ClientCode {
   def clientMethod: Unit = {
     MyObject.field = MyObject.method
   }
 }
-{code}
+```
 
 
 Would be compiled down to:
-
-
-{code}
+```scala
 public final class ClientCode {
   public static void clientMethod() {
     MyObject.field_eq$$(MyObject.method());
   }
 }
 // ClientCode$$ not shown
-{code}
+```
 
 
 This optimization should be done on a case-by-case basis. For example, in the following code, method cannot be promoted to a static method, because the object's constructor has a visible side-effect:
-
-
-{code}
+```scala
 object MyObjectWithSideEffect {
   // there is no benefit to putting this prinln in
   // a static section of the static MyObjectWithSideEffect class
@@ -93,15 +84,12 @@ object MyObjectWithSideEffect {
   // MyObjectWithSideEffect$$ singleton class.
   def method = println("The above println must execute before I do")
 }
-{code}
+```
 
 
 Also, this would not apply to methods in objects defined at any other scope except for the static scope (although it may be possible to promote such a method to a static method, if it can be determined that it is side-effect free. However, that's beyond the scope of this suggestion). 
 
 And finally, if an object is defined as a subclass of another object (aside from ScalaObject, implicitly), or mixes in a trait, it may be more difficult to prove that it has no externally visible side-effects (you have to check each base class constructor). Not impossible, but not trivial either. As a short-cut, it is ok to simply turn off this optimization for methods defined in objects such as this:
-
-
-{code}
+```scala
 object MyObject extends BaseClass with SomeTrait {...}
-{code}
-
+```

@@ -3,10 +3,9 @@ I've run a build on Jenkins with `-Xprint:patmat` enabled to confirm that the mi
 My working theory is that the problem is in the code guarded by `if (!debugInfoEmitVars)`.
 
 This is defined as:
-
-{code}
+```scala
 protected val debugInfoEmitVars = !settings.optimise.value
-{code}
+```
 
 Oops. That's false when in 2.12.0 after we've heeded the deprecation warning of `-optimize` and switched over to `-opt:l:classpath`.
 

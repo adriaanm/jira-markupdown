@@ -3,9 +3,8 @@ The discussion at https://github.com/scala/scala/pull/2620
 uncovered that the ICode-based optimizer's DCE doesn't eliminate a redundant conditional jump,
 where both branches lead to one and the same instruction.
 
-The example showing the above is {{test/files/jvm/bytecode-test-example/Foo_1.scala}} reproduced below:
-
-{noformat}
+The example showing the above is `test/files/jvm/bytecode-test-example/Foo_1.scala` reproduced below:
+```
 class Foo_1 {
   def foo(x: AnyRef): Int = {
     val bool = x == null
@@ -15,11 +14,10 @@ class Foo_1 {
       0
   }
 }
-{noformat}
+```
 
-With GenASM and {{-optimise}} we get the two conditional jumps that {{bytecode-test-example.check}} expects:
-
-{noformat}
+With GenASM and `-optimise` we get the two conditional jumps that `bytecode-test-example.check` expects:
+```
   public foo(Ljava/lang/Object;)I
    L0
     ALOAD 1
@@ -39,15 +37,14 @@ With GenASM and {{-optimise}} we get the two conditional jumps that {{bytecode-t
     LOCALVARIABLE x Ljava/lang/Object; L0 L5 1
     MAXSTACK = 1
     MAXLOCALS = 2
-{noformat}
+```
 
 including a useless
-
-{noformat}
+```
     ALOAD 1
     IFNONNULL L1
    L1
-{noformat}
+```
 
-(useless because, whether the conditional jump is taken or not, {{L1}} is the target anyway)
+(useless because, whether the conditional jump is taken or not, `L1` is the target anyway)
 

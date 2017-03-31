@@ -4,8 +4,7 @@ http://kinded-scala.googlecode.com/svn/trunk/papers/sparsec/sparsec.pdf
 
 (These are actually in separate source files,
 !SimpleResults.scala and !SimpleParsers.scala)
-
-{code}
+```scala
 
 trait SimpleResults {
   type Input
@@ -58,12 +57,11 @@ trait SimpleParsers extends SimpleResults {
       = for(a <- this; b <-  p) yield (a,b)
   }
 }
-{code}
+```
 
 When I edit !SimpleParsers.scala in the Scala editor in Eclipse
 and save, it adds 'final' keywords 
-
-{code}
+```scala
 trait SimpleParsers extends SimpleResults {
   abstract class Parser[+T] extends (Input => Result[T]) {
     def apply(in: Input): Result[T]
@@ -84,11 +82,9 @@ trait SimpleParsers extends SimpleResults {
       = for(a <- this; b <-  p) yield (final a,b)
   }
 }
-
-{code}
+```
 which cause warnings/errors:
-
-{code}
+```scala
 Description	Resource	Path	Location	Type
 ':' expected but '}' found.	SimplerParsers.scala	scala-mdx/Source/scala/com/sas/acl/parsers	Unknown	Scala Problem
 ':' expected but '}' found.	SimplerParsers.scala	scala-mdx/Source/scala/com/sas/acl/parsers	Unknown	Scala Problem
@@ -96,7 +92,6 @@ Description	Resource	Path	Location	Type
 identifier expected but 'final' found.	SimplerParsers.scala	scala-mdx/Source/scala/com/sas/acl/parsers	Unknown	Scala Problem
 identifier expected but 'final' found.	SimplerParsers.scala	scala-mdx/Source/scala/com/sas/acl/parsers	Unknown	Scala Problem
 illegal start of simple expression	SimplerParsers.scala	scala-mdx/Source/scala/com/sas/acl/parsers	Unknown	Scala Problem
-{code}
+```
 
 Side note: I checked my Java cleanup preferences and my active configuration does not enable the 'Use 'final' modifier where possible.
-

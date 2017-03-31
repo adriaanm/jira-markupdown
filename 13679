@@ -1,6 +1,5 @@
 Source files:
-
-{code}
+```scala
 $$ cat trait.scala 
 trait Outer {
   trait Inner {
@@ -12,18 +11,16 @@ $$ cat other.scala
 trait Other extends Outer {
   val foo : Inner
 }
-{code}
+```
 
 First compilation is ok:
-
-{code}
+```scala
 $$ scalac-net -Xassem test other.scala trait.scala
 $$ ilasm /dll /output:test.dll *.msil
-{code}
+```
 
 Second, seperate compilation fails:
-
-{code}
+```scala
 $$ scalac-net -Xassem test -Xassem-path test.dll other.scala
 trait Other
   symbol = abstract <interface> <trait> trait Other
@@ -49,4 +46,4 @@ Exception in thread "main" java.lang.Error: trait Inner
 	at scala.tools.nsc.Main$$.process(Main.scala:84)
 	at scala.tools.nsc.Main$$.main(Main.scala:98)
 	at scala.tools.nsc.Main.main(Main.scala)
-{code}
+```

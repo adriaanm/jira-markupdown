@@ -1,5 +1,5 @@
 The following code type checks as expected, assuming we ignore Scala's presently broken intersection type semantics:
-{code}
+```scala
 scala> trait A { type T <: Int }                  
 defined trait A
 
@@ -11,9 +11,9 @@ defined trait C
 
 scala> trait D extends C { val x : A with B; val z = y.charAt(0) }
 defined trait D
-{code}
+```
 but the following does not
-{code}
+```scala
 scala> trait A { type T = Int }                                   
 defined trait A
 
@@ -26,5 +26,5 @@ defined trait C
 scala> trait D extends C { val x : A with B; val z = y.charAt(0) }
 <console>:7: error: value charAt is not a member of D.this.x.T
        trait D extends C { val x : A with B; val z = y.charAt(0) }
-{code}
+```
 This is extremely problematic as it masks several other severe bugs in the type system.

@@ -1,6 +1,5 @@
 Using .view on a list generates slower code than expected. The following excerpt can be cut and paste in a scala console.
-
-{code}
+```scala
 def time[T](f: => T):T = {
     val before = System.currentTimeMillis
     val res:T = f
@@ -19,7 +18,7 @@ time { (1 to 100000).foreach { i => seq.find( resolved.contains(_) ).flatMap( re
 // replay for good now that we're warm
 time { (1 to 100000).foreach { i => seq.view.flatMap( resolved.get(_) ).headOption } }
 time { (1 to 100000).foreach { i => seq.find( resolved.contains(_) ).flatMap( resolved.get(_) ) } }
-{code}
+```
 
 Obtained: the penultimate figure (using .view) is consistently over 250ms in my box, the last one below 100ms.
 Expected: the two last figures should be in the same ballpark (the .view implementation actually performs one less map lookup than the .find one, but manages to be slower)

@@ -1,5 +1,5 @@
 This Java code works:
-{code}
+```scala
 class A {
   static class A1{}
   private static class A2{}
@@ -22,10 +22,10 @@ class A$$A4
 class A$$A3
 class A$$A2
 class A$$A1
-{code}
+```
 
 But this Scala code doesn't:
-{code}
+```scala
 object B {
   class B1
   private class B2
@@ -47,21 +47,21 @@ object B {
     valuesTry3.foreach(println)
   }
 }
-{code}
+```
 
-*In fact the result depends on how you run the file.*
+**In fact the result depends on how you run the file.**
 
 If the file is compiled it prints:
-{code}
+```scala
 > scalac B.scala
 > scala B
 Try 1: (0 classes)
 Try 2: (0 classes)
 Try 3: (0 classes)
-{code}
+```
 
 If the code is run on the REPL I get at least classes B1 and B2, but the rest is still missing:
-{code}
+```scala
 scala> F.main(Array(""))
 Try 1: (5 classes)
 class line5$$object$$$$iw$$$$iw$$F$$B2
@@ -81,7 +81,7 @@ class line5$$object$$$$iw$$$$iw$$F$$B1
 class line5$$object$$$$iw$$$$iw$$F$$$$anonfun$$main$$3
 class line5$$object$$$$iw$$$$iw$$F$$$$anonfun$$main$$2
 class line5$$object$$$$iw$$$$iw$$F$$$$anonfun$$main$$1
-{code}
+```
 
 In my opinion it should be investigated why Java reflection doesn't work as it is supposed to be.
 

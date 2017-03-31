@@ -1,8 +1,7 @@
-Note that this *appears* to be already fixed in the 2.11 series, but I thought I'd record it in the bug database because the true cause of the crash is non-obvious - it's not on the line printed, where the compiler crashes, but elsewhere (in my real code, it was in a different file).
+Note that this **appears** to be already fixed in the 2.11 series, but I thought I'd record it in the bug database because the true cause of the crash is non-obvious - it's not on the line printed, where the compiler crashes, but elsewhere (in my real code, it was in a different file).
 
 It took me a long time to minimise my test case, but here it is:
-
-{noformat}
+```
 trait W[A]
 class Writes[-A]
 
@@ -23,11 +22,10 @@ trait F {
   Right(0).right.flatMap(_ => new String())
 
 }
-{noformat}
+```
 
 This produces:
-
-{noformat}
+```
 TREE: new String()
 TRANSFORM: Minimised.scala
 TREE: ((x$2: Int) => new String())
@@ -350,7 +348,7 @@ new String()
         at scala.tools.nsc.Driver.process(Driver.scala:54)
         at scala.tools.nsc.Driver.main(Driver.scala:67)
         at scala.tools.nsc.Main.main(Main.scala)
-{noformat}
+```
 
 The culprit is the obviously bogus {noformat}implicit def wr[E] = jw(implicitly, implicitly){noformat} but for some reason the error on this line is suppressed.
 

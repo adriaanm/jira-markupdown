@@ -7,8 +7,7 @@ object Int's unbox(Object) is used by Erasure:
 and it's also used in other places via `definitions.isUnbox`
 
 One of those usages reads:
-
-{noformat}
+```
           /** Can't always remove a Box(Unbox(x)) combination because the process of boxing x
            *  may lead to throwing an exception.
            *
@@ -16,7 +15,7 @@ One of those usages reads:
            *  fields (see TupleX). (ID)
            */
           case Apply(boxFun, List(arg)) if isUnbox(tree.symbol) && safeToRemoveUnbox(arg.tpe.typeSymbol) =>
-{noformat}
+```
 
 
 Therefore, changing object Int's unbox(Object) is "non trivial".

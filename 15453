@@ -5,26 +5,26 @@ However, it seems possible to extend it to foo being an arbitrary expression.
 That means that whenever the compiler finds the expression "bar" and cannot resolve it, it would then try "foo.bar".
 
 Basically the following:
-{code}
+```scala
 import (expression)._
 
 def whatever = foo
-{code}
+```
 
 would be equivalent to:
-{code}
+```scala
 def import_expression$$ = expression
 
 def whatever = import_expression$$.foo
-{code}
+```
 
 
 A similar effect could be obtained by adding parameterless implicit conversions:
-{code}
+```scala
 implicit def import_expression() = expression
 
 def whatever = foo
-{code}
+```
 
 This would be itself importable, which may or may not be a good thing.
 

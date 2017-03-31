@@ -1,30 +1,26 @@
 
-In {{JPlainBuilder.genMethod()}} the exceptions an (ICode) IMethod `m` throws are obtained via
-
-{noformat}
+In `JPlainBuilder.genMethod()` the exceptions an (ICode) IMethod `m` throws are obtained via
+```
   val (excs, others) = m.symbol.annotations partition (_.symbol == ThrowsClass)
-{noformat}
+```
 
-The test added in [commit 02dd4c97| https://github.com/scala/scala/commit/02dd4c974f33d137ea353a72e27efb70928fb378] includes a source file (reproduced below)
-
-{noformat}
+The test added in [commit 02dd4c97](https://github.com/scala/scala/commit/02dd4c974f33d137ea353a72e27efb70928fb378) includes a source file (reproduced below)
+```
 class ScalaClassWithCheckedExceptions_1[E1 <: Exception] @throws[NullPointerException]("") () {
   @throws[E1]("") def bar() {}
   @throws[IllegalStateException]("") def baz(x: Int) {}
   // FIXME: SI-7066
   // @throws[E2]("") def foo[E2 <: Exception] {}
 }
-{noformat}
+```
 
-that results in an {{AbstractTypeSymbol}} "E1" reaching GenASM, as part of 
-
-{noformat}
+that results in an `AbstractTypeSymbol` "E1" reaching GenASM, as part of 
+```
 @throws[E1]("") def bar() {}
-{noformat}
+```
 
 In terms of ASM's Textify the resulting class file includes:
-
-{noformat}
+```
 // class version 50.0 (50)
 // access flags 0x21
 // signature <E1:Ljava/lang/Exception;>Ljava/lang/Object;
@@ -37,7 +33,7 @@ public class ScalaClassWithCheckedExceptions_1 {
     RETURN
     MAXSTACK = 0
     MAXLOCALS = 1
-{noformat}
+```
 
 Although there's no "E1" class file the bytecode verifier doesn't complain.
 

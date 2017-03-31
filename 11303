@@ -1,6 +1,5 @@
 What you are asking for is unsound. Here's why:
-
-{code}
+```scala
 class Box[A](var value: A)
 class A { class Foo extends Box[A.this.type](A.this) }
 class B extends A { class Bar extends Foo }
@@ -12,4 +11,4 @@ object Test extends App {
   val a1: a.type = (mix: a.Foo).value
   assert(a1 == a) // fails
 }
-{code}
+```

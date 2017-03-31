@@ -1,6 +1,5 @@
 Instead of
-
-{code}
+```scala
 def collectFirst[B](pf: PartialFunction[A, B]): Option[B] = {
   for (x <- self.toIterator) { // make sure to use an iterator or `seq`
     if (pf isDefinedAt x)
@@ -8,11 +7,10 @@ def collectFirst[B](pf: PartialFunction[A, B]): Option[B] = {
   }
   None
 }
-{code}
+```
 
 let's have
-
-{code}
+```scala
 def collectFirst[B](pf: PartialFunction[A, B]): Option[B] = {
   val f = pf.lift
   for (x <- self.toIterator) { // make sure to use an iterator or `seq`
@@ -22,6 +20,6 @@ def collectFirst[B](pf: PartialFunction[A, B]): Option[B] = {
   }
   None
 }
-{code}
+```
 
 which I think is no worse for native PartialFunctions and, in the case of PartialFunctions that have been unlifted from A => Option[B]s, calls the underlying function one fewer time.

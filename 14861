@@ -1,18 +1,18 @@
 Since the introduction of weak conformance for Numeric types, we now have this situation.
-{code}
+```scala
 scala> List(2, 2L)
 res0: List[Long] = List(2, 2)
 
 scala> List(List(2), List(2L))
 res1: List[List[AnyVal]] = List(List(2), List(2))
-{code}
+```
 My spec mojo must not be up to par because I can't completely tell from the spec what's supposed to happen -- although if I had to guess, it's behaving as specified.
 
-Unfortunately if this is as specified it leaves me pretty stuck on SI-2518, which amounts to the question of what happens here:
-{code}
+Unfortunately if this is as specified it leaves me pretty stuck on scala/bug#2518, which amounts to the question of what happens here:
+```scala
 class Foo[T] {
   def bar[U >: T](x: U)(implicit param: Imp[U]) { }
 }
 new Foo[Long].bar(5)
-{code}
+```
 Right now that goes looking for Imp[AnyVal] instead of Imp[Long].  Is it a slippery slope to apply the weak rules more deeply? As before, I find there are approximately zero situations where I am happy to see AnyVal inferred.  Maybe if there were an abstract subtype of AnyVal like say "AnyNum" which included the six numerics (and maybe Char) but excluded Unit and Boolean, it would be a little useful: but as it is it's mostly in the way.

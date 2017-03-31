@@ -1,15 +1,13 @@
 Not sure if we can do much about this.
 
 We are inferring an equivalent type here:
-
-{noformat}
+```
 -      val countChar: scalaz.typelevel.Func[scalaz.Unapply[scalaz.Applicative,Int]{type M[X] = Int; type A = Int}#M,scalaz.Applicative,Char,Int] = scalaz.typelevel.AppFuncU.apply[Char, Int](((c: Char) => 1))(scalaz.this.Unapply.unapplyA[scalaz.Applicative, Int](scalaz.this.Applicative.monoidApplicative[Int](scalaz.std.anyVal.intInstance)));
 +      val countChar: scalaz.typelevel.Func[[X]Int,scalaz.Applicative,Char,Int] = scalaz.typelevel.AppFuncU.apply[Char, Int](((c: Char) => 1))(scalaz.this.Unapply.unapplyA[scalaz.Applicative, Int](scalaz.this.Applicative.monoidApplicative[Int](scalaz.std.anyVal.intInstance)));
-{noformat}
+```
 
 But later one, we're unable to unify the PolyType `[X]Int` with the HKTypeVar `?G`
-
-{noformat}
+```
 res1 = {scala.reflect.internal.Types$ClassNoArgsTypeRef@3182}"Int"
 res2 = {scala.reflect.internal.Types$AppliedTypeVar@3322}"?G[_]"
 substitutes = {scala.collection.immutable.$colon$colon@3329}"::" size = 1
@@ -19,18 +17,16 @@ tparams1 = {scala.collection.immutable.$colon$colon@3181}"::" size = 1
 (0)  = {scala.reflect.internal.Symbols$AbstractTypeSymbol@3207}"type X"
 tparams2 = {scala.collection.immutable.$colon$colon@3190}"::" size = 1
 (0)  = {scala.reflect.internal.Symbols$AbstractTypeSymbol@3194}"type _"
-{noformat}
-
-{code}
+```
+```scala
       (tparams1 corresponds tparams2)(cmp) && (sub1(res1) <:< sub2(res2))
-{code}
-
-{noformat}
+```
+```
 Int <:< ?G[X]
 -----------------------
 this = {scala.reflect.internal.Types$ClassNoArgsTypeRef@3182}"Int"
 scala.reflect.internal.tpe.TypeComparers$class.cmp$1(scala.reflect.internal.SymbolTable, scala.reflect.internal.Symbols$Symbol, scala.reflect.internal.Symbols$Symbol, scala.collection.immutable.List, scala.collection.immutable.List, boolean, scala.collection.immutable.List) = true
 that = {scala.reflect.internal.Types$AppliedTypeVar@3364}"?G[X]"
-{noformat}
+```
 
-Which hits SI-2712.
+Which hits scala/bug#2712.

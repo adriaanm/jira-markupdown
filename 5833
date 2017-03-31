@@ -1,9 +1,8 @@
 Background info:
 
 
-The overrides in {{ObservableBuffer}} currently do not include {{++=}}. They currently are: 
-
-{code}
+The overrides in `ObservableBuffer` currently do not include `++=`. They currently are: 
+```scala
   abstract override def +=(element: A): this.type
 
   abstract override def +=:(element: A): this.type
@@ -13,19 +12,17 @@ The overrides in {{ObservableBuffer}} currently do not include {{++=}}. They cur
   abstract override def remove(n: Int): A
 
   abstract override def clear(): Unit
-{code}
+```
 
 (some of these overrides are for {{BufferLike}}, others for {{Growable}}, and others for {{SeqLike}}). 
 
 In the example, the following callsite is not "observed" 
-
-{code}
+```scala
  buf ++= ArrayBuffer(3) // fails
-{code}
+```
 
-because the override in {{ArrayBuffer}} that gets picked is: 
-
-{code}
+because the override in `ArrayBuffer` that gets picked is: 
+```scala
   /** Appends a number of elements provided by a traversable object.
    *  The identity of the buffer is returned.
    *
@@ -42,9 +39,7 @@ because the override in {{ArrayBuffer}} that gets picked is:
     case _ =>
       super.++=(xs)
   }
-
-{code}
+```
 
 It would be great if a patch were provided (and tests run!). Additionally, are there any other mutator methods that don't get "observed"?
-
 

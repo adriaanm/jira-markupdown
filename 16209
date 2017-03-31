@@ -2,25 +2,23 @@
 
 We can encode multiple type parameter blocks on
 methods in current Scala, albeit inefficiently and clumsily,
-
-{code}
+```scala
  def foo[A1, A2][B1, B2](p1 : (A1, B1)) : (A2, B2) = ...
-{code}
+```
 
 can be encoded as,
-
-{code}
+```scala
  def foo[A1, A2] = new { def apply[X1, X2, B1, B2](p1 : (A1,
 B1))(implicit ev : X1 =:= A1) : (A2, B2) = ... }
-{code}
+```
 
 (/quoting Miles Sabin)
 
 
 Multiple type parameter lists would internally be represented by nested PolyTypes, which is possible due to the NullaryMethodType refactoring. I see two options for type inference:
 
-# reduce to single type parameter list by bunching all type parameters together
-# solve type parameters in batches, so that the concrete type chosen for later type parameters does not influence the inference of earlier type parameters (in lists on the left), au contraire, later type param's inference depends on the types chosen for type params in lists on their left (see also fundeps in haskell)
+- reduce to single type parameter list by bunching all type parameters together
+- solve type parameters in batches, so that the concrete type chosen for later type parameters does not influence the inference of earlier type parameters (in lists on the left), au contraire, later type param's inference depends on the types chosen for type params in lists on their left (see also fundeps in haskell)
 
 
 see also: named and default type parameters

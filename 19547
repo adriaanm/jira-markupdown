@@ -1,6 +1,5 @@
 This caused me quite the literal headache today:
-
-{code}
+```scala
 class S[_]
 class T[_]
 
@@ -11,9 +10,9 @@ object B {
 }
 
 object A { implicitly[T[B]] }
-{code}
+```
 The code above compiles, but if you swap the order of A and B,  it no longer will:
-{code}
+```scala
 class S[_]
 class T[_]
 
@@ -24,16 +23,16 @@ object B {
   def makeST = (new S[B], new T[B])
   implicit val (s,t): (S[B],T[B]) = makeST
 }
-{code}
-{noformat}
+```
+```
 <console>:11: error: could not find implicit value for parameter e: T[B]
          implicitly[T[B]]
                    ^
-{noformat}
+```
 Very sad indeed.  
 
 The tuple has something to with it; this is ok:
-{code}
+```scala
 class S[_]
 class T[_]
 
@@ -45,4 +44,4 @@ object B {
   implicit val s: S[B] = makeST._1
   implicit val t: T[B] = makeST._2
 }
-{code}
+```

@@ -1,33 +1,33 @@
 A related case no longer works in Beta1-RC7 and r20428:
 
 W.scala
-{code}
+```scala
 class W
 {
 	def x = 3
 }
 class V extends W
-{code}
+```
 
 Y.scala
-{code}
+```scala
 object Y
 {
 	def main(args: Array[String]) =
 		println( (new Z).x )
 }
-{code}
+```
 
 Z.scala
-{code}
+```scala
 class Z extends V
-{code}
+```
 
  1. Compile
  1. Remove `extends W` from V.
  1. Mark W.scala modified.  Only Z.scala is recompiled, missing compile error in Y.scala:
-{code}
+```scala
 Y.scala:4: error: value x is not a member of Z
                 println( (new Z).x )
                                  ^
-{code}
+```

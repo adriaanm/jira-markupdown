@@ -1,6 +1,5 @@
 Here is some code that crashes the compiler. Reproducible by pasting into a REPL running 2.11.6.
-
-{noformat}
+```
 trait Bar {
   type One
   def makeOne: One
@@ -13,7 +12,7 @@ trait Foo extends Bar {
 
   def doSomething = makeOne.makeUnit _
 }
-{noformat}
+```
 
 I expect this code to fail with a compile error, informing me that there is a discrepancy between type params of `One`.
 
@@ -22,18 +21,17 @@ What seems to be happening, is that the compiler derives an index in order to de
 Note 1: If `def makeOne: One` is moved into trait `Foo`, the compiler doesn't crash.
 
 Note 2: If `def makeUnit` doesn't take a parameter of type `XYZ` (keeping class One parameterized on `XYZ`), the compiler also doesn't crash. For example,
-{noformat}
+```
 def makeUnit(xyz: Unit): Unit = ()
-{noformat}
+```
 and
-{noformat}
+```
 def makeUnit: Unit = ()
-{noformat}
+```
 both do not crash the compiler.
 
-I looked through the open issues, and the stack trace this produces (pasted below) is extremely similar to the trace shown in issue SI-8745. (That issue is marked as a duplicate of SI-8439.) Since those tickets depend on swing-scala, I opted to open a new ticket, since it wasn't clear that this issue was the *only* issue present in those tickets.
-
-{noformat}
+I looked through the open issues, and the stack trace this produces (pasted below) is extremely similar to the trace shown in issue scala/bug#8745. (That issue is marked as a duplicate of scala/bug#8439.) Since those tickets depend on swing-scala, I opted to open a new ticket, since it wasn't clear that this issue was the **only** issue present in those tickets.
+```
 java.lang.IndexOutOfBoundsException: 0
 	at scala.collection.LinearSeqOptimized$class.apply(LinearSeqOptimized.scala:65)
 	at scala.collection.immutable.List.apply(List.scala:84)
@@ -255,4 +253,4 @@ java.lang.IndexOutOfBoundsException: 0
 	at scala.tools.nsc.MainGenericRunner.process(MainGenericRunner.scala:98)
 	at scala.tools.nsc.MainGenericRunner$.main(MainGenericRunner.scala:103)
 	at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
-{noformat}
+```

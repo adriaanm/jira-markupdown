@@ -1,5 +1,5 @@
 Bill Venners reports this funny test case:
-{code}
+```scala
 class Super {
 
  def method(s: String)(f: String => Unit) {}
@@ -11,16 +11,16 @@ class Sub extends Super {
    (s) => {}
  }
 }
-{code}
+```
 Yields this error:
-{code}
+```scala
 both method method in class Super of type (String)((String, Int) => Unit)Unit
 and  method method in class Super of type (String)((String) => Unit)Unit
 match argument types (java.lang.String)
  method("hi") {
-{code}
+```
 I tried fully specifying the types of the parameters and got the same error message.  So it's not anything to do with type inference.
-{code}
+```scala
 sup.method(null)(null : String=> Unit)
-{code}
+```
 It seems like either these methods should not be allowed, or the overloading resolution should provide some way to specify which one is desired.

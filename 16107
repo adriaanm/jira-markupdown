@@ -1,5 +1,5 @@
 The following code, which compiled in 2.8.1, fails to compile with RC3.  That's not the bug though.
-{code}
+```scala
 trait MetaProtoStateMachine [MyType <: ProtoStateMachine[MyType, StateType], StateType <: Enumeration]
 extends ProtoStateMachine[MyType, StateType] {
   self: MyType =>
@@ -19,18 +19,18 @@ trait ProtoStateMachine[MyType <: ProtoStateMachine[MyType, StateType], StateTyp
     getSingleton.processEvent(this, x)
   }
 }
-{code}
+```
 This should not have compiled 2.8.1, but the error message would not give anyone much clue as to why:
-{code}
+```scala
 ./a.scala:17: error: too many arguments for method processEvent: (x: Int)Unit
     getSingleton.processEvent(this, x)
                              ^
 one error found
-{code}
+```
 Because the overloaded version of processEvent is inaccessible, the error message is written as if they must have meant the accessible one and made an arity error.  But if, in the absence of accessibility constraints, overloading resolution would have chosen a different method, then it is far more important for the error to point out that that method is inaccessible.
 
 If we change the name so there is no overload, we see the useful message.
-{code}
+```scala
 ./a.scala:17: error: method processEvent2 in trait MetaProtoStateMachine cannot be accessed in ProtoStateMachine.this.Meta
  Access to protected method processEvent2 not permitted because
  enclosing class trait ProtoStateMachine is not a subclass of 
@@ -38,5 +38,5 @@ If we change the name so there is no overload, we see the useful message.
     getSingleton.processEvent2(this, x)
                  ^
 one error found
-{code}
-This of course tells us that it is due to SI-3871, fixed since 2.8.1.
+```
+This of course tells us that it is due to scala/bug#3871, fixed since 2.8.1.

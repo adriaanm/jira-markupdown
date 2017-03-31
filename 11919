@@ -1,6 +1,5 @@
-[~milessabin] The compiler will pack types when computing an inferred type of a member, or when computing the type of a match.
-
-{code}
+@milessabin The compiler will pack types when computing an inferred type of a member, or when computing the type of a match.
+```scala
 scala> import scala.tools.reflect.ToolBox; val m = reflect.runtime.currentMirror; val u = m.universe; import u._; val tb = m.mkToolBox();
 
 scala> tb.typecheck(q"{class C extends Serializable; new C}").tpe
@@ -11,6 +10,6 @@ res14: tb.u.Type = Serializable
 
 scala> tb.typecheck(q"def f = {class C extends Serializable; 0; new C}; f").tpe
 res15: tb.u.Type = Serializable
-{code}
+```
 
 However, the best practice is for a macro to generate an tree that ends with a type ascription to the desired type, rather than referring to an expansion-local class and relying on these implementation details.

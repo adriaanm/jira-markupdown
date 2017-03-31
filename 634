@@ -1,14 +1,14 @@
 Regarding what he has in mind:
-{code}
+```scala
 object bop {
   val xs = (1 to 5).toList
   def foreach(f: Int => Unit) = xs foreach f
   def filter(f: Int => Boolean) = xs filter (i => { println("filter " + i) ; f(i) })
 }
 for (x <- bop ; if (x < 4)) println(x)
-{code}
+```
 This prints the following output:
-{code}
+```scala
 filter 1
 filter 2
 filter 3
@@ -17,11 +17,11 @@ filter 5
 1
 2
 3
-{code}
+```
 I presume he's saying the filters should be interspersed with the results.  It's easy to see where one might want this:
-{code}
+```scala
 def test(x: Int) = { println("test " + x) ; x == 3 }
 def pob(xs: Seq[Int]) { for (x <- xs ; if test(x)) return  }
 pob(1 to 1000000)
-{code}
+```
 And you get a million tests before it returns on the 3rd element.

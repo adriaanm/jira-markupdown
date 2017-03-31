@@ -1,4 +1,4 @@
-{code}
+```scala
 object ConfigExampleApp extends App {
   case class Config(name: String = null)
   val parser = new scopt.immutable.OptionParser[Config]("a", "b") {
@@ -11,7 +11,7 @@ object ConfigExampleApp extends App {
   val config = parser.parse(args, new Config).get
   val name = config.name
 }
-{code}
+```
 you will need a jar of https://github.com/jstrachan/scopt to resolve that dependency.
 
 In this case, i get an error "no value value" on the (name = value) section in the middle. It turns out to be caused by the overlap of the name of "val name" and "Config.name". If I rename either of those, the code compiles.

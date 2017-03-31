@@ -1,6 +1,5 @@
 Consider the following code:
-
-{code}
+```scala
 object wrap1 {
   trait A {
     def n = 3
@@ -12,36 +11,35 @@ object wrap2 {
     def n = 7
   }
 }
-{code}
+```
 
 Suppose we want to inherit from both A's above. This produces an error, as expected:
-
-{code}
+```scala
 // error: error overriding method n in trait A of type => Int;
 //  method n in trait A of type => Int needs `override' modifier
 trait B extends wrap1.A with wrap2.A
-{code}
+```
 
 This, of course, is ambiguous
-{code}
+```scala
 // error: ambiguous parent class qualifier
 trait B extends wrap1.A with wrap2.A {
   override def n =
     super[A].n
 }
-{code}
+```
 
 Oops! This isn't allowed (as per the spec, but it's surprising)
-{code}
+```scala
 // error: ']' expected but '.' found.
 trait B extends wrap1.A with wrap2.A {
   override def n =
     super[wrap1.A].n
 }
-{code}
+```
 
 But the most surprising thing is that renaming doesn't work!
-{code}
+```scala
 import wrap1.{A => A1}
 import wrap2.{A => A2}
 
@@ -50,10 +48,10 @@ trait B extends A1 with A2 {
   override def n =
     super[A1].n
 }
-{code}
+```
 
 The same problem arises with access modifiers. Consider:
-{code}
+```scala
 object Outer {
   object A {
     object A {
@@ -64,4 +62,4 @@ object Outer {
     }
   }
 }
-{code}
+```

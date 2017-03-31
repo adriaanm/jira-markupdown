@@ -1,7 +1,6 @@
 = problem =
-As discussed in SI-4008, the default from `Map.withDefaultValue` does not last through map transforms:
-
-{code}
+As discussed in scala/bug#4008, the default from `Map.withDefaultValue` does not last through map transforms:
+```scala
 scala> val map = Map('a' -> 1, 'b' -> 2).withDefaultValue(0)
 map: scala.collection.immutable.Map[Char,Int] = Map((a,1), (b,2))
 
@@ -15,7 +14,7 @@ scala> map2('c')
 java.util.NoSuchElementException: key not found: c
 	at scala.collection.MapLike$$class.default(MapLike.scala:223)
 	...
-{code}
+```
 
 = analysis =
 
@@ -24,8 +23,7 @@ This means that a `Map` created from `withDefaultValue` isn't very useful for pr
 = enhancement recommendation =
 
 It's not realistic to expect the default to stick around if the type of the collection changes (e.g. from `Map` to `Seq` where it's not even clear what a default would mean), but I think it's possible to have the default stick around when the type of the collection doesn't change, doing something like:
-
-{code}
+```scala
 object WithDefault {
   implicit def canBuildFrom[K, V] =
     new generic.CanBuildFrom[WithDefault[K, V], (K, V), WithDefault[K, V]] {
@@ -37,7 +35,7 @@ object WithDefault {
       def apply() = error("unsupported default apply")
     }
 }
-{code}
+```
 
 This is basically the solution given here:
 

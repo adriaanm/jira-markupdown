@@ -1,6 +1,5 @@
 The following causes the compiler (2.9.1.final and 2.10.0.r25946-b20111105020221) to hang during implicit search,
-
-{code}
+```scala
 sealed trait HList
 final case class HCons[H, T <: HList](head : H, tail : T) extends HList 
 case object HNil extends HList 
@@ -22,15 +21,14 @@ object HList {
   val iii : III = 0 :: 0 :: 0 :: HNil
   val l = iii.last
 }
-{code}
+```
 
 I haven't been able to minimise this much further. In particular, the hang doesn't occur if there are less than three elements in the list, or if the III type annotation is omitted, or if the last method is not invoked, or if any of the method signatures or implicit structure is altered non-trivially.
 
 The hang seems to be consuming CPU only ... it doesn't appear to be consuming stack or heap, so somehow or other this source seems to have tricked the compiler into a tight loop.
 
 Hitting ctrl-\ on the console for a thread dump gives me this with 2.10.0.r25946-b20111105020221,
-
-{code}
+```scala
 Full thread dump Java HotSpot(TM) 64-Bit Server VM (21.1-b02 mixed mode):
 
 "Service Thread" daemon prio=10 tid=0x00007f2ef011a800 nid=0x384c runnable [0x0000000000000000]
@@ -220,4 +218,4 @@ Heap
   object space 37184K, 46% used [0x00000000f0000000,0x00000000f1110d68,0x00000000f2450000)
  PSPermGen       total 45888K, used 23707K [0x00000000eae00000, 0x00000000edad0000, 0x00000000f0000000)
   object space 45888K, 51% used [0x00000000eae00000,0x00000000ec526ec8,0x00000000edad0000)
-{code}
+```

@@ -10,11 +10,10 @@ Since there is no flag for default-getter for ctor, it does a name compare. It m
 
 This change includes renaming init$default$ to init$$default$ to avoid collisions with default-getters for an ordinary method on the module named init. 
 
-That change is not trivial, so guidance is needed. Alternatively, one could live with the possibility of name collision and just allow that there are interactions that impose limits, similar to SI-5366.
+That change is not trivial, so guidance is needed. Alternatively, one could live with the possibility of name collision and just allow that there are interactions that impose limits, similar to scala/bug#5366.
 
 More example: 
-
-{code}
+```scala
 object A {
   val v = 7
   class B(val x: Int = v)
@@ -26,8 +25,7 @@ object A {
     println(new B().x) // 5
   }
 }
-
-{code}
+```
 
 
 

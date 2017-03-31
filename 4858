@@ -1,5 +1,5 @@
 Another naive pattern matcher exploration.  I don't expect this to be a legitimate fix, but it works and I think it demonstrates the issue.
 
-I think that the cause of SI-3887 is that when matching on a tuple and when a pattern is a stable ID, the pattern matcher assumes the pattern is a 0-tuple, which it somehow interprets to always match.
+I think that the cause of scala/bug#3887 is that when matching on a tuple and when a pattern is a stable ID, the pattern matcher assumes the pattern is a 0-tuple, which it somehow interprets to always match.
 
 It appears that the symbol for a tuple constructor Tree is `NoSymbol` whereas a stable ID has a valid symbol.  So, in the function that checks that all patterns are wildcards or tuple constructors uses this information to do a `singleMatch` instead of a `tupleMatch` if any of the patterns has `NoSymbol` as its symbol.  A proper fix would check this the right way, whatever that is.  Alternatively, it might be preferable to keep the `tupleMatch` but expand the referenced tuple (so match on `(option1._1, option1._2)`).  I haven't evaluated that approach and I'm not familiar enough with the pattern matcher to know which way is correct.

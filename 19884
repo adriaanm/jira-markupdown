@@ -1,12 +1,11 @@
-{code}
+```scala
 class A {
   def f = (x: Int) => x + 1
 }
-{code}
+```
 
 gives
-
-{noformat}
+```
   public f()Lscala/Function1;
    L0
     LINENUMBER 2 L0
@@ -25,17 +24,16 @@ gives
     ]
     CHECKCAST scala/Function1
     ARETURN
-{noformat}
+```
 
-The cast is inserted by erasure, {{-Xprint:erasure}} gives
-
-{code}
+The cast is inserted by erasure, `-Xprint:erasure` gives
+```scala
     def f(): Function1 = {
       final <artifact> def $anonfun(x: Int): Int = x.+(1);
       ((x: Int) => $anonfun(x)).$asInstanceOf[Function1]()
     }
-{code}
+```
 
-The reason is that the typer assigns the applied type {{Function1[Int,Int]}} to the {{Function(..)}} tree also during erasure (https://github.com/scala/scala/blob/7b40dc6550d4f8b5a4bc17820df8de5cc1411734/src/compiler/scala/tools/nsc/typechecker/Typers.scala#L2976-L2981). This type doesn't conform to the non-applied {{Function1}}, so erasure inserts a cast here: https://github.com/scala/scala/blob/7b40dc6550d4f8b5a4bc17820df8de5cc1411734/src/compiler/scala/tools/nsc/transform/TypeAdaptingTransformer.scala#L183
+The reason is that the typer assigns the applied type `Function1[Int,Int]` to the `Function(..)` tree also during erasure (https://github.com/scala/scala/blob/7b40dc6550d4f8b5a4bc17820df8de5cc1411734/src/compiler/scala/tools/nsc/typechecker/Typers.scala#L2976-L2981). This type doesn't conform to the non-applied `Function1`, so erasure inserts a cast here: https://github.com/scala/scala/blob/7b40dc6550d4f8b5a4bc17820df8de5cc1411734/src/compiler/scala/tools/nsc/transform/TypeAdaptingTransformer.scala#L183
 
-As a quick hack, special-cased {{typedFunction}} when {{phase.erasedTypes}} is true to assign a non-applied {{Function}} type. This makes delambdafy crash here ({{targs}} is empty): https://github.com/scala/scala/blob/7b40dc6550d4f8b5a4bc17820df8de5cc1411734/src/compiler/scala/tools/nsc/transform/Delambdafy.scala#L132-L134
+As a quick hack, special-cased `typedFunction` when `phase.erasedTypes` is true to assign a non-applied `Function` type. This makes delambdafy crash here ({{targs}} is empty): https://github.com/scala/scala/blob/7b40dc6550d4f8b5a4bc17820df8de5cc1411734/src/compiler/scala/tools/nsc/transform/Delambdafy.scala#L132-L134

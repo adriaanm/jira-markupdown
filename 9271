@@ -1,10 +1,9 @@
-Turns out my canary was placed on the wrong part of the coal mine. By changing it to duplicate the trees *after* type checking, all of the problems with inspecting {{context.tree}} evaporated. Thanks for Lukas and Eugene for helping out with this.
+Turns out my canary was placed on the wrong part of the coal mine. By changing it to duplicate the trees **after** type checking, all of the problems with inspecting `context.tree` evaporated. Thanks for Lukas and Eugene for helping out with this.
 
 That did leave a few legitimate failures, such as neg/t5696.scala and pos/t5720-ownerous.scala.
 
 The updated patch:
-
-{code}
+```scala
 @@ -5615,7 +5618,7 @@ trait Typers extends Modes with Adaptations with Tags {
          }
 
@@ -19,4 +18,4 @@ The updated patch:
            typed1(tree, mode, dropExistential(ptPlugins))
          }
 +        val tree1 = tree11.shallowDuplicate
-{code}
+```

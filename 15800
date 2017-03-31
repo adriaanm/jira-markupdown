@@ -1,8 +1,7 @@
 This happens when vararg type has type parameters.
 
 Both Array and mutable.Seq are invariant. However using Array as an argument in vararg function fails, while mutable.Seq works.
-
-{code}
+```scala
 object Main {
   def main(args: Array[String]) {
     bar(new B)
@@ -24,20 +23,20 @@ object Main {
 
 class A[T]
 class B extends A[String]
-{code}
+```
 
 Compiler error:
-{code}
+```scala
 error: type mismatch;
  found   : Array[B]
  required: Array[A[?>: Nothing <: Any]]
     foo(array: _*)
 one error found
-{code}
+```
 
 
 Everything works when vararg type does not have any type parameters:
-{code}
+```scala
 object Main {
   def main(args: Array[String]) {
     bar(new B)
@@ -59,6 +58,6 @@ object Main {
 
 class A
 class B extends A
-{code}
+```
 
 Tested on 2.8.1.final and 2.9.0.r23541.

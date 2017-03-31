@@ -1,4 +1,4 @@
-{code}
+```scala
 trait T[@specialized(Int) X] {
   def foo[@specialized(Long) B, @specialized(Long, Int) A](b: B, a: A) = { println("T::foo"); b}
 }
@@ -11,11 +11,8 @@ object Test extends App {
   new U {}.foo(0L, 0)
   (new U {}: T[Int]).foo(0L, 0) // !!! prints "T::foo"
 }
-{code}
-
-
-
-{code}
+```
+```scala
 qbin/scalac -Xprint:specialize sandbox/test.scala && qbin/scala Test
 [[syntax trees at end of                specialize]] // test.scala
 package <empty> {
@@ -79,4 +76,4 @@ package <empty> {
   };
   abstract <specialized> trait T$mcI$sp extends AnyRef with T[Int]
 }
-{code}
+```

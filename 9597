@@ -1,20 +1,20 @@
 Me neither, but I notice:
-{code}
+```scala
 // java6
 class java.util.Vector$1 extends java.lang.Object implements java.util.Enumeration
 // java7
 class java.util.Vector$1 extends java.lang.Object implements java.util.Enumeration<E>
-{code}
+```
 And here's Mr. E:
-{code}
+```scala
 scala> classOf[java.util.Vector[_]].getGenericInterfaces.head
 res0: java.lang.reflect.Type = java.util.List<E>
 // or for that matter
 scala> classOf[java.util.Vector[String]].getGenericInterfaces.head
 res1: java.lang.reflect.Type = java.util.List<E>
-{code}
+```
 What is this all about? Why won't it infer (or even allow) Vector[String] ?
-{code}
+```scala
 
 scala> val v = new java.util.Vector[String]
 v: java.util.Vector[_] = []
@@ -25,9 +25,9 @@ scala> val v: java.util.Vector[String] = new java.util.Vector[String]
  required: java.util.Vector[String]
        val v: java.util.Vector[String] = new java.util.Vector[String]
                                          ^
-{code}
+```
 This has a weirdly familiar feel. You get one bite at the apple, then it's over.
-{code}
+```scala
 scala> val v: java.util.Vector[String] = new java.util.Vector[String](5)
 v: java.util.Vector[String] = []
 
@@ -37,4 +37,4 @@ scala> val v: java.util.Vector[String] = new java.util.Vector[String](5)
  required: java.util.Collection[_ <: String]
        val v: java.util.Vector[String] = new java.util.Vector[String](5)
                                                                       ^
-{code}
+```

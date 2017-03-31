@@ -1,6 +1,5 @@
 Given the following Java class: 
-
-{code}
+```scala
 class Funs {
 
   public void fun(Integer a1, Object... objs) {
@@ -18,11 +17,10 @@ class Funs {
     fun(1, "b", "c"); // string = b, string = c
   }
 }
-{code}
+```
 
-Scalac gets confused about which overload to pick, as shown below. Casting to {{Seq[Object]}} resolves the issue.
-
-{code}
+Scalac gets confused about which overload to pick, as shown below. Casting to `Seq[Object]` resolves the issue.
+```scala
   val sample = new Funs
 
   sample.fun(1, "a", "b")
@@ -51,10 +49,10 @@ Scalac gets confused about which overload to pick, as shown below. Casting to {{
   //  sample.fun(1, Seq("a", 12): _*) // NOPE
 
   sample.fun(1, Seq("a", 12).asInstanceOf[Seq[Object]]: _*) // OK!
-{code}
+```
 
-We would expect scala to properly dispatch {{fun(1, "a", 12)}} to the {{fun(Int, Seq Object)}} overload instead.
+We would expect scala to properly dispatch `fun(1, "a", 12)` to the `fun(Int, Seq Object)` overload instead.
 
 More info: 
-* https://twitter.com/domdorn/status/501050731928248321
-* https://gist.github.com/domdorn/fb504a510ffda470991b#comment-1283475
+- https://twitter.com/domdorn/status/501050731928248321
+- https://gist.github.com/domdorn/fb504a510ffda470991b#comment-1283475

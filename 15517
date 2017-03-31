@@ -3,8 +3,7 @@ When trying to serialize an an inner class (that implements java.io.Serializable
 JDK: 1.6, Compiler: Scala 2.8.0.RC7
 
 With  "-Dsun.io.serialization.extendedDebugInfo=true":
-
-{code}
+```scala
 Exception in thread "main" java.io.NotSerializableException: Outer$$Inner$$
         - field (class "Outer", name: "Inner$$module", type: "class Outer$$Inner$$")
         - object (class "Outer", Outer@32c8f6f8)
@@ -22,10 +21,10 @@ Exception in thread "main" java.io.NotSerializableException: Outer$$Inner$$
         at java.io.ObjectOutputStream.writeObject(ObjectOutputStream.java:326)
         at Main$$.main(Main.scala:13)
         at Main.main(Main.scala)
-{code}
+```
 
 Code to reproduce the problem:
-{code}
+```scala
 import java.io.ObjectOutputStream
 import java.io.Serializable
 
@@ -40,4 +39,4 @@ class Outer extends Serializable {
   def getInner = new Inner()
   class Inner(dummy: Object = null) extends Serializable
 }
-{code}
+```

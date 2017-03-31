@@ -1,21 +1,20 @@
 I just tripped on comparing a List to an Int.  I missed the nicety of a 'will always yield false' warning.  
-{code}
+```scala
 $ ./scala 
 Welcome to Scala version 2.11.0-20130430-161342-13cf0481d2 (Java HotSpot(TM) 64-Bit Server VM, Java 1.7.0_11).
 
 scala> List("bah") == 1
 res1: Boolean = false
-{code}
+```
 
 (warns nicely if reversed)
-
-{code}
+```scala
 scala> 1 == List("foo")
 <console>:8: warning: comparing values of types Int and List[String] using `==' will always yield false
               1 == List("foo")
                 ^
 res0: Boolean = false
-{code}
+```
 
 Realizing that it's hard to know for certain if someone has overridden equals, I suppose this is tricky.  Maybe an annotation on some library equals methods: @neverEqualsPrimitive.  Not clear to me how often this comes up or whether there's anything more reasonable to be done.
 

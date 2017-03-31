@@ -9,7 +9,7 @@ object MyTest {
   implicitly[com.acme.foo.bar.Bar]
   implicitly[com.acme.foo2.baz.Baz]
 }
-{code}
+```scala
 
 And:
 
@@ -21,7 +21,7 @@ import com.acme.foo.bar.Bar
 package object foo {
   implicit val barImpl: Bar = null
 }
-{code}
+```
 
 The line {code}implicitly[com.acme.foo.bar.Bar]{code} compiles fine, proving that the compiler found my implicit value barImpl even though I did not import foo._ and MyTest is not in a sub-package of foo. Worse still, if another project links against this code, the compiler complains with errors along the line "bad symbolic reference ...". The root of the problem though is why the implicit value was found in the first place (and if I explcitly import pacakge foo, it still compiles fine and the latter error disappears too).
 

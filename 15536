@@ -1,12 +1,11 @@
-It seems {{BasicTransformer}} has exponential complexity on the nesting level of the XML being processed. This is due to this method:
-
-{code}
+It seems `BasicTransformer` has exponential complexity on the nesting level of the XML being processed. This is due to this method:
+```scala
   def transform(ns: Seq[Node]): Seq[Node] = {
     val (xs1, xs2) = ns span (n => unchanged(n, transform(n)))
     
     if (xs2.isEmpty) ns
     else xs1 ++ transform(xs2.head) ++ transform(xs2.tail)
   }
-{code}
+```
 
-Each modified node is transformed twice: once at the span, and again at the if/else. So, for {{<a><b><c><d/></c></b></a>}}, with c being modified, node a gets transformed twice, node b gets transformed four times (twice for each time a is transformed), and node c gets transformed eight times.
+Each modified node is transformed twice: once at the span, and again at the if/else. So, for `<a><b><c><d/></c></b></a>`, with c being modified, node a gets transformed twice, node b gets transformed four times (twice for each time a is transformed), and node c gets transformed eight times.

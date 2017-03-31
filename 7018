@@ -1,21 +1,21 @@
 Cheap workaround:
-{code}
+```scala
 case class Shu(value: Int) { Shu }
-{code}
+```
 Less cheap:
-{code}
+```scala
 case class Ma(value: Int)(implicit dummy: Ma.type = Ma)
-{code}
+```
 
 I noticed that the transform is done in RefChecks, and it's so simple and clean that you want to spec it and say Test(42) is a sweetened new Test(42).
 
 But I also see that simple sugars are unhealthy:
-{code}
+```scala
 case class Zi private (value: Int)
 object Test { 
   //val z2 = new Zi(19) // obviously not
   val z = Zi(17)  // error: constructor Zi in class Zi cannot be accessed in object Test
 } 
-{code}
+```
 I see I can't supply a custom non-synthetic apply to short-circuit the optimization either; the spec does say that you can roll your own copy method.
 

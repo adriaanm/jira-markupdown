@@ -1,4 +1,4 @@
-{code}
+```scala
 ~$$ scala-2.8.0 -e "collection.immutable.TreeMap(1 -> 1) transform { case (_, a) => a }"
 (fragment of scalacmd118306951684168847.scala):1: error: ambiguous implicit values:
 
@@ -15,18 +15,16 @@ match expected type
 scala.collection.generic.BuilderFactory[(Int, Int),That,scala.collection.immutable.TreeMap[Int,Int]]
 
 collection.immutable.TreeMap(1 -> 1) transform { case (_, a) => a }
-{code}
+```
 
 works with 2.7.5.
-
-{code}
+```scala
 ~$$ scala-2.7.5 -e "collection.immutable.TreeMap(1 -> 1) transform { case (_, a) => a }"
 ~$$
-{code}
+```
 
 workaround in 2.8 is to cast to !Map before calling transform:
-
-{code}
+```scala
 ~$$ scala-2.8.0 -e "(collection.immutable.TreeMap(1 -> 1): Map[Int, Int]) transform { case (_, a) => a }"
 ~$$
-{code}
+```

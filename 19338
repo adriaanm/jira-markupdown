@@ -1,6 +1,5 @@
 Attempting to compile the following code will cause scalac to spin fruitlessly on multiple cores until the JVM runs out of memory
-
-{code:scala}
+```scala
 class Point{
   def iter =
     new Iterator[Point]{
@@ -9,6 +8,6 @@ class Point{
       def hasNext:Boolean = true
     }
 }
-{code}
+```
 
 This appears to be due to the {code:scala}var currentPosition = this{code} [when I introduced the bug into the code base I guess I was thinking 'this' would refer to the Point, it does not, of course. The compiler should complain at `def next...`]

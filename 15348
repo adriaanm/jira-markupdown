@@ -1,6 +1,5 @@
 I try to do the performance test with this code
-
-{code}
+```scala
 class ScalaColls(n: Int) {
 	val a = Array.fill(n)(new Object)
 	
@@ -20,18 +19,17 @@ class ScalaColls(n: Int) {
 		}
 	}
 }
-{code}
+```
 
 and I found that 'withForEach' method works 8-10 times slower than 'withWhile'. If we look inside IndexedSeqOptimied we see
-
-{code}
+```scala
   override /*IterableLike*/
   def foreach[U](f: A =>  U): Unit = {
     var i = 0
     val len = length
     while (i < len) { f(this(i)); i += 1 }
   }
-{code}
+```
 
 It seems 'foreach' and 'while-loop solution' would have just the same performance but they don't. Probably it's caused by wrong compilation IndexedSeqOptimized for Arrays that's using some Array-wrapper in byte-code instead of plain java-array.
 

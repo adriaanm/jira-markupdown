@@ -1,10 +1,9 @@
 I have come across the stack trace below with some (invalid) code making use of early returns.  Unfortunately, this code is proprietary so I can't share it here, but I can try to answer any questions and give a general description.
 
-The code in question was using the Parser mixins and the parser definition was inside a {{lazy val}}.
+The code in question was using the Parser mixins and the parser definition was inside a `lazy val`.
 
 Here is the basic outline of the code.  This code could never compile correctly because there is no named block to which the early return can be bound.  However, the compiler blows up instead of issuing the correct warning.  Everything is fine when the code is fixed by converting the anonymous function into a nested named function.
-
-{code}
+```scala
     lazy val p1 = {
       def helper(a) = { ... }
 
@@ -15,11 +14,11 @@ Here is the basic outline of the code.  This code could never compile correctly 
         }
       }
     }
-{code}
+```
 
 
 Here is the stacktrace:
-{noformat}
+```
 java.lang.NullPointerException
 	at scala.reflect.internal.Trees$class.Select(Trees.scala:1066)
 	at scala.reflect.internal.SymbolTable.Select(SymbolTable.scala:13)
@@ -81,4 +80,4 @@ java.lang.NullPointerException
 	at scala.tools.nsc.Global$Run.compileSources(Global.scala:1552)
 	at scala.tools.nsc.Global$Run.compile(Global.scala:1661)
  [...]
-{noformat}
+```

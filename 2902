@@ -1,14 +1,13 @@
 Would it be any easier to just look for partial applications of existing type constructors in left-to-right order? Haskell does roughly this (actually, type constructors are just curried, see below), it is tractable, and people don't seem to have an issue with the limitation, though occasionally you do have to introduce a new type just to flip the order of some type parameters.
 
 Here's an example:
-
-{code}
+```scala
 case class State[S,A](run: S => (A,S))
 object Blah {
   def foo[M[_],A](m: M[A]): M[A] = m
   ...
   val blah = foo(State((i: Int) => ("hi",i+1)))
 }
-{code}
+```
 
 Another way to think about this is that type constructors are curried, so State[S,A] is actually represented as Ap(Ap(State, S), A), and likewise the M[A] is Ap(freevar, A) - these unify with freevar = Ap(State, S).

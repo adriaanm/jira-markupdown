@@ -1,6 +1,5 @@
 Seth suggested I post this recreation here. Try this on a 2.12.1 REPL:
-
-{code:scala}
+```scala
 import scala.concurrent._
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -11,13 +10,12 @@ Await.result(x, 1.second)
 
 // This throws a TimeoutException:
 Await.result(Future(42), 1.second)
-{code}
+```
 
-Adding {{scalacOptions += "-Ydelambdafy:inline"}} to {{build.sbt}} makes the problem go away.
+Adding `scalacOptions += "-Ydelambdafy:inline"` to `build.sbt` makes the problem go away.
 
-The problem can also result in a {{NoClassDefFoundError}} as shown here (running Tut on an ebook project):
-
-{code}
+The problem can also result in a `NoClassDefFoundError` as shown here (running Tut on an ebook project):
+```scala
 [tut] compiling: /Users/dave/dev/projects/advanced-scala/src/pages/test.md
 java.lang.NoClassDefFoundError: Could not initialize class $line4.$read$$iw$$iw$$iw$$iw$$iw$$iw$
     at scala.runtime.java8.JFunction0$mcI$sp.apply(JFunction0$mcI$sp.java:12)
@@ -39,5 +37,5 @@ java.util.concurrent.TimeoutException: Futures timed out after [1 second]
 [trace] Stack trace suppressed: run last *:tutOnly for the full output.
 [error] (*:tutOnly) Nonzero exit code: 1
 [error] Total time: 5 s, completed 27-Feb-2017 09:38:19
-{code}
+```
 

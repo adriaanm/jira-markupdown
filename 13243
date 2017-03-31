@@ -1,8 +1,7 @@
 This problem was discussed here: http://www.nabble.com/-scala--Implicit-parameters%2C-contractive-methods-and-SBinary-ts16098040.html
 
 In SBinary I need to be able to get something approximating the following to work:
-
-{code}
+```scala
 scala> class Bin[T]
 defined class Bin
 
@@ -14,7 +13,7 @@ scala> implicit def binSet[T](implicit x : Bin[T], y : Ord[T]) : Bin[Set[T]] = e
  because the implicit parameter type Ord[T]
  is not strictly contained in the signature Bin[Set[T]]
        implicit def binSet[T](implicit x : Bin[T], y : Ord[T]) : Bin[Set[T]] = error("oops");
-{code}
+```
 
 This is safe and should work, but doesn't because the contractiveness condition (section 7.2 of the language spec) is too restrictive. 
 
@@ -23,22 +22,19 @@ I'd like to propose using a resolution mechanism approximately equivalent to -XF
 Specifically, given an implicit def we allow it based on the following rules:
 
 If it has non-implicit parameters we allow it if we'd allow the corresponding parameterless implicit def returning a function type. e.g.
-
-{code}
+```scala
   implicit def foo(x : String) = error(x);  
-{code}
+```
 
 is equivalent to
-
-{code}
+```scala
   implicit def foo = (x : String) => error(x);
-{code}
+```
 
 We then apply analogues of the paterson conditions. Specifically, suppose we have 
-
-{code}
+```scala
   implicit def f[T1,..TN] (implicit c1 : C1, ..., cn : CN) : S
-{code}
+```
 
 We allow it if
 
@@ -46,15 +42,13 @@ a) for each Ti and each Cj, Ti does not appear more times in Cj than it does in 
 b) For each Cj, the sum of the number of type parameters (including repetitions) appearing in Cj is strictly smaller than the same sum for S.
 
 So for example we allow the type signature previously because this sum is 2 for each of Ord[T] and Bin[T], but 3 for Bin[Set[T]] and T appears only once in each constraint and once in the result type, but we would forbid the following:
-
-{code}
+```scala
   implicit def foo[T](implicit bin : Bin[(T, T)]) : Bin[T] = error("oops")
-{code}
+```
 
 Because T appears twice in the type of the implicit parameter but once in the result type
-
-{code}
+```scala
   implicit def bar[T](implicit bin : Bin[List[T]]) : Bin[T] = error("oops");
-{code}
+```
 
 Because the sum for Bin[List[T]] is 3 and the sum for Bin[T] is 2. 

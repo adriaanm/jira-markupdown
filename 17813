@@ -1,7 +1,7 @@
 When an object contains multiple methods named main, including one with a valid type signature for the "true" main method, the compiler issues a warning indicating that the object contains no such method.
 
 Here's an example:
-{code}
+```scala
 object TooManyMains {                                                                                                                       
   def main(args: Array[String]): Unit = {                                                                                                   
     println("Hello, World!")                                                                                                                
@@ -9,20 +9,18 @@ object TooManyMains {
   def main(a: Int, b: Int) = ???                                                                                                            
   def main(s: String, n: String) = ???                                                                                                      
 }    
-{code}
-
-
-{code}
+```
+```scala
 scalac mains.scala
 mains.scala:1: warning: TooManyMains has a main method with parameter type Array[String], but TooManyMains will not be a runnable program.
   Reason: main method must have exact signature (Array[String])Unit
 object TooManyMains {
        ^
 one warning found
-{code}
+```
 
 However it will will run successfully:
-{code}
+```scala
 scala TooManyMains
 Hello, World!
-{code}
+```

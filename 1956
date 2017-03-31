@@ -1,6 +1,5 @@
 The append method is implemented as follows:
-
-{code}
+```scala
 def append(l: SLL): Unit =
 {
     if (cdr == null)
@@ -8,25 +7,24 @@ def append(l: SLL): Unit =
     else
       append(cdr)
 }
-{code}
+```
 
 Because the function is virtual though, the compiler somehow issues a virtual function call to append (invokevirtual) and does perform a tail call.  If one declares the function private and looks at the bytecode, the tail recursion optimization has been performed (we have a goto instead of a function call).  Of course a private append is not very useful.
 
 Is the compiler correct to be conservative?  Perhaps some scala guru can enlighten us.
 
 One "fix" is simply to define an internal function inside of append that does the work and have the append function call it.  Something like:
-
-{code}
+```scala
 def append2(l: SLL): Unit =
 {
   def aux(m: SLL): Unit = if (m.cdr == null) m.cdr = l else aux(m.cdr)
     
   aux(this)
 }
-{code}
+```
 
 This generates the following code:
-{code}
+```scala
 private final void aux$$1(math.SLL, math.SLL);
   Code:
    0:   aload_1
@@ -55,7 +53,7 @@ public void append2(math.SLL);
    2:   aload_1
    3:   invokespecial   SI-40; //Method aux$$1:(Lmath/SLL;Lmath/SLL;)V
    6:   return
-{code}
+```
 
 which will no longer exhaust the stuck.
 

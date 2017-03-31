@@ -1,33 +1,33 @@
 Enum.java
-{code}
+```scala
 public enum Enum {
   VALUE;
 }
-{code}
+```
 
 Ann.java
-{code}
+```scala
 public @interface Ann {
   Enum value();
 }
-{code}
+```
 
 Use.scala
-{code}
+```scala
 class Use {
   @Ann(Enum.VALUE)
   def foo {}
 }
-{code}
+```
 
 Compiling them together with scalac gives:
-{code}
+```scala
 lamppc11:sandbox luc$$ ../build/pack/bin/scalac Enum.java Ann.java Use.scala 
 Use.scala:2: error: annotation argument needs to be a constant; found: Enum.VALUE
   @Ann(Enum.VALUE)
             ^
 one error found
-{code}
+```
 
 Compiling java first, then scala works.
 

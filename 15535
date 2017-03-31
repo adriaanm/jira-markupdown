@@ -1,8 +1,7 @@
-_From scala-user_
+*From scala-user*
 
 Only three of these statements will pass through scalac.
-
-{code}
+```scala
  import collection.mutable
  import collection.JavaConversions._
  import java.{util => ju}
@@ -11,21 +10,19 @@ Only three of these statements will pass through scalac.
  implicitly[ju.Dictionary[Int, String] => mutable.Map[Int, String]]
  (null: mutable.Map[Int, String]):  ju.Dictionary[Int, String]
  implicitly[mutable.Map[Int, String] => ju.Dictionary[Int, String]]
-{code}
+```
 
 Which fails?
-
-{code}
+```scala
  ~/code/scratch/implicit-overload: scalac implicit-overload.scala
 implicit-overload.scala:11: error: could not find implicit value for parameter e: (java.util.Dictionary[Int,String]) => scala.collection.mutable.Map[Int,String]
   implicitly[ju.Dictionary[Int, String] => mutable.Map[Int, String]]
             ^
 one error found
-{code}
+```
 
 Once again, with `-Xlog-implicits`
-
-{code}
+```scala
  ~/code/scratch/implicit-overload: scalac -Xlog-implicits implicit-overload.scala
 scala.this.Predef.conforms is not a valid implicit value for (scala.collection.mutable.Map[Int,String]) => java.util.Dictionary[Int,String] because:
 type mismatch;
@@ -43,7 +40,7 @@ implicit-overload.scala:11: error: could not find implicit value for parameter e
   implicitly[ju.Dictionary[Int, String] => mutable.Map[Int, String]]
             ^
 one error found
-{code}
+```
 
 Responses could vary between:
  * ignore the problem

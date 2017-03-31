@@ -5,14 +5,14 @@ According to SLS ch. 2 second para,
 However, scalac (both 2.7.x and trunk) behave differently as illustrated,
 
 A.scala:
-{code}
+```scala
 package p
 
 class BitSet
-{code}
+```
 
 B.scala
-{code}
+```scala
 package p
 
 import scala.collection.BitSet
@@ -20,11 +20,10 @@ import scala.collection.BitSet
 object Test {
  val b : BitSet = new scala.collection.mutable.BitSet
 }
-{code}
+```
 
 scalac produces the following output,
-
-{code}
+```scala
 B.scala:3: warning: imported `BitSet' is permanently hidden by definition of class BitSet in package p
 import scala.collection.BitSet
        ^
@@ -32,7 +31,7 @@ B.scala:6: error: type mismatch;
  found   : scala.collection.mutable.BitSet
  required: p.BitSet
  val b : BitSet = new scala.collection.mutable.BitSet
-{code}
+```
 
 indicating that the package-local definition p.BitSet has taken precedence over the explicit import of scala.collection.BitSet in B.scala.
 

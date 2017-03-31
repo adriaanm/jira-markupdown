@@ -1,17 +1,15 @@
 Leaving aside for a moment that default values don't make sense in anonymous functions, I'd expect these two to be (operationally) semantically equivalent modulo currying:
-
-{code}
+```scala
 def foo(lazy a: Int)(b: Int = a) { println("<") ; a; println(">") }
 def bar(lazy a: Int): (Int) => Unit = (b: Int = a) => {println("<") ; a; println(">"); ()}
-{code}
+```
 
 With the 'evaluate on first de-reference' semantics of lazy, I'd expect this to run as follows:
-
-{code}
+```scala
 foo({println("!"; 42})()
 | !<>
 foo({println("!"; 42})(13)
 | <!>
-{code}
+```
 
 However, I'd see an argument for excluding lazy arguments from default values lists, as this least-surprise semantics will require some fancy re-writes that I can't imagine how to get right in the presence of currying.

@@ -1,25 +1,22 @@
 Annotation handling in Scaladoc crashes in two related circumstances:
 
 1. An annotation is constructed with a non-primary constructor.
-
-{code}
+```scala
 class annot() extends annotation.StaticAnnotation {
   def this(a: Any) = this()
 }
 
 @annot(0)
 class B
-{code}
-
-{noformat}
+```
+```
 	at scala.tools.nsc.doc.model.ModelFactory$$anon$19.<init>(ModelFactory.scala:908)
 	at scala.tools.nsc.doc.model.ModelFactory.makeAnnotation(ModelFactory.scala:903)
 	at scala.tools.nsc.doc.model.ModelFactory$EntityImpl$$anonfun$annotations$1.apply(ModelFactory.scala:100)
-{noformat}
+```
 
 2. When calling a Java annotation in the sources, Scaladoc generates documentation for that annotation, and crashes with an argument/parmaeter list length mismatch.
-
-{noformat}
+```
 find src build.sbt -type f | xargs tail -n 1000
 ==> src/main/java/foo/A.java <==
 package foo;
@@ -36,12 +33,10 @@ package foo
 
 @A(123)
 class B
-
-{noformat}
+```
 
 This no longer causes a crash on 2.10.x since 50ee635e3c.
-
-{noformat}
+```
 % RUNNER=scaladoc scala-hash '50ee635e3c' `find src -type f`
 [info] 50ee635e3c => /Users/jason/usr/scala-v2.10.1-122-g50ee635
 warning: dropping dependency on node with no phase object: pickler
@@ -52,6 +47,6 @@ model contains 4 documentable templates
 warning: dropping dependency on node with no phase object: pickler
 model contains 4 documentable templates
 Exception in thread "main" java.lang.AssertionError: assertion failed: 
-{noformat}
+```
 
 But it still seems like a bug that documentation is generated for Java sources.

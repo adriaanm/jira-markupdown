@@ -1,6 +1,5 @@
 This turned out to be a known problem (SI-9366) in rendering singleton types over refinement types.
-
-{noformat}
+```
 scala> val typed = tb.typecheck(q"trait C { val a: Object {}; type aa = a.type }");  typed.collect { case tt @ TypeTree() if tt.original.isInstanceOf[SingletonTypeTree] => (tt.original, showRaw(tt.tpe)) }
 <console>:16: warning: abstract type u.SingletonTypeTree is unchecked since it is eliminated by erasure
          typed.collect { case tt @ TypeTree() if tt.original.isInstanceOf[SingletonTypeTree] => (tt.original, showRaw(tt.tpe)) }
@@ -11,4 +10,4 @@ abstract trait C extends scala.AnyRef {
   type aa = <expression-owner>.C.<refinement>.type
 }
 res0: List[(u.Tree, String)] = List((a.type,SingleType(ThisType(TypeName("C")), TermName("a"))))
-{noformat}
+```

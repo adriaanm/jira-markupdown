@@ -1,21 +1,19 @@
-This bug was noted in the comments for SI-3431, still exists e.g. in 2.8.0.!r22850
-
-{code}
+This bug was noted in the comments for scala/bug#3431, still exists e.g. in 2.8.0.!r22850
+```scala
 object A {
   def filter(x: String)(p: String => Boolean): List[String] = Nil
 
   def f1(x: Any)(f: Any => Any) = f(x)
   def f2(): Any = f1("a")(_ => Iterator.range(0, 5) forall (i => true))
 }
-{code}
-{code}
+```
+```scala
 class B {
   def f = A.filter(null)(_ => true)
 }
-{code}
-
-{code}
+```
+```scala
 $$ scalac -optimise -d out c.scala # or scalac -d out c.scala
 $$ scalac -optimise -d out -cp out d.scala
 error: Missing dependency 'object A', required by out/A$$.class
-{code}
+```

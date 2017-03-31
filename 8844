@@ -1,14 +1,12 @@
-I'm facing similar challenges, and have iterated to the following, custom resetter. It only resets symbols of {{Ident}} and {{This}} nodes which refer to symbols defined in the macro arguments. Yes, I had to cast to {{reflect.internal}} to achieve this; don't scold me Eugene :)
-
-{code}
+I'm facing similar challenges, and have iterated to the following, custom resetter. It only resets symbols of `Ident` and `This` nodes which refer to symbols defined in the macro arguments. Yes, I had to cast to `reflect.internal` to achieve this; don't scold me Eugene :)
+```scala
   private val internalSyms = origTree.collect {
     case dt: DefTree => dt.symbol
   }
 
   private def resetInternalAttrs(tree: Tree) = utils.resetInternalAttrs(tree, internalSyms)
-{code}
-
-{code}
+```
+```scala
   def resetInternalAttrs(tree: Tree, internalSyms: List[Symbol]) =
     new ResetInternalAttrs(internalSyms.toSet).transform(tree)
 
@@ -64,4 +62,4 @@ I'm facing similar challenges, and have iterated to the following, custom resett
       dupl
     }
   }
-{code}
+```

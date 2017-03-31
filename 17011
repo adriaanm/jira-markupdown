@@ -1,8 +1,7 @@
 The compiler aborts in icode when compiling a macro that reifies an anonymous function whose body is the macro argument. The crash happens when the macro argument contains a local variable use.
 
 The following REPL dump shows the crash.
-
-{code}
+```scala
 $ scala-2.10.0-M3/bin/scala -Xmacros
 Welcome to Scala version 2.10.0-M3 (OpenJDK 64-Bit Server VM, Java 1.7.0-internal).
 Type in expressions to have them evaluated.
@@ -117,13 +116,11 @@ symbol value x$1 does not exist in $line15.$read$$iw$$iw$$iw$$iw.<init>
 That entry seems to have slain the compiler.  Shall I replay
 your session? I can re-run each line except the last one.
 [y/n]
+```
 
-{code}
 
-
-This does not happen when using {{scala.reflect.mirror}} directly:
-
-{code}
+This does not happen when using `scala.reflect.mirror` directly:
+```scala
 scala> scala.reflect.mirror.reify { val x = 1; x }
 res0: reflect.mirror.Expr[Int] = 
 Expr[Int]({
@@ -140,4 +137,4 @@ Expr[() => Int]((() => {
 
 scala> res1.eval()
 res2: Int = 1
-{code}
+```

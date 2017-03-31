@@ -1,6 +1,5 @@
 Relatedly, in early initializers (https://groups.google.com/d/msg/scala-user/mR8nOx3ve-0/gSMnXWyY3l8J)
-
-{quote}
+```
 {code}
 class Summation[T : Summable](baseValue : Signal[T]) extends {
   private val _baseSignal = new Mutable[T, T](Val(implicitly[Summable[T]].zero), implicitly[Summable[T]].sum(_, _))
@@ -21,4 +20,4 @@ class Summation[T](baseValue : Signal[T]) (implicit summable : Summable[T]) exte
 }
 {code}
 I get the compile error "implicit modifier cannot be used for top-level objects" on the first line.  If I remove the reference to summable in the early initializer, then the compile error goes away, although this makes it impossible to pass the signal into the base class constructor.
-{quote}
+```

@@ -1,19 +1,19 @@
-The ScalaDoc states that a [scala.collection.concurrent.TrieMap|http://www.scala-lang.org/api/current/index.html#scala.collection.concurrent.TrieMap] is thread-safe:
-{quote}
+The ScalaDoc states that a [scala.collection.concurrent.TrieMap](http://www.scala-lang.org/api/current/index.html#scala.collection.concurrent.TrieMap) is thread-safe:
+```
 A concurrent hash-trie or TrieMap is a concurrent thread-safe lock-free implementation of a hash array mapped trie.
-{quote}
+```
 
-But the method {{getOrElseUpdate}} of [scala.collection.mutable.MapLike|http://www.scala-lang.org/api/current/index.html#scala.collection.mutable.MapLike] is not overridden and is therefore not thread safe:
-{code}
+But the method `getOrElseUpdate` of [scala.collection.mutable.MapLike](http://www.scala-lang.org/api/current/index.html#scala.collection.mutable.MapLike) is not overridden and is therefore not thread safe:
+```scala
   def getOrElseUpdate(key: A, op: => B): B =
     get(key) match {
       case Some(v) => v
       case None => val d = op; this(key) = d; d
     }
-{code}
+```
 
 This issue can be recreated with the following code:
-{code}
+```scala
 import scala.collection.concurrent.TrieMap
 
 object TrieMapApp extends App {
@@ -45,11 +45,11 @@ object TrieMapApp extends App {
   }
   println(exception)
 }
-{code}
+```
 
 Please let me know if you need more information.
 
 As a workaround you can write:
-{code}
+```scala
 synchronized { map.getOrElseUpdate("Result", ApplyMeOnce()) }
-{code}
+```

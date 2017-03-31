@@ -1,6 +1,5 @@
 ParHashMap non-deterministlically throws an exception, but HashMap doesn't.
-
-{noformat}
+```
 scala> import scala.collection.parallel.mutable.ParHashSet
 scala> val xs = ParHashSet[Int](1,2,3,4,5,6,7,8)
 scala> while (true) xs.foreach {i => for (x <- 1 to 100) xs += i+x}
@@ -34,6 +33,6 @@ java.lang.ArrayIndexOutOfBoundsException: 3
   at scala.concurrent.forkjoin.ForkJoinPool$WorkQueue.runTask(ForkJoinPool.java:1339) 
   at scala.concurrent.forkjoin.ForkJoinPool.runWorker(ForkJoinPool.java:1979) 
   at scala.concurrent.forkjoin.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:107)
-{noformat}
+```
 
 The "while (true)" is to try repeatedly until it fails, as the failure is non-deterministic.

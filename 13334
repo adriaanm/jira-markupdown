@@ -1,6 +1,5 @@
 The following code attempts to pattern match against symbols declared in the match expression itself. This causes an exception in scalac:
-
-{code}
+```scala
 case class CaseClass( value: Int );
 
 object PatternMatchBug {
@@ -20,10 +19,10 @@ object PatternMatchBug {
         matcher( caseClassInstance, 42 )
     }
 }
-{code}
+```
 
 stack trace:
-{code}
+```scala
 $$ scalac PatternMatchBug.scala
 Exception in thread "main" java.lang.Error: symbol value instance does not exist in PatternMatchBug.matcher
         at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:914)
@@ -62,4 +61,4 @@ Exception in thread "main" java.lang.Error: symbol value instance does not exist
         at scala.tools.nsc.Main$$.process(Main.scala:86)
         at scala.tools.nsc.Main$$.main(Main.scala:107)
         at scala.tools.nsc.Main.main(Main.scala)
-{code}
+```

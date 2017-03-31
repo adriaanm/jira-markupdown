@@ -1,14 +1,14 @@
-{code}
+```scala
 import scala.annotation.varargs
 
 class Broken {
    @varargs def method(ss: String*): Unit = ()
    class Inner { }
 }
-{code}
+```
 
 causes:
-{code}
+```scala
 java.lang.AssertionError: assertion failed: Trying to access the this of another class: tree.symbol = class $read$$iw$$iw$$iw$$iw$$iw$$iw$$iw$Broken, ctx.clazz.symbol = class $read$$iw$$iw$$iw$$iw$$iw$$iw$$iw$Broken$Inner compilation unit:<console>
 	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$backend$icode$GenICode$ICodePhase$$genLoad(GenICode.scala:962)
 	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.genLoadQualifier(GenICode.scala:1175)
@@ -37,15 +37,15 @@ java.lang.AssertionError: assertion failed: Trying to access the this of another
 	at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:297)
 	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.run(GenICode.scala:54)
 	at scala.tools.nsc.Global$Run.compileSources(Global.scala:953)
-{code}
+```
 
 but this code:
-{code}
+```scala
 class Works {
    def method(ss: String*): Unit = ()
    class Inner { }
 }
-{code}
+```
 
 works fine.
 

@@ -1,6 +1,5 @@
-This used to work in 2.7.0-RC2 but fails in 2.7.0-final. It seems {{&amp;}} is decoded to an & by the underlying parser (the default one is Java's SAX parser), and the decoder is looking desperately for the end ';' token.
-
-{code}
+This used to work in 2.7.0-RC2 but fails in 2.7.0-final. It seems `&amp;` is decoded to an & by the underlying parser (the default one is Java's SAX parser), and the decoder is looking desperately for the end ';' token.
+```scala
 scala> XML.load(new java.io.StringReader("<test2 s=\"a&amp;\"></test2>"))
 parsing attrib value: a&
 java.util.NoSuchElementException
@@ -9,4 +8,4 @@ java.util.NoSuchElementException
 	at scala.xml.UnprefixedAttribute.<init>(UnprefixedAttribute.scala:24)
 	at scala.xml.parsing.FactoryAdapter$$$$anonfun$$startElement$$1.apply(FactoryAdapter.scala:155)
 	at scala.xml.parsing.FactoryAdapter$$$$anonfun$$startElement$$1....
-{code}
+```

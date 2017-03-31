@@ -1,12 +1,11 @@
 Calling "loop" within another "loop" statement results in a reference being kept to the previous closure. Attached is a simple example showing this behavior.
 
-*Expected behavior*:
+**Expected behavior**:
 The script continues running indefinitely, 
 
-*Actual behavior*:
+**Actual behavior**:
 A java.lang.OutOfMemoryError: Java heap space is thrown.
-
-{code:scala}
+```scala
 import actors._
 import Actor._
 
@@ -28,4 +27,4 @@ while(true) {
   (1 to 5000).foreach { i => a ! B }
   a ! A
 }
-{code}
+```

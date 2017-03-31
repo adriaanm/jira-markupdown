@@ -1,10 +1,9 @@
-As expressed in [SO 33650809|http://stackoverflow.com/questions/33650809/optionlong-constructor-throws-a-nullpointerexception], the creation of `Option` from a null-carrying `java.lang` value can cause a `NullPointerException` to be thrown.
+As expressed in [SO 33650809](http://stackoverflow.com/questions/33650809/optionlong-constructor-throws-a-nullpointerexception), the creation of `Option` from a null-carrying `java.lang` value can cause a `NullPointerException` to be thrown.
 
 This is because the way `Option` factory is defined:
-
-{code:scala}
+```scala
 def apply[A](x: A): Option[A] = if (x == null) None else Some(x)
-{code}
+```
 
 What happens is that the `x` (being e.g. `java.lang.Long` - and carrying a null) is first implicitly converted to `scala.Long`, before being compared to null. `scala.Long` is an `AnyVal` and cannot thus carry a null. Thus the exception.
 

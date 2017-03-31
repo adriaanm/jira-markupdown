@@ -1,6 +1,5 @@
 Okay, here's a more faithful whittlin'
-
-{code}
+```scala
 trait Covariant[+A]
 trait Invariant[A] extends Covariant[A @annotation.unchecked.uncheckedVariance] 
  
@@ -46,11 +45,10 @@ class Test4 {
   val s: Invariant[Null] = ???
   s.combined // okay
 }
-{code}
+```
 
 Running that with the patch above to remove usage-count-based implicit sorting:
-
-{noformat}
+```
 qbin/scalac  test/files/pos/t8431.scala; rm *.class 2>/dev/null
 test/files/pos/t8431.scala:24: error: type mismatch;
  found   : CanBuildFrom[Invariant[Nothing]]
@@ -61,4 +59,4 @@ test/files/pos/t8431.scala:24: error: value combined is not a member of Invarian
   s.combined // fail
     ^
 two errors found
-{noformat}
+```

@@ -3,19 +3,17 @@ I started to see two new test failures on Avian, but the issue exists on all run
 The code ends up in an endless recursion by the changes to the stringOf method in ScalaRuntime (https://github.com/scala/scala/commit/739cc9d1ad8b7d1def468299c9cdc6e9ebb2d143#src/library/scala/runtime/ScalaRunTime.scala).
 
 The reason why it seems to work fine on Hotsopt is just that Hotspot copes better with StackOverflowErrors than Avian and is in a less broken state after catching the SOE:
-
-{code}
+```scala
     try inner(arg)
     catch {
       case _: StackOverflowError | _: UnsupportedOperationException | _: AssertionError => "" + arg
     }
-{code}
+```
 
 Don't be mistaken: Even on Hotspot stringifying XML values causes SOEs which are then catched and thrown away.
 
 Stacktraces look like this:
-
-{code}
+```scala
 ...
 scala> val atom = new scala.xml.Atom()
 java.lang.ExceptionInInitializerError
@@ -29,11 +27,10 @@ at scala.collection.Iterator$class.foreach(Iterator.scala:743)
 at scala.collection.TraversableOnce$class.addString(TraversableOnce.scala:343)
 at scala.collection.TraversableOnce$class.mkString(TraversableOnce.scala:309)
 ...
-{code}
+```
 
 or
-
-{code}
+```scala
 ...
 java.lang.NoClassDefFoundError: scala.xml.Utility$
 at scala.xml.Node.buildString(Node.scala:162)
@@ -46,4 +43,4 @@ at scala.collection.Iterator$class.foreach(Iterator.scala:743)
 ...
 Caused by: java.lang.StackOverflowError
 ... 10888 more
-{code}
+```

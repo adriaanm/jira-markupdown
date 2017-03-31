@@ -1,8 +1,7 @@
 Thanks, I'll pull the branch over and take a look. The biggest win, by far, appears to be by-name args, so that would be the main focus.
 
 For the use case of functions that take explicit arguments, perhaps making it an exposed API would be easier and more clear in intent? For instance (not counting specialization):
-
-{code}
+```scala
 package scala.runtime
 
 final class Const1[A, T](x: T) extends AbstractFunction1[A, T] {
@@ -27,15 +26,14 @@ object Const {
 def foo(f: (String) => String)
 // ...
 foo(Const("bar"))
-{code}
+```
 
 The type parameters disambiguate the apply() method for the compiler, and the return types disambiguate it for the VM (Function1, Function2, ...).
 
-This _could_ even be implicit, though I'm wary of that usage as it would need a very loud warning to potential users. As implicit, the above {{foo}} function could be called as:
-
-{code}
+This *could* even be implicit, though I'm wary of that usage as it would need a very loud warning to potential users. As implicit, the above `foo` function could be called as:
+```scala
 foo("bar")
-{code}
+```
 
 which has both good points (such as conciseness) and bad (human ambiguity of function name overloading, and most importantly, *non*-deferral of evaluation).
 

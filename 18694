@@ -7,7 +7,7 @@ c) an environment where the abstract type has been implemented concretely
 Then the type alias should be equivalent to the concrete class which implements the abstract type. It isn't because substitution is broken. Observe the unimplemented type includes T1 and R, which are Function1's type parameters completely escaping.
 
 If the type alias definition is moved from One into Two, then this compiles as given.
-{code}
+```scala
 trait One {
   type Op[A]
   type Alias[A] = Op[A]
@@ -28,9 +28,9 @@ trait Two extends One {
   // one error found
   class View2 extends Alias[Int] { def apply(xs: Int) = xs }
 }
-{code}
+```
 Here is another angle on it. f1, f2, f3 all compile. The fact that f2 compiles tells you some trivial substitution is taking place, but it is missing (at least) parents and bounds.
-{code}
+```scala
 trait Three extends One {
   trait Op[A] extends (A => A)
 
@@ -44,4 +44,4 @@ trait Three extends One {
   //   def f4[T <: Alias[Int]](f: T) = f(5)
   //                                     ^
 }
-{code}
+```

@@ -1,7 +1,7 @@
 proposed fix: extrapolate in existentialAbstraction created singleton types whose prefix was not stable
 
 extrapolate now generates a wider type instead:
-{code}
+```scala
        val extrapolate = new TypeMap {
          variance = 1
 +        override def mapOver(tp: Type): Type = tp match {
@@ -11,7 +11,7 @@ extrapolate now generates a wider type instead:
 +            else super.mapOver(tp)
 +          case _ => super.mapOver(tp)
 +        }
-{code}
+```
 
 It's not entirely clear to me yet whether this is the right fix, though.
 the type `object Test.Bar#baz`  (TypeRef(TypeRef(ThisType(object Test),class Bar,List()),  object baz,  List())) is ok, 

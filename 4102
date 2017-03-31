@@ -1,6 +1,5 @@
 I've further simplified the example to
-
-{code}
+```scala
 trait Search[M] {
     def search(input: M): C[Int] = null
 }
@@ -8,21 +7,19 @@ trait Search[M] {
 object StringSearch extends Search[String]
 
 trait C[T]
-{code}
+```
 
 and 
-
-{code}
+```scala
 public class JavaApp {
        public static void main(String[] args) {
                StringSearch.search("test");
        }
 }
-{code}
+```
 
-In a strange way the error depends on the return value being an applied type (strange because the error appears in the parameter position). The problem is actually catched using the {{-Ycheck:genjvm}} flag:
-
-{code}
+In a strange way the error depends on the return value being an applied type (strange because the error appears in the parameter position). The problem is actually catched using the `-Ycheck:genjvm` flag:
+```scala
 src/main/scala/Test.scala:5: warning: compiler bug: created generic signature for method search in StringSearch that does not conform to its erasure
 signature: (Ljava/lang/String;)LC<Ljava/lang/Object;>;
 original type: (input: String)C[Int]
@@ -32,4 +29,4 @@ if this is reproducible, please report bug at http://lampsvn.epfl.ch/trac/scala
 object StringSearch extends Search[String]
        ^
 one warning found
-{code}
+```

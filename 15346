@@ -1,13 +1,13 @@
-Trying to minimize SI-3431 I thought I was learning interesting stuff until I realized what I was really isolating was this:
-{code}
+Trying to minimize scala/bug#3431 I thought I was learning interesting stuff until I realized what I was really isolating was this:
+```scala
 warnNoInline(
   if (inc.code eq null) "bytecode was unavailable"
   else if (!isSafeToInline(m, inc, info.stack)) "it is unsafe (target may reference private fields)"
   else "a bug (run with -Ylog:inline -Ydebug for more information)"
 )
-{code}
+```
 The call to isSafeToInline crashes the compiler if there are any open blocks.  Here is source which crashes under -optimise, but with that isSafeToInline call commented out, does not:
-{code}
+```scala
 object A {    
   def f1(f: String => Boolean) = f("a")
 
@@ -19,4 +19,4 @@ object A {
       }
     }
 }
-{code}
+```

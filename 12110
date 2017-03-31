@@ -1,6 +1,5 @@
-I believe {{Map#keys}} and {{Map#keySet}} should return a {{ListSet}} at runtime, as it's the collection that better keeps the ordering semantics of {{ListMap}}. However, while I was fixing this issue, I noticed that the two collections have considerably different behaviors, despite claiming to provide the same semantics:
-
-{code}
+I believe `Map#keys` and `Map#keySet` should return a `ListSet` at runtime, as it's the collection that better keeps the ordering semantics of `ListMap`. However, while I was fixing this issue, I noticed that the two collections have considerably different behaviors, despite claiming to provide the same semantics:
+```scala
 scala> ListMap("a" -> 1, "b" -> 2, "c" -> 3, "d" -> 4, "e" -> 5).iterator.toList
 res4: List[(String, Int)] = List((a,1), (b,2), (c,3), (d,4), (e,5))
 
@@ -12,6 +11,6 @@ res10: scala.collection.immutable.ListSet[String] = ListSet(A, B, C, D, E)
 
 scala> ListSet("a", "b", "c", "d", "e").map(_.toUpperCase).iterator.toList
 res11: List[String] = List(A, B, C, D, E)
-{code}
+```
 
-I believe some of the examples above break the expectations I would have about a set/map that keeps the insertion order of its elements. Moreover, the implementations of {{ListMap}} and {{ListSet}} have too much differences; I would expect practically the same codebase with just the necessary API adaptations. I'll take some time in the next week to review the code of both collections and see if it can be cleaned up and made more consistent.
+I believe some of the examples above break the expectations I would have about a set/map that keeps the insertion order of its elements. Moreover, the implementations of `ListMap` and `ListSet` have too much differences; I would expect practically the same codebase with just the necessary API adaptations. I'll take some time in the next week to review the code of both collections and see if it can be cleaned up and made more consistent.

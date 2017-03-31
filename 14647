@@ -1,7 +1,7 @@
 When importing overloaded functions from two different objects, the compiler generates error when trying to use a function which has the same name regardless of the argument type.
 
 Example:
-{code}
+```scala
 object DoubleMath {
     def sin(x: Double) = 1
 }
@@ -18,16 +18,16 @@ class A {
         println(sin(1.0) + sin("1"))
     }
 }
-{code}
+```
 
 Tested on 2.7.7.final and 2.7.3.final with the same result.
-{code}
+```scala
 error: reference to sin is ambiguous;
 it is imported twice in the same scope by
 import FloatMath._
 and import DoubleMath._
         println(sin(1.0) + sin("1"))
-{code}
+```
 
 It would be very helpful to import overloaded functions from different objects to enable splitting large libraries into separate files and possibly shipping them in separate jars.
 

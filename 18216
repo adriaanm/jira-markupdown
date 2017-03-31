@@ -1,6 +1,5 @@
-It doesn't seem possible to use {{(=> A) => B}} in contexts requiring {{A => B}}:
-
-{code}
+It doesn't seem possible to use `(=> A) => B` in contexts requiring `A => B`:
+```scala
 scala> def log(a: => Any): Unit = println(a)
 log: (a: => Any)Unit
 
@@ -13,11 +12,10 @@ scala> apply("hello")(log)
  required: Int => ?
               apply("hello")(log)
                              ^
-{code}
+```
 
-If you try to go the other direction, using {{A => B}} in contexts requiring {{(=> A) => B}}, the result depends on how you're trying to do it:
-
-{code}
+If you try to go the other direction, using `A => B` in contexts requiring `(=> A) => B`, the result depends on how you're trying to do it:
+```scala
 scala> def log(a: Any) = println(a)
 log: (a: Any)Unit
 
@@ -29,4 +27,4 @@ scala> apply("hello")(log)
 
 scala> apply("hello")(identity)
 java.lang.ClassCastException: $anonfun$apply$1 cannot be cast to java.lang.String
-{code}
+```

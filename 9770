@@ -1,7 +1,7 @@
 I'm still unable to craft a test to trigger this. My hypothesis is that the field `Typer#context` is mutated between the point when the lazy annotation info is created and when it is forced.
 
 A few breadcrumbs for code that might be of interest:
-{code}
+```scala
     // Namers.scala
     def enterSyms(trees: List[Tree]): Namer = {
       trees.foldLeft(this: Namer) { (namer, t) =>
@@ -11,9 +11,8 @@ A few breadcrumbs for code that might be of interest:
         else newNamer(ctx)
       }
     }
-{code}
-
-{code}
+```
+```scala
           // Typer#typeStats
           stat match {
             case imp @ Import(_, _) =>
@@ -22,5 +21,5 @@ A few breadcrumbs for code that might be of interest:
                 context = context.makeNewImport(imp)
                 typedImport(imp)
               } else EmptyTree
-{code}
+```
 

@@ -7,7 +7,7 @@ And even if you know all the rules, you have a good chance of being out of luck:
 
 - since you can't annotate the type, there is no way to see a Byte, Short, or Char inlined (as those types are never inferred for literals)
 - you are required to know implementation details to know what will actually be inlined, because superficially identical sources fall out differently, as here:
-{code}
+```scala
 object Test {
   final val s1 = "abc"
   final val s2 = s"${s1}def"
@@ -15,7 +15,7 @@ object Test {
   def s4 = s2
   def s5 = s3
 }
-{code}
+```
 Is it reasonable to expect people to intuit that s5 has only a reference to string constant "abcdef", but s4 calls s2? I don't think so.
 
 There is an obvious solution, which will also be the right kind of obvious to the scala programmer. If you want a constant inlined, mark it @inline.

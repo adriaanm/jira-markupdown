@@ -1,15 +1,15 @@
 > I'd say I just don't have the signals necessary to coordinate with dot well enough.
 I see a way around the cases you described and the ones I've met myself, though it's not extremely robust. But I agree that this is all rather crazy.
 
-Unlike you wrote, currently Scaladoc will not hang. Instead, it will [time out|https://github.com/scala/scala/blob/master/src/scaladoc/scala/tools/nsc/doc/html/page/diagram/DotRunner.scala#L101]. For the scenarios discussed, giving up when there's an error is only an optimization to fail faster. Taking longer to fail when there's an actual setup problem seems acceptable to me, though of course it's a judgment call.
+Unlike you wrote, currently Scaladoc will not hang. Instead, it will [time out](https://github.com/scala/scala/blob/master/src/scaladoc/scala/tools/nsc/doc/html/page/diagram/DotRunner.scala#L101). For the scenarios discussed, giving up when there's an error is only an optimization to fail faster. Taking longer to fail when there's an actual setup problem seems acceptable to me, though of course it's a judgment call.
 
 So, it seems that scaladoc could just store the standard error, display it if there's a timeout and only log it otherwise.
 
 This might also be compatible with the other scenario I observed — spurious failures from `dot`. In my case, I observe (with GraphViz 2.34.0 and 2.36.0) the memory corruptions below inside GraphViz (not due to scaladoc). 
-If graphviz produce no output or recognizably garbled output, then ignoring the standard error would be OK. However, since in this case dot just crashes and exits, it's still easy to detect something's wrong **without** looking at the standard error.
+If graphviz produce no output or recognizably garbled output, then ignoring the standard error would be OK. However, since in this case dot just crashes and exits, it's still easy to detect something's wrong ****without**** looking at the standard error.
 
 What I saw with diagrams-debug was pretty insane. EDIT: the below just documents the heap corruptions, feel free to ignore it.
-{code}
+```scala
 [info] Test Scala API documentation to /Users/pgiarrusso/Documents/Research/Sorgenti/ilc/scala-prototype/target/scala-2.10/test-api...
 model contains 120 documentable templates
 
@@ -144,6 +144,6 @@ Diagram generation running time breakdown:
   Fixed images: 0
 
 [info] Test Scala API documentation successful.
-{code}
+```
 
 [If I were on Linux, I could just run valgrind around graphviz and send a bug report to graphviz people — assuming the memory corruption is not OS X specific. But I don't have time for that.]

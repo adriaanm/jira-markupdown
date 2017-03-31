@@ -1,8 +1,7 @@
 Positions of translated patterns (and consequently line numbers in bytecode) are sometimes wrong. While things are significantly better than in 2.9, there are still issues with unapplies. In this example, notice that in the last case some temporary variable loads are positioned at the `match` position (and the return statement as well).
 
 This causes the debugger to jump between the current line and the beginning of the match for those steps and it is very confusing. I think this is a low-hanging fruit that can improve the user experience a lot.
-
-{code}
+```scala
 abstract class Super
 case class Case1(x: Int) extends Super
 case class Case2(str: String) extends Super
@@ -28,11 +27,10 @@ object Test extends App {
   
   test(Case3(-1))
 }
-{code}
+```
 
 the output:
-
-{code}
+```scala
 public void test(Super);
   Code:
    0: aload_1
@@ -111,6 +109,6 @@ public void test(Super);
    line 19: 118
    line 20: 120
    line 14: 136
-{code}
+```
 
 The interesting bits are at offset 84 and 87 and further down.

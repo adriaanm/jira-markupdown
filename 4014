@@ -3,8 +3,7 @@ I can reproduce this from the command line.
 It might be related to the default argument changes that happen recently in trunk r21794.
 
 Given the Java annotation
-
-{code}
+```scala
 package hello;
 
 import java.lang.annotation.*;
@@ -16,21 +15,20 @@ import java.lang.annotation.*;
 public @interface Hello {
   String msg() default "hello world";
 }
-{code}
+```
 
 and the Scala class:
-
-{code}
+```scala
 package hello
 
 class HelloWorld {
   @Hello
   def method() { }
 }
-{code}
+```
 
-when I try to compile from the command line using the command _scalac hello/*_ I get the following message:
-{code}
+when I try to compile from the command line using the command *scalac hello/** I get the following message:
+```scala
 hello/Hello.java:10: error: not found: type _root_
   String msg() default "hello world";
          ^
@@ -38,4 +36,4 @@ hello/HelloWorld.scala:4: error: annotation hello.Hello is missing argument msg
   @Hello
    ^
 two errors found
-{code}
+```

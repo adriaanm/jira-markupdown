@@ -1,35 +1,35 @@
 If we have this function
-{code}
+```scala
 def f(to: TraversableOnce[Char]) {}
-{code}
+```
 and an optional string
-{code}
+```scala
 val optionalString = Some("Hello")
-{code}
+```
 and try to pass the result of 'Option.getOrElse' to the function
-{code}
+```scala
 f(optionalString.getOrElse("<none>"))
-{code}
+```
 we get this error message:
-{code}
+```scala
 type mismatch;  found: java.lang.Comparable[java.lang.String]  required: TraversableOnce[Char]
-{code}
+```
 
 This is a bit misleading.
 
 The definition of Option.getOrElse is:
-{code}
+```scala
 sealed abstract class Option[+A] ... {
   def getOrElse[B >: A](default: => B): B
   ...
 } 
-{code}
+```
 By passing 'getOrElse' to 'f' the type 'B' must be a super type of 'String' and a subtype of 'TraversableOnce[Char]'. No such type exist but the closest is 'Comparable[String]'. This leaks into the error message which then becomes misleading.
 
 A better error message would inform the programmer that "no type B could be found that is a super type of String and a subtype of TraversableOnce[Char]" or something along these lines.
 
 By the way, forcing the type B to String
-{code}
+```scala
 f(optionalString.getOrElse[String]("<none>"))
-{code}
+```
 makes the code compile. Now, getOrElse's result is a String and an implicit conversion to StringOps can kick in to make String compatible with TraversableOnce[Char].

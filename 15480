@@ -1,6 +1,5 @@
 Running following code produces java.lang.VerifyError. It fails with 2.8.0.RC6 and works with 2.7.7.
-
-{code}
+```scala
 class Env
 class Dep(arg: AnyRef)(implicit val env: Env)
 class Component(implicit env: Env){
@@ -15,22 +14,19 @@ object ThisInConstructorProblem{
     foo.dep
   }
 }
-{code}
+```
 
 Note that the code works if the implicit env in class Dep is not val:
-
-{code}
+```scala
 class Dep(arg: AnyRef)(implicit env: Env)
-{code}
+```
 
 The code also works if the instantiated class is not inner class:
-
-{code}
+```scala
   def dep = new Dep(Inner())
-{code}
+```
 
 It also works if the Inner class does not take the implicit parameter:
-{code}
+```scala
   case class Inner()
-{code}
-
+```

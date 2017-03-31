@@ -1,16 +1,15 @@
 I got a very similar error on a different piece of source code with Scala 2.9.1. I'm mentioning this because varargs are not involved here. However, making the offending code self-contained seems too time-consuming and pointless here; I'll just discuss the offending change.
 
-I'm posting a brief sample to show what happens. In the following pattern match, the offending change was the addition of the type annotation {{FoundNode\[t, repr\]}} after the binder for {{fn}}.
-{code}
+I'm posting a brief sample to show what happens. In the following pattern match, the offending change was the addition of the type annotation `FoundNode\[t, repr\]` after the binder for `fn`.
+```scala
       for (((parentNode: FlatMap[_, _, /*t, repr, */ u, that]), fn: FoundNode[t, repr], allFVSeq) <- lookupIndexableExps(e)) yield {
          //...irrelevant code
          fn.optimize(null, parentNode, allFVSeq) //triggers the crash
       }
-{code}
-Here {{lookupIndexableExps}} returns {{Seq\[(FlatMap\[\_, \_, \_, \_\], FoundNode\[\_, \_\], Seq\[Var\])\]}}, hence Scalac already knew that {{fn}} was of type {{FoundNode\[\_, \_\]}}; now I just bound the type parameters to {{FoundNode}}; the type of optimize requires those parameters to match with the parameters of {{parentNode}}, and that's why that call is required to trigger the crash!
-{{FoundNode}}, {{FlatMap}} and related defs are defined as (in simplified form, untested):
-
-{code}
+```
+Here `lookupIndexableExps` returns `Seq\[(FlatMap\[\_, \_, \_, \_\], FoundNode\[\_, \_\], Seq\[Var\])\]`, hence Scalac already knew that `fn` was of type `FoundNode\[\_, \_\]`; now I just bound the type parameters to `FoundNode`; the type of optimize requires those parameters to match with the parameters of `parentNode`, and that's why that call is required to trigger the crash!
+`FoundNode`, `FlatMap` and related defs are defined as (in simplified form, untested):
+```scala
   trait Exp[+T] {...}
   abstract class FuncExp[-S, +T](val f: Exp[S] => Exp[T]) extends Exp[S => T] {...}
   sealed abstract class FoundNode[T, Repr <: Traversable[T] with TraversableLike[T, Repr]](val c: Exp[Repr with Traversable[T]]) {
@@ -23,9 +22,9 @@ Here {{lookupIndexableExps}} returns {{Seq\[(FlatMap\[\_, \_, \_, \_\], FoundNod
 case class FlatMap[T, Repr <: Traversable[T] with TraversableLike[T, Repr],
                    U, That <: Traversable[U]](base: Exp[Repr], f: FuncExp[T, Traversable[U]])(implicit protected[this] val c: CanBuildFrom[Repr, U, That]) {
 }
-{code}
+```
 The stack trace from sbt:
-{code}
+```scala
 [debug]/Users/pgiarrusso/Documents/Research/Sorgenti/linqonsteroids/src/test/scala/ivm/expressiontree/TypeTests.scala
 scala.MatchError: ?>: Nothing <: Any (of class scala.tools.nsc.symtab.Types$BoundedWildcardType)
 	at scala.tools.nsc.typechecker.Variances$class.varianceInType(Variances.scala:67)
@@ -205,4 +204,4 @@ scala.MatchError: ?>: Nothing <: Any (of class scala.tools.nsc.symtab.Types$Boun
 	at java.util.concurrent.ThreadPoolExecutor$Worker.runTask(ThreadPoolExecutor.java:886)
 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:908)
 	at java.lang.Thread.run(Thread.java:680)
-{code}
+```

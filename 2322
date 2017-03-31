@@ -1,8 +1,7 @@
-I just found SI-1697, which sounds similar.
+I just found scala/bug#1697, which sounds similar.
 
 This code:
-
-{code}
+```scala
   def matchBroken(element: PsiElement) = element match {
     case RealPsiClass(c) => "matched: RealPsiClass(c)"
     case x: ScNamedElement => "matched: x: ScNamedElement"
@@ -10,11 +9,10 @@ This code:
     case x if x.isInstanceOf[ScNamedElement] => "matched: x if x.isInstanceOf[ScNamedElement]"
     case _ => "matched _"
   }
-{code}
+```
 
 compiled against a r18583, then decompiled with JAD, gives: 
-
-{code}
+```scala
   public String matchBroken(PsiElement element) {
     PsiClass temp2;
     if (element instanceof PsiClass) {
@@ -35,7 +33,7 @@ compiled against a r18583, then decompiled with JAD, gives:
     }
     return "matched _";
   }
-{code}
+```
 
 Removing the first case, which uses an extractor object, fixes the problem.
 

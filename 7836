@@ -1,20 +1,18 @@
 There you go:
 
 DirectRunner.scala:
-
-{code}
+```scala
     val workers = kindFiles.grouped(groupSize).toList map { toTest =>
       val worker = new Worker(fileManager, TestRunParams(scalaCheckParentClassLoader))
       worker.start()
       worker ! RunTests(kind, toTest)
       worker
     }
-{code}
+```
 
 
 Worker.scala:
-
-{code}
+```scala
   def act() {
     react {
       case RunTests(testKind, files) =>
@@ -26,4 +24,4 @@ Worker.scala:
         }
     }
   }
-{code}
+```

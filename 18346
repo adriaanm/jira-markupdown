@@ -1,6 +1,5 @@
 Following code:
-
-{code}
+```scala
 import scala.reflect.runtime.universe._
 import scala.reflect.runtime.{currentMirror => cm}
 import scala.tools.reflect.ToolBox
@@ -15,11 +14,10 @@ object Test extends App {
     """)
   tb.eval(tree)
 }
-{code}
+```
 
 Crashes badly at runtime:
-
-{code}
+```scala
 scala.reflect.internal.FatalError:
      while compiling: <no file>
         during phase: typer
@@ -50,11 +48,10 @@ scala.reflect.internal.FatalError:
 	at scala.tools.nsc.typechecker.Typers$Typer.typerWithLocalContext(Typers.scala:472)
 	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:5291)
 	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:5356)
-{code}
+```
 
 While the same code with import inside of an object work fine:
-
-{code}
+```scala
 import scala.reflect.runtime.universe._
 import scala.reflect.runtime.{currentMirror => cm}
 import scala.tools.reflect.ToolBox
@@ -70,4 +67,4 @@ object Test extends App {
     }""")
   tb.eval(tree)
 }
-{code}
+```

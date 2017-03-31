@@ -1,6 +1,5 @@
 apply is missing method in Iterator: there is no other way to take n-th element of iterator.
-
-{code}
+```scala
   def apply(n: Int) = {
     require(n >= 0)
     var remaining = n
@@ -10,11 +9,10 @@ apply is missing method in Iterator: there is no other way to take n-th element 
     }
     next
   }
-{code}
+```
 
 However, adding this method breaks source compatibility in several places, for example !RichString should be changed:
-
-{code}
+```scala
 Index: src/library/scala/runtime/RichString.scala
 ===================================================================
 --- src/library/scala/runtime/RichString.scala	(revision 15227)
@@ -28,6 +26,6 @@ Index: src/library/scala/runtime/RichString.scala
        index += 1
        self.substring(start, index min len)
      }
-{code}
+```
 
 If someone accepts this task, I'll also change all places in standard library that apply method breaks.

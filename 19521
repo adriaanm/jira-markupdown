@@ -1,6 +1,6 @@
-I seem to have found a bug in scala-reflect - when invoking apply on a {{MethodMirror}}, I end up getting a null where I have supplied a non-null value.
+I seem to have found a bug in scala-reflect - when invoking apply on a `MethodMirror`, I end up getting a null where I have supplied a non-null value.
 
-Here is some sample code. You can see I get a {{null}} where I should get a {{B(7)}}:
+Here is some sample code. You can see I get a `null` where I should get a `B(7)`:
 
 {code:title=Test.scala}
 object Test extends App {
@@ -30,6 +30,6 @@ object Test extends App {
 }
 {code}
 
-This seems to happen whenever I have a MethodMirror with both implicit and non-implicit parameters. I am not very familiar with this code, but to me it seems like an {{else args1\(i\) = arg}} is missing just below line 433 of JavaMirrors.scala.
+This seems to happen whenever I have a MethodMirror with both implicit and non-implicit parameters. I am not very familiar with this code, but to me it seems like an `else args1\(i\) = arg` is missing just below line 433 of JavaMirrors.scala.
 
 This test was run against Scala 2.11.5, but I got the same results against 2.11.2, 2.11.3, and 2.11.4. I tried against 2.10 as well, but the API has changed a lot and I would have had to refactor to get it to compile there.

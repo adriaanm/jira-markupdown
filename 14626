@@ -1,15 +1,14 @@
 `HashTable.initialSize` doesn't ensure power of two sizes and it fails with a NPE if the size is 0. e.g. the following throws a NPEr1.
-
-{code}
+```scala
   new collection.mutable.HashMap {
     override def initialSize = 0
   }.toString
-{code}
+```
 
 I will attach a patch.
 
 r1
-{code}
+```scala
 Exception in thread "main" java.lang.NullPointerException
 	at scala.collection.mutable.HashTable$$$$anon$$1.<init>(HashTable.scala:118)
 	at scala.collection.mutable.HashTable$$class.entriesIterator(HashTable.scala:116)
@@ -28,4 +27,4 @@ Exception in thread "main" java.lang.NullPointerException
 	at scala.Predef$$.println(Predef.scala:184)
 	at test.Test$$.main(S.scala:5)
 	at test.Test.main(S.scala)
-{code}
+```

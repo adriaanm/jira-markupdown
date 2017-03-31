@@ -1,6 +1,5 @@
 A slightly harder test case:
-
-{code}
+```scala
 object Test {
   def f1[@specialized A] (a: A, b: Any) = new Exception().getStackTrace()(0)
   def f2[@specialized A, B] (a: A, b: String) = new Exception().getStackTrace()(0)
@@ -16,13 +15,12 @@ object Test {
     println("f5: "+f5(1,Nil))
   }
 }
-{code}
+```
 
 This shows up fairly fundamental problems of phase-awareness in the specialization transform: as MethodTypes flow through InfoTransfomers they pick up new symbols for type parameters. This does not seem to be accounted.
-
-{code}
+```scala
   def specializedTypeVars(sym: Symbol): immutable.Set[Symbol] = (
     if (neverHasTypeParameters(sym)) immutable.Set.empty
     else enteringTyper(specializedTypeVars(sym.info))
   )
-{code}
+```

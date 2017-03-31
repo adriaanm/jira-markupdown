@@ -1,6 +1,5 @@
 Here's what I see from that method:
-
-{code}
+```scala
       def AdaptTypeError(tree: Tree, found: Type, req: Type) = {
         // SI-3971 unwrapping to the outermost Apply helps prevent confusion with the
         // error message point.
@@ -39,12 +38,11 @@ Here's what I see from that method:
         issueNormalTypeError(callee, withAddendum(callee.pos)(typeErrorMsg(foundType, req)))
         infer.explainTypes(foundType, req)
       }
-{code}
-
-{noformat}
+```
+```
 % qscalac -Xprint:jvm /Users/jason/code/scala3/src/compiler/scala/tools/nsc/typechecker/ContextErrors.scala | grep --context=100 'def AdaptTypeError'
-{noformat}
-{code}
+```
+```scala
 ...
       def AdaptTypeError(tree: reflect.internal.Trees$Tree, found: reflect.internal.Types$Type, req: reflect.internal.Types$Type): Unit = {
         val foundType: reflect.internal.Types$Type = {
@@ -91,4 +89,4 @@ Here's what I see from that method:
         ContextErrors$TyperContextErrors$TyperErrorGen.this.$outer.$outer().ErrorUtils().issueNormalTypeError(ContextErrors$TyperContextErrors$TyperErrorGen.this.callee$1(tree), ContextErrors$TyperContextErrors$TyperErrorGen.this.$outer.$outer().$asInstanceOf[tools.nsc.typechecker.TypeDiagnostics]().withAddendum(ContextErrors$TyperContextErrors$TyperErrorGen.this.callee$1(tree).pos()).apply(ContextErrors$TyperContextErrors$TyperErrorGen.this.$outer.$outer().ErrorUtils().typeErrorMsg(foundType, req)).$asInstanceOf[String](), ContextErrors$TyperContextErrors$TyperErrorGen.this.contextTyperErrorGen());
         ContextErrors$TyperContextErrors$TyperErrorGen.this.$outer.infer().explainTypes(foundType, req)
       };
-{code}
+```

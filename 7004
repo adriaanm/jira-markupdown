@@ -1,7 +1,7 @@
 I've just realized a new side of this issue, which might or might not be solved by your new virtualized pattern-matcher. Type bounds are also ignored by "GADT-like type inference", but the above workaround helps there too. Can you add this to your testcases, if that's relevant for the changes you're doing?
 
 To wit, here's an example REPL session, with the above definitions in scope:
-{code}
+```scala
 scala> (_: Any) match {
      | case View1(base) => base.map(identity)
      | }
@@ -22,5 +22,5 @@ scala> (_: Any) match {
      | case ViewNoTypeAnnotWorkingInference(base) => base.map(identity)
      | }
 res4: Any => Traversable[Any] = <function1>
-{code}
+```
 Now I'm going to clutter my case classes definitions with this trick and unclutter my pattern matching code :-)

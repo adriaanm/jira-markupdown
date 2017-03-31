@@ -1,19 +1,19 @@
 This fails:
-{code}
+```scala
 scala> xml.XML.loadString("<p><b>bold</b> <i>italic</i></p>")
 res3: scala.xml.Elem = <p><b>bold</b><i>italic</i></p>
-{code}
+```
 but this works (two spaces instead of one):
-{code}
+```scala
 scala> xml.XML.loadString("<p><b>bold</b>  <i>italic</i></p>")
 res4: scala.xml.Elem = <p><b>bold</b>  <i>italic</i></p>
-{code}
+```
 
-I believe this is due to a quite deliberate-looking chunk of code in {{FactoryAdapter.scala}} captureText():
-{code}
+I believe this is due to a quite deliberate-looking chunk of code in `FactoryAdapter.scala` captureText():
+```scala
       if (text.length() > 0 && !text.equals(" ")) {
         hStack.push(createText(text))
       }
-{code}
+```
 
 I don't know what the code is trying to do, but it's wrong, wrong, wrong... I'm lucky I caught it before it caused data corruption in my application.

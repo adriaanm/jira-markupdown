@@ -1,6 +1,5 @@
 there is a problem with class access, resulting in java.lang.IllegalAccessError being thrown:
-
-{code}
+```scala
 class Test {
     private val s = new Schnuck
     def observer : PartialFunction[ Any, Unit ] = s.observer
@@ -18,11 +17,10 @@ class Test {
 val x = new Test
 val o = x.observer
 o( "Test" ) // --> throws runtime error
-{code}
+```
 
 using a singleton object instead seems to work though:
-
-{code}
+```scala
 class Test2 {
     def observer : PartialFunction[ Any, Unit ] = Schnuck.observer
     
@@ -38,4 +36,4 @@ class Test2 {
 val x2 = new Test2
 val o2 = x2.observer
 o2( "Test" ) // --> no prob
-{code}
+```

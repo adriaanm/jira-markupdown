@@ -1,16 +1,16 @@
 Since there is a lift method in PartialFunction, which turns PartionFunction[A,B] into Function1[A,Option[B]]. I think it is a good idea to add a partial method in Funtion1, which could turn Funtion1[A,Option[B]] into PartionFunction[A,B].
 
 It may be defined as follows(in Function1[A,B]):
-{code}
+```scala
     def partial[C](implicit ev: B <:< Option[C]): PartialFunction[A,C] = x => ev(apply(x)) match {
         case Some(r) => r
     }
-{code}
+```
 or:
-{code}
+```scala
     def partial[C](implicit ev: B <:< Option[C]): PartialFunction[A,C] = new PartialFunction[A,C] {
         def apply(v: A): C = ev(Function1.this.apply(v)).get
         def isDefinedAt(x: A): Boolean = ev(Function1.this.apply(v)(x)).isDefined
         def lift: A => B = Function1.apply(v).this
     }
-{code}
+```

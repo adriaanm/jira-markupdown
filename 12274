@@ -1,17 +1,17 @@
 The dequeue function is keeping the just-returned element in the underlying  array instead of actively erasing it from the array.  (In contrast, ResizableArray's reduceToSize method actively places a null in the vacated spot.)  A fix would be to change the existing lines
-{code}
+```scala
       resarr.p_size0 = resarr.p_size0 - 1
       resarr.p_swap(1, resarr.p_size0)
       fixDown(resarr.p_array, 1, resarr.p_size0 - 1)
       toA(resarr.p_array(resarr.p_size0))
-{code}
+```
 to something like
-{code}
+```scala
       resarr.p_size0 = resarr.p_size0 - 1
       val elementToReturn = resarr.p_array(1)  // save the desired element
       resarr.p_array(1) = resarr.p_array(resarr.p_size0)  // move the last element to the root
       resarr.p_array(resarr.p_size0) = null  // null out the last slot
       fixDown(resarr.p_array, 1, resarr.p_size0 - 1)
       toA(elementToReturn)  // return the saved element
-{code}
+```
 (But that code is neither tested nor even compiled.)

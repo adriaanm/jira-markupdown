@@ -1,22 +1,22 @@
-I wanted to mention an annoyance with {{java.util.Failure}}, just in case anyone has ideas any about how to fix it without breaking source compatibility…
+I wanted to mention an annoyance with `java.util.Failure`, just in case anyone has ideas any about how to fix it without breaking source compatibility…
 
-Basically, I think {{Failure}} should extend {{Try\[Nothing]}} instead of having its own type parameter and extending {{Try\[T]}}. Since {{Failure}} doesn't carry a value with a varying type, it doesn't need a type parameter.
+Basically, I think `Failure` should extend `Try\[Nothing]` instead of having its own type parameter and extending `Try\[T]`. Since `Failure` doesn't carry a value with a varying type, it doesn't need a type parameter.
 
 Current definition:
-{noformat}
+```
 final case class Failure[+T](exception: Throwable) extends Try[T] {
-{noformat}
+```
 Ideal definition:
-{noformat}
+```
 final case class Failure(exception: Throwable) extends Try[Nothing] {
-{noformat}
+```
 
-The current definition means that casting is needed to convert one type of {{Failure}} into another type {{Failure}}.
+The current definition means that casting is needed to convert one type of `Failure` into another type `Failure`.
 
 Here are some examples of casting from the Scala library. None of these casts should be necessary IMO. I've had to do casting like this in my own code too.
 
-{{Try.scala}}:
-{noformat}
+`Try.scala`:
+```
 final case class Failure[+T](exception: Throwable) extends Try[T] {
   ...
   def flatMap[U](f: T => Try[U]): Try[U] = this.asInstanceOf[Try[U]]
@@ -24,9 +24,9 @@ final case class Failure[+T](exception: Throwable) extends Try[T] {
   def map[U](f: T => U): Try[U] = this.asInstanceOf[Try[U]]
   ...
 }
-{noformat}
-{{Future.scala}}:
-{noformat}
+```
+`Future.scala`:
+```
   ...
   def flatMap[S](f: T => Future[S])(implicit executor: ExecutionContext): Future[S] = {
     ...
@@ -40,13 +40,13 @@ final case class Failure[+T](exception: Throwable) extends Try[T] {
       case f: Failure[_] => p complete f.asInstanceOf[Failure[(T, U)]]
       ...
 }
-{noformat}
+```
 
 So I'm reporting this in the hope that someone will have a clever idea about how to fix this annoyance. :) 
 
-The best idea I could come up with—that should be *mostly* source compatible—is to leave {{Failure}} with a type parameter, but then ignore the parameter value and always have {{Failure}} extend {{Try\[Nothing]}}. But this compromise would still cause source compatibility issues in some edge cases.
+The best idea I could come up with—that should be **mostly** source compatible—is to leave `Failure` with a type parameter, but then ignore the parameter value and always have `Failure` extend `Try\[Nothing]`. But this compromise would still cause source compatibility issues in some edge cases.
 
 Possible suggestion:
-{noformat}
+```
 final case class Failure[T](exception: Throwable) extends Try[Nothing] {
-{noformat}
+```

@@ -1,17 +1,15 @@
 Let's keep track of elided closures classes in a mutable set of symbols :
-
-{noformat}
+```
       if (settings.Xdce.value)
         for ((sym, cls) <- icodes.classes if inliner.isClosureClass(sym) && !deadCode.liveClosures(sym)) {
           log(s"Optimizer eliminated ${sym.fullNameString}")
           elidedClosureClasses += sym  // <---------- part 1 of 2
           icodes.classes -= sym
         }
-{noformat}
+```
 
 With that, 
-
-{noformat}
+```
       // add inner classes which might not have been referenced yet
       exitingErasure {
         for (sym <- List(csym, csym.linkedClassOfClass);
@@ -19,4 +17,4 @@ With that,
              if m.isClass && !elidedClosureClasses(sym))   // <---------- part 2 of 2
           innerClassBuffer += m
       }
-{noformat}
+```

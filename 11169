@@ -1,10 +1,10 @@
-I do not think this is a bug. I see nothing that supports the assumption that a partial function would be acceptable as an argument to {{filterKeys}}. This is not even a matter of documentation, just compare the signature
-{code:scala}
+I do not think this is a bug. I see nothing that supports the assumption that a partial function would be acceptable as an argument to `filterKeys`. This is not even a matter of documentation, just compare the signature
+```scala
 def filterKeys(p: (A) => Boolean): Map[A, B]
-{code}
-to that of a method actually allowing a partial function, such as {{collect}}:
-{code:scala}
+```
+to that of a method actually allowing a partial function, such as `collect`:
+```scala
 def collect[B](pf: PartialFunction[A, B]): Map[B]
-{code}
+```
 
-Regardless of this, the inconsistency between {{get}} and {{contains}} is somewhat ugly. Personally, I'd prefer to have {{contains}} first apply the predicate, because a non-materialized view only makes sense if the predicate is rather lightweight anyway.
+Regardless of this, the inconsistency between `get` and `contains` is somewhat ugly. Personally, I'd prefer to have `contains` first apply the predicate, because a non-materialized view only makes sense if the predicate is rather lightweight anyway.

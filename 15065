@@ -1,18 +1,18 @@
 I was hoping to deprecate a package object ("what? already?") since the whole package has moved and that would be the cleanest way to deprecate the forwarding stubs, but:
-{code}
+```scala
 [scalacfork] /scala/trunk/src/library/scala/util/parsing/syntax/package.scala:14: error: expected start of definition
 [scalacfork] package object syntax {
 [scalacfork] ^
 [scalacfork] one error found
-{code}
+```
 As I began this ticket I thought that deprecating an object tagged everything inside it as deprecated, but that doesn't seem to be the case.  It is what I had intended for scala.Math, but now I find that referencing it directly gets the warning, but its contents skate by:
-{code}
+```scala
 scala> scala.Math   
 <console>:5: warning: object Math in package scala is deprecated: use scala.math package instead
 
 scala> scala.Math.Pi
 res0: Double = 3.141592653589793
-{code}
+```
 Hopefully there is some remedy possible short of directly annotating all several dozen of scala.Math's members.  Actually even that isn't much of a remedy because that code is all shared with the undeprecated scala.math package.
 
 (I know nobody would DREAM of suggesting cutting and pasting, so let's not even go there.)

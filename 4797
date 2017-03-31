@@ -1,5 +1,5 @@
 Here is an example where catch needs  full context:
-{code}
+```scala
 val result2 = try {
  val result1 = doThis()// can throw IOException
  doThat(result1) //can throw IOException
@@ -10,9 +10,9 @@ val result2 = try {
   else
     throw new DescriptiveException("doThat failed", result1)
 }
-{code}
+```
 If we need to achieve the same thing with current implementation, we would have to take result1 out of try scope, and possibly enclose EVERY statement in try/catch 
-{code}
+```scala
 val result1 = try {
  doThis()// can throw Exception
  } catch {
@@ -26,9 +26,9 @@ val result2 = try {
  case _ =>
   throw  new DescriptiveException("doThat failed", result1)
 }
-{code} 
+```
 OR
-{code}
+```scala
 var result1 = null
 val result2 = 
 try {
@@ -41,11 +41,11 @@ try {
   else
    throw new DescriptiveException("doThat failed", result1)
 }
-{code}
+```
 In real life you may have a dozen inter-related statements in a row, each resulting in some useful context, and each can throw, so multiple try/catch and/or external variables get quite messy
 
 Also, suppose result1 needs to be 'closed' (has a resource handle, like DB connection). It is simple with what I am proposing:
-{code}
+```scala
 val result2 = try {
  val result1 = doThis()// can throw IOException
  doThat(result1) //can throw IOException
@@ -58,9 +58,9 @@ val result2 = try {
 } finally {
   if (result1!=null) close(result1)
 }
-{code}
+```
 Typically objects should not be used after they have been closed.  Since both examples of current implementation have moved result1 to external scope, we need yet another try/finally to close it and ensure it is out of scope for the rest of the code:
-{code}
+```scala
 try { 
  var result1 = null
  val result2 = 
@@ -77,5 +77,5 @@ try {
 } finally {
  if (result1!=null) close(result1)
 }
-{code}
+```
 It gets messier and messier...

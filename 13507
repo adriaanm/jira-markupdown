@@ -1,6 +1,5 @@
 In the general category of "polymorphic Arrays are strange beasts"
-
-{code}
+```scala
 package arraycast;
 
 class Foo[T](x : Array[AnyRef]) { def bar = x.asInstanceOf[Array[T]] }
@@ -13,10 +12,9 @@ object FromMono{
 object FromPoly{
   def main(args : Array[String]) = (new Bar[AnyRef](Array[AnyRef]("Halp!"))).bar
 }
-{code}
+```
 
 FromMono will throw a ClassCastException, but FromPoly will work. So what seems to be happening is that the compiler special cases casting to monomorphic arrays but not casting to polymorphic ones. 
-
-{code}
+```scala
 java.lang.ClassCastException: [Ljava.lang.Object
-{code}
+```

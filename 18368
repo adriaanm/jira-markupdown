@@ -1,23 +1,20 @@
 There is no compilation error with wrong number of arguments for `xml.Elem`:
-
-{code} 
+```scala
 <root /> match { case Elem(prefix, lable, attribs, scope, minimizeEmpty, content @ _*) => ??? }
-{code} 
+```
 
 Method `unapplySeq` returns `Option[(String, String, scala.xml.MetaData, scala.xml.NamespaceBinding, Seq[scala.xml.Node])]`.
 
 It should be called `unapply` to produce a compilation error:
-
-{code} 
+```scala
 object ElemHelper {
   def unapply(n: Node) = Elem.unapplySeq(n)
 }
 
 <root /> match { case ElemHelper(prefix, lable, attribs, scope, minimizeEmpty, content @ _*) => ??? }
-{code}
-
-{quote}
+```
+```
 <console>:15: error: wrong number of arguments for object ElemHelper
-{quote}
+```
 
 See this SO question for error case. http://stackoverflow.com/q/17357359/406435

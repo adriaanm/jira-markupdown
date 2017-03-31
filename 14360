@@ -1,6 +1,5 @@
 In trunk:
-
-{code}
+```scala
 case class Property[T](private var t: T) {
  var beforeChanges: List[(T, T) => Unit] = Nil
  var afterChanges: List[T => Unit] = Nil
@@ -11,9 +10,9 @@ case class Property[T](private var t: T) {
   afterChanges foreach (_(t2))
  }
 }
-{code}
+```
 causes:
-{code}
+```scala
 Exception in thread "main" java.lang.Error: symbol value t$$1$$1 does not exist in line3$$object$$$$iw$$$$iw$$Property.equals
         at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:918)
         at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.genLoadArguments(GenICode.scala:1109)
@@ -70,4 +69,4 @@ Exception in thread "main" java.lang.Error: symbol value t$$1$$1 does not exist 
         at scala.tools.nsc.InterpreterLoop.main(InterpreterLoop.scala:377)
         at scala.tools.nsc.MainGenericRunner$$.main(MainGenericRunner.scala:126)
         at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
-{code}
+```

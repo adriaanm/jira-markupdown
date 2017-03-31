@@ -1,6 +1,5 @@
 What I currently do to work around this issue is to define a documentation template trait, e.g.:
-
-{code}
+```scala
 package org.my.parent
 
 package object child {
@@ -9,14 +8,14 @@ package object child {
     */
   private[child] trait DocDummy
 }
-{code}
+```
 
 This works surprisingly well, but has some drawbacks:
 
-- {{DocDummy}} must be mixed in explicitly wherever needed, which is usually all over the place, since this is the reason the definitions need to exist in a central location in the first place
-- in the example above the trait is package private, so users can not see it directly in the API, however it still appears in the heading everywhere it is used, e.g.  *object Child extends Parent with DocDummy* which might be confusing
+- `DocDummy` must be mixed in explicitly wherever needed, which is usually all over the place, since this is the reason the definitions need to exist in a central location in the first place
+- in the example above the trait is package private, so users can not see it directly in the API, however it still appears in the heading everywhere it is used, e.g.  **object Child extends Parent with DocDummy** which might be confusing
 
 But this approach also has some advantages:
 
 - you can make the trait public for others to use and ...
-- the users of your API can also use this trait in _different_ packages, not just subpackages of the package where you make the definitions
+- the users of your API can also use this trait in *different* packages, not just subpackages of the package where you make the definitions

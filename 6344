@@ -1,10 +1,10 @@
 minimized (I think):
-{noformat}
+```
 trait Term[A]
 case class Fn[A, B](f: A => B) extends Term[A => B]
 case class Apply[A, B](fn: Term[A => B]) extends Term[B]
 (Apply(Fn(identity[String])): Term[String]) match {
   case Apply(Fn(f)) => f(()) }
-{noformat}
+```
 
 note that it doesn't matter what you pass to f. here I pass (), but you can pass anything at all and the compiler swallows it without complaining (!!!)

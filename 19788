@@ -1,6 +1,5 @@
-This should not compile; it should not be able to infer a {{T}} when calling {{onestep}}.  We use that to throw a {{ClassCastException}}.
-
-{code}
+This should not compile; it should not be able to infer a `T` when calling `onestep`.  We use that to throw a `ClassCastException`.
+```scala
 package forsomescope2
 
 trait Magic[S] {
@@ -32,11 +31,10 @@ object Main extends App {
   }
   boom
 }
-{code}
+```
 
 ([scastie here|http://scastie.org/11145]) throws
-
-{noformat}
+```
 java.lang.ClassCastException: java.lang.String cannot be cast to java.lang.Integer
 	at scala.runtime.BoxesRunTime.unboxToInt(BoxesRunTime.java:101)
 	at forsomescope2.Main$$anon$1.step(ForsomeScope.scala:16)
@@ -44,6 +42,6 @@ java.lang.ClassCastException: java.lang.String cannot be cast to java.lang.Integ
 	at forsomescope2.Main$.boom(ForsomeScope.scala:28)
 	at forsomescope2.Main$.delayedEndpoint$forsomescope2$Main$1(ForsomeScope.scala:30)
 	at forsomescope2.Main$delayedInit$body.apply(ForsomeScope.scala:8)
-{noformat}
+```
 
-This doesn't apply to the {{Magic}} variant from SI-9410, except if you do the intermediate introduction of {{forSome}}, which is already introduced here.
+This doesn't apply to the `Magic` variant from scala/bug#9410, except if you do the intermediate introduction of `forSome`, which is already introduced here.

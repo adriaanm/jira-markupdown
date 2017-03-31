@@ -1,6 +1,5 @@
-Serializing an enum value depends on members of the the enum object being initialized or not. Note that for most users the serialized bytes don't matter, because Enumeration class has a {{readResolve}} method that returns the correct value instance.
-
-{code}
+Serializing an enum value depends on members of the the enum object being initialized or not. Note that for most users the serialized bytes don't matter, because Enumeration class has a `readResolve` method that returns the correct value instance.
+```scala
 object TestEnum extends Enumeration {
   val Left, Centre, Right = Value
 }
@@ -20,11 +19,10 @@ val ser1 = serialize(t) // serialize t
 val values = TestEnum.values // get the list of possible values
 val ser2 = serialize(t) // serialize the same t again
 println(Arrays.equals(ser1, ser2)) // outputs false
-{code}
+```
 
-The abstract class Enumeration has member objects ValueOrdering and ValueSet, which may or may not be initialized when serializing. They should be marked {{@transient}}, but that doesn't work for member objects. Test for that:
-
-{code}
+The abstract class Enumeration has member objects ValueOrdering and ValueSet, which may or may not be initialized when serializing. They should be marked `@transient`, but that doesn't work for member objects. Test for that:
+```scala
 class C extends Serializable {
   @transient // not respected
   object O extends Serializable { val x = 0 } // needs to be serializable
@@ -63,6 +61,6 @@ object Test extends App {
   val b = serialize(c)
   println(arrComp(a, b))
 }
-{code}
+```
 
 An easy fix may be to add empty readObject/writeObject methods to Enumeration (to investigate the consequences).

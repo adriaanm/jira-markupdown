@@ -1,25 +1,25 @@
 As was discussed on the list, Enumeration lacks the advantages of being object oriented, while case classes/objects lack the advantages of being enumeratable. A simple subclass of Enumeration, which I would like to contribute to the standard library, solves this problem. The idea of using reflection to solve the problem of lazy object intialization comes from lift's MetaMapper.
 
  This only works for
-{code}
+```scala
 val enums = new CaseEnum { ... }
-{code}
+```
 or
-{code}
+```scala
 class Enums extends CaseEnum { ... }
 object Enums extends Enums
-{code}
+```
 but for
-{code}
+```scala
 object Enums extends CaseEnum { ... }
-{code}
+```
 you have to reference the members in the body,
 e.g.
-{code}
+```scala
 A; B; C
-{code}
+```
 Example usage:
-{code}
+```scala
 val Colors = new CaseEnum {
   sealed abstract class Color extends Case
   object Red extends Color
@@ -36,13 +36,12 @@ Colors.foreach {c=> println("Value "+c+" is mapped to "+Colors.cases(c))}
 Red is mapped to Red
 Blue is mapped to Blue
 */
-{code}
+```
 Note that members do not actually have to be case classes or case objects.
 Also, I haven't tested it on 2.8. Is there a significant difference in Enumeration?
 
 Here is my source code:
-
-{code}
+```scala
 class CaseEnum extends Enumeration {
   private val _cases = new scala.collection.mutable.HashMap[Value, Case]
   trait Case {
@@ -67,4 +66,4 @@ class CaseEnum extends Enumeration {
     m.invoke(this)
   }
 }
-{code}
+```

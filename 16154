@@ -1,17 +1,17 @@
 (!) Reproducing this issue requires running scala complier two times reusing previously generated classes. Only a second run triggers the bug.
 
-Consider generic class {{A}} implemented in java:
+Consider generic class `A` implemented in java:
 {code:title="A.java"}
 public class A<T> {}
-{code}
+```scala
 
 And scala object {{B}} that implements method {{m}} that takes an instace of A as a parameter with some default value:
 {code:title="B.scala"}
 object B {
   def m(p: A[String] = null) {}
 }
-{code}
-And scala class C that invokes above method {{m}} leaving its parameter unspecified and relying on the default value:
+```
+And scala class C that invokes above method `m` leaving its parameter unspecified and relying on the default value:
 {code:title="C.scala"}
 class C {
   B.m()

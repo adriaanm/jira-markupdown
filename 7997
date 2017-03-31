@@ -1,6 +1,5 @@
-two more examples that crash the compiler in different places, probably all due to this bug. the first one is actually SI-5231:
-
-{code}
+two more examples that crash the compiler in different places, probably all due to this bug. the first one is actually scala/bug#5231:
+```scala
 object T {
   def m = new ConfigBuilder()
   implicit def build( cb: ConfigBuilder ) : Config = null
@@ -9,12 +8,11 @@ object T {
 class Config(x: Int)
 
 class ConfigBuilder private ()  { }
-{code}
+```
 
 
 Second one, crash in Symbols.info
-
-{code}
+```scala
 
 object Config {
   def apply() : ConfigBuilder = new ConfigBuilder()
@@ -27,4 +25,4 @@ final class ConfigBuilder {
   var clientID: Int = 0
   def build : Config = new Config( clientID )
 }
-{code}
+```

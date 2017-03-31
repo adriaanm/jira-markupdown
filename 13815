@@ -1,6 +1,5 @@
 The following code prints "B" instead of the expected result "C":
-
-{code}
+```scala
 object MatchTest {
   class A[T] { val op = null }
   class B extends A[Any]
@@ -14,7 +13,7 @@ object MatchTest {
 
   def main(args: Array[String]) = println(f(new C))
 }
-{code}
+```
 
 Case "a" is never matched because the if() guard always fails but using the existential type A[_] in case a also causes the match for case c to fail. Removing the type parameter on A entirely or matching against A[Any] (which gets erased anyway) in case a results in the correct output "C".
 

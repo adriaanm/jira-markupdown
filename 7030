@@ -1,14 +1,12 @@
-I've had a look at this and it seems like there's an interaction between the CPS transform and non-local returns. After the {{selectivecps}} phase the {{test1}} function is transformed to return a ControlContext, but the return statement still returns an {{Int}}.
-
-{noformat}
+I've had a look at this and it seems like there's an interaction between the CPS transform and non-local returns. After the `selectivecps` phase the `test1` function is transformed to return a ControlContext, but the return statement still returns an `Int`.
+```
     def test1(): scala.util.continuations.ControlContext[Int,Int,Int] = {
       Main.this.one.map[Nothing](((tmp1: Int) => return tmp1))
     };
-{noformat}
+```
 
-The non-local return code is transformed in the following ({{uncurry}}) phase. The return statement is transformed into a thrown {{NonLocalReturnControl}} containing an {{Int}}, but the catch now expects it to contain a {{ControlContext}}. This mismatch is probably the reason for the {{ClassCastException}} in the issue description.
-
-{noformat}
+The non-local return code is transformed in the following ({{uncurry}}) phase. The return statement is transformed into a thrown `NonLocalReturnControl` containing an `Int`, but the catch now expects it to contain a `ControlContext`. This mismatch is probably the reason for the `ClassCastException` in the issue description.
+```
     def test1(): scala.util.continuations.ControlContext[Int,Int,Int] = {
       <synthetic> val nonLocalReturnKey1: Object = new Object();
       try {
@@ -29,4 +27,4 @@ The non-local return code is transformed in the following ({{uncurry}}) phase. T
           throw ex
       }
     };
-{noformat}
+```

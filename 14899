@@ -1,8 +1,7 @@
 See this [http://old.nabble.com/Scala-and-YourKit-profiler-bytecode-issues-tp26970054p27111435.html thread]. 
 
 Take the disassembly of `scala.collection.mutable.StringBuilder.getLength` as an example:
-
-{code}
+```scala
 public void setLength(int);
  Code:
   0:   iload_1
@@ -20,7 +19,7 @@ scala/collection/mutable/StringBuilder$$$$anonfun$$setLength$$1
   17:  invokespecial   SI-481; //Method
 scala/collection/mutable/StringBuilder$$$$anonfun$$setLength$$1."<init>":(Lscala/collection/mutable/StringBuilder;I)V
 ...
-{code}
+```
 
 The `new` ~ `dup` ~ `pop` ~ ... ~ `invokespecial` sequence is a hint that something's going wrong, because after `invokespecial` the newly created instance can't be accessed at all.
 

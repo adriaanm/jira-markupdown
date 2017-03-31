@@ -1,16 +1,14 @@
 Isn't this as expected/specced? Type inference flows from the scrutinee's type.
-
-{quote}
+```
 If the case class is polymorphic, then its type parame- ters are instantiated so that the instantiation of c conforms to the expected type of the pattern. The instantiated formal parameter types of c’s primary constructor are then taken as the expected types of the component patterns p1, ..., pn. The pattern matches all objects created from constructor invocations c(v1, ..., vn) where each element pattern pi matches the corresponding value vi .
-{quote}
+```
 
-So this infers {{Some[String]}}:
-
-{code}
+So this infers `Some[String]`:
+```scala
 class A {
   // Inferred type is Some[String]
   def f1(x: Any) = (x: Option[String]) match { case y @ Some(Some(_: String)) => y }
 }
-{code}
+```
 
 I'll reclassify this as "improvement" for now but I don't really see how we could change this.

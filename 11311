@@ -7,9 +7,8 @@ I looked into it, and it seems the current behaviour was changed in this commit:
 I did not figure out what the purpose of the check is. The original behaviour seems to be to check against an "original name": https://github.com/scala/scala/commit/cb7711db82c381848a6571047c68145e4f2d3c46#diff-086eb87150c79730cf3cfe9cb8b12219L58. In either case, I think a refactoring of the handling of Names from working on the string values to encapsulating the string value and instead provide more descriptive methods would be useful in making it much easier to verify and maintain correctness in relation to the handling of names, though I can imagine that would be quite a lot of work. In line with this, a better fix than presented below would implement a descriptive method (describing what the matching means) on Name (or similar) that handles the matching and call that instead of directly matching on parts of the string value of the name.
 
 The potential fix (tested using "ant test-opt"):
-
-{code:scala}
+```scala
 def matchesName(param: Symbol) =
   param.name == name ||
   (param.name.startsWith(name) && param.name.endsWith(nme.NAME_JOIN_STRING))
-{code}
+```

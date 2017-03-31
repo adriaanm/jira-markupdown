@@ -1,5 +1,5 @@
 Sorry, the code is buggy. A correct example:
-{code}
+```scala
 object ProjTest {
   trait MInt { type Type }
   trait _0 extends MInt { type Type = Boolean }
@@ -12,11 +12,11 @@ object ProjTest {
   type X2 = _1#Type   // Ok
   type X3 = _2#Type   // Compiler error, illegal cyclic reference involving type Type
 }
-{code}
+```
 Which doesn't contain a loop and should be expanded to:
-{code}
+```scala
 _2#Type = Succ[_1]#Type = _1#Type = Succ[_0]#Type = _0#Type = Boolean
-{code}
+```
 Can you verify if this works with your experimental branch?
 
 If it does, it could be hopefully be used to implement more advanced things like HList (see http://jnordenberg.blogspot.com).

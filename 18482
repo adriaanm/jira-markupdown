@@ -1,19 +1,17 @@
 This code fails to compile
-
-{code}
+```scala
 class Foo { class Inner(x: Int = 42) }
 class Bar extends Foo { class Inner(y: Int = 0) extends super.Inner() }
-{code}
+```
 
 with the error message
-
-{code}
+```scala
 scalatest.scala:2: error: overriding object Inner in class Foo;
  object Inner cannot override final member
 class Bar extends Foo { class Inner(y: Int = 0) extends super.Inner() }
                               ^
 one error found
-{code}
+```
 
 This is a bit misleading if you didn't expect the object Inner to be created, particularly as it only refuses to compile if the companion object needs to be created (e.g. when there are default parameters).
 

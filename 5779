@@ -1,6 +1,5 @@
 Shorter example :) 
-
-{code}
+```scala
 scala> trait C { def wait (): Unit }
 defined trait C
 
@@ -9,13 +8,12 @@ Exception in thread "main" java.lang.VerifyError: class line0$$object$$$$iw$$$$i
         at java.lang.ClassLoader.defineClass1(Native Method)
         at java.lang.ClassLoader.defineClassCond(ClassLoader.java:632)
         . . . 
-{code}
+```
 
 That happens because an overriding implementation (?) was provided for a final method (but where?). 
 
 It's also strange that a similar example doesn't raise that exception: 
-
-{code}
+```scala
 scala> trait MyCalendarTrait extends java.util.GregorianCalendar {
   def getGregorianChange : java.util.Date // a public final method in the non-final superclass
 }
@@ -30,12 +28,11 @@ scala>
 
 scala> res0.getGregorianChange
 res1: java.util.Date = Fri Oct 15 01:00:00 CET 1582
-{code}
+```
 
 See? In 
-
-{code}
+```scala
 new MyCalendarTrait {}
-{code}
+```
 
 I'm also giving no implementation for method getGregorianChange().

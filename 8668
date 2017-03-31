@@ -1,10 +1,9 @@
-I have a [REPL transcript|https://gist.github.com/4061123] that shows you can access RefinedType through reflection. Also, it shows that you can detect the difference in the owner chain for symbol corresponding to RefinedType.
+I have a [REPL transcript](https://gist.github.com/4061123) that shows you can access RefinedType through reflection. Also, it shows that you can detect the difference in the owner chain for symbol corresponding to RefinedType.
 
-At the moment if you obtain owner for RefinedType coming from tree type-checked by toolbox you'll get {{NoSymbol}}. I believe this is a bug in toolboxes (because with regular type-checker you get real owner assigned). However, the point is that even if toolbox get fixed to return the correct symbol that the type-checker assigns it'll be still different from the one unpickler creates. The reason for that is owner rewriting done in pickler.
+At the moment if you obtain owner for RefinedType coming from tree type-checked by toolbox you'll get `NoSymbol`. I believe this is a bug in toolboxes (because with regular type-checker you get real owner assigned). However, the point is that even if toolbox get fixed to return the correct symbol that the type-checker assigns it'll be still different from the one unpickler creates. The reason for that is owner rewriting done in pickler.
 
 I think pickling/unpickling must be an identity function.
-
-{code}
+```scala
 $ cat Foo.scala 
 object test3 {
   trait A; trait C
@@ -72,4 +71,4 @@ res4: reflect.runtime.universe.Symbol = object test3
 
 scala> returnTpeUnpickled.typeSymbol.owner == NoSymbol
 res5: Boolean = false
-{code}
+```

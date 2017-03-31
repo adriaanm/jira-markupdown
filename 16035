@@ -1,5 +1,5 @@
 === What steps will reproduce the problem? ===
-{code}
+```scala
  ~/code/scratch/array: cat ArrayFactory.java 
 public interface ArrayFactory<T> {
   T[] create(int count);
@@ -9,11 +9,10 @@ public interface ArrayFactory<T> {
 class ScalaArrayFactory[T: Manifest] extends ArrayFactory[T] {
   def create(count: Int) = Array.ofDim[T](count)
 }
-{code}
+```
 
 Joint compilation works, separate compilation fails.
-
-{code}
+```scala
  ~/code/scratch/array: scalac -d out ArrayFactory.java ScalaArrayFactory.scala  ~/code/scratch/array: 
  ~/code/scratch/array: javac -d out ArrayFactory.java && scalac -d out -classpath out ScalaArrayFactory.scala 
 ScalaArrayFactory.scala:2: error: type mismatch;
@@ -23,10 +22,10 @@ ScalaArrayFactory.scala:2: error: type mismatch;
                                          ^
 one error found
 Scala compiler version 2.8.1.final -- Copyright 2002-2010, LAMP/EPFL
-{code}
+```
 
 Same result (although with an expanded error message) result with a snapshot of 2.9 from a few weeks back.
-{code}
+```scala
  ~/code/scratch/array: scalac29 -version
 Scala compiler version 2.9.0.r24423-b20110309020116 -- Copyright 2002-2011, LAMP/EPFL
  ~/code/scratch/array: javac -d out ArrayFactory.java && scalac29 -d out -classpath out ScalaArrayFactory.scala 
@@ -40,8 +39,7 @@ You may wish to investigate a wildcard type such as `_ >: T with java.lang.Objec
 one error found
  ~/code/scratch/array: scalac29 -d out ArrayFactory.java ScalaArrayFactory.scala 
  ~/code/scratch/array: 
-
-{code} 
+```
 
 
 === What is the expected behavior? ===

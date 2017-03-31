@@ -1,11 +1,10 @@
 I'm getting:
-{code}
+```scala
 error: scala.reflect.internal.Types$TypeError: value it  is not a member of Bounds[B]{}
-{code}
+```
 
 For some reason the `typedThis` in the typechecker:
-
-{code}
+```scala
       def typedThis(qual: Name) = tree.symbol orElse qualifyingClass(tree, qual, packageOK = false) match {
         case NoSymbol => tree
         case clazz    =>
@@ -13,6 +12,6 @@ For some reason the `typedThis` in the typechecker:
           tree setSymbol clazz setType clazz.thisType.underlying
           if (isStableContext(tree, mode, pt)) tree setType clazz.thisType else tree
       }
-{code}
+```
 
 does not add `lazy val it` to the list of members. I'm trying to figure this out.

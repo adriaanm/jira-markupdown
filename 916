@@ -1,5 +1,5 @@
 Regardless of the eventual outcome, the current fix doesn't currently do what it purports to do:
-{code}
+```scala
 object X {
   def foo() ={ val c = 3; () => c}
   def bar() = {val c = new scala.collection.immutable.HashSet[Int]; () => c};
@@ -13,11 +13,10 @@ object X {
     out.writeObject(bar());
   }
 }
-{code}
+```
 
 gives this output:
-
-{code}
+```scala
 $$ scala X
 interface scala.collection.immutable.Set
 interface scala.collection.mutable.FlatHashTable
@@ -37,7 +36,7 @@ java.io.NotSerializableException: smr.X$$$$anonfun$$bar$$1
 	at scala.tools.nsc.ObjectRunner$$.run(ObjectRunner.scala:74)
 	at scala.tools.nsc.MainGenericRunner$$.main(MainGenericRunner.scala:164)
 	at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
-{code}
+```
 
 However, HashSet is marked as serializable...
 

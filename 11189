@@ -1,8 +1,7 @@
 Dear developers,
 
 The following code also seems to show a related unsoundness.
-
-{code}
+```scala
 sealed abstract class MyADT[+A]
 case object MyNone extends MyADT[Nothing]
 case class MyFun[A](fun: A=>A) extends MyADT[A]
@@ -14,7 +13,7 @@ val foo : Any =
     case MyFun(f) => f("a")
     case _ => 0
   }
-{code}
+```
 
 In this code, I simply try to encode the following polymorphic ADT in such a way that MyNone does not require unnecessary parentheses ().
 

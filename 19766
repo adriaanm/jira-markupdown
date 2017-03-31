@@ -1,5 +1,4 @@
-
-{code:scala}
+```scala
 sealed trait Base
 case class Up() extends Base
 case class Down() extends Base
@@ -14,11 +13,10 @@ sealed trait Tracker[B <: Base] {
 }
 case class UpTracker() extends Tracker[Up]
 case class DownTracker() extends Tracker[Down]
-{code}
+```
 
 produces
-
-{code:scala}
+```scala
 PatternMatch.scala:8: error: constructor cannot be instantiated to expected type;
  found   : UpTracker
  required: Tracker[B]
@@ -30,11 +28,10 @@ PatternMatch.scala:9: error: constructor cannot be instantiated to expected type
     case DownTracker() => ???
          ^
 two errors found
-{code}
+```
 
 This does not occur if we move the method into a separate object:
-
-{code:scala}
+```scala
 sealed trait Base
 case class Up() extends Base
 case class Down() extends Base
@@ -49,4 +46,4 @@ object Foo {
     case DownTracker() => ???
   }
 }
-{code}
+```

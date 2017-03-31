@@ -1,19 +1,17 @@
 I offer my layman notes and a slightly smaller reproduction:
-
-{code:scala}
+```scala
 class Foo(x: Int) {
   def this() = {
     this(1)
     new { x }
   }
 }
-{code}
+```
 
-The problem seems to have something to do with the outer class of the anonymous class being resolved to {{package <empty>}} instead of {{class Foo}}, which it correctly does if the anonymous class construction is moved out of the secondary constructor.
+The problem seems to have something to do with the outer class of the anonymous class being resolved to `package <empty>` instead of `class Foo`, which it correctly does if the anonymous class construction is moved out of the secondary constructor.
 
-This particular error goes away by changing [ownerClass|https://github.com/scala/scala/blob/2.12.x/src/reflect/scala/reflect/internal/Symbols.scala#L2098] to:
-
-{code:scala}
+This particular error goes away by changing [ownerClass](https://github.com/scala/scala/blob/2.12.x/src/reflect/scala/reflect/internal/Symbols.scala#L2098) to:
+```scala
     final def outerClass: Symbol =
       if (this == NoSymbol) {
         // ideally we shouldn't get here, but it's better to harden against this than suffer the infinite loop in SI-9133
@@ -23,6 +21,6 @@ This particular error goes away by changing [ownerClass|https://github.com/scala
       else if (owner.isAuxiliaryConstructor) owner.enclClass // <------
       else if (isClassLocalToConstructor) owner.enclClass.outerClass
       else owner.outerClass
-{code}
+```
 
 But unfortunately that breaks t4842, t6666, t1909 and ‘origins’. I haven't been able to figure out how to avoid that :)

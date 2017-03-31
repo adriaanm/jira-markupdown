@@ -1,8 +1,7 @@
-With {{-Xstrict-inference}}, per SI-6680:
+With `-Xstrict-inference`, per scala/bug#6680:
 
-The inferred type of {{blah}} below should have something like {{forSome &#123;type A >: AnyVal&#125;}} at the end of it; instead, it refers to the (now free) type variable {{A}} from {{BoxF}}.
-
-{code}
+The inferred type of `blah` below should have something like `forSome &#123;type A >: AnyVal&#125;` at the end of it; instead, it refers to the (now free) type variable `A` from `BoxF`.
+```scala
 scala> sealed abstract class Box[+A]; case class BoxF[A](f: A => A) extends Box[A]
 defined class Box
 defined class BoxF
@@ -15,13 +14,12 @@ blah2: (A => A, A => A)
 
 scala> blah2 : ((A => A, A => A) forSome {type A})
 res0: (A => A, A => A) forSome { type A } = (<function1>,<function1>)
-{code}
+```
 
-I shouldn't be able to give the ascription that resulted in {{res0}}.
+I shouldn't be able to give the ascription that resulted in `res0`.
 
-Notwithstanding what seems to be merely a printing issue (the two {{A}} s in the {{blah4}} definition seem to be different internally, as expected), when I throw out the free variable explicitly I get what I expect.
-
-{code}
+Notwithstanding what seems to be merely a printing issue (the two `A` s in the `blah4` definition seem to be different internally, as expected), when I throw out the free variable explicitly I get what I expect.
+```scala
 scala> def blah3 = blah : ((A => A) forSome {type A})
 blah3: A => A forSome { type A }
 
@@ -35,4 +33,4 @@ scala> blah4 : ((A => A, A => A) forSome {type A})
 
               blah4 : ((A => A, A => A) forSome {type A})
               ^
-{code}
+```

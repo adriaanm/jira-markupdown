@@ -1,10 +1,9 @@
-The difference between vals and defs comes down to whether or not that local class is emitted as an inner class or not. {{Class#isMemberClass}} reveals this; and is used by reflection to decide whether to look for this class in the declarations of the enclosing class, or to look it up as a top level class on the classpath.
+The difference between vals and defs comes down to whether or not that local class is emitted as an inner class or not. `Class#isMemberClass` reveals this; and is used by reflection to decide whether to look for this class in the declarations of the enclosing class, or to look it up as a top level class on the classpath.
 
 I haven't quite figured out why def-vs-val is material; it may be a bug in the bytecode emitter.
 
 Test:
-
-{code}
+```scala
 object NotTheRepl1 {
   lazy val resultVal = {
     class A
@@ -43,19 +42,16 @@ object Test extends App {
   println(NotTheRepl2.resultVal)
   println(NotTheRepl1.resultVal)
 }
-
-{code}
+```
 
 Breadcrumbs:
-
-{code}
+```scala
       // `jclazz.isLocalClass` doesn't work because of problems with `getSimpleName`
       // hence we have to approximate by removing the `isAnonymousClass` check
 //      def isLocalClass0: Boolean = jclazz.isLocalClass
       def isLocalClass0: Boolean = jclazz.getEnclosingMethod != null || jclazz.getEnclosingConstructor != null
-{code}
-
-{code}
+```
+```scala
 if (jclazz.isMemberClass) {
         val jEnclosingClass = jclazz.getEnclosingClass
         val sEnclosingClass = classToScala(jEnclosingClass)
@@ -85,10 +81,8 @@ val cls =
             // this is totally correct, because a top-level class and a nested class with the same name cannot coexist
             // so it's either one or another, but not both - therefore we always load $-bearing classes correctly
             lookupClass orElse jclassAsScala(jclazz)
-{code}
-
-
-{code}
+```
+```scala
     /** Return the name of this symbol that can be used on the Java platform.  It removes spaces from names.
      *
      *  Special handling:
@@ -122,9 +116,8 @@ val cls =
             }
           }
         }
-{code}
-
-{code}
+```
+```scala
   protected def originalEnclosingMethod(sym: Symbol): Symbol = {
     if (sym.isMethod || sym == NoSymbol) sym
     else {
@@ -133,5 +126,4 @@ val cls =
       else originalEnclosingMethod(owner)
     }
   }
-
-{code}
+```

@@ -4,13 +4,12 @@ The problem stems from a context leak. As we complete the type of `l` we typeche
 scala.AnyRef {
   type l1[x] = Option
 }#l1
-{{code}
+`code}
 
-in {{typedHigherKindedType()}}.
+in {{typedHigherKindedType()`.
 
-Because of this, we fail to issue an error for {{type l[x]=Option}} (which of course should have been {{type l[x]=Option[x]}}. The later problems stem all seem to stem from this.
-
-{noformat}
+Because of this, we fail to issue an error for `type l[x]=Option` (which of course should have been `type l[x]=Option[x]`. The later problems stem all seem to stem from this.
+```
  at scala.tools.nsc.typechecker.Contexts$Context.inTypeConstructorAllowed(Contexts.scala:267)
 	  at scala.tools.nsc.typechecker.Typers$Typer.properTypeRequired$1(Typers.scala:858)
 	  at scala.tools.nsc.typechecker.Typers$Typer.adaptType$1(Typers.scala:884)
@@ -131,4 +130,4 @@ Because of this, we fail to issue an error for {{type l[x]=Option}} (which of co
 	  at scala.tools.nsc.typechecker.Typers$Typer.body$2(Typers.scala:5249)
 	  at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:5253)
 	  at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:5327)
-{noformat}
+```

@@ -1,6 +1,6 @@
-You're really identifying two issues.  (1) the potential deadlock and (2) that a message send can result in an exception.  I've created ticket SI-2010 for the second issue.
+You're really identifying two issues.  (1) the potential deadlock and (2) that a message send can result in an exception.  I've created ticket scala/bug#2010 for the second issue.
 
-Regarding the deadlock issue, that's not the only certain code in isDefinedAt can cause problems.  There's also SI-1518.
+Regarding the deadlock issue, that's not the only certain code in isDefinedAt can cause problems.  There's also scala/bug#1518.
 
 Anyway, I think isDefinedAt is assumed to be very inexpensive and to not look too much at state.  Most of the time I think that assumption holds.  Following that assumption, checking isDefinedAt is less expensive for the sender's thread than creating a new reaction to do the check (in the case of event-based actors).  Without benchmarking I'll say it's probably a wash (from the sender's perspective) compared to waking up an actor waiting in a receive block and having it check the condition.  In both cases I think the total cost of a message send goes up.
 

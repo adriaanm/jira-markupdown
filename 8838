@@ -1,18 +1,15 @@
 Regarding the question why -Xprint:jvm shows 
-
-{noformat}
+```
 scala.this.Predef.println(scala.Boolean.box(scala.Int.unbox(null).==(0)))
-{noformat}
+```
 
-but the bytecode contains an invocation of {{BoxesRunTime.unboxToInt()}}
-
-{noformat}
+but the bytecode contains an invocation of `BoxesRunTime.unboxToInt()`
+```
    4:	invokestatic	#76; //Method scala/runtime/BoxesRunTime.unboxToInt:(Ljava/lang/Object;)I
-{noformat}
+```
 
-That's because -Xprint:jvm actually prints trees right after CleanUp, and the rewriting that's being chased here takes place in GenICode, whose output can be seen via {{-Xprint-icode}} (excerpt follows)
-
-{noformat}
+That's because -Xprint:jvm actually prints trees right after CleanUp, and the rewriting that's being chased here takes place in GenICode, whose output can be seen via `-Xprint-icode` (excerpt follows)
+```
   def comp_zero(): Unit {
   locals: variable boxed2
   startBlock: 1
@@ -24,7 +21,6 @@ That's because -Xprint:jvm actually prints trees right after CleanUp, and the re
     10	UNBOX INT
     10	CONSTANT(0)
     10	CJUMP (INT)EQ ? 2 : 3
-    
-{noformat}
+```
 
 Sorry about the confusion. It's "Not a bug".

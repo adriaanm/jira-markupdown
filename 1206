@@ -2,19 +2,17 @@ I'm seeing this problem again.
 
 
 This time, it turned
-
-{code}
+```scala
    def expression : Parser[Expression] =
       value_expression~rep(colon_operator~value_expression) ^^ { tree => binaryExpressionTree(tree) }
-{code}
+```
 
 into
-
-{code}
+```scala
 ...
    def expression : Parser[Expression] =
       value_expression~rep(final colon_operator~value_expression) ^^ { tree => binaryExpressionTree(tree) }
-{code}
+```
 
 (The class extends scala.util.combinator.Parsers.!JavaTokensParser)
 
@@ -26,4 +24,3 @@ What's more (I'm not sure if this is related), there seems to be
 a loop or hang in the builder; my project is stuck in
 
   Building workspace (0%)
-

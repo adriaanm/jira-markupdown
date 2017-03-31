@@ -1,52 +1,46 @@
 The fix as introduced in the r24087 and r24094 has few problems.
 
 First, the line
-{code}
+```scala
 	while (!isDefined && rest >= 0) {
-{code}
+```
 
 should REALLY be
-
-{code}
+```scala
 	while (!isDefined && rest > 0) {
-{code}
+```
 
 otherwise we end up calling java.lang.Object.wait(0) i.e. basically blocking forever effectively ignoring the timeout argument of the get(Long).
 
 Second, the code
-
-{code}
+```scala
 		if (!isDefined && elapsed > 0)
 			rest -= elapsed
-{code}
+```
 
 should better be just
-
-{code}
+```scala
 		rest -= elapsed
-{code}
+```
 
 (at most one background extra bool cache/memory write per entire loop (most likely, merely a register assignment) is better than an extra condition/branching per each loop iteration), while the line
-
-{code}
+```scala
 	System.currentTimeMillis - start
-{code}
+```
 
 in waitMeasuringElapsed(Long) should explicitly overtake the 'clock gone backward' safety check:
-
-{code}
+```scala
 	val diff = System.currentTimeMillis - start
 	if (diff < 0) 0 else diff
-{code}
+```
 
 if then the waitMeasuringElapsed(Long) prepended with a line:
-
-{code}
+```scala
 	if (timeout <= 0) return 0
-{code}
+```
 
 ensuring that calling the potentially infinitely blocking wait(0) call will never happen with timed wait, the function waitMeasuringElapsed(Long) becomes robust enough to deserve being a part of [some future] public API (not from SyncVar class, of course). Good news is that in context of the function get(long) this added line will be totally eliminated by JIT, as the negative comparison (rest > 0) happens just before, ensuring that in this particular invocation the condition (timeout <= 0) will be always false.
 
-Third, the argument for the waitMeasuringElapsed(Long) call should be {{rest}}, not the entire {{timeout}}, obviously.
+Third, the argument for the waitMeasuringElapsed(Long) call should be `rest`, not the entire `timeout`, obviously.
 
 Forth, the added @volatile modifier for fields isDefined and value is not needed, and even makes certain harm performance wise. All accesses to those private variables are already guarded by this.synchronized {} sections, and the fact that wait(Long) call basically gives up the semaphore and then obtains it again (as per JVM specs) ensures that full memory barrier occurs here, so the synchronized body of the method get(long) always sees up to date values for those variables - declaring them @volatile causes extra barried (read: slow, up to 300-400 CPU tacts) RAM references, towards isDefined variable in particular.

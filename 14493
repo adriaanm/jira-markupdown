@@ -1,21 +1,21 @@
 I notice the java signature in binary class file of scala.Array is invalid:
-{code}
+```scala
 <A:Ljava/lang/Object;>Ljava/lang/Object;Lscala/collection/mutable/Vector<TA;>;Lscala/collection/generic/TraversableClass<TA;[>;Lscala/collection/generic/VectorTemplate<TA;[TA;>;Lscala/ScalaObject;
-{code}
+```
 Where, "TraversableClass<TA;[>;" an Array type with empty type paramter, or,  "[" followed with nothing.
 
 It's cause by the definition of "class Array" in Array.scala:
-{code}
+```scala
 final class Array[A](_length: Int) extends Vector[A] 
                                       with TraversableClass[A, Array]
                                       with VectorTemplate[A, Array[A]] {
-{code}
+```
 Where "TraversableClass[A, Array]" should be "TraversableClass[A, Array[A]]" or other.
 
 And at line 401:
-{code}
+```scala
   override def companion: Companion[Array] = throw new Error()
-{code}
+```
 The Array also lack type paramter.
 
 I don't know why the compiler cannot detect the lack of Array's type parameter here.

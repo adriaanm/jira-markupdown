@@ -2,7 +2,7 @@ A block meant to be given as a By-Name parameter gets prematurely executed, if i
 
 
 Example:
-{code}
+```scala
 Welcome to Scala version 2.10.1 (Java HotSpot(TM) 64-Bit Server VM, Java 1.7.0_21).
 Type in expressions to have them evaluated.
 Type :help for more information.
@@ -102,14 +102,12 @@ java.lang.RuntimeException: ex
         at scala.tools.nsc.MainGenericRunner.process(MainGenericRunner.scala:96)
         at scala.tools.nsc.MainGenericRunner$.main(MainGenericRunner.scala:105)
         at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
-
-{code}
+```
 
 The last command does not complete successfully, but throws the RuntimeException immediately, Which is IMHO a bug.
 
 When I add another line after the exception, the problem vanishes, e.g.:
-
-{code}
+```scala
 scala> ByNameTest.exec { throw new RuntimeException("ex"); println("dead code") }
 res8: String => Any = <function1>
 
@@ -149,7 +147,6 @@ java.lang.RuntimeException: ex
         at scala.tools.nsc.MainGenericRunner.process(MainGenericRunner.scala:96)
         at scala.tools.nsc.MainGenericRunner$.main(MainGenericRunner.scala:105)
         at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
-
-{code}
+```
 
 Also, if I remove the overloaded method with (String => Any) parameter, the issue is not reproducable.

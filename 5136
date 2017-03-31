@@ -4,16 +4,15 @@ Replying to [comment:1 ittayd]:
 This muddies the issue, is inaccurate, and seems to value error for error's sake.
 
 First of all, that's not at all how 's + s' compiles, assuming s is a String, which is the point of the discussion.  It compiles to
-{code}
+```scala
   new StringBuilder append s append s toString
-{code}
+```
 
 There are two separate things.
-
-{code}
+```scala
 1) String is given a '+' method by the compiler.
 2) There is an implicit conversion from Any which gives the impression everything has a '+' method.
-{code}
+```
 Only 1) is relevant to this bug.  2) is only relevant inasmuch as it instructs of the very low significance of the bug, because it implies that with or without the '+' method, there is no NPE.
 
 The bug, if indeed there is one, is only that the spec wording is ambiguous about what "taken to support a method" means and whether one should expect semantics indistinguishable from it actually possessing the method.  It is an "angels on the head of a pin" issue.  There are 571 other open tickets, in case it makes any difference to anyone.

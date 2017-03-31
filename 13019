@@ -1,6 +1,5 @@
-This is coming from SI-324. The {{scala.BigInt}} object keeps a cache of BigInts. This cache is unsynchronized and may result in different threads recreating {{BigInt}} objects for the same value (it can be reproduced on our sunrays). It remains to be seen if the cost of the synchronization is worth the savings. Here is the solution proposed by the original poster:
-
-{code}
+This is coming from scala/bug#324. The `scala.BigInt` object keeps a cache of BigInts. This cache is unsynchronized and may result in different threads recreating `BigInt` objects for the same value (it can be reproduced on our sunrays). It remains to be seen if the cost of the synchronization is worth the savings. Here is the solution proposed by the original poster:
+```scala
     private @volatile var sync = 0; // value irrelevant
 
 ... ...
@@ -20,4 +19,4 @@ This is coming from SI-324. The {{scala.BigInt}} object keeps a cache of BigInts
         } else new BigInt?(BigInteger?.valueOf(i))
 
 ... 
-{code}
+```

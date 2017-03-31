@@ -1,13 +1,13 @@
-{code}
+```scala
 scala> trait Foo[X] { def foo : Map[String,Foo[X]] }
 defined trait Foo
 
 scala> def f[T]() : Foo[T] = new Foo[T] { var foo = Map[String,Foo[T]]() }
 f: [T]()Foo[T]
-{code}
+```
 
 And now leads to:
-{code}
+```scala
 <console>:6: error: object creation impossible, since method foo in trait Foo of type => Map[String,Foo[T]] is not defined
        def f[T]() : Foo[T] = new Foo[T] { var foo = Map[String,Foo[T]]() }
-{code}
+```

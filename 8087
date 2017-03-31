@@ -1,13 +1,13 @@
 Jason:
 As far as I can tell, yes, the fix should work.
 
-The {{ :+ }} and {{ +: }} methods must return a collection of type {{That}}, where {{That}} comes from the {{CanBuildFrom}} object.
-Since the {{ReusableCBF}} that comes from the {{Seq}} companion must has {{Seq[A]}} for {{That}}, and because:
+The ` :+ ` and ` +: ` methods must return a collection of type `That`, where `That` comes from the `CanBuildFrom` object.
+Since the `ReusableCBF` that comes from the `Seq` companion must has `Seq[A]` for `That`, and because:
 
-- the default implementation of {{:+}} will return statically {{Seq[A]}}
-- and anyway a {{Vector}} at runtime
+- the default implementation of `:+` will return statically `Seq[A]`
+- and anyway a `Vector` at runtime
 
-It should be perfectly fine to use {{eq}}, which returns a {{Vector}} as an optimization.
+It should be perfectly fine to use `eq`, which returns a `Vector` as an optimization.
 
-Note to bug reporters, though - as Jason suggests, you should really use a {{VectorBuilder}} if you care about performance. And if you really, really care about append performance, use an {{ArrayBuffer}}, or better yet, a Conc-tree buffer from an external library (published through Sonatype):
+Note to bug reporters, though - as Jason suggests, you should really use a `VectorBuilder` if you care about performance. And if you really, really care about append performance, use an `ArrayBuffer`, or better yet, a Conc-tree buffer from an external library (published through Sonatype):
 https://github.com/storm-enroute/reactive-collections/blob/master/reactive-collections-core/src/main/scala/scala/reactive/core/ConcBuffer.scala

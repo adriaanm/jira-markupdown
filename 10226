@@ -1,6 +1,5 @@
 Although, after further thought, it also seems to me that you could simulate this memoization behaviour easily:
-
-{code}
+```scala
 import collection._
 
 class Cache[K, V] {
@@ -24,7 +23,7 @@ object Main {
     val v2 = cache.getOrElseUpdate("key2", { println("val2"); "val2" })
   }
 }
-{code}
+```
 
 Note that there's no way of avoiding the thunk creation above, and we're already in object-creation-land, so an additional `LazyCell` object should not be a huge issue. If it is, you could avoid creating it in most cases by first checking via `get` if there's an entry in the map already.
 

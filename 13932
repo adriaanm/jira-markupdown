@@ -1,20 +1,18 @@
 Taking a closer look at transient lazy vals, I suspect it could be actually broken by design.
 
 Given the following source:
-
-{code}
+```scala
 @serializable
 class testimpl {
   @transient lazy val classval: String = ""
 }
-{code}
+```
 
 This results into the following fields in the class:
-
-{code}
+```scala
   public volatile int bitmap$$0;
   private transient String classval;
-{code}
+```
 
 That means, if an instance is serialized, the bitmap$$0 goes into the stream, the classval will be thrown away.
 

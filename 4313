@@ -1,17 +1,14 @@
 I'm not sure if it is exactly the same, but I can get the crash in Scala version 2.10.0.r25323-b20110719020429 with much simpler code:
-
-{code}
+```scala
 import scala.reflect.Code
 def codeOf[A](code: Code[A]) = code
-{code}
-
-{code}
+```
+```scala
 codeOf((x: Iterator[A]) => x.sum)
-{code}
+```
 
 results in a StackOverflowError:
-
-{code}
+```scala
 scala> codeOf((x: Iterable[Int]) => x.head)
 java.lang.StackOverflowError
 	at scala.tools.nsc.transform.LiftCode.reify(LiftCode.scala:21)
@@ -58,11 +55,11 @@ java.lang.StackOverflowError
 	at scala.collection.TraversableLike$class.map(TraversableLike.scala:197)
 	at scala.collection.immutable.List.map(List.scala:45)
         ...
-{code}
+```
 
 Replacing the type with an existential does not reify it, but prevents the crash.
-{code}
+```scala
 scala> codeOf((x: Iterable[_]) => null)
 could not reify: Iterable[_]
 res14: scala.reflect.Code[Iterable[_] => Null] = scala.reflect.Code@3c21251c
-{code}
+```

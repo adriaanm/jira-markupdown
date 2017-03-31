@@ -1,28 +1,25 @@
 Replying to [ticket:3975 magarcia]:
 
-The example in ticket SI-3974 does not show method-chaining of dynamic calls, but they are also amenable to refactoring as the following example shows: 
-
-{code}
+The example in ticket scala/bug#3974 does not show method-chaining of dynamic calls, but they are also amenable to refactoring as the following example shows: 
+```scala
     new AnyRef {
       def abc { ... }
     }.abc
-{code}
+```
 
 
 formulated using "atomic evaluation" becomes 
-
-{code}
+```scala
   {
     val tmp = new AnyRef {
       def abc { ... }
     }
     tmp.abc
   }
-{code}
+```
 
 thus making room for the class definition: 
-
-{code}
+```scala
   {
     class Boilerplate extends AnyRef {
       def abc { ... }
@@ -30,5 +27,4 @@ thus making room for the class definition:
     val tmp = new Boilerplate
     tmp.abc
   }
-{code}
-
+```

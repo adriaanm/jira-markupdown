@@ -1,7 +1,7 @@
 The code for all constructor patterns suffers from two inefficiencies. First, there is an unnecessary null-check (note that isInstanceOf will succeed only if scrutinee is non-null). Second, unused fields are still copied into local variables, even if the variable is a wildcard.
 
 Consider this program
-{code}
+```scala
 object Test {
 
   def foo(xs: List[Int]) = xs match {
@@ -12,12 +12,12 @@ object Test {
     case xs: ::[Int] => xs.head
   }
 }
-{code}
+```
 
 The two methods should produce equally efficient code. Yet foo takes 48 bytes where bar only takes 34. I have not measured the performance impact of the additional 14 bytes. But in any case 34 vs 48 means that bar can be inlined whereas foo cannot.
 
 Here's the javap output I am seeing:
-{code}
+```scala
 Compiled from "patmatcode.scala"
 public final class Test$ extends java.lang.Object{
 public static final Test$ MODULE$;
@@ -80,4 +80,4 @@ public int bar(scala.collection.immutable.List);
    34:	athrow
 
 }
-{code}
+```

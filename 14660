@@ -1,7 +1,7 @@
-*scalac 2.8.0* complier doesn't allow a Scala method with a {{String*}} argument to override a Java method with a {{String...}} argument. 
+**scalac 2.8.0** complier doesn't allow a Scala method with a `String*` argument to override a Java method with a `String...` argument. 
 
-{{Parent.java}}
-{code}
+`Parent.java`
+```scala
   package varargs;
   
   public class Parent {
@@ -15,10 +15,10 @@
       }
   
   }
-{code}
+```
 
-{{Child.scala}}
-{code}
+`Child.scala`
+```scala
   package varargs
   
   class Child extends Parent {
@@ -27,9 +27,8 @@
       strings map("\"" + _ + "\"") mkString("(", ", ", ")")
   
   }
+```
 
-{code}
+The above code raises an error with `scalac`: "*method concatenate overrides nothing.*" However this code compiles fine when using Scala 2.7.7.
 
-The above code raises an error with {{scalac}}: "*method concatenate overrides nothing.*" However this code compiles fine when using Scala 2.7.7.
-
-I'm using a nightly build: *Scala 2.8.0.r19367-b20091102023355*
+I'm using a nightly build: **Scala 2.8.0.r19367-b20091102023355**

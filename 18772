@@ -1,4 +1,4 @@
-{code}
+```scala
 def f() = { 
   val lb = scala.collection.mutable.ListBuffer[Int](1, 2)
   val it = lb.iterator 
@@ -7,12 +7,12 @@ def f() = {
   lb += 3
   it.mkString
 }
-{code}
+```
 Notice I've done absolutely nothing which should invalidate the iterator. The string it creates could plausibly be either "2" or "23" (I can't find any documentation of what to expect about that) but I doubt it's supposed to be java.util.NoSuchElementException.
-{noformat}
+```
 scala> f
 java.util.NoSuchElementException: head of empty list
   at scala.collection.immutable.Nil$.head(List.scala:370)
   at scala.collection.immutable.Nil$.head(List.scala:367)
   at scala.collection.mutable.ListBuffer$$anon$1.next(ListBuffer.scala:407)
-{noformat}
+```

@@ -1,9 +1,9 @@
 Coming back to the (x: x.type), now I think it's not a bug, because it preserves stability without leaking the x.
-{code}
+```scala
 scala> def f = ({ val x = "" ; identity[x.type] _ })
 f: x.type => x.type forSome { val x: String }
 
 scala> def f = ({ val x = "" ; Set[x.type]() })
 f: scala.collection.immutable.Set[_ <: String with Singleton]
-{code}
+```
 And naturally I expect it to be stable or I wouldn't have opened the ticket. So if it happened to infer the singleton type, g2 and g3 would work without the intermediate values.

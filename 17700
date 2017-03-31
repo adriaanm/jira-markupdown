@@ -1,24 +1,22 @@
 here's the code:
-{noformat}
+```
 % cat S.scala                                  
 object O { Map(
   "a" -> 0, "b" -> 1, "c" -> 2, "d" -> 3, "e" -> 4,
   "a" -> 0, "b" -> 1, "c" -> 2, "d" -> 3, "e" -> 4,
   "a" -> 0, "b" -> 1, "c" -> 2, "d" -> 3, "e" -> 4,
   "f" -> 5, "g" -> 6, "h" -> 7, "i" -> 8) }
-{noformat}
+```
 
 2.9 with -optimize likes it fine:
-
-{noformat}
+```
 % scalac29 -version
 Scala compiler version 2.9.2 -- Copyright 2002-2011, LAMP/EPFL
 % scalac29 -optimize S.scala
-{noformat}
+```
 
 but with 2.10 (RC2) the inliner starts whining:
-
-{noformat}
+```
 % scalac210 -version
 Scala compiler version 2.10.0-RC2 -- Copyright 2002-2012, LAMP/EPFL
 % scalac210 -optimize S.scala
@@ -30,6 +28,6 @@ warning: At the end of the day, could not inline @inline-marked method ->$extens
 S.scala:3: warning: At the end of the day, could not inline @inline-marked method any2ArrowAssoc
   "f" -> 5, "g" -> 6, "h" -> 7, "i" -> 8) }                                ^
 three warnings found
-{noformat}
+```
 
 The map has to be a certain length before the warnings start appearing.

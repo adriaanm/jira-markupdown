@@ -1,13 +1,13 @@
 Using a recent revision of trunk (18333), the pattern matcher fails to compile patterns containing function types:
-{code}
+```scala
 object Test extends Application {
   scala.actors.Actor.react {
     case f: (Int => Int) => f(41)
   }
 }
-{code}
+```
 Stack trace:
-{code}
+```scala
 Exception in thread "main" scala.tools.nsc.symtab.Types$$TypeError: type mismatch;
  found   : () => (Int) => Int
  required: (Int) => Int
@@ -44,13 +44,13 @@ Exception in thread "main" scala.tools.nsc.symtab.Types$$TypeError: type mismatc
 	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transformStats$$1.apply(Trees.scala:1528)
 	at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transformStats$$1.apply(Trees.scala:1526)
 ...
-{code}
+```
 Note that the following code successfully compiles:
-{code}
+```scala
 object Test extends Application {
   val fun = (x: Int) => x + 1
   fun match {
     case f: (Int => Int) => f(41)
   }
 }
-{code}
+```

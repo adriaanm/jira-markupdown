@@ -1,11 +1,10 @@
-The Scala language spec §1.3.5 indicates that multi-line string literals are *not* subject to interpolation. For example, you might write a regular expression as {{"""test-config\.xml"""}} to match a particular string. Unlike in regular strings, the backslash before the period is not escaped.
+The Scala language spec §1.3.5 indicates that multi-line string literals are **not** subject to interpolation. For example, you might write a regular expression as `"""test-config\.xml"""` to match a particular string. Unlike in regular strings, the backslash before the period is not escaped.
 
 However, the compiler does not behave correctly when these multi-line literals are used in conjunction with string interpolation.  E.g.:
-
-{code:none}
+```none
 val prefix = "test"
 val pattern = s"""${prefix}-config\.xml"""
-{code}
+```
 
 This should produce the same pattern mentioned above. Instead, it produces a runtime error about an invalid string. You can work around this by double-escaping any backslashes, but this is not consistent with the language specification.
 

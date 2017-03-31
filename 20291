@@ -1,8 +1,7 @@
-This version of the test at SI-8521 fails to find ScriptEngine under sbt.
+This version of the test at scala/bug#8521 fails to find ScriptEngine under sbt.
 
 Created directly, the compiler fails to initialize.
-
-{code}
+```scala
 import javax.script._
 import scala.tools.nsc.interpreter._
 
@@ -21,8 +20,8 @@ object Main extends App {
   ngine.compile("val x = 1")
   println(Thread.currentThread().getContextClassLoader)
 }
-{code}
-{noformat}
+```
+```
 [info] Running checkcl.Main 
 [error] (run-main-0) scala.reflect.internal.FatalError: class StringContext does not have a member f
 scala.reflect.internal.FatalError: class StringContext does not have a member f
@@ -53,7 +52,6 @@ scala.reflect.internal.FatalError: class StringContext does not have a member f
 	at scala.tools.nsc.interpreter.Scripted.<init>(Scripted.scala:74)
 	at scala.tools.nsc.interpreter.Scripted$.apply(Scripted.scala:309)
 	at scala.tools.nsc.interpreter.Scripted$Factory.getScriptEngine(Scripted.scala:302)
-
-{noformat}
+```
 
 

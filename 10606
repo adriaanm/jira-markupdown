@@ -1,9 +1,9 @@
 While that's true that you can make this valid with an early initializer, I think you could still provide a warning or error for the case Arya described.  The following code, for example, gives a compiler error:
-{code}
+```scala
 trait Foo { val x: Int; val f = () => x }
  
 val bar = new Foo
-{code}
+```
 because the trait is abstract and x is not defined.  It seems like in the case Arya described, x is not really defined as far as Foo is concerned, which leads to this subtle bug.
 
-Another way of looking at it might be that x is unset _at the time it's used_ in Foo in Arya's example.  Your fix sets x before it will be used in Foo.  Would it be possible to error or warn when variables are used in a trait before they're set?
+Another way of looking at it might be that x is unset *at the time it's used* in Foo in Arya's example.  Your fix sets x before it will be used in Foo.  Would it be possible to error or warn when variables are used in a trait before they're set?

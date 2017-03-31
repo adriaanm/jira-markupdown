@@ -1,29 +1,26 @@
 In scala 2.8.0.RC2 REPL, I noticed the following behavior:
-
-{code}
+```scala
  scala> val ts = TreeSet("a", "b", "c", "d")
  ts: scala.collection.immutable.TreeSet[java.lang.String] = TreeSet(a, b, c, d)
 
  scala> val ts2 = ts + "e"
  ts2: scala.collection.immutable.TreeSet[java.lang.String] =
 TreeSet(e, a, b, c, d) // unsorted
-{code}
+```
 
 Of course, I know it is not bug because ts.toList returns sorted list correctly:
-
-{code}
+```scala
  scala> ts2.toList
  res0: List[java.lang.String] = List(a, b, c, d, e)
-{code}
+```
 
 However, this behavior is unkind.  Because TreeSet
 extends SortedSet, users of TreeSet may expect that 
 the result of toString is sorted.  Then, I hope that 
 the result of TreeSet[A]#toString is sorted as the 
 followings:
-
-{code}
+```scala
  scala> val ts2 = ts + "e"
  ts2: scala.collection.immutable.TreeSet[java.lang.String] =
 TreeSet(a, b, c, d, e) // sorted
-{code}
+```

@@ -3,7 +3,7 @@ Repeating annotations: [https://docs.oracle.com/javase/tutorial/java/annotations
 Java couldn't deal with it with in a straight-forward fashion, because Java, so we should have a look whether we can clean up this mess and make users code work.
 
 As reported in gitter.im/scala/scala by user hepin1989:
-{code}
+```scala
 Caused by: java.lang.annotation.AnnotationFormatError: Duplicate annotation for class: interface qgame.engine.component.module.ModuleConfigPath: @qgame.engine.component.module.ModuleConfigPath(path=sample-module)
     at sun.reflect.annotation.AnnotationParser.parseAnnotations2(AnnotationParser.java:125)
     at sun.reflect.annotation.AnnotationParser.parseAnnotations(AnnotationParser.java:72)
@@ -11,32 +11,32 @@ Caused by: java.lang.annotation.AnnotationFormatError: Duplicate annotation for 
     at java.lang.Class.annotationData(Class.java:3510)
     at java.lang.Class.getDeclaredAnnotationsByType(Class.java:3469)
     at qgame.engine.component.module.ModuleRunner.<init>(ModuleRunner.scala:31)
-{code}
+```
 I have had
-{code}
+```scala
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Repeatable(ServiceDependencies.class)
 @Inherited
 public @interface ServiceDependency {}
-{code}
+```
 and
-{code}
+```scala
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Inherited
 public @interface ServiceDependencies {
     ServiceDependency[] value();
 }
-{code}
+```
 and retrieve it with
-{code}
+```scala
 getDeclaredAnnotationsByType(classOf[ServiceDependency])
-{code}
+```
 have to use it like the old way:
-{code}
+```scala
 @ServiceDependencies(Array(
   new ServiceDependency(name = "ping", maxRecheckTimes = 10, reCheckInterValInSeconds = 5),
   new ServiceDependency(name = "pong", maxRecheckTimes = 10, reCheckInterValInSeconds = 5)
 ))
-{code}
+```

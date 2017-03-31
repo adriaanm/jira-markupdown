@@ -1,7 +1,7 @@
 Hello.
 
 Running scalac on my 64bit Java 7 install throws a NPE:
-{code}
+```scala
 C:\_\>scalac
 error: java.lang.NullPointerException
         at scala.collection.immutable.HashSet$$HashTrieSet.updated0(HashSet.scala:228)
@@ -62,14 +62,14 @@ Exception in thread "main" java.lang.NullPointerException
         at scala.tools.nsc.Main$$.process(Main.scala:101)
         at scala.tools.nsc.Main$$.main(Main.scala:123)
         at scala.tools.nsc.Main.main(Main.scala)
-{code}
+```
 
 My PATH variables are set to use the 64bit JRE as the default. If I explicitly run scalac under the 32bit JRE, with this line:
-{code}
+```scala
 C:\_\>"C:\Program Files (x86)\Java\jre7\bin\java.exe" -Dscala.home="C:\PROGRA~2\Scal
 a" -cp "C:\PROGRA~2\Scala\lib\jline.jar;C:\PROGRA~2\Scala\lib\scala-compiler.jar;C:\PROGRA~2\Scala\lib\scala-dbc.jar;C:\PROGRA~2\Scala
 \lib\scala-library.jar;C:\PROGRA~2\Scala\lib\scala-swing.jar;C:\PROGRA~2\Scala\lib\scalap.jar" scala.tools.nsc.Main
-{code}
+```
 
 .. everything works fine. 
 
@@ -78,8 +78,7 @@ The problem first occured in Scala 2.8.1, then I updated to 2.9-RC1 and the issu
 Now, I'm not sure if it's maybe a JRE 7 bug, but seeing only Scala sources in the NPE stacktrace, I wanted to report it here, just in case.
 
 Scala itself seems to run fine under 64bit Java 7. However, when I type "import scala.collection.immutable.HashSet" on the REPL, I get this:
-
-{code}
+```scala
 java.lang.NullPointerException
         at scala.collection.immutable.HashMap$$HashTrieMap.updated0(HashMap.scala:269)
         at scala.collection.immutable.HashMap.$$plus(HashMap.scala:53)
@@ -127,7 +126,7 @@ session? I can re-run all lines except the last one.
         at scala.tools.nsc.MainGenericRunner$$.process(MainGenericRunner.scala:85)
         at scala.tools.nsc.MainGenericRunner$$.main(MainGenericRunner.scala:33)
         at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
-{code}
+```
 (it crashes before giving me a chance to type y/n)
 
 Scala: 2.9.0.RC1

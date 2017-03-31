@@ -1,5 +1,5 @@
 Example:
-{code}
+```scala
 
     object D {
       def aaa = 1 //that’s the reason
@@ -9,31 +9,26 @@ Example:
       println(D1) 
       println(D2) 
     }
-
-{code}
+```
 
 Results :
-
-{code}
+```scala
 
     defined object D
     scala> D.D1
     null
     D2
     res32: D.D1.type = D1
-
-{code}
+```
 
 After re-definition of `D`:
-
-{code}
+```scala
 
     defined object D
     scala> D.D2
     D1
     null
     res34: D.D2.type = D2
-
-{code}
+```
 
 So it forgots (or blocks) to initialize the requested sub-object if it refers to some another member of object inside sub-object definition (`aaa` inside constructor works fine) before running enclosing object initialization. It initializes this sub-object after (when aaa is defined). Even if it's intended to initialize enclosing object to make `aaa` available before D1 initializes, it shoudn't work that way for cases, like `D.D1`.

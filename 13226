@@ -1,28 +1,28 @@
 From the mailing list... consider:
-{code}
+```scala
 classOf[AnyRef]: Class[_ <: AnyRef] // ok
 classOf[AnyRef]: Class[X] forSome { type X <: AnyRef } // ok
-{code}
+```
 But
-{code}
+```scala
 type C[T] = Class[_ <: AnyRef]
 classOf[AnyRef]: C[AnyRef] // not ok
-{code}
+```
 This makes the problem more explicit:
-{code}
+```scala
 val x: C[AnyRef] = classOf[AnyRef]: Class[_ <: AnyRef]
-{code}
+```
 The resulting error message says:
-{code}
+```scala
 <console>:5: error: type mismatch;
  found   : Class[_$$1] where type _$$1 <: AnyRef
  required: C[AnyRef]
-{code}
+```
 but this is precisely the definition of C[!AnyRef]! So it does seem
 that there is a problem with the type alias.
 
 Incidentally, it works if the scope of the existential is smaller:
-{code}
+```scala
 type C[T] = Class[X forSome {type X <: T}]
 classOf[AnyRef]: C[AnyRef] // ok
-{code}
+```

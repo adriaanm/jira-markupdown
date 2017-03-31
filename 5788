@@ -1,17 +1,15 @@
 I added 'set -x' at the beginning of scalac and ran it (for verbose echoing of lines executed), and I notice something. Here's the command to execute the compiler (with no arguments):
-
-{code}
+```scala
 /usr/lib/jvm/jdk1.6.0_24/bin/java -Xmx256M -Xms32M '-Xbootclasspath/a:C:/opt/scala/lib/jline.jar;C:/opt/scala/lib/mscorlib.dll;C:/opt/scala/lib/predef.dll;C:/opt/scala/lib/scala-compiler.jar;C:/opt/scala/lib/scala-dbc.jar;C:/opt/scala/lib/scala-library.jar;C:/opt/scala/lib/scala-partest.jar;C:/opt/scala/lib/scala-swing.jar;C:/opt/scala/lib/scalap.jar;C:/opt/scala/lib/scalaruntime.dll' -Dscala.usejavacp=true -Dscala.home=C:/opt/scala -Denv.emacs= -Djline.terminal=jline.UnixTerminal scala.tools.nsc.Main
-{code}
+```
 
 There are three DLLs appended to the boot classpath -- mscorblib.dll, predef.dll, and scalaruntime.dll!  When I remove these from the boot classpath, it no longer crashes, but prints out this:
-
-{code}
+```scala
 java.lang.NoClassDefFoundError: scala/tools/nsc/Main
 Caused by: java.lang.ClassNotFoundException: scala.tools.nsc.Main
         at java.net.URLClassLoader$$1.run(URLClassLoader.java:202)
         ...
-{code}
+```
 
 Perhaps the JVM isn't verifying that the files on the boot classpath are jar files? But even without the DLLs, something else is happening to cause it to miss the compiler class.
 

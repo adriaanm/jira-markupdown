@@ -3,8 +3,7 @@ If we make this change, we would also need to touch the corresponding `Function.
 Changes of this nature, however, usually have subtle source incompatibilities.
 
 This is contrived, but shows how in the presence of type inference, this seemingly compatible change could break someones code:
-
-{code}
+```scala
 scala> def tupled[A, B, C](f: (A, B) => C): (Product2[A, B] => C) = ???
 tupled: [A, B, C](f: (A, B) => C)Product2[A,B] => C
 
@@ -22,6 +21,6 @@ Note: Product2[Int,Int] => Int <: ((Int, Int)) => Int, but trait Set is invarian
 You may wish to investigate a wildcard type such as `_ <: ((Int, Int)) => Int`. (SLS 3.2.10)
        def client(f: (Int, Int) => Int): Set[((Int, Int)) => Int] = {val result = Set(tupled(f)); result}
                                                                                                   ^
-{code}
+```
 
 I'll assign this Rex for his opinion.

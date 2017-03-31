@@ -1,12 +1,11 @@
-In that example, the compiler can't unify {{Bar[S] with FooBar}}, because it is perfectly legal to represent uninhabited types as in:
-
-{code}
+In that example, the compiler can't unify `Bar[S] with FooBar`, because it is perfectly legal to represent uninhabited types as in:
+```scala
 scala> trait M[A]; trait N extends M[Int]
 defined trait M
 defined trait N
 
 scala> type T = M[String] with N
 defined type alias T
-{code}
+```
 
-In the pattern matching context, we know that the type {{Bar[S] with FooBar}} is inhabited (because we got there by virtue of pattern matching on a value.) But I'm not sure how to exploit this.
+In the pattern matching context, we know that the type `Bar[S] with FooBar` is inhabited (because we got there by virtue of pattern matching on a value.) But I'm not sure how to exploit this.

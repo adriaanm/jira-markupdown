@@ -1,12 +1,10 @@
 The interpreter is going out of its way to display an exception that isn't the one it actually caught. In doing so, it silently discards potentially valuable debugging information, such as the classes of the outer exceptions, and any messages that might be associated with them. As a more detailed example:
-
-{code}
+```scala
 throw new IllegalArgumentException("argument foo has the wrong type", new ClassCastException)
-{code}
+```
 
 If this example line is entered into the interpreter, the following stack trace is printed:
-
-{code}
+```scala
 java.lang.ClassCastException
 	at .<init>(<console>:5)
 	at .<clinit>(<console>)
@@ -16,7 +14,7 @@ java.lang.ClassCastException
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
 	at sun.reflect.DelegatingMethodAccessorImpl.inv...
-{code}
+```
 
 As you can see, the diagnostic message about "argument foo" is completely lost, as is the fact that the exception in question is actually an `IllegalArgumentException` and not a `ClassCastException`. This makes it much more difficult to diagnose the cause of the exception, especially if the user is not expecting the silent unwrapping to take place.
 

@@ -1,6 +1,5 @@
 Here's a slightly more isolated look at the problem:
-
-{code}
+```scala
 import collection.generic._
 
 object Test {
@@ -20,6 +19,6 @@ object Test {
 
   abstract class R2 extends IndexedSeq[Int]
 }
-{code}
+```
 
-The intermediate class, {{AbstractSeq}}, is new in 2.10.0. It seems that the implicit search isn't looking deeper than the first parent of R1. This test file also fails in 2.9.2, which tells me this isn't a regression in type inference, but rather an existing bug/limitation which has been exposed by the change in the collection hierarchy.
+The intermediate class, `AbstractSeq`, is new in 2.10.0. It seems that the implicit search isn't looking deeper than the first parent of R1. This test file also fails in 2.9.2, which tells me this isn't a regression in type inference, but rather an existing bug/limitation which has been exposed by the change in the collection hierarchy.

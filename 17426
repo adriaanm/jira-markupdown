@@ -1,9 +1,8 @@
 The following warning is generated during compilation of scalac (locker and quick):
-
-{code}
+```scala
 src/compiler/scala/tools/nsc/interpreter/TypeStrings.scala:215: warning: abstract type reflect.runtime.universe.TypeRef in type pattern reflect.runtime.universe.TypeRef is unchecked since it is eliminated by erasure
     def typeArguments: List[ru.Type] = ru.typeOf[T] match { case ru.TypeRef(_, _, args) => args; case _ => Nil }
                                                                            ^
-{code}
+```
 
 It is likely a valid warning that results from ru.TypeRefTag not being visible for the pattern match.  It should be straightforward to fix this particular warning, but in general, this is a problem with selective imports from Universe in reflection.  I remember this general problem being discussed elsewhere (and Eugene wanting to be able to have XXTag imported whenever XX is imported), but I couldn't find an internals thread or bug report to link to.

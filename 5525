@@ -1,13 +1,12 @@
-Related to SI-1071.  The same bug really, but java style: something about running under -optimise changes the access model enough to trigger the same issue. (It's the private count field of String leaking out.)
-
-{code}
+Related to scala/bug#1071.  The same bug really, but java style: something about running under -optimise changes the access model enough to trigger the same issue. (It's the private count field of String leaking out.)
+```scala
 public final class java.lang.String extends java.lang.Object implements java.io.Serializable,java.lang.Comparable,java.lang.CharSequence{
     private final char[] value;
     private final int offset;
     private final int count;
-{code}
+```
 An all scala version.
-{code}
+```scala
 class A {
   private val count: Int = 0
 }
@@ -17,4 +16,4 @@ object B {
   
   def f = (new B) count (_ > 0)
 }
-{code}
+```

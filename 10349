@@ -1,11 +1,11 @@
 > Is there any other way to splice in a sequence of arguments? It does make the syntax differ from main scala, which is surprising, but you probably have good reasons for it.
 
 You've misunderstood it:
-{code}
+```scala
 val xs = (1 to 3).map { i => q"implicit val ${TermName("foo" + i)}: Int" }
 q"f(..$xs)" // ok == q"f(implicit foo1: Int, foo2: Int, foo3: Int)"
 q"f(implicit ..$xs)" // not ok
-{code}
+```
 
 > Which means compile time, because it is a macro?
 At the place you've used a quasiquote an exception will be thrown. If you use quasiquote in a macro this will be an exception thrown within a macro (at compile time).

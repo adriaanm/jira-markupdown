@@ -1,11 +1,10 @@
 Yeah, this is something we should support. We're also limited by our lack of expressiveness in the bytecode visibility department, as that is how we define binary compatibility. Not sure I'd go with an annotation (since they're not supposed to influence semantics like that). It's a tricky design problem... We could provide something under a flag as a stopgap.
 
 The problem in compiling visibility to bytecode modifiers when qualifying visibility with a package lies with our notion of package nesting, whereas Java does not consider packages `a.foo` and `a.bar` related in any way. For example, this compiles:
-
-{code}
+```scala
 package a { private[a] class A }
 // [fastforward ten years] you add:
 package a.sub { private[a] class B extends a.A } // compiles
-{code}
+```
 
 To be honest, we've kind of been hoping Java 9's module system would take care of this for us, but I would love to fix this if we can find a reasonable way.

@@ -1,11 +1,10 @@
 I think I now understand what the problem is. 
-
-{code}
+```scala
   protected def findMacroClassLoader(): ClassLoader = {
     val classpath = global.classPath.asURLs
     macroLogVerbose("macro classloader: initializing from -cp: %s".format(classpath))
     ScalaClassLoader.fromURLs(classpath, self.getClass.getClassLoader)
   }
-{code}
+```
 
 This logic is obviously incompatible with ReflectGlobal, which doesn't populate global.classPath correctly.

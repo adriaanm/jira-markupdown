@@ -1,10 +1,10 @@
 Also interesting is this alteration:
-{code}
+```scala
   implicit lazy val Default = new AnyRef with Wanted
   // implicit object Default extends Wanted
-{code}
+```
 which fails to compile:
-{code}
+```scala
 a.scala:8: error: ambiguous implicit values:
  both lazy value Default in object Wanted of type => java.lang.Object with Wanted
  and value nope in object Wants of type => java.lang.Object with Wanted
@@ -18,5 +18,5 @@ a.scala:9: error: ambiguous implicit values:
     println(nope eq implicitly[Wanted])
                               ^
 two errors found
-{code}
+```
 I'd formed this idea that the existence of both lazy vals and object members is something of an accident of history and that they may be unified down the road.  If true we will need to ferret out these inconsistencies; if false it'd be nice if we could document them.

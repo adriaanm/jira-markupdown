@@ -1,20 +1,19 @@
 Methods like
-{code}
+```scala
 def test[T](a: Array[T])
-{code}
+```
 
 in Scala are compiled to a Java method with signature
-
-{code}
+```scala
 Signature: (Ljava/lang/Object;)Lscala/runtime/Null$$;
-{code}
+```
 
 So they use `Object` as parameter type because primitive valued and reference valued arrays share no common supertype.
 
 The generated generic Java signature, however, is
-{code}
+```scala
 <T:Ljava/lang/Object;>([TT;)Lscala/runtime/Null$$;;
-{code}
+```
 
 javac uses the the erasure of the generic signature when it references a method, so you get treated by a `java.lang.NoSuchMethodError` at runtime if you call such a method from Java code.
 

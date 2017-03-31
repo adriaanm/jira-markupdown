@@ -1,5 +1,5 @@
 The summary (title) of this issue is fairly involved but I couldn't find better one. I think it's the best to present code at this point:
-{code}
+```scala
 trait Foo[@specialized(AnyRef, Int) A, @specialized(Boolean) B] {
   def apply(x: A): Boolean
 }
@@ -7,17 +7,17 @@ abstract class Inter extends Foo[String, Boolean]
 class Baz extends Inter {
   def apply(x: String) = false
 }
-{code}
+```
 
 We are interested in apply method of Baz class. Let's see the javap output:
-{code}
+```scala
 Compiled from "check-both.scala"
 public class Baz extends Inter{
     public boolean apply(java.lang.String);
     public boolean apply(java.lang.Object);
     public Baz();
 }
-{code}
+```
 
 we see here that specialized overrides are missing so default specialized implementations will be used (from Inter class) that forward to Foo$class and thus box.
 

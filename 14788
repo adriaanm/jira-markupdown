@@ -1,19 +1,17 @@
 The following code generates several val defs where 'arg' is given the same symbol. It only works now because they are always assigned the same thing, so the fact that only one physical location is used does not matter.
 
 This affects the backend in another way, when it emits variable ranges for debug info. Currently it ignores such cases, keeping them in scope until the end of the method. However, for the jvm-1.6 target, type information about such locals should be emitted only when they are in scope. Unhappiness hits.
-
-{code}
+```scala
 class Foo {
   def stringOf(arg : Any): String = arg match {
     case arg: List[_] => arg.toString
     case _ => arg.toString
   }
 }
-{code}
+```
 
 after explcit outer:
-
-{code}
+```scala
     def stringOfSI-8520(argSI-9938: AnySI-22): java.lang.StringSI-1655 = {
       var temp1SI-10756: AnySI-22 = argSI-9938;
       if (temp1SI-10756.isInstanceOfSI-3915[List[_SI-9993]]())
@@ -51,5 +49,4 @@ after explcit outer:
         }
     }
   }
-
-{code}
+```

@@ -1,16 +1,16 @@
-1) fixed: [AbstractMethodError|http://http://www.scala-lang.org/archives/downloads/distrib/files/nightly/docs/library/index.html#scala.package@AbstractMethodError:AbstractMethodError] and AnyRef is gone
+1) fixed: [AbstractMethodError](http://http://www.scala-lang.org/archives/downloads/distrib/files/nightly/docs/library/index.html#scala.package@AbstractMethodError:AbstractMethodError) and AnyRef is gone
 2) I would rather include Product. I find Product to be a blessing for deep matches:
-{code}
+```scala
 def deepCount(t: Any): Int = t match {
   case wilf@WhatImLookingFor => 1
   case p: Product => p.toList.map(deepMatch(_)).sum
   case _ => 0
 }
-{code}
+```
 We could do without Serializable, but it wouldn't make sense to only remove Serializable but not Product.
 3) I see what you mean, but we'd have to find a principled way of dropping parents. I'd rather steer away from this, as it might come back to bite us later.
 4) I think that made sense back when we didn't have case classes, but now the same class C could extend Any, AnyRef or AnyVal. I'd rather not drop it. WDYT?
-5) We'll have links to external documentation soon. That's SI-191. In the meantime the fully qualified name is shown.
-6) Fixed in SI-3314
+5) We'll have links to external documentation soon. That's scala/bug#191. In the meantime the fully qualified name is shown.
+6) Fixed in scala/bug#3314
 
 I will close this bug as Won't Fix, since I rejected points 2, 3 and 4, but please feel free to open new bugs for the points you have strong oppinions on, so we can discuss them.

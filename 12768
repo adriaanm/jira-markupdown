@@ -1,17 +1,17 @@
 Since annotations should now follow the type, I tried to convert an example to this new syntax. While doing so, I came up with a (presumably syntactically incorrect) example that crashes the compiler:
 
-*Code*
-{code}
+**Code**
+```scala
 class C {
   new (G @A)[Int]
 }
 class G[T] {}
 class A extends Annotation
-{code}
-(I think the second line should read more like {{new (G[Int] @A)}} to be syntactically valid, which can be compiled.) I was using _Scala compiler version 2.6.0.12796.20070905-080155 -- (c) 2002-2007 LAMP/EPFL_. The exception which was produced looked as follows:
+```
+(I think the second line should read more like `new (G[Int] @A)` to be syntactically valid, which can be compiled.) I was using *Scala compiler version 2.6.0.12796.20070905-080155 -- (c) 2002-2007 LAMP/EPFL*. The exception which was produced looked as follows:
 
-*What happened*
-{code}
+**What happened**
+```scala
 $$ scalac -Xplug-types ex01.scala
 Exception in thread "main" java.lang.NullPointerException
         at scala.tools.nsc.typechecker.Typers$$Typer.typedAppliedTypeTree$$0(Typers.scala:2633)
@@ -63,8 +63,8 @@ Exception in thread "main" java.lang.NullPointerException
         at scala.tools.nsc.Main$$.process(Main.scala:86)
         at scala.tools.nsc.Main$$.main(Main.scala:107)
         at scala.tools.nsc.Main.main(Main.scala)
-{code}
+```
 
-*Expected*
+**Expected**
 
 Clean compilation if the code is correct or display of a syntax error.

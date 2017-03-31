@@ -11,7 +11,7 @@ java.lang.ClassCastException: java.lang.String cannot be cast to scala.collectio
 	at .<init>(<console>:7)
 	at .<clinit>(<console>)
         ...
-{code}
+```scala
 
 Secondly, there are two usefull extractors defined in scala.collection.SeqExtractors.scala. But sadly these two extractors doesnot work for Array and String, and sometimes we do need these function, especially for String.
 
@@ -19,7 +19,7 @@ I would like the followed codes working as expected:
 {code:title=Expected Result|borderStyle=solid}
 "abcdef" match { case p +: m :+ q => m } // expect m == "bcde"
 Array(1,2,3) match { case h +: tail => tail } //expect tail == Array(2,3)
-{code}
+```
 Here I got an idea to fix the issue by rewriting these two extractors as following:
 {code:title=SeqExtractors.scala|borderStyle=solid}
 package scala.collection

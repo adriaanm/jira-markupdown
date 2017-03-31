@@ -1,8 +1,7 @@
 See this [http://scala-programming-language.1934581.n4.nabble.com/valid-code-throws-NoSuchMethodError-at-runtime-td2222685.html#a2222685 thread]
 
 Compiling this with scalac (tested 2.8.0.RC2):
-
-{code}
+```scala
 abstract class BulkSearch {
        type R   <: Row
        type Rel <: Relation [R]
@@ -27,21 +26,19 @@ class Correspondence [R <: Row]
 class UpCorrespondence extends Correspondence [UpRow]
 
 class Mapping[MC <: Correspondence[_]]
-{code}
+```
 
 and compiling this with javac:
-
-{code}
+```scala
 public class JavaApp {
        public static void main(String[] args) {
                BulkSearchInstance.searchFor(new UpRelation());
        }
 }
-{code}
+```
 
 produces no compile-time errors but a runtime error later on:
-
-{code}
+```scala
 Exception in thread "main" java.lang.NoSuchMethodError: bugs.BulkSearchInstance.searchFor(Lbugs/UpRelation;)Lbugs/Mapping;
        at bugs.JavaApp.main(JavaApp.java:15)
        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
@@ -49,22 +46,20 @@ Exception in thread "main" java.lang.NoSuchMethodError: bugs.BulkSearchInstance.
        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
        at java.lang.reflect.Method.invoke(Method.java:597)
        at com.intellij.rt.execution.application.AppMain.main(AppMain.java:110)
-{code}
+```
 
 After some analysis, I found out that is probably due to an inconsistent generic signature being generated for the static method delegate in `BulkSearchInstance.class`.
 
 Scalac generates these signatures for `BulkSearchInstance.searchFor`:
-
-{code}
+```scala
 method_info.descriptor (see � 4.3 JVM spec): (LRelation;)LMapping;
 attribute 'Signature' (see JSR 014): (LUpRelation;)LMapping<LUpCorrespondence;>;
-{code}
+```
 
 When javac sees that, it produces something strange (i.e. not matching the descriptor found in `BulkSearchInstance.class`):
-
-{code}
+```scala
 invokestatic    SI-4; //Method BulkSearchInstance.searchFor:(LUpRelation;)LMapping;
-{code}
+```
 
 which looks like the erasure of the generic signature.  However, JVM's linker looks for the exact descriptor when looking for methods. I think the solution should be
   1. Always generate consistent descriptor and generic signature

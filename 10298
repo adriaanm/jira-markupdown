@@ -1,4 +1,4 @@
-{noformat}
+```
 ase: <no phase>] Please file a ticket with the current stack trace at https://www.assembla.com/spaces/scala-ide/support/tickets
 	at scala.tools.nsc.interactive.Global.assertCorrectThread(Global.scala:517)
 	at scala.reflect.internal.Symbols$Symbol.rawInfo(Symbols.scala:1395)
@@ -14,14 +14,13 @@ ase: <no phase>] Please file a ticket with the current stack trace at https://ww
 	at scala.tools.nsc.ast.parser.TreeBuilder.stripParens(TreeBuilder.scala:47)
 	at scala.tools.nsc.ast.parser.Parsers$Parser.parseOther$1(Parsers.scala:1475)
 	at scala.tools.nsc.ast.parser.Parsers$Parser.expr0(Parsers.scala:1477)
-{noformat}
+```
 
 Seems like we need to force a few lazies in Definitions to make this work.
-
-{code}
+```scala
 // On presentation compiler startup
 definitions.TupleClass.seq.foreach(sym => fullyInitializeSymbol(sym))
 // same for any other symbols used by Parsers.
-{code}
+```
 
 This workaround could be done in the IDE in the meantime.

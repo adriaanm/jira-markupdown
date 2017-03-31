@@ -1,8 +1,7 @@
 This issue has been uncovered when I replaced LiftCode with scala.reflect.api.macro.Context#reify. My activity also involved removing scala.reflect.Code, but I couldn't do this right away, because that led to crashes of starr, so I left Code in place (until I get chance to replace a starr), and moved along.
 
 The next step was fixing tests, since there were 40+ tests that used Code.lift to test reification. I decided to play smart and rolled my own Code.lift with lift being a macro calling shiny new reify. Then I packed the macro into code.jar and put it on library classpath before scala-library.jar (that still contained old and deprecated Code.lift). I was enjoying my wit until the tests went crashing. Apparently, there were some classloading issues, let's take a look:
-
-{code}
+```scala
 lazy val mirror = new scala.reflect.runtime.Mirror {
   lazy val libraryClassLoader = {
     val classpath = global.classPath.asURLs
@@ -11,6 +10,6 @@ lazy val mirror = new scala.reflect.runtime.Mirror {
 
   override def defaultReflectiveClassLoader() = libraryClassLoader
 }
-{code}
+```
 
 After inserting debug prints, I found out that self.getClass.getClassLoader didn't contain any references to my code.jar. Consequently, libraryClassLoader went to scala-library.jar (parent first!), loaded the old Code class and, of course, it didn't find any macros there. This is inconsistent with how library classpath works and should be fixed.

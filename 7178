@@ -1,19 +1,18 @@
 This works:
-{code}
+```scala
 object Test extends App {
   class A
   println(classOf[A].getSimpleName())
 }
-{code}
+```
 
 But this fails:
-
-{code}
+```scala
 object Test extends App {
   object A {
     class B
   }
   println(classOf[A.B].getSimpleName())
-{code}
+```
 
 for the same reason as Eugene stated. The first example works because we put A into 'Test' class and not 'Test$'. Note that class without dollar sign is generated only for top-level objects as a place where we can put static forwarders to object's method.

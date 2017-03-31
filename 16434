@@ -1,28 +1,28 @@
 At the moment isInstanceOf/asInstanceOf don't support (upper bounded) type parameters so it parametric polymorphism is not possible even if the type parameter has a manifest. All the manifest does is turning unchecked warnings off, there  is still a class cast exception which is why a manifest solution makes the problem even worse.
 
 In C# you can do just this and it works:
-{code}
+```scala
 if (e is E) call((E)e);
-{code}
+```
 
 but in Scala you cannot do this even with a typeparameter with manifest:
 if (e.isInstanceOf[E]) call(e.asInstanceOf[E])
 
 Work around 1
 =============
-{code}
+```scala
 if(isE(e) call(asE(e))
 final def isE[F <: Exp: Manifest](e: F) = { manifest[E] <:< manifest[F] }
 final def asE(e: Exp) = { val x = manifest[E].erasure.cast(e); println(x.getClass); x.asInstanceOf[E] }
-{code}
+```
 
 is only turning of the unchecked warnings in hackish way
 
 Work around 2
 =============
-{code}
+```scala
 if (manifest[E].erasure.cast(e).isInstanceOf[E]) call(manifest[E].erasure.cast(e).asInstanceOf[E])
-{code}
+```
 
 brings the unchecked warning it back so it is circular
 

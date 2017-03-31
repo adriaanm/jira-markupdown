@@ -1,5 +1,5 @@
 Well, the pickler code is unnecessarily confusing - is it only masking out those 12 bits, letting the other 20 low order bits be pickled directly, and then shuffling around those 12? Maybe it is. Well, there's no way all those flags need pickling, and there are others which do.  See this comment in Unpickler:
-{code}
+```scala
         case EXISTENTIALtpe =>
           val restpe  = readTypeRef()
           // @PP: Where is the flag setting supposed to happen? I infer
@@ -8,4 +8,4 @@ Well, the pickler code is unnecessarily confusing - is it only masking out those
           // motivation to fix it.
           val tparams = until(end, readSymbolRef) map (_ setFlag EXISTENTIAL)
           newExistentialType(tparams, restpe)
-{code}
+```

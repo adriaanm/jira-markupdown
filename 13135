@@ -1,4 +1,4 @@
-{code}
+```scala
 trait Sequ[+A] {
   def toArray: Array[T forSome {type T <: A}]
 }
@@ -14,10 +14,10 @@ object Foo extends Application {
   println(x.toArray) // call directly
   println((x: Sequ[Char]).toArray) // calling through the bridge misses unboxing
 }
-{code}
+```
 
 This typechecks, then fails at runtime:
-{code}
+```scala
 [C@16a786
 java.lang.ExceptionInInitializerError
         at Foo.main(toarray.scala)
@@ -35,6 +35,6 @@ Caused by: java.lang.ClassCastException: [C
         at Foo$$.<init>(toarray.scala:17)
         at Foo$$.<clinit>(toarray.scala)
         ... 10 more
-{code}
+```
 
 It looks like erasure forgot to add some unboxing calls.

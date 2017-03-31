@@ -1,12 +1,11 @@
 Compiler does not reevaluate {{apply}}'s {{implicit}} each time {{apply}} is called, when the applications are in the same statement.
 
-The compiler would be correct if {{test}} were a function, and the {{implicit}} was defined at the function definition site. In that case the {{implicit}} is only supposed to be evaluated in the first application to a function, where the type parameters are then fully determined.
+The compiler would be correct if `test` were a function, and the `implicit` was defined at the function definition site. In that case the `implicit` is only supposed to be evaluated in the first application to a function, where the type parameters are then fully determined.
 
-However, this is not the case below, because the {{implicit}} is declared not for the function {{test}} but for the application function {{apply}}, and thus the type parameter {{A}} should be determined separately for each invocation of {{apply}}. It is proven as shown below by the fact that invoking {{apply}} with separate statements or even explicitly calling {{.apply}} more than once in the same statement does compile as expected.
+However, this is not the case below, because the `implicit` is declared not for the function `test` but for the application function `apply`, and thus the type parameter `A` should be determined separately for each invocation of `apply`. It is proven as shown below by the fact that invoking `apply` with separate statements or even explicitly calling `.apply` more than once in the same statement does compile as expected.
 
-The [motivating use case is for a workaround|https://issues.scala-lang.org/browse/SI-5550?focusedCommentId=60794&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-60794] to a use case that applies to [bug SI-5550|https://issues.scala-lang.org/browse/SI-5550].
-
-{code}
+The [motivating use case is for a workaround|https://issues.scala-lang.org/browse/SI-5550?focusedCommentId=60794&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-60794] to a use case that applies to [bug SI-5550](https://issues.scala-lang.org/browse/SI-5550).
+```scala
 class Test {
   def apply[A](v: A)(implicit d: A <:< Any) = this
 }
@@ -27,4 +26,4 @@ error: type mismatch;
  required: <:<[Int,Any]
        test(1)("")
                ^
-{code}
+```

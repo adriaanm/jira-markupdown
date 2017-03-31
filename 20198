@@ -1,7 +1,5 @@
 Given the following code:
-
-
-{code:scala}
+```scala
 object Model {
   sealed trait Field[T]
   case object StringField extends Field[String]
@@ -19,10 +17,10 @@ object Model {
     case Equality(BoolField, Bool(v)) => 2
   }
 }
-{code}
+```
 
 scalac outputs the following:
-{code}
+```scala
 [info] Compiling 1 Scala source to /Users/iravid/Development/bigpanda/free-applicatives/target/scala-2.11/classes...
 [error] /Users/iravid/Development/bigpanda/free-applicatives/bpql.scala:65: match may not be exhaustive.
 [error] It would fail on the following inputs: Equality(BoolField, Literal(_)), Equality(StringField, Bool(_))
@@ -31,7 +29,7 @@ scalac outputs the following:
 [error] one error found
 [error] (compile:compileIncremental) Compilation failed
 [error] Total time: 1 s, completed Sep 18, 2016 11:25:40 AM
-{code}
+```
 
 Note that incompatible cases are suggested - Equality(BoolField, Literal("bla")) cannot be instantiated as Expression is invariant in T.
 

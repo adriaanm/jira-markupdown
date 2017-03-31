@@ -1,17 +1,16 @@
 The offending bytecode instruction is:
-
-{noformat}
+```
    3:	lookupswitch{ //4
 		97: 63;
 		97: 56;
 		98: 63;
 		122: 56;
 		default: 44 }
-{noformat}
+```
 
-The list of int pair {{(match, offset)}} as per the JVMS "must be sorted in increasing numerical order by match." 
+The list of int pair `(match, offset)` as per the JVMS "must be sorted in increasing numerical order by match." 
 
-The problem above is the duplicate {{match}} value (97) which results from {{'a'}} matching two different case clauses (the second is unreachable for that value).
+The problem above is the duplicate `match` value (97) which results from `'a'` matching two different case clauses (the second is unreachable for that value).
 
-The backend can silently swallow duplicate {{match}} values but given they're constants, the error could be signalled earlier.
+The backend can silently swallow duplicate `match` values but given they're constants, the error could be signalled earlier.
 

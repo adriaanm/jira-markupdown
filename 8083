@@ -1,6 +1,5 @@
 I should also mention that creating lots of throwaway intermediate Vectors, even with this fix, is always going to be more expensive than using an imperative Builder within the loop. Here's an example that is an order of magnitude faster.
-
-{code}
+```scala
 object Test extends App {
   type Upcast = IndexedSeq[String]
   var i = 0
@@ -18,10 +17,8 @@ object Test extends App {
     i += 1
   }
 }
-{code}
-
-
-{noformat}
+```
+```
 // 2.10.1
 ...
 0.372 / 100000
@@ -34,6 +31,6 @@ object Test extends App {
 0.381 / 100000
 0.378 / 100000
 0.378 / 100000
-{noformat}
+```
 
-If you use a suitable persistent data structure like {{List}} that has a free prepend, you can keep things pure. But Vector's append/prepend is more expensive (as a tradeoff to make its indexing faster).
+If you use a suitable persistent data structure like `List` that has a free prepend, you can keep things pure. But Vector's append/prepend is more expensive (as a tradeoff to make its indexing faster).

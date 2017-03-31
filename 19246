@@ -3,19 +3,18 @@ Compiler errors would be easier to read if they didn't use fully qualified type 
 We've talked about this in person once or twice, but I don't think I've ever filed an issue. 
 
 scala-ide shows me a very long line, with fully qualified type names: 
-
-{code}
+```scala
 type mismatch;  found   : rx.lang.scala.Observable[nest.sparkle.loader.kafka.AvroKafkaLoader.TaggedBlock[Nothing,Nothing]] => rx.lang.scala.Observable[nest.sparkle.loader.kafka.AvroKafkaLoader.TaggedBlock[K,Nothing]]  required: rx.lang.scala.Observable[nest.sparkle.loader.kafka.AvroKafkaLoader.TaggedBlock[T,U]] => rx.lang.scala.Observable[nest.sparkle.loader.kafka.AvroKafkaLoader.TaggedBlock[K,U]]  
-{code}
+```
 
 I'd like to see a shorter version of what scalac produces:
-{code}
+```scala
 type mismatch;  
 found: 
   Observable[TaggedBlock[Nothing,Nothing]] => Observable[TaggedBlock[K,Nothing]]  
 required: 
   Observable[TaggedBlock[T,U]] => Observable[TaggedBlock[K,U]]  
-{code}
+```
 
 I find it useful to copy and paste the error message and then manually format it to make it easier to read, but that seems a bit silly..
 

@@ -1,29 +1,26 @@
 This is fine:
-
-{noformat}
+```
 scala> classOf[(Int*) => Unit]
 res0: Class[Seq[Int] => Unit] = interface scala.Function1
-{noformat}
+```
 
 But if you're really perverse:
-
-{noformat}
+```
 scala> classOf[(((Int*) => Unit)*) => Unit]
 <console>:4: error: type mismatch;
  found   : Class[Seq[Int* => Unit] => Unit]
  required: Class[Seq[Seq[Int] => Unit] => Unit]
 Note: Seq[Int* => Unit] => Unit <: Seq[Seq[Int] => Unit] => Unit, but Java-defined class Class is invariant in type T.
 You may wish to investigate a wildcard type such as `_ <: Seq[Seq[Int] => Unit] => Unit`. (SLS 3.2.10)
-{noformat}
+```
 
 Interestingly enough, this "fixes" it:
-
-{noformat}
+```
 scala> type Pathological = (((Int*) => Unit)*) => Unit
 defined type alias Pathological
 
 scala> classOf[Pathological]
 res1: Class[Int* => Unit* => Unit] = interface scala.Function1
-{noformat}
+```
 
-I strongly suspect this is related to SI-5991.
+I strongly suspect this is related to scala/bug#5991.

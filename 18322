@@ -1,8 +1,7 @@
 In a linked-list structure with hetrogeneous values the type parameter used to reference the neighbouring link seems to deliver insufficient information to the compiler.  The result is that the compiler refuses to recognize that the structure can be traversed safely.
 
 Enclosed is a small class (Link.scala) that doesn't compile.  The problem is with line 13.
-
-{code}
+```scala
 package rule
 
 case class Link[T, T2 <: Link[_,_]] (val value : T, val next : T2) {
@@ -22,4 +21,4 @@ case class Link[T, T2 <: Link[_,_]] (val value : T, val next : T2) {
 object End extends Link[Option[Nothing], Link[Option[Nothing],_]](None, null){
 	override def matches(other : this.type) = true
 }
-{code}
+```

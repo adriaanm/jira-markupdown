@@ -10,9 +10,7 @@ Caused by: scala.tools.asm.tree.analysis.AnalyzerException: Incompatible stack h
 [error] While processing switchwalker/Inspector.inspect
 
 The construct that hurts the compiler seems to look something like this:
-
-
-{code:scala}
+```scala
 def inspect(): Result
 {
   var switch: Switch = null
@@ -32,11 +30,9 @@ def inspect(): Result
 
   result
 }//inspect
+```
+Commenting out the assignment in the point marked /*** 1 ******/ (without touching the following "match" clause) or removing the "finally" clause in the point /****** 2 ***/ stops the compiler from crashing. But no other changes in the same file (those I've tried) help.
 
-
-{code}
-Commenting out the assignment in the point marked /*** 1 ***/ (without touching the following "match" clause) or removing the "finally" clause in the point /*** 2 ***/ stops the compiler from crashing. But no other changes in the same file (those I've tried) help.
-
-The project compiles without any problems with Scala 2.11. I could not reproduce the crash with the smaller example project, containing the similar constructs. So I supply the full stack trace and the source file that causes the compiler to crash in the attachment. The points in the source file where the changes can help the compiler to survive are also marked /*** 1 ***/ and /*** 2 ***/.
+The project compiles without any problems with Scala 2.11. I could not reproduce the crash with the smaller example project, containing the similar constructs. So I supply the full stack trace and the source file that causes the compiler to crash in the attachment. The points in the source file where the changes can help the compiler to survive are also marked /*** 1 ******/ and /****** 2 ***/.
 
 I also can supply the entire project if required (since it is not secret nor very big), so the crash could be reproduced.

@@ -1,6 +1,5 @@
 It's dangerous to remove elements from mutable maps during iteration. It may work one day and stop working the next if the map size changes or an optimisation is added to shrink the map on removals and so on. The offending code is:
-
-{code}
+```scala
     def removeDanglingNodes() {
       for (node <- nodes.values filter (_.phaseobj.isEmpty)) {
         val msg = "dropping dependency on node with no phase object: "+node.phasename
@@ -15,6 +14,6 @@ It's dangerous to remove elements from mutable maps during iteration. It may wor
         }
       }
     }
-{code}
+```
 
 I'll post a pull request along with performance figures to make sure there is no regression.

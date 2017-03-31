@@ -1,16 +1,14 @@
 Parameter names are lost after specialization (in specialized overrides). For example, when debugging inside a closure that was specialized they show up in the debugger as `v$1..v$n`.
 
 The following code:
-
-{code}
+```scala
 class Foo {
   val f = (param: Int) => param
 }
-{code}
+```
 
 generates the following anonymous function (trees after specialization):
-
-{code}
+```scala
 final <synthetic> class $anonfun extends scala.runtime.AbstractFunction1[Int,Int] with Serializable {
   def this(): anonymous class $anonfun = {
     $anonfun.super.this();
@@ -19,4 +17,4 @@ final <synthetic> class $anonfun extends scala.runtime.AbstractFunction1[Int,Int
   final def apply(param: Int): Int = $anonfun.this.apply$mcII$sp(param);
   <specialized> def apply$mcII$sp(v1: Int): Int = v1 //!! notice v1
 };
-{code}
+```

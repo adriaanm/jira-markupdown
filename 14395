@@ -1,6 +1,5 @@
 I'm not quite sure of the intended behaviour here. I've been trying to serialise an Enumeration (in 2.7 and 2.8), but it doesn't seem to work as I expected.
-
-{code}
+```scala
 Welcome to Scala version 2.8.0.r18405-b20090730020155 (Java HotSpot(TM) Client VM, Java 1.6.0_13).
 Type in expressions to have them evaluated.
 Type :help for more information.
@@ -42,9 +41,9 @@ scala> println(System.identityHashCode(MyEnum))
 
 scala> println(System.identityHashCode(serialise(MyEnum)))
 8713829
-{code}
+```
 
-After poking around in the (2.7) source a little, it seems that Value is being "resolved", but the actual Enumeration "MyEnum" object isn't (and why values end up non-equal too). I have a work-around - inserting {{def readResolve(): AnyRef = MyEnum}} method in MyEnum fixes it.
+After poking around in the (2.7) source a little, it seems that Value is being "resolved", but the actual Enumeration "MyEnum" object isn't (and why values end up non-equal too). I have a work-around - inserting `def readResolve(): AnyRef = MyEnum` method in MyEnum fixes it.
 
 Should it be necessary that I provide my own readResolve method on each of my Enumeration objects? It's not really an issue, I just have quite a few in my object model, and I want to serialise the whole thing.
 

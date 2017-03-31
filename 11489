@@ -1,6 +1,6 @@
 I have a problem with name-based pattern matching actually still generating tuples.
 given such definitions
- {code} 
+```scala
 type If
 implicit val IfTag: ClassTag[If]
 trait DeconstructorCommon[T >: Null <: Tree] {
@@ -18,11 +18,11 @@ trait IfDeconstructor extends DeconstructorCommon[If]{
     def _2: Tree
     def _3: Tree
   }
-{code}
+```
 the pattern 
 {code} val If(condp, thenp, elsep) = tree{code}
 gets compiled into bytecode equivalent to
-{code}
+```scala
             Tuple3 tuple3;
             Object object = tree;
             Option option = this.scala$tools$nsc$backend$jvm$BCodeBodyBuilder$PlainBodyBuilder$$$outer().int().IfTag().unapply(object);
@@ -39,6 +39,6 @@ gets compiled into bytecode equivalent to
             Object condp2 = tuple32._1();
             Object thenp2 = tuple32._2();
             Object elsep2 = tuple32._3();
-{code}
+```
 
 ie tuples Options are not created indeed, but tuples are

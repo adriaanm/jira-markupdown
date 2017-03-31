@@ -1,13 +1,13 @@
 As of r23937 we see a third outcome.  Starting with, no inner classes.
-{code}
+```scala
 scala> classOf[A].getClasses.head.getMethods.head.getGenericReturnType
 java.util.NoSuchElementException
 
 scala> classOf[A].getClasses
 res4: Array[java.lang.Class[_]] = Array()
-{code}
+```
 Here is a diff showing why.
-{code}
+```scala
 5a6,7
 >   EnclosingMethod: length = 0x4
 >    00 21 00 24 
@@ -19,10 +19,10 @@ Here is a diff showing why.
 < const SI-31 = Asciz	InnerClasses;
 ---
 > const SI-31 = Asciz	EnclosingMethod;
-{code}
+```
 Let's go straight to the mouth of the horse.
-{code}
+```scala
 scala> Class.forName("""A$$$$anonfun$$m$$1""").getMethods.head.getGenericReturnType
 res6: java.lang.reflect.Type = T
-{code}
+```
 Hey, it works!

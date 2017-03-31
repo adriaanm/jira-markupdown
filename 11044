@@ -1,6 +1,5 @@
 Not sure it works for me:
-
-{code}
+```scala
 package foo
 
 final class Optional[A >: Null](val value: A) extends AnyVal {
@@ -8,9 +7,8 @@ final class Optional[A >: Null](val value: A) extends AnyVal {
   def isEmpty = value == null
   @inline final def getOrElse[B >: A](alt: => B): B = if (isEmpty) alt else value
 }
-{code}
-
-{code}
+```
+```scala
 package foo
 
 class C
@@ -21,9 +19,8 @@ object Test {
     println(x.getOrElse(new C))
   }
 }
-{code}
-
-{code}
+```
+```scala
 18:03 ~/Projects/211x/sandbox (2.11.x)$ scalac Macros.scala && scalac Test.scala && javap -v foo.Test$
 ...
   public void foo();
@@ -44,4 +41,4 @@ object Test {
         21: invokevirtual #34                 // Method scala/Predef$.println:(Ljava/lang/Object;)V
         24: return
 ...
-{code}
+```

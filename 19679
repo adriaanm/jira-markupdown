@@ -1,6 +1,5 @@
 The following minimization illustrates the bug:
-
-{code}
+```scala
 abstract class Piol extends java.util.PrimitiveIterator.OfLong {
   def hasNext = ???
   def nextLong() = ???
@@ -37,8 +36,8 @@ class Bippy {
     // def forEachRemaining(c: java.util.function.Consumer[_ >: Long]) { ??? }
   }
 }
-{code}
+```
 
-Note that _only_ when the return type is a generic (even if the exact type is specified) does the compiler silently...do...I'm not even sure what it's doing.  It's confused about what {{Long}} should be, and somehow that causes it to emit the method as {{private}} even though it's not marked {{private}} and it is identical after erasure to a {{public}} method.
+Note that *only* when the return type is a generic (even if the exact type is specified) does the compiler silently...do...I'm not even sure what it's doing.  It's confused about what `Long` should be, and somehow that causes it to emit the method as `private` even though it's not marked `private` and it is identical after erasure to a `public` method.
 
-The {{Bippy}} version (where the return type is not in any way generic) does not exhibit this problem, and {{Baz}} and {{Quux}} show that it works the way it ought to if you get the correct type in place.
+The `Bippy` version (where the return type is not in any way generic) does not exhibit this problem, and `Baz` and `Quux` show that it works the way it ought to if you get the correct type in place.

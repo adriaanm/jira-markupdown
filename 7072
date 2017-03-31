@@ -1,6 +1,5 @@
 AFAIT, scalac is doing the right thing already: 
-
-{code}
+```scala
 scala> class A(@beans.BeanProperty val froz: String)
 defined class A
 
@@ -9,16 +8,15 @@ res4: Array[java.lang.reflect.Method] = Array(public java.lang.String A.froz(), 
 
 scala> res4.map(m => java.lang.reflect.Modifier.isPublic(m.getModifiers))
 res5: Array[Boolean] = Array(true, true)
-{code}
+```
 
-This isn't to be confused with {{AccessibleObject#isAccessible}}, which can only be set by the client of Java reflection to bypass the usual accessibility checks based on modifers and packaging. This isn't something that can be set in the bytecode.
-
-{code}
+This isn't to be confused with `AccessibleObject#isAccessible`, which can only be set by the client of Java reflection to bypass the usual accessibility checks based on modifers and packaging. This isn't something that can be set in the bytecode.
+```scala
 scala> res4.map(_.isAccessible)
 res6: Array[Boolean] = Array(false, false)
 
 scala> classOf[Object].getMethods.map(_.isAccessible)
 res7: Array[Boolean] = Array(false, false, false, false, false, false, false, false, false)
-{code}
+```
 
 Could you provide more information about what you expect, and which tools require this?

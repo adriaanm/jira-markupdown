@@ -6,7 +6,7 @@ The patch includes:
  * test case to ensure error information is indeed properly captured
 
 There is one part that concerns me.  Reaction is currently catching ALL throwables.
-{code}
+```scala
       case t: Throwable => {
         Debug.info(a+": caught "+t)
         a.terminated()
@@ -25,10 +25,10 @@ There is one part that concerns me.  Reaction is currently catching ALL throwabl
             t.printStackTrace()
         }
       }
-{code}
+```
 I didn't change that behavior, but I think it should at least let java.lang.Error and it's subclasses through.   Errors indicate that something is seriously wrong so I don't think it's a good idea to swallow them.  So I'd seriously consider putting a guard on the case as follows:
-{code}
+```scala
       case t: Throwable if !t.isInstanceOf[java.lang.Error] => {
           //....
       }
-{code}
+```

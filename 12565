@@ -1,6 +1,5 @@
 The difference between 2.11.8 and 2.12.0 is that we have started to treat case classes as one-case-ADTs for the purposes of the analysis. If we introduce a sealed parent type, I get a OOME in 2.11.8:
-
-{code}
+```scala
 sealed trait T
 case class C(a: Int, b: Int, c: Int, d: Int, e: Int, f: Int) extends T
 
@@ -18,7 +17,7 @@ object Test {
       case C(9, 9, 9, 9, 9, 9) => 9
   }
 }
-{code}
+```
 
 The bottleneck seems to be:
 

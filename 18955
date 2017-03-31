@@ -1,6 +1,5 @@
 The following example uses an ExecutionContext with direct, synchronous execution.
-
-{code}
+```scala
   def futureTest: Int = {
     import scala.concurrent.duration._
     implicit val immediateContext = new scala.concurrent.ExecutionContext {
@@ -16,7 +15,7 @@ The following example uses an ExecutionContext with direct, synchronous executio
     scala.concurrent.Await.result(res, 300 seconds)
   }
   futureTest
-{code}
+```
 
 It fails with
 
@@ -62,5 +61,5 @@ java.lang.IllegalArgumentException: requirement failed
 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:615)
 	at java.lang.Thread.run(Thread.java:744)
 
-The stack trace is from 2.10.3, but it also fails in 2.11.0-RC1. The stack strace looks very similar to that of SI-8069.
+The stack trace is from 2.10.3, but it also fails in 2.11.0-RC1. The stack strace looks very similar to that of scala/bug#8069.
 Batch#blockOn looks suspicious, setting _tasksLocal to Nil and then calling run which requires it to be null. Also the "WARNING" comment from BatchingExecutor seems to apply to InternalCallbackExecutor.

@@ -1,13 +1,12 @@
 I just stumbled over a very similar error, judging from the stacktrace I got.
-
-{code}
+```scala
 trait A
 trait B
 def x(a: (A { val y: Int }) with B { val y: Int }) = a.y
-{code}
+```
 
 leads to
-{code}
+```scala
 Exception in thread "main" java.lang.AssertionError: assertion failed
         at scala.Predef$$.assert(Predef.scala:78)
         at scala.tools.nsc.ast.TreeGen.mkCast(TreeGen.scala:141)
@@ -20,6 +19,6 @@ Exception in thread "main" java.lang.AssertionError: assertion failed
         at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$typedApply$$1$$1.apply(Typers.scala:3252)
         at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$typedApply$$1$$1.apply(Typers.scala:3252)
 ...
-{code}
+```
 
 (I was just exploring the AST, found it interesting that CompoundTypeTree takes a Template and played around with it until it suddenly crashed my REPL.)

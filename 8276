@@ -12,23 +12,21 @@ object ParsedAxis {
          case b: B[Int] => 3
       }
 }
-{code}
+```scala
 
-{code}
+```
 A.scala:7: non-variable type argument Int in type pattern B[Int] is unchecked since it is eliminated by erasure
          case b: B[Int] => 3
                  ^
-{code}
+```scala
 
 In this case, the warning can be resolved by using a type variable:
-
-{code}
+```
          case b: B[i] => 3
-{code}
+```scala
 
 but this is less useful when reading the code and isn't possible when `B[Int]` is inside a type alias like `type BI = B[Int]`.  Similarly, `Int @unchecked` can be used, but it is less safe than the type variable approach, where the compiler still knows that `i=Int` is the only possibility.  In fact, if another type argument is used, the compiler complains:
-
-{code}
+```
 pattern type is incompatible with expected type;
   found   : B[String]
   required: A[Int]

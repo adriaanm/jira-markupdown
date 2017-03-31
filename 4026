@@ -7,8 +7,7 @@ When annotating a constructor argument, the annotation only ends up on the actua
 What you need to do is add a meta-annotation to the annotation type, see documentation here: http://www.scala-lang.org/archives/downloads/distrib/files/nightly/docs/library/scala/annotation/target/field.html
 
 In your case, you probably want something like
-
-{code}
+```scala
 import annotation.target.field
 
 @Entity
@@ -19,15 +18,14 @@ class RoutableEntity(
 	@(JoinColumn @field)(name = "calendar_entry_id")
 	@BeanProperty
 	var calendarEntry: CalendarEntry,
-{code}
+```
 
 You can define type aliases to improve the readability
-
-{code}
+```scala
 object MyAnnotations {
   type OneToOne = jpa.OneToOne @field
   type JoinColumn = jpa.JoinColumn @field
 }
-{code}
+```
 
 and then import / use these annotations instead of the original ones.

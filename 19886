@@ -1,6 +1,5 @@
 When compiling a Scala project that uses UndoFX, the Scala compiler throws up an AssertionError. The library does work in a Java project, according to the project owner, so it does seem like a bug in the Scala compiler. The stack trace is as follows:
-
-{code}
+```scala
 java.lang.AssertionError: assertion failed: TVar<?0=null>
 	at scala.reflect.internal.Types$TypeVar.addLoBound(Types.scala:3013)
 	at scala.reflect.internal.tpe.TypeConstraints$class.solveOne$1(TypeConstraints.scala:228)
@@ -136,11 +135,10 @@ java.lang.AssertionError: assertion failed: TVar<?0=null>
 	at org.gradle.messaging.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24)
 	at org.gradle.messaging.remote.internal.hub.MessageHub$Handler.run(MessageHub.java:360)
 	... 2 more
-{code}
+```
 
 The code that throws up this error is
-
-{code}
+```scala
 import java.util.function.{Consumer, Function => JFunction}
 
 import org.fxmisc.undo.UndoManagerFactory
@@ -166,9 +164,9 @@ case class Change(oldVal: Boolean, newVal: Boolean) {
 
   def apply(): Unit = println(newVal)
 }
-{code}
+```
 
-There seems to be an issue with the type checker when dealing with the Java {{Function}} class, at least from what I can glean from that stack trace.
+There seems to be an issue with the type checker when dealing with the Java `Function` class, at least from what I can glean from that stack trace.
 
 I've attached a minimal example project built with Gradle, containing the above code, that exhibits the error.
 

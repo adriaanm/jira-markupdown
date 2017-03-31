@@ -1,6 +1,5 @@
 The compiler is unable to infer the identity type-constructor, when evidence is provided through default arguments.
-
-{code}
+```scala
 scala> :paste
 trait C[_[_]]
 type Id[x]=x
@@ -14,11 +13,10 @@ scala> foo(3)
 argument expression's type is not compatible with formal parameter type;
  found   : Int
  required: ?F
-{code}
+```
 
 Using multiple parameter lists doesn't help:
-
-{code}
+```scala
 scala> def foo[F[_]](f: F[Int])(c: C[F] = idC) = ()
 scala> foo(3)()
 error: type mismatch;
@@ -28,11 +26,10 @@ Note that implicit conversions are not applicable because they are ambiguous:
  both method intWrapper in class LowPriorityImplicits of type (x: Int)scala.runtime.RichInt
  and method any2Ensuring in object Predef of type [A](x: A)Ensuring[A]
  are possible conversion functions from Int to ?F
-{code}
+```
 
 Neither implicits:
-
-{code}
+```scala
 scala> :paste
 trait C[_[_]]
 type Id[x]=x
@@ -41,14 +38,13 @@ def foo[F[_]](f: F[Int])(implicit c: C[F]) = ()
 
 scala> foo(3)
 <console>:12: error: no type parameters for method foo: (f: F[Int])(implicit c: C[F])Unit exist so that it can be applied to arguments (Int)
-{code}
+```
 
 The REPL becomes broken once this error is shown:
-
-{code}
+```scala
 scala> 1
 error: type mismatch;
  found   : Int
  required: ?F
 ...
-{code}
+```

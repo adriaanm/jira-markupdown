@@ -2,7 +2,7 @@ I've attached simple single-line usecase project, that depends on play-framework
 It compiles on scala-2.10.x without problems, but fails on 2.11.x with messages mostly similar to this issue.
 
 Steps to reproduce: download, unpack, sbt compile. The only source code file is conf/routres. Sbt will download deps, generate router source code into target/scala-2.11/src_managed/main and take a try to compile it. It will fail with:
-{code}
+```scala
 [info] Compiling 4 Scala sources and 2 Java sources to /target/scala-2.11/classes...
 [error] conf/routes: routes is already defined as object routes
 [error] conf/routes: routes is already defined as class routes
@@ -15,7 +15,7 @@ Steps to reproduce: download, unpack, sbt compile. The only source code file is 
 [error] conf/routes: Routes is already defined as object Routes
 [error] 6 errors found
 [error] (compile:compile) Compilation failed
-{code}
+```
 
 target/scala-2.11/src_generated/main contains java-source (in controllers/ subdir) with final static variables and inner static classes. Scala files contain inner classes, but DO NOT calling java-variables and inner-classes directly. So, this usecase slightly differs from original issue description.
 

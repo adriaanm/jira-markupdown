@@ -1,8 +1,7 @@
 It seems that if you provide serial version UID to the annotation as anything else rather than long literal scala compiler just silently ignores its value.
 
 It should either accept the value or raise an error, failing the compilation.
-
-{code}
+```scala
 case class User()
 
 @SerialVersionUID(13.asInstanceOf[Long]) case class IdentifyMessage1(userName: String, user: User, code: Int)
@@ -13,13 +12,11 @@ val SerialUID = "13".toLong
 println("#1 " + java.io.ObjectStreamClass.lookup(IdentifyMessage1("hei", User(), 8).getClass).getSerialVersionUID)
 println("#2 " + java.io.ObjectStreamClass.lookup(IdentifyMessage2("hei", User(), 8).getClass).getSerialVersionUID)
 println("#3 " + java.io.ObjectStreamClass.lookup(IdentifyMessage3("hei", User(), 8).getClass).getSerialVersionUID)
-
-{code}
+```
 
 Running this code should print out 13 for all classes, but only #2 is correct.
-
-{code}
+```scala
 #1 -7748233784455101520
 #2 13
 #3 1213360818062299825
-{code}
+```

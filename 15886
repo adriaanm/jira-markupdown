@@ -1,8 +1,7 @@
 A function  (Double) => Double works also on Int-parameters.
 This is not true if you try to compose this function with 
 an Int-function. Example
-
-{code}
+```scala
 val d2 = (x:Int) => x+x  // (Int) => Int
 val si = math.sin _      // (Double) => Double
 
@@ -16,18 +15,17 @@ error: type mismatch;
  required: (?) => Double
        val sidx = (x:Int) => (si compose d2) (x)
                                          ^
-{code} 
+```
 
 
 
 === What is the expected behavior? ===
-{code}
+```scala
 // it could go this way 
 val int2Double = implicitly[Int<%<Double]
 
 val sidy = si compose int2Double compose d2
-                                         
-{code}
+```
 
 
 === What versions of the following are you using? ===

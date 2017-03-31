@@ -6,7 +6,7 @@ Since this is the only thread that is dequeuing exceptions, then if a ShutdownRe
 
 Alternatively, if a FreshRunReq is handled, then a new runner thread will be created and the old thread will terminate without dequeuing any further exceptions. So any pending ShutdownReq will still be on the queue, hence the new runner thread will eventually dequeue it and shutdown.
 
-Your example code in comment SI-13 behaves different, because it doesn't exhibit the same queuing behaviour.
+Your example code in comment scala/bug#13 behaves different, because it doesn't exhibit the same queuing behaviour.
 
 So if there is a problem with askShutdown, I'm fairly confident this isn't it.
 

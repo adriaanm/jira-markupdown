@@ -1,6 +1,5 @@
-Minimized further, showing  that {{-optimise}} isn't required:
-
-{noformat}
+Minimized further, showing  that `-optimise` isn't required:
+```
 object Test {
 
   def main(args: Array[String]) { 
@@ -10,17 +9,15 @@ object Test {
   }
 
 }
-{noformat}
+```
 
 Error message:
-
-{noformat}
+```
 java.lang.VerifyError: Uninitialized object exists on backward branch 4 in method Test$.main([Ljava/lang/String;)V at offset 5
-{noformat}
+```
 
-Output produced by ASM's {{Textifier -debug}}
-
-{noformat}
+Output produced by ASM's `Textifier -debug`
+```
   public main([Ljava/lang/String;)V
    L0
     NEW scala/Some
@@ -38,11 +35,10 @@ Output produced by ASM's {{Textifier -debug}}
     LOCALVARIABLE args [Ljava/lang/String; L0 L2 1
     MAXSTACK = 3
     MAXLOCALS = 2
-{noformat}
+```
 
-Verbose output by {{javap}}
-
-{noformat}
+Verbose output by `javap`
+```
   public void main(java.lang.String[]);
     flags: ACC_PUBLIC
     Code:
@@ -66,6 +62,6 @@ Verbose output by {{javap}}
           offset_delta = 4
           locals = [ class Test$, class "[Ljava/lang/String;" ]
           stack = [ uninitialized 0, uninitialized 0 ]
-{noformat}
+```
 
 

@@ -1,6 +1,5 @@
-When one tries to compile some code with an {{applyDynamicNamed}} method call, that has an invalid number of arguments, a {{StackOverflowError}} occurs:
-
-{code}
+When one tries to compile some code with an `applyDynamicNamed` method call, that has an invalid number of arguments, a `StackOverflowError` occurs:
+```scala
 object X {
   val d = new D
   d.meth(value1 = 10, value2 = 100) // two arguments here, but only one is allowed
@@ -9,11 +8,10 @@ import language.dynamics
 class D extends Dynamic {
   def applyDynamicNamed(name: String)(value: (String, Any)) = name
 }
-{code}
+```
 
-Compiled with {{scalac x.scala}}:
-
-{code}
+Compiled with `scalac x.scala`:
+```scala
 uncaught exception during compilation: java.lang.StackOverflowError
 error: java.lang.StackOverflowError
 	at scala.tools.nsc.typechecker.AnalyzerPlugins$AnalyzerPlugin$class.isActive(AnalyzerPlugins.scala:31)
@@ -53,4 +51,4 @@ error: java.lang.StackOverflowError
 	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:5552)
 	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:5630)
 <repeat until death>
-{code}
+```

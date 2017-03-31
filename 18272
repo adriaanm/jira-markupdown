@@ -2,21 +2,19 @@ Discussion:
 
 https://groups.google.com/d/msg/scala-internals/0Tra8JXRR6w/jyRlNu4WLrAJ
 
-Just recently, {{ExecutionContext}} was edited with this:
-
-{code}
+Just recently, `ExecutionContext` was edited with this:
+```scala
   def reportFailure(@deprecatedName('t) cause: Throwable): Unit
-{code}
+```
 
-Since then, it is taken as having a member, {{name: String}}.
-
-{code}
+Since then, it is taken as having a member, `name: String`.
+```scala
   /code/scala cat sandbox/name.scala
 trait T extends scala.concurrent.ExecutionContext { val name = "" } // false "needs override modifier" error
-{code}
+```
 
 Analysis by Johaness Rudolph (thanks!)
-{code}
+```scala
 class strangeTest(x: Symbol) extends scala.annotation.StaticAnnotation
 
 object X {
@@ -29,4 +27,4 @@ trait A {
 
 // compile separately
 // trait B extends A { val test = 12 }
-{code}
+```

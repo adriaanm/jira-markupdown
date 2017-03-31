@@ -1,6 +1,5 @@
 Yep, it's lubbing:
-
-{code}
+```scala
 (0)  = {scala.reflect.internal.Types$TypeRef$$anon$6@4974}"Null"
 (1)  = {scala.reflect.internal.Types$TypeRef$$anon$5@4976}"scala.collection.mutable.WrappedArray.ofRef[AnyRef]"
 (2)  = {scala.reflect.internal.Types$TypeRef$$anon$6@4978}"scala.collection.mutable.WrappedArray.ofInt"
@@ -12,11 +11,10 @@ Yep, it's lubbing:
 (8)  = {scala.reflect.internal.Types$TypeRef$$anon$6@4990}"scala.collection.mutable.WrappedArray.ofShort"
 (9)  = {scala.reflect.internal.Types$TypeRef$$anon$6@4992}"scala.collection.mutable.WrappedArray.ofBoolean"
 (10)  = {scala.reflect.internal.Types$TypeRef$$anon$6@4994}"scala.collection.mutable.WrappedArray.ofUnit"
-{code}
+```
 
-It them throws the LUB away to call {{asInstanceOf}}
-
-{code}
+It them throws the LUB away to call `asInstanceOf`
+```scala
 import reflect.runtime.universe._, collection.mutable._, WrappedArray._
 
 scala> val ts = List(typeOf[ofInt], typeOf[ofLong], typeOf[ofShort], typeOf[WrappedArray[AnyRef]], typeOf[ofUnit], typeOf[ofDouble], typeOf[ofFloat], typeOf[ofBoolean], typeOf[Null])
@@ -24,7 +22,7 @@ ts: List[reflect.runtime.universe.Type] = List(scala.collection.mutable.WrappedA
 
 scala> lub(ts)
 res11: reflect.runtime.universe.Type = scala.collection.mutable.WrappedArray[_ >: Int with Long with Short with Unit with Double with Float with Boolean]
-{code}
+```
 
 For that particular method we can of course avoid the lub altogether by annotating the type of the match as `Any`. But I guess that's not why you raised this ticket.
 

@@ -1,4 +1,4 @@
-{code}
+```scala
 trait Base {
   trait BaseInner {
     val base = 0
@@ -21,15 +21,15 @@ trait T2 extends Base { self: T1 =>
   type Inner <: Inner2
   def f2(i: Inner) { i.base + i.t1 + i.t2 }
 }
-{code}
+```
 yields
-{code}
+```scala
 $$ scala I.scala
 /home/mikhail.vorozhtsov/I.scala:22: error: value t2 is not a member of T2.this.Inner
   def f2(i: Inner) { i.base + i.t1 + i.t2 }
                                        ^
 one error found
-{code}
-Strangely {{type Inner = Inner2}} works, but then changing {{type Inner <: Inner1}} to {{type Inner = Inner1}} breaks it again.
+```
+Strangely `type Inner = Inner2` works, but then changing `type Inner <: Inner1` to `type Inner = Inner1` breaks it again.
 
 Tested on 2.8.1 and 2.9.0.r24471-b20110317020039

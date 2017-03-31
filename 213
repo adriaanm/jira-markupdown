@@ -1,19 +1,19 @@
 Here's one possibility. Considering section 6.25.5, in the result of eta-conversion, change:
-{code}
+```scala
 { val x1 = e1;
   ...
   val xm = em;
   (y1:T1,...,yn:Tn) => e'(y1,...,yn)
 }
-{code}
+```
 with
-{code}
+```scala
 { val x1 = (() => e1);
   ...
   val xml = (() => em);
   ...
 }
-{code}
+```
 and in e', replace each ei by xi() rather than xi.
 
 This has the effect of explicitly thunking each parameter, and then allowing the usual method call compilation to determine whether or not to unthunk them at call time.

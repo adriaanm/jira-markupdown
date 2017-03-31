@@ -1,16 +1,14 @@
 
 The Oracle JVM as of JDK 7 has started rejecting bytecode of the form:
-
-{code}
+```scala
 NEW x
 DUP
 ... instructions loading ctor-args, involving a backedge
 INVOKESPECIAL <init>
-{code}
+```
 
 The above can be detected bytecode-level, and solved bytecode-level by reformulating into:
-
-{code}
+```scala
 ... instructions loading ctor-args, involving a backedge
 STORE nth-arg
 ...
@@ -21,15 +19,14 @@ LOAD 1st-arg
 ...
 LOAD nth-arg
 INVOKESPECIAL <init>
-{code}
+```
 
-After rewriting {{NEW x}} runs after the code to compute arguments, but it's that behavioral change or {{VerifyError}}
+After rewriting `NEW x` runs after the code to compute arguments, but it's that behavioral change or `VerifyError`
 
-To implement the above, an ASM utility computing usage-definition and definition-usage webs is needed. That's already available for the experimental optimizer I've been working on (that utility is called {{ProdConsAnalyzer}}. The rewriting described above is implemented by:
-
-{code}
+To implement the above, an ASM utility computing usage-definition and definition-usage webs is needed. That's already available for the experimental optimizer I've been working on (that utility is called `ProdConsAnalyzer`. The rewriting described above is implemented by:
+```scala
 private def avoidBackedgesInConstructorArgs(cnode: ClassNode) {
-{code}
+```
 
 at https://github.com/magarciaEPFL/scala/blob/24db961fb7f1ce982a1d4a750433fe5a2c84b142/src/compiler/scala/tools/nsc/backend/jvm/BCodeOptIntra.scala#L427
 

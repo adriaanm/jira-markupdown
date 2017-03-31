@@ -3,7 +3,7 @@ I have a feeling this is being dismissed as invariance bug (on the programmer si
 I completely agree that uncheckedVariance undermines the type safety and that the programmer takes responsibility if the program crashes. However as implemented now, uncheckedVariance adds ADDITIONAL BYTECODE that breaks the code that would otherwise work.
 
 Here is a simplified example that typechecks and works. Adding @uncheckedVariance causes it to crash. Surely an annotation is not intented to break working code.
-{code}
+```scala
 package broken {
   object Main {
     def main(args: Array[String]) {
@@ -23,12 +23,12 @@ package broken {
     def backing = this
   }
 }
-{code}
+```
 
 What happens is: array is casted into Array[Object] due to trait definition, then it is casted back into an appropriate type. Normally this works fine. @uncheckedVariance adds bytecode that tries to verify if array can be cast as Array[Object] which apperently is not ok with the jvm.
 Arrays get special treatment, however they donot behave the same as regular Object under these circumstances:
-{code}
+```scala
 Type[T] is cast into Type[_] and back into Type[T]
 Array[T] is cast into Array[Object] and back into Array[T]
-{code}
+```
 @uncheckedVariance adds "checkcast" directive to the bytecode. This works with Type[_], but crashes with Array[Object]. Which means @uncheckedVariance does not work with Arrays as intented.

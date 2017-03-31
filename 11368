@@ -1,8 +1,8 @@
-Hmm, {{nextEol}} is indeed very quadratic. Not to mention {{seq.length}} is called on the underlying {{PagedSeq}} all over {{StreamReader}}, which will force the whole thing into memory.
+Hmm, `nextEol` is indeed very quadratic. Not to mention `seq.length` is called on the underlying `PagedSeq` all over `StreamReader`, which will force the whole thing into memory.
 
-Passing a {{BufferedReader}} to it will not help, sadly, but {{StreamReader}} extends {{PagedSeqReader}}, so if you don't need its "one line at a time" semantics, you can just use {{PagedSeqReader}} directly with
-{code}
+Passing a `BufferedReader` to it will not help, sadly, but `StreamReader` extends `PagedSeqReader`, so if you don't need its "one line at a time" semantics, you can just use `PagedSeqReader` directly with
+```scala
 new PagedSeqReader(PagedSeq.fromReader(reader))
-{code}
+```
 
 Thanks for reporting this. A fix is coming :)

@@ -1,16 +1,14 @@
 i should point out that this is not such a synthetically constructed case. here is an example usage from my DSL
-
-{code}
+```scala
       play( server, out ) {
          val ply = PlayBuf.ar( numChannels, id, BufRateScale.kr( id ), loop = if( loop ) 1 else 0 )
          if( !loop ) FreeSelfWhenDone.kr( ply )
          ply * "amp".kr( amp )
       }
-{code}
+```
 
 now this failed to work, because PlayBuf was early constructed out of the Graph context:
-
-{code}
+```scala
 object DSL {
    implicit def thunkToGraphFunction[ T <% GE ]( thunk: => T ) = new GraphFunction( thunk )
    def play( target: Node = Server.default.defaultGroup, outBus: Int = 0,
@@ -18,30 +16,27 @@ object DSL {
              addAction: AddAction = addToHead )( f: GraphFunction[ _ ]) : Synth =
       f.play( target, outBus, fadeTime, addAction )
 }
-{code}
+```
 
 note that GE is a trait to which different graph elements can be converted, e.g. number literals, a Seq[ GE ], but also the ugens like PlayBuf.
 
-_but_, if i do instead:
-
-{code}
+*but*, if i do instead:
+```scala
 object DSL {
    ...
    def play( target: Node = Server.default.defaultGroup, outBus: Int = 0,
              fadeTime: Option[Float] = Some( 0.02f ),
              addAction: AddAction = addToHead )( thunk: => GE ) : Synth =
       new GraphFunction( thunk ).play( target, outBus, fadeTime, addAction )
-{code}
+```
 
-it suddenly works, the thunk is not prematurely evaluated. this is clearly inconsistent, and for the sake of DSL building, i think the implicit def thunkToGraphFunction should work exactly the same. Here is another example which _does_ work:
-
-{code}
+it suddenly works, the thunk is not prematurely evaluated. this is clearly inconsistent, and for the sake of DSL building, i think the implicit def thunkToGraphFunction should work exactly the same. Here is another example which *does* work:
+```scala
    {
       val ply = PlayBuf.ar( numChannels, id, BufRateScale.kr( id ), loop = if( loop ) 1 else 0 )
       if( !loop ) FreeSelfWhenDone.kr( ply )
       ply * "amp".kr( amp )
    }.play( s, 0 )
-{code}
+```
 
 so this last example is implicitly converted to GraphFunction (which has the play method) and the thunk captures everything inside the curly braces, not just the last line (ply * "amp".kr( amp ))...
-

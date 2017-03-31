@@ -4,30 +4,29 @@ minimized example:
 
 script: a
 ----
-{code}
+```scala
 #!/bin/bash -v
 
 (cd other; b)
 exec scala -cp commons-email-1.2.jar "$$0" "$$@"
 !#
 import org.apache.commons.mail._;
-{code} 
+```
 
 script: other/b
 ----
-{code}
+```scala
 #!/bin/bash -v
 
 exec scala -cp commons-io-1.4.jar "$$0" "$$@"
 !#
 import org.apache.commons.io.FileUtils._;
-{code}
+```
 
 This assumes that a is in some path like: /tmp and b is in /tmp/other and commons-email-1.2.jar and commons-io-1.4.jar are in those same paths respectively.
 
 === What is the expected behavior? ===
-
-{code}
+```scala
 $$ a
 #!/bin/bash -v
 (cd other; b)
@@ -35,11 +34,10 @@ $$ a
 exec scala -cp commons-io-1.4.jar "$$0" "$$@"
 exec scala -cp commons-email-1.2.jar "$$0" "$$@"
 $$
-{code}
+```
 
 === What do you see instead? ===
-
-{code}
+```scala
 $$ a
 #!/bin/bash -v
 (cd other; b)
@@ -51,7 +49,7 @@ import org.apache.commons.mail._;
           ^
 one error found
 $$
-{code}
+```
 
 === Additional information ===
 

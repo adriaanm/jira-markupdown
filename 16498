@@ -1,5 +1,5 @@
 When trying to generate scala doc for my scala project using maven-scala-plugin I have an error:
-{code}
+```scala
 
 /home/avatar/projects/bss/om/modules/om.domain/src/main/scala/com/comarch/bss/domain/customer/order/SimpleProductOrder.scala:582: error: not enough arguments for constructor ConvertProductAction: (id: java.util.UUID, aggregate: com.comarch.p7.cqrs.engine.domain.Aggregate, parentItemId: Option[java.util.UUID], bundleItemId: Option[java.util.UUID], fulfillmentExecutionInfo: Option[com.comarch.bss.common.product.common.ExecutionInfo], productInventoryExecutionInfo: Option[com.comarch.bss.common.product.common.ExecutionInfo], oneTimeChargeExecutionInfo: Option[com.comarch.bss.common.product.common.ExecutionInfo], sourceProductConfiguration: com.comarch.bss.domain.customer.order.events.common.ProductConfiguration, targetProductConfiguration: com.comarch.bss.domain.customer.order.events.common.ProductConfiguration, expectedActivationDateTime: Option[org.joda.time.DateTime], expectedTerminationDateTime: Option[org.joda.time.DateTime])com.comarch.bss.domain.customer.order.ConvertProductAction
     val action = new ConvertProductAction(
@@ -117,10 +117,10 @@ Caused by: java.lang.Error: no-symbol does not have owner
 	at scala.tools.nsc.ScalaDoc$.main(ScalaDoc.scala:74)
 	at scala.tools.nsc.ScalaDoc.main(ScalaDoc.scala)
 	... 6 more
-{code}
+```
 
 Line causing error:
-{code}
+```scala
     val action = new ConvertProductAction(
       id = event.productOrderItemId,
       aggregate = aggregate,
@@ -129,10 +129,10 @@ Line causing error:
       sourceProductConfiguration = event.sourceProductConfiguration,
       targetProductConfiguration = event.targetProductConfiguration,
       expectedActivationDateTime = event.requiredDateTime)
-{code}
+```
 
 Constructor definition:
-{code}
+```scala
   def this(
     id: UUID,
     aggregate: Aggregate,
@@ -146,7 +146,7 @@ Constructor definition:
     expectedActivationDateTime: Option[DateTime],
     expectedTerminationDateTime: Option[DateTime] = None
   )
-{code}
+```
 
 I use similar code many times in my project (named arguments in object constructor, many of them with default values), but others don't cause this exception.
 The same problem I had in Scala 2.8.1.

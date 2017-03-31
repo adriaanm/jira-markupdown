@@ -1,6 +1,5 @@
 ToolBox.typecheck fails an assertion with the message "import failure: cannot determine unique overloaded method alternative from..." when typechecking an overridden interface method.
-
-{code}
+```scala
 import scala.reflect.runtime.currentMirror
 import scala.tools.reflect.ToolBox
 	
@@ -14,11 +13,10 @@ val tree = toolBox.parse("""
 """)
 
 toolBox.typecheck(tree) // throws AssertionError
-{code}
+```
 
 Stack trace:
-
-{noformat}
+```
 java.lang.AssertionError: assertion failed: import failure: cannot determine unique overloaded method alternative from
  def plus(x$1: Long,x$2: java.time.temporal.TemporalUnit): java.time.temporal.Temporal
 def plus(x$1: Long,x$2: java.time.temporal.TemporalUnit): java.time.Instant
@@ -38,6 +36,6 @@ def plus(x$1: Long,x$2: java.time.temporal.TemporalUnit): java.time.Instant
   at scala.tools.reflect.ToolBoxFactory$ToolBoxImpl.typecheck(ToolBoxFactory.scala:371)
   at scala.tools.reflect.ToolBoxFactory$ToolBoxImpl.typecheck(ToolBoxFactory.scala:26)
   ... 29 elided
-{noformat}
+```
 
 Thanks for reading!

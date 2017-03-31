@@ -1,5 +1,5 @@
 Seems dce eliminates a byte from the stack instead of converting it to a long:
-{code}
+```scala
 $ ../scala-trunk/build/quick/bin/scalac src/main/scala/Test.scala -Yinline -Xprint-icode:dce -Ystop-after:dce -Ydead-code
 $ mv Test\$.icode Test\$.icode-dce
 $ ../scala-trunk/build/quick/bin/scalac src/main/scala/Test.scala -Yinline -Xprint-icode:dce -Ystop-after:dce
@@ -19,11 +19,11 @@ $ diff Test\$.icode-dce Test\$.icode-nodce
 <     10	DROP BYTE
 ---
 >     10	CALL_PRIMITIVE(Conversion(BYTE,LONG))
-{code}
+```
 
 The breaker is here:
-{code}
+```scala
 <     10	DROP BYTE
 ---
 >     10	CALL_PRIMITIVE(Conversion(BYTE,LONG))
-{code}
+```

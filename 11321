@@ -3,8 +3,7 @@ That thing where you want to know if it's a named arg or an assignment.
 The workaround is to supply the type of the payer variable.
 
 Mini-me of https://github.com/cheeseng/scalatest-compile-error/blob/without-scalatest/src/test/scala/payment/InvoiceSpec.scala
-
-{code}
+```scala
     locally {
       val p = Payment(payer = Some("payer"))
 
@@ -13,13 +12,13 @@ Mini-me of https://github.com/cheeseng/scalatest-compile-error/blob/without-scal
       val payer = invoice.payment.get.payer
       //val payer: Option[String] = invoice.payment.get.payer
     }
-{code}
+```
 Unhappy:
-{noformat}
+```
     scala.this.Predef.locally[Unit]({
       val p: payment.Payment = Payment.apply(scala.Some.apply[String]("payer"));
       val <invoice: error>: <error> = Invoice(None, Some(p));
       val <payer: error>: <error> = <invoice: error>.<payment: error>.<get: error>.<payer: error>;
       ()
     })
-{noformat}
+```

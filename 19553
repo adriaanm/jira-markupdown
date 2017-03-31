@@ -1,5 +1,5 @@
 Test.scala:
-{code}
+```scala
 class Settings {
   object hardcoded {
     def valueClassFilter: Boolean = {
@@ -14,14 +14,13 @@ class Settings {
     }
   }
 }
-{code}
+```
 
-When compiling with {{-optimize}}, the classfile {{Settings$hardcoded$$anonfun$valueClassFilter$1.class}} is NOT emitted (closure is eliminated). However, the nested closure {{Settings$hardcoded$$anonfun$valueClassFilter$1$$anonfun$apply$mcVI$sp$1.class}} mentions the eliminated class as its outer class in the EnclosingMethod attribute.
-
-{noformat}
+When compiling with `-optimize`, the classfile `Settings$hardcoded$$anonfun$valueClassFilter$1.class` is NOT emitted (closure is eliminated). However, the nested closure `Settings$hardcoded$$anonfun$valueClassFilter$1$$anonfun$apply$mcVI$sp$1.class` mentions the eliminated class as its outer class in the EnclosingMethod attribute.
+```
 lucmac:sandbox luc$ scalac -optimize Test.scala 
 lucmac:sandbox luc$ scala -e 'println(Class.forName("Settings$hardcoded$$anonfun$valueClassFilter$1$$anonfun$apply$mcVI$sp$1").getEnclosingClass)'
 java.lang.ClassNotFoundException: Settings$hardcoded$$anonfun$valueClassFilter$1
 	at java.net.URLClassLoader$1.run(URLClassLoader.java:202)
 	at java.security.AccessController.doPrivileged(Native Method)
-{noformat}
+```

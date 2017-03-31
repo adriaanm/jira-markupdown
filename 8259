@@ -1,25 +1,22 @@
 In https://github.com/retronym/scala/tree/ticket/3452-rebased, I have a fix for the side issue that Paul reports:
-
-{code}
+```scala
 final class Option[+A](val value: A) extends AnyVal
  
 abstract class Foo[A]                { def f(): Option[A] }
          class Bar[A] extends Foo[A] { def f(): Option[A] = ??? }
-{code}
+```
 
 These signatures were considered different wrt bridging because:
-
-{code}
+```scala
 !(ErasedValueClass(Option[A(in Foo)]) =:= ErasedValueClass(Option[A(in Bar)]])
-{code}
+```
 
-In my branch, I fix this in a slightly hacky way with a type map from `ErasedValueClass[M[A]]` to `ErasedValueClass[M[scalaErasure(A)]`. Importantly, this still recognises the cases when the bridge *is* needed:
-
-{code}
+In my branch, I fix this in a slightly hacky way with a type map from `ErasedValueClass[M[A]]` to `ErasedValueClass[M[scalaErasure(A)]`. Importantly, this still recognises the cases when the bridge **is** needed:
+```scala
 final class Option[+A](val value: A) extends AnyVal
 
 abstract class Foo1[A]                         { def f(): A }
          class Bar1[A] extends Foo1[Option[A]] { def f(): Option[A] = ??? }
-{code}
+```
 
 I have a hunch we can move that into the normal erasure type map, rather than leaving it to posterasure. 

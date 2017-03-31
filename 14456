@@ -1,7 +1,7 @@
 This issue is present on both trunk and 2.7.x.
 
 j/J.java:
-{code}
+```scala
 package j;
 
 public class J {
@@ -9,10 +9,10 @@ public class J {
     System.out.println("J.foo()");
   }
 }
-{code}
+```
 
 s/S.scala:
-{code}
+```scala
 package s
 
 import j.J
@@ -30,11 +30,10 @@ object Test {
     (new SC).bar()
   }
 }
-{code}
+```
 
 These compile without error (either compiling the Java first then the Scala; or compiling both the Scala and Java with scalac first, then the Java with javac). On running the following stacktrace is generated,
-
-{code}
+```scala
 java.lang.IllegalAccessError: tried to access method j.J.foo()V from class s.S$$class
 	at s.S$$class.bar(S.scala:7)
 	at s.SC.bar(S.scala:11)
@@ -52,11 +51,10 @@ java.lang.IllegalAccessError: tried to access method j.J.foo()V from class s.S$$
 	at scala.tools.nsc.ObjectRunner$$.run(ObjectRunner.scala:33)
 	at scala.tools.nsc.MainGenericRunner$$.main(MainGenericRunner.scala:138)
 	at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
-{code}
+```
 
 Viewing the bytecode for s.S$$class shows why this is the case:
-
-{code}
+```scala
 public abstract class s.S$$class extends java.lang.Object{
 public static void $$init$$(s.S);
   Code:
@@ -69,7 +67,7 @@ public static void bar(s.S);
    4:	invokevirtual	SI-16; //Method j/J.foo:()V
    7:	return
 }
-{code}
+```
 
 J.foo is invoked from s.S$$class which does not extend j.J despite trait s.S extending j.J.
 

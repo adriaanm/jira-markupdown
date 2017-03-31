@@ -1,11 +1,10 @@
 Calling String.split with a character (e.g. String.split('\t')) escapes the character when converting it to a String (from StringLike.scala):
-
-{code}
+```scala
   @throws(classOf[java.util.regex.PatternSyntaxException])
   def split(separator: Char): Array[String] = toString.split(escape(separator))
 
   private def escape(ch: Char): String = "\\Q" + ch + "\\E"
-{code}
+```
 
 Java 7 includes performance optimizations for String.split: when called with a single character that is not a regex, an optimized code path will be used. Escaping the the character as done in StringLike.split(c) will break this optimization.
 

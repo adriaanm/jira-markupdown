@@ -1,15 +1,14 @@
-{code}
+```scala
 class Buffer {
   def f[@specialized(Int) T](): T = 0 match {
     case 0 => 0.asInstanceOf[T]
     case 1 => 0.asInstanceOf[T]
   }
 }
-{code}
+```
 
 causes stack overflow in 2.10.0
-
-{noformat}
+```
 uncaught exception during compilation: java.lang.StackOverflowError
 java.lang.StackOverflowError
 	at scala.collection.mutable.FlatHashTable$HashUtils$class.elemHashCode(FlatHashTable.scala:391)
@@ -30,7 +29,7 @@ java.lang.StackOverflowError
 	at scala.tools.nsc.typechecker.Typers$Typer.typedPos(Typers.scala:5513)
 	at scala.tools.nsc.typechecker.Duplicators$BodyDuplicator.typed(Duplicators.scala:373)
 	at scala.tools.nsc.typechecker.Typers$Typer.typedPos(Typers.scala:5513)
-{noformat}
+```
 
 Workaround:
 Replacing the pattern matching with equivalent if/else statements will allow it to compile.

@@ -1,12 +1,11 @@
 Snipping the original report, replacing with essence.  Not sure if this usage seems pathological or not, but I have a very interesting side project underway which is temporarily stymied by this crash, so it's of interest at least to me and the original reporter.  I'm pretty sure it's related to varargs processing based on the appearance of Array in the crasher and also the last demo below:
-
-{code}
+```scala
 object Test {
   val x = "abc"
   val xs = List[x.type](x)
 }
-{code}
-{code}
+```
+```scala
 Exception in thread "main" scala.tools.nsc.symtab.Types$$TypeError: type mismatch;
  found   : Array[Test.x.type]
  required: Array[java.lang.String]
@@ -15,9 +14,8 @@ Exception in thread "main" scala.tools.nsc.symtab.Types$$TypeError: type mismatc
 	at scala.tools.nsc.typechecker.Infer$$Inferencer.typeError(Infer.scala:223)
 	at scala.tools.nsc.typechecker.Infer$$Inferencer.typeErrorTree(Infer.scala:238)
 [...]
-{code}
-
-{code}
+```
+```scala
 scala> val x = "abc"                          
 x: java.lang.String = abc
 
@@ -26,4 +24,4 @@ y: Some[x.type] = Some(abc)
 
 scala> val y: List[x.type] = ::[x.type](x, ::[x.type](x, Nil))
 y: List[x.type] = List(abc, abc)
-{code}
+```

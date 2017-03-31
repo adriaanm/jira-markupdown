@@ -1,9 +1,9 @@
-Martin, I think this is related to SI-1756, where type information is propagated too far. Maybe `typedArgToPoly` needs a fallback like the one in `adaptToArguments`? (see r18958)
+Martin, I think this is related to scala/bug#1756, where type information is propagated too far. Maybe `typedArgToPoly` needs a fallback like the one in `adaptToArguments`? (see r18958)
 
 Will commit test to pending.
 
 some tracing info from -Xtyper-debug and println's in `typedArgToPoly`:
-{code}
+```scala
 typing private[this] val o: Any = (x.getOrElse(""): Q), pt = ?, undetparams = List(), implicits-enabled = true, silent = true
 ...
 typing (x.getOrElse(""): Q), pt = Any, undetparams = List(), implicits-enabled = true, silent = true
@@ -35,4 +35,4 @@ typed Test.this.x.getOrElse[java.lang.Object](Test.this.string2q("")):java.lang.
  required: Test.Q
   val o: Any =  ((x.getOrElse("")): Q) 
                              ^
-{code}
+```

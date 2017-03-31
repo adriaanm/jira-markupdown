@@ -1,6 +1,5 @@
 to make this more concrete, consider this (edited!) debugging output:
-
-{code}
+```scala
 typing implicit with undetermined type params: List(type Repr1, type El1, type Repr2, type El2)  
 tree: Test.this.MyTuple2.apply[Array[Int], Array[Int]](Test.this.as, Test.this.as).zipped[Repr1, El1, Repr2, El2]
 
@@ -14,13 +13,13 @@ typed implicit Predef.<%<.conformsOrViewsAs:[A, B](implicit evidence$$1: Functio
 
 typing implicit with undetermined type params: List(type B)
 tree: Predef.<%<.conformsOrViewsAs[Array[Int], B]
-{code}
+```
 
 I think it would be better if the undetermined type param `B` in the last two lines would track the constraint `B <: Collection.this.TraversableLike[?El1, ?Repr1]` (where these are type variables introduced when typing the top-level implicit)
 
 
 test code (+predef is modified to move <:< and conforms to LowestPriorityImplicits):
-{code}
+```scala
 import scala.collection.{TraversableLike, IterableLike}
 
 object Test {
@@ -32,4 +31,4 @@ object Test {
   val as = Array(1, 2, 3)
   MyTuple2(as, as) zipped
 }
-{code}
+```

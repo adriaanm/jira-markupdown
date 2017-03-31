@@ -1,21 +1,21 @@
 Using: Scala version 2.8.0.r19673-b20091116132603 (OpenJDK 64-Bit Server VM, Java 1.6.0_0)
 
 Given A.scala, B.scala
-{code}
+```scala
 class A {
 	def x[T](t: T) = t
 }
 object B {
 	val y = (new A).x(3)
 }
-{code}
+```
 
  1. Compile
  1. Make A.x specialized
-{code}
+```scala
 class A {
 	def x[@specialized T](t: T) = t
 }
-{code}
+```
  1. Mark A.scala modified.  Only A.scala is recompiled although B.scala must be as well in order to take advantage of specialization.
  1. Explicitly mark B.scala as modified.  B.y now uses the specialized version of A.x.

@@ -1,35 +1,34 @@
 I can reproduce the problem with the following minimized example,
 
 Enum.java
-{code}
+```scala
 public enum Enum {
   VALUE;
 }
-{code}
+```
 
 Ann.java
-{code}
+```scala
 public @interface Ann {
   Enum value();
 }
-{code}
+```
 
 Use.scala
-{code}
+```scala
 class Use {
   @Ann(Enum.VALUE)
   def foo {}
 }
-{code}
+```
 
 And in this case an error is reported by command line scalac,
-
-{code}
+```scala
 src/bug2764/Use.scala:4: error: annotation argument needs to be a constant; found: Enum.VALUE
   @Ann(Enum.VALUE)
             ^
 one error found
-{code}
+```
 
 So it looks like the Eclipse vs. command-line build issue might be a red-herring.
 

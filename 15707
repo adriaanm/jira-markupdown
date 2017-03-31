@@ -1,4 +1,4 @@
-{code}
+```scala
 class One {
   private val messages = new collection.mutable.MutableList[String]
   List("a") foreach { messages += _ }
@@ -7,11 +7,10 @@ class One {
 class Two {
   private val messages = new collection.mutable.MutableList[String]
 }
-{code}
+```
 
 The first class has been stripped of its signature in the renaming.  Both the field and the generated accessor have the new name and neither has the type information.
-
-{code}
+```scala
 // what happens to One
 classOf[One].getDeclaredFields.toList map(f => (f.getName, f.getGenericType))
 List((One$$$$messages,class scala.collection.mutable.MutableList))
@@ -21,8 +20,8 @@ List((One$$$$messages,class scala.collection.mutable.MutableList))
 // how it looks unmangled
 classOf[Two].getDeclaredFields.toList map(f => (f.getName, f.getGenericType))
 List((messages,scala.collection.mutable.MutableList<java.lang.String>))
-{code}
-This is easy to change (I already implemented it) but I see from the history that there may be complications.  In SI-1375 iulian says "Nothing seems to break without this restriction..." but then reverts it with commit message "Now generic signatures are not
+```
+This is easy to change (I already implemented it) but I see from the history that there may be complications.  In scala/bug#1375 iulian says "Nothing seems to break without this restriction..." but then reverts it with commit message "Now generic signatures are not
 generated for synthetic and private symbols (was breaking javac)."
 
 But that all seems to be about a different situation than this.  A declared private member of a non-anonymous class which scalac has to name mangle because of jvm limitations is not in the category of synthetics.  I'm not sure why the field even has to be renamed actually (I understand why the accessor does, so maybe it's only a matter of uniformity.) I think at the very least the field should get the generic signature, and I don't have an opinion about the accessor.

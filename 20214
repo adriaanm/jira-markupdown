@@ -1,5 +1,5 @@
 The following codes cannot be compiled with 2.12.0-RC1
-{code}
+```scala
 class Foo[T] {
   def toMap[K, V](implicit ev: Foo[T] <:< Foo[(K, V)]): Foo[Map[K, V]] = null
   def toMap[K](keySelector: T => K): Foo[Map[K, T]] = null
@@ -9,15 +9,15 @@ object Foo {
   val f: Foo[Int] = null
   val m = f.toMap(_ % 2)
 }
-{code}
+```
 
 The error information is:
-{code}
+```scala
 value % is not a member of Any
 [error]   val m = f.toMap(_ % 2)
 [error]                     ^
 [error] one error found
-{code}
+```
 
 It works with 2.12.0-M5, 2.11 and 2.10.
 

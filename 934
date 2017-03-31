@@ -1,6 +1,5 @@
 For the record, I can also compile the original example. Also, I have tested the virtual pattern matcher against the regex example with the code below, and it passes. So, not only it doesn't crash, but it matches correctly so far.  Thanks, Adriaan!
-
-{code}
+```scala
 object TokeniserTest extends Properties("Tokeniser") {                                                          
   val hexDigit = Gen oneOf (('0' to '9') ++ ('a' to 'f'))                                                       
   val identifier = Gen listOfN (8, hexDigit) map (_.mkString)                                                   
@@ -23,4 +22,4 @@ object TokeniserTest extends Properties("Tokeniser") {
   property("Parsing") = forAllNoShrink(textGen) ( text => Tokeniser.go(text)                                    
     matches """(status|reset|density \d+|(min |max )?track \d+|(motor|stream) (on|off)|side \d+)""" )           
 }
-{code}
+```

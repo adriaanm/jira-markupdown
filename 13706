@@ -1,6 +1,5 @@
-A singleton type is always inhabited by an object reference, and null. Hence the type {{Singleton}} should have bounds {{>: Null <: AnyRef}}. However, this is not currently the case:
-
-{code}
+A singleton type is always inhabited by an object reference, and null. Hence the type `Singleton` should have bounds `>: Null <: AnyRef`. However, this is not currently the case:
+```scala
 scala> trait T { type X >: Null <: AnyRef }
 defined trait T
 
@@ -8,6 +7,6 @@ scala> new T { type X = Singleton }
 <console>:6: error: error overriding type X in trait T with bounds >: Null <: AnyRef;
  type X has incompatible type Singleton
        new T { type X = Singleton }
-{code}
+```
 
-In particular it seems obviously erroneous that {{Null <: Singleton}} doesn't hold, since {{Null <: a.type}} and {{a.type <: Singleton}} for any reference {{a}}. So the transitivity of type conformance seems to be broken.
+In particular it seems obviously erroneous that `Null <: Singleton` doesn't hold, since `Null <: a.type` and `a.type <: Singleton` for any reference `a`. So the transitivity of type conformance seems to be broken.

@@ -1,5 +1,5 @@
 This worked in 2.7, and crashes the compiler from 2.8.0 through current trunk.
-{code}
+```scala
 trait T[A]
 class C extends T[String]
 object Test {
@@ -7,9 +7,9 @@ object Test {
     classOf[C].getTypeParameters
   }
 }
-{code}
+```
 The following variation does not crash 2.8.0 or 2.8.1, but still crashes current trunk.
-{code}
+```scala
 trait T[A]
 class C extends T[String]
 object Test {
@@ -18,9 +18,9 @@ object Test {
     x.getTypeParameters
   }
 }
-{code}
+```
 Finally, this variation doesn't crash anyone.
-{code}
+```scala
 trait T[A]
 class C extends T[String]
 object Test {
@@ -29,9 +29,9 @@ object Test {
     x.getTypeParameters
   }
 }
-{code}
+```
 The crash looks like:
-{code}
+```scala
 error: java.lang.Error: T in class Class cannot be instantiated from java.lang.Class[C](classOf[C])
 	at scala.tools.nsc.symtab.SymbolTable.abort(SymbolTable.scala:35)
 	at scala.tools.nsc.symtab.Types$$AsSeenFromMap.throwError$$1(Types.scala:3389)
@@ -39,4 +39,4 @@ error: java.lang.Error: T in class Class cannot be instantiated from java.lang.C
 	at scala.tools.nsc.symtab.Types$$AsSeenFromMap.apply(Types.scala:3419)
 	at scala.tools.nsc.symtab.Types$$AsSeenFromMap.apply(Types.scala:3289)
 	at scala.tools.nsc.symtab.Types$$TypeMap$$$$anonfun$$mapOverArgs$$1.apply(Types.scala:3114)
-{code}
+```

@@ -1,21 +1,19 @@
 In GenICode the definition of adapt has several questionable cases that do not seem reachable. Need to investigate and either comment why they are necessary and add tests, or remove them if they are dead code.
 
 This defines conforms as either a subtype relation or the case when from is null and to is nothing. When would we have a null when we expect nothing?
-{code}
+```scala
       val conforms = (from <:< to) || (from == NullReference && to == NothingReference)
-{code}
+```
 
 This is saying if we have a throwable and a non-throwable is expected then we should emit a cast? Why would we get here?
-
-{code}
+```scala
         case ThrowableReference if !(ThrowableClass.tpe <:< to.toType) => ctx.bb.emit(CHECK_CAST(to)) // downcast throwables
-{code}
+```
 
 And why do we need this special case? It's saying that from conformed with to, but that to is a LONG and from was int sized but that shouldn't happen, because conforms is defined as the subtype relation <:< and INT isn't a subtype of LONG however, removing it breaks test/files/run/t107.scala
-
-{code}
+```scala
         case _                                                         =>
           // widen subrange types
           if (from.isIntSizedType && to == LONG)
             coerce(INT, LONG)
-{code}
+```

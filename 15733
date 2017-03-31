@@ -1,11 +1,11 @@
 In 2.8.0, 2.8.1.RC3 and trunk, if there are only classes that are private within an enclosing package:
-{code}
+```scala
 package a
 private[a] class T
-{code}
+```
 
 scaladoc throws an error about no documentable classes in compilation units:
-{code}
+```scala
 Exception in thread "main" java.lang.Error: no documentable class found in compilation units
         at scala.tools.nsc.doc.model.ModelFactory$$$$anon$$17$$$$anonfun$$1.apply(ModelFactory.scala:34)
         at scala.tools.nsc.doc.model.ModelFactory$$$$anon$$17$$$$anonfun$$1.apply(ModelFactory.scala:34)
@@ -17,12 +17,12 @@ Exception in thread "main" java.lang.Error: no documentable class found in compi
         at scala.tools.nsc.ScalaDoc$$.process(ScalaDoc.scala:65)
         at scala.tools.nsc.ScalaDoc$$.main(ScalaDoc.scala:81)
         at scala.tools.nsc.ScalaDoc.main(ScalaDoc.scala)
-{code}
+```
 
 Additionally, it throws the error when the only inputs are package objects:
-{code}
+```scala
 package object a
-{code}
+```
 
 The first case is an issue because I might have a subproject that is only used internally and not exported as an API.  Or, it might not have public classes yet.  I don't want to have to disable running documentation against the subproject and then remember to enable it when there are valid classes.
 

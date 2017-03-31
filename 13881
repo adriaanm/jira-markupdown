@@ -1,8 +1,7 @@
 The bug is intermittent and seems to be timing dependent, so I don't know how to submit a reproducible test case without building a bunch of test scaffolding (such as a carefully built mock InputStream). But I have encountered the bug on multiple computers, running both Mac and Linux and running both Java 1.5 and Java 1.6.
 
 Here's an actual interaction showing the bug:
-
-{code}
+```scala
 scala> val cmd = "cat 8.txt 8.txt 8.txt 8.txt 8.txt"
 cmd: java.lang.String = cat 8.txt 8.txt 8.txt 8.txt 8.txt
 
@@ -14,23 +13,20 @@ res0: Int = 31304240
 
 scala> count
 res1: Int = 31302464
-{code}
+```
 
 This very simple code should give the same result every time, but it doesn't.  (8.txt is just a big text file.)
 
 I investigated and I found that the problem is in this code in scala.io.BufferedSource.scala:
-
-{code}
+```scala
   def fillBuffer() = {
     byteBuffer.compact()
     charBuffer.position(0)
-{code}
+```
 
 the last line here is incorrect; it should be changed to:
-
-{code}
+```scala
     charBuffer.compact()
-{code}
+```
 
 it would be equally correct to call clear(), too, since fillBuffer() is only called when charBuffer has no remaining chars anyway.
-

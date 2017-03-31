@@ -1,6 +1,5 @@
 The following program gives incorrect results when compiled with the -optimise flag under 2.7.4, 2.7.5, and the 20090819 nightly build of 2.8.0:
-
-{code}
+```scala
 final class V(var x:Int , var y:Int) {
   def +=(ax:Int,ay:Int) { x += ax ; y += ay }
 }
@@ -26,23 +25,23 @@ object Fail {
     println("Answers are " + (vm.x+vm.y) + " and " + (um.x+um.y))
   }
 }
-{code}
+```
   
 Good output:
-{code}
+```scala
 ~/code/scala$$ rm *.class ; ~/pkg/scala-2.8.0.r18509-b20090819020207/bin/scalac Fail.scala
 ~/code/scala$$ java -cp ~/pkg/scala-2.8.0.r18509-b20090819020207/lib/scala-library.jar:. Fail
 Answers are 15 and 16
 ~/code/scala$$
-{code}
+```
 
 Bad optimized output:
-{code}
+```scala
 ~/code/scala$$ rm *.class ; ~/pkg/scala-2.8.0.r18509-b20090819020207/bin/scalac -optimise Fail.scala
 ~/code/scala$$ java -cp ~/pkg/scala-2.8.0.r18509-b20090819020207/lib/scala-library.jar:. Fail
 Answers are 0 and 16
 ~/code/scala$$
-{code}
+```
 
 These changes make the problem disappear:
  * Removing the loop.

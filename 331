@@ -1,8 +1,7 @@
 Paul's "new profile" of the bug is not related to structural types, but to the way implicits work (and which are now used for Arrays).
 
 The situation is similar to the following:
-
-{code}
+```scala
 class A
 class B
 implicit def a2b(a: A): B = new B
@@ -13,6 +12,6 @@ f(new A) // OK
 def g[T <: B](p: T) = null
 g[B](new A) // OK
 g(new A) // error: inferred type arguments [A] do not conform to method g's type parameter bounds [T <: B]
-{code}
+```
 
 Which is, I think, the expected behaviour for implicits.

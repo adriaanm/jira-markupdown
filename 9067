@@ -1,10 +1,9 @@
 I think we might have a problem. For certain lists the running time of the serialization becomes quadratic.
 Think of a list holding objects each of which points to the tail of that list.
-If you take a look at {{writeObject}}, you'll see that the recursive calls ensue, each of which does a while-loop to traverse all the elements.
+If you take a look at `writeObject`, you'll see that the recursive calls ensue, each of which does a while-loop to traverse all the elements.
 
-Changing the list size above {{32}} results in really long running times. Not to say that it can still result in a stack overflow.
-
-{code}
+Changing the list size above `32` results in really long running times. Not to say that it can still result in a stack overflow.
+```scala
 object Test {
 
   def deepCopy[T](obj : T, reportSize: Boolean = false): T = {
@@ -41,4 +40,4 @@ object Test {
   }
 
 }
-{code}
+```

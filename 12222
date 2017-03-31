@@ -1,8 +1,7 @@
 Actually, I think this is a bug (or maybe an invalid assumption) in LambdaLift.
 
 The following source:
-
-{code}
+```scala
 abstract class WA extends DelayedInit {
   override def delayedInit(x: => Unit): Unit = x
 }
@@ -18,11 +17,10 @@ class C {
     }
   }
 }
-{code}
+```
 
 prints after lambdalift as
-
-{code}
+```scala
 package <empty> {
   abstract class WA extends Object with DelayedInit {
     def <init>(): WA = {
@@ -56,6 +54,6 @@ package <empty> {
     }
   }
 }
-{code}
+```
 
-Note that the two references to {{symbol$1}} are not translated in the same way: one is a direct {{Ident}} to the constructor parameter, the other a {{Select}} of the field. I think both should be translated to field accesses.
+Note that the two references to `symbol$1` are not translated in the same way: one is a direct `Ident` to the constructor parameter, the other a `Select` of the field. I think both should be translated to field accesses.

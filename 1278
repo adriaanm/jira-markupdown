@@ -1,17 +1,15 @@
 Note that this bug is actually much harder to workaround than I made it sound above. e.g. it will also break if you have something like (because of the Boolean in the signature):
-
-{code}
+```scala
 trait Baz2[A] extends (A => Boolean)
 
 class Foo2 {
   def l(b: Baz2[String]) { }
 }
-{code}
+```
 
 It turns out that scala.collection.Set has that issue because the signature is:
-
-{code}
+```scala
 trait Set[A] extends (A => Boolean) with Collection[A] {
-{code}
+```
 
 Other classes in the standard library may also be affected.

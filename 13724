@@ -5,30 +5,26 @@ Compiler: scalac 2.7.2.RC1 (believe also 2.7.1.final)
 Reproducibility: Always
 
 Failing case:
-
-{code}
+```scala
 case class A
 case class B(c: () => Unit) extends A
-{code}
+```
 
 Works when either A or B are not a case class:
-
-{code}
+```scala
 class A
 case class B(c: () => Unit) extends A
-{code}
-
-{code}
+```
+```scala
 case class A
 class B(c: () => Unit) extends A
-{code}
+```
 
 Trace (top 4 lines, see file):
-
-{code}
+```scala
 Exception in thread "main" java.lang.NullPointerException
 	at scala.tools.nsc.typechecker.EtaExpansion$$class.freshName$$1(EtaExpansion.scala:57)
 	at scala.tools.nsc.typechecker.EtaExpansion$$class.liftout$$1(EtaExpansion.scala:82)
 	at scala.tools.nsc.typechecker.EtaExpansion$$class.liftoutPrefix$$1(EtaExpansion.scala:92)
         ...
-{code}
+```

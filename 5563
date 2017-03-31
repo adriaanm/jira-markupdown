@@ -1,5 +1,5 @@
 Your reasoning for the change is to make the order of applying `dropRight` and `toString` to a `StringBuilder` insignificant:
-{code}
+```scala
 scala> val sb = new StringBuilder ++= "Hello World"
 sb: StringBuilder = Hello World
 
@@ -8,9 +8,9 @@ res0: java.lang.String = Hello Worl
 
 scala> sb.toString dropRight 1
 res1: String = Hello Worl  
-{code}
+```
 However, it seems like a random requirement. Also, it does not hold for Builders in general:
-{code}
+```scala
 scala> val lb = new collection.mutable.ListBuffer[Int]()
 lb: scala.collection.mutable.ListBuffer[Int] = ListBuffer()
 
@@ -21,12 +21,12 @@ res41: String = ListBuffer(1, 2)
 
 scala> lb.toString dropRight 1
 res42: String = ListBuffer(1, 2, 3
-{code}
+```
 It seems like a much more relevant requirement to respect the general contract of a Builder:
  * A !ListBuffer (a list builder) builds a List
  * An !ArrayBuilder builds an Array
  * ...and a !StringBuilder should build a String
-The expected contract of a Builder of _Foo_ is that calling its `result` method should return a `Foo`.
+The expected contract of a Builder of *Foo* is that calling its `result` method should return a `Foo`.
 This contract is also more or less implied by the Scaladoc of trait `scala.collection.mutable.Builder`.
 
 Finally, this is a breaking change. Code (like ours) that relies on calling `result` on a `StringBuilder`, no longer works. This is probably the best reason for reverting this change in 2.9.

@@ -1,8 +1,7 @@
 I did not realize it behaved as expected for a block when the conversion is triggered by a missing member.  That is certainly useful and not problematic.
 
 The problem I was trying to address is restricted to when the conversion is to an expected type.  For example, this prints "side effect 1":
-
-{code}
+```scala
 object ExpectedType {
   implicit def runnable(act: => Unit): Runnable =
     new Runnable { def run() = act }
@@ -18,6 +17,6 @@ object ExpectedType {
           runnable.run()
   }
 }
-{code}
+```
 
 Since the two cases are handled separately in the specification, what about specifying that implicits with by-name parameters are not considered for this case (situation 1 in the spec)?

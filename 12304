@@ -1,5 +1,5 @@
 The inline optimization causes the exception. Using 
-{code:java}
+```java
 scalacOptions in Compile ++= Seq(
         "-Ynooptimise",
         "-Yclosure-elim",
@@ -8,10 +8,10 @@ scalacOptions in Compile ++= Seq(
         //"-Yinline", // TODO: Causes NegativeArraySizeException in Build
         "-Yinline-handlers"
        )
-{code}
+```
 it compiles fine.
 
-*There is following debug output:*
+**There is following debug output:**
   !!! PJUMP(method matchEnd36)/scala.tools.nsc.backend.icode.GenICode$PJUMP is not a control flow instruction[0m
   
   !!! Mismatched stacks in ReachingDefinitions#lub2: List(ListSet((26,0), (21,0), (17,0), (16,2), (11,2), (10,2), (9,2), (4,2))), List(ListSet((9,2)), ListSet((27,1))), returning List(ListSet((26,0), (21,0), (17,0), (16,2), (11,2), (10,2), (9,2), (4,2)))[0m
@@ -27,7 +27,7 @@ it compiles fine.
 [0m[[0minfo[0m] [0m[log jvm] Generating code for block: 12[0m
 
 
-*With -Ydebug and Ylog:jvm you can see this exception:*
+**With -Ydebug and Ylog:jvm you can see this exception:**
 
 java.lang.AssertionError: assertion failed: List(module package$RichActorRef, module package$RichActorRef)
 	at scala.reflect.internal.Symbols$Symbol.suchThat(Symbols.scala:1922)

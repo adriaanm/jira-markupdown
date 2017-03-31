@@ -2,37 +2,34 @@ We discussed this in today's meeting. Martin was surprised how broken
 "protected" in Java is (see Paul's example).
 
 Summing up. Given the Java class:
-
-{code}
+```scala
 package p;
 public class A {
     protected void f() {}
 }
-{code}
+```
 
 This indeed means, in Scala terms, "f" is "protected[p]", i.e. we should set
 the "privateWithin" flag to "p". Otherwise, the following Scala code would
 not be legal:
-
-{code}
+```scala
 package p {
   object T {
     val a = new A()
     a.f()
   }
 }
-{code}
+```
 
-This has been fixed in SI-3946, but with the unfortunate consequence on
+This has been fixed in scala/bug#3946, but with the unfortunate consequence on
 overriding, which invalidates the following (previously valid) Scala code:
-
-{code}
+```scala
 package q {
   class B extends p.A {
     override protected def f() { }
   }
 }
-{code}
+```
 
 Note that the same situation is much more unlikely to happen in
 Scala-only code, because when one writes "class A" in Scala, writing

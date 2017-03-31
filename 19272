@@ -1,6 +1,5 @@
-This is very related to SI-8128, but still exhibits similar behaviour in 2.11.2.
-
-{code}
+This is very related to scala/bug#8128, but still exhibits similar behaviour in 2.11.2.
+```scala
 package regr 
 
 trait F[A]
@@ -16,13 +15,12 @@ object H {
     case G(a, _) => Some(a)
   }
 }
-{code}
+```
 
 results in (from H.unapply):
-
-{noformat}
+```
 error during expansion of this match (this is a scalac bug). 
 The underlying error was: type mismatch;
   found   : regr.F[_$1(in method unapply)(in method unapply)(in method unapply)(in method unapply)] where type _$1(in method unapply)(in method unapply)(in method unapply)(in method unapply)
   required: regr.F[_$1(in method unapply)(in method unapply)(in method unapply)(in method unapply)]	Regr.scala
-{noformat}
+```

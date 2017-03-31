@@ -1,29 +1,28 @@
-To recap, {{-optimise}} comprises
-{noformat}
+To recap, `-optimise` comprises
+```
   -Yinline -Yinline-handlers -Yclosure-elim -Ydead-code
-{noformat}
+```
 
-Leaving out {{-Yclosure-elim}} keeps both GenASM and GenJVM happy.
+Leaving out `-Yclosure-elim` keeps both GenASM and GenJVM happy.
 
 Let's compare the bytecode emitted with and without "closelim", and all other optimization phases on.
 
 (BTW, the ASM crash results from computing stack-map frames to emit 1.6 classfiles, that's skipped with -target:1.5-asm but then one also skips noticing non-wellformed bytecode).
 
 The ASM crash occurs for:
-{noformat}
+```
   class:  ConfigurableDefault$mcZ$sp$class
   method: fillArray$mcZ$sp
-{noformat}
+```
 
 The problematic snippet is "v.asInstanceOf[Long]". In both cases below the method signature is:
-{noformat}
+```
     public static java.lang.Object fillArray$mcZ$sp(ConfigurableDefault$mcZ$sp, boolean[], boolean);
-{noformat}
+```
 ie local 1 is a boolean[] and local 2 a boolean.
 
 Without "closelim" it looks like:
-
-{noformat}
+```
    25:	iload_2
    26:	invokestatic	#22; //Method scala/runtime/BoxesRunTime.boxToBoolean:(Z)Ljava/lang/Boolean;
    29:	invokestatic	#26; //Method scala/runtime/BoxesRunTime.unboxToLong:(Ljava/lang/Object;)J
@@ -31,17 +30,16 @@ Without "closelim" it looks like:
    35:	astore	6
    37:	aload	6
    39:	areturn
-{noformat}
+```
 
 With "closelim" it looks like:
-
-{noformat}
+```
    19:	iload_2
    20:	invokestatic	#22; //Method scala/runtime/BoxesRunTime.boxToLong:(J)Ljava/lang/Long;
    23:	astore_3
    24:	aload_3
    25:	areturn
-{noformat}
+```
 
-The last snippet is problematic because a {{iload_2}} pushes a {{boolean}} and that's no good input for {{boxToLong}} which expects a {{long}}.
+The last snippet is problematic because a `iload_2` pushes a `boolean` and that's no good input for `boxToLong` which expects a `long`.
 

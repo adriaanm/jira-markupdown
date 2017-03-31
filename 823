@@ -1,6 +1,5 @@
 The compilation scheme given in the bug report corresponds to the mono-cache implementation, which is no longer used (it can still be forced using the `-Ystruct-dispatch` flag, but will probably be removed soon as it is slower in all cases). The current standard compilation scheme compiles a call as follows:
-
-{code}
+```scala
  var reflParams$$Cache: Array[Class[_]] = Array[JClass](classOf[A], classOf[B])
  var reflPoly$$Cache: scala.runtime.MethodCache = new EmptyMethodCache()
 def reflMethod$$Method(forReceiver: JClass[_]): JMethod = {
@@ -13,7 +12,7 @@ def reflMethod$$Method(forReceiver: JClass[_]): JMethod = {
     return method
   }
 }
-{code}
+```
 
 My analysis is that this method can run unsynchronized in a multi-threaded environment. In the worst case, a method looked-up by one thread will not be cached (it could be overwritten by another thread). However, the system still is safe as the method can always be recalculated afterwards (it is only a cache), and the caching data structure is not harmed by the threads interacting.
 

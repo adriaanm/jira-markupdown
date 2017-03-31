@@ -1,4 +1,4 @@
-{code}
+```scala
 scala> def f(implicit x: Int): Int = x + 1
 f: (implicit x: Int)Int
 
@@ -14,9 +14,9 @@ scala> List(1, 2, 3) map (f _)
 
 scala> List(1, 2, 3) map (x => f(x))
 res1: List[Int] = List(2, 3, 4)
-{code}
+```
 And the monkey wrenches really go flying if you throw in another one:
-{code}
+```scala
 scala> implicit def g(implicit x: Int): Int = x + 1
 g: (implicit x: Int)Int
 
@@ -28,5 +28,5 @@ starting with method g in object $$iw
 
 scala> List(1, 2, 3) map (x => g(x))
 res4: List[Int] = List(2, 3, 4)
-{code}
+```
 I suppose we're in unspecified land here, but I think it'd be nice if we could say implicit methods don't move one in multiple directions away from non-implicit ones (by which I mean, make it implicit and now THIS works but THIS doesn't...) because it's rather tedious trying to push all that toothpaste back into the tube.

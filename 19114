@@ -1,16 +1,14 @@
 While using a csv parser to process large char arrays i ran into the problem that the toString method of ArrayCharSequence was very slow on large buffers (and, as it appears, also on small buffers)
 
 The problematic method:
-
-{noformat}
+```
 override def toString = xs drop start take length mkString ""
-{noformat}
+```
 
 I created a faster version which is already almost 50% faster on an empty charsequence and only becomes relatively faster when the array gets bigger (already 20x as fast in the test below). It appears the implementation is used in 2.10 (and maybe earlier) until the latest version.
 
 Code (it's all about the toString method):
-
-{noformat}
+```
 final class FastArrayCharSequence(val xs: Array[Char], start: Int, end: Int) extends CharSequence {
   // yikes
   // java.lang.VerifyError: (class: scala/runtime/ArrayCharSequence, method: <init> signature: ([C)V)
@@ -99,5 +97,4 @@ object Test extends App {
     index = index + 1
   }
 }
-
-{noformat}
+```

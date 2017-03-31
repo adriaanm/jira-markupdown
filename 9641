@@ -1,6 +1,5 @@
-Using {{ArrayList}} rather than {{Vector}} (which is only generic in Java 7+).
-
-{code}
+Using `ArrayList` rather than `Vector` (which is only generic in Java 7+).
+```scala
 import scala.tools.partest.ReplTest
 
 object Test extends ReplTest {
@@ -9,16 +8,15 @@ object Test extends ReplTest {
   val v: java.util.ArrayList[String] = new java.util.ArrayList[String](5)
   """
 }
-{code}
+```
 
-On the compilation of the second line, the symbol for the constructor {{[E](Int)ArrayList[E]}} has a corrupt info.
-
-{noformat}
+On the compilation of the second line, the symbol for the constructor `[E](Int)ArrayList[E]` has a corrupt info.
+```
 // unwanted existential!
 TypeHistory(typer:7,(x$1: Int)java.util.ArrayList[_],null)
 // an overloaded constuctor
 TypeHistory(posterasure:5,(x$1: java.util.Collection)java.util.ArrayList,TypeHistory(namer:7,(x$1: java.util.Collection[_ <: E])java.util.ArrayList[E],null))
-{noformat}
+```
 
 Overload resolution discounts the Int-accepting constructor, and ends up reporting "found: Int, required: Collection".
 

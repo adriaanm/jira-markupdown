@@ -1,5 +1,5 @@
 I went back to investigate why I hadn't been able to figure out how to get a classtag into a macro, but erik had done it no problem.  This is why:
-{code}
+```scala
 import scala.language.experimental.macros
 import scala.reflect.macros.Context
 import scala.reflect.ClassTag
@@ -16,14 +16,14 @@ object Mmm {
 //   def f[T](x: Int)(implicit ev: ClassTag[T]) = macro f_impl[T]
 //                                                      ^
 // one error found
-{code}
+```
 
 "macro implementations cannot have implicit parameters other than WeakTypeTag evidences" does not at all clue me in to why I have displeased the compiler.  It turns out it is because I have mimicked the signature with too much fidelity - I am allowed the implicit parameter, only I'm not allowed to say so.
-{code}
+```scala
 // now it compiles
 object Mmm {
   def f[T](x: Int)(implicit ev: ClassTag[T]) = macro f_impl[T]
   def f_impl[T](c: Context)(x: c.Expr[Int])(ev: c.Expr[ClassTag[T]]) = null
 }
-{code}
+```
 This warrants a very specific error message.

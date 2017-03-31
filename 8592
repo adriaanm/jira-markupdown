@@ -1,22 +1,19 @@
 That's right, in the general "boxed" case ie 
-
-{noformat}
+```
 public static java.lang.Object fillArray(ConfigurableDefault, java.lang.Object, java.lang.Object);
-{noformat}
+```
 
 it can't be determined statically that "after unboxing the 2nd arg, the element type of that array matches the third arg's unboxed type".
 
 I was thinking about the specialization I was examining, 
-
-{noformat}
+```
 public static java.lang.Object fillArray$mcZ$sp(ConfigurableDefault$mcZ$sp, boolean[], boolean);
-{noformat}
+```
 
 for which a bytecode-level type-flow analysis (detailed enough to track array component and element types) could be used to rule out success for:
-
-{noformat}
+```
 instanceof	#16; //class "[J"
-{noformat}
+```
 
 Anyway, that was a comment "just for completeness". Fixing the bug most likely involves patching ClosureElim some more :)
 

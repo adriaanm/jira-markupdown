@@ -1,8 +1,7 @@
 Yes, that seems to be the problem, viz, java and JAVA_HOME do not jibe.
 
 I was able to test this way, without munging my environment, thankfully. This is java at v6 and JAVA_HOME at v7; reflective invocation of javap finds the wrong tools.jar.
-
-{code}
+```scala
 apm@mara:~/tmp/q$ JAVACMD=$JAVA6_HOME/bin/java JAVA_HOME=$JAVA7_HOME sbt12 
 Launching with /home/apm/bin/sbt-0.12.3/bin/sbt-launch.jar
 [info] Set current project to default-7bbd7f (in build file:/home/apm/tmp/q/)
@@ -30,6 +29,6 @@ scala> :javap
 scala> :javap java.lang.Object
 
 scala> 
-{code}
+```
 
 It does indeed fail silently.  Boy, that's confusing.

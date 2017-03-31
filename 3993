@@ -1,14 +1,12 @@
 Hi, 
 
 I've done some information finding on this bug, first by compiling the snippet with the compiler options 
-
-{code}
+```scala
 -Xprint:icode -Xprint-icode
-{code}
+```
 
 which allows seeing almost-bytecode-level what gets done: 
-
- {code}
+```scala
   1: 
     26	LOAD_MODULE object Predef
     26	LOAD_MODULE object Predef
@@ -20,32 +18,28 @@ which allows seeing almost-bytecode-level what gets done:
     26	BOX INT
     26	CALL_METHOD scala.Predefscala.Predef.println (dynamic)
     26	RETURN (UNIT)
-{code}
+```
 
 First a RichInt is built for the "1", and then method RichInt.to is invoked on it with 100000000 as argument. That returns a Range (this and other sources at 
 
 http://lampsvn.epfl.ch/trac/scala/browser/scala/trunk/src/library/scala/runtime/RichInt.scala
 
 ) and finally the implementation of hashCode defined in SeqLike gets run, i.e. 
-
-{code}
+```scala
   /** Hashcodes for $$Coll produce a value from the hashcodes of all the
    *  elements of the $$coll.
    */
   override def hashCode() = (Seq.hashSeed /: this)(_ * 41 + _.hashCode)
-{code}
+```
 
 
 Thus explaining why it's slow. Actually long ago there used to be a custom hashCode implementation in Range, but: 
-
-
-{code}
+```scala
   /* eliminated, so as to not break the hashcode/equals contract 
   override def hashCode = start + limit + step
   */
-{code}
+```
 
 
 The short answer is, hashCode will be slow on large sequences. 
-
 

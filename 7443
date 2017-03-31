@@ -3,8 +3,7 @@ I finally came up with an implementation based on type classes for now (didn't h
   https://github.com/wookietreiber/scala-collection-extras
 
 The main part consists of this:
-
-{code}
+```scala
   def merge[A:Ordering](xs: CC[A], y: A) = { 
     val (ps,ss) = xs.partition(implicitly[Ordering[A]].lt(_,y))
     val builder = xs.genericBuilder[A]
@@ -23,7 +22,7 @@ The main part consists of this:
 
   def shuffle[A](xs: CC[A]): CC[A] =
     sortBy(xs) { _ ⇒ nextLong }
-{code}
+```
 
 An example is included in the github projects README. 
 

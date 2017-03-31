@@ -1,6 +1,5 @@
 I came across an unreachable code warning which should not be present, in Scala 2.10.0-RC3:
-
-{code}
+```scala
 object Test {
   type Id[X] = X
 
@@ -13,9 +12,8 @@ object Test {
     }
   }
 }
-{code}
-
-{code}
+```
+```scala
 $ sbt run
 [info] Set current project to default-2e4ad8 (in build file:../)
 [info] Compiling 1 Scala source to .../target/scala-2.10/classes...
@@ -25,14 +23,14 @@ $ sbt run
 [warn] one warning found
 [info] Running Test 
 Nothing
-{code}
+```
 
 If, instead, the code looks like
-{code}
+```scala
 type Id[X] = Option[X]
-{code}
+```
 and
-{code}
+```scala
 val a: Id[Int] = None
-{code}
+```
 no unreachable code warning appears.

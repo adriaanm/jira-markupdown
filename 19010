@@ -1,6 +1,5 @@
-when compiling with the scalac option {{-Ywarn-numeric-widen}} we get the following odd warning if the expression is not made up of already evaluated numeric terms:
-
-{noformat}
+when compiling with the scalac option `-Ywarn-numeric-widen` we get the following odd warning if the expression is not made up of already evaluated numeric terms:
+```
 scala> trait Foo
 defined trait Foo
 
@@ -21,16 +20,15 @@ elapsed: Foo
 
 scala>  def elapsed: Foo = { val t = (System.nanoTime - 100L); t.foo }
 elapsed: Foo
-{noformat}
+```
 
 This last one shows that if the expression is assigned then Long is inferred and the typer doesn't complain. But the expression is clearly of the specific type Long, and the warning is unintuitive at best.
 
 This originally came up with the following code:
-
-{noformat}
+```
 import scala.concurrent.duration._
 
 class Stopwatch(val start: Long = System.nanoTime) extends AnyVal {
   def elapsed: Duration = ((System.nanoTime - start) / 1000).micros
 }
-{noformat}
+```

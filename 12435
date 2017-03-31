@@ -1,13 +1,12 @@
 There are calls for a lint warning for decomposing `Seq` with `::`. Maybe a back-stop warning for "abuse of cons".
-
-{code}
+```scala
 scala> Seq(1,2) match { case head :: tail => }
 
 scala> (Vector(1,2): Seq[Int]) match { case head :: tail => }
 scala.MatchError: Vector(1, 2) (of class scala.collection.immutable.Vector)
   ... 28 elided
-{code}
+```
 
-Similarly, for [collections usage errors|https://github.com/scala/scala-abide/issues/71] and [awry types|https://github.com/scala/scala-abide/issues/70].
+Similarly, for [collections usage errors](https://github.com/scala/scala-abide/issues/71) and [awry types](https://github.com/scala/scala-abide/issues/70).
 
 In this case, using `m.keySet` is safer. A typelevel lint rule would probably just emit a special exhaustiveness warning, given some knowledge about the library; but a lint tool that knows the runtime type for your version of the API would be handy. 

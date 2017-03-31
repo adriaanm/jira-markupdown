@@ -1,6 +1,5 @@
 Allthough toString is overridden in user class, REPL obviously calls something like Iterable.toString:
-
-{code}
+```scala
 class C(val i: Int) { override def toString = "C:" + i }
 val c = new C(4) // REPL-output as expected: c: C = C:4
 
@@ -8,7 +7,7 @@ class C(val i: Int) extends Iterable[Int] {
   def iterator = Iterator(i)
   override def toString = "C:" + i }
 val c = new C(4) // REPL-output now erronous: c: C = line16(4)
-{code} 
+```
 
 I'd expect the same output, that is
 c: C = C:4

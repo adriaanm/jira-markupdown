@@ -1,18 +1,16 @@
 it's not about package objects:
-
-{code}
+```scala
 scala> class a { @deprecated("") val x = 1 }
 <console>:4: warning: value x in class a is deprecated: 
        class a { @deprecated("") val x = 1 }
                                      ^
 defined class a
-{code}
+```
 
 the point is that the `@deprecated` annotation gets copied to the field, not to the getter / setter. when the getter passes !RefCheck the deprecation message is issued.
 
 to get the expected behavior:
-
-{code}
+```scala
 scala> class a { @(deprecated @annotation.target.getter @annotation.target.setter)("") val x = 1 }
 defined class a
 
@@ -21,7 +19,7 @@ scala> (new a).x
        (new a).x
                ^
 res0: Int = 1
-{code}
+```
 
 
 I'll fix this by allowing the `@annotation.target` meta-annotations directly on annotation class (not only on class type when using the annotation)

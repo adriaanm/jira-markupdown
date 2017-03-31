@@ -5,8 +5,7 @@ TraversableLike currently it calls toList, but that is not particularly efficien
 MapLike and SetLike both suggest providing an efficient size method and the implementations override isEmpty as size == 0, so I think it is OK to rely on the size in toSeq.
 
 With that in mind, for MapLike.toSeq, I'd suggest something like:
-
-{code}
+```scala
   override def toSeq: Seq[(A, B)] = {
     val result = new mutable.GenericArray[(A, B)](size)
     var i = 0
@@ -16,11 +15,10 @@ With that in mind, for MapLike.toSeq, I'd suggest something like:
     }
     result
   }
-{code}
+```
 
 For SetLike.toSeq, I'd suggest something like:
-
-{code}
+```scala
   override def toSeq: Seq[A] = {
     val result = new mutable.GenericArray[A](size)
     var i = 0
@@ -30,7 +28,7 @@ For SetLike.toSeq, I'd suggest something like:
     }
     result
   }
-{code}
+```
 
 It's obviously possible to reduce duplication by having a toGenericArray in Traversable or as a utility method that takes a traversable somewhere for internal methodsr1.
 

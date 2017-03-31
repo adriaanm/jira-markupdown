@@ -1,21 +1,17 @@
 
-The new optimizer explains in more detail ( {{-Ydebug -neo:o3 -Ylog:jvm -Yinline-warnings}} ) why that inlining is unfeasible.
+The new optimizer explains in more detail ( `-Ydebug -neo:o3 -Ylog:jvm -Yinline-warnings` ) why that inlining is unfeasible.
 
-Summary: because of the local method in {{List.dropWhile}} , which becomes private to {{immutable.List}}
+Summary: because of the local method in `List.dropWhile` , which becomes private to `immutable.List`
 
 Snippet:
-
-{noformat}
+```
 class C {
   def m() {
     List(0).dropWhile(_ < 1)
   }
 }
-{noformat}
-
-
-
-{noformat}
+```
+```
 warning: Closure-inlining failed because
   scala/collection/immutable/List::dropWhile(Lscala/Function1;)Lscala/collection/immutable/List;
 contains instruction 
@@ -50,11 +46,10 @@ that would cause IllegalAccessError from class C
     LOCALVARIABLE p Lscala/Function1; L0 L1 1
     MAXSTACK = 3
     MAXLOCALS = 2
-{noformat}
+```
 
 Where does that private method come from? From the {{@tailrec}}-optimized {{loop()}}:
-
-{noformat}
+```
   @inline final override def dropWhile(p: A => Boolean): List[A] = {
     @tailrec
     def loop(xs: List[A]): List[A] =
@@ -63,7 +58,7 @@ Where does that private method come from? From the {{@tailrec}}-optimized {{loop
 
     loop(this)
   }
-{noformat}
+```
 
 
 It's not a bug of the old optimizer.

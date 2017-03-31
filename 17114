@@ -1,6 +1,5 @@
 Currently implicit defs, which are also macros, are expanded too early (typed1 in typedImplicit1), which means that they cannot be used to generate type tags.
-
-{code}
+```scala
 scala> def impl[T: c.WeakTypeTag](c: Context) = { println(c.weakTypeOf[T]); c.Expr[C[T]](c.universe.Literal(c.universe.Constant(null))) }
 impl: [T](c: scala.reflect.macros.Context)(implicit evidence$1: c.WeakTypeTag[T])c.Expr[C[T]]
 
@@ -20,4 +19,4 @@ incompatible: C[T] does not match expected type C[Int]
 <console>:30: error: could not find implicit value for parameter e: C[Int]
               implicitly[C[Int]]
                         ^
-{code}
+```

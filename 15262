@@ -1,6 +1,5 @@
 There is a compiler error when compiling the following code (test case inspired from a unit test in specs):
-
-{code}
+```scala
   abstract class Matcher[-T] {
     def apply(t: =>T) = t
   }
@@ -12,11 +11,10 @@ There is a compiler error when compiling the following code (test case inspired 
   class Baz
   def calcBar: Class[_] = classOf[Baz]
   new Exp(calcBar).must(be(classOf[Baz]))
-{code}
+```
 
 The error is:
-
-{code}
+```scala
 scala.tools.nsc.symtab.Types$$TypeError: type mismatch;
  found   : java.lang.Class[_]
  required: Class[(some other)_$$1(in value <local issue2>)] where type (some other)_$$1(in value <local issue2>)
@@ -27,7 +25,6 @@ scala.tools.nsc.symtab.Types$$TypeError: type mismatch;
         at scala.tools.nsc.typechecker.SuperAccessors$$SuperAccTransformer$$$$anonfun$$1$$$$anonfun$$apply$$1.apply(SuperAccessors.scala:49)
         at scala.tools.nsc.typechecker.SuperAccessors$$SuperAccTransformer$$$$anonfun$$1$$$$anonfun$$apply$$1.apply(SuperAccessors.scala:49)
         at scala.tools.nsc.typechecker.SuperAccessors$$SuperAccTransformer.scala$$tools$$nsc$$typechecker$$SuperAccessors$$SuperAccTransformer$$$$withInvalidOwner(SuperAccessors.scala:251)
-{code}
+```
 
 This is observed with Scala.2.8.0.r21679-b20100426020139.
-

@@ -1,14 +1,14 @@
 Well, you're a ways outside the land of stuff you should do.  The issue is actually this:
-{code}
+```scala
 scala> null.asInstanceOf[Nothing]
 java.lang.NullPointerException
 	at RequestResult$$.<init>(<console>:12)
 	at RequestResult$$.<clinit>(<console>)
 	at RequestResult$$scala_repl_result(<console>)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-{code}
+```
 Although this is somewhat nonsensical, it shouldn't NPE.  I'm not sure what good could ever come of trying to cast something to Nothing, since it will always fail - were it really a Nothing it would be hurtling its way upward, not allowing you to cast it.  I would say it should be disallowed.  Failing that I guess it should be casting to scala.runtime.Nothing$$ instead, which at least doesn't NPE:
-{code}
+```scala
 scala> null.asInstanceOf[scala.runtime.Nothing$$]
 res1: scala.runtime.Nothing$$ = null
-{code}
+```

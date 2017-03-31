@@ -1,10 +1,9 @@
-Parsers.Parser don't provide an easy way to override error messages. The common idiom for that is unsuspectingly very fragile. I suggest adding two new method, {{withFailureMessage}} and {{withErrorMessage}}, to provide that functionality. As for the problem, I'll let the comment in my proposed API describe it:
+Parsers.Parser don't provide an easy way to override error messages. The common idiom for that is unsuspectingly very fragile. I suggest adding two new method, `withFailureMessage` and `withErrorMessage`, to provide that functionality. As for the problem, I'll let the comment in my proposed API describe it:
 
-The semantics are slightly different than those obtained by doing {{| failure(msg)}}, in that the message produced by this method will always replace the message produced, which is not guaranteed by that idiom.
+The semantics are slightly different than those obtained by doing `| failure(msg)`, in that the message produced by this method will always replace the message produced, which is not guaranteed by that idiom.
 
-For example, parser {{p}} below will always produce the designated failure message, while {{q}} will not produce it if {{sign}} is parsed but {{number}} is not.
-
-{code}
+For example, parser `p` below will always produce the designated failure message, while `q` will not produce it if `sign` is parsed but `number` is not.
+```scala
 def p = sign.? ~ number withFailureMessage  "Number expected!"
 def q = sign.? ~ number | failure("Number expected!")
-{code}
+```

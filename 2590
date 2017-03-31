@@ -8,16 +8,14 @@ I've coded both algorithms to take a Product argument and to avoid the allocatio
 time-critical code.
 
 I also coded versions of the data structures I hashed to implement a trait that looks like this:
-
-{code}
+```scala
     trait Hashable {
       def hashableInts: Int
       def hashableInt (n: Int): Int
     }
-{code}
+```
 
 and coded versions of the hash algorithms to call the methods in it to obtain the contents of the data structures as a sequence of 32-bit integers, thereby avoiding any allocations during hashing. As expected, this resulted in a substantial speedup, of as much as 500%. However, it is not clear that it would be worth changing Product (for example) to include such methods, particularly since a superior hash algorithm may one day appear that consumes its input in
 something other than 32-bit chunks. (Scala should certainly avoid the mistake of java.lang.String, which promises a specific, and decidedly low-quality, hash function.)
 
 Attached are implementations of lookup3 and MurmurHash2 for Product and String, which might be useful to replace the existing ScalaRunTime._hashCode.
-

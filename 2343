@@ -1,13 +1,13 @@
 Hi Ross,
 
 I don't now what the problem is, but I have a suspicion: the field
-{code}
+```scala
 class A {
   @Column(...) @BeanProperty var isoCode = "dlfk"
 }
-{code}
+```
 generates
-{code}
+```scala
 class A {
   @Column(...) private[this] var isoCode = "dlfk"
   @Column(...) def isoCode = this.isoCode
@@ -15,9 +15,9 @@ class A {
   @Column(...) def getIsoCode() = isoCode
   @Column(...) def setIsoCode(s: String) = isoCode = s
 }
-{code}
+```
 
-The {{@Column}} annotation is copied to every getter / setter (this will change soon). Now: Hibernate looks for bean getters, i.e. methods starting with {{get}} or {{is}}. For each getter it analyzes the {{@Column}}. Since there are two such methods with the same {{@Column}} it yields an error.
+The `@Column` annotation is copied to every getter / setter (this will change soon). Now: Hibernate looks for bean getters, i.e. methods starting with `get` or `is`. For each getter it analyzes the `@Column`. Since there are two such methods with the same `@Column` it yields an error.
 
 Let's try again when the way annotations are copied (or not) around can be controlled (hopefully soon).
 

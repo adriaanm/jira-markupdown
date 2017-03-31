@@ -5,12 +5,12 @@ As per https://github.com/scala/scala/blob/master/src/repl/scala/tools/nsc/inter
         |** object programatically, settings.usejavacp.value = true."""
 {code}{quote}
 
-Except the Scalac  tools force the setting to {{-Dscala.usejavacp=true}}:
+Except the Scalac  tools force the setting to `-Dscala.usejavacp=true`:
 https://github.com/scala/scala/blob/master/src/compiler/scala/tools/ant/templates/tool-unix.tmpl#L202
 https://github.com/scala/scala/blob/master/src/compiler/scala/tools/ant/templates/tool-windows.tmpl#L129
 
-And yet tools/tests visibly expect the tool to set {{usejavacp=false}} since they override the setting:
-{code:bash}
+And yet tools/tests visibly expect the tool to set `usejavacp=false` since they override the setting:
+```bash
 huitseeker➜~/Scala/scala(issue/DeprecWarning✗)» ag 'Dscala\.usejavacp'                                                                                                           [17:35:29]
 build/locker/classes/compiler/scala/tools/ant/templates/tool-unix.tmpl
 202:  -Dscala.usejavacp=true \
@@ -122,8 +122,8 @@ src/compiler/scala/tools/ant/templates/tool-windows.tmpl
 
 src/compiler/scala/tools/ant/templates/tool-unix.tmpl
 202:  -Dscala.usejavacp=true \
-{code}
+```
 
 More worryingly, both scripts ignore the setting that may be passed to them by the user, preemptively forcing their own stuff by placing it after java args.
 
-Attached is a patch that fixes things for {{src/compiler/scala/tools/ant/templates/tool-unix.tmpl}}. I have no idea how to proceed with the windows equivalent.
+Attached is a patch that fixes things for `src/compiler/scala/tools/ant/templates/tool-unix.tmpl`. I have no idea how to proceed with the windows equivalent.

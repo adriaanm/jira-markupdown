@@ -5,16 +5,16 @@ new SplitMenuButton()  should get a default constructor parameter supplied (dele
 Sorry I an not able to provide a reduced example. In simple examples similar code with one of the constructor had a default parameter and other has a has a T* argument compiles fine. There looks to be something more involved here. I look more tomorrow. Some other way of simplifying this is below.
 
 A thing that may help is that if I use scalafx library (build for 2.10) but 2.11.0-M8 compiler and try to instantiate `SplitMenuButton` 
-{noformat}
+```
 import scalafx.scene.control.SplitMenuButton
 
 class A { 
   val a = new SplitMenuButton()
 }
-{noformat}
+```
 
 I get similar error
-{noformat}
+```
 [error] ....scala:6: ambiguous reference to overloaded definition,
 [error] both constructor SplitMenuButton in class SplitMenuButton of type (items: scalafx.scene.control.MenuItem*)scalafx.scene.control.SplitMenuButton
 [error] and  constructor SplitMenuButton in class SplitMenuButton of type (delegate: javafx.scene.control.SplitMenuButton)scalafx.scene.control.SplitMenuButton
@@ -22,10 +22,10 @@ I get similar error
 [error]   val a = new SplitMenuButton
 [error]           ^
 [error] one error found
-{noformat}
+```
 
 Just for a reference SBT setup looks like this:
-{noformat}
+```
 scalaVersion := "2.11.0-M8"
 
 libraryDependencies += "org.scalafx" % "scalafx_2.10" % "1.0.0-M7"
@@ -35,6 +35,6 @@ resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repos
 scalacOptions ++= Seq("-unchecked", "-deprecation", "–explaintypes", "–Xlint")
 
 unmanagedJars in Compile += Attributed.blank(file(System.getenv("JAVA_HOME") + "/jre/lib/jfxrt.jar"))
-{noformat}
+```
 
 I need to run, I will try to attach a sample project tomorrow.

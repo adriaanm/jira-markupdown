@@ -3,22 +3,20 @@ Ok, then here is what we know:
 (a) case classes and companion objects will never work in the interpreter if they both refer to the other.
 
 (b) 
-
-{code}
+```scala
 object Foo
 case class Foo(x : Int) 
-{code}
+```
 
 will work in the interpreter and not in script runner. There is a separate bug for script runner, I'll break that out and assign it to Martin.
 
 (c)
-
-{code}
+```scala
 case class Foo(x : Int)
 object Foo {
   def foo = Foo(10)
 }
-{code}
+```
 
 used to work (pre 2.7) and doesn't work anymore.
 

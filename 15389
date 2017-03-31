@@ -1,6 +1,5 @@
 Consider the following code:
-
-{code}
+```scala
     "correctly define apply()" in {
       val prop = forAll { (i: Int, str: String) =>
         (str.length > 0) ==> {
@@ -11,14 +10,13 @@ Consider the following code:
           stream(idx) mustEqual str(idx)
         }
       }
-{code}
+```
 
 Obviously, this code is inside a thunk inside a lambda inside another thunk finally inside a class constructor (not shown).  The full context is included for reference, since I didn't have time to come up with a minimal case.
 
 The line in question will generate the following invoke:
-
-{code}
+```scala
    15:	invokeinterface	SI-40,  2; //InterfaceMethod scala/MathCommon.abs:(I)I
-{code}
+```
 
 However, scala.MathCommon is not an interface, it is a class.  This of course results in an exception at runtime.

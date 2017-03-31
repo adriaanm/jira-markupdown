@@ -1,7 +1,7 @@
 Complex setup, unfortunately, involving Eclipse, but clearly a compiler problem
 
 Verify that these files are current enough to interest you:
-{code}
+```scala
 ch.epfl.lamp.sdt.aspects_2.8.0.r17240-b20090305022856.jar
 ch.epfl.lamp.sdt.core_2.8.0.r17240-b20090305022905.jar
 scala.library_2.8.0.r17240-b20090305020927.jar
@@ -10,18 +10,18 @@ ch.epfl.lamp.sdt.aspects_2.8.0.r17250-b20090306022933.jar
 ch.epfl.lamp.sdt.core_2.8.0.r17250-b20090306022941.jar
 scala.library_2.8.0.r17250-b20090306020955.jar
 scala.tools.nsc_2.8.0.r17250-b20090306020955.jar
-{code}
+```
 
 Then
-{code}
+```scala
 svn checkout https://projectfortress.sun.com/svn/Community/trunk PFC
-{code}
+```
 
 Then
-{code}
+```scala
 cd PFC
 ant compile
-{code}
+```
 There may be prerequisites you need to install (Java 1.6, some version of ant).
 
 Then,
@@ -29,17 +29,17 @@ start an appropriately configured, Scala plugin from the nightlies, Eclipse (sig
 Alternately, perhaps it would make more sense to replace the compiler we use (in !ProjectFortress/third_party/scala) with something more current, and then to tweak the paths in ProjectFortress/build.xml.    That is NOT what I did to get the bug, but it looks like a compiler bug, right?  Unless this is perhaps some weird mixed-mode problem, resulting from two different versions of the compiler getting in a fight.
 
 Then, if you are using Eclipse
-{code}
+```scala
 "Refresh" PFC
-{code}
+```
 
 Then, in subdirectory !ProjectFortress:
-{code}
+```scala
 ../bin/fortress compile compiler_tests/Compiled0.fss
-{code}
+```
 
 Then, if you are me:
-{code}
+```scala
 dr2chase:ProjectFortress dr2chase$$ ../bin/fortress compile compiler_tests/Compiled0.fss
 Guessing FORTRESS_HOME=/Users/dr2chase/workspace/PFC
 Exception in thread "main" java.lang.VerifyError: (class: com/sun/fortress/scala_src/nodes/Id$$, method: apply signature: (Lcom/sun/fortress/nodes/ASTNodeInfo;Lscala/Option;Ljava/lang/String;)Lcom/sun/fortress/nodes/Id;) Can only throw Throwable objects
@@ -72,15 +72,14 @@ Exception in thread "main" java.lang.VerifyError: (class: com/sun/fortress/scala
 	at com.sun.fortress.Shell.compilerPhases(Shell.java:677)
 	at com.sun.fortress.Shell.subMain(Shell.java:269)
 	at com.sun.fortress.Shell.main(Shell.java:243)
-{code}
+```
 
 Workaround:
-{code}
+```scala
 ant clean compile
-{code}
+```
 because the checked out project uses version 2.7.2 of the compiler.
 
 If you need help recreating, let me know, but I'm not going to put too much time into this without some prodding because Fortress was "too complex" for the plugin guys to deal with the last bug we encountered.
 
 It is reproducible, for me, using the steps above.
-

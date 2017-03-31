@@ -1,7 +1,7 @@
 The code is broken, and if you fix it, you will see that Try is actually a valid functor.
 Here are two possible ways to fix it:
 1. http://ideone.com/Z21SUn
-{code:scala}
+```scala
 import scala.util._
 
 object Main extends App {
@@ -12,9 +12,9 @@ object Main extends App {
   println(Success(1) map { numberOrDefault _ compose divideByZero _ })
   println(Success(1) map divideByZero _ map numberOrDefault _)
 }
-{code}
+```
 2. http://ideone.com/Z9zePL
-{code:scala}
+```scala
 import scala.util._
 
 object Main extends App {
@@ -25,9 +25,9 @@ object Main extends App {
   println(Success(1) map { ((x: Int) => numberOrDefault(x)) compose divideByZero _ })
   println(Success(1) map divideByZero _ map ((x: Int) => numberOrDefault(x)))
 }
-{code}
+```
 You may argue this is the right example: http://ideone.com/TgkLCO
-{code:scala}
+```scala
 import scala.util._
 
 object Main extends App {
@@ -38,15 +38,15 @@ object Main extends App {
   println(Success(1) map { x => numberOrDefault(divideByZero(x)) })
   println(Success(1) map divideByZero _ map ((x: Int) => numberOrDefault(x)))
 }
-{code}
+```
 But that's not true, because for "map (f . g)" case you use
-{code}
+```scala
 f = numberOrDefault
 g = divideByZero
-{code}
+```
 and for "map g . map f" case you use another f:
-{code}
+```scala
 f = ((x: Int) => numberOrDefault(x))
 g = divideByZero
-{code}
+```
 By this example you actually prove that numberOrDefault !== ((x: Int) => numberOrDefault( x )), which is quite obvious fact.

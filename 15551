@@ -1,8 +1,7 @@
 In 2.8.0, docs for Dialog declare closeOperation() as 'This method is called when the window is closing, after all other window event listeners have been processed.'  This method is never called.
 
 To test:
-
-{code}
+```scala
 import swing._
 
 class TestDialog extends Dialog {
@@ -11,12 +10,12 @@ class TestDialog extends Dialog {
 
 val d = new TestDialog()
 d.visible = true
-{code}
+```
 
 When the dialog is closed, nothing is printed.  (Can also verify with breakpoints.)
 
 RichWindow.scala already has code to call closeOperation for swing.Frame, and this Chould be used for Dialog as well:
-{code}
+```scala
 80	  protected trait SuperMixin extends JFrame {
 81	    override protected def processWindowEvent(e: java.awt.event.WindowEvent) {
 82	      super.processWindowEvent(e)
@@ -24,4 +23,4 @@ RichWindow.scala already has code to call closeOperation for swing.Frame, and th
 84	        closeOperation()
 85	    }
 86	  }
-{code}
+```

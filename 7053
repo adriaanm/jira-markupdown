@@ -1,5 +1,5 @@
 Here's a better look at it.
-{code}
+```scala
 // compiles
 class CC1(xs: List[_]) {
   def f(x1: Any) = null
@@ -10,15 +10,15 @@ class CC2(xs: List[_]) {
   def f(x1: Any, x2: Any) = null
   def g = xs map (x => f(x, x))
 }
-{code}
+```
 In 2.9, -Xprint:typer for g in CC1 and CC2
-{noformat}
+```
 def g: List[Null] = CC1.this.xs.map[Null, List[Null]](((x: _$1) => CC1.this.f(x)))(immutable.this.List.canBuildFrom[Null])
 def g: List[Null] = CC2.this.xs.map[Null, List[Null]](((x: _$2) => CC2.this.f(x, x)))(immutable.this.List.canBuildFrom[Null])
-{noformat}
+```
 As similar as one might suppose.  In trunk:
-{noformat}
+```
 def g: List[Null] = CC1.this.xs.map[Null, List[Null]](((x: Any) => CC1.this.f(x)))(immutable.this.List.canBuildFrom[Null]
 def g: <error> = CC2.this.xs.map(((x: <error>) => f(x, x)))
-{noformat}
+```
 So the existential in the function parameter type has been crushed to Any.

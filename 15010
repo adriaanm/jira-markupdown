@@ -1,6 +1,5 @@
 `ArrayBuffer`'s `sizeHint` method fails:
-
-{code}
+```scala
 scala> val b = new collection.mutable.ArrayBuffer[Int]
 b: scala.collection.mutable.ArrayBuffer[Int] = ArrayBuffer()
 
@@ -22,11 +21,10 @@ java.lang.ArrayIndexOutOfBoundsException
         at scala.tools.nsc.Interpreter$$Request$$$$anonfun$$loadAndRun$$1$$$$anonfun$$apply$$15.apply(Interpreter.scala:979)
         at scala.tools.nsc.Interpreter$$Request$$$$anonfun$$loadAndRun$$1$$$$anonfun$$a...
 scala>
-{code}
+```
 
 due to:
-
-{code}
+```scala
   override def sizeHint(len: Int) {
     if (len > size && len >= 1) {
       val newarray = new Array[AnyRef](len min 1)
@@ -34,6 +32,6 @@ due to:
       array = newarray
     }
   }
-{code}
+```
 
 Probably, it's supposed to be `len max 1`.

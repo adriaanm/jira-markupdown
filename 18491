@@ -1,8 +1,7 @@
-The fix for SI-7740 also scrubs causes (and suppressions, for Java 7).
+The fix for scala/bug#7740 also scrubs causes (and suppressions, for Java 7).
 
 The old behavior:
-
-{code}
+```scala
 scala> def sample = throw new RuntimeException("Point of failure")
 sample: Nothing
 
@@ -57,19 +56,17 @@ Caused by: java.lang.RuntimeException: java.lang.RuntimeException: Point of fail
 Caused by: java.lang.RuntimeException: Point of failure
     at .sample(<console>:7)
     ... 35 more
-{code}
+```
 
 Shows the causes, versus the new behavior, which is too succinct:
-
-{code}
+```scala
 scala> rewrapperer
 java.lang.RuntimeException: java.lang.RuntimeException: java.lang.RuntimeException: Point of failure
   at .rewrapper(<console>:14)
   at .rewrapperer(<console>:15)
-{code}
+```
 
 This is minor because you can always:
-
-{code}
+```scala
 scala> lastException.printStackTrace
-{code}
+```

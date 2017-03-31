@@ -1,8 +1,7 @@
 Based on the stack trace when the compiler crashes, I think I've stumbled across this same bug again, twice in a fortnight (on different projects). Common factor: me.
 
 Here's a different, more complex (but still not easy to reduce much further) test case:
-
-{code}
+```scala
 object Test {
   trait Foo {
     type Inner
@@ -18,6 +17,6 @@ object Test {
   val baz: Bar[_] = ???
   wrap(baz).get: Ordering[Foo { type Result = this.type }]
 }
-{code}
+```
 
-This version *does* appear to crash every version of the compiler between 2.10.3 and 2.12.0-M1.
+This version **does** appear to crash every version of the compiler between 2.10.3 and 2.12.0-M1.

@@ -1,5 +1,5 @@
 The project [https://github.com/yanns/scalatest-compile-error] produces the following error:
-{noformat}
+```
 Detected sbt version 0.13.5
 [info] Loading global plugins from /home/simon/.sbt/0.13/plugins
 [info] Loading project definition from /home/simon/projects/scala/scalatest-compile-error/project
@@ -334,10 +334,10 @@ java.lang.AssertionError: assertion failed:
 [error]     10         payer = Some("payer")
 [error]     11       )
 [error] Total time: 4 s, completed Sep 8, 2014 10:46:31 PM
-{noformat}
+```
 
 when I removed the last test with {code}val payer = invoice.payment.value.payer {code} ([https://github.com/yanns/scalatest-compile-error/blob/master/src/test/scala/payment/InvoiceSpec.scala#L28]), it works as expected:
-{noformat}
+```
 Detected sbt version 0.13.5
 [info] Loading global plugins from /home/simon/.sbt/0.13/plugins
 [info] Loading project definition from /home/simon/projects/scala/scalatest-compile-error/project
@@ -354,7 +354,7 @@ Detected sbt version 0.13.5
 [info] Tests: succeeded 2, failed 0, canceled 0, ignored 0, pending 0
 [info] All tests passed.
 [success] Total time: 7 s, completed Sep 8, 2014 10:49:12 PM
-{noformat}
+```
 
 If I let the last test with {code}val payer = invoice.payment.value.payer {code} but remove the {code}id: Option[String] = None{code} [https://github.com/yanns/scalatest-compile-error/blob/master/src/main/scala/payment/Invoice.scala#L6] from Invoice, it compiles also fine. 
 
@@ -363,7 +363,7 @@ I wrote the project on GitHub to reproduce the error with the minimal amount of 
 This error happened before in one "real" project that I cannot share.
 In that project, the error is quite different:
 (I replace the sensible information with <placeholder>
-{noformat}
+```
 [info] Compiling 1 Scala source to [project]/test-classes...
 [trace] Stack trace suppressed: run last test:compile for the full output.
 [error] (test:compile) java.lang.NullPointerException
@@ -756,4 +756,4 @@ java.lang.NullPointerException
 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:615)
 	at java.lang.Thread.run(Thread.java:745)
 [error] (test:compile) java.lang.NullPointerException
-{noformat}
+```

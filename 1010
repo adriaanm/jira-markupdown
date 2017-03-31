@@ -1,10 +1,9 @@
 Since there's work going on with Stream at the moment anyway, might this be a good time to fix this on trunk (even if it doesn't make it into 2.8.0)?
 
-I've appended a patch with a proposed solution (passes {{ant test}} on top of current r22157).
+I've appended a patch with a proposed solution (passes `ant test` on top of current r22157).
 
 It replaces Stream.Cons by
-
-{code}
+```scala
   @serializable @SerialVersionUID(2734764611255889683L)
   final class Cons[+A](hd: A, tl: => Stream[A]) extends Stream[A] {
     override def isEmpty = false
@@ -16,6 +15,6 @@ It replaces Stream.Cons by
       tl
     }
   }
-{code}
+```
 
 I regenerated the serial version UID, since this will be incompatible with the old one, right?

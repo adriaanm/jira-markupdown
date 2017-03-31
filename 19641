@@ -1,10 +1,9 @@
 I have been experiencing a deadlock on production where 2 threads ({{ForkJoinPool-2-worker-1}} and {{null-SimpleThreadPoolWorker-1}}) of my application where in WAITING status.
 
-The application log show them stop reporting until I restart the application at _21:55_.
+The application log show them stop reporting until I restart the application at *21:55*.
 
-{{ForkJoinPool-2-worker-1}} stopped logging at _19:32:00_ :
-
-{code}
+`ForkJoinPool-2-worker-1` stopped logging at *19:32:00* :
+```scala
 2015-03-19 19:32:00,479 [ForkJoinPool-2-worker-1] INFO  com.gu.apiindexer.index.IndexBuilder - Content batch Single content id {455589366} starting...
 2015-03-19 19:32:00,479 [ForkJoinPool-2-worker-1] INFO  c.g.a.i.d.LiveContentToTagDataProvider - Executing content to tag map for Single content id {455589366}...
 2015-03-19 19:32:00,479 [ForkJoinPool-2-worker-1] INFO  com.gu.apiindexer.scaladb.Database - content-to-tag-query-template+content-single-subquery(455589366) completed in 0 ms
@@ -46,10 +45,10 @@ The application log show them stop reporting until I restart the application at 
 2015-03-19 21:56:50,092 [ForkJoinPool-2-worker-1] INFO  com.gu.apiindexer.Start$ - Loading reference data...
 2015-03-19 21:56:50,092 [ForkJoinPool-2-worker-1] INFO  com.gu.apiindexer.Start$ - Loading sections...
 2015-03-19 21:56:50,094 [ForkJoinPool-2-worker-1] INFO  com.gu.apiindexer.scaladb.Database - get-sections() completed in 2 ms 
-{code} 
+```
 
-{{null-SimpleThreadPoolWorker-1}} stopped logging at _19:30:10_ :
-{code}
+`null-SimpleThreadPoolWorker-1` stopped logging at *19:30:10* :
+```scala
 2015-03-19 19:30:10,410 [null-SimpleThreadPoolWorker-1] INFO  com.gu.apiindexer.scaladb.Database - preview-content-id-for-path(global/2015/mar/19/cam, global/2015/mar/19/cam) completed in 2 ms
 2015-03-19 19:30:10,411 [null-SimpleThreadPoolWorker-1] INFO  com.gu.apiindexer.scaladb.Database - preview-content-id-for-path(music/2015/mar/19/zomba-prison-project-i-have-no-everything-here-review-malawi-prison-music-ian-brenna, music/2015/mar/19/zomba-prison-project-i-have-no-everything-here-review-malawi-prison-music-ian-brenna) completed in 1 ms
 2015-03-19 19:30:10,415 [null-SimpleThreadPoolWorker-1] INFO  com.gu.apiindexer.scaladb.Database - preview-content-id-for-path(global/550b22a6e4b0c360811ba748, global/550b22a6e4b0c360811ba748) completed in 4 ms
@@ -66,11 +65,10 @@ The application log show them stop reporting until I restart the application at 
 2015-03-19 21:55:22,771 [null-SimpleThreadPoolWorker-1] INFO  com.gu.apiindexer.Start$ - Loading reference data...
 2015-03-19 21:55:23,719 [null-SimpleThreadPoolWorker-1] INFO  com.gu.apiindexer.Start$ - Loading sections...
 2015-03-19 21:55:23,959 [null-SimpleThreadPoolWorker-1] INFO  com.gu.apiindexer.scaladb.Database - get-sections() completed in 215 ms
-{code}
+```
 
 Before restarting the application I have taken a thread dump. :
-
-{code}
+```scala
 "ForkJoinPool-2-worker-1" daemon prio=10 tid=0x00007f3e38070800 nid=0x6359 in Object.wait() [0x00007f3e2c651000]
    java.lang.Thread.State: WAITING (on object monitor)
         at java.lang.Object.wait(Native Method)
@@ -157,6 +155,6 @@ Before restarting the application I have taken a thread dump. :
 
    Locked ownable synchronizers:
         - <0x00000000d6618468> (a java.util.concurrent.locks.ReentrantLock$NonfairSync)
-{code}
+```
 
 I have not been able to reproduce the problem, and this the first time we have experienced this issue on the codebase.

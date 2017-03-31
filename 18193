@@ -1,15 +1,13 @@
 The issue is that Nil and :: implement Serializable by being a case class/object, but the sealed abstract class List does not.
 
 This leads to huge types down the line:
-
-{code}
+```scala
 List(List(), Vector())
-{code}
+```
 
 
 ... results in the following type:
-
-{code}
+```scala
 List[scala.collection.immutable.Seq[Nothing] with
  scala.collection.AbstractSeq[Nothing]{def companion:
  scala.collection.generic.GenericCompanion[scala.collection.immutable.Seq with
@@ -255,13 +253,12 @@ List[scala.collection.immutable.Seq[Nothing] with
  scala.collection.immutable.Seq[Nothing] with scala.collection.AbstractSeq[Nothing]; def slice(from:
  Int,until: Int): scala.collection.immutable.Seq[Nothing] with
  scala.collection.AbstractSeq[Nothing]})}]
-{code}
+```
 
 Making List implement Serializable:
-
-{code}
+```scala
 List[scala.collection.immutable.Seq[Nothing] with scala.collection.AbstractSeq[Nothing] with java.io.Serializable]
-{code}
+```
 
 While we are all aware of the issues around Serializable, I think in this case it is perfectly sound and safe to make List serializable:
 

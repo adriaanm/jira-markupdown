@@ -1,6 +1,5 @@
 The new backend does an admirable job of eliminating closure allocation when possible:
-
-{code:scala}
+```scala
 @inline def foreachFn[E <: AnyRef, U] (array :Array[E])(op :E => U) {
     var ii = 0 ; val max = array.length; while (ii < max) {
       op(array(ii))
@@ -13,11 +12,10 @@ The new backend does an admirable job of eliminating closure allocation when pos
       println(prefix + key)
     }
   }
-{code}
+```
 
 yields:
-
-{code:text}
+```text
 public void testFn(java.lang.String[], java.lang.String);
     Code:
        0: aload_0
@@ -56,10 +54,10 @@ public void testFn(java.lang.String[], java.lang.String);
       63: istore        6
       65: goto          31
       68: return
-{code}
+```
 
 but boy that $adapted method sure is annoying. I don't need a BoxedUnit. So let's try to eliminate it by using java.util.function.Consumer:
-{code:scala}
+```scala
   @inline def foreachSAM[E <: AnyRef, U] (array :Array[E])(op :java.util.function.Consumer[E]) {
     var ii = 0 ; val max = array.length; while (ii < max) {
       op.accept(array(ii))
@@ -72,11 +70,10 @@ but boy that $adapted method sure is annoying. I don't need a BoxedUnit. So let'
       println(prefix + key)
     }
   }
-{code}
+```
 
 Oh noes, there goes my lovely closure elimination:
-
-{code:text}
+```text
   public void testSAM(java.lang.String[], java.lang.String);
     Code:
        0: aload_0
@@ -108,6 +105,6 @@ Oh noes, there goes my lovely closure elimination:
       49: istore        6
       51: goto          26
       54: return
-{code}
+```
 
 You know we love to have our cake and eat it too.

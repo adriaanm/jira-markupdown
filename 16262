@@ -1,14 +1,14 @@
 This code crashes the compiler (after complaining that Sp must be a trait):
-{code}
+```scala
 package spectest {
   class Sp[@specialized A, B](val a: A, val b: B) { }
   class Fsp[@specialized A, B](a: A, b: B) extends Sp(a,b) {
     def ab = (a,b)
   }
 }
-{code}
+```
 Error message from r25234 is:
-{code}
+```scala
 SpecTest.scala:3: warning: class Sp must be a trait. Specialized version of class Fsp will inherit generic spectest.Sp[Unit,B]
   class Fsp[@specialized A, B](a: A, b: B) extends Sp(a,b) {
         ^
@@ -24,4 +24,4 @@ error: java.lang.AssertionError: assertion failed: List(value a, value a)
 	at scala.tools.nsc.typechecker.Duplicators$BodyDuplicator.typed(Duplicators.scala:310)
 
 ...
-{code}
+```

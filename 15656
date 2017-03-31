@@ -1,21 +1,21 @@
 I have pervasively utilized the import noise reduction available when one defines type aliases in a package object:
-{code}
+```scala
   type IOException    = java.io.IOException
   type InputStream    = java.io.InputStream
-{code}
+```
 Unfortunately this interacts needlessly poorly with the rest of the world.  One adds a seemingly compilable file from elsewhere to find:
-{code}
+```scala
 [error] file.scala:44: reference to InputStream is ambiguous;
 [error] it is both defined in trait Foo and imported subsequently by 
 [error] import java.io.{InputStream, OutputStream}
-{code}
+```
 scalac is perfectly well aware that these normalize to the same type.  I have no problem with this being an error if they are not the same type, but this one is purely spurious, and it really hamstrings the otherwise boundless joy of aliasing commonly used types into one's package.
 
 Addendum: it is particularly intrusive because even wildcard imports incur an ambiguity error, so for instance:
-{code}
+```scala
   // package wide
   type Settings = scala.tools.nsc.Settings
   // some new file
   import scala.tools.nsc._
   // and... error.
-{code}
+```

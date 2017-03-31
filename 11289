@@ -1,5 +1,5 @@
 I guess https://github.com/scala/scala/blob/2.11.x/src/library/scala/collection/mutable/IndexedSeqView.scala offers an adequate illustration of why one might want to do this. Note that you couldn't make the type alias public even if you were inclined to do so because of variance. So every one of those Thises would be IndexedSeqView\[A, Coll\], with all that that implies.
-{code}
+```scala
 trait IndexedSeqView[A, +Coll] ... {
   private[this] type This = IndexedSeqView[A, Coll]
 
@@ -14,5 +14,5 @@ trait IndexedSeqView[A, +Coll] ... {
   override def splitAt(n: Int): (This, This)       
   override def reverse: This                       
 }
-{code}
+```
 I don't think a self-respecting language can make someone type IndexedSeqView\[A, Coll\] twelve times in ten lines.

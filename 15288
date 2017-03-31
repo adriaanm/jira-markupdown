@@ -1,7 +1,7 @@
 In the course of exercising abstract hierarchies I frequently find myself wanting to specify a type in terms of the methods it must implement without wanting to impose the additional requirement of implementing a specific interface.  One can do this but the penalty for doing so is severe and, it appears to me, unnecessary.
 
 Consider:
-{code}
+```scala
 trait Trait {
   type Foo <: { def bar(x: Int): Int }
   
@@ -17,7 +17,7 @@ class Concrete2 extends Trait {
   
   override def foobar(foo: Foo) = foo.bar(10)
 }
-{code}
+```
 In Concrete2 we override the method with a syntactically identical version of the inherited method.  The impact is profound.
 
 In Concrete1: a call to foobar forwards the target object and argument to Trait.foobar, where the integer is boxed and placed in an array, the method handle is looked up, the reflective call is issued, the result is unboxed, and it is returned to the calling class.

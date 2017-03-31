@@ -1,8 +1,7 @@
-{{immutable.Range.foreach()}} invokes its argument's {{apply()}} twice. When compiling with -optimize, that leads to inlining twice "the loop body" (if it gets inlined at all, for the max size threshold might be surpassed due to the duplicate inlining). 
+`immutable.Range.foreach()` invokes its argument's `apply()` twice. When compiling with -optimize, that leads to inlining twice "the loop body" (if it gets inlined at all, for the max size threshold might be surpassed due to the duplicate inlining). 
 
-A formulation of {{immutable.Range.foreach()}} invoking its argument's {{apply()}} just once is: 
-
-{noformat}
+A formulation of `immutable.Range.foreach()` invoking its argument's `apply()` just once is: 
+```
 if (length > 0) {
   val sentinel = last
   var closuVar = start
@@ -13,7 +12,7 @@ if (length > 0) {
     else closuVar += step
   }
 }
-{noformat}
+```
 
 There can be other places in the collections library that exhibit a similar pattern. 
 

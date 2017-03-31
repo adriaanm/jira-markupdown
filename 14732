@@ -1,19 +1,17 @@
-*How to reproduce the bug*
+**How to reproduce the bug**
  1. Create a file with a class that has compile errors
  2. Save the file to compile it
  3. Delete the file
 
 As a result we get the following errors in the Error Log view:
-
-{code}
+```scala
 Error
 Sun Nov 22 18:50:48 EET 2009
 Resource '/bugs/src/bugs/Hello.scala' does not exist.
-{code}
+```
 
 and
-
-{code}
+```scala
 Warning
 Sun Nov 22 18:50:48 EET 2009
 Errors running builder 'Scala Builder' on project 'bugs'.
@@ -48,7 +46,7 @@ org.eclipse.core.internal.resources.ResourceException: Resource '/bugs/src/bugs/
 	at org.eclipse.core.internal.events.AutoBuildJob.doBuild(AutoBuildJob.java:140)
 	at org.eclipse.core.internal.events.AutoBuildJob.run(AutoBuildJob.java:238)
 	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:55)
-{code}
+```
 
 Subsequent compilations (via save) produce the save error. If we do a clean+rebuild we do not get the error but any future compilations via save again produce the same error. The only way to stop having the error is to close the project and reopen it (but I believe that even then the Scala builder is in an inconsistent state).
 

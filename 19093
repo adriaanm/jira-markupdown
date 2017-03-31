@@ -1,4 +1,4 @@
-{code}
+```scala
 object Test {
   class MyDynamic extends Dynamic {
     def applyDynamic[T](n: String)(a: String) = ???
@@ -6,11 +6,10 @@ object Test {
   val qual = new MyDynamic
   qual.sel[String]("a")
 }
-{code}
+```
 
-fails with {{-Yrangepos}}
-
-{noformat}
+fails with `-Yrangepos`
+```
 ======= Position error
 Enclosing tree [491] does not include tree [490]
 == Enclosing tree [491] of type Apply at [135:139]applydynamic_sip.scala
@@ -20,6 +19,6 @@ Enclosing tree [491] does not include tree [490]
 == Enclosed tree [490] of type TypeApply at [135:150]applydynamic_sip.scala
 
 [L   6        ] #490    [135:150]       TypeApply  // qual.sel[String]
-{noformat}
+```
 
-Once this is fixed, {{-Yrangepos:false}} should be removed from {{test/files/run/applydynamic_sip.flags}}, most likely also {{test/files/run/t6731.flags}}, {{test/files/run/t6663.flags}}, {{test/files/run/t6327.flags}}.
+Once this is fixed, `-Yrangepos:false` should be removed from `test/files/run/applydynamic_sip.flags`, most likely also `test/files/run/t6731.flags`, `test/files/run/t6663.flags`, `test/files/run/t6327.flags`.

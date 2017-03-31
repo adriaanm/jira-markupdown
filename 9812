@@ -1,5 +1,5 @@
 Here's the typer issue down to its essentials. The NPE is most likely error reporting floundering.
-{code}
+```scala
 class Foo[A](x: A)
 object bar extends Foo(5: T forSome { type T })
 // a.scala:2: error: illegal inheritance;
@@ -12,5 +12,5 @@ object bar extends Foo(5: T forSome { type T })
 // object bar extends Foo(5: T forSome { type T })
 //                         ^
 // two errors found
-{code}
+```
 That error message says, in effect, "Bug City." You never know what's going to end up owning certain kinds of symbols; neither does the compiler, which is requiring a T owned by the empty package (i.e. the enclosing package class.)

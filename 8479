@@ -1,7 +1,7 @@
 The language is that the parser preserves the escapes in an interpolated string, so that the interpolator can do whatever it wants.
 
 Clarifying the previous comment:
-{code}
+```scala
 scala> implicit class `literally the string`(val sc: StringContext) {
      | def lit(args: Any*): String = {
      |   sc.checkLengths(args)
@@ -16,10 +16,10 @@ res4: String = a="42";
 scala> val a = "42" ; lit"""a=\"$a\";"""
 a: String = 42
 res5: String = a=\"42\";
-{code}
+```
 
 Clarifying a previous suggestion to use octal escapes, they are deprecated somewhat:
-{code}
+```scala
 scala> implicit class `strictly ess`(val sc: StringContext) {
      | def S(args: Any*): String = {
      |   sc.checkLengths(args)
@@ -45,5 +45,5 @@ scala> :se +deprecation
 
 scala> val a = "42" ; f"\042$a\042"
 <console>:11: warning: Octal escape literals are deprecated, use \u0022 instead.
-{code}
+```
 And of course as noted previously, that advice is only good for triple-quotes.  There's a comment in the code to upgrade the advice to dollar-quote when that is merged someday.

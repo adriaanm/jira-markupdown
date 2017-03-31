@@ -1,12 +1,12 @@
 That's not always an option:
-{code}
+```scala
 illegal inheritance from final class Optional
 [error] trait Optional[+T] extends java.util.Optional[T @uV]
 [error]                                      ^
 [error] one error found
-{code}
+```
 Without fixing this there is no way to treat java.util.Optional (for instance - as one example among endless) as the covariant type it should be without adding an uncheckedVariance annotation at every single use site until you die. Of course there's no point in that, you can write _ <: A at every single use site until you die, and that's probably shorter.
-{code}
+```scala
 scala> import scala.annotation.unchecked.{ uncheckedVariance => uV }
 import scala.annotation.unchecked.{uncheckedVariance=>uV}
 
@@ -31,4 +31,4 @@ defined class A
 
 scala> class A[+T](val x: Opt[T @uV])
 defined class A
-{code}
+```

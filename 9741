@@ -1,6 +1,5 @@
 Related to: https://github.com/milessabin/shapeless/issues/48
-
-{code}
+```scala
 import scala.language.experimental.macros
 import scala.reflect.macros.Context
 def fooImpl[T: c.WeakTypeTag](c: Context): c.Expr[Unit] = { println(c.weakTypeOf[T].typeSymbol.asClass.companionSymbol); c.universe.reify {} }
@@ -8,15 +7,14 @@ def foo[T] = macro fooImpl[T]
 
 scala> { case class Frob(x: Int); foo[Frob] }
 <none>
-{code}
+```
 
 However:
-
-{code}
+```scala
 import scala.reflect.runtime.universe._
 
 scala> { case class Frob(x: Int); weakTypeOf[Frob].typeSymbol.asClass.companionSymbol }
 scala.ScalaReflectionException: free type Frob is not a class
-{code}
+```
 
 So, run-time and compile-time reflection disagree about whether `Frob` is a "class" or a "free type".

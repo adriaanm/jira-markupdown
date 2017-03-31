@@ -1,30 +1,27 @@
 I'm using scala-2.7.1.  It appears that either the Regex group numbers or group names are off by one.  This code:
-
-{code}
+```scala
 val firstMatch = new scala.util.matching.Regex("a(b)","b").findFirstMatchIn("ab").get
 println(firstMatch.group(0))
 println(firstMatch.group("b"))
-{code}
+```
 
 produces this output:
-
-{code}
+```scala
 b
 java.lang.ArrayIndexOutOfBoundsException: 1
     at scala.util.matching.Regex$$Match.start(Regex.scala:211)
     ...
-{code}
+```
 
 While group(i:Int) expects zero based indices into the subgroups, groupNames is prepended with a blank extra name causing the first subgroup to be unreachable by name.
 
 To make matters worse, the following code reveals a difference in how Regex.Match and Regex.!MatchIterator index the same groups.  The second assertion fails:
-
-{code}
+```scala
 val matches = new scala.util.matching.Regex("a+(b+)","b").findAllIn("aabb")
 val firstMatch = matches.matchData.next
 // presumably now matches.start(0) == firstMatch.start(0)
 assert(matches.start == firstMatch.start) // 0 == 0
 assert(matches.start(0) == firstMatch.start(0)) // 0 != 2
-{code}
+```
 
 I think the correct fix is for the Regex.Matches.{starts,ends} initializers to map the offsets from 0 to groupCount, not from 1, as in the attached patch.

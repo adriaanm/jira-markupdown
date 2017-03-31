@@ -1,6 +1,5 @@
 The following little snippet blows up:
-
-{code}
+```scala
 object Test {
   implicit class DoubleMethods(val x: Double) extends AnyVal {
     def inv: Double = 1.0 / x
@@ -8,11 +7,10 @@ object Test {
 
   def apply(x: Double) = x.inv
 }
-{code}
+```
 
 The error message is 
-
-{code:none}
+```none
 error: 
      while compiling:  test.scala
        current phase:  typer
@@ -116,6 +114,6 @@ Exception in thread "main" java.util.NoSuchElementException: key not found: valu
 	at scala.tools.nsc.Driver.process(Driver.scala:52)
 	at scala.tools.nsc.Driver.main(Driver.scala:65)
 	at scala.tools.nsc.Main.main(Main.scala)
-{code}
+```
 
-Removing {{extends AnyVal}} or removing {{implicit}} and adding the implicit conversion manually both work fine.
+Removing `extends AnyVal` or removing `implicit` and adding the implicit conversion manually both work fine.

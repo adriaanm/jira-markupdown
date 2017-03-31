@@ -1,8 +1,8 @@
-Discovered while diagnosing SI-6260.
-{code}
+Discovered while diagnosing scala/bug#6260.
+```scala
 class Box1[T <: Int](val x: T) extends AnyVal { }
-{code}
-{noformat}
+```
+```
 
 $this.$asInstanceOf[Int]()
 	at scala.Predef$.assert(Predef.scala:173)
@@ -15,6 +15,6 @@ $this.$asInstanceOf[Int]()
 	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.genLoadApply6$1(GenICode.scala:988)
 	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$backend$icode$GenICode$ICodePhase$$genLoad(GenICode.scala:1021)
 	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:138)
-{noformat}
+```
 
 [martin says: Relegating from critical as it's an untypical case. I'll still try to fix but this should not be a blocker for an 2.10 RC1]

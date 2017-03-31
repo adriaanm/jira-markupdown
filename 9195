@@ -1,16 +1,16 @@
 Ah, OK! It's about not changing the parser.
 
 Still, I'm under the impression that defining C should probably be allowed by default, so this wouldn't work:
-{code}
+```scala
 trait B extends A[B]       -->    trait B { type X = B }
 trait B extends A[_ <: B]  -->    trait B { type X <: B } //or trait B { type X = _ <: B }, which seems the same
-{code}
+```
 even though it's nicer
 
-and we'd need _something_ like this:
-{code}
+and we'd need *something* like this:
+```scala
 trait B extends A[=B]      -->    trait B { type X = B }
 trait B extends A[B]       -->    trait B { type X <: B }
-{code}
+```
 
 (Not enthusiast about the = syntax, but I am sure that picking some syntax is easier than getting soundness).

@@ -1,7 +1,6 @@
 The following code works in 2.6.0-final but throws and exception in
 trunk r12940:
-
-{code}
+```scala
 object Test extends Application
 {
   val a = Array[String]("a", "b", "c")
@@ -16,11 +15,10 @@ object Test extends Application
   val d : Array[String] = b
   System.out.println(d)
 }
-{code}
+```
 
 The output is:
-
-{code}
+```scala
 [Ljava.lang.String;@1a125f0
 Array(a)
 java.lang.ExceptionInInitializerError
@@ -38,15 +36,14 @@ Caused by: java.lang.ClassCastException: [Ljava.lang.Object; cannot be cast to [
         at Test$$.<init>(t.scala:12)
         at Test$$.<clinit>(t.scala)
         ... 10 more
-{code}
+```
 
 Oddly enough, putting everything in one line works:
-
-{code}
+```scala
 Welcome to Scala version 2.6.0.12940.20070926-175352.
 Type in expressions to have them evaluated.
 Type :help for more information.
 
 scala> Array[String]("abc", "def").take(1).toArray
 res0: Array[String] = [Ljava.lang.String;@d5e270
-{code}
+```

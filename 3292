@@ -1,5 +1,5 @@
 I think, I found the problem: in `ClosureElimination` single instructions are replaced by using `BasicBlock.replaceInstruction`. But this doesn't work as expected:
-{code}
+```scala
 #!scala
     def replaceInstruction(oldInstr: Instruction, newInstr: Instruction): Boolean = {
       assert(closed, "Instructions can be replaced only after the basic block is closed")
@@ -17,8 +17,8 @@ I think, I found the problem: in `ClosureElimination` single instructions are re
       }
       changed
     }
-{code}
+```
 
-This is a complicated way of saying replace the _first_ occurrence of the given instruction in the block with the one given. But equality of an `Instruction` is not defined in terms of its position, so there's just any first instruction of this kind in the block replaced.
+This is a complicated way of saying replace the *first* occurrence of the given instruction in the block with the one given. But equality of an `Instruction` is not defined in terms of its position, so there's just any first instruction of this kind in the block replaced.
 
 Since BasicBlock.replaceInstruction is used all over the place in ClosureElimination you could possibly craft many examples where this implementation breaks down.

@@ -2,7 +2,7 @@ Anonymous class can derive from serializable base class
 (either via java.io.Serializable or @serializable).
 Currently, there is no way to associate a serialVersionUID
 with the anonymous class.
-{code}
+```scala
 @serializable
 trait Foo {
   def xy: Int
@@ -12,8 +12,8 @@ trait Foo {
 val x = new Foo {
   def xy = 2
 }
-{code}
-This was noted in Ticket SI-832. There were two problems
+```
+This was noted in Ticket scala/bug#832. There were two problems
 with 832. First it was marked as an enhancement.
 If scalability is important to Scala, then being able to
 detect during deserialization when there is a
@@ -31,7 +31,7 @@ Proposal:
 Add code to the Scala class tools/nsc/transform/CleanUp.scala
 which adds a serialVersionUID to an anonymous class if
 its base class is serializable. Something like:
-{code}
+```scala
 case cdef @ ClassDef(mods, name, tparams, impl) =>
     val sym = cdef.symbol
     // is this an anonymous class?
@@ -39,7 +39,7 @@ case cdef @ ClassDef(mods, name, tparams, impl) =>
       sym addAnnotation serialVersionUIDAnnotation
     }
     super.transform(tree)
-{code}
+```
 (About 90% down the file where a serialVersionUID is automatically
 generated for anonymous functions.)
 

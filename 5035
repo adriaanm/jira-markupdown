@@ -1,6 +1,5 @@
 I've a slightly different snippet that seems to fail just in the same way (maybe it's worth adding it in the regression suite once the problem is fixed...)
-
-{noformat}
+```
 class Crash { // if you change this to a `trait` it keeps failing, though if it is an `object` it compiles just fine!
   class Element
 
@@ -18,11 +17,10 @@ class Crash { // if you change this to a `trait` it keeps failing, though if it 
       ElementOrdering.compare(a.element, b.element)
   }
 }
-{noformat}
+```
 
 And here is the crash reported by scalac
-
-{noformat}
+```
 % scalac Crash.scala 
 error: scala.tools.nsc.symtab.Types$TypeError: ambiguous reference to overloaded definition,
 both value Crash$ElementOrdering$$$outer in object ElementOrdering of type ()Crash.this.type
@@ -229,6 +227,6 @@ match expected type ?
 	at scala.tools.nsc.Main$.process(Main.scala:106)
 	at scala.tools.nsc.Main$.main(Main.scala:123)
 	at scala.tools.nsc.Main.main(Main.scala)
-{noformat}
+```
 
 I've tested this with both scalac 2.9.1 and 2.9.2.

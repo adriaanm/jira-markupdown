@@ -1,6 +1,5 @@
 here's my working hypothesis:
-
-{code}
+```scala
 class Dep(x: Int)(implicit val nameClash: String)
 
 object Test extends Application {
@@ -23,13 +22,13 @@ object Test extends Application {
   
   new Meh
 }
-{code}
+```
 
-thus, when in a constructor of the class C, and moreover in a context that is enclosed by the self/super constructor call of that constructor,  the members of C are not in scope and the *outer* of the class C is the next outer (its implicits are also in scope here)
+thus, when in a constructor of the class C, and moreover in a context that is enclosed by the self/super constructor call of that constructor,  the members of C are not in scope and the **outer** of the class C is the next outer (its implicits are also in scope here)
 
 this leads to the following pearl:
-{code}
+```scala
 val nextOuter = if (owner.isConstructor) (if(enclInSelfSuperCall) outer.outer.outer.outer else outer.outer.outer) else outer
-{code}
+```
 
 since the only decent numbers are 0 and 1, I propose we encapsulate `outer.outer.outer` into something more descriptive -- but what?

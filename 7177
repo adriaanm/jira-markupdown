@@ -1,4 +1,4 @@
-{code}
+```scala
     public String getSimpleName() {
 	if (isArray())
 	    return getComponentType().getSimpleName()+"[]";
@@ -31,14 +31,13 @@
 	// Eventually, this is the empty string iff this is an anonymous class
 	return simpleName.substring(index);
     }
-{code}
+```
 
 classOf[A].getEnclosingClass().getName => "Test$"
 classOf[A].getName => "Test$A$1"
 
 Well, according to the source code of getSimpleName, A should be flattened into Test$$A$1. What's even more interesting, the correct name indeed appears after LambdaLift, but then gets messed by Flatten:
-
-{code}
+```scala
 C:\Projects\Kepler\sandbox>scalac -Xprint:lambdalift,flatten t5425.scala
 [[syntax trees at end of lambdalift]]// Scala source: t5425.scala
 package <empty> {
@@ -89,4 +88,4 @@ package <empty> {
     }
   }
 }
-{code}
+```

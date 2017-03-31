@@ -7,8 +7,7 @@ Short explanation:
  - when specialization creates the correct F$mcI$sp, it overwrites the class symbol, but the module symbol is kept
  - in GenJVM, the addInnerClass attempts to get the owner class and module, getting the specialization-generated symbol for F$mcI$sp and the lazy type symbol for the module -- and forces .info on it
  - once this happens, the class is read and the signature for F$mcI$sp is set to an incorrect value (see above)
-
-{code}       
+```scala
 phase     before parser (Definition.<init>          specialization                 genJVM
 
 source    ---------------------------------------- trait F -----------------------------------------------------
@@ -16,7 +15,6 @@ code                                       \
               / class sym (lazy type)  ----  ----- synthetic F$mcI$sp ------- force .info - signature messed up --- crash
 existing  ---<- module sym (lazy type) -------------------------------------- force .info - eliminated
 bytecode      \ mclass sym (lazy type) ---------------------------------------------------- eliminated
-
-{code}
+```
 
 A localized solution is to force .info on all members with the same name before creating a specialized version of a class - and this fixes the particular problem - but shouldn't this be done everytime we create a synthetic class?

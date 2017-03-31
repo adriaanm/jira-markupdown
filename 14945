@@ -1,6 +1,6 @@
-{code}
+```scala
 $$ scalac -Yinline  a.scala 
 error: Missing dependency 'class scala.Proxy$$class', required by /scala/trunk/build/pack/lib/scala-library.jar(scala/runtime/RichInt.class)
 one error found
-{code}
+```
 I know this is a consequence of there now being different classpaths calculated depending on whether -optimise is set, only because I fixed SI-2928.  It was and is hard coded to look at settings.XO.value so -Yinline is left in the lurch.  Thus do I know how to fix it, but I'm leaving it because I would really like first for someone to document why we find ourselves with a classpath with such a powerful interest in the compiler switches.

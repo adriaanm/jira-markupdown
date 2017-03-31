@@ -1,19 +1,18 @@
 Thanks for the quick answer, but I do find it quite surprising.
-Why shouldn't Scalac, in this case, resolve the alias statically and go on? Also, what's {{T}} doing in the output?
+Why shouldn't Scalac, in this case, resolve the alias statically and go on? Also, what's `T` doing in the output?
 
 In fairness, I forgot to mention that
-{code}
+```scala
 or[String, String](bar orElse bar)(foo)
-{code}
-typechecks correctly, as does {{or(bar)(foo)}}. So this is, at least, a limitation of type inference. Does that help? I added at the end a couple variations.
+```
+typechecks correctly, as does `or(bar)(foo)`. So this is, at least, a limitation of type inference. Does that help? I added at the end a couple variations.
 
 Also, I just checked that dotty (38b00c5e7a2d3ea43391b5210925aaca13c79b36) does accept the example.
 
-Moreover, given that the alias can be statically resolved, I don't see how the two possible declarations of {{or}} are actually different — and SBT agrees and does not recompile client code. The spec just says "A type alias type t = T defines t to be an alias name for the type T" (4.3), and "If t is defined by a type alias type t = T, then t is equivalent to T." (3.5.1, Type equivalence).
+Moreover, given that the alias can be statically resolved, I don't see how the two possible declarations of `or` are actually different — and SBT agrees and does not recompile client code. The spec just says "A type alias type t = T defines t to be an alias name for the type T" (4.3), and "If t is defined by a type alias type t = T, then t is equivalent to T." (3.5.1, Type equivalence).
 
-Given that type inference is not really specified, whether this is a Scalac bug is of course up to you. And how hard it is to change this (without breaking other things) is a different question. However, if you want to close this, you should convince SBT *and* dotty to fix their behavior :-)
-
-{code}
+Given that type inference is not really specified, whether this is a Scalac bug is of course up to you. And how hard it is to change this (without breaking other things) is a different question. However, if you want to close this, you should convince SBT **and** dotty to fix their behavior :-)
+```scala
 object Bug {
   type =?>:[A, B] = PartialFunction[A, B]
 
@@ -36,4 +35,4 @@ object Bug {
   def theArg2: String =?>: String = bar orElse bar
   def bippy3 = or(theArg2)(foo) //Succeeds.
 }
-{code}
+```

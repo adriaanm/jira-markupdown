@@ -1,15 +1,15 @@
 First, the newBuilder function in object PriorityQueue is defined as
-{code}
+```scala
    def newBuilder[A](implicit ord: Ordering[A]) = new PriorityQueue[A]
-{code}
+```
 The lack of a return type means that the type in the API comes out as
-{code}
+```scala
    def newBuilder[A](implicit ord: Ordering[A]): PriorityQueue[A]
-{code}
+```
 rather than the expected
-{code}
+```scala
    def newBuilder[A](implicit ord: Ordering[A]): Builder[A, PriorityQueue[A]]
-{code}
+```
 The fix is to explicitly add the appropriate return type to the method declaration.
 
 Second, the current algorithm for creating a priority queue from initial elements inserts the elements one at a time.  This takes O(N log N) time.  Substituting the well-known "heapify" algorithm would improve this to O(N) time.  Similar  improvements can be made to enqueue, ++=, and reverse.

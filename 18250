@@ -1,8 +1,7 @@
 In the following example, the pattern match against `FooBar` is not correctly propagated to the case body, producing a compiler error:
 
 Preparation:
-
-{code}
+```scala
 sealed trait Bar[S] {
   def system: S
 }
@@ -10,11 +9,10 @@ sealed trait Bar[S] {
 trait Foo { def bar(): Unit }
 
 trait FooBar extends Bar[Foo]
-{code}
+```
 
 Example:
-
-{code}
+```scala
 trait Test[S] {
   val bar: Bar[S]
 
@@ -23,12 +21,11 @@ trait Test[S] {
     case _ =>
   }
 }
-{code}
+```
 
 The error here is: "error: value bar is not a member of _2"
 
 The following shows that the type is actually accepted by the compiler:
-
-{code}
+```scala
 case fb: FooBar => (fb: FooBar).system.bar()
-{code}
+```

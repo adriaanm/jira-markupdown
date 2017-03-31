@@ -1,6 +1,5 @@
-Ok, now that Philipp has fixed SI-3412 in record time (thanks a bunch, Philipp!), the {{f()}} is no longer necessary, and
-
-{code}
+Ok, now that Philipp has fixed scala/bug#3412 in record time (thanks a bunch, Philipp!), the `f()` is no longer necessary, and
+```scala
 import scala.actors._, scala.actors.Actor._, scala.actors.Futures._
 
 val a = actor { loop { react { case i:Int => Thread.sleep(2000); reply(i*2) } } }
@@ -8,6 +7,6 @@ val f = a !! (3, {case x:Int => x})
 val r = f map { _ + 1 }
 
 println(future(r)())
-{code}
+```
 
 works if future[T](resp: Responder[T]) is added to Futures.

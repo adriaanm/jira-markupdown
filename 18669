@@ -7,13 +7,13 @@ object DelambdafyBug {
     f("Hello") foreach println
   }
 }
-{code}
+```scala
 
 {code:title=build.sbt}
 scalaVersion := "2.11.0-M7"
 
 scalacOptions += "-Ydelambdafy:method"
-{code}
+```
 
 During `posterasure`, the knowledge that the result type was a value class, here StringOps (and not a String) is lost. I think `posterasure` should perform a boxing operation, here (or `erasure` itself).
 
@@ -41,7 +41,7 @@ collection.IndexedSeqOptimized}.foreach{(f: Function1)Unit}({
     }{Unit}
   }
 }
-{code}
+```scala
 After posterasure:
 {code:title=after posterasure}
 package <empty>{type} {
@@ -65,9 +65,9 @@ collection.IndexedSeqOptimized}.foreach{(f: Function1)Unit}({
     }{Unit}
   }
 }
-{code}
+```
 
-If the lambda *takes* a value class instead instead, then the compiler crashes during `icode` because some ErasedValueType(class StringOps, String) survive until then.
+If the lambda **takes** a value class instead instead, then the compiler crashes during `icode` because some ErasedValueType(class StringOps, String) survive until then.
 {code:title=DelambdafyBug.scala}
 object DelambdafyBug {
   def main(args: Array[String]): Unit = {
@@ -75,7 +75,7 @@ object DelambdafyBug {
     g("Hello")
   }
 }
-{code}
+```scala
 After erasure:
 {code:title=after erasure}
 package <empty>{type} {
@@ -115,7 +115,7 @@ collection.IndexedSeqOptimized}.foreach{(f: Function1)Unit}({
     }{Unit}
   }
 }
-{code}
+```
 After posterasure:
 {code:title=after posterasure}
 package <empty>{type} {

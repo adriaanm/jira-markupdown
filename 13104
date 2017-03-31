@@ -1,6 +1,5 @@
 The following code:
-
-{code}
+```scala
 trait Builder[C[_],T] {
   def +=(x: T): Unit
   def finalise: C[T]
@@ -24,11 +23,10 @@ object Arbitrary {
   ): Arbitrary[C[T]] = () => Some(b.builder[T].finalise)
 
 }
-{code}
+```
 
 ... causes the following compiler crash:
-
-{code}
+```scala
 Exception in thread "main" java.lang.StackOverflowError
   at scala.tools.nsc.symtab.Types$$TypeMap.mapOver(Types.scala:2228)
   at scala.tools.nsc.symtab.Types$$AsSeenFromMap.apply(Types.scala:2651)
@@ -92,4 +90,4 @@ Exception in thread "main" java.lang.StackOverflowError
   .
   .
   .
-{code}
+```

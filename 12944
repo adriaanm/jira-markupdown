@@ -1,20 +1,20 @@
-{code}
+```scala
 scala> new Date("1981/08/07") <= new Date()
 <console>:7: warning: comparing a fresh object using `<=' will always yield false
        new Date("1981/08/07") <= new Date()
                               ^
 res0: Boolean = true
-{code}
+```
 
 what happened: I added the <= method to java.util.Date with implicits, but when testing my code in the interpreter, I got this warning:
-{code}
+```scala
 <console>:7: warning: comparing a fresh object using `<=' will always yield false
-{code}
+```
 
 what expected: no warning
 
 For completeness, rest of code:
-{code}
+```scala
 trait Ord[T] {
   def <= (other: T): Boolean
 }
@@ -24,4 +24,4 @@ import java.util.Date
 implicit def dateAsOrd(self: Date) = new Ord[Date] {
   def <= (other: Date) = self.equals(other) || self.before(other)
 }
-{code}
+```

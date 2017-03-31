@@ -1,8 +1,7 @@
 In 2.7.0-RC1 I get a deadlock when shutting down the Scala Actors system
 with this program.  The deadlock is not reproducible 100% of the time, but
 I get it on JDK6 on Linux and JDK5 on Mac OS X around 50% of the time.
-
-{code}
+```scala
 import scala.actors.Actor
 import scala.actors.Actor._
 import scala.actors.Scheduler
@@ -49,18 +48,16 @@ object Test extends Application
 
   System.err.println("starting 4")
 }
-{code}
-
-{code}
+```
+```scala
 "Thread-0" prio=5 tid=0x0100d4e0 nid=0x854800 waiting for monitor entry [0xb0c8a000..0xb0c8ad90]
         at java.lang.Object.wait(Native Method)
         - waiting on <0x05984198> (a scala.actors.FJTaskScheduler2)
         at scala.actors.FJTaskScheduler2.liftedTree3$$1(FJTaskScheduler2.scala:116)
         at scala.actors.FJTaskScheduler2.run(FJTaskScheduler2.scala:115)
         - locked <0x05984198> (a scala.actors.FJTaskScheduler2)
-{code}
-
-{code}
+```
+```scala
 "Thread-1" daemon prio=5 tid=0x0100d940 nid=0x872000 waiting for monitor entry [0xb0d0b000..0xb0d0bd90]
         at scala.actors.Scheduler$$.unPendReaction(Scheduler.scala:90)
         - waiting to lock <0x05984248> (a scala.actors.Scheduler$$)
@@ -68,9 +65,8 @@ object Test extends Application
         at scala.actors.FJTask$$Wrap.run(Unknown Source)
         at scala.actors.FJTaskRunner.scanWhileIdling(Unknown Source)
         at scala.actors.FJTaskRunner.run(Unknown Source)
-{code}
-
-{code}
+```
+```scala
 "main" prio=5 tid=0x010015e0 nid=0xb0801000 in Object.wait() [0xb07ff000..0xb0800148]
         at java.lang.Object.wait(Native Method)
         - waiting on <0x0598de70> (a scala.actors.FJTaskRunner)
@@ -94,9 +90,8 @@ object Test extends Application
         at scala.tools.nsc.ObjectRunner$$.run(ObjectRunner.scala:74)
         at scala.tools.nsc.MainGenericRunner$$.main(MainGenericRunner.scala:161)
         at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
-{code}
+```
 
-It appears that the lock on {{scala.actors.Scheduler$$}} is held by {{Scheduler.snapshot}}
-while Actor.exit is trying to run {{Scheduler.unPendReaction()}}  which needs the same
+It appears that the lock on `scala.actors.Scheduler$$` is held by `Scheduler.snapshot`
+while Actor.exit is trying to run `Scheduler.unPendReaction()`  which needs the same
 lock.
-

@@ -1,16 +1,13 @@
 When defining a ambiguous implicit view, the compiler will complain for an implicit def, but not for an implicit val:
-
-{code}
+```scala
 scala> implicit val impl: String => Int = (s: String) => s.toInt
 impl: String => Int = <function1>
 
 scala> "2" - 1
 java.lang.StackOverflowError
 	at $anonfun$1.apply(<console>:9)
-
-{code}
-
-{code}
+```
+```scala
 scala> implicit def stringToInt(s: String): Int = s.toInt
 <console>:7: error: type mismatch;
  found   : s.type (with underlying type String)
@@ -21,23 +18,20 @@ Note that implicit conversions are not applicable because they are ambiguous:
  and method stringToInt of type (s: String)Int
  are possible conversion functions from s.type to ?{def toInt: ?}
        implicit def stringToInt(s: String): Int = s.toInt
-
-{code}
+```
 
 Further the implicit view is not ambiguous if the type annotation on the val or def is omitted:
-
-{code}
+```scala
 scala> implicit val impl = (s: String) => s.toInt
 impl: String => Int = <function1>
 
 scala> "2" - 1
 res0: Int = 1
-{code}
-
-{code}
+```
+```scala
 scala> implicit def stringToInt(s: String) = s.toInt
 stringToInt: (s: String)Int
 
 scala> "2" - 1
 res0: Int = 1
-{code}
+```

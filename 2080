@@ -5,14 +5,14 @@ The fix consists of generating the javasig of the erasure of higher-order type p
 Here's a self-contained test:
 
 ticket2163.scala
-{code}
+```scala
 class Ticket2163Scala[CC[X]](x: CC[Int]) {
   def bar[DD[X]](meh: DD[Int]): CC[Int] = x
 }
-{code}
+```
 
 ticket2163.java
-{code}
+```scala
 import java.util.*;
 
 public class ticket2163 {
@@ -22,11 +22,10 @@ public class ticket2163 {
       foo.bar(array);
     }
 }
-{code}
+```
 
 Here's the patch:
-
-{code}
+```scala
 diff --git a/src/compiler/scala/tools/nsc/transform/Erasure.scala b/src/compiler/scala/tools/nsc/transform/Erasure.scala
 index 8cfa61b..accd51c 100644
 --- a/src/compiler/scala/tools/nsc/transform/Erasure.scala
@@ -40,4 +39,4 @@ index 8cfa61b..accd51c 100644
              TVAR_TAG.toString+sym.name+";"
            else if (sym == AnyClass || sym == AnyValClass || sym == SingletonClass) 
              jsig(ObjectClass.tpe)
-{code}
+```

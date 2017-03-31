@@ -1,15 +1,13 @@
 From my read of SIP-15, I believe it should support value classes of value classes.  If SIP-15 really doesn't support value classes of value classes, then it would be nice if the error handling was more clear.  I'm hoping it's more than just error handling, though, because I think it would be nice to optimize multiple wrapping of abstractions down completely.
 
 The code I ran on 2.10.0-M3, -M4, and -SNAPSHOT was
-
-{code}
+```scala
 class A(val i: Int) extends AnyVal
 class B(val a: A) extends AnyVal
-{code}
+```
 
 which gave me an error that starts with
-
-{code}
+```scala
 [error] Unknown type: A$unboxed, A$unboxed [class scala.reflect.internal.Types$UniqueErasedValueType, class scala.reflect.internal.Types$UniqueErasedValueType] TypeRef? false
 [error] 
 [error]      while compiling: /home/shajra/tmp/scala-bug/valclass.scala
@@ -24,14 +22,13 @@ which gave me an error that starts with
 [error]                  tpe: Int
 [error]        symbol owners: value a -> constructor B -> class B -> package <empty>
 [error]       context owners: object B -> package <empty>
-{code}
+```
 
 and (eliding the compiler tree dump) ended with
-
-{code}
+```scala
 [error] == Expanded type of tree ==
 [error] 
 [error] TypeRef(TypeSymbol(final abstract class Int extends ))
 [error] 
 [error] Unknown type: A$unboxed, A$unboxed [class scala.reflect.internal.Types$UniqueErasedValueType, class scala.reflect.internal.Types$UniqueErasedValueType] TypeRef? false
-{code}
+```

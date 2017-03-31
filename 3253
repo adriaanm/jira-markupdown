@@ -1,6 +1,5 @@
 This problem is masked with an unreported error when the type constructor is a component type of an enclosing manifest.
-
-{code}
+```scala
 scala> class M[A]; class O[A, B[_]]
 warning: there were 1 feature warning(s); re-run with -feature for details
 defined class M
@@ -13,12 +12,11 @@ scala> implicitly[reflect.Manifest[O[String, M]]]
 <console>:70: error: erroneous or inaccessible type
               implicitly[reflect.Manifest[O[String, M]]]
                         ^
-{code}
+```
 
 Internally, an error like is issued and swallowed:
-
-{noformat}
+```
 kinds of the type arguments (M) do not conform to the expected kinds of the type parameters (type T).
 M's type parameters do not match type T's expected parameters:
 class M has one type parameter, but type T has none
-{noformat}
+```

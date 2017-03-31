@@ -1,29 +1,24 @@
 reproduced in 2.11.8 and 2.12.0-M5:
-
-{code:scala}
+```scala
 case class Foo(d: Double) extends AnyVal
 null.asInstanceOf[Foo] // works
-{code}
-
-{code:scala}
+```
+```scala
 case class Foo(d: Double) extends AnyVal
 def newInst[T] = null.asInstanceOf[T]
 newInst[Foo] // NPE
-{code}
+```
 
 But did not reproduce [~rytz]'s report under 2.12.0-M5:
-
-{code:scala}
+```scala
 case class Bar(val x: String) extends AnyVal
 null.asInstanceOf[Bar]  // OK, returns Bar(null)
-{code}
-
-{code:scala}
+```
+```scala
 case class Baz[T](val x: T) extends AnyVal
 null.asInstanceOf[Baz[Int]  // OK, returns Baz(null) 
-{code}
-
-{code:scala}
+```
+```scala
 case class Bat[T <: AnyVal](val x: T) extends AnyVal
 null.asInstanceOf[Baz[Int]  // OK-ish, returns Bat(null)  (implying x was boxed?)
-{code}
+```

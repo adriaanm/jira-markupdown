@@ -1,16 +1,16 @@
 I ran into this myself.  Here is another way to trigger it: forward reference to lazy value.
-{code}
+```scala
 class Bop {
   def f = {
     println(s.length)
     lazy val s = "abc"
   }
 }
-{code}
-{code}
+```
+```scala
 Exception in thread "main" java.lang.Error: symbol lazy value s$$lzy$$1 does not exist in Bop.f
 	at scala.tools.nsc.symtab.SymbolTable.abort(SymbolTable.scala:34)
 	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:840)
 	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.genLoadArguments(GenICode.scala:1027)
 	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:740)
-{code}
+```

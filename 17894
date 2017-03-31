@@ -1,12 +1,11 @@
-Original report (Scala IDE): [#1001402|https://scala-ide-portfolio.assembla.com/spaces/scala-ide/tickets/1001402]
+Original report (Scala IDE): [#1001402](https://scala-ide-portfolio.assembla.com/spaces/scala-ide/tickets/1001402)
 
-Twin issue reported against Eclipse: [#398657|https://bugs.eclipse.org/bugs/show_bug.cgi?id=398657]
+Twin issue reported against Eclipse: [#398657](https://bugs.eclipse.org/bugs/show_bug.cgi?id=398657)
 
 Scalac crashes when trying to open a Java class, with annotations, compiled by the Eclipse Java compiler.
 
 The Java code is the following:
-
-{code}
+```scala
 package ide.issue.session;
 
 import java.util.HashMap;
@@ -24,15 +23,14 @@ public class JavaClass {
 		
     }
 }
-{code}
+```
 
-It depends on {{"org.codehaus.jackson" % "jackson-core-asl" % "1.9.4"}}, also available [here|http://search.maven.org/remotecontent?filepath=org/codehaus/jackson/jackson-core-asl/1.9.4/jackson-core-asl-1.9.4.jar].
+It depends on `"org.codehaus.jackson" % "jackson-core-asl" % "1.9.4"`, also available [here](http://search.maven.org/remotecontent?filepath=org/codehaus/jackson/jackson-core-asl/1.9.4/jackson-core-asl-1.9.4.jar).
 
 I attached a zip with the result of the compilation with the Eclipse Java compiler.
 
 A Scala test class:
-
-{code}
+```scala
 package ide.issue.security
 
 import ide.issue.session.JavaClass
@@ -43,11 +41,10 @@ class ScalaTest {
     val j= new JavaClass()
   }
 }
-{code}
+```
 
 The error:
-
-{code}
+```scala
 $ scalac -classpath ../jackson-core-asl-1.9.4.jar:../t1402.jar ScalaTest.scala 
 error: error while loading JsonTypeInfo$Id, class file '../jackson-core-asl-1.9.4.jar(org/codehaus/jackson/annotate/JsonTypeInfo$Id.class)' is broken
 (class java.lang.UnsupportedOperationException/addChild inapplicable for <none>)
@@ -87,6 +84,6 @@ ScalaTest.scala:8: error: ide.issue.session.JavaClass does not have a constructo
            ^
 one warning found
 three errors found
-{code}
+```
 
 If the Java class is compiled with javac, scalac is working fine.

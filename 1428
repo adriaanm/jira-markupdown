@@ -5,11 +5,9 @@ Both syntax are accepted in the compiler (both pluggin and stand-alone), but one
 Problem 1)
 
 In file vcc/DialogTest.scala in the trouble block, if this line is present:
-
-
-{code}
+```scala
     val columns=List(("col1",classOf[String]), "col2",classOf[java.lang.Integer]))
-{code}
+```
 
 I get:
 
@@ -17,15 +15,15 @@ error in presentation normal compile
 java.lang.StackOverflowError
 
 However if this is the line:
-{code}
+```scala
     val columns=List[(String,java.lang.Class[_])](("col1",classOf[String]),("col2",classOf[java.lang.Integer]))
-{code}
+```
 The code loads perfectly
 
 Problem 2) 
 
 This line in vcc/DialogTest.scala will case errors when I open the code:
-{code}
+```scala
    def apply(col:Int,obj:(String,Integer))= col match { case 0=> obj._1; case 1=> obj._2}
  }}
 
@@ -35,16 +33,16 @@ An error has occurred. See error log for more details.
 scala.tools.eclipse.javaelements.ScalaAnonymousClassElement cannot be cast to org.eclipse.jdt.core.IField
 
 Change it to: 
-{code}
+```
     def apply(col:Int,obj:(String,Integer)):java.lang.Object= col match { case 0=> obj._1; case 1=> obj._2}
-{code}
+```scala
 No problem happens...
 
 
 Case 3)
 
 Also, having focused on these lines, I create a smaller single file, and then the behavior is a little different:
-{code}
+```
 package vcc
 
 abstract class TableModelRowProjection[T] {

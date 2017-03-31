@@ -1,5 +1,5 @@
 Now groupBy is implemented as following:
-{code}
+```scala
 332	  def groupBy[K](f: A => K): Map[K, Repr] = {
 333	    var m = Map[K, Builder[A, Repr]]()
 334	    for (elem <- this) {
@@ -12,7 +12,7 @@ Now groupBy is implemented as following:
 341	    }
 342	    m mapValues (_.result)
 343	  }
-{code}
+```
 
 Note line 342, which returns a map view. It means that builder.result would be invoked everytime when we get the value of the map. That leads to two problems:
 
@@ -20,7 +20,7 @@ Note line 342, which returns a map view. It means that builder.result would be i
 "Produces a collection from the added elements . The builder's contents are undefined after this operation."
 
 2.  
-{code}
+```scala
 scala> val arr = Array.range(0,10)
 arr: Array[Int] = Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
 
@@ -37,10 +37,10 @@ scala> v1 eq v2
 res5: Boolean = false
 
 scala>
-{code}
+```
 As we can see, we get a new Array each time calling map.apply, which may cause performance problem.
 
 So line 342 may change to 
-{code}
+```scala
 342	    m map { case(k,b) => (k,b.result) }
-{code}
+```

@@ -1,9 +1,7 @@
-I'm trying to figure out whether this is a bug. It comes about when you declare a method to be parameterized on some type T where there must be a typeclass in scope for T (e.g. TC[T]), but *only if you don't require that the method takes an actual parameter of type T*. Example:
+I'm trying to figure out whether this is a bug. It comes about when you declare a method to be parameterized on some type T where there must be a typeclass in scope for T (e.g. TC[T]), but **only if you don't require that the method takes an actual parameter of type T**. Example:
 
 This does not compile:
-
-
-{code}
+```scala
 object PolymorphicBug {
 
   def main(args: Array[String]) {
@@ -25,11 +23,11 @@ object PolymorphicBug {
     //()  --uncomment this line and it will compile
   }
 }
-{code}
+```
 The error is: "polymorphic expression cannot be instantiated to expected type; found [J] String, required: Unit"
 
 Replace the declaration of the baz method as 
-{code}
+```scala
       def baz[J : TC](i : J) : String = s + " " + implicitly[TC[J]].foo.toString
-{code}
+```
 And it compiles again.

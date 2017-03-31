@@ -3,8 +3,7 @@ OK, so it doesn't cause a reference to the outer map (as it just references a fi
 However it introduces a new non-transient field. The nice thing about this field is that it's set before the call to super unlike any field that is defined inside the inner class body. A negative aspect is that the field is not transient, so it gets serialized.
 
 An alternative is to use early initialization syntax to get the best of both worlds (at the cost of ugly code). The patch is like:
-
-{code}
+```scala
 --- a/src/library/scala/collection/immutable/HashMap.scala
 +++ b/src/library/scala/collection/immutable/HashMap.scala
 @@ -125,12 +125,15 @@ class HashMap[A, +B] extends Map[A,B] with MapLike[A, B, HashMap[A, B]] with mut
@@ -53,11 +52,10 @@ index 3d66c90..9d2e298 100644
        table     = HashSet.this.table
        tableSize = HashSet.this.tableSize
        threshold = HashSet.this.threshold
-{code}
+```
 
 This seems to do the job, see the relevant bytecode for the anonymous inner class in immutable.HashSet:
-
-{code}
+```scala
 {
 private transient int lf;
 
@@ -150,4 +148,4 @@ private int lf();
 
 
 }
-{code}
+```

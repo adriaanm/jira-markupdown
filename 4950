@@ -1,5 +1,5 @@
 It can be reduced even further:
-{code}
+```scala
 package types
 
 sealed trait Document {
@@ -17,10 +17,10 @@ sealed trait DynamicDocument extends Document {
 }
 
 class Collection extends StaticDocument
-{code}
+```
 
 This variant still triggers the bug:
-{code}
+```scala
 ...
 sealed trait Document {
   sealed trait FieldBase
@@ -28,9 +28,9 @@ sealed trait Document {
   sealed trait DynamicFieldBase extends FieldBase with DynamicDocument
 }
 ...
-{code}
+```
 While this does not:
-{code}
+```scala
 ...
 sealed trait Document {
   sealed trait FieldBase
@@ -38,4 +38,4 @@ sealed trait Document {
   sealed trait DynamicFieldBase extends FieldBase // with DynamicDocument
 }
 ...
-{code}
+```

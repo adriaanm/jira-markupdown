@@ -5,11 +5,10 @@ FWIW I am also seeing apparently the same problem in the following situation, an
 - We exclude commons-logging dependency from hadoop-client and instead replace it with SLF4J's shim jcl-over-slf4j, a drop-in API replacement
 
 We get:
-
-{code}
+```scala
 [WARNING] Class org.apache.commons.logging.Log not found - continuing with a stub.
 [ERROR] error while loading FileInputFormat, class file '/Users/srowen/.m2/repository/org/apache/hadoop/hadoop-core/1.0.4/hadoop-core-1.0.4.jar(org/apache/hadoop/mapred/FileInputFormat.class)' is broken
-{code}
+```
 
 The class is available in jcl-over-slf4j, but is marked as "runtime" dependency since it is not used directly, and not needed -- by the likes of javac at least -- at compile time.
 

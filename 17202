@@ -1,5 +1,5 @@
 Getting following exception (rarely) when processing list as a parallel collections:
-{noformat}
+```
 java.lang.NullPointerException
 	at scala.collection.parallel.ParIterableLike$$anonfun$map$1$$anonfun$apply$1.apply(ParIterableLike.scala:505)
 	at scala.collection.parallel.ParIterableLike$$anonfun$map$1$$anonfun$apply$1.apply(ParIterableLike.scala:505)
@@ -18,12 +18,11 @@ java.lang.NullPointerException
 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1110)
 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:603)
 	at java.lang.Thread.run(Thread.java:722)
-{noformat}
+```
 
 The code is like following:
-
-{code}
+```scala
 val l: List[A] = ... //some initialization
 def mapper[A,B,C](v: A): (B,C) = {...}
 val res = l.par.map(mapper).seq.toMap
-{code}
+```

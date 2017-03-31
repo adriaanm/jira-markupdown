@@ -1,6 +1,5 @@
 It seems you're looking at the wrong place. I'll take the example reduced by Paul, and show that all specialization are performed correctly (unless I'm missing something). I added client call to test if specialization is correctly performed all across the board.
-
-{code}
+```scala
 class ClassMethod[@specialized(Int) T](x: T) {
   def m1[@specialized(Int) W](f: T => W): W = f(x)
   def m2(f: T => T): T = f(x)
@@ -12,11 +11,10 @@ class Test {
     x.m1(x => x + 1)
   }
 }
-{code}
+```
 
 Printing trees after specialization, Test.test looks like this:
-
-{code}
+```scala
 def test(): Unit = {
       val x: ClassMethod[Int] = new ClassMethod$mcI$sp(1);
       {
@@ -34,13 +32,12 @@ def test(): Unit = {
         ()
       }
     }
-{code}
+```
 
 Looks good to me!
 
 You are looking at {{m1$mcI$sp}}, which is a specialization based only on class parameters. In order to hit the sweet spot, you need to be in a specialized case for both the method and class type parameters. That variant is called {{m1$mIcI$sp}} (the encoding of specialized methods is 'm' followed by instantiations for method type parameters, followed by 'c' and instantiations of the class type parameters). You were looking at {{m1$mcI}}, but that one can not call the int variant of m1, since it still has the type parameter `W` (you don't see it in bytecode, that's why I suggest you use {{-Xprint:spec}}):
-
-{code}
+```scala
 class ClassMethod[@specialized(scala.Int) T >: Nothing <: Any] extends java.lang.Object with ScalaObject {
     <paramaccessor> protected[this] val x: T = _;
     def this(x: T): ClassMethod[T] = {
@@ -54,5 +51,5 @@ class ClassMethod[@specialized(scala.Int) T >: Nothing <: Any] extends java.lang
     <specialized> def m1$mIcI$sp(f: (Int) => Int): Int = ClassMethod.this.m1$mIc$sp(f.asInstanceOf[(T) => Int]());
     <specialized> def m2$mcI$sp(f: (Int) => Int): Int = ClassMethod.this.m2(f.asInstanceOf[(T) => T]()).asInstanceOf[Int]()
   };
-{code}
+```
 

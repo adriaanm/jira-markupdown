@@ -1,18 +1,16 @@
 I don't think the following code should produce a compiler error:
-
-{code}
+```scala
 scala> (Vector(): Seq[_]) match { case List() => true; case Nil => false }}}
 <console>:8: error: unreachable code
               (Vector(): Seq[_]) match { case List() => true; case Nil => false }
                                                                           ^
-{code}
+```
 
-The following slightly modified version seems to show that the {{false}} can be reached:
-
-{code}
+The following slightly modified version seems to show that the `false` can be reached:
+```scala
 scala> (Vector(): Seq[_]) match { case List() => true; case x if x == Nil => false }
 warning: there were 1 unchecked warnings; re-run with -unchecked for details
 res1: Boolean = false
-{code}
+```
 
-See also [this Stack Overflow question|http://stackoverflow.com/q/7549111/334519].
+See also [this Stack Overflow question](http://stackoverflow.com/q/7549111/334519).

@@ -1,6 +1,5 @@
-For the below code, the compiler issues no warning; only the runtime catches the {{MatchError}}:
-
-{code}
+For the below code, the compiler issues no warning; only the runtime catches the `MatchError`:
+```scala
 import scala.reflect.runtime.universe._
 
 val (c : Int, p: TermName) = {
@@ -9,15 +8,14 @@ val (c : Int, p: TermName) = {
  }
  (c1, p1)
 }
-{code}
+```
 
-When importing {{TermName}} explicitly, a warning is issued:
-
-{code}
+When importing `TermName` explicitly, a warning is issued:
+```scala
 import scala.reflect.runtime.universe.TermName
 ...
 
 warning: abstract type pattern reflect.runtime.universe.TermName is unchecked since it is eliminated by erasure
-{code}
+```
 
-However, as it is known that {{TermName <: NameApi}}, the latter being an abstract class, I believe that the correct warning would have been a {{fruitless type test}} warning.
+However, as it is known that `TermName <: NameApi`, the latter being an abstract class, I believe that the correct warning would have been a `fruitless type test` warning.

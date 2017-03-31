@@ -1,24 +1,24 @@
 First, I'm not sure if a type parameter is allowed to take type parameter, that is:
-{code}
+```scala
 class classA[T] {}
-{code}
+```
 is good, but
-{code}
+```scala
 class classB[T[_]] {}
-{code}
+```
 is an unnecessary,  or invalid. So, Landei, you code should be rewritten as:
-{code}
+```scala
 class DependentMap[K] private (map: Map[Any, Any] = Map[Any, Any]()) {
   def +[V](k: K, v: V) = new DependentMap(map + (k -> v))
 }
-{code}
+```
 
 Second, if so, then the compiler should report error on classB[T[_]] instead of crash.
 
 Third, anyway, here is a smallest test case which causes compiler throwing above AssertionError:
-{code}
+```scala
 class Ticket2367[T[_]] {}
 class A {
   new Ticket2367
 }
-{code}
+```

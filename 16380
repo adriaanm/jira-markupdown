@@ -1,17 +1,15 @@
 Unfortunately the vendor of the 1.7VM has changed from "Sun Microsystems Inc." to "Oracle Corporation". This means that the fork-join-pool is not enabled by default		
-
-{noformat}
+```
 Welcome to Scala version 2.9.1.final (Java HotSpot(TM) Server VM, Java 1.7.0).
 Type in expressions to have them evaluated.
 Type :help for more information.
 
 scala>  System.getProperty("java.vm.vendor")
 res0: java.lang.String = Oracle Corporation
-{noformat}
+```
 
 See this code:
-
-{noformat}
+```
 private[actors] def useForkJoin: Boolean =
     try !propIsSetTo("actors.enableForkJoin", "false") &&
       (propIsSetTo("actors.enableForkJoin", "true") || {
@@ -25,6 +23,6 @@ private[actors] def useForkJoin: Boolean =
     catch {
       case _: SecurityException => false
     }
-{noformat}
+```
 
 The fix is trivial

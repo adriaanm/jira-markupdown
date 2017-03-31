@@ -1,6 +1,6 @@
 this bug affects me using scala version 2.11.1
 testing the following in the REPL 
-{code}
+```scala
 import scala.reflect.runtime.universe._
 import scala.tools.reflect.ToolBox
 
@@ -9,9 +9,9 @@ class Test {
 }"""
 val toolbox = runtimeMirror(getClass.getClassLoader).mkToolBox()
 toolbox.parse(input)
-{code}
+```
 results in 
-{code}
+```scala
 scala.tools.reflect.ToolBoxError: reflective compilation has failed:
 
 '{' expected but ';' found.
@@ -23,23 +23,23 @@ scala.tools.reflect.ToolBoxError: reflective compilation has failed:
   at scala.tools.reflect.ToolBoxFactory$ToolBoxImpl$withCompilerApi$.apply(ToolBoxFactory.scala:354)
   at scala.tools.reflect.ToolBoxFactory$ToolBoxImpl.parse(ToolBoxFactory.scala:413)
   ... 46 elided
-{code}
+```
 my current workaround is surrounding package declarations with curly-brackets. 
-{code}
+```scala
 val input = """
 package foo.bar{
   class Test {
   }
 }"""
-{code}
+```
 
 this results in a valid tree. However calling 
 {code}toolbox.typecheck{code}
 on the resulting tree fails throwing: 
-{code}
+```scala
 java.lang.AssertionError: assertion failed: value <local <expression-owner>>
   at scala.reflect.internal.Symbols$Symbol.newPackage(Symbols.scala:309)
   at scala.tools.nsc.typechecker.Namers$Namer.createPackageSymbol(Namers.scala:380)
   at scala.tools.nsc.typechecker.Namers$Namer.createPackageSymbol(Namers.scala:373)
 ...
-{code}
+```

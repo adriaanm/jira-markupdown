@@ -1,7 +1,7 @@
 Somewhat related to SI-1500, here is another problem with type inference and annotated types / custom {{AnnotationChecker}}s.
 
-Example {{AnnotationChecker}}:
-{code}
+Example `AnnotationChecker`:
+```scala
     object checker extends AnnotationChecker {
 
       /** Check annotations to decide whether tpe1 <:< tpe2 */
@@ -11,10 +11,10 @@ Example {{AnnotationChecker}}:
 
       }
     }
-{code}
+```
 
 Test code:
-{code}
+```scala
     class xyz[A] extends TypeConstraint
 
     def loopWhile[T](cond: =>Boolean)(body: =>(Unit @xyz[T])): Unit @ xyz[T] = {{
@@ -31,14 +31,14 @@ Test code:
         (): @xyz[Int]
       }}
     }}
-{code}
+```
 
 Compiler error:
-{code}
+```scala
 <console>:19: error: type mismatch;
  found   : Unit @xyz[Int]
  required: Unit @xyz[Nothing]
                (): @xyz[Int]
-{code}
+```
 
-This time, the reason is that when solving a system of typing constraints, each variable is either minimized or maximized, depending on the combined variance of its occurences. Now, the code that checks the variance does not look for occurences in type annotations, so a variable that occurs only there is reported as "doesn't occur anywhere" and will be mapped to {{Nothing}}.
+This time, the reason is that when solving a system of typing constraints, each variable is either minimized or maximized, depending on the combined variance of its occurences. Now, the code that checks the variance does not look for occurences in type annotations, so a variable that occurs only there is reported as "doesn't occur anywhere" and will be mapped to `Nothing`.

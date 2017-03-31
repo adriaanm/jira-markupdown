@@ -1,6 +1,5 @@
 Removing Scala's the code in Typers which does constant inlining ...
-
-{code}
+```scala
         case ct @ ConstantType(value) if mode.inNone(TYPEmode | FUNmode) && (ct <:< pt) && !forScaladoc && !forInteractive => // (0)
           val sym = tree.symbol
           if (sym != null && sym.isDeprecated) {
@@ -8,11 +7,10 @@ Removing Scala's the code in Typers which does constant inlining ...
             unit.deprecationWarning(tree.pos, msg)
           }
           treeCopy.Literal(tree, value)
-{code}
+```
 
 ... seems to have uncovered a NPE ...
-
-{code}
+```scala
 quick.plugins:
     [mkdir] Created dir: /home/soc/Entwicklung/scala/build/quick/classes/continuations-plugin
 [scalacfork] Compiling 5 files to /home/soc/Entwicklung/scala/build/quick/classes/continuations-plugin
@@ -47,7 +45,7 @@ quick.plugins:
 [scalacfork] 	at scala.tools.nsc.Driver.process(Driver.scala:54)
 [scalacfork] 	at scala.tools.nsc.Driver.main(Driver.scala:67)
 [scalacfork] 	at scala.tools.nsc.Main.main(Main.scala)
-{code}
+```
 
 ... which I think is an issue with class initialization of code related to SubComponent/Global.
 

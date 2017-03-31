@@ -1,6 +1,5 @@
 Simplified below. Adriaan, are forward references in type parameter lists allowed?
-
-{code}
+```scala
 trait Term
 case class FunctionalTerm[+T <: Term](t: T) extends Term
 
@@ -12,11 +11,10 @@ def ex2[T <: Term, U[T] <: Term](t: U[T]): Term = ex1(t)
 // ex3 compiles, ex4 gives errors
 def ex3[T <: Term, U[T] <: X, X <: Term](t: U[T]): Term = sys.error("TODO: ex3")
 def ex4[T <: Term, U[T] <: X, X <: Term](t: U[T]): Term = ex3(t)
-{code}
+```
 
 errors on ex4:
-
-{noformat}
+```
 scala> def ex4[T <: Term, U[T] <: X, X <: Term](t: U[T]): Term = ex3(t)
 <console>:9: error: inferred type arguments [T,U,Nothing] do not conform to method ex3's type parameter bounds [T <: Term,U[T] <: X,X <: Term]
        def ex4[T <: Term, U[T] <: X, X <: Term](t: U[T]): Term = ex3(t)
@@ -26,4 +24,4 @@ scala> def ex4[T <: Term, U[T] <: X, X <: Term](t: U[T]): Term = ex3(t)
  required: U(in method ex3)[T(in method ex3)]
        def ex4[T <: Term, U[T] <: X, X <: Term](t: U[T]): Term = ex3(t)
                                                                      ^
-{noformat}
+```

@@ -2,17 +2,15 @@ TL;DR: immutable collections are nice because they don't chance, so we can be sm
 
 
 s.c.i.List (for example) seems to derive its equals from GenSeqLike:
-
-{code}
+```scala
  override def equals(that: Any): Boolean = that match {
     case that: GenSeq[_] => (that canEqual this) && (this sameElements that)
     case _               => false
   }
-{code}
+```
 
 canEquals cannot succeed-fast (only fail-fast) for `this eq that` so we go directly to sameElements, which is using LinearSeqOptimized's:
-
-{code}
+```scala
   override /*IterableLike*/
   def sameElements[B >: A](that: GenIterable[B]): Boolean = that match {
     case that1: LinearSeq[_] =>
@@ -26,6 +24,6 @@ canEquals cannot succeed-fast (only fail-fast) for `this eq that` so we go direc
     case _ =>
       super.sameElements(that)
   }
-{code}
+```
 
 As witnessed this does not succeed-fast.

@@ -1,4 +1,4 @@
-{code}
+```scala
 scala> def iv = collection.mutable.IndexedSeq(1,2,3).view
 iv: scala.collection.mutable.IndexedSeqView[Int,scala.collection.mutable.IndexedSeq[Int]]
 
@@ -9,6 +9,6 @@ java.lang.ClassCastException: scala.collection.SeqViewLike$$anon$1 cannot be cas
 scala> iv intersect iv
 java.lang.ClassCastException: scala.collection.SeqViewLike$$anon$1 cannot be cast to scala.collection.mutable.IndexedSeqView
   ... 32 elided
-{code}
+```
 
-Problem is described in more detail in related issues SI-4190 and SI-6709.  A sensible fix will cover them all.  It's mostly SeqView's fault for .asInstanceOf[That]-ing without even checking cbf eq theCbfWeAreExpecting.  (Relying on a bunch of manual overrides in IndexedSeqView is not a very good idea either.)
+Problem is described in more detail in related issues scala/bug#4190 and scala/bug#6709.  A sensible fix will cover them all.  It's mostly SeqView's fault for .asInstanceOf[That]-ing without even checking cbf eq theCbfWeAreExpecting.  (Relying on a bunch of manual overrides in IndexedSeqView is not a very good idea either.)

@@ -1,6 +1,5 @@
 Minimized a bit further:
-
-{code}
+```scala
 object A {
   class C {
     def m(a: Nothing): Int = 0
@@ -10,12 +9,10 @@ object A {
   }
   (new C).m({ case (x, y) => x } : Any => Any)
 }
+```
 
-{code}
-
-This smells rather similar to SI-8111, but it isn't the same bug.
-
-{noformat}
+This smells rather similar to scala/bug#8111, but it isn't the same bug.
+```
 qbin/scalac -Ycheck:typer ../scala/sandbox/test.scala
 [Now checking: typer]
 [check: typer] ../scala/sandbox/test.scala:8:
@@ -25,4 +22,4 @@ qbin/scalac -Ycheck:typer ../scala/sandbox/test.scala
  currentOwner chain: value $anonfun -> value <local A> -> object A
        symbol chain: value y -> value $anonfun -> value <local A> -> object A -> package <empty> -> package <root>scala.reflect.internal.Trees$Bind / (y @ _)
 warning: TreeCheckers detected non-compliant trees in test.scala
-{noformat}
+```

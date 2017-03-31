@@ -1,8 +1,7 @@
 The length and size methods on ListBuffer differ. The former is overridden in ListBuffer.scala to have an O(1) implementation, but the latter forwards to "underlying", which uses the O(n ) implementation from TraversableOnce.
 
 To reproduce,
-
-{code}
+```scala
 def time[A](f: => A): A = {
   val t1 = System.currentTimeMillis
   val ret = f
@@ -15,17 +14,16 @@ val lb = collection.mutable.ListBuffer.tabulate[Int](1000*1000)(identity)
 
 time(for (j <- 0 until 10000) { lb.length })
 time(for (j <- 0 until 10000) { lb.size })
-{code}
+```
 
 I get,
-
-{code}
+```scala
 scala> time(for (j <- 0 until 1000) { lb.length })
 0.00000 secs
 
 scala> time(for (j <- 0 until 1000) { lb.size })
 5.48300 secs
-{code}
+```
 
 The issue came up on StackOverflow, where Daniel Sobral explained the behavior,
 http://stackoverflow.com/questions/7061842/what-is-the-running-time-for-size-on-scalas-listbuffer

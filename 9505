@@ -1,15 +1,12 @@
 Some breadcrumbs:
-
-{code}
+```scala
 def normalTypedApply(tree: Tree, fun: Tree, args: List[Tree]) = {
         val stableApplication = (fun.symbol ne null) && fun.symbol.isMethod && fun.symbol.isStable
         if (stableApplication && isPatternMode) {
           // treat stable function applications f() as expressions.
           typed1(tree, mode & ~PATTERNmode | EXPRmode, pt)
-        
-{code}
-
-{code}
+```
+```scala
      def typedIdentOrWildcard(tree: Ident) = {
         val name = tree.name
         if (Statistics.canEnable) Statistics.incCounter(typedIdentCount)
@@ -19,20 +16,18 @@ def normalTypedApply(tree: Tree, fun: Tree, args: List[Tree]) = {
         else
           typedIdent(tree, name)
       }
-{code}
+```
 
 In the original type check, we get to:
-
-{noformat}
+```
 normalTypedApply(tree = << ::((x @ _), (xs @ _)) >>, fun = << :: >>, ...)
-{noformat}
+```
 
 After a reset, the retypecheck gets to: 
-
-{noformat}
+```
 normalTypedApply(tree = << scala.`package`.::((x @ _), (xs @ _)) >>, fun = << scala.`package`.:: >>, ...)
-{noformat}
+```
 
-The function is treated as a stable application, and the application is typed in expression mode, rather than pattern mode. Under this mode, the ident {{_}} does not typecheck.
+The function is treated as a stable application, and the application is typed in expression mode, rather than pattern mode. Under this mode, the ident `_` does not typecheck.
 
 I'm not sure yet what changed from 2.10.0 to 2.10.1 to lead us down this path.

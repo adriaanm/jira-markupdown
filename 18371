@@ -1,4 +1,4 @@
-{code}
+```scala
 $ cat spec.scala 
 
 class C[@specialized(Int) T](c: T) {
@@ -15,11 +15,10 @@ spec.scala:5: error: type mismatch;
     new D(c)
           ^
 one error found
-{code}
+```
 
 Adding some debug info to duplicators shows it doesn't instantate <init>'s type to the type parameter T:
-
-{code}
+```scala
            typing new D[T].<init>(C.this.c): pt = scala.this.Any: undetparams=, implicitsEnabled=false, enrichmentEnabled=false, mode=EXPRmode, silent=false, context.owner=method test$mcI$sp
                 typing new D[T].<init>: pt = ?: undetparams=, implicitsEnabled=false, enrichmentEnabled=false, mode=EXPRmode BYVALmode POLYmode FUNmode, silent=true, context.owner=method test$mcI$sp
                     typing new D[T]: pt = ?: undetparams=, implicitsEnabled=false, enrichmentEnabled=false, mode=EXPRmode POLYmode QUALmode, silent=true, context.owner=method test$mcI$sp
@@ -27,7 +26,7 @@ Adding some debug info to duplicators shows it doesn't instantate <init>'s type 
                     adapted new D[scala.this.Int]: D[scala.this.Int] to ?, 
                 typed new D[scala.this.Int].<init>: (<param> d: U)D[U]
                 adapted new D[scala.this.Int].<init>: (<param> d: U)D[U] to ?, 
-{code}
+```
 
 Last two lines say it all: D[Int].<init> has type `(d: U)D[U]` instead of `(d: Int)D[Int]`.
 

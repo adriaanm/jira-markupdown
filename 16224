@@ -1,6 +1,6 @@
 I am writing a Scala class to inherit from a Java class, and I must override a method that takes a protected Java inner class as a parameter. The Java dependency comes as a jar without source code.
 
-I have the exact same setup as found in SI-3120 except that I do not have the Java source code available, so scalac only knows about the Java dependency by looking at the byte code (in jar or class files).
+I have the exact same setup as found in scala/bug#3120 except that I do not have the Java source code available, so scalac only knows about the Java dependency by looking at the byte code (in jar or class files).
 
 This is how I replicate the problem in a simple setting without my jar dependency:
 
@@ -13,7 +13,7 @@ public class JavaSuperClass {
         System.out.println("hello");
     }
 }
-{code}
+```scala
 
 {code:title=scalapkg/ScalaSubClass.java|borderStyle=solid}
 package scalapkg
@@ -23,11 +23,10 @@ class ScalaSubClass extends JavaSuperClass {
     println("world")
   }
 }
-{code}
+```
 
 This is what happens:
-
-{code}
+```scala
 $ cd javapkg
 $ javac JavaSuperClass.java
 $ cd ../scalapkg
@@ -39,19 +38,18 @@ ScalaSubClass.scala:6: error: class JavaInnerClass in class JavaSuperClass canno
   override def method(javaInnerclass: JavaSuperClass#JavaInnerClass) {
                                                      ^
 one error found
-{code}
+```
 
-Note, if I change {{JavaSuperClass#JavaInnerClass}} to simply {{JavaInnerClass}}, I get this:
-
-{code}
+Note, if I change `JavaSuperClass#JavaInnerClass` to simply `JavaInnerClass`, I get this:
+```scala
 ScalaSubClass.scala:6: error: method method overrides nothing
   override def method(javaInnerClass: JavaInnerClass) {
                ^
 one error found
-{code}
+```
 
-I know this sounds very similar to SI-1806, but I believe this is unrelated because there are no statics anywhere in my example.
+I know this sounds very similar to scala/bug#1806, but I believe this is unrelated because there are no statics anywhere in my example.
 
-I feel like something is wrong, because when I put the same code into a mixed java/scala project in Eclipse, it seemed to compile fine (with the latter {{JavaInnerClass}} syntax); it's only when I compile the Scala code with only the Java byte code (and no Java source code) that I cannot get it to work. This should also be able to work as well if {{method}} is protected in both classes.
+I feel like something is wrong, because when I put the same code into a mixed java/scala project in Eclipse, it seemed to compile fine (with the latter `JavaInnerClass` syntax); it's only when I compile the Scala code with only the Java byte code (and no Java source code) that I cannot get it to work. This should also be able to work as well if `method` is protected in both classes.
 
-I posted this to [StackOverflow here|http://stackoverflow.com/questions/6476848/how-to-refer-to-protected-inner-class-in-scala-when-inheriting-from-java-with-by], but was told it was probably a compiler bug as opposed to incorrect usage.
+I posted this to [StackOverflow here](http://stackoverflow.com/questions/6476848/how-to-refer-to-protected-inner-class-in-scala-when-inheriting-from-java-with-by), but was told it was probably a compiler bug as opposed to incorrect usage.

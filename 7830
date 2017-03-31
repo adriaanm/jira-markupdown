@@ -1,8 +1,7 @@
 Some in progress notes. I've renamed class and object 'B' to 'buhB' to make it easier to do a search using contains. That's important because some names change along the way. All the following results come from the same run, which is important as ids aren't stable from one run to the next.
 
 On the second and subsequent compiles, early in the process, we get symbol package$buhB from its class file. Here it has id 6946
-
-{noformat}
+```
 *** package$buhB#6946
 java.lang.Exception: Stack trace
   at java.lang.Thread.dumpStack(Thread.java:1273)
@@ -40,10 +39,10 @@ java.lang.Exception: Stack trace
   at scala.collection.AbstractIterator.foreach(Iterator.scala:1157)
   at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:430)
   ...
-{noformat}
+```
 
 Somewhat later we get symbol buhB from Namer, here with id 7260.
-{noformat}
+```
 *** buhB#7260
 java.lang.Exception: Stack trace
 	at java.lang.Thread.dumpStack(Thread.java:1273)
@@ -105,10 +104,10 @@ java.lang.Exception: Stack trace
 	at scala.collection.AbstractIterator.foreach(Iterator.scala:1157)
 	at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:430)
         ...
-{noformat}
+```
 
 Finally, during code gen we get our assert saying that symbols 6946 and 7260 are overloaded alternatives. Same name, same type, same owner.
-{noformat}
+```
 assertion failed: Symbol is unexpectedly overloaded with alternatives 'object package$buhB#6946#MOD (object package$buhB#6946#MOD->package buhbase#29#PK->package <root>#2#PK)'and'object package$buhB#7260#MOD (object package$buhB#7260#MOD->package buhbase#29#PK->package <root>#2#PK)'.
 	at scala.Predef$.assert(Predef.scala:179)
 	at scala.reflect.internal.Symbols$Symbol.suchThat(Symbols.scala:1651)
@@ -118,7 +117,7 @@ assertion failed: Symbol is unexpectedly overloaded with alternatives 'object pa
 	at scala.tools.nsc.backend.jvm.GenASM$AsmPhase.run(GenASM.scala:119)
         ...
 }
-{noformat}
+```
 
 So, Namer tried to look up buhB, didn't find it, created #7260. Later #7260 was renamed to package$buhB and by then the damage was done. I don't yet know where the name gets changed.
 

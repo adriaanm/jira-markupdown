@@ -1,8 +1,7 @@
 We recently found a performance problem with `groupBy` which turned out to be caused by an extra level of indirection introduced by the 2.12.x trait encoding.
 
 I notice some "inlining too deep" notices in the `-XX:+PrintInlining` output under 2.12 for this test:
-
-{noformat}
+```
                               @ 148   akka.actor.ActorCell::checkReceiveTimeout (5 bytes)   inline (hot)
                                 @ 1   akka.actor.dungeon.ReceiveTimeout::checkReceiveTimeout$ (5 bytes)   inline (hot)
                                   @ 1   akka.actor.dungeon.ReceiveTimeout::checkReceiveTimeout (183 bytes)   inline (hot)
@@ -47,4 +46,4 @@ I notice some "inlining too deep" notices in the `-XX:+PrintInlining` output und
                                                 @ 38   java.util.concurrent.ConcurrentLinkedQueue::updateHead (20 bytes)   inline (hot)
                                                   @ 8   java.util.concurrent.ConcurrentLinkedQueue::casHead (13 bytes)   inlining too deep
                                                   @ 16   java.util.concurrent.ConcurrentLinkedQueue$Node::lazySetNext (12 bytes)   inlining too deep
-{noformat}
+```

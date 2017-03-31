@@ -1,6 +1,5 @@
 The original example compiles if the apply application is desugared,
-
-{code}
+```scala
 object Main {
   class A()
   case class RichA() {
@@ -12,11 +11,10 @@ object Main {
   a.apply((p: Int) => "")  // Now compiles
   //^^^^^ desugared apply
 }
-{code}
+```
 
 Here's another simpler example,
-
-{code}
+```scala
 object AmbigImplicits {
   trait Base
   
@@ -46,11 +44,10 @@ object AmbigImplicits {
   val i3 = b(23)           // Error ambiguous implicits
   val s3 = b("foo")        // Error ambiguous implicits
 }
-{code}
+```
 
 Here the error for {{i3}} (similar for {{s3}}) is,
-
-{code}
+```scala
 SI5142.scala:30: error: type mismatch;
  found   : java.lang.Object with bugs.SI5142.AmbigImplicits.Base
  required: ?{val apply: ?}
@@ -59,6 +56,6 @@ Note that implicit conversions are not applicable because they are ambiguous:
  and method baseFoo in object AmbigImplicits of type (b: bugs.SI5142.AmbigImplicits.Base)java.lang.Object with bugs.SI5142.AmbigImplicits.FooOps
  are possible conversion functions from java.lang.Object with bugs.SI5142.AmbigImplicits.Base to ?{val apply: ?}
     val i3 = b(23)           // Error ambiguous implicits
-{code}
+```
 
 This is with Scala 2.10.0.rdev-4227-2012-01-23-g8051740, 2.9.1.final, and 2.8.2.final.

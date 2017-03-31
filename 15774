@@ -1,7 +1,5 @@
 There's a structural invocation in {{nsc.ast.parser.Scanners}}. Not sure whether there's a performance impact, but doing away with it is easy. Rather than defining {{lookaheadReader}} (in  {{CharArrayReader.scala}}) to have a refinement type, give a name to its class: 
-
-
-{code}
+```scala
   /** A new reader that takes off at the current character position */
   def lookaheadReader = new CharArrayReaderForLookahead 
 
@@ -14,14 +12,13 @@ There's a structural invocation in {{nsc.ast.parser.Scanners}}. Not sure whether
     /** A mystery why CharArrayReader.nextChar() returns Unit */
     def getc() = { nextChar() ; ch }
   }
-{code}
+```
 
 
 Besides that one, there are three other cases of dynamic dispatch in the compiler sources (granted, {{forMSIL}} without {{-optimize}}) found after placing a breakpoint at {{CleanUp}} on:
 
-{{    case ad@ApplyDynamic(qual0, params) =>  }}
-
-{code}
+`    case ad@ApplyDynamic(qual0, params) =>  `
+```scala
 (1)
     pos: scala\\tools\\nsc\\typechecker\\Implicits.scala,line-857,offset=39632
     qual = "ImplicitSearch.this.scala$$tools$$nsc$$typechecker$$Implicits$$ImplicitSearch$$$$$$outer().global().erasure().erasure()"
@@ -39,5 +36,4 @@ Besides that one, there are three other cases of dynamic dispatch in the compile
     qual = "x.traverser()"
     args = "List()"
     symbol = "method zis"
-
-{code}
+```

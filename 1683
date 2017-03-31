@@ -1,13 +1,13 @@
 At least the first three of your examples are user error.
-{code}
+```scala
   VA1.f(VA1.log _, new Base)      // 1: compiler mistake
   VA1.f(VA1.log _, 5, new Base)   // 2: compiler mistake
   VA2.f(VA2.log _)                // 3: compiler mistake
-{code}
+```
 In the first two, you're trying to call methods which take Specials with Base arguments.  The superclass isn't the subclass.  In the third one, you're calling a method which takes Special => Unit with Special => Unit => Unit.
 
 Reducing this way down to the misbehavior:
-{code}
+```scala
 object Test2 {
   def log(msg: Special): Unit = {}
   def log(msg: Special, y: Throwable): Unit = {}
@@ -18,9 +18,9 @@ object Test2 {
   f(log _, "a")      // 4: compiler mistake
   f(log _, 5, "a")   // 5: compiler mistake
 }
-{code}
+```
 If either f or log is not overloaded, this compiles.  In combination it cannot resolve them.  Inference in the face of overloading isn't that good and my guess is this is wontfix, but I won't close it because I'm not sure.  As is usually the case it compiles with a little assistance:
-{code}
+```scala
   f((log _): Special => Unit, "a")
   f((log _): Special => Unit, 5, "a")
-{code}
+```

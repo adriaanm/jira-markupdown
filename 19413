@@ -1,6 +1,5 @@
 In the following code, which compiles successfully in 2.11.2 but not in 2.11.4, the definitions run2 and run3 fail to compile with the type errors that follow.
-
-{code}
+```scala
 package test.nestedcov
 
 sealed abstract class Outer[+A]
@@ -32,11 +31,10 @@ object NestedCov {
       expr : Outer3[A, A]
   }
 }
-{code}
+```
 
 Failing with
-
-{code}
+```scala
 NestedCov.scala:22: error during expansion of this match (this is a scalac bug).
 The underlying error was: type mismatch;
  found   : test.nestedcov.Outer2[test.nestedcov.Inner2[A with A],A with A]
@@ -50,4 +48,4 @@ The underlying error was: type mismatch;
   def run3[A](nc: Outer3[A, A]) = nc match {
                                      ^
 two errors found
-{code}
+```

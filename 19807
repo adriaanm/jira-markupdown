@@ -1,5 +1,5 @@
-Following up on SI-6443 and SI-9442, is seems the uncurry erasure is quite picky:
-{code}
+Following up on scala/bug#6443 and scala/bug#9442, is seems the uncurry erasure is quite picky:
+```scala
 $ cat test2.scala 
 trait Ctx {
   trait Tree
@@ -36,22 +36,22 @@ package <empty> {
     def foo2[T](c: Ctx, l: Lst[c.Tree], t: T): Nothing = l.zip[c.Tree, c.Tree](l)
   }
 }
-{code}
+```
 
 So, depending on whether you have a type parameter, it decides to erase or not:
-{code}
-{code}
+```scala
 
-{code}
+```
+```scala
     def foo1(c: Ctx, l: Lst[Ctx#Tree]): Nothing = {
       <synthetic> val l$1: Lst[c.Tree] = l.asInstanceOf[Lst[c.Tree]]();
       l$1.zip[c.Tree, c.Tree](l$1)
     };
     def foo2[T](c: Ctx, l: Lst[c.Tree], t: T): Nothing = l.zip[c.Tree, c.Tree](l)
-{code}
+```
 
 I think the problem lies in the isDependentMethodType method in class Type, but I may be wrong:
-{code}
+```scala
 $ scala
 Welcome to Scala 2.11.8-20150821-135328-f8a6d21a49 (Java HotSpot(TM) 64-Bit Server VM, Java 1.7.0_80).
 Type in expressions for evaluation. Or try :help.
@@ -80,4 +80,4 @@ res0: Boolean = true
 
 scala> typeTag[Test.type].tpe.member(TermName("foo2")).info.asInstanceOf[scala.reflect.internal.Types#Type].isDependentMethodType
 res1: Boolean = false
-{code}
+```

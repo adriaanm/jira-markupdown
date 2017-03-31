@@ -1,6 +1,5 @@
 If the first vector is very short and the second vector is very long, both old code and proposed new code will run in O\(n\) time, but yes, the new code will have worse constant factors:
-
-{noformat}
+```
 import System.{currentTimeMillis => millis}
 def time[T](f: => T): Long = { val start = millis; f; millis - start }
 def repeat[T](n: Int)(body: => T): Unit = for(_ <- 0 until n) body
@@ -30,6 +29,6 @@ after fix
 586
 0
 560
-{noformat}
+```
 
-But I don't think this should bother us more than slightly. I think getting asymptotic speedup on {{big ++ small}} is clearly worth a constant slowdown in {{small ++ big}}.
+But I don't think this should bother us more than slightly. I think getting asymptotic speedup on `big ++ small` is clearly worth a constant slowdown in `small ++ big`.

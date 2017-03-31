@@ -1,6 +1,5 @@
 Compiling this program yields unchecked warnings which are relevant:
-
-{code}
+```scala
 sandbox/test.scala:12: warning: non-variable type argument T1 in type pattern In[T1] is unchecked since it is eliminated by erasure
       case x: In[T1] if classTag[T] == classTag[T1] => "T1"
               ^
@@ -8,6 +7,6 @@ sandbox/test.scala:13: warning: non-variable type argument T2 in type pattern In
       case y: In[T2] if classTag[T] == classTag[T2] => "T2"
               ^
 two warnings found
-{code}
+```
 
 The compiler assumes you know more than it does here, and uses this knowledge to refine the abstract type `T` to `T1` while typechecking the guards and body of the first case. That's why the guard always succeeds. This refinement of method type parameters within patterns is known as "GADT typechecking".

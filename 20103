@@ -1,13 +1,11 @@
 I think the implicit boxing wrappers in Predef should check for passing null values and return an Option instead:
-
-{code:scala}
+```scala
 implicit def Double2double(x: java.lang.Double): Double     = x.doubleValue
-{code}
+```
 
 Otherwise, behaviour like this can occur which results in unnecessary runtime errors:
-
-{code:scala}
+```scala
 > val d: java.lang.Double = null
 > val optD: Option[Double] = Option(d)
 java.lang.NullPointerException
-{code}
+```

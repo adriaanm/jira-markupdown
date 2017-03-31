@@ -1,5 +1,5 @@
 The following program worked in 2.7, does not work on Windows in 2.8:
-{code}
+```scala
 import scala.io.Source
   
 object LongLines {
@@ -23,7 +23,7 @@ object FindLongLines {
 	  LongLines.processFile(arg, width)
   }
 }
-{code}
+```
 The problem is that `getLines()` reads in the whole input file as a single line. Investigation shows that `getLines()` expands to 
 getLines(compat.Platform.EOL), which expands to a CR character on windows(!!!). Doing an explicit getLines("\n") works. 
 
@@ -32,4 +32,3 @@ Something is clearly wrong here. I suspect it's the `lineSeparator` property, wh
 In any case we cannot release 2.8 like this. This is very basic functionality, which we cannot afford it to break between 2.7 and 2.8.
 
 Since this involves several components I am not sure who's best to handle this. I assign to you Paul, but feel free to pass it on if you think there's a better expert on this.
-

@@ -1,10 +1,9 @@
-The version of ForkJoin that we bundle [1] appears to prone to underutilize available cores when using `fork` (as opposed to `execute`). Our {{ExecutionContextImpl}} does exactly this as an optimization in nested parallelism.
+The version of ForkJoin that we bundle [1] appears to prone to underutilize available cores when using `fork` (as opposed to `execute`). Our `ExecutionContextImpl` does exactly this as an optimization in nested parallelism.
 
 A test case that demonstrates the problem with ForkJoin:
 
 https://gist.github.com/retronym/5420028
-
-{code}
+```scala
 import annotation.tailrec
 import java.util.concurrent.CountDownLatch
  
@@ -70,7 +69,7 @@ object ConcurrentTest {
   }
  
 }
-{code}
+```
 
 The most recent packages of jsr166e and jsr166y do not suffer from this bug.
 
@@ -81,8 +80,7 @@ Suggestion:
 
 
 [1] 
-
-{noformat}
+```
 https://github.com/scala/scala/pull/407
 
 This was this commit, from http://gee.cs.oswego.edu/cgi-bin/viewcvs.cgi/jsr166/src/jsr166y/ForkJoinTask.java?view=log
@@ -93,4 +91,4 @@ Branch: MAIN
 Changes since 1.88: +66 -46 lines 
 Diff to previous 1.88
 Add CountedCompleter; improve tryHelpStealer
-{noformat}
+```

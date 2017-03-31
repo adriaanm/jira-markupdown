@@ -2,18 +2,16 @@ Wow! Jesper pointed me to this ticket a while ago, but only just got around to c
 This is pretty bad. Luckily, it turned out to be an easy fix:
 
 `doTypeTraversal` in `RefChecks` used `apply` instead of `mapOver`, which caused `checkBounds` to only be called for the type arguments at the leaves of the tree, instead of traversing the whole tree... This bug masked a couple type errors in the new collection library:
-
-{code}
+```scala
 trait SequenceView[+A, +Coll <: Sequence[_]] extends SequenceViewTemplate[A, Coll, SequenceView[A, Coll]] 
 
 object SequenceView {
   type Coll = TraversableView[_, _]
-{code}
+```
 
 is wrong!
 
 the type alias should be:
-
-{code}
+```scala
   type Coll = TraversableView[_, C] forSome {type C <: Traversable[_]}
-{code}
+```

@@ -1,6 +1,5 @@
 The tree that reaches the LazyVal phase:
-
-{code}
+```scala
 <stable> <accessor> lazy def i#15024(): Int#1750 = {
   <synthetic> val nonLocalReturnKey1#24371: Object#149 = new Object#149();
   try {
@@ -23,11 +22,10 @@ The tree that reaches the LazyVal phase:
       throw ex#24759
   }
 }
-{code}
+```
 
 What it expects:
-
-{code}
+```scala
 i$lzy#15025 = unbox#14934(o#14716.getOrElse#14953({
       @SerialVersionUID#2329(0) final <synthetic> class $anonfun#24363 extends scala#21.runtime#2648.AbstractFunction0#3471 with Serializable#2326 {
         def <init>#24367(): <$anon: Function0#934> = {
@@ -40,11 +38,10 @@ i$lzy#15025 = unbox#14934(o#14716.getOrElse#14953({
       (new <$anon: Function0#934>(): Function0#934)
     }));
     i$lzy#15025
-{code}
+```
 
 The tree that it finds happens to have the same shape (a block with one statement and an expression) as what it expects (a statement to initialize the lazy val, and an expression to return it)
-
-{code}
+```scala
 debuglog(s"create complete lazy def in $methOrClass for $lazyVal")
       val (block, res) = tree match {
         case Block(List(assignment), res) if !lazyUnit(lazyVal) =>
@@ -52,11 +49,10 @@ debuglog(s"create complete lazy def in $methOrClass for $lazyVal")
         case rhs                          =>
           (mkBlock(rhs),         UNIT)
       }
-{code}
+```
 
 The upshot is that the definition of `nonLocalReturnKey1` ends up hidden inside the `synchronized` call:
-
-{code}
+```scala
 <stable> private def i$lzycompute#27983(): Int#1750 = {
   {
     A#7598.this.synchronized#5786(if (bitmap$0#27975.&#27981(1).==#27982(0))
@@ -87,6 +83,6 @@ The upshot is that the definition of `nonLocalReturnKey1` ends up hidden inside 
       throw ex#24759
   }
 }
-{code}
+```
 
 That fact shows up later on when the function for the by-name argument fails to capture it.

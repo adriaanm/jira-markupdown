@@ -1,6 +1,5 @@
 Example below shows the problem:
-
-{code}
+```scala
 trait SomeTag
 type @@[+A, T] = A with T
 def withSomeTag[A](a: A): A @@ SomeTag  = a.asInstanceOf[A @@ SomeTag]
@@ -9,15 +8,15 @@ def withSomeTag[A](a: A): A @@ SomeTag  = a.asInstanceOf[A @@ SomeTag]
 type TypeAlias = String @@ SomeTag
 def need(a: TypeAlias) = ???
 need(withSomeTag("foo"))
-{code}
+```
 
 Causes:
-{code}
+```scala
 <console>:13: error: type mismatch;
  found   : String("foo")
  required: SomeTag with String
               need(withSomeTag("foo"))
-{code}
+```
 
 Changing parameter's type to unaliased version works fine.
 Because of this bug, using of scalaz.Tag / shapeless.tag.Tagged is difficult.

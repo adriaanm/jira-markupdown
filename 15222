@@ -1,15 +1,13 @@
 The following crashes both the 2.8 RC1 REPL and compiler:
-
-{code}
+```scala
 object Y {
   class A
   def f: Function0[A] = () => { object X extends A; X }
 }
-{code}
+```
 
 scalac crash output is:
-
-{code}
+```scala
 exception when traversing (() => {
   final class X extends Y.this.A with ScalaObject {
     def this(): object X = {
@@ -241,4 +239,4 @@ Exception in thread "main" scala.tools.nsc.symtab.Types$$TypeError: type mismatc
 	at scala.tools.nsc.Main$$.process(Main.scala:110)
 	at scala.tools.nsc.Main$$.main(Main.scala:124)
 	at scala.tools.nsc.Main.main(Main.scala)
-{code}
+```

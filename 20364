@@ -1,6 +1,5 @@
 The following code runs on Scala 2.11.8, but throws an exception in Scala 2.12.1:
-
-{code}
+```scala
 trait Unwrapper[@specialized(Byte) P] {
   def unwrap: P = 0L.asInstanceOf[P]
 }
@@ -9,13 +8,12 @@ object UnwrapperTest extends App {
   val u = new Unwrapper[Byte] {}
   println(u.unwrap)
 }
-{code}
+```
 
 The expected result is: 0
 
 The exception is:
-
-{code}
+```scala
 Exception in thread "main" java.lang.ClassCastException: java.lang.Long cannot be cast to java.lang.Byte
 	at scala.runtime.BoxesRunTime.unboxToByte(BoxesRunTime.java:93)
 	at variant.Unwrapper.unwrap$mcB$sp(Unwrapper.scala:4)
@@ -32,13 +30,12 @@ Exception in thread "main" java.lang.ClassCastException: java.lang.Long cannot b
 	at scala.App.main$(App.scala:74)
 	at variant.UnwrapperTest$.main(UnwrapperTest.scala:3)
 	at variant.UnwrapperTest.main(UnwrapperTest.scala)
-{code}
+```
 
 This seems to be an issue with specializing: when removing the @specialized annotation the code works as expected.
 
 Looking at the bytecode
-
-{code}
+```scala
 Compiled from "Unwrapper.scala"
 public interface variant.Unwrapper{
 public static java.lang.Object unwrap$(variant.Unwrapper);
@@ -71,6 +68,6 @@ public static void $init$(variant.Unwrapper);
    0:   return
 
 }
-{code}
+```
 
 the problem seems to be that the unwrap method returns a boxed long and the unwrap$mcB$sp() method tries to unbox the boxed long to a byte which throws a ClassCastException because BoxesRunTime.unboxToByte expects a boxed byte, not a boxed long.

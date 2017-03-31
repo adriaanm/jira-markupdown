@@ -3,7 +3,7 @@ I ran into a NoSuchMethodError when trying to implement my own "implementation t
 The following Java and Scala code compiles without errors:
 
 ScalaTest.scala:
-{code}
+```scala
 trait MyTrait[T, This <: MyTrait[T, This]] {
   def x: This
 
@@ -23,10 +23,10 @@ object ScalaTest {
        x.myVal()
     }
 }
-{code}
+```
 
 JavaTest.java:
-{code}
+```scala
 public class JavaTest {
     public static void main(String[] args) {
        MyClass<Integer> x = new MyClass<Integer>();
@@ -34,16 +34,16 @@ public class JavaTest {
        x.myVal();
     }
 }
-{code}
+```
 
 The ScalaTest program works correctly:
-{noformat}
+```
 $ scala ScalaTest
 HELLO
-{noformat}
+```
 
 The JavaTest program throws a NoSuchMethodError when run:
-{noformat}
+```
 $ scala JavaTest
 HELLO
 java.lang.NoSuchMethodError: MyClass.myVal()LMyClass;
@@ -63,4 +63,4 @@ java.lang.NoSuchMethodError: MyClass.myVal()LMyClass;
 	at scala.tools.nsc.MainGenericRunner.process(MainGenericRunner.scala:80)
 	at scala.tools.nsc.MainGenericRunner$.main(MainGenericRunner.scala:89)
 	at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
-{noformat}
+```

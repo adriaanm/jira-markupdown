@@ -1,6 +1,5 @@
 Using the collection API I discovered one way to filter out a subtype of a collection (I'll use List in my example):
-
-{code}
+```scala
 scala> class Foo
 defined class Foo
 
@@ -12,21 +11,19 @@ list: List[Foo] = List(Foo@71f84d01, Bar@6487b71b)
 
 scala> list collect { case x: Bar => x }
 res0: List[Bar] = List(Bar@6487b71b)
-{code}
+```
 
 ... so I have extracted all the Bars from a List[Foo] and now have a List[Bar].
 
 
 It would be even nicer and shorter to write something like this:
-
-{code}
+```scala
 scala> list narrow Bar
 res0: List[Bar] = List(Bar@6487b71b)
-{code}
+```
 
 For this to work, one would need a method signature like in the following example:
-
-{code}
+```scala
 scala> class RichList[A](l: List[A]) {
      |   def narrow [B] (c: Class[B]): List[B] =
      |     l collect { case x: B => x }
@@ -35,7 +32,7 @@ scala> class RichList[A](l: List[A]) {
            l collect { case x: B => x }
                                ^
 defined class RichList
-{code}
+```
 
 ... but, as you can see, this won't work due to type erasure. I'm also not sure whether to use 'c: Class[B]' for the parameter is the right choice.
 

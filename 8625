@@ -1,7 +1,7 @@
-Unfortunately it isn't fully functional: If the @inline-d method references, for example, a private {{var}} in an enclosing class, {{ExplicitOuter}} will expand its name, but the {{Inliners}} will generate a call to the original name, as it stood at the time of pickling. 
+Unfortunately it isn't fully functional: If the @inline-d method references, for example, a private `var` in an enclosing class, `ExplicitOuter` will expand its name, but the `Inliners` will generate a call to the original name, as it stood at the time of pickling. 
 
-{{Inliners}} will either have to replicate the {{makeNotPrivate}} calls (fragile?) or figure out that names are expanded based on the Java signature (major surgery?).
+`Inliners` will either have to replicate the `makeNotPrivate` calls (fragile?) or figure out that names are expanded based on the Java signature (major surgery?).
 
 I'll commit the failing test case to the branch tonight to make this clearer.
 
-I'm also worried about references to package-qualified private members of other compilation units. {{ExplicitOuter}} should only {{makeNotPrivate}} symbols from the current compilation unit. Some cases work at the moment, as those members are public in bytecode anyway, but I need to write some more tests. Again, the interesting case comes when names are expanded, ie when the referenced symbol is a class/trait member.
+I'm also worried about references to package-qualified private members of other compilation units. `ExplicitOuter` should only `makeNotPrivate` symbols from the current compilation unit. Some cases work at the moment, as those members are public in bytecode anyway, but I need to write some more tests. Again, the interesting case comes when names are expanded, ie when the referenced symbol is a class/trait member.

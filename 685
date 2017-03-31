@@ -7,8 +7,7 @@ What's happening here is as follows:
 As you presumably know, HashMap has this field "later". The idea is that old copies reference newer ones, but newer ones don't reference older ones. This means that you can view the older ones as patches against the newer ones, but the newer ones don't prevent the old copies from being garbage collected. When you perform an update against a freshly created immutable.HashMap, you get the contents of this "later" field.
 
 Here's the code that initializes later:
-
-{code}
+```scala
  	  private def markUpdated(key: A, ov: Option[B], delta: Int) {
  	    val lv = loadFactor
  	    later = new HashMap[A, B] {
@@ -22,7 +21,6 @@ Here's the code that initializes later:
  	    oldValue = ov
  	    deltaSize = delta
  	  }
-
-{code} 	
+```
 
 The problem: later is being created as an anonymous inner class. And the Scala compiler passes a reference to the enclosing class as a field of the inner class, regardless of whether it needs it (I though thtere was a ticket about this, but I can't find it). Consequently the newly updated HashMap references the old HashMap, as well as the old HashMap referencing the newly updated HashMap, so the entire thing is retained in memory. 

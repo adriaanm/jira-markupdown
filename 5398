@@ -1,8 +1,7 @@
 Actually they are the same bug I think.  By the way "object T2" in your comment doesn't have any bearing on the bug, it crashes fine without it.
 
 Putting r24206 to work, here it is after lazyvals:
-
-{code}
+```scala
 // I'm using: () => { trait T { def t = () } }
   object t4202 final
       constructor t4202 
@@ -12,11 +11,10 @@ Putting r24206 to work, here it is after lazyvals:
               method apply final
               method apply final <bridge>
               value <local $$anonfun> 
-{code}
+```
 
 And then here after lambdalift.  Notice the trait implementation class is being renamed to "T$$class$$1" which is pretty clearly wrong.  I'm able to push the error downfield by excluding .isImplClass but the problem is deeper.
-
-{code}
+```scala
   object t4202 final
       anonymous class $$anonfun$$1 final <synthetic>
           constructor $$anonfun$$1 
@@ -31,4 +29,4 @@ And then here after lambdalift.  Notice the trait implementation class is being 
 *             method t 
 *             value <local T$$class> 
           value <local $$anonfun> 
-{code}
+```

@@ -1,6 +1,5 @@
 Ok, I did a mini-benchmark with this code:
-
-{code}
+```scala
 def testRange(i: Int, j: Int, k: Int) = {
   var count = 0
   for {
@@ -9,13 +8,12 @@ def testRange(i: Int, j: Int, k: Int) = {
     vk <- 0 to k
   } { count += 1 }
 }
-{code}
+```
 
 Then timed it with the following two settings:
-
-{code}
+```scala
 testRange(10, 1000, 10000)
 testRange(10000, 1000, 10)
-{code}
+```
 
-Naturally, the former stresses {{foreach}} speed, while the latter stresses {{Range}} creation. I decided my original patch was too slow, so I have submitted another patch. This patch manages to be slightly faster than the original Range, by virtue of turning {{length}} from a {{lazy val}} into a {{def}}. I tried {{val}} too, but that was slower than either of the the other options.
+Naturally, the former stresses `foreach` speed, while the latter stresses `Range` creation. I decided my original patch was too slow, so I have submitted another patch. This patch manages to be slightly faster than the original Range, by virtue of turning `length` from a `lazy val` into a `def`. I tried `val` too, but that was slower than either of the the other options.

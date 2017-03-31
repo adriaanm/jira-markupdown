@@ -4,8 +4,8 @@ But when it is thrown inside a parallel collection, the output in "Multiple exce
 
 Example in Scala 2.10.0-RC2 below.
 
-*Regular*:
-{noformat}
+**Regular**:
+```
 scala> throw new RuntimeException("Hello", new RuntimeException("World", new RuntimeException("X")))
 java.lang.RuntimeException: Hello
 	at .<init>(<console>:8)
@@ -41,10 +41,10 @@ Caused by: java.lang.RuntimeException: World
 	... 29 more
 Caused by: java.lang.RuntimeException: X
 	... 29 more
-{noformat}
+```
 
-*Parallel*
-{noformat}
+**Parallel**
+```
 
 scala> Seq(1,2).par.foreach(i => throw new RuntimeException("Hello", new RuntimeException("World", new RuntimeException("X"))))
 scala.collection.parallel.CompositeThrowable: Multiple exceptions thrown during a parallel computation: java.lang.RuntimeException: Hello
@@ -75,4 +75,4 @@ scala.collection.parallel.ParIterableLike$Foreach.tryLeaf(ParIterableLike.scala:
 	at scala.concurrent.forkjoin.ForkJoinPool$WorkQueue.runTask(ForkJoinPool.java:975)
 	at scala.concurrent.forkjoin.ForkJoinPool.runWorker(ForkJoinPool.java:1478)
 	at scala.concurrent.forkjoin.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:104)
-{noformat}
+```

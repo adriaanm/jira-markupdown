@@ -3,8 +3,7 @@ Yeah, I was wondering about that. I admit I was "scala" in both stack traces inv
 If it is a bug in the viplugin, are you seeing something I'm not? Or have a brief description of what its doing wrong, and I'll go report the bug against it?
 
 I parsed apart the stack traces a bit (which I should have done this for you first anyway). Here's what I'm seeing:
-
-{code}
+```scala
 So the hover thread is blocked, with my comments reading from the bottom up:
 
 "Text Viewer Hover Presenter" daemon waiting for monitor entry [0x00007f57c4e97000]
@@ -64,13 +63,12 @@ And now the main UI thread, comments from the bottom up:
 	at org.eclipse.swt.widgets.Widget.sendIMKeyEvent(Widget.java:1262)
 (I was typing)
 	at org.eclipse.equinox.launcher.Main.main(Main.java:1287)
-{code}
+```
 
 I don't see the lock:
-
-{code}
+```scala
 	- parking to wait for  <0x00007f580a03e088> (a java.util.concurrent.locks.ReentrantReadWriteLock$$NonfairSync)
-{code}
+```
 
 That scala.tools.eclipse.util.Cached is trying to get anywhere else in the thread dump. Do you know, either specifically or generally, what lock this is so I can report to the viplugin people which one they shouldn't be getting?
 

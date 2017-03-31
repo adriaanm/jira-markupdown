@@ -1,9 +1,8 @@
-The problem is when scalac reads the class file {{Vector.class}}. If a Scala class extends {{JList}}, even indirectly, SBT's custom compiler phase that extracts the API of all classes in your project will end up forcing the type of this constructor:
-
-{code}
+The problem is when scalac reads the class file `Vector.class`. If a Scala class extends `JList`, even indirectly, SBT's custom compiler phase that extracts the API of all classes in your project will end up forcing the type of this constructor:
+```scala
 public JList(final Vector<?> listData) {
-{code}
+```
 
-which triggers loading of {{Vector.class}}.
+which triggers loading of `Vector.class`.
 
 You might have more luck by wrapping, rather than inheriting from JList.

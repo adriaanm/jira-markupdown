@@ -1,15 +1,13 @@
 IMHO not a bug. The inline eta-expansion works because the compiler infers the correct type whereas your explicitly eta-expanded times2b has the wrong type. Compare these:
-
-{code}
+```scala
   vector2.flatMap( _.map(_*2) )
   vector2.flatMap( (_.map(_*2)): (Option[Int] => collection.GenTraversableOnce[Int]) ) // inferred type
   vector2.flatMap( (_.map(_*2)): (Option[Int] => Option[Int]) ) // wrong
-{code}
+```
 
-An {{Option\[Int\] => Option\[Int\]}} cannot be converted to an {{Option\[Int\] => GenTraversableOnce\[Int\]}} but a {{(v: Option\[Int\])Option\[Int\]}} can be eta-expanded to that type. The expansion looks something like this (and type-checks successfully, as expected):
-
-{code}
+An `Option\[Int\] => Option\[Int\]` cannot be converted to an `Option\[Int\] => GenTraversableOnce\[Int\]` but a `(v: Option\[Int\])Option\[Int\]` can be eta-expanded to that type. The expansion looks something like this (and type-checks successfully, as expected):
+```scala
   vector2.flatMap( { (x: Option[Int]) => times2a(x) } )
-{code}
+```
 
-The implicit conversion is applied to the result of the method call, converting an {{Option\[Int\]}} to a {{GenTraversableOnce\[Int\]}}.
+The implicit conversion is applied to the result of the method call, converting an `Option\[Int\]` to a `GenTraversableOnce\[Int\]`.

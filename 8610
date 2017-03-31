@@ -1,6 +1,5 @@
 After talking to Jason I got convinced that this is very hairy issue and we won't be able to fix it in 2.11 due to limited time. I'll quote Jason's summary:
-
-{quote}
+```
 trait Foo[A] {
 def minBy[B](b: B): A = ???
 }
@@ -46,6 +45,6 @@ Cons of #2
 SI-3452 also highlights the same problem in a different context: static forwarder methods also have the wrong generic signatures. This one is actually much easier to fix, as we can freely change the erased signature to match the precise generic signature.
 
 [1] https://github.com/retronym/scala/compare/ticket/3452-rebased
-{quote}
+```
 
 I think generating additional bridges is the way to go but we'll have to be careful about breaking existing code. I'm guessing we would need to introduce the logic behind a switch and try it out on various projects to asses how likely it is we are breaking existing code. This is 2.12 material.

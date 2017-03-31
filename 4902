@@ -1,11 +1,10 @@
 The bug seems to be in Nil actually:
-
-{code}
+```scala
   // Removal of equals method here might lead to an infinite recursion similar to IntMap.equals.
   override def equals(that: Any) = that match {
     case that1: Seq[_] => that1.isEmpty
     case _ => false
   }
-{code}
+```
 
 That is collection.immutable.Seq in the case and I believe it should be collection.Seq.

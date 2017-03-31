@@ -1,8 +1,7 @@
 The toString method is not correctly overridden for  scala.xml.dtd.ParsedEntityDecl and related EntityDeclarations, causing an incorrect DocType to be generated
 
 Workaround for 2.7.7: create a local class that overrides toString:
-
-{code}
+```scala
  class PE(name: String, entdef: EntityDef) extends scala.xml.dtd.ParsedEntityDecl(name, entdef) {
     override def toString : String = {
       val sb = new StringBuilder()
@@ -10,4 +9,4 @@ Workaround for 2.7.7: create a local class that overrides toString:
       return this.toString(sb).toString
     }
   } 
-{code}
+```

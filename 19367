@@ -1,5 +1,5 @@
 Currently it is possible to match a parametric case class with correct type like so:
-{code:scala}
+```scala
 case class Register[T](key: Key[T], value: T)
 ...
 x match {
@@ -7,22 +7,22 @@ x match {
     val k: Key[t] = r.key
     val v: t = r.value // matching types with the key
 }
-{code}
+```
 What does not work is the same while extracting values (1):
-{code:scala}
+```scala
 case Register[t](k, v) => // says “Register[t] does not take parameters”
-{code}
+```
 When not including the name for the type, T is inferred to be Any (2):
-{code:scala}
+```scala
 case Register(k, v) => // T is Any here, even though Register is not covariant
-{code}
+```
 There are two things which should be done:
 
-* allow the extraction syntax shown in (1) above
-* implicitly introduce a type with a fresh name when performing the match as in (2), leading to more precise type checking than just assuming Any instead
+- allow the extraction syntax shown in (1) above
+- implicitly introduce a type with a fresh name when performing the match as in (2), leading to more precise type checking than just assuming Any instead
 
 The second part’s current negative effect can be seen in the following (assuming generic {code}ActorRef[-T]{code} which only accepts messages of type T):
-{code:scala}
+```scala
 case class Echo[T](msg: T, replyTo: ActorRef[T])
 ...
 x match {
@@ -30,4 +30,4 @@ x match {
     replyTo ! msg // works by accident now because T=Any for both
     replyTo ! 42 // works as well, but should not actually work
 }
-{code}
+```

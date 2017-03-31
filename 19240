@@ -1,26 +1,24 @@
 The phase assembly, which is responsible for ensuring correct execution order of internal as well as user-defined compiler components, is severely broken.
 
-h3. How to reproduce
+### How to reproduce
 
 I have written a small compiler plugin which can be configured to instantiate an arbitrary number of noop components with user-defined phase constraints. For installing it locally, perform
-
-{code}
+```scala
 $ git clone git@github.com:misberner/dummyphase.git
 $ cd dummyphase
 $ sbt publishLocal
-{code}
+```
 
-The syntax for defining phases is: {{phase1(after;rightAfter;before)|phase2(after;rightAfter;before)|...}}. 
-Here, {{after}} and {{before}} are comma-separated lists of phase names. The phase definition is specified as the property {{dummyphase.phases}}. Example invocations can be found below (note that the "parser" is extremely fragile).
+The syntax for defining phases is: `phase1(after;rightAfter;before)|phase2(after;rightAfter;before)|...`. 
+Here, `after` and `before` are comma-separated lists of phase names. The phase definition is specified as the property `dummyphase.phases`. Example invocations can be found below (note that the "parser" is extremely fragile).
 
 
-h3. If components specify no constraints, they are ignored
+### If components specify no constraints, they are ignored
 
-Every phase should run after "parser" and before "terminal". However, if a component specifies empty lists for both {{runsAfter}} and {{runsBefore}}, it is ignored entirely.
+Every phase should run after "parser" and before "terminal". However, if a component specifies empty lists for both `runsAfter` and `runsBefore`, it is ignored entirely.
 
 To make matters worse, a component is considered if it declares that it runs after parser, but not if it declares to run before terminal.
-
-{code}
+```scala
 # A phase without any constraints, ignored
 $ scalac -Xplugin ~/.ivy2/local/dummyphase/dummyphase_2.11/0.1-SNAPSHOT/jars/dummyphase_2.11.jar \
   -Ddummyphase.phases='phase(;;)' -Xshow-phases
@@ -30,13 +28,12 @@ $ scalac -Xplugin ~/.ivy2/local/dummyphase/dummyphase_2.11/0.1-SNAPSHOT/jars/dum
 # A phase that specifies it runs before the terminal phase, ignored
 $ scalac -Xplugin ~/.ivy2/local/dummyphase/dummyphase_2.11/0.1-SNAPSHOT/jars/dummyphase_2.11.jar \
   -Ddummyphase.phases='phase(;;terminal)' -Xshow-phases
-{code}
+```
 
-h3. If components specify runsRightAfter, all other constraints are ignored
+### If components specify runsRightAfter, all other constraints are ignored
 
 This leads to wrong phase orders without any kind of warning.
-
-{code}
+```scala
 # phase1 needs to run after delambdafy, phase2 needs to run *right after* phase1 and before icode.
 # Since icode does not need to run *right* after delambdafy, a valid order would be:
 # delambdafy, phase1, phase2, icode
@@ -49,27 +46,25 @@ $ scalac -Xplugin ~/.ivy2/local/dummyphase/dummyphase_2.11/0.1-SNAPSHOT/jars/dum
         phase1  24
         phase2  25
 ...
-{code}
+```
 
-h3. Solvable constraint systems are rejected
+### Solvable constraint systems are rejected
 
-The current phase assembly  fails if a phase that defines a {{rightAfter}} dependency has another outgoing edge. Due to the above, this cannot be shown by specifying an {{after}} and a {{rightAfter}} dependency, but a {{rightAfter}} in combination with a {{before}} exposes this.
-
-{code}
+The current phase assembly  fails if a phase that defines a `rightAfter` dependency has another outgoing edge. Due to the above, this cannot be shown by specifying an `after` and a `rightAfter` dependency, but a `rightAfter` in combination with a `before` exposes this.
+```scala
 $ scalac -Xplugin ~/.ivy2/local/dummyphase/dummyphase_2.11/0.1-SNAPSHOT/jars/dummyphase_2.11.jar \
   -Ddummyphase.phases='phase1(;patmat;)|phase2(parser;;phase1)' \
   -Xshow-phases
 error: scala.reflect.internal.FatalError: Phase phase1 can't follow patmat, created phase-order.dot
-{code}
-As can be seen in the attached {{phase-order.png}}, the constraint system is satisfiable.
+```
+As can be seen in the attached `phase-order.png`, the constraint system is satisfiable.
 
-h3. The implementation has bugs
+### The implementation has bugs
 
-The implementation modifies variable members of case classes (that are used for {{hashCode}} calculation), without removing them from containing {{HashSet}} s. This leads to erroneous phase graphs. See attached file {{phase-4.png}}, where the {{posterasure}} node is still present even though it was collapsed into another node.
+The implementation modifies variable members of case classes (that are used for `hashCode` calculation), without removing them from containing `HashSet` s. This leads to erroneous phase graphs. See attached file `phase-4.png`, where the `posterasure` node is still present even though it was collapsed into another node.
 
 Note that no user-defined phases are necessary to expose this behavior.
-
-{code}
+```scala
 $ scalac -Xshow-phases -Xgenerate-phase-graph phase
 $ dot -Tpng phase-4.dot >phase-4.png
-{code}
+```

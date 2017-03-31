@@ -1,8 +1,7 @@
 Functions intersectWith(), unionWith(), diffWith(), or similar names, should be added to generic Traversables or at least to Maps. Note that IntMap and LongMap already have intersectionWith() and unionWith(). The name "intersectionWith" corresponds to Haskell usage, but "intersectWith" agrees better with the existing intersect() method. Likewise for Haskell's "differenceWith" vs. our "diff", hence we should have "diffWith".
 
 The following is the skeleton of a number of variant functions on Traversables, in a way that properly handles multisets of keys and special-cases some classes where the functionality already exists (implementation is attached):
-
-{code}
+```scala
 import scala.collection.{mutable, immutable}
 
 implicit class IntersectUnionWithPimp[K, A](a: Traversable[(K, A)]) {
@@ -154,13 +153,13 @@ implicit class IntersectUnionByPimp[A](a: Traversable[A]) {
   def diffBy[K, B >: A](b: Traversable[B])(keyfn: B => K
       ): Traversable[B]
 }
-{code}
+```
 
 This code is very vaguely based on the existing definition of intersect(). It needs to be written better to handle these things:
 
-# It should use the proper builder and CanBuildWith objects/types rather than creating a buffer.
-# The code special-cases HashMap, IntMap and LongMap, which have some of these functions built in. However, it does this using matching. Perhaps better is through the implicit mechanism, but even better is to merge this code properly into the source tree in the right places.
-# There is a name conflict between my naming scheme and unionWith() in LongMap. This *should* not be a major issue as the latter takes two parameters whereas my fun takes one (the rest are curried). But Scala can't handle polymorphism between implicit and non-implicit functions. However, this issue won't come up once code like this is integrated into the source tree.
-# Some of the names are questionable, esp. diffWith(), which doesn't take any "with" function.
+- It should use the proper builder and CanBuildWith objects/types rather than creating a buffer.
+- The code special-cases HashMap, IntMap and LongMap, which have some of these functions built in. However, it does this using matching. Perhaps better is through the implicit mechanism, but even better is to merge this code properly into the source tree in the right places.
+- There is a name conflict between my naming scheme and unionWith() in LongMap. This **should** not be a major issue as the latter takes two parameters whereas my fun takes one (the rest are curried). But Scala can't handle polymorphism between implicit and non-implicit functions. However, this issue won't come up once code like this is integrated into the source tree.
+- Some of the names are questionable, esp. diffWith(), which doesn't take any "with" function.
 
 Comments?

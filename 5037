@@ -1,5 +1,5 @@
 I was going to say this is fixed in trunk, because it no longer crashes the repl.  But while creating a test case to guard it I found it still crashes scalac.
-{code}
+```scala
 class Lift[T] {                                                          
    def apply[R](f: F0[R]): T => R = f.f
 
@@ -14,20 +14,20 @@ object Test {
     (new Lift[String])((_: String).length)
   }
 }
-{code}
+```
 In the repl a type error (and the type error looks right to me):
-{code}
+```scala
 <console>:8: error: type mismatch;
  found   : (String) => Int
  required: _1.F0[?] where val _1: Lift[String]
            (new Lift[String])((_: String).length)
                                           ^
-{code}
+```
 Same crash outside.
-{code}
+```scala
 	at scala.tools.nsc.ast.TreeGen.mkAttributedQualifier(TreeGen.scala:82)
 	at scala.tools.nsc.ast.TreeGen.mkAttributedQualifier(TreeGen.scala:45)
 	at scala.tools.nsc.ast.TreeGen.mkAttributedRef(TreeGen.scala:107)
 	at scala.tools.nsc.ast.TreeGen.mkAttributedStableRef(TreeGen.scala:149)
 	at scala.tools.nsc.ast.TreeGen.mkAttributedQualifier(TreeGen.scala:60)
-{code}
+```

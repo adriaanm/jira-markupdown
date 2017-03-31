@@ -1,5 +1,5 @@
 There are a few places in the language where the syntactic sugar has an absolute monopoly on decent expression. Most noticeable to me lately is that ((x, y)) means Tuple2. Tuple2, not Product2.
-{code}
+```scala
 scala> trait Foo { def f: (Int, Int) }
 defined trait Foo
 
@@ -12,15 +12,15 @@ scala> new Foo { def f = new Bippy }
  required: (Int, Int)
               new Foo { def f = new Bippy }
                                 ^
-{code}
+```
 That's horrid. The type (Int, Int) should mean Product2[Int, Int], and the pattern syntax should mean the Product2 unapply:
-{code}
+```scala
 scala> def g(x: Any) = x match { case (p, q) => println("two things") ; case _ => println("oops") }
 g: (x: Any)Unit
 
 scala> g(new Bippy)
 oops
-{code}
+```
 ...it's fine if a term (x, y) creates a Tuple though.
 
 A related issue is that we must be better stewards of these core types, again due to their absolute syntactic monopoly. There's no way to evade their warts, they follow us everywhere. Some examples of things which are completely inflexible:

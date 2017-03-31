@@ -1,6 +1,5 @@
 These show that the compiler knows that a wildcard is not a valid identifier in accordance with the spec:
-
-{code}
+```scala
 scala> def _ = 3
 <console>:1: error: identifier expected but '_' found.
        def _ = 3
@@ -18,21 +17,20 @@ scala> val _ = 3
 <console>:10: error: identifier expected but '_' found.
  + "_: Int = " + scala.runtime.ScalaRunTime.replStringOf(_, 1000)
                                                                               ^
-{code}
+```
 
 However, scalac complains about multiple bindings to _ :
-{code}
+```scala
 scala> { val _ = 3; val _ = 5; 7 }
 <console>:8: error: _ is already defined as value _
               { val _ = 3; val _ = 5; 7 }
                                ^
-{code}
+```
 
 This was reported on a mailing list a while ago (http://www.scala-lang.org/node/7159), but never filed as an issue.  One improvement since then:
-
-{code}
+```scala
 scala> { val _ = 3; `_` }
 <console>:1: error: wildcard invalid as backquoted identifier
        { val _ = 3; `_` }
                     ^
-{code}
+```

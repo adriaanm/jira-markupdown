@@ -1,6 +1,5 @@
 Allright, here's what's going on. The macro emits
-
-{code}
+```scala
 {
   final class $anon extends scala.AnyRef {
     def <init>() = {
@@ -13,7 +12,7 @@ Allright, here's what's going on. The macro emits
   };
   new $anon()
 }.unapply(<unapply-selector>)
-{code}
+```
 
 Then this code under the alias of `fun1` gets into https://github.com/xeno-by/scala/blob/master/src/compiler/scala/tools/nsc/typechecker/PatternTypers.scala#L306. Then `patmat.alignPatterns(fun1, args)` is called, which figures out that there's an arityError (https://github.com/xeno-by/scala/blob/master/src/compiler/scala/tools/nsc/transform/patmat/ScalacPatternExpanders.scala#L108), which gets reported by stringifying the type of `fun1`, which looks like `TypeRef(NoPrefix, TypeName("$anon"), List())`. 
 

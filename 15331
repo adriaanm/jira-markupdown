@@ -1,31 +1,30 @@
 I have a trait for a type-level function:
-
-{code}
+```scala
 trait TFn1[I, O] {
   type app[i <: I] <: O
 }
-{code}
+```
 
 and I'm trying to write bind/flatMap for it.  The following is a simplified example that gives me the error I'm getting:
-{code}
+```scala
 trait TFn1B[T] {
   type x[a, b, f <: TFn1[a, TFn1[T, b]] ] =
     TFn1[T, b] {
       type app[s <: T] = f#app[a]#app[s]
     }
 }
-{code}
+```
 
 The error is:
-{code}
+```scala
 type arguments [s] do not conform to type app's type parameter bounds [i <: I]
            TFn1[T, b] {
            ^
-{code}
+```
 I think the error message is for the `app[s]` part despite where `^` points.  It looks like scalac doesn't know that:
-{code}
+```scala
   f#app[a] <: TFn1[T, b]
-{code}
+```
 which should mean that `s <: I` since `I is T and s <: T`.
 
 It seems to me that the code should be accepted but maybe some type information gets lost with the second projection. 

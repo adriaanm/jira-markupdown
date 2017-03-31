@@ -1,16 +1,14 @@
 Multiple issues here.  (And that's before I get to the question of whether one's companion object can be a package object -- although I assume the answer is "no", I find nothing unambiguous in the spec.)
-
-{noformat}
+```
 package foo
 
 class Bar { }
 package object Bar { }
-{noformat}
+```
 
 1) Non-idempotence of source compilation
 2) Classes not even on the classpath fail the compilation
-
-{noformat}
+```
 // first time it compiles, second time it doesn't.
 % scalac3 p.scala 
 % scalac3 p.scala 
@@ -33,10 +31,10 @@ one error found
 % rm -rf foo
 % scalac3 -d /tmp -cp /asldkfjlasdfj p.scala 
 %
-{noformat}
+```
 
 Edit: Another, possibly more serious, related issue follows.  Example from mark harrah.
-{noformat}
+```
 // demo/A.scala containing:
 package demo
 trait A
@@ -52,10 +50,10 @@ mkdir build
 scalac -d build -cp build demo/A.scala demo/package.scala
 rm -f build/demo/A.class
 scalac -d build -cp build demo/A.scala demo/package.scala
-{noformat}
+```
 It fails even when given all the source files it has just compiled:
-{noformat}
+```
 error: error while loading demo, class file needed by package is missing.
 reference type A of package demo refers to nonexisting symbol.
 one error found
-{noformat}
+```

@@ -3,7 +3,7 @@
 I have run into this again and it's going to be a problem for improving the pattern matcher's type parameter handling.  I don't think it actually has anything to do with tailcalls (although it may), I think that's only where it's being revealed, and it originates in the typer.  So I'm reassigning to scala_reviewer to see if it can get another look.
 
 Here is a distillation of the problem.
-{code}
+```scala
 abstract class Bar[+B] {
 }
 abstract class C1[+B] extends Bar[B] {  
@@ -20,9 +20,9 @@ abstract class C1[+B] extends Bar[B] {
     case x: C1[_] => f2(x)
   }
 }
-{code}
+```
 The crash:
-{code}
+```scala
 Exception in thread "main" scala.tools.nsc.symtab.Types$$TypeError: type mismatch;
  found   : C1[_]
  required: Bar[B]
@@ -34,4 +34,4 @@ Exception in thread "main" scala.tools.nsc.symtab.Types$$TypeError: type mismatc
  at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:4186)
  at scala.tools.nsc.typechecker.Typers$$Typer.typedArg(Typers.scala:2209)
  at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$typedArgs$$3.apply(Typers.scala:2220)  
-{code}
+```

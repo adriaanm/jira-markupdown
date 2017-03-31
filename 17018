@@ -1,13 +1,12 @@
-There appears to be a problem with {{InlineExceptionHandlers}}.
+There appears to be a problem with `InlineExceptionHandlers`.
 
-I noticed after compiling the compiler with {{-target:jvm-1.6 -optimize}} 
+I noticed after compiling the compiler with `-target:jvm-1.6 -optimize` 
   as of https://github.com/scala/scala/commit/446de86b3e51f45418cc87c0c9ec43c30bbab3d4
 and later trying to run with the usual VM options that activate the new verifier:
   {{java -Xverify:all -XX:+UseSplitVerifier -XX:-FailOverToOldVerifier}}
 
 There is some mismatch between stack map frames as emitted vs as computed by the verifier:
-
-{noformat}
+```
 Exception in thread "main" java.lang.VerifyError: 
 Bad type on operand stack in method
 scala.reflect.internal.BaseTypeSeqs$BaseTypeSeq.liftedTree1$1(ILscala/reflect/internal/Types$RefinedType;)Lscala/reflect/internal/Types$Type; 
@@ -23,20 +22,20 @@ at offset 259
         at scala.tools.nsc.Driver.process(Driver.scala:45)
         at scala.tools.nsc.Driver.main(Driver.scala:65)
         at scala.tools.nsc.Main.main(Main.scala)
-{noformat}
+```
 
 The problem does not surface when the compiler is compiled with 
  {{-Yinline -Yclosure-elim -Ydead-code}}
 
 There are two candidate culprits:
-# GenASM, which delegates to ASM the computation of stack-maps, but computes some input for that: {{inameToSymbol()}}, {{getCommonSuperClass()}}.
-# {{InlineExceptionHandlers}}
+- GenASM, which delegates to ASM the computation of stack-maps, but computes some input for that: `inameToSymbol()`, `getCommonSuperClass()`.
+- `InlineExceptionHandlers`
 
-GenASM seems not to be the culprit because {{inameToSymbol()}} doesn't run at all (rather, {{getCommonSuperClass()}} always hits the {{reverseJavaName}} cache). And if {{getCommonSuperClass()}} had a bug, we would have noticed already.
+GenASM seems not to be the culprit because `inameToSymbol()` doesn't run at all (rather, `getCommonSuperClass()` always hits the `reverseJavaName` cache). And if `getCommonSuperClass()` had a bug, we would have noticed already.
 
-First I tried diagnosing with ASM's {{CheckClassAdapter}} , http://asm.ow2.org/doc/faq.html#Q4 , but it finds no error.
+First I tried diagnosing with ASM's `CheckClassAdapter` , http://asm.ow2.org/doc/faq.html#Q4 , but it finds no error.
 
-Thus we're left with {{javap -c -private -verbose}} , which does show a difference for the method in question:
+Thus we're left with `javap -c -private -verbose` , which does show a difference for the method in question:
 
 {code:title=version 1: compiled with -optimize|borderStyle=solid}
 private final scala.reflect.internal.Types$Type liftedTree1$1(int, scala.reflect.internal.Types$RefinedType);
@@ -217,7 +216,7 @@ private final scala.reflect.internal.Types$Type liftedTree1$1(int, scala.reflect
      stack = [ class java/lang/Throwable ]
    frame_type = 7 /* same */
    frame_type = 41 /* same */
-{code}
+```scala
 
 {code:title=version 2: compiled with -Yinline -Yclosure-elim -Ydead-code|borderStyle=solid}
 private final scala.reflect.internal.Types$Type liftedTree1$1(int, scala.reflect.internal.Types$RefinedType);
@@ -384,11 +383,11 @@ private final scala.reflect.internal.Types$Type liftedTree1$1(int, scala.reflect
      stack = [ class java/lang/Throwable ]
    frame_type = 7 /* same */
    frame_type = 41 /* same */
-{code}
+```
 
 
-A question we could ask ourselves is: _What performance gain (if any) does {{InlineExceptionHandlers}} buy us?_
+A question we could ask ourselves is: *What performance gain (if any) does `InlineExceptionHandlers` buy us?*
 
-If negative, null, or negligible, then, shouldn't we consider removing {{InlineExceptionHandlers}} from the pipeline? This question is unrelated to this bug but becomes more pressing because of it.
+If negative, null, or negligible, then, shouldn't we consider removing `InlineExceptionHandlers` from the pipeline? This question is unrelated to this bug but becomes more pressing because of it.
 
 Given that the build optimizes library and compiler, this bug means our build can't target 1.6 classfiles.

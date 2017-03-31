@@ -3,16 +3,16 @@ I realized that this bug affects package objects in a common use case so I now b
 It turns out that you get the same error when you create a package object in a file with the same name as the package object if the package object is not in the default package.
 
 For example:
-{code}
+```scala
 //file: /src/po.scala
 package object po { }
-{code}
+```
 compiles fine, but
-{code}
+```scala
 //file: /src/bugs/po.scala
 package bugs
 package object po { }
-{code}
+```
 produces the following message: "po is already defined as object po".
 
 I believe it is a common case to place a package object in a file with the same name and so this bug should be fixed.

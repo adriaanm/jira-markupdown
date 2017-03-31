@@ -1,6 +1,5 @@
 In Scala 2.10.0 you can write a macro that will define an anonymous class with a type member and return an instance that will be statically typed as a structural type with that type member:
-
-{code}
+```scala
 object MacroExample extends ReflectionUtils {
   import scala.language.experimental.macros
   import scala.reflect.macros.Context
@@ -25,20 +24,18 @@ object MacroExample extends ReflectionUtils {
     ))
   }
 }
-{code}
+```
 
-(Where [ReflectionUtils|https://gist.github.com/4552471] just defines a constructor method for convenience.)
+(Where [ReflectionUtils](https://gist.github.com/4552471) just defines a constructor method for convenience.)
 
 And now:
-
-{code}
+```scala
 scala> MacroExample.foo("T")
 res0: AnyRef{type T = Int} = $1$$1@7da533f6
-{code}
+```
 
 But if we try the same thing with a method instead of a type member, it doesn't work:
-
-{code}
+```scala
 def bar(name: String): Any = macro bar_impl
 def bar_impl(c: Context)(name: c.Expr[String]) = {
   import c.universe._
@@ -61,18 +58,16 @@ def bar_impl(c: Context)(name: c.Expr[String]) = {
     Apply(Select(New(Ident(anon)), nme.CONSTRUCTOR), Nil)
   ))
 }
-{code}
+```
 
 We just don't end up with a structural type:
-
-{code}
+```scala
 scala> MacroExample.bar("test")
 res1: AnyRef = $1$$1@da12492
-{code}
+```
 
 But for some reason we can add an extra class that extends the anonymous class and instantiate that instead:
-
-{code}
+```scala
 def baz(name: String): Any = macro baz_impl
 def baz_impl(c: Context)(name: c.Expr[String]) = {
   import c.universe._
@@ -100,13 +95,12 @@ def baz_impl(c: Context)(name: c.Expr[String]) = {
     Apply(Select(New(Ident(wrapper)), nme.CONSTRUCTOR), Nil)
   ))
 }
-{code}
+```
 
 And it works:
-
-{code}
+```scala
 scala> MacroExample.baz("test")
 res0: AnyRef{def test: Int} = $2$$1@6663f834
-{code}
+```
 
-See [this Stack Overflow question|http://stackoverflow.com/q/14370842/334519] for more discussion.
+See [this Stack Overflow question](http://stackoverflow.com/q/14370842/334519) for more discussion.

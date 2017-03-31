@@ -1,16 +1,15 @@
-The following class throws `VerifyError` when running with `-optimize`. It's in *inline exception handlers*, since it works fine if I pass `-Yskip:inlineExceptionHandlers` (or if I add something in the `finally` block, like a dummy println).
-
-{code}
+The following class throws `VerifyError` when running with `-optimize`. It's in **inline exception handlers**, since it works fine if I pass `-Yskip:inlineExceptionHandlers` (or if I add something in the `finally` block, like a dummy println).
+```scala
 class Foo {
 	lazy val x = try { 10 } finally ()
 
 	def main(args: Array[String]) {		
 	}
 }
-{code}
+```
 
 and the output:
-{code}
+```scala
 Exception in thread "main" java.lang.ClassFormatError: Illegal exception table range in class file Foo
 	at java.lang.ClassLoader.defineClass1(Native Method)
 	at java.lang.ClassLoader.defineClassCond(ClassLoader.java:631)
@@ -38,4 +37,4 @@ Exception in thread "main" java.lang.ClassFormatError: Illegal exception table r
 	at scala.tools.nsc.GenericRunnerCommand.scala$tools$nsc$GenericRunnerCommand$$guessHowToRun(GenericRunnerCommand.scala:34)
 	at scala.tools.nsc.GenericRunnerCommand$$anonfun$2.apply(GenericRunnerCommand.scala:51)
 	at scala.tools.nsc.GenericRunnerCommand$$anonfun$2.apply(GenericRunnerCommand.scala:51)
-{code}
+```

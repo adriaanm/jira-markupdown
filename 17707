@@ -1,7 +1,7 @@
 The API docs say that isPackage should imply isTerm, which makes sense. However, in 2.10-RC2, isPackage returns true for both packages and package classes, which are not terms.
 
 Example repro code:
-{noformat}
+```
 import scala.tools.nsc
 val compiler = new nsc.Global(new nsc.Settings)
 new compiler.Run
@@ -10,13 +10,13 @@ val sp = compiler.definitions.ScalaPackageClass
 println("isPackageClass: " + sp.isPackageClass)
 println("isPackage: " + sp.isPackage)
 println("isTerm: " + sp.isTerm)
-{noformat}
+```
 
 This prints:
-{noformat}
+```
 isPackageClass: true
 isPackage: true
 isTerm: false
-{noformat}
+```
 
 Something should give. In my opinion, the public API docs make more sense than the current behavior, so change the implementation. Have isPackage return false for package classes.

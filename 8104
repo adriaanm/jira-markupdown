@@ -1,6 +1,6 @@
-After inlining {{defaultIfIOException}} the TFA is caught in a trap because:
+After inlining `defaultIfIOException` the TFA is caught in a trap because:
 - on exit from block 1 there's just the Console object on the stack,
-- block 5 (the start of an EH, reached by exceptional control-flow from 6) has {{stack height == 1}} on exit (the stack contains just the String pushed in that block). There's a normal control-flow edge from 5 to 4.
+- block 5 (the start of an EH, reached by exceptional control-flow from 6) has `stack height == 1` on exit (the stack contains just the String pushed in that block). There's a normal control-flow edge from 5 to 4.
 - the other predecessor of block 4 (block 6) has an out-flow where the stack contains (a) the Console object it had on entry plus (b) a string
 
 As a result we have inconsistent stack height on entry to 6.

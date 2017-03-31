@@ -1,6 +1,5 @@
 Given the following code:
-
-{code}
+```scala
 class A {    
     var current = ">>> "
     def append(str: String) = {
@@ -16,13 +15,12 @@ println(a.current)
 
 val b: B = new B() append "hello"
 println(b.current)
-{code}
+```
 
 I would expect a correct compilation, as class B does not override append.
 
 Rather than that, I get the following compilation error:
-
-{code}
+```scala
 jponge@eduroinsa143:Temp $$ scala fail_inference.scala 
 (fragment of fail_inference.scala):14: error: type mismatch;
  found   : this.A
@@ -32,11 +30,11 @@ val b: B = new B() append "hello"
 one error found
 !!!
 discarding <script preamble>
-{code}
+```
 
 If I remove the explicit type on the following declaration:
 
-{{val b = new B() append "hello"}}
+`val b = new B() append "hello"`
 
 then the code compiles. However, the instance b is really of type B!
 

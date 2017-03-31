@@ -1,5 +1,5 @@
 Given a `protected[this]` method and a subtype overriding its declaration to make access public, the widening of access isn't applied to the specialized declarations.
-{code:scala}
+```scala
 trait QuitePrivate[@specialized(Int) +K] {
 	protected[this] def hasK(k :K) :Boolean
 }
@@ -12,14 +12,13 @@ trait MoreOpen extends QuitePrivate[Int] {
 object Playground extends App {
 	def check(guy :MoreOpen) = guy.hasK(42)
 }
-{code}
-
-{noformat}
+```
+```
 Error:(13, 33) method hasK$mcI$sp in trait MoreOpen cannot be accessed in MoreOpen
  Access to protected method hasK$mcI$sp not permitted because
  enclosing object Playground is not a subclass of 
  trait MoreOpen where target is defined
 	def check(guy :MoreOpen) = guy.hasK(42)
-{noformat}
+```
 
 BTW - I know the specialization is an experimental and not fullly integrated feature of the language. Should I keep reporting bugs I find in this area, or is it just burdening you with stuff that's likely to go out of the window and be rewritten completely?

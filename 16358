@@ -1,6 +1,5 @@
 When writing scaladoc for an overrided member, it is convenient to be able to inherit the existing docs and extend them. Currently, it appears that you can either inherit or provide your own, but not merge the two. The simplest way I can think to address this is as follows:
-
-{code:scala}
+```scala
 trait Foo {
   /** Do interesting stuff. */
   def doStuff()
@@ -17,14 +16,13 @@ trait Baz {
    */
   override def doStuff()
 }
-{code}
+```
 
 The scaladoc for Foo.doStuff() would be "Do interesting stuff." and the scaladoc for Bar.doStuff() would be "Actually does quite boring stuff.". However, the scaladoc for Baz would be:
-
-{code:html}
+```html
 Do interesting stuff.
 
 We make use of pixie magic to do stuff.
-{code}
+```
 
-So, the rule is that if the scaladoc starts on the {{/**}} line, it is treated as the documentation. If the {{/**}} line is blank, the inherited docs are inserted followed by these docs.
+So, the rule is that if the scaladoc starts on the `/**` line, it is treated as the documentation. If the `/**` line is blank, the inherited docs are inserted followed by these docs.

@@ -1,4 +1,4 @@
-{code}
+```scala
 scala> import collection.mutable
 import collection.mutable
 
@@ -19,9 +19,9 @@ res2: Seq[Int] = WrappedArray(4, 5, 6)
 
 scala> x.toIndexedSeq
 res3: scala.collection.immutable.IndexedSeq[Int] = Vector(4, 5, 6)
-{code}
+```
 
-Note that Arrays (= WrappedArrays) and Buffers are incorrectly declared as not subclassing IndexedSeq. This is a clear bug as IndexedSeq is specifically defined as a sequence for which index operations are (near-)constant, which applies to both Buffers and Arrays. This means that I have a function that does random-access an array-like parameter and I logically declare it to take an IndexedSeq, it fails when I pass in something that's a Buffer or Array. This is not a mutable/immutable thing because calling {{toSeq()}} returns the same item back. (Mutable objects can be viewed as immutable objects.)
+Note that Arrays (= WrappedArrays) and Buffers are incorrectly declared as not subclassing IndexedSeq. This is a clear bug as IndexedSeq is specifically defined as a sequence for which index operations are (near-)constant, which applies to both Buffers and Arrays. This means that I have a function that does random-access an array-like parameter and I logically declare it to take an IndexedSeq, it fails when I pass in something that's a Buffer or Array. This is not a mutable/immutable thing because calling `toSeq()` returns the same item back. (Mutable objects can be viewed as immutable objects.)
 
 I hesitated before marking this as "Critical". I eventually did so because by default bugs show up as "Major" and this is a fairly serious bug; I can't believe it hasn't been fixed already.
 

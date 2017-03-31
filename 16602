@@ -2,10 +2,10 @@ The Scala compiler is erasing generic type information of fields that are declar
 
 This is a showstopper for sophisticated reflection libraries that make heavy use of generic type information, e.g. the 'coercion' component in SodaTest (https://github.com/GrahamLea/SodaTest)
 
-This seems to be a partial regression of SI-1395.
+This seems to be a partial regression of scala/bug#1395.
 
 Scala script:
-{code:scala}
+```scala
 class OptionTypes {
   val optionInt: Option[Int] = Some(1)
   val optionDouble: Option[Double] = Some(4.5)
@@ -18,10 +18,10 @@ println(classOf[OptionTypes].getDeclaredField("optionDouble").getGenericType)
 println(classOf[OptionTypes].getDeclaredField("optionString").getGenericType)
 println(classOf[OptionTypes].getDeclaredField("listInt").getGenericType)
 println(classOf[OptionTypes].getDeclaredField("listString").getGenericType)
-{code}
+```
 
 Run against 2.8.1.final:
-{noformat}
+```
 scala> class OptionTypes {
      |   val optionInt: Option[Int] = Some(1)
      |   val optionDouble: Option[Double] = Some(4.5)
@@ -45,7 +45,7 @@ scala.collection.immutable.List<java.lang.Integer>
 
 scala> println(classOf[OptionTypes].getDeclaredField("listString").getGenericType)
 scala.collection.immutable.List<java.lang.String>
-{noformat}
+```
 
 Run against 2.9.1-final:
 Note that optionInt, optionDouble and listInt have run time type arguments of 'java.lang.Object'.

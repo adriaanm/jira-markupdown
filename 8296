@@ -1,22 +1,19 @@
 there are a number of mistakes you are making here i think. 
 
 first of all, the so-called composition you are making is bogus. `numberOrDefault` is actually taking a closure, and composing `divideByZero` actually means to capture it inside of a closure, instead of the expression itself. composition law of functor doesn't specify this situation at all. that is
-
-{code}
+```scala
 tryy map { p => g(() => f(p)) }
-{code}
+```
 
 doesn't have any assumption of relation to
-
-{code}
+```scala
 tryy map f map g
-{code}
+```
 
 but rather should be equivalent to
-
-{code}
+```scala
 tryy map { p => () => f(p) } map g
-{code}
+```
 
 don't let syntax trick you.
 

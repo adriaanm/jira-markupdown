@@ -1,6 +1,5 @@
 The error messages related to inheritance are generally pretty decent, if arguments are the same:
-
-{code}
+```scala
 trait A { def foo: Int }
 trait B extends A { override def foo: String }
 
@@ -8,18 +7,18 @@ trait B extends A { override def foo: String }
  method foo has incompatible type
        trait B extends A { override def foo: String }
                                         ^
-{code}
+```
 
 
 But if arguments differ, the error message is not very helpful:
-{code}
+```scala
 trait A { def foo(i: Int): Int }
 trait B extends A { override def foo(s: String): Int }
 
 <console>:8: error: method foo overrides nothing
        trait B extends A { override def foo(s: String): Int }
                                         ^
-{code}
+```
 
 It would be nice if in case of an error, the compiler would check if there is a signature with the same name, but different arguments.
 

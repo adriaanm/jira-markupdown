@@ -1,23 +1,20 @@
 The following snippets should all run without exceptions and produce List(2).
-
-{code}
+```scala
 type T = Int
 val code = reify {
   List[T](2)
 }
 println(code.eval)
-{code}
-
-{code}
+```
+```scala
 type U = Int
 type T = U
 val code = reify {
   List[T](2)
 }
 println(code.eval)
-{code}
-
-{code}
+```
+```scala
 def foo[W] = {
   type U = W
   type T = U
@@ -30,4 +27,4 @@ println(code.tree.freeTypes)
 val W = code.tree.freeTypes(2)
 cm.mkToolBox().runExpr(code.tree, Map(W -> definitions.IntTpe))
 println(code.eval)
-{code}
+```

@@ -1,17 +1,15 @@
 This looks like a bug with the SAM type inference. Compare:
-
-{code}
+```scala
 scala> 1.to(10).asJava.stream().map(_ + 1)
 res7: java.util.stream.Stream[?0] = java.util.stream.ReferencePipeline$3@2c991465
 
 scala> 1.to(10).asJava.stream().map[Int](_ + 1)
 res8: java.util.stream.Stream[Int] = java.util.stream.ReferencePipeline$3@f171912
-{code}
+```
 
 Here's the signature of Stream.map:
-
-{code}
+```scala
 <R> Stream<R> 	map(Function<? super T,? extends R> mapper)
-{code}
+```
 
 It looks like the existential type from the call-site variance on R leaks out into the return type instead of being replaced by the inferred type R = Int.

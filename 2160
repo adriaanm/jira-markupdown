@@ -1,21 +1,21 @@
 Sorry, am not used to trac.
 
 Broken code:
-{code}
+```scala
 class Test[A](implicit val m: Manifest[A]) 
 class Foo 
 object Bar extends Test[Foo] 
 Bar.m 
-{code}
+```
 
 Work around 1: 
-{{(new Test[Foo]).m}}
+`(new Test[Foo]).m`
 
 Work around 2:
-{code}
+```scala
 class Test[A](implicit m: Manifest[A]) {
     val foo = m
 } 
 object Bar extends Test[Foo] 
 Bar.foo 
-{code}
+```

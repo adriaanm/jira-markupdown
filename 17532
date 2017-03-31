@@ -1,19 +1,17 @@
 When the scrutinee of a match has a parametric type, and appropriate TypeTags are in scope, it should be possible to formulate a match like the following:
-
-{code}
+```scala
 def f[T: TypeTag](x: T) = x match {
   case xs: List[String] => ...
   case xs: List[Int] => ...
 }
-{code}
+```
 
 It would be nice if that would also work with type parameters used in non-top-level positions:
-
-{code}
+```scala
 def f[T: TypeTag](xs: List[T]) = xs match {
   case (s: String) :: tail =>
-{code}
+```
 
 In principle the compiler should have all necessary knowledge available, but I cannot judge how difficult it would be to make this work.
 
-Talking with Adriaan did not result in immediate dismissal, and he asked me to reference SI-5143 as related.
+Talking with Adriaan did not result in immediate dismissal, and he asked me to reference scala/bug#5143 as related.

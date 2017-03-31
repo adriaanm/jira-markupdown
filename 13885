@@ -1,5 +1,5 @@
 The last line of the following definition of an abstract class (the method "test3") crashes the compiler (2.7.2.final) with a ClassCastException:
-{code}
+```scala
 abstract class O(val data: Int) {
     type T >: this.type <: O
     protected def construct(x: Int): T
@@ -7,10 +7,10 @@ abstract class O(val data: Int) {
     def test2: T = this + this
     def test3(that: O): T = this.test2 + that.test2
 }
-{code}
+```
 
 I guess the code should compile successfully, but it crashes during compilation with the following ClassCastException:
-{code}
+```scala
 Exception in thread "main" java.lang.ClassCastException: scala.tools.nsc.symtab.
 Types$$ExistentialType cannot be cast to scala.tools.nsc.symtab.Types$$TypeBounds
         at scala.tools.nsc.symtab.Types$$TypeRef.bounds(Types.scala:1378)
@@ -154,11 +154,11 @@ zer.scala:40)
         at scala.tools.nsc.InterpreterLoop.main(InterpreterLoop.scala:298)
         at scala.tools.nsc.MainGenericRunner$$.main(MainGenericRunner.scala:150)
         at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
-{code}
+```
 
 
 This code here provides the same functionality and compiles just fine, although it is probably nothing like semantically equivalent ;)
-{code}
+```scala
 abstract class O[T <: O[T]](val data: Int) {
     this: T =>
     protected def construct(x: Int): T
@@ -166,4 +166,4 @@ abstract class O[T <: O[T]](val data: Int) {
     def test2: T = this + this
     def test3(that: O[T]): T = this.test2 + that.test2
 }
-{code}
+```

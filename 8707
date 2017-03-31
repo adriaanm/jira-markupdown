@@ -2,11 +2,10 @@ I know I should really have a pull request or at least a diff.  But anyway, here
 
 (1) Throws the correct exception on an error
 
-(2) Does not fail on a short octal at the end of a string {{s"\4"}}
+(2) Does not fail on a short octal at the end of a string `s"\4"`
 
-(3) Uses the {{append(str, a, b)}} string builder method, which should be faster than substring (no object creation required)
-
-{code}
+(3) Uses the `append(str, a, b)` string builder method, which should be faster than substring (no object creation required)
+```scala
   def treatEscapes(str: String): String = {
     lazy val bldr = new java.lang.StringBuilder
     val len = str.length
@@ -60,6 +59,6 @@ I know I should really have a pull request or at least a diff.  But anyway, here
     if (start == 0) str
     else bldr.append(str, start, idx).toString
   }
-{code}
+```
 
-It does not address the issue of it being weird that {{s"""\n"""}} gives you a carriage return.  It also does not address the issue that {{s"\""}} doesn't do what you think it will.
+It does not address the issue of it being weird that `s"""\n"""` gives you a carriage return.  It also does not address the issue that `s"\""` doesn't do what you think it will.

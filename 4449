@@ -1,5 +1,5 @@
 I am beyond embarrassed that it took me so long to see the cause of this bug, and Paul even pointed to the very code I was looking at as the source of the problem... In ./src/library/scala/collection/immutable/PagedSeq.scala, the following code does not set isFirst to false under the correct conditional.  As a result, it never changes to false, and no newline characters are added to the beginning of each String.
-{code}
+```scala
   /** Constructs a character sequence from a line iterator
    *  Lines do not contain trailing `\n' characters; The method inserts
    *  a line separator `\n' between any two lines in the sequence.
@@ -14,5 +14,5 @@ I am beyond embarrassed that it took me so long to see the cause of this bug, an
       }
     }) 
   }      
-{code}
+```
 As a result, fromLines will always result in the same result as fromStrings.

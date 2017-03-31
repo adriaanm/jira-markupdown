@@ -1,6 +1,5 @@
 Given
-
-{code}
+```scala
 class Gen
 {
     def add(name: String) = {
@@ -13,32 +12,28 @@ class Gen
         }
     }
 }
-{code}
+```
 
 The calling code
-
-{code}
+```scala
 val gen = new Gen()
 gen.add("a")
 gen.add("b").bind("1")
-{code}
+```
 
 Should output
-
-{code}
+```scala
 Adding a
 Adding b
 Binding 1 to b
-{code}
+```
 
 Instead the result is
-
-{code}
+```scala
 Adding a
 Adding b
 Adding b
 Binding 1 to b
-{code}
+```
 
 Disassembly of calling code verifies that multiple calls to gen.add("b") are emitted, specifically 2**n calls to add() where n = number of chained calls to bind().
-

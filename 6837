@@ -1,9 +1,8 @@
-Righto. {{AddInterfaces#implMethodDef}} appears culpable. It cut/pastes the method from the trait to the implementation class, without creating new symbols for the parameters. When these get renamed later in erasure, the new names become visible in the type history of the original method at the typer phase of the next run. Or something along those lines.
-
-{code}
+Righto. `AddInterfaces#implMethodDef` appears culpable. It cut/pastes the method from the trait to the implementation class, without creating new symbols for the parameters. When these get renamed later in erasure, the new names become visible in the type history of the original method at the typer phase of the next run. Or something along those lines.
+```scala
   private def implMethodDef(tree: Tree): Tree = (
     implMethodMap get tree.symbol
             map (impl => new ChangeOwnerAndReturnTraverser(tree.symbol, impl)(tree setSymbol impl))
       getOrElse abort("implMethod missing for " + tree.symbol)
   )
-{code}
+```

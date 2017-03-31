@@ -1,6 +1,5 @@
 [Edit: adding a more serious super-related crash.]
-
-{code}
+```scala
 trait C1[+A] {
   def head: A = sys.error("")
 }
@@ -17,11 +16,10 @@ class C3 extends C2[Char]
 //  at scala.tools.nsc.transform.Mixin.scala$tools$nsc$transform$Mixin$$rebindSuper(Mixin.scala:95)
 //  at scala.tools.nsc.transform.Mixin$$anonfun$mixinTraitMembers$1$1.apply(Mixin.scala:351)
 //  at scala.tools.nsc.transform.Mixin$$anonfun$mixinTraitMembers$1$1.apply(Mixin.scala:304)
-{code}
+```
 
 [Original report]
-
-{code}
+```scala
 trait Super[@specialized(Int) A] {
   def superb = 0
 }
@@ -31,8 +29,8 @@ object Sub extends Super[Int] {
   super.superb        // okay    
   override def superb: Int = super.superb // okay
 }
-{code} 
-{code}
+```
+```scala
 scala.tools.nsc.symtab.Types$$TypeError: Super does not name a parent class of object Sub
 	at scala.tools.nsc.typechecker.Contexts$$Context.error(Contexts.scala:273)
 	at scala.tools.nsc.typechecker.Infer$$Inferencer.error(Infer.scala:213)
@@ -53,13 +51,12 @@ scala.tools.nsc.symtab.Types$$TypeError: Super does not name a parent class of o
 	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:4126)
 	at scala.tools.nsc.transform.SpecializeTypes$$$$anon$$6.transform(SpecializeTypes.scala
 [snip]
-{code}
+```
 
 In the original code, I originally got a different error during mixins, using an unqualified super reference. I haven't reproduced that yet in isolation. It can be reproduced by compiling scalala with SBT from: https://github.com/retronym/Scalala/tree/ab592a34bc1b5492ab2df65d4ba96d6c585ff724
 
 This results in:
-
-{code}
+```scala
 [info] [running phase mixin on Domain.scala]
 exception when traversing <root>#java#lang#Object with
 <root>#scala#Product2 with
@@ -75,11 +72,11 @@ java.lang.UnsupportedOperationException: tail of empty list
        at scala.tools.nsc.transform.Mixin$$$$anonfun$$scala$$tools$$nsc$$transform$$Mixin$$$$rebindSuper$$1.apply(Mixin.scala:95)
        at scala.tools.nsc.transform.Mixin$$$$anonfun$$scala$$tools$$nsc$$transform$$Mixin$$$$rebindSuper$$1.apply(Mixin.scala:94)
        at scala.tools.nsc.symtab.SymbolTable.atPhase(SymbolTable.scala:103)
-{code}
+```
 
 I'll try and get a smaller test case for this one, and update this ticket.
 
-See also SI-3651
+See also scala/bug#3651
 
 What versions of the following are you using?
 Scala: 2.8.0 / 2.8.1

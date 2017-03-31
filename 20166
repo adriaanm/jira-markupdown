@@ -1,5 +1,5 @@
 I have the following layout of code which does not compile but according to the spec for protected should:
-{code}
+```scala
 trait A {
   protected def callMe(): Unit
 }
@@ -8,16 +8,16 @@ trait B extends A {
   protected def a: A
   final override protected def callMe(): Unit = a.callMe()
 }
-{code}
+```
 The compiler gives me an error
-{code}
+```scala
  error: method callMe in trait A cannot be accessed in A
  Access to protected method callMe not permitted because
  prefix type A does not conform to
  trait B where the access take place
          final override protected def callMe(): Unit = a.callMe()
                                                          ^
-{code}
+```
 
 According to the spec:
 The protected modifier applies to class member definitions. Protected members
@@ -26,4 +26,4 @@ of a class can be accessed from within
 – all templates that have the defining class as a base class,
 – the companion module of any of those classes.
 
-Especially the second point should apply here but the compiler seems to treat {{callMe}} as {{protected\[this\]}}
+Especially the second point should apply here but the compiler seems to treat `callMe` as `protected\[this\]`

@@ -1,7 +1,6 @@
 It is possible for a `Double` and a `Float` to be equal but have different hash
 codes:
-
-{code}
+```scala
 Welcome to Scala version 2.9.0.r23230-b20101012020216 (Java HotSpot(TM) Client VM, Java 1.6.0_21).
 Type in expressions to have them evaluated.
 Type :help for more information.
@@ -14,14 +13,13 @@ res1: Int = 1073217536
 
 scala> (1.5f).##
 res2: Int = 1069547520
-{code}
+```
 
 If I understand the rules correctly, Scala requires two values (even primitives)
 that are equal to have the same hash code.
 
 I'm guessing that you could fix that by altering this code in `ScalaRunTime`:
-
-{code}
+```scala
   @inline def hash(dv: Double): Int = {
     val iv = dv.toInt
     if (iv == dv) return iv
@@ -30,11 +28,10 @@ I'm guessing that you could fix that by altering this code in `ScalaRunTime`:
     if (lv == dv) return lv.hashCode
     else dv.hashCode
   }
-{code}
+```
 
 to this:
-
-{code}
+```scala
   @inline def hash(dv: Double): Int = {
     val iv = dv.toInt
     if (iv == dv) return iv
@@ -45,7 +42,7 @@ to this:
     val fv = dv.toFloat
     if (fv == dv) fv.hashCode else dv.hashCode
   }
-{code}
+```
 
 and that the additional overhead is irrelevant (hashing floating point values
 is perverse to begin with).

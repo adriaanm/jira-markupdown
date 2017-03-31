@@ -1,19 +1,19 @@
-I have just committed r17144 and closed SI-1565.  The bug originally reported in this ticket works fine now:
-{code}
+I have just committed r17144 and closed scala/bug#1565.  The bug originally reported in this ticket works fine now:
+```scala
 scala> (a : Int, b : Int) => println(List(a, b))
 res0: (Int, Int) => Unit = <function>
 
 scala> res0(5, 10)
 List(5, 10)
-{code}
+```
 However lex's specific example is thorny:
-{code}
+```scala
 a : Int => println("hello")
-{code}
+```
 That is, I think the specific case of an unparenthesized one-argument function may be best dealt with by special casing the interpreter, because I'm pretty sure disambiguating it in the parser is impossible.
-{code}
+```scala
 // is that a function or a self-type? 
 scala> class Foo
 scala> class Bar extends Foo { self: Bar => println("hi") }
-{code}
+```
 I'll look at this some more but I think the lion's share of the available improvement is in the patch for 1565.

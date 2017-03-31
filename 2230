@@ -1,19 +1,18 @@
 Much distilled:
-{code}
+```scala
 def f(x: Boolean) = if (x) <br/><br/> else <br/>
-{code}
-{code}
+```
+```scala
 <console>:4: error: kinds of the type arguments (Sequence[Any]) do not conform to the expected kinds of the type parameters (type CC) in class Companion.
 Sequence[Any]'s type parameters do not match type CC's expected parameters: trait Sequence has one type parameter, but type CC has one
        def f(x: Boolean) = if (x) <br/><br/> else <br/>
            ^
-{code}
+```
 In your case it's trying to infer the return type of spanForSentence.  When the first leg of the if is <br/> it's an Elem and the return type is Elem.  When it's <br/><br/> it is apparently a NodeBuffer.
 
 Anyway, just tell it to use a NodeSeq:
-{code}
+```scala
 def f(x: Boolean): xml.NodeSeq = if (x) <br/><br/> else <br/>
 f: (x: Boolean)scala.xml.NodeSeq
-
-{code}
+```
 No question these issues are problematic.

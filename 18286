@@ -1,4 +1,4 @@
-{code}
+```scala
 class C /*#1*/{
   implicit def conversion(m: Int)(implicit nada: Nothing): String = ???
 
@@ -6,11 +6,10 @@ class C /*#1*/{
     locally(0 : String) // "value conversion is not a member of C.this.C"
   }
 }
-{code}
+```
 
 The offending code:
-
-{code}
+```scala
 // Typer#adapt
 case _ =>
   debuglog("fallback on implicits: " + tree + "/" + resetAllAttrs(original))
@@ -19,15 +18,14 @@ case _ =>
   // we pass `EmptyTree` as the `original`. intended? added in 2009 (53d98e7d42) by martin.
   tree1.tpe = pluginsTyped(tree1.tpe, this, tree1, mode, pt)
   if (tree1.isEmpty) tree1 else adapt(tree1, mode, pt, EmptyTree)
-{code}
+```
 
-The winning implicit conversion is inferred as a symful {{Select(This(C#1), "conversion")}}. The {{resetAllAttrs}} brutalizes this tree, and upon retypechecking we end up with {{This(C#2)}}.
+The winning implicit conversion is inferred as a symful `Select(This(C#1), "conversion")`. The `resetAllAttrs` brutalizes this tree, and upon retypechecking we end up with `This(C#2)`.
 
-{{resetLocalAttrs}} seems like a better option here.
+`resetLocalAttrs` seems like a better option here.
 
 The same problem arises with the two classes share the name "$anon".
-
-{code}
+```scala
 trait T; trait U
 new T {
   implicit def conversion(m: Int)(implicit nada: Nothing): String = ???
@@ -36,4 +34,4 @@ new T {
     locally(0 : String) // "value conversion is not a member of U"
   }
 }
-{code}
+```

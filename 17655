@@ -1,6 +1,5 @@
 As discussed in https://groups.google.com/d/topic/scala-internals/Ief8xGFd6fU/discussion , currently lambdalift crashes on:
-
-{noformat}
+```
 class Foo(a: Any);
 
 class IP extends Foo({
@@ -27,12 +26,11 @@ at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.outerSelect(Expl
 at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.outerValue(ExplicitOuter.scala:215)
 at scala.tools.nsc.transform.LambdaLift$LambdaLifter.memberRef(LambdaLift.scala:327)
 at scala.tools.nsc.transform.LambdaLift$LambdaLifter.postTransform(LambdaLift.scala:472)
-{noformat}
+```
 
 
 The motivation for this ticket is an alternative lowering for closures that is amenable to MethodHandles (both the real thing and so-called "Poor Man's Method Handles" , https://groups.google.com/d/topic/scala-internals/f7TektSb26s/discussion , ie the general rule is:
-
-{noformat}
+```
     /**  Transform a function node (x_1,...,x_n) => body of type FunctionN[T_1, .., T_N, R] to
      *
      *  {
@@ -51,7 +49,7 @@ The motivation for this ticket is an alternative lowering for closures that is a
      *  TODO In case the closure-body captures nothing, it need not be hoisted out of the closure.
      *
      */
-{noformat}
+```
 
 Thus the following (longer) example is representative of a use case around "Poor Man's Method Handles" 
 

@@ -1,52 +1,47 @@
 This breaks java compatibility. Here is a simple example :
 
 I have a java interface defined as follow :
-
-{code}
+```scala
 interface JavaVarArgsInterface {
    void varArgsMethod( String ... args );
 }
-{code}
+```
 
 I want to implement it in scala now :
-
-{code}
+```scala
 class ScalaVarArgsImpl extends JavaVarArgsInterface {
    def varArgsMethod( args : String*) {
         for( arg <- args ) println( arg )
    }
 }
-{code}
+```
 
 The compilation will pass but will generate the following class :
-
-{code}
+```scala
 public class ScalaVarArgsImpl extends java.lang.Object implements JavaVarArgsInterface,scala.ScalaObject{
     public ScalaVarArgsImpl();
     public void varArgsMethod(scala.Seq);
     public int $$tag()       throws java.rmi.RemoteException;
 }
-{code}
+```
 
 Which obviously doesn't implement properly the JavaArgsInterface.
 
 With 2.7.1-final we would do the following :
-
-{code}
+```scala
 class ScalaVarArgsImpl extends JavaVarArgsInterface {
    def varArgsMethod( args : Array[String]) {
         for( arg <- args ) println( arg )
    }
 }
-{code}
+```
 
 And it would compile as expected.
 
 If you compile this with 2.7.2-final you'll get :
-
-{code}
+```scala
 ScalaVarArgsImpl.scala:1: error: class ScalaVarArgsImpl needs to be abstract, since method varArgsMethod in trait JavaVarArgsInterface of type (java.lang.String*)Unit is not defined
 class ScalaVarArgsImpl extends JavaVarArgsInterface {
       ^
 one error found
-{code}
+```

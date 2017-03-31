@@ -4,10 +4,10 @@ this goes wrong because isHigherKindedType on a SingletonType (in this case: ?bc
 1) easy fix: override `isHigherKindedType` to be false in singletontype and thus avoid computing the underlying type (conceptually correct anyway)
 
 2) more robust fix(?): toInstance should recurse when pre is a typevar:
-{code}
+```scala
               if (symclazz == clazz && /*<2797>*/!pre.isInstanceOf[TypeVar] && /*</2797>*/ (pre.widen.typeSymbol isNonBottomSubClass symclazz)) {
                 pre.baseType(symclazz) match {
-{code}
+```
 
 the problem is that `pre.widen.typeSymbol isNonBottomSubClass symclazz` is true while `pre.baseType(symclazz)` is `NoType`
 

@@ -1,4 +1,4 @@
-{code}
+```scala
 scala> import scala.collection.mutable._                   
 import scala.collection.mutable._
 
@@ -7,11 +7,11 @@ res0: scala.collection.mutable.HashMap[Int,Int] with scala.collection.mutable.Sy
 
 scala> res0.clone()
 res1: res0.Self = Map()
-{code}
+```
 Maybe this is related to the implementation of clone() casting to whatever you tell it?
-{code}
+```scala
 trait Cloneable[+A <: AnyRef]  {
   override def clone: A = super.clone().asInstanceOf[A]
 }
-{code}
-I should point out that specifying a concrete type for clone() is not a solution because a method like ++ is implemented as "clone() ++= x" and on Set for example ++ returns "This", so that implementation won't work unless clone() also returns "This".
+```
+I should point out that specifying a concrete type for clone() is not a solution because a method like ++ is implemented as "clone() <ins><ins>= x" and on Set for example </ins></ins> returns "This", so that implementation won't work unless clone() also returns "This".

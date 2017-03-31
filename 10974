@@ -1,12 +1,11 @@
-The heap dump shows about 188k strongly reachable instances of {{Solving$SolverLit}}, an internal data structure in the pattern matcher used to calculating exhaustivity / reachability of matches.
+The heap dump shows about 188k strongly reachable instances of `Solving$SolverLit`, an internal data structure in the pattern matcher used to calculating exhaustivity / reachability of matches.
 
 What is the minimum memory needed to compile? Does, say, 1.2G work?
 
 It would be good to track this down to a smaller test case.
 
 A blackbox way to do this:
-
-{code}
+```scala
 SOURCES=$(find src -name '*.scala')
 CP=foo.jar:bar.jar
 echo jointly compiling everthing with copious memory
@@ -15,7 +14,7 @@ for s in $SOURCES; do
   echo individually compiling $s with limited memory
   scalac J-Xmx500M -classpath target/classes:$CP $s
 done
-{code}
+```
 
 Looking at your heap dump, it looks like the OOME was triggered during:
 

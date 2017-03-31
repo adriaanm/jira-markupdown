@@ -1,7 +1,5 @@
 Using 2.7.0-RC2:
-
-
-{code}
+```scala
 scala> for(method <- 1.getClass.getMethods) {println(method)}
 <console>:7: error: type mismatch;
  found   : Int
@@ -12,10 +10,8 @@ Note that implicit conversions are not applicable because they are ambiguous:
  are possible conversion functions from Int to ?{val getClass: ?}
       for(method <- 1.getClass.getMethods) {println(method)}
                     ^
-{code}
-
-
-{code}
+```
+```scala
 scala> for(method <- 1.asInstanceOf[Int].getClass.getMethods) {println(method)}
 <console>:7: error: type mismatch;
  found   : Int
@@ -26,11 +22,10 @@ Note that implicit conversions are not applicable because they are ambiguous:
  are possible conversion functions from Int to ?{val getClass: ?}
       for(method <- 1.asInstanceOf[Int].getClass.getMethods) {println(method)}
                       ^
-{code}
+```
 
 but this seems OK:
-
-{code}
+```scala
 scala> for(method <-
 1.asInstanceOf[java.lang.Integer].getClass.getMethods)
 {println(method)}
@@ -39,11 +34,10 @@ public int java.lang.Integer.compareTo(java.lang.Integer)
 public int java.lang.Integer.compareTo(java.lang.Object)
 public boolean java.lang.Integer.equals(java.lang.Object)
 ...
-{code}
+```
 
 and this is also OK:
-
-{code}
+```scala
 scala> import scala.runtime._
 scala> for(method <- (new RichInt(1)).getClass.getMethods) {println(method)}
 public int scala.runtime.RichInt.abs()
@@ -51,7 +45,7 @@ public int scala.runtime.RichInt.hashCode()
 public int scala.runtime.RichInt.compareTo(java.lang.Object)
 public boolean scala.runtime.RichInt.equals(java.lang.Object)
 ...
-{code}
+```
 
 Now, I would expect for an integer literal to behave (at least for the
 sake of minimal Java interoperability) like a `java.lang.Integer` or at
@@ -62,7 +56,6 @@ Solutions:
   * Solution 1: in the presence of ambiguous implicit conversions, a dominant one should be defined, but this may require a scala syntactic extension? So, we say `int2Integer` is the dominant implicit conversion over `intWrapper` or any other else.
 
   * Solution 2: the compiler recognizes that we have an implicit conversion from a primitive type to a reference type (`int2Integer`) and treats primitive types separately in this context by selecting int2Integer over `intWrapper`.
-
 
 
 

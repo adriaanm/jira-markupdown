@@ -1,10 +1,10 @@
-The problem here is that the type of the Array (inferencer assigns Array[Nothing]), is different from what the constructor returns (Array[Array[Nothing]]). Actually, this is a serious type soundness problem: one can give whatever type he wants to Array, and call an unrelated (in the number of dimensions) constructor: {{new Array[Array[Double]](5, 5, 5)}}. Here we are typing the expression as a 2-dimensional array of Doubles, but create a 3-dimensioanl array.
+The problem here is that the type of the Array (inferencer assigns Array[Nothing]), is different from what the constructor returns (Array[Array[Nothing]]). Actually, this is a serious type soundness problem: one can give whatever type he wants to Array, and call an unrelated (in the number of dimensions) constructor: `new Array[Array[Double]](5, 5, 5)`. Here we are typing the expression as a 2-dimensional array of Doubles, but create a 3-dimensioanl array.
 
 In other words: the return type of an array constructor is not always the type of the array, but rather it is Array[Array[...Array[a]..]] with as many nested Arrays as the number of dimensions it takes. I think this is a case where type constraints /a la/ C# would help.
 
-One solution is to make these constructors private and provide factory methods in {{object Array}}: 
-{code}
+One solution is to make these constructors private and provide factory methods in `object Array`: 
+```scala
   def make[a](d1: Int): Array[a] = new Array[a](d1, d2)
   def make[a](d1: Int, d2: Int): Array[Array[a]] = new Array[Array[a]](d1, d2)
 ...
-{code}
+```

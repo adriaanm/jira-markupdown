@@ -1,30 +1,28 @@
 Cay reported the following program that hangs in M4 (https://groups.google.com/forum/#!topic/scala-user/CMD_oZK_4Ns)
-{code}
+```scala
 scala> import scala.sys.process._
 import scala.sys.process._
 
 scala> println(("ls -al /" #| "grep u").!!)
-{code}
+```
 
-also hangs with {{-Ydelambdafy:inline}} (though with the library itself is compiled with delambdafy-method -- i did not try a scala library compiled with delambdafy-inline)
+also hangs with `-Ydelambdafy:inline` (though with the library itself is compiled with delambdafy-method -- i did not try a scala library compiled with delambdafy-inline)
 
 This also hangs in the class-based repl.
 
 ----
 
-(The rest of the description duplicates SI-8119 parallel collections + object initialization = hang) 
+(The rest of the description duplicates scala/bug#8119 parallel collections + object initialization = hang) 
 
 Also reported by cay horstmann on https://groups.google.com/forum/#!topic/scala-user/f5YJE5AB5aA
-
-{code}
+```scala
 scala> for (i <- (1 to 100).par) yield i
-{code}
+```
 
-hangs in 2.12.0-M4 and current master, thread dump below. it completes with {{-Ydelambdafy:inline}}, or by using {{-Yrepl-class-based}}.
+hangs in 2.12.0-M4 and current master, thread dump below. it completes with `-Ydelambdafy:inline`, or by using `-Yrepl-class-based`.
 
 thread dump:
-
-{noformat}
+```
 scala> for (i <- (1 to 100).par) yield i
 
 "scala-execution-context-global-18" #18 daemon prio=5 os_prio=31 tid=0x00007f90eb4fd800 nid=0x6a03 in Object.wait() [0x000070000571e000]
@@ -108,4 +106,4 @@ scala> for (i <- (1 to 100).par) yield i
 	at scala.tools.nsc.MainGenericRunner.process(MainGenericRunner.scala:98)
 	at scala.tools.nsc.MainGenericRunner$.main(MainGenericRunner.scala:103)
 	at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
-{noformat}
+```

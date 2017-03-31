@@ -3,21 +3,20 @@ scala 2.7.4.final, jdk1.6.0_11, IntelliJ Idea 8.1 on Vista.
  
 Observation:
 Clean compile pass for the following code, but a runtime ClassFormatError resulted.
-
-{code}
+```scala
 object ClassFormatErrorExample extends Application { new Aclass(1) }
 
 trait TBase { var p:Int = 0; def f(p1: Int) {} }
 
 class Aclass (p: Int) extends TBase { def g{ f(p) } }
-{code}
+```
 
 Detail:
 Parameter Aclass.p clashes with var TBase.p,
 changing Aclass.p to Aclass.q, for example, resolves the issue.   
 
 Stack trace: 
-{code}
+```scala
 Exception in thread "main" java.lang.ClassFormatError: Duplicate field name&signature in class file Aclass
 	at java.lang.ClassLoader.defineClass1(Native Method)
 	at java.lang.ClassLoader.defineClass(ClassLoader.java:621)
@@ -41,4 +40,4 @@ Exception in thread "main" java.lang.ClassFormatError: Duplicate field name&sign
 	at com.intellij.rt.execution.application.AppMain.main(AppMain.java:90)
 
 Process finished with exit code 1
-{code}
+```

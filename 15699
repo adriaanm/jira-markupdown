@@ -1,19 +1,18 @@
 If you compile the following code:
-{code}
+```scala
 class Do(f: => Unit) { 
   def exec() { f } 
 } 
-{code}
+```
 You obtain the following behaviour:
-{code}
+```scala
 scala> new Do{ println("Hello"); println("There") }  
 Hello
 There
 res3: Do = $$anon$$1@761f9da
 
 scala> res3.exec
-
-{code}
+```
 In other words, it appears to be a by-name parameter but it functions as though it is by value.
 
 I think this is could easily catch people out and should generate a compile error like:

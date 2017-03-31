@@ -6,9 +6,8 @@ This is a pretty fundamental part of the compiler and I can't see a way to chang
 
 These will indeed end up in the uniques cache until GC evicts them.
 
-One idea you might be able to try is use this way to find whether a type is a subclass of {{Option}} or not:
-
-{code}
+One idea you might be able to try is use this way to find whether a type is a subclass of `Option` or not:
+```scala
 scala> val optionClass = symbolOf[Option[_]] // just do this once
 optionClass: reflect.runtime.universe.TypeSymbol = class Option
 
@@ -17,4 +16,4 @@ res3: Boolean = true
 
 scala> typeOf[Tuple1[Any]].baseType(optionClass) != NoType
 res4: Boolean = false
-{code}
+```

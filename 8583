@@ -1,22 +1,19 @@
-Diagnosis: In {{GenASM.run()}} those closure classes that aren't "live" anymore are removed from the to-be-emitted list:
-
-{noformat}
+Diagnosis: In `GenASM.run()` those closure classes that aren't "live" anymore are removed from the to-be-emitted list:
+```
       if (settings.Xdce.value)
         for ((sym, cls) <- icodes.classes if inliner.isClosureClass(sym) && !deadCode.liveClosures(sym)) {
           log(s"Optimizer eliminated ${sym.fullNameString}")
           icodes.classes -= sym
         }
-{noformat}
+```
 
-However in {{JBuilder.addInnerClasses()}} that information is overlooked:
-
-
-{noformat}
+However in `JBuilder.addInnerClasses()` that information is overlooked:
+```
       // add inner classes which might not have been referenced yet
       exitingErasure {
         for (sym <- List(csym, csym.linkedClassOfClass); m <- sym.info.decls.map(innerClassSymbolFor) if m.isClass)
           innerClassBuffer += m
       }
-{noformat}
+```
 
 Candidate solution, below.

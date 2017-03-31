@@ -3,22 +3,20 @@ First off, I am a relative Scala newbie, so my sincerest apologies if this is ei
 However, on the remote chance that this is simply a minor thing that's slipped through the cracks and it would be possible to do it, here is a little bit more information to clarify the issue:
 
 (1) the default implementation for :+() that seems to be called for an Array[T] is on scala.collection.SeqLike. The implementation in 2.9.0.1 is: 
-
-{code}
+```scala
 def :+[B >: A, That](elem: B)(implicit bf: CanBuildFrom[Repr,B,That]): That = {
    val b = bf(repr)
    b ++= thisCollection
    b += elem
    b.result
 }
-{code}
+```
 
 This constructs a builder, adds the original elements and then the extension element. Seems to not be optimal for an array.
 
 
 (2) here is a sketch of a specialized implementation for Array[T] that uses Array.copy(). I know that this does not have the same structure as the one on SeqLike (simply because I do not know how to get it called for an array - as I said, I'm a newbie), so this is for illustration purposes only:
-
-{code}
+```scala
 def :+[T: ClassManifest]( xs: Array[T], x: T ) : Array[T] = {
    val oldlength = xs.length
    val extended = Array.ofDim[T]( oldlength + 1 )
@@ -26,12 +24,11 @@ def :+[T: ClassManifest]( xs: Array[T], x: T ) : Array[T] = {
    extended( oldlength ) = x
    extended
 }
-{code}
+```
 
 
 (3) should something remotely resembling the implementation based on Array.copy() be possible, the gains would possibly be attractive. Here is a naive mini-benchmark:
-
-{code}
+```scala
 @Test def test() {
    val before = Array(1,2,3,4,5,6,7,8)
    for( j <- 0 until 10 ) {    // do 10 runs, consider only best time out of ten
@@ -42,7 +39,7 @@ def :+[T: ClassManifest]( xs: Array[T], x: T ) : Array[T] = {
       println( System.currentTimeMillis - t ) 
    }
 }
-{code}
+```
 
 The results are as follows (with -server, best out of 10 runs to eliminate GC effects and allow optimizer to run):
 

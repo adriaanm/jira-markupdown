@@ -1,5 +1,5 @@
 [extempore says: this is an intersection of implicit + default + unapply.  If we let it get past the NPE (which is from a Block not having a symbol) we see what has happened:
-{code}
+```scala
 "foo" match {
   case {
     val x$$1: java.lang.String = <unapply-selector>;
@@ -7,15 +7,14 @@
     TestingObject.this.Matcher.unapply(x$$1)(x$$2)
   } <unapply> ((x @ _)) => scala.this.Predef.println(x)
 };
-{code}
+```
 There is nothing in place to deal with symbol-free Blocks popping up inside patterns.
 
--- original report follows --
+ - original report follows --
 
 Here's the class being compiled.
 It compiles fine if an implicit val is defined in main().
-
-{code}
+```scala
 object TestingObject {
 
     "foo" match {
@@ -26,10 +25,10 @@ object TestingObject {
     def unapply(s: String)(implicit secondParam: Option[String] = None) = Some("Got: " + s + " and " + secondParam)
   }
 }
-{code}
+```
 
 Here's the error the compiler throws:
-{code}
+```scala
 Exception in thread "main" java.lang.NullPointerException
 	at scala.tools.nsc.typechecker.Unapplies$$class.unapplyTypeList(Unapplies.scala:30)
 	at scala.tools.nsc.Global$$analyzer$$.unapplyTypeList(Global.scala:291)
@@ -42,4 +41,4 @@ Exception in thread "main" java.lang.NullPointerException
 	at scala.tools.nsc.typechecker.Typers$$Typer.typedCase(Typers.scala:1904)
 	at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$typedCases$$1.apply(Typers.scala:1927)
 	...
-{code}
+```

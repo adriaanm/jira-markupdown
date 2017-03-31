@@ -1,5 +1,5 @@
-This looks similar to SI-4024.  I am very pleased that the compiler is giving itself variance advice.
-{code}
+This looks similar to scala/bug#4024.  I am very pleased that the compiler is giving itself variance advice.
+```scala
 class A {
   val clazz = Class.forName("xxx")
   val ctr = clazz.getConstructor(Nil: _*)
@@ -10,8 +10,8 @@ class A {
   // does not crash
   // val ctr = clazz.getConstructor(List[Class[_]]: _*)
 }
-{code}
-{code}
+```
+```scala
 [paulp@leaf bug]$$ scalac29 a.scala 
 exception when traversing A.this.clazz.getConstructor((immutable.this.Nil: _*))
 exception when traversing private[this] val ctr: java.lang.reflect.Constructor[_] = A.this.clazz.getConstructor((immutable.this.Nil: _*))
@@ -37,4 +37,4 @@ You may wish to investigate a wildcard type such as `_ <: B`. (SLS 3.2.10)
 	at scala.tools.nsc.typechecker.Typers$$Typer.typedArg(Typers.scala:2131)
 	at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$typedArgs$$3.apply(Typers.scala:2144)
 	at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$typedArgs$$3.apply(Typers.scala:2143)
-{code}
+```

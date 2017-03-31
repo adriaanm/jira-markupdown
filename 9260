@@ -1,10 +1,9 @@
-I've implemented the instanceof elimination in {{Erasure}}. Along the way, I made the existing optimization null-aware.
+I've implemented the instanceof elimination in `Erasure`. Along the way, I made the existing optimization null-aware.
 
 https://github.com/retronym/scala/compare/scala:2.10.x...retronym:ticket/7172
 
 With this in place, the original code is now compiled to:
-
-{code}
+```scala
 <specialized> class Foo$mcS$sp extends Foo {
     override <specialized> def test(x: Short): Unit = Foo$mcS$sp.this.test$mcS$sp(x);
     override <specialized> def test$mcS$sp(x: Short): Unit = scala.this.Predef.println({
@@ -37,9 +36,8 @@ With this in place, the original code is now compiled to:
           case15()
       };
       // ...
-{code}
-
-{code}
+```
+```scala
   Code:
    Stack=2, Locals=3, Args_size=2
    0:	getstatic	#21; //Field scala/Predef$.MODULE$:Lscala/Predef$;
@@ -75,6 +73,6 @@ With this in place, the original code is now compiled to:
    63:	goto	174
    66:	iload_1
    ...
-{code}
+```
 
-So we still need to teach the optimizer that {{box(x1).==(null)}} is always false. Suggestions for the right place to put this?
+So we still need to teach the optimizer that `box(x1).==(null)` is always false. Suggestions for the right place to put this?

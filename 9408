@@ -1,6 +1,5 @@
 The TypeTree produced by the macro expansion has a null original. Therefore when the result of its typedType, a TypeTree, calls setOriginal passing that tree as an argument, the following code NPEs:
-
-{code}
+```scala
 def setOriginal(tree: Tree): this.type = {
   def followOriginal(t: Tree): Tree = t match {
     case tt: TypeTree => followOriginal(tt.original)
@@ -10,4 +9,4 @@ def setOriginal(tree: Tree): this.type = {
   orig = followOriginal(tree); setPos(tree.pos)
   this
 }
-{code}
+```

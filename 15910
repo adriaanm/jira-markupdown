@@ -1,8 +1,7 @@
 Typechecker accepts type annotation such as `null: Int`. Regression from 2.8.1 behavior.
 
 Scala 2.9 trunk (r23895)
-
-{code}
+```scala
 scala> def foo: Int = null: Int
 foo: Int
 
@@ -16,13 +15,12 @@ bar: Int
 scala> bar
 java.lang.NullPointerException
    ...
-{code} 
+```
 
 === What is the expected behavior? ===
 
 2.8.1 final:
-
-{code}
+```scala
 scala> def foo: Int = null: Int
 <console>:5: error: type mismatch;
  found   : Null(null)
@@ -36,7 +34,7 @@ scala> def bar = null: Int
  required: Int
        def bar = null: Int
                  ^
-{code}
+```
 
 === Notes ===
 
@@ -46,4 +44,3 @@ Produces same behavior with scalac, r23895 (verified by malayeri)
   - Scala: 2.9.0.r23982-b20110114020143
   - Java: (OpenJDK 64-Bit Server VM, Java 1.6.0_20)
   - Operating system: Ubuntu 10.10
-

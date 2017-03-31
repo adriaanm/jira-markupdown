@@ -1,6 +1,5 @@
-Our phase assembly code is not in the greatest shape. For example, if you run {{scalac -Xshow-phases}} you get:
-
-{code}
+Our phase assembly code is not in the greatest shape. For example, if you run `scalac -Xshow-phases` you get:
+```scala
              phase name  id  description
              ----------  --  -----------
                  parser   1  parse source into ASTs, perform simple desugaring
@@ -33,6 +32,6 @@ inlineExceptionHandlers  26  optimization: inline exception handlers
                     dce  28  optimization: eliminate dead code
                     jvm  29  generate JVM bytecode
                terminal  30  The last phase in the compiler chain
-{code}
+```
 
-Note that optimizer phases are there even if optimizer is not turned on. What happens is that each phase checks {{optimize}} flag and if it's disabled then it  skips execution of that phase. What we should do instead is to have a proper phase assembly logic that includes phases that are going to be used in given compiler run.
+Note that optimizer phases are there even if optimizer is not turned on. What happens is that each phase checks `optimize` flag and if it's disabled then it  skips execution of that phase. What we should do instead is to have a proper phase assembly logic that includes phases that are going to be used in given compiler run.

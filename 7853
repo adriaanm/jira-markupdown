@@ -1,10 +1,9 @@
-The behavior in question results in 2.10-M4 from a lowering in {{uncurry}}, as shown below (before and after) for the snippets:
-
-{noformat}
+The behavior in question results in 2.10-M4 from a lowering in `uncurry`, as shown below (before and after) for the snippets:
+```
   def exprA = o()("")
 
   def exprB = (o()_)("")
-{noformat}
+```
 
 {code:title=after_Typer.scala|borderStyle=solid}
 def exprA: Seq[AnyRef] = o.apply()("");
@@ -12,7 +11,7 @@ def exprA: Seq[AnyRef] = o.apply()("");
 def exprB: Seq[AnyRef] = {
   ((j: String) => o.apply(<empty>)(j))
 }.apply("")
-{code} 
+```scala
 
 
 {code:title=after_Uncurry.scala|borderStyle=solid}
@@ -33,7 +32,7 @@ def exprB(): Seq[Object] = {
     (new anonymous class $anonfun(): String => Seq[Object])
   }
 }.apply("")
-{code} 
+```
 
 
 

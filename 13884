@@ -1,13 +1,13 @@
 For example, if the react block checks to see if the sender is a specific actor:
-{code}
+```scala
 react {
   case MyMessage(msg) if sender == desiredSender => // do something
 }
-{code}
+```
 when send calls waitingFor to determine if the actor is waiting for the message and should be resumed, the sender will not be in sessions, and as a result the call to sender will either throw an exception because sessions is empty or return an invalid value because it already has a session on it associated with a higher-level receive.
 
 The following changes to send seem to work:
-{code}
+```scala
   def send(msg: Any, replyTo: OutputChannel[Any]) = synchronized {
     tick()
     sessions = replyTo :: sessions // if partial function uses sender to calculate
@@ -36,6 +36,6 @@ The following changes to send seem to work:
       mailbox.append(msg, replyTo)
     }
   }
-{code}
+```
 
 I'm not quite sure of the purpose if the isSuspended check that was there, and why it blew away any existing sessions if the actor was not suspended, so I took it out.  But it would be simple enough to put back in.

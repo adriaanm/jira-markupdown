@@ -8,7 +8,7 @@ I have two (almost sorted) lists of integers and check for equality of these lis
 (The above procedure is the most efficient in my application because the two input lists are always "almost sorted" and the two lists are very large and expensive to sort.)
 
 This is best understood with concrete code:
-{code}
+```scala
     val leftElems: Iterator[Int] = List(2,1,3) iterator
     var rightElems: Iterator[Int] = List(1,2,3) iterator
 
@@ -27,7 +27,7 @@ This is best understood with concrete code:
       rightElems = bufferedRightElems.iterator ++ rightElems // This causes stack overflow on next call to hasNext
       // rightElems = {bufferedRightElems.enqueue(rightElems.toSeq: _*); bufferedRightElems.iterator} // This works
     }
-{code}
+```
 However, as noted in the comment calling rightElems.hasNext causes a stack overflow error.
 
 There must be a bug in the implementation of (++) for iterators. (I am sorry I cannot offer a fix, but I am currently working towards a deadline.)

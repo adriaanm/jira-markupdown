@@ -1,4 +1,4 @@
-{code}
+```scala
 trait A {
  trait C[+T] { 
    protected[this] def f(t: T) {}
@@ -8,15 +8,14 @@ trait A {
    def g(t: T) { f(t) } 
  }
 }
-{code}
+```
 
 gives:
-
-{code}
+```scala
 a.scala:3: error: covariant type T occurs in contravariant position in type T of value t
    protected[this] def f(t: T) {}
                          ^
 one error found
-{code}
+```
 
-Compiles if `g` doesn't call `f` or if `C` and `D` are top-level traits. Seems to be related to SI-465.
+Compiles if `g` doesn't call `f` or if `C` and `D` are top-level traits. Seems to be related to scala/bug#465.

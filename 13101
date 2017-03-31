@@ -1,13 +1,13 @@
 The SLS states (3.2.10) that
-{code}
+```scala
 T forSome { val x : S } 
-{code}
+```
 expands, for some fresh U, into
-{code}
+```scala
 T[U/x.type] forSome { type U <: S with Singleton }
-{code}
+```
 However, the typechecker does not treat them as the same:
-{code}
+```scala
 scala> class Foo { val z = "foo"; val y : z.type = z }
 defined class Foo
 
@@ -24,4 +24,4 @@ scala> val x : ({ val y : z.type } forSome { val z : String }) = new Foo
 
 scala>  val x : ({ val y : T } forSome { type T <: String with Singleton }) = new Foo
 x: AnyRef{def y: T} forSome { type T <: String with Singleton } = Foo@1febf99
-{code}
+```

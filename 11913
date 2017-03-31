@@ -1,8 +1,7 @@
-This is actually not a bug. The reason is that the lambda body of the eta-expansion of {{isPrime}} invokes the {{isPrime}} method, which is an instance method, so the lambda needs to capture the {{C}} instance.
+This is actually not a bug. The reason is that the lambda body of the eta-expansion of `isPrime` invokes the `isPrime` method, which is an instance method, so the lambda needs to capture the `C` instance.
 
 The class
-
-{code}
+```scala
 class C {
   def methodLift = {
     def isPrime(c: Int) = BigInt(c).isProbablePrime(1)
@@ -10,11 +9,10 @@ class C {
     f(0)
   }
 }
-{code}
+```
 
 compiles to (with delambdafy:method, indylambda)
-
-{code}
+```scala
 class C {
   def anonfun$1(i: Int) = this.isPrime$1(i)
   def isPrime$1(i: Int) = BigInt(c).isProbablePrime(1)
@@ -24,4 +22,4 @@ class C {
     f.apply(0)
   }
 }
-{code}
+```

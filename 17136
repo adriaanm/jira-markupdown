@@ -1,11 +1,11 @@
-The snapshots below depict system load while running {{ant test.suite}}. Although coarse, they suggest that over half of the test.suite run is I/O bound, for the number of tasks running in parallel, unlike the first quarter or so which is CPU bound. 
+The snapshots below depict system load while running `ant test.suite`. Although coarse, they suggest that over half of the test.suite run is I/O bound, for the number of tasks running in parallel, unlike the first quarter or so which is CPU bound. 
 
 The data:
 
-- snapshot 1: Except for a small bump all CPUs are fully loaded during {{files/pos}} and {{files/neg}} tests.
-- snapshot 2: By the time {{files/run}} tests are being run, the CPUs have little to do during the second half of that interval.
-- snapshot 3: CPU utilization recovers to around 100% (for a short while) after the batch of {{files/jvm}} tests start, then stays at values below 20%. With the {{buildmanager}} tests it recovers again, followed by another decline (the decline lasts longer than the recovery). Same pattern with the {{scalacheck}} tests
-- snapshot 4: Finally, {{files/scalap}}, {{files/specialized}}, and {{files/presentation}} tests run at 50% utilization.
+- snapshot 1: Except for a small bump all CPUs are fully loaded during `files/pos` and `files/neg` tests.
+- snapshot 2: By the time `files/run` tests are being run, the CPUs have little to do during the second half of that interval.
+- snapshot 3: CPU utilization recovers to around 100% (for a short while) after the batch of `files/jvm` tests start, then stays at values below 20%. With the `buildmanager` tests it recovers again, followed by another decline (the decline lasts longer than the recovery). Same pattern with the `scalacheck` tests
+- snapshot 4: Finally, `files/scalap`, `files/specialized`, and `files/presentation` tests run at 50% utilization.
 
 Perhaps we can get shorter wall-clock time by running two partests in parallel (don't laugh), mixing I/O bound and CPU bound loads. Additionally, spawning 8 parallel tasks underutilizes some cores on some machines.
 

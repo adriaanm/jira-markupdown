@@ -1,6 +1,5 @@
 Running fsc on GenJVM crashes the compiler. It's a bug in the resident mode (the first time it succeeds, but the second time it crashes)
-
-{code}
+```scala
 java.lang.AssertionError: assertion failed: type error: can't convert from REF(class Tuple2$$mcII$$sp) to REF(singleton class Tuple2$$mcII$$sp) in unit GenJVM.scala
 	at scala.Predef$$.assert(Predef.scala:92)
 	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.adapt(GenICode.scala:1140)
@@ -85,11 +84,10 @@ java.lang.AssertionError: assertion failed: type error: can't convert from REF(c
 	at scala.tools.nsc.MainGenericRunner$$.main(MainGenericRunner.scala:33)
 	at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
 error: fatal error (server aborted): assertion failed: type error: can't convert from REF(class Tuple2$$mcII$$sp) to REF(singleton class Tuple2$$mcII$$sp) in unit GenJVM.scala
-{code}
+```
 
 The problem is a confusion between a module symbol and a companion class symbol. It happens while compiling GenJVM at line 1063, which looks like:
-
-{code}
+```scala
         linearization foreach { b =>
           if (! (covered contains b) ) {
             if (start >= 0) { // we're inside a handler range
@@ -105,4 +103,4 @@ The problem is a confusion between a module symbol and a companion class symbol.
             covered -= b
           }
         }
-{code}
+```

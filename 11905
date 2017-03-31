@@ -1,16 +1,15 @@
 Thanks for you comment, Alex.
 
-I'm not sure your suggestion would help in the situation you describe though. It seems {{readResolve}} is called only after {{readObject}} returns (example below). So we'd get this sequence of events:
-* start de-serializing the {{Outer}} instance
-* start de-serializing the {{attr$}} instance for the {{attr$module}} field
-* invoke {{attr$.readObject}}
-** invokes the {{outer$.attr}} getter, which finds the {{attr$module}} field still being {{null}}, so a new module instance is created (constructor side-effects!)
-* invoke {{attr$.readResolve}}
-** the {{outer$.attr$module}} field is non-null, so its value is returned
+I'm not sure your suggestion would help in the situation you describe though. It seems `readResolve` is called only after `readObject` returns (example below). So we'd get this sequence of events:
+- start de-serializing the `Outer` instance
+- start de-serializing the `attr$` instance for the `attr$module` field
+- invoke `attr$.readObject`
+ - invokes the `outer$.attr` getter, which finds the `attr$module` field still being `null`, so a new module instance is created (constructor side-effects!)
+- invoke `attr$.readResolve`
+ - the `outer$.attr$module` field is non-null, so its value is returned
 
-I don't see a way to prevent invoking the module constructor if the module is accessed by a custom {{readObject}}.
-
-{code}
+I don't see a way to prevent invoking the module constructor if the module is accessed by a custom `readObject`.
+```scala
 case class C(var s: String) {
   private def readObject(in: ObjectInputStream): Unit = {
     println("Before Default")
@@ -27,9 +26,8 @@ case class C(var s: String) {
     C("readResolve")
   }
 }
-{code}
-
-{noformat}
+```
+```
 scala> val c = C("orig")
 c: C = C(orig)
 
@@ -41,4 +39,4 @@ C(orig)
 C(readObject)
 readResolve
 res2: C = C(readResolve)
-{noformat}
+```

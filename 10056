@@ -1,6 +1,5 @@
 Here is a minimal example:
-
-{code}
+```scala
 object S {
   class Test {
     def test(arg: Int) = ???
@@ -15,19 +14,17 @@ object S {
   (new Test).test("works")
   (new Test).test(arg = "fails")
 }
-{code}
+```
 
-Note that {{test("works")}} compiles, while {{test(arg = "fails")}} does not. 
+Note that `test("works")` compiles, while `test(arg = "fails")` does not. 
 
 I ran with {{-Ytyper-debug}} (2.12.2). Full output below, but I believe the key line (from {{test(arg = "fails")}}) is this:
-
-{code}
+```scala
 no second try: (arg: Int)Nothing and arg = "fails" because error not in result: source-C:\Users\Justin\Source\SI-7809\S.scala,line-13,offset=246!=source-C:\Users\Justin\Source\SI-7809\S.scala,line-13,offset=239
-{code}
+```
 
-This is the full typer-debug output for {{test(arg = "fails")}}:
-
-{noformat}
+This is the full typer-debug output for `test(arg = "fails")`:
+```
 |    |-- new Test().test(arg = "fails") BYVALmode-EXPRmode (site: value <local S> in S)
 |    |    |-- new Test().test BYVALmode-EXPRmode-FUNmode-POLYmode (silent: value <local S> in S)
 |    |    |    |-- new Test() EXPRmode-POLYmode-QUALmode (silent: value <local S> in S)
@@ -45,11 +42,10 @@ This is the full typer-debug output for {{test(arg = "fails")}}:
 |    |    |    \-> <error>
 |    |    no second try: (arg: Int)Nothing and arg = "fails" because error not in result: source-C:\Users\Justin\Source\SI-7809\S.scala,line-13,offset=246!=source-C:\Users\Justin\Source\SI-7809\S.scala,line-13,offset=239
 \
-{noformat}
+```
 
-And this is from {{test("works")}}:
-
-{noformat}
+And this is from `test("works")`:
+```
 |    |-- new Test().test("works") BYVALmode-EXPRmode (site: value <local S> in S)
 |    |    |-- new Test().test BYVALmode-EXPRmode-FUNmode-POLYmode (silent: value <local S> in S)
 |    |    |    |-- new Test() EXPRmode-POLYmode-QUALmode (silent: value <local S> in S)
@@ -77,4 +73,4 @@ And this is from {{test("works")}}:
 |    |    |-- S.this.Implicit(new S.this.Test()).test BYVALmode-EXPRmode-FUNmode-POLYmode (silent: value <local S> in S)
 |    |    |    \-> (arg: String)Nothing
 |    |    \-> Nothing
-{noformat}
+```

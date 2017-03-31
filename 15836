@@ -1,5 +1,5 @@
 In the following code, `H1` and `H0` are both `Int`, but the types are not unified.
-{code}
+```scala
 object TypeParam {
   trait GC[K[_ <: H0], H0]
 
@@ -13,15 +13,14 @@ object TypeParam {
   // type A's bounds >: Nothing <: H1 are stricter than type _'s declared bounds >: Nothing <: H0
   type a = GC[PA[Int]#Apply, Int]
 }
-{code}
+```
 
 Substituting `H1` to `Int` manually allows compilation:
-
-{code}
+```scala
   trait PA[H1] {
     type Apply[A <: Int] = Any
   }
-{code}
+```
 
 
 

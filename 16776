@@ -1,8 +1,7 @@
-I think this might be related to some of the issues uncovered in SI-5488.
+I think this might be related to some of the issues uncovered in scala/bug#5488.
 
 The basic gist is that while AnyRef specialization is working for simple type combinations (e.g. @specialized(Int, AnyRef) it seems to be breaking for "full specialization". Here's the code:
-
-{code}
+```scala
 import scala.{specialized => spec}
 
 // specialized on Int/AnyRef only
@@ -32,7 +31,7 @@ object Test {
     println(new C3("abc", 123).getClass.getName)
   }
 }
-{code}
+```
 
 Commenting out the second println allows the whole thing to compile and run as expected.
 

@@ -1,11 +1,11 @@
 I indeed found that removing 'with This' in
-{noformat}
+```
 type OpSemExp <: LazyExp[OpSemExp] with This
-{noformat}
+```
 into
-{noformat}
+```
 type OpSemExp <: LazyExp[OpSemExp]
-{noformat}
+```
 did make the error go away and then projecting on Val is possible.
 but it probably means something else.
 
@@ -13,18 +13,17 @@ But is the type selection volatile because of type erasure?
 Then the workaround would be to put a typetag somewhere.
 
 Only this
-{noformat}
+```
 trait LazyExp[+This <: LazyExp[This]: TypeTag] 
-{noformat}
+```
 is not allowed.
-
-{noformat}
+```
 scala> trait LazyExp[+This <: LazyExp[This]: TypeTag]
 <console>:1: error: traits cannot have type parameters with context bounds `: ..
 .' nor view bounds `<% ...'
        trait LazyExp[+This <: LazyExp[This]: TypeTag]
                                                       ^
-{noformat}
+```
 
 Probably the type parameter This is volatile because of type erasure.
 

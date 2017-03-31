@@ -1,7 +1,6 @@
-This "bug" came up in a [Stackoverflow question|http://stackoverflow.com/questions/35723617/scala-implicit-conversionstring-to-a-custom-class-and-its-subclass/35724019#35724019].
+This "bug" came up in a [Stackoverflow question](http://stackoverflow.com/questions/35723617/scala-implicit-conversionstring-to-a-custom-class-and-its-subclass/35724019#35724019).
 When you put a subtype constraint on a type parameter in an implicit conversion, the conversion is also applied when an unrelated type is involved. My guess is that Nothing is involved here somewhere. But when I want to check the type with a TypeTag, the conversion no longer kicks in for the unrelated type, and for the right type I get "error: macro has not been expanded".
-
-{code:scala}
+```scala
 scala> trait TestBase
 defined trait TestBase
 
@@ -45,4 +44,4 @@ scala> val test: TestBase = Foo()
 <console>:17: error: macro has not been expanded
        val test: TestBase = Foo()
                                ^
-{code}
+```

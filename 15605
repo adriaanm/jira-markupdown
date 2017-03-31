@@ -1,4 +1,4 @@
-{code}
+```scala
 scala> def f { object C; case class C(); }
 <console>:5: error: C is already defined as object C
        def f { object C; case class C(); }
@@ -8,7 +8,7 @@ scala> def g { case class C(); object C; }
 <console>:5: error: C is already defined as (compiler-generated) case class companion object C
        def g { case class C(); object C; }
                                       ^
-{code}
+```
 
 What happens: `ensureCompanionObject` looks up a term symbol `m` in the current scope named after the class. Then there are two cases:
 
@@ -17,9 +17,9 @@ What happens: `ensureCompanionObject` looks up a term symbol `m` in the current 
 
 
 Another way to reproduce the same problem:
-{code}
+```scala
 scala> def h { case class C(x: Int = 1) }
 <console>:5: error: C is already defined as (compiler-generated) case class companion object C
        def h { case class C(x: Int = 1) }
                           ^
-{code}
+```

@@ -1,44 +1,42 @@
 Hi Fanf,
 
 the question is which `Class` object should be passed to the annotation. For top-level scala objects, the scala compiler generates two classfiles
-
-{code}
+```scala
   object o { def x = 1 }
-{code}
+```
 
 you get
  * o.class, which has static methods forwarding to the methods of o$$, i.e.
-{code}
+```scala
   class o { static int x() { return o$$.MODULE$$.x(); } }
-{code}
+```
  * o$$.class, which contains the actual implementation of the object's methods. The static initializer creates an instance of o$$ and stores it in the MODULE$$ field
-{code}
+```scala
   class o$$ {
     o$$ MODULE$$ = new o$$;
     int x() { return 1; }
   }
-{code}
+```
 
 I don't know what `org.apache.directory.server.core.integ.annotations.Factory` expects. If it wants static factory methods, we should pass the `o` class, not `o$$`.
 
 However, calling `o.getClass` in scala returns
-{code}
+```scala
 scala> o.getClass
 res0: java.lang.Class[_] = class o$$
-{code}
+```
 
 ----
 
-For nested objects, the additional classfile with static forwarders is *not* generated. Instead, a method is added to the containing class:
-
-{code}
+For nested objects, the additional classfile with static forwarders is **not** generated. Instead, a method is added to the containing class:
+```scala
   class A { object p { def x = 1 } }
-{code}
+```
 
 generates
 
  * A.class with
-{code}
+```scala
   class A {
     A$$p$$ p$$module = null;
     A$$p$$ p() {
@@ -46,22 +44,21 @@ generates
       return A$$p$$;
     }
   }
-{code}
+```
  * A$$p$$.class with
-{code}
+```scala
   class A$$p$$ { int x() { return 1; } }
-{code}
+```
 
 
 So in this case there doesn't exist any static methods which could be called.
 
 
 Again, `getClass` returns the object `A$$p$$`:
-
-{code}
+```scala
 scala> (new A).p.getClass
 res0: java.lang.Class[_] = class A$$p$$
-{code}
+```
 
 
 ----

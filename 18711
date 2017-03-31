@@ -1,9 +1,9 @@
 As reported in https://twitter.com/crichardson/status/391689178146418688 the following
-{code}
+```scala
 scala.concurrent.Future{1} zip null
-{code}
+```
 fails with :
-{code}
+```scala
 java.lang.IllegalStateException: problem in scala.concurrent internal callback
 	at scala.concurrent.Future$InternalCallbackExecutor$.reportFailure(Future.scala:589)
 	at scala.concurrent.impl.CallbackRunnable.executeWithValue(Promise.scala:40)
@@ -48,10 +48,10 @@ Caused by: java.lang.IllegalArgumentException: requirement failed
 	at scala.concurrent.Future$InternalCallbackExecutor$.scala$concurrent$Future$InternalCallbackExecutor$$unbatchedExecute(Future.scala:691)
 	at scala.concurrent.Future$InternalCallbackExecutor$.execute(Future.scala:682)
 	... 32 more
-{code}
+```
 
 I took a quick look at it and this code seems suspicious (from 2.10.3 Future l.642):
-{code}
+```scala
  case t: Throwable =>
                     // if one task throws, move the
                     // remaining tasks to another thread
@@ -61,6 +61,6 @@ I took a quick look at it and this code seems suspicious (from 2.10.3 Future l.6
                     _tasksLocal set Nil
                     unbatchedExecute(new Batch(remaining))
                     throw t
-{code}
+```
 
 The new Batch, executed in the same thread, will see non null `_tasksLocal` and fail, swallowing exception `t`.

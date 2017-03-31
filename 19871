@@ -1,4 +1,4 @@
-{code}
+```scala
 class C {
   implicit def f(x: Int): String = "f was here"
   implicit def g(x: Int): String = "g was here"
@@ -6,13 +6,12 @@ class C {
     implicitly[Int => String]
   }
 }
-{code}
+```
 
 Reported https://groups.google.com/d/msg/scala-user/dzWIwyAjVh8/8nz1u8GlCwAJ
 
 The recently added code:
-
-{code}
+```scala
         context.issueAmbiguousError(AmbiguousImplicitTypeError(tree,
           (tree1.symbol, tree2.symbol) match {
             case (ImplicitAmbiguousMsg(msg), _) => msg.format(treeTypeArgs(tree1))
@@ -21,7 +20,7 @@ The recently added code:
             case (_, _) => s"ambiguous implicit values:\n${coreMsg}match expected type $pt"
           }
         ))
-{code}
+```
 
-hits a null symbol if the tree is a {{Block}}.
+hits a null symbol if the tree is a `Block`.
 

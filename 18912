@@ -1,19 +1,17 @@
 The following demonstrates the problem:
-
-{code}
+```scala
 def foo(pf: PartialFunction[Any, Unit]) = ()
 
 def bar(default: String) = foo {
   case _ => val x: String = default
 }
-{code}
+```
 
-Inside the PF literal, the symbol {{default}} is shadowed by something that must be synthetically generated:
-
-{code}
+Inside the PF literal, the symbol `default` is shadowed by something that must be synthetically generated:
+```scala
 <console>:9: error: type mismatch;
  found   : A1 => B1
  required: String
          case _ => val x: String = default
                                    ^
-{code}
+```

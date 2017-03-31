@@ -1,13 +1,11 @@
 Using r21834, the following code:
-
-{code}
+```scala
 import scala.reflect.{BeanProperty => bp}
 class Foo { @bp var bar: Int = 1 }
-{code}
+```
 
 Generates the following stack trace:
-
-{code}
+```scala
 Exception in thread "main" java.util.NoSuchElementException: head of empty list
   at scala.collection.immutable.Nil$$.head(List.scala:388)
   at scala.collection.immutable.Nil$$.head(List.scala:385)
@@ -50,6 +48,6 @@ Exception in thread "main" java.util.NoSuchElementException: head of empty list
   at scala.tools.nsc.Main$$.process(Main.scala:109)
   at scala.tools.nsc.Main$$.main(Main.scala:123)
   at scala.tools.nsc.Main.main(Main.scala)
-{code}
+```
 
 Removing the rename in the import and using @BeanProperty directly solves the problem.

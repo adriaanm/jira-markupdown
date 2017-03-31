@@ -1,5 +1,5 @@
 Simplified, with enhanced contrast (not that I object to bringing in Bippy.)
-{code}
+```scala
 object Test {
   def foo1[A1] = new { private type A2 = A1 ; def bar: A2 = ??? }
   def foo2[A1] = new {         type A2 = A1 ; def bar: A2 = ??? }
@@ -9,9 +9,9 @@ object Test {
 
   def check[A] = new { def apply[B](b: B)(implicit ev: A =:= B) = () }
 }
-{code}
+```
 There's no question this is a bug - look at the inferred type of foo1. Not only is A2 private, it is no longer in scope. Two for the price of one.
-{code}
+```scala
 def foo1[A1 >: Nothing <: Any]: AnyRef{def bar: this.A2}
 def foo2[A1 >: Nothing <: Any]: AnyRef{type A2 = A1; def bar: this.A2}
-{code}
+```

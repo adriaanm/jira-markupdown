@@ -1,15 +1,13 @@
 The following mixture of attempting a phantom-type constraint + specialization explodes at compile time:
-
-{code}
+```scala
 trait C
 class Foo[@specialized(Int) T, A] {
   def bar[B >: A <: C]: T = ???
 }
-{code}
+```
 
 With the following exception:
-
-{code}
+```scala
 error: 
      while compiling:  /home/jsuereth/projects/tmp/phantom-bug.scala
        current phase:  specialize
@@ -18,6 +16,6 @@ error:
   reconstructed args:  -Xscript Main -d /tmp/scalascript5606505759334571591.tmp
 
 uncaught exception during compilation: scala.reflect.internal.Types$TypeError
-{code}
+```
 
 Remove any one of the type bounds makes the code succeed.  Removing the @specialize annotation also makes the code succeed.

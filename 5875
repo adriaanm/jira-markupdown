@@ -1,7 +1,7 @@
 @mgarcia
 
 Yes, I believe that:
-{code}
+```scala
   final def encode(line: Int, column: Int): Int = {
     checkInput(line, column)
     
@@ -10,16 +10,16 @@ Yes, I believe that:
     else
       (line << COLUMN_BITS) | math.min(COLUMN_MASK, column)
   }
-{code}
+```
 would be correct.
 
 The old cold before r24717 used:
-{code}
+```scala
 if (column > COLUMN_MASK)
   column1 = COLUMN_MASK
     else 
   column1 = column
-{code}
+```
 and encoded with `column1`.
 
 I think Paul who committed r24717 would be able to quickly confirm whether this was a typo.

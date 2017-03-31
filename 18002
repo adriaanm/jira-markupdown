@@ -1,6 +1,5 @@
-Miles Sabin stumbled upon an [interesting corner case|https://gist.github.com/milessabin/4973733] in how {{lazy val}} definitions interact with pattern matching.  The basic idea:
-
-{code}
+Miles Sabin stumbled upon an [interesting corner case](https://gist.github.com/milessabin/4973733) in how `lazy val` definitions interact with pattern matching.  The basic idea:
+```scala
 scala> val stream = Stream.iterate(0, 3) { x => println(x); x + 1 }
 stream: scala.collection.immutable.Stream[Int] = Stream(0, ?)
 
@@ -13,40 +12,37 @@ scala> a
 0
 1
 res0: Int = 0
-{code}
+```
 
-One would hope that only {{a}} is forced, but all three values are. This is because of how the val definition is expanded:
-
-{code}
+One would hope that only `a` is forced, but all three values are. This is because of how the val definition is expanded:
+```scala
 lazy val $fresh = stream match {
   case Stream(a, b, c) => (a, b, c)
 }
 lazy val a = $fresh._1
 lazy val b = $fresh._2
 lazy val c = $fresh._3
-{code}
+```
 
-The culprit is construction of a tuple in the synthesized {{case}} clause: tuples are strict, so forcing {{a}} forces the whole tuple.
+The culprit is construction of a tuple in the synthesized `case` clause: tuples are strict, so forcing `a` forces the whole tuple.
 
 If the language spec instead required an expansion similar to:
-
-{code}
+```scala
 lazy val a = stream match { case Stream(a, _, _) => a }
 lazy val b = stream match { case Stream(_, b, _) => b }
 lazy val c = stream match { case Stream(_, _, c) => c }
-{code}
+```
 
-Or if the library had {{LazyTuple}} types:
-
-{code}
+Or if the library had `LazyTuple` types:
+```scala
 lazy val $fresh = stream match {
   case Stream(a, b, c) => LazyTuple3(a, b, c)
 }
 lazy val a = $fresh._1
 lazy val b = $fresh._2
 lazy val c = $fresh._3
-{code}
+```
 
-... then the laziness would be appropriately deferred to {{Stream}}.
+... then the laziness would be appropriately deferred to `Stream`.
 
-That being said, I don't actually know how one would write an appropriate {{Stream.unapplySeq}}, or {{unapply}} for any data type in general, that doesn't force all value members. Seems like a separate {{unapplyLazy}}, returning an {{Option\[LazyTuple\]}}, would be necessary... and that's horrible.
+That being said, I don't actually know how one would write an appropriate `Stream.unapplySeq`, or `unapply` for any data type in general, that doesn't force all value members. Seems like a separate `unapplyLazy`, returning an `Option\[LazyTuple\]`, would be necessary... and that's horrible.

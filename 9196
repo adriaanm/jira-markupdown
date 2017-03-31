@@ -1,11 +1,11 @@
-Let's see if I understand this from the DOT point-of-view. I'll refer to "semantic subtyping": {{A <:s B}}, which simply means that at runtime any instance of A is also an instance of B. I am not sure on how to interpret variant aliases semantically. I advocate thinking in this terms to clarify the situation.
+Let's see if I understand this from the DOT point-of-view. I'll refer to "semantic subtyping": `A <:s B`, which simply means that at runtime any instance of A is also an instance of B. I am not sure on how to interpret variant aliases semantically. I advocate thinking in this terms to clarify the situation.
 
 Let's analyze again this code. See the comments.
-{code}
+```scala
 trait B extends A[B] {
   def kaboom = f(new B {})
   //Scalac seems to "believe" that X = B, in particular that B <: X, but B <:s X is false if we allow defining C. However, B <: X is only used for calling protected[this] methods: we can't refer to X explicitly. However, protected[this] isn't the root of the problem.
   //Do variant aliases force Scala to believe that B <: X, and still allow defining C? If so, they seem unsound themselves.
 }
-{code}
+```
 Does this understanding make sense?

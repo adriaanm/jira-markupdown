@@ -1,8 +1,8 @@
 A few preliminary observations:
 
-# ruling out all forms of cross-library inlining would also result in {{Range.foreach}} and similar not being inlined, which might not be what one wants.
-# the following method can be used to prevent the inliner from loading bytecode for inlining:
-{noformat}
+- ruling out all forms of cross-library inlining would also result in `Range.foreach` and similar not being inlined, which might not be what one wants.
+- the following method can be used to prevent the inliner from loading bytecode for inlining:
+```
     def shouldLoadImplFor(sym: Symbol, receiver: Symbol): Boolean = {
       def alwaysLoad    = (receiver.enclosingPackage == RuntimePackage) || (receiver == PredefModule.moduleClass)
       def loadCondition = sym.isEffectivelyFinal && isMonadicMethod(sym) && isHigherOrderMethod(sym)
@@ -11,9 +11,9 @@ A few preliminary observations:
       debuglog("shouldLoadImplFor: " + receiver + "." + sym + ": " + res)
       res
     }
-{noformat}
-# Another useful method is {{Global.Run.compiles(sym: Symbol)}} which tells us whether, say, a method is part of the program being compiled:
-{noformat}
+```
+- Another useful method is `Global.Run.compiles(sym: Symbol)` which tells us whether, say, a method is part of the program being compiled:
+```
     /** does this run compile given class, module, or case factory? */
     // NOTE: Early initialized members temporarily typechecked before the enclosing class, see typedPrimaryConstrBody!
     //       Here we work around that wrinkle by claiming that a top-level, early-initialized member is compiled in
@@ -25,4 +25,4 @@ A few preliminary observations:
       else if (!sym.isTopLevel) compiles(sym.enclosingTopLevelClass)
       else if (sym.isModuleClass) compiles(sym.sourceModule)
       else false
-{noformat}
+```

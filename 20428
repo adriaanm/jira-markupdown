@@ -1,18 +1,17 @@
 The following code causes the compiler to crash:
-
-{code}
+```scala
 object Foo {
   implicit def callByNameToNoArgumentsFunction[A](a: => A): () => A = () => a
   def foo(methods: (() => Int)*)(default: Int = 0): Int = ???
   def bar(i: Int)(i2: Int = 0): Int = ???
   foo(bar(1)())()
 }
-{code}
+```
 
-Calling {{foo}} with a value (not relying on the default) compiles.
+Calling `foo` with a value (not relying on the default) compiles.
 
 Crash message:
-{code}
+```scala
 Error:scalac: Error: 
   symbol value x$1#32994 does not exist in sandbox.Foo.<init>, which contains locals value x$3#28585. 
 Method code: def this() = {
@@ -278,6 +277,4 @@ Method code: def this() = {
 	at java.lang.reflect.Method.invoke(Method.java:498)
 
 	at com.martiansoftware.nailgun.NGSession.run(NGSession.java:319)
-
-
-{code}
+```

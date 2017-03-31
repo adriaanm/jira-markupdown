@@ -2,9 +2,8 @@ In the following code, the reaction doesn't work (workaround is to use the comme
 
 It would appear that FocusGained is not being passed to the partial matchers in reactions.
 
-This is similar to https://issues.scala-lang.org/browse/SI-7307 and I'm getting a sense that many Reactors are not being fired in scala.swing.
-
-{code}
+This is similar to scala/bug#7307 and I'm getting a sense that many Reactors are not being fired in scala.swing.
+```scala
   val panel1 = new BorderPanel() {
     reactions += {
       case e: FocusGained => nameField.requestFocus()
@@ -19,4 +18,4 @@ This is similar to https://issues.scala-lang.org/browse/SI-7307 and I'm getting 
 //  panel1.addFocusListener(new FocusAdapter {
 //    override def focusGained(e: FocusEvent) {nameField.requestFocus()}
 //  })
-{code}
+```

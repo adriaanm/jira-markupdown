@@ -1,7 +1,7 @@
 (From [http://www.nabble.com/private-vals-in-traits--t4780372.html this mailing list thread])
 
 Consider:
-{code}
+```scala
  trait A { val foo: String = "A" }
  trait B {
    private val foo: String = "B"
@@ -11,7 +11,7 @@ Consider:
    println(foo) // prints "A", as expected
    f            // prints "B", as expected
  }
-{code}
+```
 This looks, good, but if I switch the order of B and A in the
 declaration of Test, it doesn't compile, claiming that there's no such
 value as foo.
@@ -20,7 +20,7 @@ Adriaan pointed out that this works in the interpreter, and I replied:
 
 Interesting. I see now that it works in the interpreter (I hadn't
 tried). But it does not work with scalac:
-{code}
+```scala
 [~]% cat test.scala
 trait A { val foo: String = "A" }
 trait B {
@@ -53,6 +53,6 @@ scala> Test
 A
 B
 res0: Test.type = Test$$@7b37df
-{code}
+```
 
-I would expect this to work in the compiler as it works in the interpreter. If this is _not_ a compiler defect, I would also expect it to fail in the interpreter. (The above session is with 2.6.0, but the behavior is the same in 2.6.1-RC1.)
+I would expect this to work in the compiler as it works in the interpreter. If this is *not* a compiler defect, I would also expect it to fail in the interpreter. (The above session is with 2.6.0, but the behavior is the same in 2.6.1-RC1.)

@@ -1,6 +1,6 @@
 I can confirm with Scala 2.8.1, Java 1.6.0_20 (64-bit HotSpot).
 In one file we have:
-{code}
+```scala
 package object test {
   def foo(a: Int, b: Int) = a + b
   def foo(a: Int, b: Int, c: Int) = a + b + c
@@ -25,11 +25,11 @@ package object test {
     baz("5")
   }  
 }
-{code}
+```
 The above file compiles with no errors.
 
 In another file we have the exact same method `test1`, this time in an object `Test`:
-{code}
+```scala
 package test
 
 object Test {
@@ -46,9 +46,9 @@ object Test {
     baz("5")
   }  
 }
-{code}
+```
 The compiler reports the following errors:
-{code}
+```scala
 test2.scala:5: error: not enough arguments for method foo: (a: Int,b: Int,c: Int)Int.
 Unspecified value parameter c.
     foo(1, 2)
@@ -67,5 +67,5 @@ test2.scala:13: error: type mismatch;
     baz(5)
         ^
 four errors found
-{code}
+```
 I think this is a pretty big bug in package objects.

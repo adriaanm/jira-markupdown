@@ -1,6 +1,5 @@
 Take a good look at the typer output.  It looks like the implicit is acting on the argument to getOrElse even though the whole expression would typecheck fine if it would just evaluate the getOrElse and then consider the annotation.  Is it working backward from the :Q annotation and trying to convert that, then deciding the whole expression is Object? Anyway:
-
-{code}
+```scala
 object Test1
 {
   class Q
@@ -18,12 +17,12 @@ object Test1
     (x.getOrElse(""): Q) match { case _ => () }
   }
 }
-{code}
+```
 Compilation failure on second variation:
-{code}
+```scala
 b.scala:28: error: type mismatch;
  found   : java.lang.Object
  required: Test1.Q
     ((x.getOrElse("")): Q) match { case _ => () }
                  ^
-{code}
+```

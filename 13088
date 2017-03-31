@@ -1,5 +1,5 @@
 With Scala 2.7.0-RC1 using Java 1.6.0, the following code
-{code}
+```scala
 object VerifyErrorTest {
   def f: Boolean = {
     try {
@@ -14,11 +14,10 @@ object VerifyErrorTest {
     println(f)
   }
 }
-{code}
+```
 
 generates the following stack trace:
-
-{code}
+```scala
 > scala VerifyErrorTest
 java.lang.VerifyError: (class: VerifyErrorTest$$, method: f signature: ()Z) Inconsistent stack height 0 != 1
         at VerifyErrorTest.main(VerifyErrorTest.scala)
@@ -35,11 +34,10 @@ la:49)
         at scala.tools.nsc.ObjectRunner$$.run(ObjectRunner.scala:74)
         at scala.tools.nsc.MainGenericRunner$$.main(MainGenericRunner.scala:161)
         at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
-{code}
+```
 
-{{javap -c VerifyErrorTest$$}} generates the following mnemonics:
-
-{code}
+`javap -c VerifyErrorTest$$` generates the following mnemonics:
+```scala
 public boolean f();
   Code:
    0:   iconst_0
@@ -67,4 +65,4 @@ public boolean f();
     14    19    19   Class java/lang/Exception
 
      2    11    13   any
-{code}
+```

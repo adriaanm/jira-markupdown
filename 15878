@@ -1,8 +1,7 @@
 scala.concurrent.SyncVar should not silently swallow InterruptedException within its get(Long) method. As the matter of fact it should not catch the exception at all (same as get() method does), considering that SyncVar.get() can perform no useful processing for the exception here: at very least, it should reraise the Thread.currentThread.interrupt() flag after catching the exception, but this is still bad as it results in aliasing None result for two things 'timeout happened' and 'thread was interrupted' keeping the calling code still unaware of the possibly pending interrupt.
 
 While here, I see yet another problem in the same method: the get(Long) method uses if (!isDefined) instead of while (!isDefined) thus is vulnerable against spurious wakeups (which JLS explicitly allows to happen). Unfortunately the Object.wait(Long) does not report remaining timeout, so the correct implementation of the method looks a little bit complicated:
-
-{code}
+```scala
 def get(timeout: Long): Option[A] = synchronized {
 	var rest = timeout
 	while (!isDefined && (rest > 0)) {
@@ -19,7 +18,7 @@ def get(timeout: Long): Option[A] = synchronized {
 	if (isDefined) Some(value)
 	else None
 }
-{code}
+```
 
 Note: this implementation does not follow the unfortunate java notation of 'zero timeout means infinitely long'. Instead, zero means exactly that - 'do not wait at all', while 'infinitely long' is naturally represented by Long.MaxValue for all practical senses (but even better to call get() if waiting forever (or till interrupt()) is needed). This change should be ok considering that SyncVar never carried scaladoc promising any non-monotonic behaviour with zero timeout.
 

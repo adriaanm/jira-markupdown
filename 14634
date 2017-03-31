@@ -1,26 +1,26 @@
-While investigating SI-2236, I discovered this:
-{code}
+While investigating scala/bug#2236, I discovered this:
+```scala
 object o {
   implicit val imp: Int = 10
   class A(implicit val param: Int)
   class B extends A
 }
-{code}
+```
 This does not compile, though it'd be rather difficult for param to be available to pass to itself:
-{code}
+```scala
 c.scala:4: error: ambiguous implicit values:
  both value param in class A of type => Int
  and value imp in object o of type => Int
  match expected type Int
   class B extends A
           ^
-{code}
+```
 I would expect it to behave more like this, which works:
-{code}
+```scala
 object o {
   implicit val imp: Int = 10
   class A(implicit _param: Int) { val param = _param }
   class B extends A
 }
-{code}
-This appears to be the underlying cause of the VerifyError in SI-2236, with the construction of B trying to retrieve the implicit value from not-yet-with-us superclass A.
+```
+This appears to be the underlying cause of the VerifyError in scala/bug#2236, with the construction of B trying to retrieve the implicit value from not-yet-with-us superclass A.

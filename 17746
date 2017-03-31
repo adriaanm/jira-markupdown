@@ -1,6 +1,5 @@
 I was porting some custom type mappers from ScalaQuery on 2.9.2 to Slick on 2.10 and was getting an unexpected error finding an implicit value. I was able to boil it down to the following test which runs on 2.9.2 as expected, but fails to find a value in 2.10.0-RC5. 
-
-{code}
+```scala
 sealed trait V { def id: Int }
 val X = new V { val id = 1 }
 
@@ -14,7 +13,7 @@ import ValueProviders._
 def foo[T: ValueProvider](value: T) = null
 
 foo(X) // No implicit found here in 2.10
-{code}
+```
 
 error: could not find implicit value for evidence parameter of type ValueProviders.ValueProvider[V{val id: Int}]
 

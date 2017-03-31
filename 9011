@@ -1,6 +1,5 @@
 reduced the crashing example:
-
-{code}
+```scala
 object MessageType {
   val HELLO = ""
 }
@@ -16,8 +15,8 @@ class ReproForSI6921 {
     new Message(MessageType.HELLO, reason = explanation)
   }
 }
-{code}
-{code}
+```
+```scala
 no-symbol does not have an owner
 	at scala.reflect.internal.SymbolTable.abort(SymbolTable.scala:49)
 	at scala.tools.nsc.Global.abort(Global.scala:254)
@@ -25,11 +24,10 @@ no-symbol does not have an owner
 	at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer.hostForAccessorOf(SuperAccessors.scala:548)
 	at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer.needsProtectedAccessor(SuperAccessors.scala:524)
 	at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer.mayNeedProtectedAccessor$1(SuperAccessors.scala:162)
-{code}
+```
 
 by reducing it further to the following, the compiler no longer crashes but gives a very strange error message that i haven't seen before:
-
-{code}
+```scala
 class Message(messageType: String, reason: Option[String])
 
 class ReproForSI6921 {
@@ -41,10 +39,10 @@ class ReproForSI6921 {
     new Message("", reason = explanation)
   }
 }
-{code}
-{code}
+```
+```scala
 sandbox/t6921-2.scala:7: error: erroneous or inaccessible type
   def decideElection = {
       ^
 one error found
-{code}
+```

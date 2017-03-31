@@ -4,11 +4,10 @@ Note: I am not sure if I should mark this a defect or an enhancement, to me it f
 
 It's been said about Scala that you can program in an (almost) pure functional style if you don't use mutable state, implying no vars, only vals.
 
-However, it can be negatively experienced that a val is also mutable in Scala: In an template ('initializer') statement, a reference to a val, which is defined _later_ in the same template, equals the default value for the type of the val, NOT the value that it is given in its definition.
+However, it can be negatively experienced that a val is also mutable in Scala: In an template ('initializer') statement, a reference to a val, which is defined *later* in the same template, equals the default value for the type of the val, NOT the value that it is given in its definition.
 
 e.g
-
-{code}
+```scala
 
 object ValRefInInitializer extends Application {
 	
@@ -23,8 +22,7 @@ object ValRefInInitializer extends Application {
   }
 	
 }
-
-{code}
+```
 
 If one is not aware of this mutability of vals, this can lead to unexpected misbehaviour, leading to a significant debugging effort.
 
@@ -33,8 +31,7 @@ If one is not aware of this mutability of vals, this can lead to unexpected misb
 I think this is very misleading, one should be able to see [the expansion of] a reference to a val as a constant, to reflect the one and only value the val can have.
 
 In comparison, the compiler will disallow the same construct in another type of block statement:
-
-{code}
+```scala
 
 object CompileError extends Application {
 
@@ -46,12 +43,12 @@ object CompileError extends Application {
   }
 
 }
-{code}
+```
 
 I am aware that this issue also exists in Java with final variables in the same position, but this is another place where Scala can improve over the old Java.
 
-_(Java example)_
-{code}
+*(Java example)*
+```scala
 public class FinalVarTestJava {
 
   static class A {
@@ -82,13 +79,12 @@ public class FinalVarTestJava {
    }
    */
 }
-
-{code}
+```
 
 
 = enhancement recommendation =
 
-The compiler should either not allow the reference, with a message similar to what happens in other types of statements: _"forward reference extends over definition of value [x]"_
+The compiler should either not allow the reference, with a message similar to what happens in other types of statements: *"forward reference extends over definition of value [x]"*
 
 or it should use the correct value of the val without complaining, maybe by doing the assignment to the val on first reference, in that case like a lazy val.
 

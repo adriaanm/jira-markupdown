@@ -1,6 +1,5 @@
 Compiling the following,
-
-{code}
+```scala
 object TupledAmbiguity {
   trait Base
   
@@ -27,11 +26,10 @@ object TupledAmbiguity {
   val f4 = foo(23)            // OK
   val f5 = foo("foo", 23)     // OK
 }
-{code}
+```
 
 Results in the following error being reported against the attempt to invoke BarOps#foo as a two argument method,
-
-{code}
+```scala
 src/bugs/TupledAmbiguity.scala:20: error: type mismatch;
  found   : bugs.TupledAmbiguity.b.type (with underlying type Object with bugs.TupledAmbiguity.Base)
  required: ?{val foo(x$1: ?>: String("foo") <: Any,x$2: ?>: Int(23) <: Any): ?}
@@ -42,7 +40,7 @@ Note that implicit conversions are not applicable because they are ambiguous:
   val f2 = b.foo("foo", 23)   // Ambiguous implicits
            ^
 one error found
-{code}
+```
 
 The cause of the ambiguity is the application of automatic tupling to the argument list in the problematic call which creates a second candidate signature which resolves to FooOps#foo with T inferred as (String, Int). Is this a bug? If not, it's at least unfortunate and counterintuitive as the comparison with the analogous case of f4 and f5 where automatic tupling doesn't interfere with overload resolution.
 

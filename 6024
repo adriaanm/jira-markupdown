@@ -1,5 +1,5 @@
 Here is more condensed test case:
-{code}
+```scala
 val src = new io.Source {
   val iter = "<stream><features><foo/></features>".iterator ++
     Iterator.continually{ println("wait 5s"); Thread.sleep(5000); '\n' }.take(1) ++
@@ -7,10 +7,10 @@ val src = new io.Source {
 }
 val reader = new xml.pull.XMLEventReader(src)
 while (reader.hasNext) System.out.println(reader.next)
-{code}
+```
 
 One would hope that `EvElemEnd(null,features)` is printed before waiting 5 second. Instead we get:
-{code}
+```scala
 EvElemStart(null,stream,,)
 EvElemStart(null,features,,)
 EvElemStart(null,foo,,)
@@ -20,6 +20,6 @@ EvElemEnd(null,features)
 EvText(
 )
 EvElemEnd(null,stream)
-{code}
+```
 
 Not sure if it is something inherent to the XML parser.

@@ -1,5 +1,5 @@
 To elaborate a bit more (and regardless of what the spec says) the expected type of a constructor pattern should be the intersection of the known type (the scrutinee) and the minimum type of a match, in this case Cell[_]. Typing 'case Cell(_)' with pt=Any gives the typer the impression that no restrictions are necessary - but this is not true when there are bindings.
-{code}
+```scala
 object Test {
   case class Cell[A](var x: A)
   def f1(x: Any)        = x match { case y @ Cell(_) => y }       // Inferred type is Cell[Any] -- unsound
@@ -7,5 +7,5 @@ object Test {
   def f3(x: Cell[_])    = x match { case y @ Cell(_) => y }       // Inferred type is Cell[_]
   def f4[A](x: Cell[A]) = x match { case y @ Cell(_) => y }       // Inferred type is Cell[A]
 }
-{code}
+```
 As is so often true in our codebase, this has all been done before: see propagateKnownTypes in Checkable.scala. 80% of the code related to inferring the types of patterns is duplicative with 80% of the code related to assessing the checkability of types of patterns.

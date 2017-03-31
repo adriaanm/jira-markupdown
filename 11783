@@ -1,4 +1,4 @@
-Page 116, chapter _Implicit Parameters and Conversions_ , _View Bounds_ subchapter 
+Page 116, chapter *Implicit Parameters and Conversions* , *View Bounds* subchapter 
 
 {code:language=scala}
 def sort[A <% Ordered[A]](xs: List[A]): List[A] =
@@ -7,7 +7,7 @@ def sort[A <% Ordered[A]](xs: List[A]): List[A] =
     val {ys, zs} = xs.splitAt(xs.length / 2)
     merge(ys, zs)
   }
-{code}
+```scala
 
 The construct didn't compile with Scala 2.11 and I've replaced it with :
 {code:language=scala}
@@ -17,12 +17,12 @@ def sort[A <% Ordered[A]](xs: List[A]): List[A] =
       val (ys, zs) = xs.splitAt(xs.length / 2)
       merge(ys, zs)
     }
-{code}
+```
 
 Moreover, it seems that the view bounds are deprecated as of Scala 2.11
-https://issues.scala-lang.org/browse/SI-7629
+scala/bug#7629
 
-The sort sample out of which this example makes part of doesn't compile when using _implicit_ keyword. This is due to the fact that the implicit  _int2ordered_ function is causing ambiguity for the compiler because it provides the same functionality as the LowPriorityImplicits#intWrapper function.
+The sort sample out of which this example makes part of doesn't compile when using *implicit* keyword. This is due to the fact that the implicit  *int2ordered* function is causing ambiguity for the compiler because it provides the same functionality as the LowPriorityImplicits#intWrapper function.
 
 
 I've slightly modified the sample code like this :
@@ -54,7 +54,7 @@ I've slightly modified the sample code like this :
 case class Num(value: Int)  {
   override def toString: String = value.toString
 }
-{code}
+```scala
 
 Sample code that uses the code above :
 
@@ -64,4 +64,4 @@ def main(args: Array[String]) {
     val sortedXs = sort(xs)(num2ordered)
     print(sortedXs.mkString(","))
   }
-{code}
+```

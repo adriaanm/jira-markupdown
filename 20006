@@ -1,8 +1,7 @@
 The code below causes the compiler to crash in 2.11.7. It seems that the trigger is the "evidence$" implicit parameter name that ends with a dollar sign. The code compiles OK when dropping the dollar sign or using a Context bound specification, so it's easy to avoid the error. But a better feedback from the compiler would be helpful. Note that another trigger for the error is the Future.map operation; if the Sample class is instantiated directly in the mapFuture method, no error occurs.
 
 With 2.12.0-M3, the code compiles OK.
-
-{code}
+```scala
 import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
 
@@ -12,11 +11,10 @@ trait Test {
     f map { id => new Sample[A](id) }
   }
 }
-{code}
+```
 
 Compiler output (local paths from my PC removed from dump):
-
-{code}
+```scala
 [error]
 [error]   1 not in List(value $outer, value 1)
 [error]      while compiling: D:\development\scalabugs\implicit-error\src\main\scala\ImplicitError.scala
@@ -72,4 +70,4 @@ Compiler output (local paths from my PC removed from dump):
 [error]      7   }
 [error] Total time: 1 s, completed 08.mar.2016 11:34:18
 >
-{code}
+```

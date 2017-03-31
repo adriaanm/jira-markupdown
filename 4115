@@ -1,16 +1,15 @@
 Paul, this semantic issue is most interesting. I also find interesting that you didn't point me to a specification about these issues, and I see why you complained before.
 
-I'm not sure I get you fully, but I do see that things are not so simple as I thought. But does your example support your point? In our case, the relevant descriptor is the one for {{f3}}, which is declared to return {{Bar2}}, which corresponds to {{B}} in your discussion. That is, the erasure algorithm works as _I_ would have expected. Generic signatures are instead computed in a different way: there {{Foo with Bar2}} erases to {{Foo}}, and even {{Bar2}} erases to {{Foo}}, as shown in the testcase below!
+I'm not sure I get you fully, but I do see that things are not so simple as I thought. But does your example support your point? In our case, the relevant descriptor is the one for `f3`, which is declared to return `Bar2`, which corresponds to `B` in your discussion. That is, the erasure algorithm works as *I* would have expected. Generic signatures are instead computed in a different way: there `Foo with Bar2` erases to `Foo`, and even `Bar2` erases to `Foo`, as shown in the testcase below!
 
 However, the erasure algorithm does what I considered obvious, and I would keep that unchanged for binary compatibility, since there might be existing Java code calling into Scala using erased descriptors (I wrote some myself, even if it was an horrible experience since the Scala interface was much more fancy).
 Instead, the generic signatures we produce currently cannot be used if they don't match the descriptors, so we can change them to match more the descriptors without breaking binary compatibility so much - especially before the release of 2.10.
 
 Do you agree about changing that algorithm?
 
-h1. Example
-The above example has no generic signatures, but adding type parameters produces a reduced version of the problem in {{Erasure}}:
-
-{code}
+# Example
+The above example has no generic signatures, but adding type parameters produces a reduced version of the problem in `Erasure`:
+```scala
 //Other definitions like above, I only changed Test.
 class Test {
   def f1 = new Foo { }
@@ -33,9 +32,9 @@ class Test {
   // <T:Ljava/lang/Object;>(TT;)LFoo;
   // which means <T extends Object> Foo methodName(T);
 }
-{code}
-Of course, the generic signature is only emitted by a mainline Scala compiler, with the warning disabled. The generic signature warning (that is, {{-Ycheck:jvm}} or my pull request) reports the following warnings and omits generic signatures:
-{code}
+```
+Of course, the generic signature is only emitted by a mainline Scala compiler, with the warning disabled. The generic signature warning (that is, `-Ycheck:jvm` or my pull request) reports the following warnings and omits generic signatures:
+```scala
 SI-3452/DescriptorExample.scala:13: warning: compiler bug: created generic signature for method f6 in Test that does not conform to its erasure
 signature: <T:Ljava/lang/Object;>(TT;)LFoo;
 original type: [T >: ? <: ?](t: Object)Foo with Bar2
@@ -53,36 +52,36 @@ if this is reproducible, please report bug at https://issues.scala-lang.org/
   def f7[T](t: T) = new Bar2 { }
       ^
 two warnings found
-{code}
+```
 
 Notice, in particular, that the algorithm producing generic signatures transforms not only {{Foo with Bar2}} into {{Foo}}, but also {{Bar2}} into {{Foo}} (see {{f7}}). This shows nicely another source of mismatch between generic signatures and erased types.
 
-Back to encoding {{Bar2 with Foo}}, Java does have some kind of intersection types, at least in type bounds, which _might_ be useful; I did not look into it because I'm sure somebody smarter already tried and failed. For instance, given Java method {{<T extends Foo & Bar2> T foo()}}, probably type inference would not infer a type argument for {{T}}.
+Back to encoding `Bar2 with Foo`, Java does have some kind of intersection types, at least in type bounds, which *might* be useful; I did not look into it because I'm sure somebody smarter already tried and failed. For instance, given Java method `<T extends Foo & Bar2> T foo()`, probably type inference would not infer a type argument for `T`.
 
-h1. Other remaining bugs
+# Other remaining bugs
 I categorized warnings on the library (which are simpler). Here's a list of what is left there:
 
-# tons of Nothing-vs-Nothing$ mismatches:
-{code}
+- tons of Nothing-vs-Nothing$ mismatches:
+```scala
 [scalacfork] signature: (TB;)Lscala/runtime/Nothing$;
 [scalacfork] original type: (x$1: Object)Nothing
 [scalacfork] normalized type: (x$1: Object)scala.runtime.Nothing$
 [scalacfork] erasure type: (x$1: Object)Nothing
-{code}
+```
 The documentation of Nothing$ claims that Nothing should erase to Nothing$; this one sounds easiest to fix, so I'll take a look at it first - I might actually be able to fix this.
-# parsers seems to show the same problem with intersection types again;
-# classes extending AnyVal are erased correctly, but not in generic signatures:
-{code}
+- parsers seems to show the same problem with intersection types again;
+- classes extending AnyVal are erased correctly, but not in generic signatures:
+```scala
 [scalacfork] signature: <A:Ljava/lang/Object;>(TA;)Lscala/Predef$ArrowAssoc<TA;>;
 [scalacfork] original type: [A >: ? <: ?](x: Object)Predef$ArrowAssoc[A]
 [scalacfork] normalized type: [A >: ? <: ?](x: Object)Predef$ArrowAssoc[A]
 [scalacfork] erasure type: (x: Object)Object
 [scalacfork] if this is reproducible, please report bug at https://issues.scala-lang.org/
 [scalacfork]   @inline implicit def any2ArrowAssoc[A](x: A): ArrowAssoc[A] = new ArrowAssoc(x)
-{code}
+```
 (same problem on any2Ensuring)
-# This warnings I don't get yet - what is the '...'?
-{code}
+- This warnings I don't get yet - what is the '...'?
+```scala
 [scalacfork] /Users/pgiarrusso/Documents/Research/Sorgenti/scala/src/library/scala/collection/parallel/mutable/ParHashMap.scala:192: warning: compiler bug: created generic signature for object table$1 in scala.collection.parallel.mutable.ParHashMapCombiner that does not conform to its erasure
 [scalacfork] signature: ()Lscala/collection/parallel/mutable/ParHashMapCombiner$table$2$;
 [scalacfork] original type: ()...
@@ -90,9 +89,9 @@ The documentation of Nothing$ claims that Nothing should erase to Nothing$; this
 [scalacfork] erasure type: (table$module$1: scala.runtime.VolatileObjectRef)...
 [scalacfork] if this is reproducible, please report bug at https://issues.scala-lang.org/
 [scalacfork]     object table extends HashTable[K, DefaultEntry[K, V]] {
-{code}
-# More crazy stuff, note {{@annotation.unspecialized}}:
-{code}
+```
+- More crazy stuff, note `@annotation.unspecialized`:
+```scala
 [scalacfork] /Users/pgiarrusso/Documents/Research/Sorgenti/scala/src/library/scala/runtime/AbstractPartialFunction.scala:64: warning: compiler bug: created generic signature for method applyOrElse$mcZD$sp in scala.runtime.AbstractTotalFunction that does not conform to its erasure
 [scalacfork] signature: <A1:Ljava/lang/Object;B1:Ljava/lang/Object;>(TA1;Lscala/Function1<TA1;TB1;>;)TB1;
 [scalacfork] original type: [A1 >: ? <: ?, B1 >: ? <: ?](x: Double, default: Function1)B1
@@ -100,4 +99,4 @@ The documentation of Nothing$ claims that Nothing should erase to Nothing$; this
 [scalacfork] erasure type: (x: Double, default: Function1)Object
 [scalacfork] if this is reproducible, please report bug at https://issues.scala-lang.org/
 [scalacfork]   @annotation.unspecialized override final def applyOrElse[A1 <: T1, B1 >: R](x: A1, default: A1 => B1): B1 = apply(x)
-{code}
+```

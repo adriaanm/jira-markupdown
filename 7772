@@ -1,8 +1,7 @@
 If we view macros as a text/tree substitution facility, then it wouldn't look logical if text/tree on the left-hand side of a pattern match expanded into something that belong to the right-hand side.
 
 Moreover, with the incoming addition of c.introduceTopLevel it becomes possible to generate arbitrarily complex unappliers, even with heterogeneous types of arguments, varying from expansion to expansion:
-
-{code}
+```scala
 import language.experimental.macros
 import scala.reflect.macros.Context
 
@@ -40,9 +39,8 @@ object Macros {
     c.Expr[Option[Any]](Apply(Select(Ident(name), TermName("unapply")), List(x.tree)))
   }
 }
-{code}
-
-{code}
+```
+```scala
 object Test extends App {
   import Macros._
   def whatever() = null
@@ -55,4 +53,4 @@ object Test extends App {
 22:27 ~/Projects/Paradise/sandbox (paradise/macros)$ scalac Macros.scala && scalac Test.scala && scala Test
 (1,List(2))
 List(1)
-{code}
+```

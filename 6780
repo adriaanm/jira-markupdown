@@ -1,6 +1,5 @@
 I've traced the problem to this fragment in method typeRef in scala.reflect.internal.Types:
-
-{code}     
+```scala
       val pre1 = pre match {
        case x: SuperType if sym1.isEffectivelyFinal || sym1.isDeferred =>
          x.thistpe
@@ -12,6 +11,6 @@ I've traced the problem to this fragment in method typeRef in scala.reflect.inte
          }
        case _ => pre
      }
-{code}
+```
 
 I don't see why we want to loose type information of `CompoundType`s in this manner. Maybe it is useful to make inferred types wider? I can't see how, except in the presence of a this.type -- which is exactly where it can break things... but of course my sight here is really limited.

@@ -1,9 +1,9 @@
 Replying to [comment:10 odersky]:
 > I see, but would classify this as a corner case due to the unit conversion. There's no attempt in the spec to classify overloads that will always yield ambiguous errors when referenced as illegal.
 
-That would be fine if there was _some_ way to call the second method. There is not (that I know of, short of using reflection).
+That would be fine if there was *some* way to call the second method. There is not (that I know of, short of using reflection).
 I was using Eclipse, which is why I couldn't easily copy/paste my results. Apologize for that. Here's more using a slightly modified version (returning Float) from the console:
-{code}
+```scala
 scala> object Foo {def bar(i:Int):Float=i;def bar(i:Int)(f:Float)=i*f;}
 defined module Foo
 
@@ -49,11 +49,11 @@ and  method bar in object Foo of type (Int)Float
 match argument types (Int)
        Foo.bar(5): (Float=>Float)
            ^
-{code}
+```
 It does not seem right that one can define methods that simply cannot be called. I would much prefer that both methods could be called, since they do not appear ambiguous to me
-{code}
+```scala
   Foo.bar(5)      // Unambiguously calls the single parm variant
   Foo.bar(5) _    // Unambiguously calls the double parm variant partially
   Foo.bar(5)(2f)  // Unambiguously calls the double parm variant.
-{code}
+```
 Short of that, it seems that the same ambiguity rules should be applied to defs, preventing creation of methods that are impossible to reference.

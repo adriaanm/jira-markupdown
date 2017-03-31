@@ -1,27 +1,24 @@
 Some details, for the non-REPL scenario:
-
-{noformat}
+```
 class ScalaColls(n: Int) {
   () => n 
 }
-{noformat}
+```
 
 The only difference {{-optimize}} makes is inlining (in {{ScalaColls$$anonfun$1.apply()}}) the getter that {{ScalaColls}} provides for {{ScalaColls$$n}} (that field was public final already before inlining). 
 
-In other words {{ScalaColls$$anonfun$1.apply()}} goes from:
-
-{noformat}
+In other words `ScalaColls$$anonfun$1.apply()` goes from:
+```
 public final int apply();
   Code:
    Stack=1, Locals=1, Args_size=1
    0:	aload_0
    1:	invokevirtual	#25; //Method apply$mcI$sp:()I
    4:	ireturn
-{noformat}
+```
 
 to:
-
-{noformat}
+```
 public final int apply();
   Code:
    Stack=1, Locals=1, Args_size=1
@@ -29,4 +26,4 @@ public final int apply();
    1:	getfield	#24; //Field $outer:LScalaColls;
    4:	getfield	#28; //Field ScalaColls.ScalaColls$$n:I
    7:	ireturn
-{noformat}
+```

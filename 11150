@@ -1,13 +1,12 @@
 It's pretty hard to know what's happening without source code to reproduce the problem. You could minimize by paring down your test sources until the problem goes away; if they are relatively disentangled, that's doable with a binary search.
 
 But I took a look at the heap dump anyway to see what I could glean. There is an enormous AST generated at this point in your code:
-
-{code}
+```scala
   test("1 requiredParam") {
     implicit val v = mock[Validator]
     (v.validate _).expects(*).returning(true)
        // ^-- here
-{code}
+```
 
 (The test sources are visible in the heap dump)
 

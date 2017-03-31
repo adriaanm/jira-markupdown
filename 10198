@@ -1,6 +1,5 @@
 Maybe we can discuss a smaller example. Here's a starting point:
-
-{code}
+```scala
 class Global(expectedThread: Thread) {
   def checkThread() { Thread.currentThread == expectedThread }
   def set(a: Any) = {checkThread(); ...  }
@@ -15,14 +14,13 @@ val g1 = new Global(thread1); val g2 = new Global(thread2)
 onThread(thread2) {
   import(g1, g2)
 }
-{code}
+```
 
 Here, `importer` can never satisfy the checks for the correct thread. As I understand it, you workaround this by:
-
-{code}
+```scala
 onThread(thread1) { g1.get }
 onThread(thread2) { importer(g1, g2) }
-{code}
+```
 
 In practice, there are a few more layers; You get Symbols out of Global, and some methods on the Symbol are lazy and need forcing.
 

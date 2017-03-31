@@ -1,34 +1,30 @@
 scala code:
-
-{code}
+```scala
 class A {
   def f[T <: Int](x: T): T = x
 }
-{code}
+```
 
 the generic signature looks like this:
-
-{noformat}
+```
   // access flags 0x1
   // signature <T:Ljava/lang/Object;>(TT;)TT;
   // declaration: T f<T>(T)
   public f(I)I
-{noformat}
+```
 
 which is invalid, java generics don't abstract over primitives. the following java code compiles:
-
-{code}
+```scala
 public class B {
   public static void main(String[] args) {
     A a = new A();
     System.out.println(a.f(10));
   }
 }
-{code}
+```
 
 but fails to run
-
-{noformat}
+```
 Exception in thread "main" java.lang.NoSuchMethodError: A.f(Ljava/lang/Object;)Ljava/lang/Object;
         at B.main(B.java:4)
-{noformat}
+```

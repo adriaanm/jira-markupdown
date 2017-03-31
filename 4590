@@ -1,7 +1,7 @@
 Replying to [comment:16 rompf]:
 > First of all, there seems to be some confusion about the nature of Scala's Vector implementation. I don't know who spread the myth about the underlying data structure being a skip-list (I've read that in a couple of places now) but this is definitely false. The implementation is based on 32-wide trees, just as in Clojure. This renders any wholesale arguments (e.g. about locality) invalid.
 
-That would be me spreading that rumor.  :-)  While Scala's Vector *is* a tree, it doesn't push the data to the leaves, so you can't really say that it's doing the same thing that Clojure's tries do.  I'll spend some more time with the implementation, but it really *does* look like a skip-list to me.  Maybe it's just the fact that I'm looking at the six display pointers sideways, but that's what it seems like.
+That would be me spreading that rumor.  :-)  While Scala's Vector **is** a tree, it doesn't push the data to the leaves, so you can't really say that it's doing the same thing that Clojure's tries do.  I'll spend some more time with the implementation, but it really **does** look like a skip-list to me.  Maybe it's just the fact that I'm looking at the six display pointers sideways, but that's what it seems like.
 
 In any case, the difference between a skip-list and a tree is really just in whether access is optimized for level tips or branch traversal, and I wasn't able to grok the implementation sufficiently to see which holds true.  As you mentioned, the focus optimization changes which locality is fast to reference, so the difference between something which is conceptually a skip-list and something which is conceptually a tree is basically nil.
 

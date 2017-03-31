@@ -1,6 +1,5 @@
-Here's a fun technique to facilitate experimentation with `invokeExact` *without* resorting to writing Java code!
-
-{code}
+Here's a fun technique to facilitate experimentation with `invokeExact` **without** resorting to writing Java code!
+```scala
 scala> :paste -raw
 // Entering paste mode (ctrl-D to finish)
 
@@ -41,6 +40,6 @@ res1: invokeExact.type = method invokeExact
 
 scala> mh.invokeExact(pack.O) // Let's try again!
 res2: String = foo
-{code}
+```
 
 I was messing around with `MethodHandle`s looking for ways to use access private methods without our usual mangling and publicising. Each Scala class that needs to expose its privates could publish a single, static, SYNTHETIC field named '$LOOKUP'. We could use a static cache for the MethodHandle at each call site, much like we do for structural types.

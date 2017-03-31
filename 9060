@@ -1,5 +1,5 @@
 Jan, thank you for your patch!
-It seems to me that you have correctly addressed the issues from https://issues.scala-lang.org/browse/SI-5374, in particular
+It seems to me that you have correctly addressed the issues from scala/bug#5374, in particular
 that the structural sharing is maintained when serializing objects which point to the same lists multiple times.
 Also, it seems to me that the loop-logic works correctly now.
 
@@ -7,12 +7,12 @@ A couple of comments:
 
 1) I did not completely understand why the fields {{seen0}} and {{inLoop0}} private, why not have just public {{var}}s.
 
-2) It seems to me that the idea is that when the {{seen}} field becomes {{false}}, serializing a {{::}} has to bring it
-back to {{true}}. Otherwise, the tail must have been {{Nil}}, meaning that the loop in {{writeObjectImpl}} can end.
+2) It seems to me that the idea is that when the `seen` field becomes `false`, serializing a `::` has to bring it
+back to `true`. Otherwise, the tail must have been `Nil`, meaning that the loop in `writeObjectImpl` can end.
 
 3) It seems to me that serializing nested lists should work as well.
-Calling {{writeAsSeen}} in line 34 may serialize a nested list, in which case the nested list should leave the {{ctrl}}
-object in the {{seen == false}} state, but in that case the {{writeAsSeen}} of the outer list brings it back to {{true}}.
+Calling `writeAsSeen` in line 34 may serialize a nested list, in which case the nested list should leave the `ctrl`
+object in the `seen == false` state, but in that case the `writeAsSeen` of the outer list brings it back to `true`.
 
 Am I right?
 
@@ -24,5 +24,5 @@ Overall, looks good.
 
 On a side note, I wonder if there is some existing serialization infrastructure, i.e. a method call, we could use instead
 of the thread local with state patch to output the objects into the object output stream and maintain structural sharing.
-Something like {{out.writeObjectId(...)}} could greatly simplify the code we have in the patch now.
+Something like `out.writeObjectId(...)` could greatly simplify the code we have in the patch now.
 

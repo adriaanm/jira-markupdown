@@ -1,12 +1,11 @@
-{{groupBy}} is substantially slower in 2.12, with throughput down to as little as 60% of 2.11 on my machine.  This seems to affect all collections (Vector, List, and Array tested).
+`groupBy` is substantially slower in 2.12, with throughput down to as little as 60% of 2.11 on my machine.  This seems to affect all collections (Vector, List, and Array tested).
 
-Manually inlining the {{groupBy}} code does not seem to help.  Indeed, benchmarking of {{HashMap.getOrElseUpdate}} shows a considerable decrease in throughput, possibly enough to account for the entire effect.  {{AnyRefMap}} does not appear to be affected.
+Manually inlining the `groupBy` code does not seem to help.  Indeed, benchmarking of `HashMap.getOrElseUpdate` shows a considerable decrease in throughput, possibly enough to account for the entire effect.  `AnyRefMap` does not appear to be affected.
 
-Manually inlining the {{get}}, match, and {{update}} calls from {{getOrElseUpdate}} does appear to solve the issue (at least mostly).
+Manually inlining the `get`, match, and `update` calls from `getOrElseUpdate` does appear to solve the issue (at least mostly).
 
-The old bytecode in {{scala.collection.mutable.MapLike$class}} was:
-
-{code}
+The old bytecode in `scala.collection.mutable.MapLike$class` was:
+```scala
   public static java.lang.Object getOrElseUpdate(scala.collection.mutable.MapLike, java.lang.Object, scala.Function0);
     Code:
        0: aload_0
@@ -43,11 +42,10 @@ The old bytecode in {{scala.collection.mutable.MapLike$class}} was:
       69: aload_3
       70: invokespecial #142                // Method scala/MatchError."<init>":(Ljava/lang/Object;)V
       73: athrow
-{code}
+```
 
-Now, however, the bytecode is as follows, with extra instructions highlighted with {{>>>>>}}:
-
-{code}
+Now, however, the bytecode is as follows, with extra instructions highlighted with `>>>>>`:
+```scala
   public V getOrElseUpdate(K, scala.Function0<V>);
     Code:
        0: aload_0
@@ -89,6 +87,6 @@ Now, however, the bytecode is as follows, with extra instructions highlighted wi
       86: athrow
       87: aload_3
       88: areturn
-{code}
+```
 
 Whether these extra jumps themselves are the extra cost, or whether they prevent some JIT optimization, I have not yet investigated.  However, the bytecode appears less efficiently organized (note the swap of the exception vs return which requires one of the extra jumps in the success case).

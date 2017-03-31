@@ -1,6 +1,5 @@
 The code:
-
-{code}
+```scala
 object Broken {
   trait Parent
   class Child extends Parent
@@ -8,15 +7,14 @@ object Broken {
   trait Test { lazy val x: Child = new Child }
   abstract class Test2 extends Test { override def x: Parent }
 }
-{code}
+```
 
 Causes the compiler to assertion fail:
-
-{code}
+```scala
 java.lang.AssertionError: assertion failed:
   mixed in lazy value x from class Broken$Test2 is not param?!?
      while compiling: C:\Users\anixon\source\myproject\src\test\scala\myproject\Broken.scala
         during phase: globalPhase=mixin, enteringPhase=cleanup
      library version: version 2.12.1
     compiler version: version 2.12.1
-{code}
+```

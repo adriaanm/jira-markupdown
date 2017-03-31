@@ -1,6 +1,5 @@
 Minimized (well, relative to where we started)
-
-{code}
+```scala
 import Ordering.{Byte, comparatorToOrdering}
 trait Format[T]
 
@@ -18,12 +17,10 @@ sealed trait HList
 sealed trait HNil extends HList
 object HNil extends HNil
 final class HCons[H, T <: HList](head : H, tail : T) extends HList
-
-{code}
+```
 
 Fixed by:
-
-{noformat}
+```
 diff --git a/src/compiler/scala/tools/nsc/typechecker/Implicits.scala b/src/comp
 index ed1e6d0..7ee6cc2 100644
 --- a/src/compiler/scala/tools/nsc/typechecker/Implicits.scala
@@ -46,4 +43,4 @@ index ed1e6d0..7ee6cc2 100644
                if (Statistics.canEnable) Statistics.incCounter(foundImplicits)
                printInference("[success] found %s for pt %s".format(result, ptIn
                result
-{noformat}
+```

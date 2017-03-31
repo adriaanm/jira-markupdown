@@ -1,6 +1,5 @@
 I have the same problem with an inner trait:
-
-{code}
+```scala
 trait A {
   trait Test
   val instance: Test = new Test { }
@@ -14,13 +13,13 @@ class B extends A {
 object Run extends App {
   val b = new B
 }
-{code}
+```
 
 gives java.lang.ClassFormatError: Duplicate method name&signature in class file B
 
 However, when making trait A a class, the problem disappears on both 2.10.4 and 2.11.5.
 
 The wordaround is to use something along the lines of:
-{code}
+```scala
   override val instance = new Test { }
-{code}
+```

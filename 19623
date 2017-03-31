@@ -1,6 +1,5 @@
 I expect the following code to compile without errors:
-
-{code}
+```scala
 trait Elem {
     type Peer
 }
@@ -10,11 +9,10 @@ trait Impl[E[~] <: Elem {type Peer = ~}] {
 
     foo[Int](??? : E[Int]#Peer)
 }
-{code}
+```
 
 Instead, an error is given that:
-
-{code:text}
+```text
 Error:(12, 18) type mismatch;
  found   : this.scala.Peer
     (which expands to)  Int
@@ -22,7 +20,7 @@ Error:(12, 18) type mismatch;
     (which expands to)  R
     foo[Int](??? : E[Int]#Peer)
              ^^
-{code}
+```
 
 It looks as if the variable `R` is not getting substituted in the structural refinement part of the type.
 

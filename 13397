@@ -1,6 +1,5 @@
 As reported on the scala-tools list, following r14964 the plugin build fails,
-
-{code}
+```scala
 Buildfile: build.xml
 
 init:
@@ -30,15 +29,14 @@ error: type mismatch;
 BUILD FAILED
 /wrk/kit/development/scala/trunk/plugin/build.xml:85: Compile failed with 2 errors; see the
 compiler error output for details.
-{code}
+```
 
 Previously the RandomAccessSeq[Char] edit.text was being implicitly converted to a RichString, concatenated then converted back to a RandomAccessSeq[Char]. The addition of + in Seq frustrates this by defining an applicable + with return type Seq[Char].
 
 A fix is to add a covariantly returning definition of + to RandomAccessSeq,
-
-{code}
+```scala
 override def +[B >: A](e: B): RandomAccessSeq[B] =
   this ++ Seq.single(e)
-{code}
+```
 
 The use of this in the plugin has to be adjusted slightly to append a char rather than a string literal.

@@ -1,7 +1,6 @@
 I wonder why we're using an outer namer for parameter accessors.
 Commenting out these lines fixes the test case.
-
-{code}
+```scala
     def namerOf(sym: Symbol): Namer = {
       val usePrimary = sym.isTerm && (
 //           (sym.isParamAccessor)
@@ -12,11 +11,10 @@ Commenting out these lines fixes the test case.
       if (usePrimary) createPrimaryConstructorParameterNamer
       else innerNamer
     }
-{code}
+```
 
 Here's a self-contained test case that also makes sure the constructor's type parameters stay in scope.
-
-{code}
+```scala
 class Global {
   class Typer[T]
 }
@@ -26,4 +24,4 @@ class Reifier[T](global: Global)(typer: global.Typer[T])
 object Test {
   def mkReifier[T](global: Global)(typer: global.Typer[T]) = typer
 }
-{code}
+```

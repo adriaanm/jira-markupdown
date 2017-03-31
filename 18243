@@ -1,6 +1,5 @@
 After a transformation of selectDynamic the position for the transformed method is not correctly set. For example
-
-{code}
+```scala
 object X {
   val d = new D
   d.method
@@ -9,16 +8,16 @@ import language.dynamics
 class D extends Dynamic {
   def selectDynamic(name: String) = name
 }
-{code}
+```
 
 results in (with "scalac -Yrangepos -Xprint-pos -Xprint:parser,typer")
-{code}
+```scala
 //after parser
     [29:37]d.method
 
 //after typer
     [29:30][29:30][29]X.this.d.selectDynamic([29]"method")
-{code}
+```
 
 where the 29 before the string argument in selectDynamic is wrong.
 

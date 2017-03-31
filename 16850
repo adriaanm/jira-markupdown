@@ -1,16 +1,14 @@
 Compiling
-
-{code}
+```scala
 class Foo[T](val x: Int) extends AnyVal { def xyzzy(t:T) = t } 
 
 object Test {
   new Foo[String](4).xyzzy(null)
 }
-{code}
+```
 
 causes an assertion failure in the compiler
-
-{code}
+```scala
 error: 
      while compiling:  ok.scala
        current phase:  erasure
@@ -36,6 +34,6 @@ no extension method found for method xyzzy among Stream(method extension$xyzzy)/
 	at scala.tools.nsc.transform.Erasure$ErasureTransformer$$anon$1.preErase(Erasure.scala:1045)
 	at scala.tools.nsc.transform.Erasure$ErasureTransformer$$anon$1.transform(Erasure.scala:1100)
         [snip]
-{code}
+```
 
 It seems to stem from the argument involving the class' type parameter. I think the matches check around the assertion does not consider the two type parameters to match.

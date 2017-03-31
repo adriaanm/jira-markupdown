@@ -1,8 +1,7 @@
 ExecutionContext.Implicits.global seems to get used as an implicit when you (or I at least) least expect it.
 
 I expected the following code to use my fixed thread pool, and was quite surprised when it didn't.
-
-{code:scala}
+```scala
 import java.util.concurrent.Executors
 import scala.concurrent.{ExecutionContext, Future}
 import ExecutionContext.Implicits.global
@@ -19,6 +18,6 @@ object Foo {
     pool.shutdown()
   }
 }
-{code}
+```
 
-The issue seems to be that {{global}} has a more specific type than {{ExecutionContext}} and thus gets selected (if it's imported anywhere in scope) over any implicit {{ExecutionContext}} in scope, regardless of other forms of priority. This seems scary to me. I don't think it's necessarily a _bug_, but it seems to be asking for trouble.
+The issue seems to be that `global` has a more specific type than `ExecutionContext` and thus gets selected (if it's imported anywhere in scope) over any implicit `ExecutionContext` in scope, regardless of other forms of priority. This seems scary to me. I don't think it's necessarily a *bug*, but it seems to be asking for trouble.

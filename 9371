@@ -8,11 +8,11 @@ Finally, this bug potentially applies to many other libraries relying on Java bi
 
 The JLS declares that moving a method upward in the class hierarchy is a binary compatible change (http://docs.oracle.com/javase/specs/jls/se5.0/html/binaryComp.html). And we can guess safely that Android developers wouldn't screw up their binary compatibility constraints - you'd see a huge uproar if they did.
 
-Also, to fix SI-1430, given {{A <: B}}, a method {{foo}} in {{A}}, and code invoking {{foo}} on a receiver of static type {{B}}, we need to invoke it using descriptor {{B.foo}} when the receiver has type {{B}} and {{A}} is not accessible; {{B}} is guaranteed to be accessible in this scenario.
-It seems that in this case we also need to use descriptor {{B.foo}}. Hence, it seems that always generating {{B.foo}} in this scenario would solve both bugs. However, the code also checks if an interface is involved - I don't get why, and the direction of the test was flipped (I think) without a clear reason. That's however hard to see, because that commit mixes a refactoring with a bugfix.
+Also, to fix scala/bug#1430, given `A <: B`, a method `foo` in `A`, and code invoking `foo` on a receiver of static type `B`, we need to invoke it using descriptor `B.foo` when the receiver has type `B` and `A` is not accessible; `B` is guaranteed to be accessible in this scenario.
+It seems that in this case we also need to use descriptor `B.foo`. Hence, it seems that always generating `B.foo` in this scenario would solve both bugs. However, the code also checks if an interface is involved - I don't get why, and the direction of the test was flipped (I think) without a clear reason. That's however hard to see, because that commit mixes a refactoring with a bugfix.
 
-It even seems that using {{B.foo}} is even required by the JLS when it says that "A reference to a method must be resolved at compile time to a symbolic reference to the erasure (§4.6) of the qualifying type of the invocation" in http://docs.oracle.com/javase/specs/jls/se5.0/html/binaryComp.html.
+It even seems that using `B.foo` is even required by the JLS when it says that "A reference to a method must be resolved at compile time to a symbolic reference to the erasure (§4.6) of the qualifying type of the invocation" in http://docs.oracle.com/javase/specs/jls/se5.0/html/binaryComp.html.
 
 More in general, MIMA might be getting this wrong as well. Either:
-* MIMA allows that change - but then it doesn't work because of this commit; or
-* MIMA forbids this change which should be allowed - and then we're using overly restrictive compatibility constraints, but might be unable to fix that until 2.11 since we shouldn't look for trouble with 2.10.0
+- MIMA allows that change - but then it doesn't work because of this commit; or
+- MIMA forbids this change which should be allowed - and then we're using overly restrictive compatibility constraints, but might be unable to fix that until 2.11 since we shouldn't look for trouble with 2.10.0

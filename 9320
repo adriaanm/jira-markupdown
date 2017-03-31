@@ -1,6 +1,5 @@
 To explain more precisely, in the 2.10.0 window, a for-comprehension with a tuple-pattern binding that consists strictly of variables (or wildcards) erroneously did not result in a call to withFilter (or, in casu, filter). The translation was performed on a purely syntactic basis, but would lead to unexpected MatchErrors as illustrated by Jason:
-
-{code}
+```scala
 // 2.9.2, 2.10.1
 scala> for ((a, b) <- List[Any](0)) yield a
 res0: List[Any] = List()
@@ -8,15 +7,14 @@ res0: List[Any] = List()
 // 2.10.0
 scala> for ((a, b) <- List[Any](0)) yield a
 scala.MatchError: 0 (of class java.lang.Integer)
-{code}
+```
 
 If we leave the 2.10.0 bug in place, we let buggy code that could only have been written in the couple of months that 2.10.0 is out, fester until we fix it in 2.11. 
 
 As always, we're talking trade-offs here. I did not intend "drop-in replacement" as a legal term. I should have qualified it with "modulo bad bugs that are expected to cause more pain than sticking to our doctrine".
 
 So, to get back to your example, as soon as the pattern becomes non-trivial, 2.10.0's behavior matches that of 2.9/2.10.1:
-
-{code}
+```scala
 scala> object Foo {
      |     val foo: Either[String, (String, String)] = Right(("a", "b"))
      |     def res = for {
@@ -30,11 +28,10 @@ scala> object Foo {
  required: scala.util.Either[Nothing,(String, String)]
              ("a", b) <- foo.right
              ^
-{code}
+```
 
 This is because the signature of RightProjection's filter is not what you might expect: it returns an Option[Either[A, B]], so the subsequent map must deal with a full Either, not just the element on the right. I had to desugar the for comprehension to make it work because this kind of definition of filter just doesn't work with for comprehensions (it can't change the "type in the monad". There, I said "monad".).
-
-{code}
+```scala
 scala>   foo.right filter {
      |     case ("a", b) => true
      |     case _ => false
@@ -46,4 +43,4 @@ It would fail on the following input: Left(_)
                 } map {
                       ^
 res1: Option[String] = Some(ab)
-{code}
+```

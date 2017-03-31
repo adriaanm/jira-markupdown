@@ -4,20 +4,20 @@ to be a fairly pervasive problem with scalac's handling of Java generics.
 Here's a much simpler test case that I just found (with r15706 this time):
 
 S.scala:
-{code}
+```scala
 class S { new J }
-{code}
+```
 
 J.java:
-{code}
+```scala
 class J {
 	J() { }
 	J( java.util.Collection<?> collection ) { }
 }
-{code}
+```
 
 result:
-{code}
+```scala
   ~/newbug> ~/scala/dists/latest/bin/scalac J.java S.scala             
 Exception in thread "main" java.lang.Error: unexpected alias type: type _$$1
 	at scala.tools.nsc.symtab.Symbols$$Symbol.existentialBound(Symbols.scala:701)
@@ -100,4 +100,4 @@ Exception in thread "main" java.lang.Error: unexpected alias type: type _$$1
 	at scala.tools.nsc.Main$$.process(Main.scala:84)
 	at scala.tools.nsc.Main$$.main(Main.scala:98)
 	at scala.tools.nsc.Main.main(Main.scala)
-{code}
+```

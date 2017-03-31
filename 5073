@@ -12,7 +12,7 @@ Replying to [comment:6 soc]:
 It's confusing for sure, but it's accurate as far as the compiler knows, and it's in the zone of difficult change.  The error is encountered when it is still trying to type the + expression.  Naturally it's going to go look for implicit conversions before it gives up, and there are conversions called int2double and int2long in Predef, and they are ambiguous in the narrow context of the expression it is typing.
 
 Now were those implicits unambiguous, it would only kick the error further downfield a little ways, so you don't need to worry it's randomly resorting to FP math when it gets confused.  Compare these outcomes.
-{code}
+```scala
 scala> (1 + 2L): Int 
 <console>:6: error: type mismatch;
  found   : Int(1)
@@ -30,5 +30,4 @@ scala> (1d + 2L): Int
  required: Int
        (1d + 2L): Int
            ^
-
-{code}
+```

@@ -4,8 +4,7 @@ The main issue is letting the type of the variable to be inferred as Object or A
 
 Combined with implicit conversions this could lead to all sorts of confusion (the firs example with "123" string).
 Here is another example, this time with overloading.
-
-{code}
+```scala
 object Overloaded {
     def f(a: AnyVal) = println("anyval")
     def f(a: Number) = println("number")
@@ -15,7 +14,7 @@ object Overloaded {
 val condition = true
 val test = if (condition) 123 else 123f
 Overloaded.f(test)
-{code}
+```
 
 The problem here is that the behaviour is not obvious nor intuitive... and most likely not what the developer intended to do. Basically I am trying to argue that the type inference should only work when all the if-branches return the same type. Otherwise the compiler should generate and error and let the programmer specify the type.
 

@@ -1,8 +1,7 @@
 Tested with Scala 2.7.2rc4 and revision 16415 (latest) from the 2.7.2 branch.
 
 The following example shows the problem. The Java generic signature includes <J> to mean the long primitive, but this is not allowed, so if any reflection based framework calls getGenericParameterTypes (I noticed this with Spring), it will blow up with a GenericSignatureFormatError. It also means that the Scala method can't be called from Java code. Using java.lang.Long in the signature is a possible workaround (as shown).
-
-{code}
+```scala
 package test
 
 object Generics {
@@ -22,11 +21,10 @@ class Foo {
   def l(b: Baz[Long]) { }
   def jl(b: Baz[java.lang.Long]) { }
 }
-{code}
+```
 
 The stacktrace is:
-
-{code}
+```scala
 Exception in thread "main" java.lang.reflect.GenericSignatureFormatError
 	at sun.reflect.generics.parser.SignatureParser.error(SignatureParser.java:103)
 	at sun.reflect.generics.parser.SignatureParser.parseFieldTypeSignature(SignatureParser.java:233)
@@ -52,5 +50,4 @@ Exception in thread "main" java.lang.reflect.GenericSignatureFormatError
 	at java.lang.reflect.Method.getGenericParameterTypes(Method.java:282)
 	at test.Generics$$.main(Generics.scala:10)
 	at test.Generics.main(Generics.scala)
-
-{code}
+```

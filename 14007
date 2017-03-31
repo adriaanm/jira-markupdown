@@ -2,7 +2,7 @@ In some configurations remote actors do not work -- objects received over the TC
 
 This can be reproduced using the remote-actors example given at http://www.dirkmeister.de/2008/12/25/remote-actors-in-scala
 
-The specific behavior is either a MatchException involving a Node object, or a ClassCastException involving a Symbol (altering the main app slightly causes one or the other to occur.) In each case, the full name of the expected and the offending class are _identical_ -- this implies the class is getting loaded twice by different ClassLoaders, resulting in two incompatible classes with the same name. Bad news. (This appears to be the same issue reported in SI-856. That one was closed by its author as a misunderstanding, but with no explanation as to why.)
+The specific behavior is either a MatchException involving a Node object, or a ClassCastException involving a Symbol (altering the main app slightly causes one or the other to occur.) In each case, the full name of the expected and the offending class are *identical* -- this implies the class is getting loaded twice by different ClassLoaders, resulting in two incompatible classes with the same name. Bad news. (This appears to be the same issue reported in scala/bug#856. That one was closed by its author as a misunderstanding, but with no explanation as to why.)
 
 I've tracked the problem down to the CustomObjectInputStream class (in JavaSerializer.scala). If I disable this class by setting RemoteActor.classLoader = null, then the problem goes away.
 

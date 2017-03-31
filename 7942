@@ -1,6 +1,5 @@
 Greg and I were checking this out and saw that there was another issue with:
-
-{code}
+```scala
 trait Foo[@specialized(AnyRef, Int) A, @specialized(Boolean) B] {
   def apply(x: A): B
 }
@@ -12,7 +11,7 @@ abstract class Inter extends Foo[String, Boolean]
 class Baz extends Inter {
   def apply(x: String) = false
 }
-{code}
+```
 
 The `apply$mcLZ$sp` was not getting specialized in `Baz`, but just retained the bridge to `apply`. This should work now.
 

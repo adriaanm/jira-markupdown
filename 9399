@@ -1,32 +1,29 @@
 Example of "nothing magical":
-
-{code}
+```scala
 val trees = List(q"call.f", "call.g")
 val output = q"""
   val v = ..$trees
   doSomethingElse(v)
 """
-{code}
+```
 
 According to your proposal this will translate into
-{code}
+```scala
 q"""
   val v = { call.f ; call.g }
   doSomething(v)
 """
-{code}
+```
 
 Then somebody else comes and refactors the original code into:
-
-{code}
+```scala
 val trees = List(q"call.f", q"call.g")
 val output = q"doSomethingElse(..$trees)"
-{code}
+```
 
 And suddenly out of nowhere all your tests fail because this will result in a completely different tree:
-
-{code}
+```scala
 q"doSomethingElse(call.f, call.g)"
-{code}
+```
 
 I'm strongly against this magic that changes the semantics from something simple to something convoluted without a good reason.

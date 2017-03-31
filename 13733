@@ -1,6 +1,5 @@
 With either 2.7.2 RC1 or 2.7.1 the following,
-
-{code}
+```scala
 object TIF {
   abstract class A
   case class B(b : String) extends A
@@ -9,30 +8,27 @@ object TIF {
   val l = List(Right(B("b")), Left(C("c")))
   l.map(Either.merge)
 }
-{code}
+```
 
 results in a compile error,
-
-{code}
+```scala
 foo.scala:7: error: type mismatch;
  found   : (Either[T,T]) => T
  required: (Either[TIF.C,TIF.B] with Product) => ?
   l.map(Either.merge)
                ^
 one error found
-{code}
+```
 
 Adding the type parameter manually,
-
-{code}
+```scala
   l.map(Either.merge[A])
-{code}
+```
 
 or adding a type ascription,
-
-{code}
+```scala
   l.map(Either.merge : Either[A, A] => A)
-{code}
+```
 
 solves the problem. However it seems that A should be being inferred as the LUB here without explicit type annotations.
 

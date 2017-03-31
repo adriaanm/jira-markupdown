@@ -1,26 +1,24 @@
 This doesn't compile:
-
-{code}
+```scala
 def f(a: Int*) = a match {
   case 0 :: Nil => "List(0)! My favorite Seq!"
   case _ => a.toString
 }
-{code}
-{noformat}
+```
+```
 error: constructor cannot be instantiated to expected type;
  found   : collection.immutable.::[B]
  required: Int*
-{noformat}
+```
 
 But this does:
-
-{code}
+```scala
 def f(a: Int*) = (a: Seq[Int]) match {
   case 0 :: Nil => "List(0)! My favorite Seq!"
   case _ => a.toString
 }
-{code}
+```
 
-I think it's obvious, but per the spec, the identifier {{a}} should already have the type Seq[Int] inside the body of {{f}} in either case, yet in the first case, the compiler seems to think that {{a}} has a type which is a strict subtype of Seq[Int] and which List does not extend.
+I think it's obvious, but per the spec, the identifier `a` should already have the type Seq[Int] inside the body of `f` in either case, yet in the first case, the compiler seems to think that `a` has a type which is a strict subtype of Seq[Int] and which List does not extend.
 
-Seems related to (if not a dupe of) SI-4176.
+Seems related to (if not a dupe of) scala/bug#4176.

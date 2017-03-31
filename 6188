@@ -1,15 +1,15 @@
 Thank you for this detailed information. I have Win 7 and I had to add the registry key to enable ALT + input method, so not all Win 7 have it configured by default.
 
-Also after setting _DejaVu Sans Mono_ and file.encoding=UTF-8, I tried the CTRL-V on the following
-{code}
+Also after setting *DejaVu Sans Mono* and file.encoding=UTF-8, I tried the CTRL-V on the following
+```scala
 val x = "☆"
-{code}
+```
 but it appears funky on the console:
-{code}
+```scala
 val x = "☆"�"
-{code}
-Oddly, {{x.length == 1}} so the extra garbage seems to only be a printing artifact. You don't get the same behavior? 
+```
+Oddly, `x.length == 1` so the extra garbage seems to only be a printing artifact. You don't get the same behavior? 
 
-What I found out is that jline/jansi relies currently on {{_getch}} which does not detect the ALT unicode combinations (input is just ignored). I tested with a little C program that {{ReadConsoleW}} reads those ALT combination correctly. It does not work either when pasting by using right mouse click.
+What I found out is that jline/jansi relies currently on `_getch` which does not detect the ALT unicode combinations (input is just ignored). I tested with a little C program that `ReadConsoleW` reads those ALT combination correctly. It does not work either when pasting by using right mouse click.
 
-We would have to modify jansi to use {{ReadConsoleW}}, rebuild and repackage the dll. It probably is going to take a while as well as some help from the jansi maintainer and there may be challenges along the way but I can start down that path...
+We would have to modify jansi to use `ReadConsoleW`, rebuild and repackage the dll. It probably is going to take a while as well as some help from the jansi maintainer and there may be challenges along the way but I can start down that path...

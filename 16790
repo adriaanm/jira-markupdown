@@ -1,5 +1,5 @@
-Consider code fragment. As discussed in its comment, the sequence of expressions in there makes the compiler crash - below a stacktrace extracted from sbt. All my attempts of further reduction of the bugreport fail. Note that I added a semicolon to separate the two expressions, since I didn't trust semicolon inference any more. Yet, that specific sequence of {{(\_)}} and {{\_}} is needed to trigger the bug, apparently.
-{code}
+Consider code fragment. As discussed in its comment, the sequence of expressions in there makes the compiler crash - below a stacktrace extracted from sbt. All my attempts of further reduction of the bugreport fail. Note that I added a semicolon to separate the two expressions, since I didn't trust semicolon inference any more. Yet, that specific sequence of `(\_)` and `\_` is needed to trigger the bug, apparently.
+```scala
 class BugReport {
   trait Exp[+T]
   case class Foo[T](v: Exp[T]) extends Exp[T]
@@ -21,9 +21,8 @@ class BugReport {
     }.fold(null /*Seq.empty*/) _
   }
 }
-{code}
-
-{code}
+```
+```scala
 java.lang.Error: no-symbol does not have owner
 	at scala.tools.nsc.symtab.SymbolTable.abort(SymbolTable.scala:34)
 	at scala.tools.nsc.symtab.Symbols$NoSymbol$.owner(Symbols.scala:2150)
@@ -315,4 +314,4 @@ java.lang.Error: no-symbol does not have owner
 	at java.lang.Thread.run(Thread.java:680)
 [error] {file:/Users/pgiarrusso/Documents/Research/Sorgenti/linqonsteroids/}default-1aacbc/compile:compile: java.lang.Error: no-symbol does not have owner
 [error] Total time: 2 s, completed Feb 23, 2012 8:38:33 AM
-{code}
+```

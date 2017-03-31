@@ -1,5 +1,5 @@
-Both {{RuleTransformer}} and {{RewriteRule}} depend on the basic engine of {{def transform(ns: Seq[Node]): Seq[Node]}}. Perhaps a better question is why have a {{RuleTransformer}} at all. The only thing it does different is not recursing on descendants inside {{def transform(n: Node): Seq[Node]}}, which makes it possible to make an inheritance chain from {{RuleTransformer}}, and know it will stop at the identity implementation on {{RuleTransformer}}.
+Both `RuleTransformer` and `RewriteRule` depend on the basic engine of `def transform(ns: Seq[Node]): Seq[Node]`. Perhaps a better question is why have a `RuleTransformer` at all. The only thing it does different is not recursing on descendants inside `def transform(n: Node): Seq[Node]`, which makes it possible to make an inheritance chain from `RuleTransformer`, and know it will stop at the identity implementation on `RuleTransformer`.
 
-Since {{RuleTransformer}} does use the recursing characteristic of {{BasicTransformer}}, the safety net provided by {{RuleTransformer}} provides a certain guarantee of avoiding exponential explosions.
+Since `RuleTransformer` does use the recursing characteristic of `BasicTransformer`, the safety net provided by `RuleTransformer` provides a certain guarantee of avoiding exponential explosions.
 
 So, overall, I don't think breaking the inheritance here would make things easier instead of harder.

@@ -1,6 +1,5 @@
 There are at least two ways to work around this problem. One way is to disable the fork-join pool (falling back to a thread pool that does not use `Unsafe` intrinsics) by setting the `actors.enableForkJoin` JVM property: `-Dactors.enableForkJoin=false`. Another way is to re-configure the global actors scheduler:
-
-{code}
+```scala
 import scala.actors.Scheduler
 import scala.actors.scheduler.ResizableThreadPoolScheduler
 
@@ -9,11 +8,10 @@ Scheduler.impl = {
   s.start()
   s
 }
-{code}
+```
 
 Schedulers can also be overridden on a per-actor basis:
-
-{code}
+```scala
 import scala.actors.scheduler.ResizableThreadPoolScheduler
 
 object MyConfig {
@@ -27,4 +25,4 @@ object MyConfig {
 trait MyActor {
   override def scheduler = MyConfig.scheduler
 }
-{code}
+```

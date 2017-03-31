@@ -1,11 +1,11 @@
 Ok:
-{code}
+```scala
 val s = Seq(1)
 val f = (s /: Seq(99))((s,c) => s.patch(0,Seq(c),1))
-{code}
+```
 
 Won't compile:
-{code}
+```scala
 val s = Seq(1).view
 val f = (s /: Seq(99))((s,c) => s.patch(0,Seq(c),1))
 // error: type mismatch;
@@ -13,11 +13,11 @@ val f = (s /: Seq(99))((s,c) => s.patch(0,Seq(c),1))
 // required: java.lang.Object with scala.collection.SeqView[Int,Seq[Int]]
 //       val f = (s /: Seq(99))((s,c) => s.patch(0,Seq(c),1))
 //                                              ^
-{code}
+```
 
 Will compile, but weird results?
-{code}
+```scala
 val s = Seq(1).view.asInstanceOf[Seq[Int]]
 val f = (s /: Seq(99))((s,c) => s.patch(0,Seq(c),1))
 f.length == f.toList.length  //  false???  1 == 2
-{code}
+```

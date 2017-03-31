@@ -1,14 +1,12 @@
 I am getting this error if I use a code like this (concatente the contents of a list in a comma separated string) inside a method in my class:
-
-{code}
+```scala
 val classNames = Conversions.convertList(names).reduceLeft[String] { (acc, n) =>
         acc + ", " + n
         }	
-{code}
+```
 
 Apparently this makes the compiler generate an incompatible inner class:
-
-{code}
+```scala
 java.lang.IncompatibleClassChangeError: com.googlecode.solder.dwr.WeldContainer and com.googlecode.solder.dwr.WeldContainer$$$$anonfun$$getClasses$$1 disagree on InnerClasses attribute
 	at java.lang.Class.getDeclaringClass(Native Method)
 	at java.lang.Class.getEnclosingClass(Class.java:1085)
@@ -44,6 +42,6 @@ java.lang.IncompatibleClassChangeError: com.googlecode.solder.dwr.WeldContainer 
 	at java.lang.reflect.Method.invoke(Method.java:597)
 	at org.apache.catalina.startup.Bootstrap.start(Bootstrap.java:288)
 	at org.apache.catalina.startup.Bootstrap.main(Bootstrap.java:413)
-{code}
+```
 
 I guess this means Weld (JSR-299) and Scala are not compatible. Please fix this!

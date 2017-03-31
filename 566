@@ -1,6 +1,5 @@
 And again some additional info. I have found this method in scala.tools.eclipse.BuildCompiler:
-
-{code}
+```scala
   // use workspace specified encoding for each file. 
   override def getSourceFile(f: AbstractFile): SourceFile = {
     // new BatchSourceFile(f, reader.read(f))
@@ -14,7 +13,6 @@ And again some additional info. I have found this method in scala.tools.eclipse.
     val reader = readers(file.getCharset)
     new BatchSourceFile(f, reader.read(f))
   }
+```
 
-{code}
-
-Let's look at first line, commenting something interesting for the bug :-) OK, I have tried to insert 'println's for debugging - indeed *all* files are read with workspace (rather project) encoding ('case f : PlainFile' takes place).
+Let's look at first line, commenting something interesting for the bug :-) OK, I have tried to insert 'println's for debugging - indeed **all** files are read with workspace (rather project) encoding ('case f : PlainFile' takes place).

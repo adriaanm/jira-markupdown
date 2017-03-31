@@ -1,23 +1,20 @@
 Can't reproduce. Both with resetLocalAttrs and with resetAllAttrs I'm getting the same error:
-
-{code}
+```scala
 [error] /Users/xeno_by/Projects/specs2/matcher-extra/src/test/scala/org/specs2/matcher/MTest.scala:9: type mismatch;
 [error]  found   : Unit
 [error]  required: CatMatcher
 [error]     matchA[Cat].name("Kitty")
 [error]                     ^
-{code}
+```
 
 Actually, I have a guess about what might be the problem here. How about changing
-
-{code}
+```scala
 flatMap(_.scalaArgs.collectFirst { case Function(ValDef(_, a, _, _) :: Nil, b) => a -> c.resetLocalAttrs(b) }).
-{code}
+```
 
 to 
-
-{code}
+```scala
 flatMap(_.scalaArgs.map(arg => c.resetLocalAttrs(arg)).collectFirst { case Function(ValDef(_, a, _, _) :: Nil, b) => a -> b }).
-{code}
+```
 
 Would that help?

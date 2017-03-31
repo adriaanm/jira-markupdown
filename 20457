@@ -1,8 +1,7 @@
-Accessing a transient lazy val from a trait after an object was de-serialized causes a {{NullPointerException}} _if_ the lazy val was accessed _before_ the object was serialized.
+Accessing a transient lazy val from a trait after an object was de-serialized causes a `NullPointerException` *if* the lazy val was accessed *before* the object was serialized.
 
 One can reproduce this problem with the following classes:
-
-{noformat}
+```
 class NotSerializable {
   def foo = "bar"
 }
@@ -15,7 +14,7 @@ trait Base extends Serializable {
 class BaseImpl extends Base {
   def check: Boolean = Try(notSerializable.foo).isSuccess
 }
-{noformat}
+```
 
-If you create an instance of {{BaseImpl}}, serialize and de-serialize this instance calling {{check}} works without problems.
-If you create an instance, call {{check}}, serialize and de-serialize this instance calling check causes a {{NullPointerException}}.
+If you create an instance of `BaseImpl`, serialize and de-serialize this instance calling `check` works without problems.
+If you create an instance, call `check`, serialize and de-serialize this instance calling check causes a `NullPointerException`.

@@ -1,6 +1,5 @@
-Considering {{test/files/specialized/spec-patmatch.scala}} / https://github.com/scala/scala/commit/b94c6e0
-
-{code}
+Considering `test/files/specialized/spec-patmatch.scala` / https://github.com/scala/scala/commit/b94c6e0
+```scala
 class Foo[@specialized A] {
   def test(x: A) = println(x match {
    case _: Boolean => "bool"
@@ -54,11 +53,10 @@ object Test {
   }
 
 }
+```
 
-{code}
-
-{{-Xoldpatmat}}
-{code}
+`-Xoldpatmat`
+```scala
 [[syntax trees at end of                specialize]] // spec-patmatch.scala
 package <empty> {
   class Foo[@specialized A >: Nothing <: Any] extends Object {
@@ -259,11 +257,10 @@ package <empty> {
     })
   }
 }
+```
 
-{code}
-
-With virtpatmat (in which {{Match}} nodes are eliminated before the specialize phase)
-{code}
+With virtpatmat (in which `Match` nodes are eliminated before the specialize phase)
+```scala
 [[syntax trees at end of                specialize]] // spec-patmatch.scala
 package <empty> {
   class Foo[@specialized A >: Nothing <: Any] extends Object {
@@ -1512,10 +1509,8 @@ package <empty> {
     })
   }
 }
+```
 
+I'm going to ask Iulian what the motivation was for getting `Duplicators` to strip out the impossible cases; was it performance, avoidance of errors from the subsequent match translation, or both?
 
-{code}
-
-I'm going to ask Iulian what the motivation was for getting {{Duplicators}} to strip out the impossible cases; was it performance, avoidance of errors from the subsequent match translation, or both?
-
-The simplest resolution here will be to remove the now-redundant code from {{Duplicators}} and live with the extra bytecode.
+The simplest resolution here will be to remove the now-redundant code from `Duplicators` and live with the extra bytecode.

@@ -3,14 +3,14 @@ Had lots of problems using the FSC inside an IDE.
 Eventually I tried running FSC from the command line and it just hung without any console output.
 
 I then ran it again with "-verbose" and I noticed this...
-{code}
+```scala
 Starting CompileServer on port 63048
 [Port number: 63048]
 java.net.SocketException: Software caused connection abort: connect
 [Connecting to compilation daemon at port 63048 failed; re-trying...]
 [Port number: 63048]
 ..... keeps looping forever and ever and ever  ...
-{code}
+```
 This error occurs on a corporate laptop AND this only happens when I'm not connected to the corporate network. Eg working at home offline it doesn't work, but in the office is fine.
 
 I've only ever seen the exception 'Software caused connection abort' when local firewall have interfered with the comms.
@@ -31,30 +31,29 @@ So the server still starts on 0.0.0.0 but the client by default now connects to 
 In Socket.scala of package scala.tools.nsc
 
 Change ...
-
-{code}
+```scala
 def localhost(port: Int) = apply(InetAddress.getLocalHost(), port)
-{code}
+```
 to
-{code}
+```scala
 def localhost(port: Int) = apply(InetAddress.getByAddress(Array[Byte](127,0,0,1)), port)
-{code}
+```
 This causes the compile client to connect to the private "localhost" interface rather than the public interface of the machine.
 
 Perhaps confusingly the call ..
-{code}
+```scala
 InetAddress.getLocalHost()
-{code}
+```
 returns the public interface of the "local machine" rather than the private "localhost" interface.
 
 FYI In my code I use
-{code}
+```scala
 InetAddress.getByAddress(bytes 127.0.0.1)
-{code}
+```
 rather than ..
-{code}
+```scala
 InetAddress.getByName("localhost")
-{code}
+```
 because 127.0.0.1 is supported by all properly configured IP stacks but the name "localhost" relies on host name resolution being setup (eg hosts file/dns/nis etc).
 
 You can see the tweak here ..

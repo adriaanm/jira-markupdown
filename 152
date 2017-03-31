@@ -1,15 +1,13 @@
 How about {{{SeqFunction0[T] <: Seq[T]}}}, that stores a {{{Seq[Function0[T]]}}} internally but calls {{apply()}} whenever an element is applied for? Some code, to make it clearer:
-
-{code}
+```scala
 class SeqFunction0[T](xs: Seq[T]) extends Seq[T] with EverythingThatItEntails[T, SeqFunction0[T]] {
   override def apply(n: Int): T = xs(n).apply()
   // any other required overrides
 }
-{code}
+```
 
-I think that most closely mirrors the behavior _I_ would expect:
-
-{code}
+I think that most closely mirrors the behavior *I* would expect:
+```scala
   def f(xs: => Int*): Int = {
     for (i <- xs.indices) {
       val current = xs(i) // so it won't evaluate twice below
@@ -19,6 +17,6 @@ I think that most closely mirrors the behavior _I_ would expect:
   }
 
   println(f(0, {println("Printed once!"); 2}, 4, 1, ???)) // prints "Printed once!" then "1"
-{code}
+```
 
 Note: the braces are playing hell with formatting in the first line. I had to opt between no formatting and extraneous { and }, and I opted for the latter.

@@ -1,18 +1,16 @@
 We've got an imported symbol in the inner scope (s.util) , and a defined symbol (bob.util) in the outer scope. What are the binding precedences of each of these?
-
-{quote}
+```
 1. Definitions and declarations that are local, inherited, or made available by a package clause in the same compilation unit where the definition occurs have highest precedence.
 2. Explicit imports have next highest precedence.
 3. Wildcard imports have next highest precedence.
 4. Definitions made available by a package clause not in the compilation unit where the definition occurs have lowest precedence.
-{quote}
+```
 
 Intuition suggests that `bob.util` should have precedence #1, as syntactically it is defined in the same source file as package bob. But because packages are open, it could also be defined an any number of other source files. As such, packages are considered to be source-file-less drifters, and that shunts the precedence of the `defSym` down to 4.
 
 In this case, shadowing is as specced:
-
-{quote}
+```
 A binding in some inner scope shadows bindings of lower precedence in the same scope as well as bindings of the same or lower precedence in outer scopes.
-{quote}
+```
 
-See also SI-2458 / https://github.com/retronym/scala/tree/ticket/2458, in which I have a fix for the arbiter of this rule. I'll add a task to that ticket to add a clarification to the spec along these lines.
+See also scala/bug#2458 / https://github.com/retronym/scala/tree/ticket/2458, in which I have a fix for the arbiter of this rule. I'll add a task to that ticket to add a clarification to the spec along these lines.

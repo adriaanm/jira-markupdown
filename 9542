@@ -1,8 +1,7 @@
-Was this crash only happening just after REPL startup? If so, this is a duplicate of SI-7418, which has just been fixed.
+Was this crash only happening just after REPL startup? If so, this is a duplicate of scala/bug#7418, which has just been fixed.
 
 With Scala 2.10.1, I can't reproduce otherwise:
-
-{noformat}
+```
 scala> Array.fill
 
 def fill[T](n1: Int, n2: Int)(elem: => T)(implicit evidence$10: reflect.ClassTag[T]): Array[Array[T]]
@@ -10,6 +9,6 @@ def fill[T](n1: Int, n2: Int, n3: Int)(elem: => T)(implicit evidence$11: reflect
 def fill[T](n1: Int, n2: Int, n3: Int, n4: Int)(elem: => T)(implicit evidence$12: reflect.ClassTag[T]): Array[Array[Array[Array[T]]]]
 def fill[T](n1: Int, n2: Int, n3: Int, n4: Int, n5: Int)(elem: => T)(implicit evidence$13: reflect.ClassTag[T]): Array[Array[Array[Array[Array[T]]]]]
 def fill[T](n: Int)(elem: => T)(implicit evidence$9: reflect.ClassTag[T]): Array[T]
-{noformat}
+```
 
-If can can reproduce this in a REPL session *after* the first line has been evaluated, please reopen this ticket. It is best if you can run post a REPL transcript under {{scala -verbose}}; that will include a stack trace in the output.
+If can can reproduce this in a REPL session **after** the first line has been evaluated, please reopen this ticket. It is best if you can run post a REPL transcript under `scala -verbose`; that will include a stack trace in the output.

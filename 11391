@@ -1,10 +1,9 @@
 The tension in the compiler is that the Mixin phase of the compiler, which add "trait forwarder" methods for mixed-in methods, does not add a bridge method if the erased signature of the forwarder differs (ie: is more specific than) the interface method that is implements. This is because, for historical reasons, the Mixin phase comes after the Erasure phase (which adds bridges.)
 
-In my patch for SI-3452, I originally tried to add these bridge methods. However, this caused certain programs to fail compilation, if the extra bridge method clashed with an existing method the user defined. So I backed out of that path, and instead opted to ensure that the forwarder would not differ in erased signature from the interface method. This is what now leads to the weaker return type you see from Java clients.
+In my patch for scala/bug#3452, I originally tried to add these bridge methods. However, this caused certain programs to fail compilation, if the extra bridge method clashed with an existing method the user defined. So I backed out of that path, and instead opted to ensure that the forwarder would not differ in erased signature from the interface method. This is what now leads to the weaker return type you see from Java clients.
 
 A workaround would be to introduce an intermediate abstract class as follows:
-
-{code}
+```scala
 import java.util.Comparator
  
 trait RDDLike[T] {
@@ -16,4 +15,4 @@ trait RDDLike[T] {
 abstract class AbstractRDD[T] extends RDDLike[T]
  
 class DoubleRDD extends AbstractRDD[java.lang.Double] { }
-{code}
+```

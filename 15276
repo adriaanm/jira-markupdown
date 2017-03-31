@@ -1,8 +1,7 @@
 The error goes away if you remove @specialized, or if you remove the supertype, or if you make findOffset protected.
 
 The file:
-
-{code}
+```scala
 class SparseArray[@specialized T:ClassManifest] extends collection.mutable.Map[Int,T] with collection.mutable.MapLike[Int,T,SparseArray[T]] {
   override def get(x: Int) = {
     val ind = findOffset(x)
@@ -25,14 +24,11 @@ class SparseArray[@specialized T:ClassManifest] extends collection.mutable.Map[I
   def +=(kv: (Int,T)) = error("ignore")
   override final def iterator = error("ignore")
 }
-
-
-{code}
+```
 
 
 the stack trace:
-
-{code}
+```scala
 scala.tools.nsc.symtab.Types$$TypeError: method findOffset cannot be accessed in SparseArray$$mcV$$sp
         at scala.tools.nsc.typechecker.Contexts$$Context.error(Contexts.scala:274)
         at scala.tools.nsc.typechecker.Infer$$Inferencer.error(Infer.scala:214)
@@ -131,4 +127,4 @@ scala.tools.nsc.symtab.Types$$TypeError: method findOffset cannot be accessed in
         at scala.tools.nsc.Main$$.process(Main.scala:109)
         at scala.tools.nsc.Main$$.main(Main.scala:123)
         at scala.tools.nsc.Main.main(Main.scala)
-{code}
+```

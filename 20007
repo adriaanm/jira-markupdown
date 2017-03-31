@@ -2,9 +2,8 @@ As a fallout from https://github.com/scala/scala/pull/4974 I ran into the follow
 
 According to http://www.scala-lang.org/files/archive/spec/2.11/08-pattern-matching.html#type-patterns prefix paths in type patterns need to be checked (i.e. they lead to outer ref checks). This is perfectly fine for prefixes that start at the top level scope, where it is impossible to have a static subtype of a non-static supertype.
 
-By admitting class definitions inside of methods, however, one can construct a case where just that happens: A static (prefix-less, outer refs ignored) subtype of a non-static (with checked prefix) supertype, such that for types {{C <: B}} a value can match a type pattern {{\_: C}} but not {{\_: B}}:
-
-{code}
+By admitting class definitions inside of methods, however, one can construct a case where just that happens: A static (prefix-less, outer refs ignored) subtype of a non-static (with checked prefix) supertype, such that for types `C <: B` a value can match a type pattern `\_: C` but not `\_: B`:
+```scala
 object Outer4 extends App {
   var c: AnyRef = null
   class A {
@@ -26,11 +25,10 @@ object Outer4 extends App {
   (new A).f
   (new A).f
 }
-{code}
+```
 
 In accordance with the spec, and under both outer ref check implementations (before and after #4974), this prints:
-
-{code}
+```scala
 C
 not B
-{code}
+```

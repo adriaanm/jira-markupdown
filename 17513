@@ -16,7 +16,7 @@ NOTE: This looks asymmetrical. Is that intended? If I call 'that isCoDefinedWith
 
 - when the class is entered, it goes through updatePosFlags (https://github.com/scala/scala/blob/master/src/compiler/scala/tools/nsc/typechecker/Namers.scala#L135)
 The code looks like this:
-{code}
+```scala
         companionSymbolOf(sym, context) andAlso { companion =>
           val assignNoType = companion.rawInfo match {
             case _: SymLoader => true
@@ -26,6 +26,6 @@ The code looks like this:
           if (assignNoType)
             companion setInfo NoType
         }
-{code}
+```
 
-This code makes companions that *were* companions (the call to `companionSymbolOf` just returned my companion) *not be companions anymore*. This is what I'm witnessing in the IDE.
+This code makes companions that **were** companions (the call to `companionSymbolOf` just returned my companion) **not be companions anymore**. This is what I'm witnessing in the IDE.

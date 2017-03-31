@@ -1,5 +1,5 @@
 It's because MODULE and METHOD aren't mutually exclusive.  The compiler crashes in quick because you've broken it by enforcing a false belief.  Inner objects wind up with both flags.
-{code}
+```scala
 % cat a.scala 
 class A { object B }
 % scalac3 -Xprint:all -Ydebug ./a.scala |& grep method |grep module
@@ -10,4 +10,4 @@ class A { object B }
     <method> <module> <stable> <latemethod> def B(): A#B.type = {
     <method> <module> <stable> <latemethod> def B(): A$B.type = {
     <method> <module> <stable> <latemethod> def B(): A$B.type = if (A.this.B$module.eq(null))
-{code}
+```

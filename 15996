@@ -7,16 +7,16 @@ life cycle behavior.
 It is always a problem of enforcing a on-creation behaviour
 on a class hierarchy. The base class could have code that
 gets executed in its constructor:
-{code}
+```scala
 abstract class Base {
   // ...
   Framework.register(this)
 }
-{code}
+```
 but the complete object has not yet been constructed.
 The Base class could wrap the code in a method which is called
 in the constructor of a derived class
-{code}
+```scala
 abstract class Base {
   // ...
   def onCreation: Unit=
@@ -26,12 +26,12 @@ class Derived extends Base {
   // ...
   onCreation
 }
-{code}
+```
 But, the Derived class might be further extended.
 
 The proposed solution is to have a OnCreate trait similar to the
 DelayedInit trait:
-{code}
+```scala
 trait OnCreate {
     def onCreate: Unit
 }
@@ -47,7 +47,7 @@ class Derived extends Base {
 
 // the onCreate method is called after the Derived class is constructed
 val d = new Derived
-{code}
+```
 
 We all know when object construction starts but having code that
 executes after an object is created, without being explicit about it,
@@ -56,7 +56,7 @@ is not possible.
 It is the inclusion of the OnCreate trait that causes the compiler to
 generate code that calls the onCreate method after construction
 is completed.
-{code}
+```scala
 // compiler generated code
 val d = { val obj = new Derived; obj.onCreate; obj }
-{code}
+```

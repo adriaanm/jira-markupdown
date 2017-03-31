@@ -1,6 +1,5 @@
 The exception happens indeed at a cast. It looks like a Docdef makes its way into namer.
-
-{code}
+```scala
       } else if (sym != null && sym.isClass && sym.isImplicit) {
         val owningInfo = sym.owner.info
         val existingDerivedSym = owningInfo.decl(sym.name.toTermName).filter(sym => sym.isSynthetic && sym.isMethod)
@@ -8,10 +7,8 @@ The exception happens indeed at a cast. It looks like a Docdef makes its way int
         enterImplicitWrapper(tree.asInstanceOf[ClassDef])
       }
       super.enterExistingSym(sym, tree)
-{code}
-
-
-{code}
+```
+```scala
 java.lang.ClassCastException: scala.tools.nsc.ast.Trees$DocDef cannot be cast to scala.reflect.internal.Trees$ClassDef
 	at scala.tools.nsc.interactive.InteractiveAnalyzer$InteractiveNamer$class.enterExistingSym(Global.scala:81)
 	at scala.tools.nsc.interactive.InteractiveAnalyzer$$anon$7.enterExistingSym(Global.scala:40)
@@ -76,4 +73,4 @@ java.lang.ClassCastException: scala.tools.nsc.ast.Trees$DocDef cannot be cast to
 	at scala.collection.TraversableLike$WithFilter.foreach(TraversableLike.scala:777)
 	at scala.tools.nsc.interactive.Global.backgroundCompile(Global.scala:575)
 	at scala.tools.nsc.interactive.PresentationCompilerThread.run(PresentationCompilerThread.scala:25)
-{code}
+```

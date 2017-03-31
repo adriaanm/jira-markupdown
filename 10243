@@ -1,17 +1,17 @@
-This bug report, and most of the conversation, seems to surround the question of whether or not {{op}} is executed exactly once, and only if inserted. But this is not the primary issue with the current implementation in my opinion. When I say that {{getOrElseUpdate}} is not atomic, I mean that it may return a value that is not, and never was, in the map. If I have multiple threads all calling {{getOrElseUpdate}} (and no one calling any other update operation) then only one thread should successfully update the map and all threads should get the value that the first inserted. This is not the case with the current implementation, nor the implementation proposed by Aleksandar above. An implementation that achieves this is quite trivial:
-{code:scala}
+This bug report, and most of the conversation, seems to surround the question of whether or not `op` is executed exactly once, and only if inserted. But this is not the primary issue with the current implementation in my opinion. When I say that `getOrElseUpdate` is not atomic, I mean that it may return a value that is not, and never was, in the map. If I have multiple threads all calling `getOrElseUpdate` (and no one calling any other update operation) then only one thread should successfully update the map and all threads should get the value that the first inserted. This is not the case with the current implementation, nor the implementation proposed by Aleksandar above. An implementation that achieves this is quite trivial:
+```scala
   override def getOrElseUpdate(key: A, op: => B): B = get(key) match {
     case Some(v) => v
     case None =>
       val v = op
       putIfAbsent(key, v).getOrElse(v)
   }
-{code}
-This should be the default implementation in {{scala.collection.concurrent.Map}} (and any pull request that does not include something equivalent is woefully incomplete). Of course, implementations like {{TrieMap}} should feel free to override the default implementation if they can achieve the same effect more efficiently or if they wish to add execute-only-if-inserted semantics.
+```
+This should be the default implementation in `scala.collection.concurrent.Map` (and any pull request that does not include something equivalent is woefully incomplete). Of course, implementations like `TrieMap` should feel free to override the default implementation if they can achieve the same effect more efficiently or if they wish to add execute-only-if-inserted semantics.
 
-_Aside_:
-There is no need to add a {{computeIfAbsent}} function. This is something I would argue against anyway. I'd rather see a
-{code}
+*Aside*:
+There is no need to add a `computeIfAbsent` function. This is something I would argue against anyway. I'd rather see a
+```scala
 def adjust(key: A, op: Option[B] => Option[B]): Unit
-{code}
-function added to the {{mutable.Map}} interface, with the additional restriction in {{concurrent.Map}} that the whole operation is atomic. Note that this is the equivalent function to Java 8's {{compute}} function with {{null}} being replaced by {{Option}}. 
+```
+function added to the `mutable.Map` interface, with the additional restriction in `concurrent.Map` that the whole operation is atomic. Note that this is the equivalent function to Java 8's `compute` function with `null` being replaced by `Option`. 

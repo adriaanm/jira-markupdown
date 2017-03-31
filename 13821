@@ -1,6 +1,5 @@
 The following Java source compiles successfully as expected with javac,
-
-{code}
+```scala
 // Outer.java
 package test;
 
@@ -15,22 +14,20 @@ public class Outer {
     System.out.println(Red.toString());
   }
 }
-{code}
+```
 
 However when it is compiled by scalac together with the following Scala source file,
-
-{code}
+```scala
 // Use.scala
 package test
 
 object Use {
   Outer.foo
 }
-{code}
+```
 
 scalac produces the following incorrect error report,
-
-{code}
+```scala
 src/test/Outer.java:3: error: illegal cyclic reference involving object Outer
 import static test.Outer.Inner.*;
        ^
@@ -38,4 +35,4 @@ src/test/Use.scala:4: error: value foo is not a member of object test.Outer
   Outer.foo
         ^
 two errors found
-{code}
+```

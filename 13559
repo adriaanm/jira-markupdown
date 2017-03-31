@@ -1,8 +1,7 @@
 I am having a strange compiler issue.   I have been able to simplify the problem to the following:
 
 I have two file.  In first file I have:
-
-{code}
+```scala
 object foobarObj {
 abstract class foo 
 case class foo1(a: int) extends foo
@@ -14,11 +13,10 @@ abstract class foobar
 case class foobar1(b: bar) extends foobar
    
 }
-{code}
+```
 
 In the 2nd file I have:
-
-{code}
+```scala
 import foobarObj._;
 
 object test {         
@@ -27,17 +25,15 @@ object test {
       def returnFooBarFunction2: foobar = foobar1(bar1(ReturnFooFunction()))   // Compiler error
 
  }
-{code}
+```
 
 
 If I do a clean and force the compiler to compile both files (using maven) It all compiles ok.  But if I only compile the 2nd file I get the following error:
-
-{code}
+```scala
 test.scala:7: error: type mismatch;
 [WARNING]  found   : foobarObj.foo(in object foobarObj)
 [WARNING]  required: foobarObj.(some other)foo(in object foobarObj)
 [WARNING]       def returnFooBarFunction2: foobar = foobar1(bar1(ReturnFooFunction()))   // Compiler error
 [WARNING]                                                            ^
 [WARNING] one error found
-{code}
-
+```

@@ -1,6 +1,5 @@
 isModule always seems to return false:
-
-{code}
+```scala
 scala> import reflect.runtime.universe._
 import reflect.runtime.universe._
 
@@ -21,11 +20,10 @@ res3: Boolean = false
 
 scala> res0.erasure.typeSymbol.isModule
 res4: Boolean = false
-{code}
+```
 
 It only seems to be possible to get it to return true by reaching into the innards of the compiler:
-
-{code}
+```scala
 scala> res1.getClass
 res3: Class[_ <: reflect.runtime.universe.Symbol] = class scala.reflect.internal.Symbols$ModuleClassSymbol
 
@@ -36,4 +34,4 @@ scala> res1.isModuleClass
 
 scala> res1.asInstanceOf[scala.tools.nsc.Global#Symbol].isModuleClass
 res5: Boolean = true
-{code}
+```

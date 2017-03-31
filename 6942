@@ -1,10 +1,9 @@
-Unfortunately AnyRef specialization had to be removed from {{Functions}} in https://github.com/scala/scala/commit/cc3badae17e. Discussion of the problems it caused is here: https://groups.google.com/d/msg/scala-internals/5P5TS9ZWe_w/39S8q1WJYF8J.
+Unfortunately AnyRef specialization had to be removed from `Functions` in https://github.com/scala/scala/commit/cc3badae17e. Discussion of the problems it caused is here: https://groups.google.com/d/msg/scala-internals/5P5TS9ZWe_w/39S8q1WJYF8J.
 
 We don't have plans to revisit this in forseeable future.
 
 What we do have, however, is experimental support for SAMs in Scala 2.11.
-
-{code}
+```scala
 scala> trait IntFunction[A] { def apply(i: A): Int }
 defined trait IntFunction
 
@@ -13,6 +12,6 @@ sum: [T](as: Traversable[T])(f: IntFunction[T])Int
 
 scala> sum(List("a", "bc"))(_.length)
 res2: Int = 3
-{code}
+```
 
 No boxing is needed here.

@@ -1,9 +1,7 @@
-Right after {{flatten}} there are two field declarations with the same name and type ({{val out$1: Int = _;}} ), one each in the following classes:
-- {{class Test$C$1 extends Object with Test$Trait$1}}
-- {{abstract trait Test$Trait$1$class extends Object with Test$Trait$1}}
-
-
-{noformat}
+Right after `flatten` there are two field declarations with the same name and type ({{val out$1: Int = _;}} ), one each in the following classes:
+- `class Test$C$1 extends Object with Test$Trait$1`
+- `abstract trait Test$Trait$1$class extends Object with Test$Trait$1`
+```
   class Test$C$1 extends Object with Test$Trait$1 {
     def copy(): Unit = {
       new Test$C$1(Test$C$1.this.out$1);
@@ -17,9 +15,8 @@ Right after {{flatten}} there are two field declarations with the same name and 
       ()
     }
   };
-{noformat}
-
-{noformat}
+```
+```
   abstract trait Test$Trait$1$class extends Object with Test$Trait$1 {
     def foo(): Unit = {
       Test$Trait$1$class.this.out$1;
@@ -31,11 +28,10 @@ Right after {{flatten}} there are two field declarations with the same name and 
       ()
     }
   }
-{noformat}
+```
 
-The Mixin phase lumps both fields in class {{Test$C$1}}
-
-{noformat}
+The Mixin phase lumps both fields in class `Test$C$1`
+```
   class Test$C$1 extends Object with Test$Trait$1 {
 
     <synthetic> <stable> <accessor> <paramaccessor> def out$1(): Int = Test$C$1.this.out$1;  /* <---------------- (1 of 2)  */
@@ -57,11 +53,10 @@ The Mixin phase lumps both fields in class {{Test$C$1}}
       ()
     }
   }
-{noformat}
+```
 
-That's why {{javap -private Test\$C\$1}} shows:
-
-{noformat}
+That's why `javap -private Test\$C\$1` shows:
+```
 public class Test$C$1 extends java.lang.Object implements Test$Trait$1{
     private final int out$1;
     private final int out$1;
@@ -71,4 +66,4 @@ public class Test$C$1 extends java.lang.Object implements Test$Trait$1{
     public void copy();
     public Test$C$1(int);
 }
-{noformat}
+```

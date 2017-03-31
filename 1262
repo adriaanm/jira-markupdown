@@ -1,6 +1,5 @@
 The following is enlightening:
-
-{code}
+```scala
 object Foo{
   final val Thing = '3';
 }
@@ -8,11 +7,10 @@ object Foo{
 object Bar{
   final val Thing : Char = '3'
 }
-{code}
+```
 
 Observe what happens:
-
-{code}
+```scala
 david@mel:~$$ fsc -Xprint:explicitouter switch.scala 
 [[syntax trees at end of explicitouter]]// Scala source: switch.scala
 package <empty> {
@@ -33,7 +31,7 @@ package <empty> {
     final <stable> <accessor> def Thing(): Char = Bar.this.Thing
   }
 }
-{code}
+```
 
 Adding the type annotation widens the type of the private version from Char('3') to Char. This is almost certainly what's causing these things to fail to be inlined as constants and thus what's causing the switch statement to not get generated.
 

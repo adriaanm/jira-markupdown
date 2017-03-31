@@ -1,11 +1,9 @@
 The two lines below appears to be equivalent, however the first one succeeds while the second one returns an error:
-
-{code:java}
+```java
 scala> Seq((1,1)).asInstanceOf[Seq[(String,String)]].map { x => (x._1,x._2) }
 res0: Seq[(String, String)] = List((1,1))
-{code}
-
-{code:java}
+```
+```java
 scala> Seq((1,1)).asInstanceOf[Seq[(String,String)]].map { case (x,y) => (x,y) }
 java.lang.ClassCastException: java.lang.Integer cannot be cast to java.lang.String
   at $anonfun$1.apply(<console>:11)
@@ -16,6 +14,6 @@ java.lang.ClassCastException: java.lang.Integer cannot be cast to java.lang.Stri
   at scala.collection.TraversableLike$class.map(TraversableLike.scala:245)
   at scala.collection.immutable.List.map(List.scala:285)
   ... 33 elided
-{code}
+```
 
 This is obviously wrong to cast a Seq[(Int, Int)] to Seq[(String,String)] but only the second line returns an error which seems inconsistent.

@@ -1,6 +1,5 @@
 There are some conditions where parameter captured by secondary constructors generate ambiguous bytecode. Such as in the following example where the default constructor receives an Int parameter and the secondary captures an Int.
-
-{code:scala}
+```scala
 object Bar extends App {
   val 
   def foo(x: Int) = {		
@@ -11,11 +10,10 @@ object Bar extends App {
   }
   println(foo(6))
 }
-{code}
+```
 
 Will generate the following bytecode where the two constructors have the same signature.
-
-{code:bytecode}
+```bytecode
 public class Bar$Foo$1 {
   public Bar$Foo$1(int);
     descriptor: (I)V
@@ -32,11 +30,10 @@ public class Bar$Foo$1 {
        2: invokespecial #21                 // Method "<init>":(I)V
        5: return
 }
-{code}
+```
 
 The problem does not show itself at compilation time, it only fails at runtime with:
-
-{code}
+```scala
 [info] Running Bar 
 [error] (run-main-b) java.lang.ClassFormatError: Duplicate method name&signature in class file Bar$Foo$1
 java.lang.ClassFormatError: Duplicate method name&signature in class file Bar$Foo$1
@@ -73,6 +70,6 @@ java.lang.RuntimeException: Nonzero exit code: 1
 [trace] Stack trace suppressed: run last compile:run for the full output.
 [error] (compile:run) Nonzero exit code: 1
 [error] Total time: 1 s, completed Oct 26, 2015 4:42:21 PM
-{code}
+```
 
 The compiler should handle these cases in a different way or should disallow them by failing the compilation.

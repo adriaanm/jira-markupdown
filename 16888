@@ -1,6 +1,5 @@
 In the following code, the 2nd call to f at the end fails to find the implicit value of type GetResult[(String, String)]. The version with the explicit getTuple call succeeds.
-
-{code}
+```scala
 object TupledEvidenceTest {
 
   abstract class TupledEvidence[M[_], T] { type T }
@@ -20,10 +19,9 @@ object TupledEvidenceTest {
 
   f[(String,String)]
 }
-{code}
+```
 
 Both calls work if you use the following version of getTuple without the path-dependent return type.
-
-{code}
+```scala
   implicit def getTuple[T](implicit w: TupledEvidence[GetResult, T]): GetResult[T] = sys.error("")
-{code}
+```

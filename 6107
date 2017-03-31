@@ -1,17 +1,17 @@
 BTW try
-{code}
+```scala
 io.Source.stdin.getLines.foreach(println)
-{code}
+```
 It shows first line only after we entered second line.
 
-AFAIK it happens 'cause {{BufferedSource.BufferedLineIterator}} has
-{code}
+AFAIK it happens 'cause `BufferedSource.BufferedLineIterator` has
+```scala
 var nextLine = bufReader.readLine
-{code}
-So when we create {{BufferedLineIterator}} by calling {{getLines}} we also wait for a user input.
+```
+So when we create `BufferedLineIterator` by calling `getLines` we also wait for a user input.
 
 I guess the correct code is something like this:
-{code}
+```scala
 class BufferedLineIterator extends Iterator[String] {
   val bufReader = BufferedSource.this.bufferedReader()
   var nextLine = null
@@ -35,6 +35,6 @@ class BufferedLineIterator extends Iterator[String] {
     result
   }
 }
-{code}
+```
 
 Should I create a new bug for this or these bugs are same?

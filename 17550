@@ -1,18 +1,16 @@
 The following appeared in 2.10.0-RC1 in the Akka build (was not present in 2.10.0-M7):
-
-{code}
+```scala
 [warn] /Users/rkuhn/comp/akka/akka-actor/src/main/scala/akka/actor/dungeon/Children.scala:124: fruitless type test: a value of type akka.actor.dungeon.ChildrenContainer.SuspendReason cannot also be a akka.actor.dungeon.ChildrenContainer.WaitingForChildren
 [warn]     case TerminatingChildrenContainer(_, _, w: WaitingForChildren) ⇒ w
 [warn]                                                ^
-{code}
+```
 
 You can see the full file here: https://github.com/akka/akka/blob/master/akka-actor/src/main/scala/akka/actor/dungeon/Children.scala#L124
 
 And the traits/classes involved are defined here: https://github.com/akka/akka/blob/master/akka-actor/src/main/scala/akka/actor/dungeon/ChildrenContainer.scala#L45
 
 My attempts at minimizing it have not been successful: I found that I can sometimes provoke it with the following two files in Eclipse, seeing the warning from the PC (i.e. not the build compiler), and the warning then goes away after a clean build:
-
-{code}
+```scala
 package tester
 
 object PatMatWarning {
@@ -26,9 +24,8 @@ object PatMatWarning {
   case class Wrap(x: X)
 
 }
-{code}
-
-{code}
+```
+```scala
 package tester
 
 class PatMatWarning2 {
@@ -40,6 +37,6 @@ class PatMatWarning2 {
   }
 
 }
-{code}
+```
 
 Having all within the same file never triggered the warning for me.

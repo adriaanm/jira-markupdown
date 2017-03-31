@@ -1,32 +1,29 @@
 The parameter types of case class apply / unapply are not hygienic
-
-{code}
+```scala
 scala> case class C(x: String); object C { class String }
 <console>:7: error: type mismatch;
  found   : C.String
  required: java.lang.String
        case class C(x: String); object C { class String }
                   ^
-{code}
+```
 
-The parameter types of {{copy}} are hygienic. This is inconsistent, and also the implementation is very complex (custom type completer). Hygiene was required for {{copy}} because it fails more often, namely in this example
-
-{code}
+The parameter types of `copy` are hygienic. This is inconsistent, and also the implementation is very complex (custom type completer). Hygiene was required for `copy` because it fails more often, namely in this example
+```scala
 class A {
   class C
   case class B(x: C) extends A { def copy(x: C = this.x) = ... }
 }
-{code}
+```
 
-Note that B extends A, so the constructor parameter is {{A.this.C}}, while the copy parameter is {{B.this.C}}.
+Note that B extends A, so the constructor parameter is `A.this.C`, while the copy parameter is `B.this.C`.
 
 Type parameters of copy are not hygienic, as shown in this example:
-
-{code}
+```scala
 scala> case class C[T <: String]() { class String }
 <console>:7: error: type arguments [T] do not conform to class C's type parameter bounds [T <: String]
        case class C[T <: String]() { class String }
                   ^
-{code}
+```
 
-Fixing this bug also requires clarifying the [corresponding section in the spec|http://www.scala-lang.org/files/archive/spec/2.11/05-classes-and-objects.html#case-classes]
+Fixing this bug also requires clarifying the [corresponding section in the spec](http://www.scala-lang.org/files/archive/spec/2.11/05-classes-and-objects.html#case-classes)

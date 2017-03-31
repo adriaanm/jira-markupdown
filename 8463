@@ -1,12 +1,11 @@
 As shown above, Scala 2.9 the call to a guards was optimized away in some cases:
-
-{code}
+```scala
 scala> val pf: PartialFunction[Int, Int] = { case x if {println(x); true: Boolean} => x; case x => x}
 pf: PartialFunction[Int,Int] = <function1>
 
 scala> pf.isDefinedAt(0)
 res2: Boolean = true
-{code}
+```
 
 By contrast, 2.10 calls the guard. Is that a regression? A progression? I'm not really sure.
 
@@ -14,4 +13,4 @@ In general, changing behaviour must undertaken with the utmost of care and with 
 
 But that's just my view. This change should and will be vetted by the wider community on the mailing lists.
 
-There are also other considerations, like the tradeoff between the efficiency of avoiding repeated calls to the match + guard, vs the extra allocations in some of the changes I've made (e.g. {{Future#collect}}.)
+There are also other considerations, like the tradeoff between the efficiency of avoiding repeated calls to the match + guard, vs the extra allocations in some of the changes I've made (e.g. `Future#collect`.)

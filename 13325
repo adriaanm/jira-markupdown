@@ -1,8 +1,7 @@
 I noticed when benchmarking some of my alternative collections stuff that Array.filter was about 30% slower than my implementation for a filter which removes about half the array. 
 
 Looking at the code (the following is from BoxedIntArray, but they all seem similar):
-
-{code}
+```scala
  	  final override def filter(p: Any => Boolean): BoxedArray = {
  	    val include = new Array[Boolean](value.length)
  	    var len = 0
@@ -20,11 +19,10 @@ Looking at the code (the following is from BoxedIntArray, but they all seem simi
  	    }
  	    new BoxedIntArray(result)
  	  }
-{code}
+```
 
 This seems to do an unneccessary amount of work. Something like the following might prove to be better (I haven't tested this, but it's fairly close to what my code is doing. It needs further investigation)
-
-{code}
+```scala
  	  final override def filter(p: Any => Boolean): BoxedArray = {
  	    val temp = new Array[Int](value.length)          
  	    var currentWrite = 0
@@ -39,4 +37,4 @@ This seems to do an unneccessary amount of work. Something like the following mi
  	    }
             temp.slice(0, currentWrite).force
  	  }
-{code}
+```

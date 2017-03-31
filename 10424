@@ -1,8 +1,7 @@
 BTW, I've just been battling the reifier for a typesafe support ticket. Removing inferred types in the hope that they can be recovered later doesn't really work all that well.
 
 Here's what I suggested:
-
-{code}
+```scala
 import scala.language.experimental.macros
 import scala.reflect.runtime.{ currentMirror => cm }
 import scala.reflect.runtime.{ universe => ru }
@@ -49,13 +48,12 @@ object FooMacros {
     cu.reify { B.fooTree(lam.splice, fExpr.splice, c.Expr[scala.reflect.runtime.universe.TypeTag[T]](fType).splice ) }
   }
 }
-{code}
+```
 
 So that:
 
 This would be able to reconstitute the inferred type:
-
-{code}
+```scala
 class Trade(val id: String, val symbol: String, val amount: Int)
 
 object FreeVarTest {
@@ -70,7 +68,6 @@ object FreeVarTest {
     a.foo(t => t.id == freevar && (t.amount < am || t.symbol != c))
   }
 }
-
-{code}
+```
 
 The original code didn't use `reifyType`, and the reified tree was just `(t => ...)`, which no possibility to re-infer the parameter type.

@@ -1,20 +1,20 @@
-*Background:*
+**Background:**
 Odersky's book, "+Programming in Scala, Second Edition+", Chapter 2, Footnotes, reads:
-[5] In the interpreter, however, you can _define_ a new val with a name that was already used before....
+[5] In the interpreter, however, you can *define* a new val with a name that was already used before....
 
-*Test Case:*
-{code}
+**Test Case:**
+```scala
 val mySet = Set("Item1","Item2")
 val mySet: Set[String] = mySet + "Item3"
-{code}
+```
 
-*Expected Output:*
-{code}
+**Expected Output:**
+```scala
 mySet: Set[String] = Set(Item1, Item2, Item3)
-{code}
+```
 
-*Actual Output:*
-{code}
+**Actual Output:**
+```scala
 java.lang.NullPointerException
         at $line40.$read$$iw$$iw$.<init>(<console>:8)
         at $line40.$read$$iw$$iw$.<clinit>(<console>)
@@ -49,15 +49,15 @@ java.lang.NullPointerException
         at scala.tools.nsc.MainGenericRunner.process(MainGenericRunner.scala:98)
         at scala.tools.nsc.MainGenericRunner$.main(MainGenericRunner.scala:103)
         at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
-{code}
+```
 
-*Additional notes:*
+**Additional notes:**
 Running the below code:
-{code}
+```scala
 mySet + "Item3"
-{code}
+```
 ...results in the following output:
-{code}
+```scala
 scala.collection.immutable.Set[String] = Set(Item1, Item2, Item3)
-{code}
+```
 It is only when we try to redefine mySet as this output, as described in the book, that we encounter issues.

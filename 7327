@@ -1,8 +1,7 @@
 Hi Adriaan,
 
 Here is the code example that does not compile.
-
-{code}
+```scala
 class D[-A] (v: A) {
   def get[T <: A] = v match {
     case x: T => x
@@ -14,30 +13,27 @@ implicit def neg[A](x: A) = new D[D[A]]( new D[A](x) )
 def size(t: D[D[Int] with D[String]]) = t
 
 size("")
-{code}
-
-{code}
+```
+```scala
 error: type mismatch;
  found   : java.lang.String("")
  required: D[D[Int] with D[String]]
        size("")
             ^
-{code}
+```
 
-Note that if we change the last line {{size("")}} to either of the following, then it does compile.
-
-{code}
+Note that if we change the last line `size("")` to either of the following, then it does compile.
+```scala
 size(5)
 res0: D[D[Int] with D[String]] = D@77d66
 
 size("hi" : D[D[String]])
 res1: D[D[Int] with D[String]] = D@a6bf88
-{code}
+```
 
 So the problem is the implicit is not being found for the 2nd or greater leaf node in the input type, e.g.
-
-{code}
+```scala
 D[D[Int] with D[String]]
-{code}
+```
 
 Please let me know if this is insufficient to reopen this bug, and in such case, what further information you need from me.

@@ -1,7 +1,7 @@
 As can be seen in decompiled code, compiler is incerting an extra cast to Object[], which simply does not work on JVM.
 
 The example is reduced from a large codebase and does not make much sense beyong demonstrating the problem.
-{code}
+```scala
 object Main {
   def mkArray[T <: A](atype: Int) :T#AType = {
     (atype match {
@@ -28,6 +28,6 @@ trait I extends A {
 trait F extends A {
   type AType = Array[Float]
 }
-{code}
+```
 
 Workaround: instead of casting directly ".asInstanceOf[T#AType]", cast to AnyRef first: ".asInstanceOf[AnyRef].asInstanceOf[T#AType]".

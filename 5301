@@ -1,15 +1,14 @@
 This won't happen.
-
-{code}
+```scala
 class A(arg: String)
 object B extends A { "foo" }
-{code}
+```
 Now class A is modified in what should be a completely safe way.
-{code}
+```scala
 class A(arg: String) {
   def this() = this("bar")
 }
-{code}
+```
 Now object B is calling the other constructor and has in its body a detached "foo".
 
 Functions calls can get away with it because it can't be a class body.

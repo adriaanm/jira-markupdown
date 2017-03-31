@@ -1,13 +1,13 @@
 That answer ("don't do that") is pretty unsatisfying.
 
 The jdk 7 source comments on the similar case
-{code}
+```scala
 m replaceAll """$"""
-{code}
+```
 that it ought to throw IllegalArgumentException, and I would say ditto.
 
 Update: with java 8:
-{code}
+```scala
 scala> "cat".r.replaceAllIn("one cat two cats", "\\")
 java.lang.IllegalArgumentException: character to be escaped is missing
   at java.util.regex.Matcher.appendReplacement(Matcher.java:809)
@@ -21,6 +21,6 @@ java.lang.IllegalArgumentException: Illegal group reference: group index is miss
   at java.util.regex.Matcher.replaceAll(Matcher.java:955)
   at scala.util.matching.Regex.replaceAllIn(Regex.scala:369)
   ... 32 elided
-{code}
+```
 
 I won't nitpick that the message doesn't say how to fix the common case.

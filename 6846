@@ -1,10 +1,9 @@
-we cannot assign the correct {{OVERRIDE}} flags to default getters. one and the same default getter might sometimes override another one, sometimes not, example below.
+we cannot assign the correct `OVERRIDE` flags to default getters. one and the same default getter might sometimes override another one, sometimes not, example below.
 
-this is a consequence of the fact that we allow overriding defaults without {{override}} modifiers.
+this is a consequence of the fact that we allow overriding defaults without `override` modifiers.
 
-so the fix in [9f9932bd20|https://github.com/scala/scala/commit/9f9932bd20] is left in place, a comment is added in [5d90d00108|https://github.com/scala/scala/commit/5d90d00108]
-
-{code}
+so the fix in [9f9932bd20](https://github.com/scala/scala/commit/9f9932bd20) is left in place, a comment is added in [5d90d00108](https://github.com/scala/scala/commit/5d90d00108)
+```scala
 trait A1 { def f(x: Int): Int }
 trait A2 extends A1 { def f(x: Int = 1): Int }
 
@@ -16,4 +15,4 @@ object t {
   new A1 with B // here, B.f$default$1 should not have an 'override' flag
   new A2 with B // here, B.f$default$1 would need an 'override' flag
 }
-{code}
+```

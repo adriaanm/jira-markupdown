@@ -1,23 +1,23 @@
 I disagree with Rüdiger on the fact that c should be equal to b in the previous example, given that eq is the pysical equality, not the verification that the content is the same. Nevertheless, there is indeed a major performance issue on Set. I'm using the mutable version of HashSet, and here is an example snippet :
-{code}
+```scala
 def grade: Double = {
   val setA: HashSet = // get from somewhere else
   val setB: HashSet = // get from somewhere else
   if ((setA size) == 0 || (setB size) == 0) return 0
   else return (setA & setB size) / (setA | set B size)
 }
-{code}
+```
 This piece of code is repeated a lot of times in a loop, and the entire loop is executed in around 4.5 sec.
 
 But when I replace the union with somethin else...
-{code}
+```scala
 def grade: Double = {
   val setA: HashSet = // get from somewhere else
   val setB: HashSet = // get from somewhere else
   if ((setA size) == 0 || (setB size) == 0) return 0
   else return (setA & setB size) / ((setA size) + (setB size))  // just a gross approximation for testing purpose
 }
-{code}
+```
 ... then the execution time goes down to around 0.35 sec.
 
 So, I think this is a faulty behavior and should be corrected.

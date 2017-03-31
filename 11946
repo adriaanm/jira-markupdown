@@ -1,12 +1,11 @@
 Hah. In fact, default argument expressions are always type-checked in a context where the parameter is in scope - this is a bug.
 The reason: normal value definitions are allowed to be recursive, so we need a special case for parameters.
 
-Now, unfortunately we cannot just use the outer context, because parameters of a previous parameter list are visible: {{def f(x: Int)(y: Int = x)}} is valid.
+Now, unfortunately we cannot just use the outer context, because parameters of a previous parameter list are visible: `def f(x: Int)(y: Int = x)` is valid.
 The type checker doesn't have a scope per parameter list, only one per method, so there's no easy fix.
 
 Here's another bug that has the same underlying reason:
-
-{code}
+```scala
 class A {
   type T
 }
@@ -15,16 +14,15 @@ class C {
   val a: A
   def f(a: String, b: a.T) = 0
 }
-{code}
+```
 
 By the spec (http://www.scala-lang.org/files/archive/spec/2.11/04-basic-declarations-and-definitions.html#default-arguments):
 {quote}The scope of a formal value parameter name x comprises all subsequent parameter clauses, as well as the method return type and the function body.
 {quote}
 
-So the parameter {{a}} should not be in scope in the type definition of {{b}}. However, in reality, the type checker will resolve {{a}} in {{a.T}} to the parameter instead of the field and yield an error:
-
-{noformat}
+So the parameter `a` should not be in scope in the type definition of `b`. However, in reality, the type checker will resolve `a` in `a.T` to the parameter instead of the field and yield an error:
+```
 error: type T is not a member of String
          def f(a: String, b: a.T) = 0
                                ^
-{noformat}
+```

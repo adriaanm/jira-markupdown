@@ -2,12 +2,11 @@ I have a very weird bug in my code.
 
 I am using Scala 2.11.7 and also tried with 2.11.8.
 
-**Problem**
+****Problem****
 I get a NullPointerException when trying to access an abstract class value that contains a default value.
 
-**Example**
-
-{code:scala}
+****Example****
+```scala
 sealed abstract class Language(private val realName: String = "", val extensions: List[String]) {
   self: Product =>
 
@@ -15,13 +14,12 @@ sealed abstract class Language(private val realName: String = "", val extensions
 }
 
 case object Scala extends Language(extensions = List(".scala"))
-{code}
+```
 
 I not always get a NullPointerException, it only happens in the tests if I run all the tests. If I run the test that fails with testOnly it passes.
 
 I was going crazy since yesterday and today I had the idea to change the code to explicitly pass the "default":
-
-{code:scala}
+```scala
 sealed abstract class Language(private val realName: Option[String], val extensions: List[String]) {
   self: Product =>
 
@@ -29,7 +27,7 @@ sealed abstract class Language(private val realName: Option[String], val extensi
 }
 
 case object Scala extends Language(realName = None, extensions = List(".scala"))
-{code}
+```
 
 And now it works fine.
 
@@ -38,8 +36,7 @@ Do you have any ideas about what can be going wrong here?
 EDIT:
 
 The line 134 is the one with `val specificTypeRules ....`
-
-{code:java}
+```java
 object IgnoreManager {
   private[this] lazy val languageIgnoreConfigEnum: Map[String, List[SomeCaseClass]] = ...
 
@@ -49,10 +46,8 @@ object IgnoreManager {
   }
 ...
 }
-{code}
-
-
-{noformat}
+```
+```
 [info]   java.lang.NullPointerException:
 [info]   at rules.project.filerules.IgnoreManager$.languageSpecificRules(IgnoreManager.scala:134)
 [info]   at rules.project.filerules.IgnoreManager$.annotateWithIgnored(IgnoreManager.scala:264)
@@ -65,7 +60,7 @@ object IgnoreManager {
 [info]   at org.scalatest.Transformer.apply(Transformer.scala:22)
 [info]   at org.scalatest.Transformer.apply(Transformer.scala:20)
 [info]   ...
-{noformat}
+```
 
 I just updated the base classes and the rest of the code like it was, before I started changing it (as best as I could). I did lots of testing before understanding the error and I mostly did not commit before I had it fixed.
 

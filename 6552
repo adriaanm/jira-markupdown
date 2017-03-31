@@ -1,15 +1,14 @@
 So, the problem here is that specialization does correctly change the private[this] modifier to protected[this], but does not go back and create the appropriate getter/setter methods which scalac would have already created by that point.
 
 You can easily see this by diffing the output of -Xprint:tailcalls between a version using private[this] and a version using private:
-
-{code}
+```scala
 11c11,13
 <     def read(): T = Cell.this.v;
 ---
 >     private <accessor> def v(): T = Cell.this.v;
 >     private <accessor> def v_=(x$1: T): Unit = Cell.this.v = x$1;
 >     def read(): T = Cell.this.v();
-{code}
+```
 
 I'm not sure what the best way to handle this is. I guess we could try to explicitly call the methods which would create the accessors, and then manually rewrite field access to use them? The tough thing is that the logic about which methods will need to be specialized is (currently) quite complicated, so we can't easily move the rewriting code into an earlier phase.
 

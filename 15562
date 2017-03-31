@@ -1,15 +1,15 @@
-The data structure used in collection.immutable.Vector is quite fast, but it's possible to do even better. I created a port of Clojure's PersistentVector?, reimplementing it from the ground up within the Scala 2.8 collections framework. The underlying data structure is a bitmapped dense trie, rather than the skip-list-like structure used by the Vector in the standard library. Because of the implementation as a dense trie, the locality of reference for Clojure's vector is *substantially* better than the Vector in the Scala standard library. It also lends itself nicely to a manual loop unrolling optimization which allows HotSpot? to inline almost all of the calls into O(6) array accesses.
+The data structure used in collection.immutable.Vector is quite fast, but it's possible to do even better. I created a port of Clojure's PersistentVector?, reimplementing it from the ground up within the Scala 2.8 collections framework. The underlying data structure is a bitmapped dense trie, rather than the skip-list-like structure used by the Vector in the standard library. Because of the implementation as a dense trie, the locality of reference for Clojure's vector is **substantially** better than the Vector in the Scala standard library. It also lends itself nicely to a manual loop unrolling optimization which allows HotSpot? to inline almost all of the calls into O(6) array accesses.
 
-I've done some extensive benchmarking, the results of which I've included below. It looks like my port of Clojure's PersistentVector? is around 50% *faster* than scala.collection.immutable.Vector on both random and sequential reads (index-based reads, not traversal). Performance is almost equivalent for writes. The port of Clojure's PersistentVector? uses almost 50% less memory on writes, and exactly the same memory for reads (i.e. none). The only operation which the stdlib Vector seems to do better than the port of Clojure's is the reverse operation. The raw results are included at the bottom of this ticket.
+I've done some extensive benchmarking, the results of which I've included below. It looks like my port of Clojure's PersistentVector? is around 50% **faster** than scala.collection.immutable.Vector on both random and sequential reads (index-based reads, not traversal). Performance is almost equivalent for writes. The port of Clojure's PersistentVector? uses almost 50% less memory on writes, and exactly the same memory for reads (i.e. none). The only operation which the stdlib Vector seems to do better than the port of Clojure's is the reverse operation. The raw results are included at the bottom of this ticket.
 
-As I mentioned, this is a *complete rewrite* of Clojure's PersistentVector?. It retains the BSD license and source attribution just because I wanted to play it safe, but the source is now so far removed from the original that we can probably discard that (though I'd like to hear from Rich before we just delete the header).
+As I mentioned, this is a **complete rewrite** of Clojure's PersistentVector?. It retains the BSD license and source attribution just because I wanted to play it safe, but the source is now so far removed from the original that we can probably discard that (though I'd like to hear from Rich before we just delete the header).
 
 It is worth noting that the stdlib Vector seems to support a fast prepend operation, whereas the dense trie data structure requires O(n) for this operation (append is still O(1)). In every other respect, the port of Clojure's PersistentVector? is either dramatically superior, or equivalent to the implementation in the stdlib. On top of it all, my port includes an update(Int, A) method, while this is glaringly absent from the stdlib API.
 
-Is there any reason why we can't replace the stdlib Vector implementation with this one? APIs (such as updated, :+ and +:) could be added for backwards compatibility, but it seems to me that the performance characteristics of this port are so far beyond those of the stdlib that it really doesn't make any *technical* sense to stick with the current implementation.
+Is there any reason why we can't replace the stdlib Vector implementation with this one? APIs (such as updated, :+ and +:) could be added for backwards compatibility, but it seems to me that the performance characteristics of this port are so far beyond those of the stdlib that it really doesn't make any **technical** sense to stick with the current implementation.
 
 Source and specs are attached.
-{code}
+```scala
 
 Hardware: 2.66 Ghz Dual Core i7, 8 GB RAM, SATA2 SSD
 OS:       MacOS X 10.6.4
@@ -223,4 +223,4 @@ scala.collection.immutable.Vector class is represented by 'DefVector'.
 
       Memory Difference: 0.000000 KB
 ================================================================================
-{code}
+```

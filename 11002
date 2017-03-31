@@ -1,11 +1,10 @@
 TreePrinter adds the escapement in the OP res0:
-{code}
+```scala
         case Literal(x) => print(x.escapedStringValue)
-{code}
+```
 
 Eugene's x2 is just normal parsing of the thing inside triple quotes, where normal escaping happens for normal strings.  Isn't that normal?
-
-{code}
+```scala
 scala> val Literal(Constant(s: String)) = q""" "bob\\'s" """   // normal escaping required for literal
 s: String = bob\'s
 
@@ -14,17 +13,17 @@ s: String = "bob's"
 
 scala> val Literal(Constant(s: String)) = q""""bob\\'s""""   // it's possible to ruin your eyesight
 s: String = bob\'s
-{code}
+```
 
 I was just improving messages for interactions like
-{code}
+```scala
 s"\d".r  // expecting wrongly that \d is preserved for regex
 s"abc\"def"  // expecting wrongly that quote is escaped under interpolation
                    // so s/interpolation/interpretation/
 
 scala> s"\d".r    // real people spend hours debugging this
 scala.StringContext$InvalidEscapeException: invalid escape '\d' not one of [\b, \t, \n, \f, \r, \\, \", \'] at index 0 in "\d". Use \\ for literal \.
-{code}
+```
 My two thoughts were that s should be a macro to get ahead of the errors, as f can, and that it's impossible to warn in general for arbitrary interpolators, so it would be nice if non-macro interpolators could have a compile-time verify feature, because you don't know in advance what the escape policy is for the macro.
 
 What if by convention, `s"""\'"""` did escapes and `S"""\'"""` was raw, with the mnemonic of Constants or Stable things.

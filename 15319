@@ -1,19 +1,19 @@
 Error when java annotation takes a raw `java.lang.Class`.
 
 Test.java
-{code}
+```scala
 public @interface Test {
   public Class exc() default Exception.class;
 }
-{code}
+```
 A.scala
-{code}
+```scala
 class A {
   @Test(exc = classOf[Exception])
   def myTestMethod = 0
 }
-{code}
-{code}
+```
+```scala
 rytz@chara:~/scala/trunk/sandbox$$ javac Test.java 
 rytz@chara:~/scala/trunk/sandbox$$ ../build/pack/bin/scalac A.scala 
 A.scala:2: error: type mismatch;
@@ -22,6 +22,6 @@ A.scala:2: error: type mismatch;
   @Test(exc = classOf[Exception])
                      ^
 one error found
-{code}
+```
 
 works when changing the annotation argument type to `Class<?>`.

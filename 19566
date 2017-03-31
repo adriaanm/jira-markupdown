@@ -1,12 +1,10 @@
  the below program, with the exact same code prints different things (also below) in 2.10.4 and 2.11.{4, 5}. The key line being asked of the presentation compiler is 
-
-{code}
+```scala
     val sourceSnippet = """object Snippet{val x = 123; "1" + x<caret>.e}"""
-{code}
+```
 
 In 2.10.4, the output correctly includes all the implicitly-available extension methods. In 2.11.{4, 5}, it does not. Could this be a regression?
-
-{code}
+```scala
 import scala.tools.nsc.util.ClassPath.JavaContext
 import scala.tools.nsc.util.DirectoryClassPath
 import scala.tools.nsc.util.JavaClassPath
@@ -63,10 +61,8 @@ object Main{
     println(":::")
   }
 }
-{code}
-
-
-{noformat}
+```
+```
 ================================2.11.4================================
 haoyi-mbp:ammonite haoyi$ sbt run
 [info] Loading global plugins from /Users/haoyi/.sbt/0.13/plugins
@@ -201,9 +197,8 @@ toShort
 toByte
 :::
 [success] Total time: 12 s, completed Feb 16, 2015 4:24:49 PM
-{noformat}
-
-{noformat}
+```
+```
 ================================2.10.4================================
 
 haoyi-mbp:ammonite haoyi$ sbt run
@@ -391,4 +386,4 @@ clone
 :::
 [success] Total time: 2 s, completed Feb 16, 2015 4:25:40 PM
 haoyi-mbp:ammonite haoyi$
-{noformat}
+```

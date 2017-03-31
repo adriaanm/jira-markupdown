@@ -1,8 +1,7 @@
 I would be very interested in such a feature.
 
 For now, in Java I am expected to use an aspect to avoid polluting my serialized business classes with technical stuff in a transversal thread safe manner (using transient fields and a transient lock with late initialization for each of them is ugly):
-
-{code}
+```scala
 class A {
 
   @Cachable
@@ -11,11 +10,10 @@ class A {
   }
 
 }
-{code}
+```
 
 And the code of the aspect looking for method with @Cachable annotation invocation (I have also implemented a way to invalidate the cache but I don't know if it could be the point here):
-
-{code}
+```scala
 public aspect CachingAspect {
 
 	MethodCache methodCache = new MethodCache();
@@ -65,9 +63,8 @@ public aspect CachingAspect {
              }
   	}
 }
-{code}
+```
 
 Basically the method cache is a WeakHashMap of Object -> Map( Method -> Cache ).
 
 This is pretty inefficient because it requires accessing 2�maps for a getting to the cached object.
-

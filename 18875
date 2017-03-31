@@ -1,4 +1,4 @@
-{code}
+```scala
 object A {
   class A {
     def foo = 1
@@ -29,14 +29,14 @@ object A {
 
   foo(11)
 }
-{code}
+```
 
 Here two example describing this problem. It's implicit overloading resolution bug and ordinary overloading resolution. However problem is similar, so let's describe problem for method foo.
 
 Method foo is defined in class G and in class Z. Class G has companion object, which is inherited from Z. So according to SLS 6.26.3 class G is derived from class Z. So in terms of relative weight method foo in class G must be more specific than method foo in class Z.
 
 I can imagine that compiler calculates relative weight for foo in object K and object G, then any of them is not derived other one. However my vision of word "defined" is that method 'foo' is written in some class, because it's perfectly works in the following case:
-{code}
+```scala
 class B {
   class A
   class B extends A
@@ -51,4 +51,4 @@ class B {
     foo(new B)
   }
 }
-{code}
+```

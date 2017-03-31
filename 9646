@@ -3,8 +3,7 @@ It changed in 2.10.2, and we didn't expect it to: that's the main problem.
 As per the mail I just sent (which I'll reproduce here for the record), this facet of implicit search isn't specced, so the status quo is the spec. The implementation intends to exclude `e` from the implicit search as it doesn't have an explicit result type, and is defined after the point of the search. But after the change, the "doesn't-have-a-result-type" check fails, as `e`-s symbol has its type elaborated earlier.
 
 I guess as the 2.10.2 guardian, James ought to make a call on what to do. Two questions to answer: 1) leave it or revert it; 2) invest time into pinning down the behaviour with tests or deem it effectively untestable.
-
-{quote}
+```
 On Wed, May 22, 2013 at 12:23 AM, Bill Venners <bill@artima.com> wrote:
 Seems odd that the compiler would judge this code a forward reference error rather than decide it should look in the companions. If it doesn't find anything in the companions it makes sense it could issue an error that includes a note about the forward reference as a helpful clue, but not if there is something in the companion objects. In that case I'd expect it should use the implicit in the companion.
 
@@ -54,6 +53,4 @@ If you want to restrict the scope of an implicit, simply introduce a new scope:
    // use customEquality
 
   }
-
-
-{quote}
+```

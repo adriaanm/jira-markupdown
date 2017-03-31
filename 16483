@@ -1,45 +1,39 @@
 Consider this code, defining a simple class with a method named `**`:
-
-{code}
+```scala
 class Foo() {
   def **(s: String) = "Foo"
 }
-{code}
+```
 
 Now we add a new classes and correspondent implicits to "add more supported types" to `Foo`s `**` method:
-
-{code}
+```scala
 class Weird(foo: Foo) {
   def **[M](w: Weird) = new Weird(foo)
 }
 
 implicit def foo2weird(foo: Foo) = new Weird(foo)
-{code}
-
-
-{code}
+```
+```scala
 class Weirder[T](foo: T) {
   def **[M](w: Weirder[T]) = new Weirder(foo)
 }
 
 implicit def foo2weirder(foo: Foo) = new Weirder(foo)
-{code}
-
-{code}
+```
+```scala
 class Weirdest[T](foo: T) {
   def **(w: Weirdest[T]) = new Weirdest(foo)
 }
 
 implicit def foo2weirdest(foo: Foo) = new Weirdest(foo)
-{code}
+```
 
 While the first and the last work, the second one fails:
-{code}
+```scala
 // Works:
 foo ** new Weird(new Foo)
-{code}
-
-{code}
+```
+```scala
 // Fails:
 foo ** new Weirder(new Foo)
 /*
@@ -49,12 +43,11 @@ error: type mismatch;
               f ** new Weirder(new Foo)
                    ^
 */
-{code}
-
-{code}
+```
+```scala
 // Works again:
 foo ** new Weirdest(new Foo)
-{code}
+```
 
 The only difference between the second and the third example is the removal of the (unused) type parameter `M`.
 

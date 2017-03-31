@@ -1,8 +1,7 @@
-I took another look for this problem but was unable to reproduce retention of undolog entries at the completion of the compiler. Perhaps I was measuring something different from "capturing memory snapshot at the end of typer"; [~grek] what mechanism did you use to control when the snapshot was taken?
+I took another look for this problem but was unable to reproduce retention of undolog entries at the completion of the compiler. Perhaps I was measuring something different from "capturing memory snapshot at the end of typer"; @gkossakowski what mechanism did you use to control when the snapshot was taken?
 
 Limiting SBT to one compilation at a time helps to reduce overall memory requirements and make the results of profiling easier to digest:
-
-{code}
+```scala
 sbt> set concurrentRestrictions in Global := Seq(Tags.limit(Tags.CPU, 1))
-{code}
+```
 

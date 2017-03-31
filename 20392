@@ -1,12 +1,11 @@
-I manage an open source library (Accord) that heavily uses macros, and have recently had [reports|https://github.com/wix/accord/issues/103] that, when upgrading _client code_ from 2.12.0 to 2.12.1, compilation breaks. I've managed to reproduce this with the attached sbt project (see below for sample output).
+I manage an open source library (Accord) that heavily uses macros, and have recently had [reports](https://github.com/wix/accord/issues/103) that, when upgrading *client code* from 2.12.0 to 2.12.1, compilation breaks. I've managed to reproduce this with the attached sbt project (see below for sample output).
 
 This is not merely a backwards compatibility issue, as it reproduces with a fresh local build of Accord with Scala 2.12.1. The reason I mentioned macros is that this issue seems quite similar to what Miles Sabin reported in [SI-9392], but his report never mentioned the initial "package parser" error and, if the ticket is accurate, a patch to make the compiler more lenient has made its way since before 2.12.0 went gold.
 
-I'll be more than happy to help (contact me here, by e-mail at tomer@tomergabel.com, or through the project Gitter channel), but a quick glance at scala-reflect's {{Types.scala}} indicates that I'm completely out my depth here.
+I'll be more than happy to help (contact me here, by e-mail at tomer@tomergabel.com, or through the project Gitter channel), but a quick glance at scala-reflect's `Types.scala` indicates that I'm completely out my depth here.
 
 Output looks like this on my end:
-
-{code}
+```scala
 pkunk:research tomerga$ sbt clean compile
 [info] Loading global plugins from /Users/tomerga/.sbt/0.13/plugins
 [info] Set current project to research (in build file:/Users/tomerga/research/)
@@ -444,5 +443,5 @@ java.lang.AssertionError: assertion failed: ClassBType.info not yet assigned: LT
 [error] four errors found
 [error] (compile:compileIncremental) Compilation failed
 [error] Total time: 8 s, completed Feb 3, 2017 1:44:05 AM
-{code}
+```
 

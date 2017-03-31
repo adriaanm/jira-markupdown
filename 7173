@@ -1,17 +1,16 @@
 This has the form:
-{code}
+```scala
 scala> var x = 0
 x: Int = 0
 
 scala> x = 1 ; println(x)
 1
 x: Int = 1
-{code}
+```
 The last line reports the var that was set by the assignment.
 
 If the LHS is side-effecting, you'll see it twice.
-
-{code}
+```scala
 scala> class A(s: String) { var _t = -1 ; println(s"A $s!"); def t: Int = {println("getter"); _t}; def t_=(p: Int) { println(s"setter $p"); _t = p }; def m(v: String) = new A(v)} 
 defined class A
 
@@ -27,12 +26,12 @@ x
 A txt!
 getter
 a.m("txt").t: Int = -1
-{code}
+```
 On 2.10.0, it looks like there was a quoting bug that was later fixed:
-{code}
+```scala
 scala> a m "txt" t = 18; println("x")
 warning: there were 1 feature warnings; re-run with -feature for details
 <console>:10: error: ')' expected but string literal found.
  + "a.m("txt").t: Int = " + `$ires0` + "\n" 
          ^
-{code}
+```

@@ -1,5 +1,5 @@
 This is induced because unlike when you request a single constructor, getConstructors returns untyped Constructors.
-{code}
+```scala
 scala> val cls = classOf[java.io.File]
 cls: java.lang.Class[java.io.File] = class java.io.File
 
@@ -8,11 +8,11 @@ res0: java.lang.reflect.Constructor[java.io.File] = public java.io.File(java.lan
 
 scala> cls.getConstructors                
 res1: Array[java.lang.reflect.Constructor[_]] = Array(public java.io.File(java.net.URI), public java.io.File(java.lang.String), public java.io.File(java.lang.String,java.lang.String), public java.io.File(java.io.File,java.lang.String))
-{code}
+```
 I have no idea why getConstructors returns Constructor[] and not Constructor<T>[] when getConstructor returns Constructor<T>, but so it is.  So newInstance on the untyped ones returns an Any instead of a T.  You can work around this with a cast, i.e. change the original example to:
-{code}
+```scala
 val stringConst = cls.getConstructors.asInstanceOf[Array[java.lang.reflect.Constructor[java.io.File]]].find{ c => 
-{code}
+```
 ...but it'd be a lot nicer if they came back typed.
 
 (Note this is what induces this bug in this case, but it goes without saying that the compiler should deal with it without crashing.)

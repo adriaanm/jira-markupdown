@@ -1,6 +1,5 @@
 fsc (and scala) always return 0 when called as a java.lang.Process
-
-{code}
+```scala
 $ cat Foo.scala 
 package foo
 
@@ -15,36 +14,36 @@ object Foo extends App{
 $ scalac Foo.scala && scala -cp . foo.Foo
  
 0
-{code}
+```
 
 whereas
-{code}
+```scala
 $ fsc nonsense > /dev/null
 $ echo $?
 1
-{code}
+```
 
 \\
 
 
 Changing the onExit function in these scripts from
-{code}
+```scala
 function onExit() {                                                                                                                                            
   if [[ "$saved_stty" != "" ]]; then
     restoreSttySettings
     exit $scala_exit_status
   fi  
 }
-{code}
+```
 to
-{code}
+```scala
 function onExit() {                                                                                                                                            
   if [[ "$saved_stty" != "" ]]; then
     restoreSttySettings
   fi  
   exit $scala_exit_status
 }
-{code}
+```
 seems to fix the problem
 
  

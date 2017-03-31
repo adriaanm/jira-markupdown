@@ -1,22 +1,19 @@
 Maybe someone can shed a little light on the small patch of the problem I'm looking at.
 
-The difference in behaviour between the original case and the case in which the object is nested in {{val dummy}} hinges on the {{INCONSTRUCTOR}} flag, which is calculated for templates as:
-
-{code}
+The difference in behaviour between the original case and the case in which the object is nested in `val dummy` hinges on the `INCONSTRUCTOR` flag, which is calculated for templates as:
+```scala
     def inConstructorFlag: Long =
       if (owner.isConstructor && !context.inConstructorSuffix || owner.isEarlyInitialized) INCONSTRUCTOR
       else 0l
-{code}
-
-{code}
+```
+```scala
 class ClassSymbol {
  override def isClassLocalToConstructor = this hasFlag INCONSTRUCTOR
 }
-{code}
+```
 
-Perhaps not relevant to this problem, but for completeness, I'll note that for functions translated into anonymous classes, this flag is set in {{Uncurry}}
-
-{code}
+Perhaps not relevant to this problem, but for completeness, I'll note that for functions translated into anonymous classes, this flag is set in `Uncurry`
+```scala
               if (dd.symbol.isClassConstructor) {
                 atOwner(sym) {
                   val rhs1 = (rhs: @unchecked) match {
@@ -42,18 +39,16 @@ Perhaps not relevant to this problem, but for completeness, I'll note that for f
 ...
 
 val anonClass = fun.symbol.owner newAnonymousFunctionClass(fun.pos, inConstructorFlag) addAnnotation serialVersionUIDAnnotation
-{code}
+```
 
 The accessor for this flag:
-
-{code}
+```scala
     // class C extends D( { class E { ... } ... } ). Here, E is a class local to a constructor
     def isClassLocalToConstructor = false
-{code}
+```
 
-is only used in {{Symbol#outerClass}}:
-
-{code}
+is only used in `Symbol#outerClass`:
+```scala
     /** The class that is logically an outer class of given `clazz`.
      *  This is the enclosing class, except for classes defined locally to constructors,
      *  where it is the outer class of the enclosing class.
@@ -62,26 +57,23 @@ is only used in {{Symbol#outerClass}}:
       if (owner.isClass) owner
       else if (isClassLocalToConstructor) owner.enclClass.outerClass
       else owner.outerClass
-{code}
+```
 
-Which is in turn only used in {{ExplicitOuter}}.
+Which is in turn only used in `ExplicitOuter`.
 
-So, after all that, a question: should {{isClassLocalToConstructor}} also be true for {{class E}} in the following? (I'd say yes.)
-
-{code}
+So, after all that, a question: should `isClassLocalToConstructor` also be true for `class E` in the following? (I'd say yes.)
+```scala
 class C extends D( { val x = { class E } })
-{code}
+```
 
 If so, what about? (I'd say no.)
-
-{code}
+```scala
 class C extends D( { object O { class E } })
-{code}
+```
 
 And a trickier one:
-
-{code}
+```scala
 class C extends D( { () => { class E } })
 class C extends D( assert(true, /*by-name*/{ class E } )
-{code}
+```
 

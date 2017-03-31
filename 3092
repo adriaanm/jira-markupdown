@@ -1,15 +1,13 @@
 Even though the original report mentions a catch-all exception handler, NonLocalReturnException inherits from RuntimeException so it's even worse.
 
 I'd suggest changing:
-
-{code}
+```scala
 class NonLocalReturnException[T](val key: AnyRef, val value: T) extends RuntimeException with ControlException
-{code}
+```
 
 to
-
-{code}
+```scala
 class NonLocalReturnException[T](val key: AnyRef, val value: T) extends ControlException
-{code}
+```
 
 That would be an improvement over the current situation.

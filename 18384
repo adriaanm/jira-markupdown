@@ -1,6 +1,5 @@
 I seem to be able to create some kind of "deadlock" by running a test (declared in {{Main.scala}}). The deadlock is caused by separate threads which are accessing {{a.b.c.Oxbow$class.$init$}} - the first because of a call to a method brought into scope via an {{import a.b.c.Oxbow._}} and the second by {{import a.b.c._}}. If you run the test a few times, eventually you'll see the "deadlock" - I'm left with two threads which are doing this:
-
-{noformat}
+```
 "ForkJoinPool-1-worker-9" daemon prio=6 tid=0x0000000014630800 nid=0x1940 in Object.wait() [0x000000001543e000]
    java.lang.Thread.State: RUNNABLE
                 at a.b.c.Oxbow$class.$init$(Oxbow.scala:4)
@@ -35,16 +34,15 @@ I seem to be able to create some kind of "deadlock" by running a test (declared 
                 at scala.concurrent.forkjoin.ForkJoinPool$WorkQueue.runTask(ForkJoinPool.java:1339)
                 at scala.concurrent.forkjoin.ForkJoinPool.runWorker(ForkJoinPool.java:1979)
                 at scala.concurrent.forkjoin.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:107)
-{noformat}
+```
 
-I'm calling it a "deadlock" (i.e. in moderately ironic quotation marks) because, according to JConsole, there is no deadlock and according to the stacks both threads are in {{RUNNABLE}} state and are not {{WAITING}} at all (could they have been woken up by a call to notify?) - but they don't appear to be doing anything. You can leave it for 10 minutes and the threads will be in the same state
+I'm calling it a "deadlock" (i.e. in moderately ironic quotation marks) because, according to JConsole, there is no deadlock and according to the stacks both threads are in `RUNNABLE` state and are not `WAITING` at all (could they have been woken up by a call to notify?) - but they don't appear to be doing anything. You can leave it for 10 minutes and the threads will be in the same state
 
-If I change the code so that both {{Test1}} and {{Test2}} do {{import a.b.c._}} then the issue is not observed
+If I change the code so that both `Test1` and `Test2` do `import a.b.c._` then the issue is not observed
 
 
 The files are organized as follows:
-
-{noformat}
+```
 in package a.b.c
 
   File Oxbow.scala
@@ -57,6 +55,6 @@ In package a.b.c.d
 in package test
 
   File Main.scala
-{noformat}
+```
 
-You need to run {{Main.scala}} a few times to reveal the deadlock. I'm fairly confident that this must be a bug in scalac, rather than a trait initialization order problem on my side (although I could be wrong)
+You need to run `Main.scala` a few times to reveal the deadlock. I'm fairly confident that this must be a bug in scalac, rather than a trait initialization order problem on my side (although I could be wrong)

@@ -1,8 +1,7 @@
 h3.steps
 
-# Define an XML literal that redefines a namespace binding (xmlns attribute) within a child element.
-
-{code}
+- Define an XML literal that redefines a namespace binding (xmlns attribute) within a child element.
+```scala
 Welcome to Scala version 2.10.0 (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_33).
 Type in expressions to have them evaluated.
 Type :help for more information.
@@ -15,22 +14,21 @@ res0: String = " xmlns:x="http://bar.com/" xmlns:x="http://foo.com/""
 
 scala> assert(foo.child.head.scope.toString == """ xmlns:x="http://bar.com/"""")
 java.lang.AssertionError: assertion failed
-{code}
+```
 
 h3.problem
 
-# The child element duplicates namespace binding. In the above example, {{xmlns:x}} is duplicated.
+- The child element duplicates namespace binding. In the above example, `xmlns:x` is duplicated.
 
 h3.expectation
 
-# The outer namespace binding with the same prefix should be overridden by the inner namespace binding.
-
-{code}
+- The outer namespace binding with the same prefix should be overridden by the inner namespace binding.
+```scala
 scala> assert(foo.child.head.scope.toString == """ xmlns:x="http://bar.com/"""")
-{code}
+```
 
 h3.notes
 
-This is caused Scala compiler stacking outer namespace binding when defining inner {{Elem}}. See {{ast.parser.SymbolicXMLBuilder}}.
+This is caused Scala compiler stacking outer namespace binding when defining inner `Elem`. See `ast.parser.SymbolicXMLBuilder`.
 
-The same bug is duplicated in Scala library when XML document is created using {{scala.xml.XML.loadString(...)}} again due to outer namespace binding stacked in {{scala.xml.parsing.FactoryAdapter}}.
+The same bug is duplicated in Scala library when XML document is created using `scala.xml.XML.loadString(...)` again due to outer namespace binding stacked in `scala.xml.parsing.FactoryAdapter`.

@@ -1,14 +1,12 @@
 Try to compile this:
-
-{code}
+```scala
 class A {
   super.+("")
 }
-{code}
+```
 
 and you'll get this:
-
-{code}
+```scala
 Exception in thread "main" java.lang.Error: Unexpected tree in genLoad: A.super at: source-../scala/test/files/neg/supper-to-breakfast.scala,line-2,offset=12
 	at scala.tools.nsc.symtab.SymbolTable.abort(SymbolTable.scala:33)
 	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$backend$icode$GenICode$ICodePhase$$genLoad(GenICode.scala:941)
@@ -54,6 +52,6 @@ Exception in thread "main" java.lang.Error: Unexpected tree in genLoad: A.super 
 	at scala.tools.nsc.Main$.process(Main.scala:106)
 	at scala.tools.nsc.Main$.main(Main.scala:120)
 	at scala.tools.nsc.Main.main(Main.scala)
-{code}
+```
 
 The problem is specific to the `+(String)` method, and involves implicit view any2stringadd applied on A.super, as if super was not as the reserved word it is.

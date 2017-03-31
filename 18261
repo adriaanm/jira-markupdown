@@ -1,21 +1,19 @@
 With 2.10.2-SNAPSHOT (2.10.2-20130515-155912-70e2ead142) compilation error is reported for the following code in akka-testkit.
 https://github.com/akka/akka/blob/master/akka-testkit/src/test/scala/akka/testkit/AkkaSpecSpec.scala#L67
-
-{code}
+```scala
         implicit val davyJones = otherSystem.actorOf(Props(new Actor {
           def receive = {
             case m: DeadLetter ⇒ locker :+= m
             case "Die!"        ⇒ sender ! "finally gone"; context.stop(self)
           }
         }), "davyJones")
-{code}
-
-{noformat}
+```
+```
 
 [error] /Users/patrik/dev/akka/akka-testkit/src/test/scala/akka/testkit/AkkaSpecSpec.scala:68: recursive value davyJones needs type
 [error]           def receive = {
 [error]               ^
-{noformat}
+```
 
 It compiles fine when I remove the implicit, which we actually don't need here.
 

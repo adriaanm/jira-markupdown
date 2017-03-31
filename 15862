@@ -1,11 +1,11 @@
 What steps will reproduce the problem (please be specific and use wikiformatting)?
-{code}
+```scala
 scalac ACompileFirst.scala BCompileSecond.scala
-{code}
-There is **no** error if the order of the arguments is reversed!
+```
+There is ****no**** error if the order of the arguments is reversed!
 
 File ACompileFirst.scala:
-{code}
+```scala
 trait FooBar {
   val IR: FooOpsExp
   import IR._
@@ -14,9 +14,9 @@ trait FooBar {
       case m: DeliteOpMap[_,_,creatingThisTypeVarFails] =>
   }
 }
-{code} 
+```
 File BCompileSecond.scala:
-{code}
+```scala
 trait FooOpsExp {
 
   abstract class Def[B]
@@ -25,7 +25,7 @@ trait FooOpsExp {
 
   abstract case class DeliteOpMap[A,B,C[X] <: DeliteCollection[X]]() extends Def[C[B]]
 }
-{code}
+```
 
 
 What is the expected behavior? Compiling without error.
@@ -34,8 +34,7 @@ What is the expected behavior? Compiling without error.
 What do you see instead?
 
 When constructing a TypeVar for `creatingThisTypeVarFails`, typeArgs is `List(?_)` but params is empty. Assertivity ensues:
-
-{code}
+```scala
 Exception in thread "main" java.lang.AssertionError: assertion failed
 	at scala.Predef$$.assert(Predef.scala:100)
 	at scala.tools.nsc.symtab.Types$$TypeVar.<init>(Types.scala:2281)
@@ -118,8 +117,7 @@ Exception in thread "main" java.lang.AssertionError: assertion failed
 	at scala.tools.nsc.Main$$.process(Main.scala:106)
 	at scala.tools.nsc.Main$$.main(Main.scala:122)
 	at scala.tools.nsc.Main.main(Main.scala)
-
-{code}
+```
 
 
 What versions of the following are you using?

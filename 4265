@@ -1,5 +1,5 @@
 In case anyone really wants to try for this -- good luck I say -- here is a test case for you.
-{code}
+```scala
 object Test {
   def f(x: Any) = println(x match {
     case List(_, _) => "two"
@@ -32,9 +32,9 @@ object Test {
 	  f2(List(1,2,3,4,5))
 	}
 }
-{code}
+```
 Now look at Patterns.scala line 327.  Adding the conditional there was what remedied the other two tickets and broke this one.
-{code}
+```scala
   if (xs.isEmpty || xs.size > 1 || !isStar(xs.head))  => (tptArg, xs)
-{code}
-If you remove the conditional the test case won't even compile because it considers the default case both functions to be unreachable code.  If you leave it in the function which takes an Any does the right thing, and the one which takes a List generates wrong code along the lines of SI-1697 and SI-2337.
+```
+If you remove the conditional the test case won't even compile because it considers the default case both functions to be unreachable code.  If you leave it in the function which takes an Any does the right thing, and the one which takes a List generates wrong code along the lines of scala/bug#1697 and scala/bug#2337.

@@ -1,8 +1,7 @@
 This is not just cosmetic. It causes java.lang.Class.getDeclaredClasses to blow up as follows when walking classes to get methods, inner classes, etc. This is done in JRuby's Java integration layer to build up our meta-structure.
 
 No class Scala delivers should ever break Java reflection. For now we are patching around it by catching the NoClassDefFoundError and giving up on inspecting inner classes for the class in question.
-
-{code}
+```scala
 Class.java:-2:in `getDeclaredClasses0': java.lang.NoClassDefFoundError: scala/collection/mutable/ArrayBuffer$$$$anonfun$$remove$$1
 	from Class.java:1699:in `getDeclaredClasses'
 	from JavaClass.java:1848:in `getDeclaredClasses'
@@ -82,5 +81,4 @@ URLClassLoader.java:202:in `run': java.lang.ClassNotFoundException: scala.collec
 	from Main.java:286:in `run'
 	from Main.java:128:in `run'
 	from Main.java:97:in `main'
-{code}
-
+```

@@ -4,16 +4,16 @@ I guess that stems from the fact that those val declarations are syntactic sugar
 ----------
 
 There is a new form of type:
-{code}
+```scala
 Type  ::= Type1 [for_some `{' WhereClause {semi WhereClause}} `}']
 WhereClause ::= type TypeDcl
              |  val  ValDcl
              |
-{code}
+```
 Existential types can abstract over types as well as values.
 
 Examples:
-{code}
+```scala
 class LinkedList[T]
 class Outer { type T; val m: T }
 
@@ -26,14 +26,14 @@ class Outer { type T; val m: T }
  new LinkedList(x.m)
 }
  : LinkedList[x.T] for_some { val x: Outer }
-{code}
+```
 Note: A value abstraction { val x: T } can be treated as syntactic sugar for
 a type abstraction { type x_type <: T with Singleton }. This requires a new
 predefined type Singleton which can be inherited only from singleton types.
 If the syntactic sugar is expanded out, the last example has type:
-{code}
+```scala
 LinkedList[x_type # T] for_some { type T <: Outer with Singleton }
-{code}
+```
 It's an open question whether `val' abstractions are worth their
 weight, or whether we should just require that users write and read
 teh desugared version. A point in favor of `val' abstraction is that

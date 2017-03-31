@@ -9,8 +9,7 @@ I can confirm that I've run into what seems to be exactly this bug on some of my
 So it definitely has to do with the ordering that the compiler loads classes (and in particular, it's only inner classes that are affected).
 
 I've distilled it down to something short: the following snippet works fine:
-
-{code}
+```scala
 $$ scala
 Welcome to Scala version 2.7.3.final (Java HotSpot(TM) Server VM, Java 1.6.0_12).
 Type in expressions to have them evaluated.
@@ -20,11 +19,10 @@ scala> classOf[edu.stanford.nlp.util.ArrayCoreMap]
 res0: java.lang.Class[edu.stanford.nlp.util.ArrayCoreMap] = class edu.stanford.nlp.util.ArrayCoreMap
 
 scala> exit
-{code}
+```
 
 But if I load another class first:
-
-{code}
+```scala
 $$ scala
 Welcome to Scala version 2.7.3.final (Java HotSpot(TM) Server VM, Java 1.6.0_12).
 Type in expressions to have them evaluated.
@@ -36,7 +34,6 @@ res0: java.lang.Class[edu.stanford.nlp.util.CoreMap] = interface edu.stanford.nl
 scala> classOf[edu.stanford.nlp.util.ArrayCoreMap]
 error: error while loading ArrayCoreMap, class file '/home/dramage/Projects/dev/javanlp/projects/core/classes/edu/stanford/nlp/util/ArrayCoreMap.class' is broken
 (class edu.stanford.nlp.util.TypesafeMap$$Key not found.)
-{code}
+```
 
 Sorry I can't share those (Java) files easily.
-

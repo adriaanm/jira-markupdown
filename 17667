@@ -1,6 +1,5 @@
 Scala seems to refine all existential type variables to Any when pattern matching, which is unsound and can result in runtime errors. Here's an example data type:
-
-{code}
+```scala
 /* The 'coinductive' view of streams, represented as their unfold. */
 trait Stream[+A]
 case class Unfold[S,+A](s: S, f: S => Option[(A,S)]) extends Stream[A]
@@ -9,50 +8,46 @@ object Stream {
   def fromList[A](a: List[A]): Stream[A] = 
     Unfold(a, (l:List[A]) => l.headOption.map((_,l.tail)))
 }
-{code}
+```
 
 Now take a look at an example usage which breaks. If I have a Stream[Int], and I match and obtain an Unfold(s, f), the type of (s,f) should be (S, S => Option[(A,S)]) forSome { type S }. But Scala just promotes everything to Any:
-
-{code}
+```scala
 scala> Stream.fromList(List(1,2,3,4))
 res0: Stream[Int] = Unfold(List(1, 2, 3, 4),<function1>)
 
 scala> res0 match { case Unfold(s, f) => s }
 res1: Any = List(1, 2, 3, 4)
-{code}
+```
 
 Notice that the type of s is Any. Likewise, the type of f is also wrong, it accepts an Any:
-
-{code}
+```scala
 scala> res0 match { case Unfold(s, f) => f }
 res2: Any => Option[(Int, Any)] = <function1>
-{code}
+```
 
 Since f expects Any, we can give it a String and get a runtime error:
-
-{code}
+```scala
 scala> res0 match { case Unfold(s, f) => f("a string!") }
 java.lang.ClassCastException: java.lang.String cannot be cast to scala.collection.immutable.List
-{code}
+```
 
 I am using Scala 2.10.0-RC2, which, I understand has the new virtual pattern matcher turned on by default (I tried passing -Yvirtpatmat to the compiler but the option was not recognized.) 
 
 I find that this situation comes up a lot when writing libraries in Scala. It is extremely common to have a data type describing computations of some sort, and a separate interpreter which pattern matches to evaluate these computations for some semantics. The data type will frequently have existential type variables like this, and this bug means that the interpreter of the DSL is not typechecked!
 
 Incidentally, the expression 'blah match { case Unfold(s,f) => f }' should trigger a type error due to an escaping skolem (rigid) type variable. Here's Haskell by comparison:
-
-{code}
+```scala
 data Stream a where
   Unfold :: s -> (s -> Maybe (a, s)) -> Stream a 
 
 fn (Unfold s f) = f
-{code}
+```
 
 This yields:
-{code}
+```scala
     Couldn't match type `t' with `s -> Maybe (t1, s)'
       `t' is a rigid type variable bound by
           the inferred type of fn :: Stream t1 -> t at Test.hs:23:1
     In the expression: f
     In an equation for `fn': fn (Unfold s f) = f
-{code}
+```

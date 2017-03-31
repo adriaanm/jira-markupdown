@@ -1,8 +1,7 @@
 affects 2.10.0 M7.
 
 Reproducable via the repl (as long as -optimise isn't on of course).
-
-{code}
+```scala
 val viewed : Iterable[Iterable[Iterable[Int]]] =
 List(List(List(0).view).view).view
 
@@ -10,11 +9,10 @@ val filtered = viewed.flatMap{ x => x.flatMap( y => List( y.filter{ _
 > 0 } ) ) }
 
 filtered.iterator.toIterable.flatten
-{code}
+```
 
 will throw the following exception and stack trace:
-
-{code}
+```scala
 NoSuchElementException("next on empty iterator") from
 at scala.collection.Iterator$$anon$2.next(Iterator.scala:38)
 at scala.collection.Iterator$$anon$2.next(Iterator.scala:36)
@@ -24,7 +22,7 @@ at scala.collection.SeqViewLike$AbstractTransformed.head(SeqViewLike.scala:43)
 at scala.collection.immutable.Stream.scala$collection$immutable$Stream$$flatten1$1(Stream.scala:909)
 at scala.collection.immutable.Stream.flatten(Stream.scala:914)
 at scala.collection.immutable.Stream.flatten(Stream.scala:185)
-{code}
+```
 
 Drop the innermost view and it won't and you'll get the
 correct Stream() as the result.  Using Nil.view will work, using

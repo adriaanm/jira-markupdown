@@ -1,21 +1,21 @@
 to illustrate the complexity, what should we do in this case:
 compile with scalac:
-{code}
+```scala
 class Monad[X]
-{code}
+```
 
 compile with javac:
-{code}
+```scala
 public class EvilRaw {
   public Monad createMonad() {return null;}
 }
-{code}
+```
 
 then compile with scalac:
-{code}
+```scala
 class GoodScala extends EvilRaw {
   override def createMonad: Monad[_] = error("foo")
 }
-{code}
+```
 
 this should compile, right? since raw types that occur in java sigs are converted to existential types

@@ -1,22 +1,22 @@
-Copied from SI-2345:
+Copied from scala/bug#2345:
 It's cause by the definition of "class Array" in Array.scala:
-{code}
+```scala
 final class Array[A](_length: Int) extends Vector[A] 
                                       with TraversableClass[A, Array]
                                       with VectorTemplate[A, Array[A]] {
-{code}
+```
 Where "TraversableClass?[A, Array]" should be "TraversableClass?[A, Array[A]]" or other.
 
 And at line 401:
-{code}
+```scala
   override def companion: Companion[Array] = throw new Error()
-{code}
+```
 The Array also lacks type paramter.
 
 I don't know why the compiler cannot detect the lack of Array's type parameter here.
 
 BTW, scala.Array seems can not be automatically casted to plain "java.lang.Object" for Java's call as:
-{code}
+```scala
 java.text.Format#format(Object obj)
-{code}
+```
 I'm not sure if it's also related to this issue.

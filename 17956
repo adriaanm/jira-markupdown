@@ -1,6 +1,5 @@
 Using case classes with a pattern __match on a monad other than option generates weird error messages.
-
-{code}
+```scala
 trait ListMatcher {
   object __match {
     def one[T](x: T): List[T] = List(x)
@@ -16,24 +15,24 @@ trait ListMatcher {
 
   case class Yo(x: Int)
 }
-{code}
+```
 
 Compiling this snippet with -Xexperimental generates the type error:
-{noformat}
+```
 files/run/virtpatmat_virtcase.scala:14: error: type mismatch;
  found   : PartialFunction[Int,Int]
  required: List[?]
   case class Yo(x: Int)
              ^
 one error found
-{noformat}
+```
 
-With the quick fix from SI-7076, the error message is:
-{noformat}
+With the quick fix from scala/bug#7076, the error message is:
+```
 files/run/virtpatmat_virtcase.scala:14: error: type mismatch;
  found   : List[Int]
  required: Int
   case class Yo(x: Int)
              ^
 one error found
-{noformat}
+```

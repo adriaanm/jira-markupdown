@@ -1,4 +1,4 @@
-{code}
+```scala
 import scala.reflect.macros.{Context => Ctx}
 
 class C
@@ -16,18 +16,16 @@ object Impls {
     c.universe.Ident(c.universe.TypeName("X"))
   }
 }
-{code}
-
-{code}
+```
+```scala
 class foo(val bar: Int) extends annotation.StaticAnnotation
 
 object Api {
   @foo({ type Foo(x: Int) = macro Impls.foo; class D extends Foo(2); val x: Foo(2) = new D; x.x }) 
   def foo = println("it works")
 }
-{code}
-
-{code}
+```
+```scala
 00:24 ~/Projects/Kepler_typemacros/sandbox (paradise/macros)$ scalac Test.scala
 error: uncaught exception during compilation: java.lang.AssertionError
 error: java.lang.AssertionError: assertion failed: 
@@ -221,4 +219,4 @@ ConstantType(value = Constant(it works))
 	at scala.tools.nsc.Driver.process(Driver.scala:54)
 	at scala.tools.nsc.Driver.main(Driver.scala:67)
 	at scala.tools.nsc.Main.main(Main.scala)
-{code}
+```

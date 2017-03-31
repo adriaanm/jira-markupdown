@@ -1,20 +1,18 @@
 The RegexParsers trait provides an automatic capability to skip over white space before
 parsing literals or matching regexes.  Unfortunately, this behaviour doesn't work very
 nicely with the positioned combinator because it means that some thing like
-
-{code}
+```scala
 positioned (foo)
-{code}
+```
 
 sets the position of the result of the foo parser to the position of the beginning of
 the whitespace immediately preceding the foo construct, not the first non-whitespace
 character of the foo construct, which is much more useful.
 
 This problem can be worked-around using the following idiom:
-
-{code}
+```scala
 "" ~> positioned (foo)
-{code}
+```
 
 where the empty literal causes the whitespace to be skipped before foo is called.
 However, using this idiom clutters up the grammar.
@@ -23,4 +21,3 @@ My suggestion is to provide an override of positioned in RegexParsers that skips
 whitespace before it records the position and invokes its argument parser, and hence is consistent with the behaviour of literal and regex.
 
 I can put together a patch and test case if the idea is acceptable.
-

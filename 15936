@@ -1,15 +1,13 @@
 What I would really like to see (in e.g. scala.util) is a convenience class to create virtual machine shutdown hooks, like one normally implements this way:
-
-{code}
+```scala
 scala> Runtime.getRuntime().addShutdownHook(
      |   new Thread(new Runnable() {
      |     override def run() { println("I'm the shutdown code") }
      |   }))
-{code}
+```
 
 Of course the shutdown code is most likely something shutting down an ExecutorService or closing a stream or socket, etc. As you can see in the example it's really boilerplate, no closures ... so what I currently use and what serves me well is the following implementation:
-
-{code}
+```scala
 /**
  * A virtual machine shutdown hook.
  *
@@ -49,11 +47,10 @@ final object ShutdownHook {
   /** Creates a registered instance. */
   def apply(body: => Unit) = new ShutdownHook("", body).register()
 }
-{code}
+```
 
 So know creating a VM shutdown hook is as easy as:
-
-{code}
+```scala
 $$ scala -i ShutdownHook.scala
 Loading ShutdownHook.scala...
 defined class ShutdownHook
@@ -69,7 +66,7 @@ res0: ShutdownHook = ShutdownHook()
 scala> :q
 foo :)
 $$
-{code}
+```
 
 Hopefully, this makes it into library.jar :)
 

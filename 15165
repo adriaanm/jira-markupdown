@@ -1,7 +1,6 @@
 = Problem =
-_Iterator.reduceRight()_ has the following contract at the moment:
-
-{code}
+*Iterator.reduceRight()* has the following contract at the moment:
+```scala
 Applies a binary operator to all values produced by this iterator, going right to left.
 $$willNotTerminateInf
 @param  op    the binary operator.
@@ -11,14 +10,14 @@ $$willNotTerminateInf
            op(x,,1,,, op(x,,2,,, ..., op(x,,n-1,,, x,,n,,)...))
          where `x,,1,,, ..., x,,n,,` are the values produced by this iterator.
 @throws `UnsupportedOperationException` if this iterator is empty._
-{code}
+```
 
-However, if we try to use the method we see that it provides a different behavior - _op(x,,2,,, op(x,,3,,, ..., op(x,,1,,, x,,n,,)...))_
+However, if we try to use the method we see that it provides a different behavior - *op(x,,2,,, op(x,,3,,, ..., op(x,,1,,, x,,n,,)...))*
 
 = Current implementation =
 
 Current implementation looks as follows:
-{code}
+```scala
   def reduceRight[B >: A](op: (A, B) => B): B = {
     if (hasNext) foldRight[B](next())(op)
     else throw new UnsupportedOperationException("empty.reduceRight")
@@ -26,13 +25,13 @@ Current implementation looks as follows:
 
   def foldRight[B](z: B)(op: (A, B) => B): B =
     if (hasNext) op(next(), foldRight(z)(op)) else z
-{code}
+```
 
-We can see that it uses _x,,1,,_ as a seed value for _foldRight()_ call and that produce behavior that differs from _reduceRight()_ contract.
+We can see that it uses *x,,1,,* as a seed value for *foldRight()* call and that produce behavior that differs from *reduceRight()* contract.
 
 = Suggested solution =
-We can make _reduceRight()_ conform to the contract with the following implementation:
-{code}
+We can make *reduceRight()* conform to the contract with the following implementation:
+```scala
     def reduceRight[B >: A](op: (A, B) => B): B = {
       def doReduce(z: A, op: (A, B) => B): B = {
         if (hasNext) op(z, doReduce(next(), op))
@@ -41,4 +40,4 @@ We can make _reduceRight()_ conform to the contract with the following implement
       if (hasNext) doReduce(next(), op)
       else throw new UnsupportedOperationException("empty.reduceRight")
     }
-{code}
+```

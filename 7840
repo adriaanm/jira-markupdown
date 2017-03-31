@@ -1,26 +1,26 @@
-It's strange. When running {{NestRunner}} all by itself CPU usage stays all the time close to 100% , unlike when running {{ant test.suite}}.
+It's strange. When running `NestRunner` all by itself CPU usage stays all the time close to 100% , unlike when running `ant test.suite`.
 
 A few data points (8-core machine, no warm-up, no averaging over multiple runs, relative times are what counts):
-# Baseline: running {{partest --run}} results in
-{noformat}
+- Baseline: running `partest --run` results in
+```
 All of 986 tests were successful (elapsed time: 00:13:13)
-{noformat}
+```
 with 4 GB peak memory use.
-# running {{scala.tools.partest.nest.NestRunner --run}} with 
-{noformat}
+- running `scala.tools.partest.nest.NestRunner --run` with 
+```
 -Dactors.corePoolSize=32 -Dpartest.actors=32 -Dactors.maxPoolSize=64 -Dactors.enableForkJoin=true
-{noformat}
+```
 results in
-{noformat}
+```
 All of 986 tests were successful (elapsed time: 00:15:56)
-{noformat}
+```
 with 5 GB peak memory use.
-# running {{NestRunner --run}} with only {{-Dactors.enableForkJoin=false}} results in
-{noformat}
+- running `NestRunner --run` with only `-Dactors.enableForkJoin=false` results in
+```
 All of 986 tests were successful (elapsed time: 00:13:09)
-{noformat}
-with 6 GB peak memory use. Regarding pool size, {{--debug}} informs us that:
-{noformat}
+```
+with 6 GB peak memory use. Regarding pool size, `--debug` informs us that:
+```
 Info: actors.corePoolSize not defined
 
 Testing interpreter and backend
@@ -28,11 +28,10 @@ Info: initializing scala.actors.Scheduler$@351563ff...
 Info: Thread[Thread-1,5,main]: corePoolSize = 12, maxPoolSize = 256
 Info: scala.actors.Scheduler$@351563ff: starting new Thread[Thread-1,5,main] 
       [class scala.actors.scheduler.ResizableThreadPoolScheduler]
-{noformat}
+```
 
-Background info, quoting from {{scala.actors.Actor}}
-
-{noformat}
+Background info, quoting from `scala.actors.Actor`
+```
  *  If actors use blocking operations (for example, methods for blocking I/O),
  *  there are several options:
  *
@@ -43,11 +42,11 @@ Background info, quoting from {{scala.actors.Actor}}
  *    avoid starvation caused by actors that invoke arbitrary blocking methods.
  *  - The `actors.enableForkJoin` JVM property can be set to `false`, in which
  *    case a `ResizableThreadPoolScheduler` is used by default to execute actors.
-{noformat}
+```
 
 Summing up:
 
-|| {{NestRunner --run}} ||elapsed time||
+|| `NestRunner --run` ||elapsed time||
 | ForkJoinScheduler, parallelism == 12 | 13 minutes |
 | ForkJoinScheduler, parallelism == 32 | 16 minutes |
 | ResizableThreadPoolScheduler         | 13 minutes |

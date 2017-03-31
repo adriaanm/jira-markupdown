@@ -5,18 +5,16 @@ i am getting a compiler error with
 "Error:Caused by java.lang.Error: symbol value player$$1 does not exist in de.sciss.synth.Buffer.play"
 
 for the last change committed to http://github.com/Sciss/ScalaCollider (# f675b4b051969e9c4b852b444829b03eafd4cd2a )... the lines in charge are in de.sciss.synth.Buffer :
-
-{code}
+```scala
    def play( loop: Boolean = false, amp: Float = 1f, out: Int = 0 ) : Synth = {
       val player = PlayBuf.ar( numChannels, id, BufRateScale.kr( id ), loop = if( loop ) 1 else 0 )
       if( !loop ) FreeSelfWhenDone.kr( player )
       player * amp
    }.play( server, out )
-{code}
+```
 
 the exception:
-
-{code}
+```scala
 Information:Compilation completed with 44 errors and 0 warnings
 Information:44 errors
 Information:0 warnings
@@ -64,15 +62,14 @@ Error:scala.tools.nsc.Global$$Run.compile(Global.scala:815)
 Error:scala.tools.nsc.Main$$.process(Main.scala:109)
 Error:scala.tools.nsc.Main$$.main(Main.scala:123)
 Error:scala.tools.nsc.Main.main(Main.scala)
-{code}
+```
 
 the project is fairly complex and in this case uses a lot of implicits, so it will be difficult to create an isolated case...
 
 this is with Scala 2.8 RC1.
 
 a workaround has been committed in the next version # aec41adf6a91ad7ecf5b0028bb79359d06b9a3ef , which uses an explicit method for creating the Synth instead:
-
-{code}
+```scala
 def play( loop: Boolean = false, amp: Float = 1f, out: Int = 0 ) : Synth = {
       import SC._
       SC.play( server, out ) { // working around nasty compiler bug
@@ -81,9 +78,8 @@ def play( loop: Boolean = false, amp: Float = 1f, out: Int = 0 ) : Synth = {
          ply * amp
       }
    }
-{code}
+```
 
 this still leaves me with a strange runtime error i will need to examine, though...
 
 sorry for not being able to provide easier cases, but i guess that is the nature of nasty compiler bugs....
-

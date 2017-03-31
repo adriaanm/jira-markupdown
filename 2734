@@ -3,24 +3,22 @@ you'd think this would be a trivial fix, but it looks like ParallelMatching "rel
 Paul: could you please have a look at why `shortCut` returns a negative value that's later used as an index?  (`requestBody` does `targets(bx)`) 
 
 the `shortcut` I'm talking about is called in `class MixEquals`:
-{code}
+```scala
       lazy val success = remake(List(
         rest.rows.head.insert2(List(NoPattern), head.boundVariables, scrut.sym),
         Row(emptyPatterns(1 + rest.tvars.size), NoBinding, NoGuard, shortCut(label))
       )).toTree
-{code}
+```
 
 
 I added `require(bx >= 0)` to `Row` and `VariableRule` to chase this down -- you then get:
-
-{code}
+```scala
 [scalacfork] Compiling 238 files to /Users/adriaan/git/scala/build/quick/classes/compiler
 [scalacfork] Exception in thread "main" java.lang.IllegalArgumentException: requirement failed
 [scalacfork] 	at scala.Predef$$.require(Predef.scala:112)
 [scalacfork] 	at scala.tools.nsc.matching.ParallelMatching$$MatchMatrix$$Row.<init>(ParallelMatching.scala:590)
 [scalacfork] 	at scala.tools.nsc.matching.ParallelMatching$$MatchMatrix$$MixEquals.success(ParallelMatching.scala:498)
 [scalacfork] 	at scala.tools.nsc.matching.ParallelMatching$$MatchMatrix$$RuleApplication.codegen(ParallelMatching.scala:251)
-{code}
+```
 
 When this is fixed in the pattern matcher, feel free to re-assign to me or simply add the `require(n >= 0)` to `List::drop`. Thanks!
-

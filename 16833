@@ -1,19 +1,16 @@
 I couldn't minimize, but this is the second time I hit this enigmatic assert.
 To repro, checkout https://github.com/adriaanm/scala/commit/9dc710d9a3, there's a type error in Typers:
-
-{code}
+```scala
 val (ownType, cases1) = typedAdaptedCases(cases, selectorTp)
-{code}
+```
 
 should be
-
-{code}
+```scala
 val (cases1, ownType) = typedAdaptedCases(cases, selectorTp)
-{code}
+```
 
 this mistake causes a type error in a case in the match below, which seems to trigger the assert
-
-{code}
+```scala
 (MatchTranslator(this)).translateMatch(selector1, cases1, ownType, matchFailGen) match {
   // a switch
   case Block(vd :: Nil, tree@Match(selector, cases)) =>
@@ -23,10 +20,10 @@ this mistake causes a type error in a case in the match below, which seems to tr
   case translated =>
     typed(translated, mode, ownType) //WildcardType) setType owntype
 }
-{code}
+```
 
 stacktrace:
-{code}
+```scala
 
 [scalacfork] /Users/adriaan/git/scala/src/compiler/scala/tools/nsc/typechecker/Typers.scala:3410: error: type mismatch;
 [scalacfork]  found   : Typers.this.global.Type
@@ -58,4 +55,4 @@ stacktrace:
 [scalacfork] 	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:4545)
 [scalacfork] 	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:4619)
 [scalacfork] 	at scala.tools.nsc.typechecker.Typers$Typer.typedCase(Typers.scala:2052)
-{code}
+```

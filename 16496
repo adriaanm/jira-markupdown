@@ -1,16 +1,14 @@
 Code lifting fails for constructor calls of anonymous structural types.
 
 On 2.9.1, this example
-
-{code}
+```scala
 object Test {
   ((_:Int) => new { val x = 1 }): scala.reflect.Code[_]
 }
-{code}
+```
 
 crashes scalac with
-
-{noformat}
+```
 Exception in thread "main" scala.tools.nsc.symtab.Types$TypeError: cannot reify symbol: constructor $anon
         at scala.tools.nsc.transform.Reifiers$Reifier.reify(Reifiers.scala:224)
         at scala.tools.nsc.transform.Reifiers$Reifier.reify(Reifiers.scala:237)
@@ -61,18 +59,17 @@ Exception in thread "main" scala.tools.nsc.symtab.Types$TypeError: cannot reify 
         at scala.tools.nsc.Main$.process(Main.scala:106)
         at scala.tools.nsc.Main$.main(Main.scala:123)
         at scala.tools.nsc.Main.main(Main.scala)
-{noformat}
+```
 
 If you remove the contents of the anonymous type
-{code}
+```scala
 object Test {
   ((_:Int) => new { }): scala.reflect.Code[_]
 }
-{code}
+```
 
 it fails with
-
-{noformat}
+```
 Exception in thread "main" scala.tools.nsc.symtab.Types$TypeError: cannot reify tree (class scala.reflect.generic.Trees$EmptyTree$): <empty>
         at scala.tools.nsc.transform.Reifiers$Reifier.reify(Reifiers.scala:313)
         at scala.tools.nsc.transform.Reifiers$Reifier$$anonfun$reify$9.apply(Reifiers.scala:297)
@@ -140,13 +137,12 @@ Exception in thread "main" scala.tools.nsc.symtab.Types$TypeError: cannot reify 
         at scala.tools.nsc.Main$.process(Main.scala:106)
         at scala.tools.nsc.Main$.main(Main.scala:123)
         at scala.tools.nsc.Main.main(Main.scala)
-{noformat}
+```
 
 instead.
 
 On scala-2.10.0.r25895-b20111027023733, it still crashes but with different error messages:
-
-{noformat}
+```
 Exception in thread "main" java.lang.Error: cannot reify type Object{def this(): Object} of class class scala.reflect.internal.Types$ClassInfoType
         at scala.reflect.internal.SymbolTable.abort(SymbolTable.scala:33)
         at scala.tools.nsc.transform.LiftCode$Codifier$Reifier.reifyType(LiftCode.scala:296)
@@ -225,9 +221,8 @@ Exception in thread "main" java.lang.Error: cannot reify type Object{def this():
         at scala.tools.nsc.Driver.process(Driver.scala:52)
         at scala.tools.nsc.Driver.main(Driver.scala:65)
         at scala.tools.nsc.Main.main(Main.scala)
-{noformat}
-
-{noformat}
+```
+```
 error: java.lang.Error: cannot reify type Object{def this(): Object {val x: Int}; val x: Int; private val x: Int} of class class scala.reflect.internal.Types$ClassInfoType
         at scala.reflect.internal.SymbolTable.abort(SymbolTable.scala:33)
         at scala.tools.nsc.transform.LiftCode$Codifier$Reifier.reifyType(LiftCode.scala:296)
@@ -306,4 +301,4 @@ error: java.lang.Error: cannot reify type Object{def this(): Object {val x: Int}
         at scala.tools.nsc.Driver.process(Driver.scala:52)
         at scala.tools.nsc.Driver.main(Driver.scala:65)
         at scala.tools.nsc.Main.main(Main.scala)
-{noformat}
+```

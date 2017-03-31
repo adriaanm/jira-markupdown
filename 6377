@@ -1,6 +1,5 @@
 The type it is inferring is GenSeq[Int] { refinement }.  This is by definition also a GenSeq[Int].  You're seeing the the same thread in all 8 because 8 is such a low number it doesn't bother spreading the load.
-
-{noformat}
+```
 
 scala> def numbers(isPar: Boolean): scala.collection.GenSeq[Int] = if (isPar) (1 to 256).par else 1 to 256
 numbers: (isPar: Boolean)scala.collection.GenSeq[Int]
@@ -29,5 +28,4 @@ scala> numbers(true) map { _ => Thread.currentThread.getName } groupBy (x => x) 
 
 scala> numbers(false) map { _ => Thread.currentThread.getName } groupBy (x => x) mapValues (_.length) foreach println
 (Thread-20,256)
-
-{noformat}
+```

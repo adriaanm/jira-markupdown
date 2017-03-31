@@ -1,12 +1,11 @@
 Replying to [comment:9 extempore]:
 > Replying to [comment:6 dragos]:
-> > Thanks for coming up with such a small example. This look similar to SI-2175 (an undeclared local variable is used in the pattern match translation). 
+> > Thanks for coming up with such a small example. This look similar to scala/bug#2175 (an undeclared local variable is used in the pattern match translation). 
 > 
 > I don't think 2429B has anything to do with the pattern matcher.  The synthetic e$$1 which is crashing it doesn't make its first appearance until lambdalifter, right here:
 
 It's already there after explicit outer (I renamed 'e' to 'eee' to be easier to spot). There's only one appearance of 'eee', when it's used as a return value from a case branch:
-
-{code}
+```scala
 [[syntax trees at end of explicitouter]]// Scala source: 2429.scala
 package <empty> {
   final class Bug2429B extends java.lang.Object with ScalaObject {
@@ -59,7 +58,7 @@ package <empty> {
     }, immutable.this.List.builderFactory[Bug2429B.T]()))
   }
 }
-{code}
+```
 
 
 > {code}

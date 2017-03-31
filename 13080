@@ -1,16 +1,14 @@
 With 2.7.0-RC1, this code doesn't compile:
-
-{code}
+```scala
 object Test {
   def foo(x : Any) = x match {
     case y => { System.out.println(y.getClass()) }
   }
 }
-{code}
+```
 
 It generates this error:
-
-{code}
+```scala
 error: type mismatch;
  found   : Any
  required: ?{val getClass: ?}
@@ -18,13 +16,12 @@ Note that implicit conversions are not applicable because they are ambiguous:
  both method any2stringadd in object Predef of type (Any)scala.runtime.StringAdd and method any2ArrowAssoc in object Predef of type [A](A)ArrowAssoc[A]
  are possible conversion functions from Any to ?{val getClass: ?}
     case y => { System.out.println(y.getClass()) }
-{code}
+```
 
 One doesn't except this type of message for a getClass() call.
 
 You would end up writing code like this:
-
-{code}
+```scala
 object Test extends Application {
   def foo(x : Any) = x match {
     case y : AnyRef => { System.out.println(y.getClass()) }
@@ -34,7 +31,7 @@ object Test extends Application {
   foo(10)
   foo(null)
 }
-{code}
+```
 
 But besides null, what would z ever match?
 

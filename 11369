@@ -1,8 +1,7 @@
 It is awkward to make transpose lazy while maintaining binary compatibility.  Also, lazy transpose would convert it from an immediate exception when collections are not rectangular to an eventual one (maybe never), which may or may not adhere to the contract for other collections.
 
 Therefore, for the time being I recommend the following workaround:
-
-{code}
+```scala
 scala> val s = Stream(Stream.from(0), Stream.from(1))
 s: scala.collection.immutable.Stream[scala.collection.immutable.Stream[Int]]
   = Stream(Stream(0, ?), ?)
@@ -14,4 +13,4 @@ ss: scala.collection.immutable.Stream[scala.collection.immutable.Stream[Int]]
 scala> ss.take(2).map(_.force).force
 res0: scala.collection.immutable.Stream[scala.collection.immutable.Stream[Int]]
   = Stream(Stream(0, 1), Stream(1, 2))
-{code}
+```

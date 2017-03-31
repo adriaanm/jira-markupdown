@@ -1,7 +1,7 @@
 Calling sorted on a Seq view throws UnsupportedOperationException because newBuilder is not overridden in IndexedSeqView. This is a reduced example and looks silly, but using filter on a view before sorting is something one would expect to work and it fails at runtime with no warning.
 
 Test case:
-{code}
+```scala
 package test
 
 object Foo {
@@ -10,10 +10,10 @@ object Foo {
     ()
   }
 }
-{code}
+```
 
 Output tested with r21007: 
-{code}
+```scala
 Exception in thread "main" java.lang.UnsupportedOperationException: IndexedSeqView(foo, bar, baz).newBuilder
 	at scala.collection.TraversableViewLike$$class.newBuilder(TraversableViewLike.scala:40)
 	at scala.collection.mutable.IndexedSeqLike$$$$anon$$1.newBuilder(IndexedSeqLike.scala:36)
@@ -21,4 +21,4 @@ Exception in thread "main" java.lang.UnsupportedOperationException: IndexedSeqVi
 	at scala.collection.mutable.IndexedSeqLike$$$$anon$$1.sorted(IndexedSeqLike.scala:36)
 	at test.Foo$$.main(Foo.scala:5)
 	at test.Foo.main(Foo.scala)
-{code}
+```

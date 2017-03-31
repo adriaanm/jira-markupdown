@@ -3,7 +3,7 @@ I think this bug is invalid.
 PolyHashMap is parameterized on the type constructors.  K and V are covariant.  So it is perfectly valid for it to infer "Any" for the type parameter to update.  This is true regardless of the variance in PolyHashMap's definition, because a K[X] is a K[Any] for all possible X, and a V[X] is a V[Any].
 
   If you specify the type for the call to update, you get the expected error:
-{code}
+```scala
 m.update[Int](K(1), V("1"))
 
 ./b.scala:33: error: type mismatch;
@@ -12,15 +12,15 @@ m.update[Int](K(1), V("1"))
   m.update[Int](K(1), V("1"))
                         ^
 one error found
-{code}
+```
 If you place a bound on update which falls above the lub, it will fail as expected:
-{code}
+```scala
 def update[A <: AnyRef](k : Key[A], v : Value[A]) : Unit = m(k) = v
 
 ./b.scala:35: error: inferred type arguments [Any] do not conform to method update's type parameter bounds [A <: AnyRef]
   m(K(1)) = V("1") // no error! -- type inference should look at signature for variance, not in type arg
   ^
 one error found
-{code}
+```
 
 If you are suggesting that the compiler should fail to compile the code even though it is well-typed, then I think there's a much higher burden of proof necessary than that shown in this ticket.  So, closing.

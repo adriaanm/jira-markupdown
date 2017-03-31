@@ -1,29 +1,28 @@
 In 2.8.0.final and r22621:
 
 I have a method with two argument lists.  The first contains a repeated parameter; the second contains a parameter with a default.  If I pass a Seq to the first and don't provide the second argument, there is a compile error.  If I provide the second argument, there is no error.  Details:
-
-{code}
+```scala
 scala> def a(x: Int*)(s: Int = 3) = 9
 a: (x: Int*)(s: Int)Int
-{code}
+```
 
 Omitting the second parameter produces an error:
-{code}
+```scala
 scala> a( Seq(3) : _*)()
 <console>:7: error: no `: _*' annotation allowed here
 (such annotations are only allowed in arguments to *-parameters)
        a( Seq(3) : _*)()
                  ^
-{code}
+```
 
 It compiles if the second parameter is provided explicitly:
-{code}
+```scala
 scala> a( Seq(3) : _*)(4)
 res1: Int = 9
-{code}
+```
 
 or the first parameter list is provided directly:
-{code}
+```scala
 scala> a(3,4)()                     
 res4: Int = 9
-{code}
+```

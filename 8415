@@ -2,6 +2,6 @@ It looks like we're doomed w.r.t this one.
 
 The problem is that Scala reflection and reflective compiler (which is underlying toolboxes) use a different model of classfile loading than vanilla scalac does. Vanilla compiler has its classpath as a list of directories/jars on the filesystem, so it can exhaustively enumerate the packages on the classpath. Reflective compiler works with arbitrary classloaders, and classloaders don't have a concept of enumerating packages.
 
-As a result, when a reflective compiler sees "math" having "import scala._; import java.lang._" imports in the lexical context, it doesn't know whether that "math" stands for _root_.math, scala.math or java.lang.math. So it has to speculate and provisionally creates a package for _root_.math, which ends up being a wrong choice.
+As a result, when a reflective compiler sees "math" having "import scala._; import java.lang._" imports in the lexical context, it doesn't know whether that "math" stands for *root*.math, scala.math or java.lang.math. So it has to speculate and provisionally creates a package for *root*.math, which ends up being a wrong choice.
 
 We could probably support a notion of "overloaded" packages, so that the compiler doesn't have to speculate and can store all the possible options, but that'd require redesign of reflection and probably of the typer as well.

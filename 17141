@@ -1,5 +1,5 @@
 I try to access a method reflectively. The following statements define the method mirror.
-{code}
+```scala
 class X {
    def methodIntIntInt(x: Int, y: Int) = x+y
 }
@@ -14,10 +14,10 @@ val tpe = typeOf[X]
 val ms = tpe.declaration(newTermName("methodIntIntInt")).asMethodSymbol
 val mm1 = im.reflectMethod(ms)
 mm1(1,2)
-{code}
+```
 
 Now if the method mirror is invoked (via apply), then an exception is thrown:
-{code}
+```scala
 scala> mm1(1,2)
 java.lang.ClassNotFoundException: no Java class corresponding to object $iw found
         at scala.reflect.runtime.JavaMirrors$JavaMirror$$anonfun$classToJava$1.scala$reflect$runtime$JavaMirrors$JavaMirror$$anonfun$$noClass$1(JavaMirrors.scala:905)
@@ -72,14 +72,14 @@ java.lang.ClassNotFoundException: no Java class corresponding to object $iw foun
         at scala.tools.nsc.MainGenericRunner.process(MainGenericRunner.scala:92)
         at scala.tools.nsc.MainGenericRunner$.main(MainGenericRunner.scala:101)
         at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
-{code}
+```
 
 Interestingly: If we access {{{im.symbol}}} and then invoke the method over the mirror, then it works.
-{code}
+```scala
 scala> im.symbol
 res3: reflect.runtime.universe.ClassSymbol = class X
 
 scala> mm1(1,2)
 res4: Any = 3
-{code}
+```
 

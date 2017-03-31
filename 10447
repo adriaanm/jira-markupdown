@@ -1,8 +1,7 @@
 The inference failure does not appear to be a bug; the type of `arg` contains a pair of overloaded `foreach` members; one contributed by `Tree`, and the second contributed by `List[List[Tree]]`
 
 This amounts to:
-
-{code}
+```scala
 trait A { def foo(f: Int => String)}
 sealed abstract class B1
 final class B extends B1 { def foo(f: String => Int)}
@@ -13,6 +12,6 @@ object Test {
       b.foo(x => x)
   }
 }
-{code}
+```
 
 It is a pity that our static checks don't detect the "fruitless type test" here as they would if `B` were final.

@@ -1,6 +1,5 @@
 So, I was a bit optimistic. Here's a pretty robust test case that proves that it is working, except in the case of AnyRef specialization:
-
-{code}
+```scala
 import scala.{specialized => spec}
 
 class D[@spec T, @spec W](t:T, w:W)
@@ -33,11 +32,10 @@ object Test {
     new C[Int](1).m[Double]((x:Int) => D.get[Int, Double](x, 2.0))
   }
 }
-{code}
+```
 
 The output I get is:
-
-{code}
+```scala
 D$mcII$sp
 D$mcIL$sp
 D$mcLI$sp
@@ -48,7 +46,7 @@ D
 D
 D
 D$mcID$sp
-{code}
+```
 
 The top 5 lines are correct, but the bottom 5 should be the same as the top, which they are except in the IL and LI cases. It seems that AnyRef specialization is working when invoked directly (in cases 2 and 3) but not when invoked indirectly (cases 7 and 8).
 

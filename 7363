@@ -1,8 +1,7 @@
 The optimizer can't optimize code that doesn't typecheck, the JVM can't run code that doesn't typecheck, for example the ICode below 
 
-(the "{{CALL_METHOD scala.Unit.getClass}}" expects an Object on the stack but finds nothing (the Predef module instance is there to be consumed by the forthcoming {{Predef.println}} invocation) 
-
-{noformat}
+(the "{{CALL_METHOD scala.Unit.getClass}}" expects an Object on the stack but finds nothing (the Predef module instance is there to be consumed by the forthcoming `Predef.println` invocation) 
+```
   def main(args: Array[String] (ARRAY[REF(class String)])): Unit {
   locals: value args
   startBlock: 1
@@ -15,13 +14,12 @@ The optimizer can't optimize code that doesn't typecheck, the JVM can't run code
     5	RETURN(UNIT)
     
   }
-{noformat}
+```
 
 How does that code find its way till GenICode? Like so:
 
 After superaccessors:
-
-{noformat}
+```
 [[syntax trees at end of superaccessors]]// Scala source: bt4.scala
 package <empty> {
   object Test extends scala.AnyRef {
@@ -34,11 +32,10 @@ package <empty> {
     def main(args: Array[String]): Unit = scala.this.Predef.println(Test.this.UNIT.getClass())
   }
 }
-{noformat}
+```
 
 After erasure:
-
-{noformat}
+```
 [[syntax trees at end of erasure]]// Scala source: bt4.scala
 package <empty> {
   object Test extends Object {
@@ -51,5 +48,5 @@ package <empty> {
     def main(args: Array[String]): Unit = scala.this.Predef.println(().getClass())
   }
 }
-{noformat}
+```
 

@@ -1,6 +1,5 @@
 For certain inputs, the result of Iterator.span, followed by toSeq and toList, is wrong. If span is directly followed by toList, everything is fine.
-
-{code}
+```scala
 def spanA(list: List[Int], x: Int) =
   list.iterator.span(_ == x) match {
     case (a,b) => (a.toList, b.toList)
@@ -20,17 +19,15 @@ println()
 
 println("A2: " + spanA(List(1, 2, 1), 1) )
 println("B2: " + spanB(List(1, 2, 1), 1) )
-{code}
+```
 
 results in
-
-
-{code}
+```scala
 A1: (List(1),List(2, 3))
 B1: (List(1),List(2, 3))
 
 A2: (List(1),List(2, 1))
 B2: (List(1, 1),List(2))
-{code}
+```
 
 Interestingly, the misbehaviour only seems to occur here when the last element of the input list equals the first, even though the span operation should never even look at the last element in these example cases.

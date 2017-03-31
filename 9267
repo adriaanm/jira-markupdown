@@ -1,6 +1,5 @@
 Here's minimal reproduction of the issue:
-
-{code}
+```scala
 scala> :paste
 // Entering paste mode (ctrl-D to finish)
 
@@ -22,7 +21,7 @@ res0: Foo{val global: Null} = $anon$1@9273085
 
 scala> res0.ownPhaseRunId
 res1: Int = 14
-{code}
+```
 
 We inline the constant and thus never refer to global so it doesn't blow up with NPE. What's worse, -Xcheckinit won't help you because it runs after the constant has been inlined and there's no sign of accessing global anymore.
 

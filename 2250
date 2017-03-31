@@ -1,14 +1,14 @@
 I just ran into this bug too, working with classloaders.  Interestingly it does not manifest if you explicitly qualify with super.  Change trait S to this:
-{code}
+```scala
   def bar() {
     super.foo()
   }
-{code}
+```
 and scala s.Test says "J.foo()".  The bytecode looks like this, as a result of the mangling in SuperAccessors.  Perhaps this is as simple as identifying this situation during that phase and treating it like a super invocation?
-{code}
+```scala
 public static void bar(s.S);
   Code:
    0:	aload_0
    1:	invokeinterface	SI-16,  1; //InterfaceMethod s/S.s$$S$$$$super$$foo:()V
    6:	return
-{code}
+```

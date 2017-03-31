@@ -1,5 +1,5 @@
-While working on sbt's incremental compiler I introduced a new compiler phase that affected phase ordering a little bit and that leads to NPE in {{selectiveanf}} phase:
-{code}
+While working on sbt's incremental compiler I introduced a new compiler phase that affected phase ordering a little bit and that leads to NPE in `selectiveanf` phase:
+```scala
 at scala.tools.selectivecps.CPSUtils$class.hasAnswerTypeAnn(CPSUtils.scala:94)
 at scala.tools.selectivecps.SelectiveANFTransform.hasAnswerTypeAnn(SelectiveANFTransform.scala:15)
 at scala.tools.selectivecps.SelectiveANFTransform$ANFTransformer.transform(SelectiveANFTransform.scala:124)
@@ -32,10 +32,10 @@ at scala.collection.mutable.ListBuffer$$anon$1.foreach(ListBuffer.scala:318)
 at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:297)
 at scala.tools.nsc.Global$Run.compileSources(Global.scala:953)
 at scala.tools.nsc.Global$Run.compile(Global.scala:1041)
-{code}
+```
 
 The phase order in sbt is following:
-{code}
+```scala
       phase name  id  description
       ----------  --  -----------
           parser   1  parse source into ASTs, perform simple desugaring
@@ -51,10 +51,10 @@ The phase order in sbt is following:
     selectivecps  11  
         liftcode  12  reify trees
          uncurry  13  uncurry, translate function values to anonymous classes
-{code}
+```
 
-Notice, that {{selectiveanf}} runs before {{refchecks}} whereas in standard Scala compiler it runs after {{refchecks}} and it doesn't crash:
-{code}
+Notice, that `selectiveanf` runs before `refchecks` whereas in standard Scala compiler it runs after `refchecks` and it doesn't crash:
+```scala
     phase name  id  description
     ----------  --  -----------
         parser   1  parse source into ASTs, perform simple desugaring
@@ -68,6 +68,6 @@ superaccessors   5  add super accessors in traits and nested classes
       liftcode   9  reify trees
   selectivecps  10  
        uncurry  11  uncurry, translate function values to anonymous classes
-{code}
+```
 
-I verified in sbt context that if I push {{selectiveanf}} phase after {{refchecks}} then it works properly which means that there's hidden (undeclared) dependency of {{selectiveanf}} phase on {{refchecks}}.
+I verified in sbt context that if I push `selectiveanf` phase after `refchecks` then it works properly which means that there's hidden (undeclared) dependency of `selectiveanf` phase on `refchecks`.

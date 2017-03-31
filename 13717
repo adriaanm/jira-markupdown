@@ -1,8 +1,7 @@
 I'm seeing strange permissions in the resulting jar file from the build because one of the jars (msil I think) in a zipfileset for scala-compiler.jar is DOS format. This apparently doesn't combine well with the other which end up in Unix format. Setting the filemode and dirmode explicitly takes care of the problem.
 
 Here's a patch that fixes it:
-
-{code}
+```scala
 #!patch
 diff -ur scala-2.7.2.RC1.orig/build.xml scala-2.7.2.RC1/build.xml
 --- scala-2.7.2.RC1.orig/build.xml      2008-08-20 01:56:04.000000000 -0600
@@ -19,4 +18,4 @@ diff -ur scala-2.7.2.RC1.orig/build.xml scala-2.7.2.RC1/build.xml
 +      <zipfileset dirmode="755" filemode="644" src="${jline.jar}"/>
      </jar>
    </target>
-{code}
+```

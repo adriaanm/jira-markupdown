@@ -3,7 +3,7 @@ Hello,
 Sorry for the long and meaningless summary.
 
 I am using scala 2.7.3 final and the following looks like a bug to me, but maybe I am using too experimental features ... :
-{code}
+```scala
 object Types {
   type QuasiC = {val valInC: Types.QuasiA}
   type QuasiA = {def methodInA: String}
@@ -23,16 +23,16 @@ abstract class C {
     new B(this)
   }
 }
-{code}
+```
 
 gives this error :
-{code}
+```scala
 test2.scala:19: error: type mismatch;
  found   : test2.C
  required: test2.Types.QuasiC
     new B(this)
           ^
 one error found
-{code}
+```
 
 If I am not mistaken, to call testM on a C, C will not be abstract, so valInC will have a value, that will be of class A, which should not be abstract, so mixed in with something that provides methodInA, and so C will be conform to QuasiC !

@@ -1,12 +1,11 @@
 This is a different idea of mutability than Scala has.  (Rust has this idea.)
 
-That is, in Rust, mutability is a property of the *context*.  If you are in a mutable context, you can mutate things.  If you are in an immutable context, you can't.  If you stick a mutable thing into an immutable context, you can't mutate it any more.  (Conversely: if you stick an immutable thing into a mutable context, you can mutate it.)  There are both advantages and disadvantages to this approach.  It lowers surprise when you wield the system intentionally, but it makes it difficult for you to really protect something from mutation.
+That is, in Rust, mutability is a property of the **context**.  If you are in a mutable context, you can mutate things.  If you are in an immutable context, you can't.  If you stick a mutable thing into an immutable context, you can't mutate it any more.  (Conversely: if you stick an immutable thing into a mutable context, you can mutate it.)  There are both advantages and disadvantages to this approach.  It lowers surprise when you wield the system intentionally, but it makes it difficult for you to really protect something from mutation.
 
-In Scala as it stands, mutability is a property of the *field* and therefore you get cases where immutable fields hold mutable objects and vice versa.  This is just one example of this sort.  Option(Array(1,2,3)) is another.
+In Scala as it stands, mutability is a property of the **field** and therefore you get cases where immutable fields hold mutable objects and vice versa.  This is just one example of this sort.  Option(Array(1,2,3)) is another.
 
 I do think it's bad that X* doesn't have a very clear type, so you can be thinking "immutable" and yet get a mutating version handed to you.  Personally I would just disallow X* in case classes, or think of some more robust fix.  If you want a vararg in your case class to make it seem like the case class can take an arbitrary number of parameters, you'll be have a bit of a rough ride:
-
-{code}
+```scala
 scala> case class C(a: Int, xs: Int*)
 defined class C
 
@@ -21,4 +20,4 @@ res2: Int = 6
 
 scala> res0.productArity  // Wait, what?
 res3: Int = 2
-{code}
+```

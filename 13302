@@ -1,6 +1,5 @@
 The current desugaring goes approximately as follows:
-
-{code}
+```scala
 object Foreach{
   def main(args : Array[String]){
     for (arg <- args; if (arg.length > 3)){
@@ -8,27 +7,25 @@ object Foreach{
     }
   }
 }
-{code}
+```
 
 Becomes 
-
-{code}
+```scala
 object Foreach{
   def main(args : Array[String]){
     args.filter(arg => arg.length > 3).foreach(arg => println(arg));
   }
 }
-{code}
+```
 
 It should instead desugar to 
-
-{code}
+```scala
 object Foreach{
   def main(args : Array[String]){
     args.foreach(arg => if (arg.length > 3) println(arg));
   }
 }
-{code}
+```
 
 As this latter desugaring avoids creating intermediate datastructures.
 

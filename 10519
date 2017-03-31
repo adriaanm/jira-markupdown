@@ -1,6 +1,5 @@
 This comes from:
-
-{code}
+```scala
 val symbolicCases = approx.approximateMatch(cases, approx.onUnknown { tm =>
         approx.fullRewrite.applyOrElse[TreeMaker, Prop](tm, {
           case BodyTreeMaker(_, _) => True // irrelevant -- will be discarded by symbolCase later
@@ -9,10 +8,9 @@ val symbolicCases = approx.approximateMatch(cases, approx.onUnknown { tm =>
             False
         })
       }) map caseWithoutBodyToProp
-{code}
+```
 
-bailing out when encountering the {{ProductExtractorTreeMaker}} representing the null and length test.
-
-{noformat}
+bailing out when encountering the `ProductExtractorTreeMaker` representing the null and length test.
+```
 P(x2,x2.a.!=(null).&&(x2.a.lengthCompare(1).==(0)),Substitution((p3,x2.a(0))))
-{noformat}
+```

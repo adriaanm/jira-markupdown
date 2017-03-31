@@ -1,26 +1,24 @@
-{code:scala}
+```scala
 class Foo[T <: String]
 class Bar[T]
 def foo[T](implicit bar: Bar[T]) = bar
 implicit def mkFooBar[A, T[x] <: Foo[x]]: Bar[T[A]] = new Bar[T[A]]
 
 foo[Foo[String]]
-{code}
+```
 
 If you compile this code in one go, you get the following error:
-
-{code:scala}
+```scala
 error: could not find implicit value for parameter bar: Bar[Foo[String]]
        foo[Foo[String]]
           ^
-{code}
+```
 
 This error is actually caused by another error:
-
-{code:scala}
+```scala
 error: type arguments [x] do not conform to class Foo's type parameter bounds [T <: String]
        implicit def mkFooBar[A, T[x] <: Foo[x]]: Bar[T[A]] = new Bar[T[A]]
                                         ^
-{code}
+```
 
-This is the error you _actually_ have to fix to get the code working, but the compiler doesn't show it and leaves you guessing what the problem is.
+This is the error you *actually* have to fix to get the code working, but the compiler doesn't show it and leaves you guessing what the problem is.

@@ -1,6 +1,5 @@
-In the presence of syntax errors, Scalac warns about {{macro}} being deprecated, for example:
-
-{code}
+In the presence of syntax errors, Scalac warns about `macro` being deprecated, for example:
+```scala
     import reflect.makro.Context
     
     object Bug {
@@ -11,11 +10,10 @@ In the presence of syntax errors, Scalac warns about {{macro}} being deprecated,
     object BugImpl {
       def myMacro;(c: Context) = c.reify(())
     }
-{code}
+```
 
 gives:
-
-{code}
+```scala
 
 [warn] /Users/paul/scala/scala-macro-experiments/src/main/scala/Bug.scala:5: macro is now a reserved word; usage as an identifier is deprecated
 [warn]   def myMacro: Unit = macro BugImpl.myMacro
@@ -23,6 +21,6 @@ gives:
 [error] /Users/paul/scala/scala-macro-experiments/src/main/scala/Bug.scala:9: ';' expected but '=' found.
 [error]   def myMacro;(c: Context) = c.reify(())
 [error]                            ^
-{code}
+```
 
-Remove the spurious {{;}} and the deprecation warning goes away.
+Remove the spurious `;` and the deprecation warning goes away.

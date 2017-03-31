@@ -1,12 +1,11 @@
-*Reproducing the comment I left there, here:*
+**Reproducing the comment I left there, here:**
 
 These examples in the repl don't make any difference, but there are dozens more of these in the compiler and I am sure you don't want to continue this substitution. That ThreadLocal is not a desirable change, and this will be way slower, which you won't have any trouble seeing it if you go after any remotely hot spot where those 3-4 lines of boilerplate exist.
 
 When marked @inline, these calls are compiled ideally - no thunks, no thread locals, state managed on the stack. This is a local optimum, all directions away lead down. You might be able to reduce the boilerplate with a macro. That is the only change I can see making sense.
 
 Here's a partial list of additional sites, which I offer to show how far this PR comes from eliminating these, and not as encouragement to change others. These are only the ones which matched regexp finally.*\= saved (which means I was most likely the author, or at least the tweaker) but it's not by any means complete.
-
-{noformat}
+```
 src/compiler/scala/tools/nsc/ast/parser/Parsers.scala:229:      finally smartParsing = saved
 src/compiler/scala/tools/nsc/ast/parser/Parsers.scala:311:      finally classContextBounds = saved
 src/compiler/scala/tools/nsc/ast/parser/Parsers.scala:497:      finally inFunReturnType = saved
@@ -38,4 +37,4 @@ src/repl/scala/tools/nsc/interpreter/IMain.scala:202:    finally printResults = 
 src/repl/scala/tools/nsc/interpreter/IMain.scala:208:    finally totalSilence = saved
 src/repl/scala/tools/nsc/interpreter/IMain.scala:1137:    finally isettings.unwrapStrings = saved
 src/repl/scala/tools/nsc/interpreter/session/FileBackedHistory.scala:28:    finally isPersistent = saved
-{noformat}
+```

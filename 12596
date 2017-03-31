@@ -3,12 +3,11 @@ Heres the revision log of ForkJoinPool in the JDK8 updates branch:
 http://hg.openjdk.java.net/jdk8u/jdk8u/jdk/log/8b04ee324a1a/src/share/classes/java/util/concurrent/ForkJoinPool.java
 
 I think the last commit, discussed as https://bugs.openjdk.java.net/browse/JDK-8080623, might be relevant. As far as I can tell the benchmark only has two threads worth of work to do (one ping and one pong actor), so the 100% cpu utilization on machines with >2 cores was busy waiting. Throughput was certainly improved with this tactic, but:
-
-{quote}
+```
 
 Unfortunately the spinning has shown to be fairly CPU intensive causing overall performance regressions in applications due to less CPU available for the other parts of the application not running as FJ tasks. 
 
 The recommendation which has been discussed with Doug Lea is to disable the spinning for JDK 8, and for JDK 9 continue the ongoing Work and research to solve the active waiting without spinning. Depending on timing of this work it may potentially be back ported to a later release of 8u.
-{quote}
+```
 
 

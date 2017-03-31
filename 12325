@@ -1,5 +1,5 @@
 On 2.12, after it breaks my CPU fan,
-{code}
+```scala
 1000000
 java.lang.OutOfMemoryError: GC overhead limit exceeded
 	at scala.util.Success.map(Try.scala:252)
@@ -14,9 +14,9 @@ java.lang.OutOfMemoryError: GC overhead limit exceeded
 	at java.util.concurrent.ForkJoinPool$WorkQueue.runTask(ForkJoinPool.java:1056)
 	at java.util.concurrent.ForkJoinPool.runWorker(ForkJoinPool.java:1692)
 	at java.util.concurrent.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:157)
-{code}
+```
 This must be slightly different, because it completes:
-{code}
+```scala
     def next(state: Int): Future[(String, Int)] = read().map(text => (text, text.toInt + state))
 
     def loop(state0: Int): Future[Unit] =
@@ -24,5 +24,5 @@ This must be slightly different, because it completes:
         case (text, state) => write(state.toString).flatMap(_ =>
           if (state == N) Future.successful(()) else loop(state))
       }
-{code}
+```
 However, that version is 3x slower on 2.12 compared to 2.11.  OK, my break is over.

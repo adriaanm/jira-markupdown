@@ -1,15 +1,14 @@
 Works in 2.7.6, but not in 2.8. Somehow null is returned from Global.typerPhase.
 
 The following code in ClassfileParser is called during the initialisation of the val firstPhase. It in turn triggers a call to Global.typerPhase, which ends up with a null value.
-
-{code}
+```scala
 if (settings.debug.value && settings.verbose.value)
               println("" + sym + "; signature = " + sig + " type = " + newType)
-{code}
+```
 
 
 Full error:
-{code}
+```scala
 ~/code/scala/BugPartialApply> cat Apply1.scala 
 trait Apply
 
@@ -303,4 +302,4 @@ Exception in thread "main" java.lang.AssertionError: assertion failed
 	at scala.tools.nsc.Main$$.process(Main.scala:90)
 	at scala.tools.nsc.Main$$.main(Main.scala:105)
 	at scala.tools.nsc.Main.main(Main.scala)
-{code}
+```

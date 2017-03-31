@@ -1,5 +1,5 @@
-The method {{lineContents}} of {{OffsetPosition}} includes newlines contrary to the statement in the comment:
-{noformat}
+The method `lineContents` of `OffsetPosition` includes newlines contrary to the statement in the comment:
+```
 scala> val s = "foo\nbar"
 s: String = 
 foo
@@ -15,10 +15,10 @@ scala> p.lineContents
 res6: String = 
 "foo
 "
-{noformat}
+```
 
-This issue is fixed by adjusting the end index of {{lineContents}}:
-{noformat}
+This issue is fixed by adjusting the end index of `lineContents`:
+```
 def lineContents: String =
     source.subSequence(index(line - 1), index(line) - 1).toString
-{noformat}
+```

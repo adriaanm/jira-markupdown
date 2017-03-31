@@ -3,22 +3,19 @@ I have hit this issue also, though my situation is a bit different so I thought 
 I have a `trait Stream[+F[_],+O]`, where a `Stream[Nothing,A]` represents a pure stream which uses no effects, and a `Stream[F,A]` may request evaluation of `F[_]` effects in between emitting values to the output. The advantage of using `Nothing` to represent pure streams is that normal subtyping will promote that to whatever `F[_]` the context requires, no need for explicit lifting.
 
 The problem is when calling a function like this one:
-
-{code:scala}
+```scala
 def pull[F[_],A,B](s: Stream[F,A])(using: Handle[F,A] => Pull[F,B,Any]): Stream[F,B]
-{code}
+```
 
 in conjunction with a polymorphic function like
-
-{code:scala}
+```scala
 def take[F[_],I]: Handle[F,I] => Pull[F,I,Handle[F,I]]
-{code}
+```
 
 The issue is that Scala won't infer `Nothing` for the argument to `take` or the `pull` type parameter, which leads to needing to write:
-
-{code:scala}
+```scala
 val purePull = Stream.pull[Nothing,Int,Int](Stream(1,2,3,4))(process1.take[Nothing,Int](2))
-{code}
+```
 
 Both those annotations are needed. Not very good. :(
 

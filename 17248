@@ -1,5 +1,5 @@
 We generate wrong method signarues for AnyRef specialization. Let me give you the following example:
-{code}
+```scala
 package foo
 import scala.runtime.BoxedUnit
 
@@ -9,10 +9,10 @@ trait CustomFunction1[@specialized(scala.Int) T1, @specialized(scala.AnyRef) R] 
 class UnitFunctionBridge[T] extends CustomFunction1[T, BoxedUnit] {
   override final def apply(t: T): BoxedUnit = BoxedUnit.UNIT
 }
-{code}
+```
 
 Let's see what -Xprint:cleanup gives us:
-{code}
+```scala
 package foo {
   abstract trait CustomFunction1 extends Object {
     def apply(v1: Object): Object;
@@ -43,26 +43,26 @@ package foo {
     }
   }
 }
-{code}
+```
 
 The relevant part is (from UnitFunctionBridge:
-{{<specialized> def apply$mcLI$sp(v1: Int): Object = foo.CustomFunction1$class.apply$mcLI$sp(UnitFunctionBridge.this, v1);}}
+`<specialized> def apply$mcLI$sp(v1: Int): Object = foo.CustomFunction1$class.apply$mcLI$sp(UnitFunctionBridge.this, v1);`
 
 The return type here is wrong. It should be BoxedUnit because we implement generic, specialized interface of CustomFuction1[T1, R] and we substitute R with BoxedUnit.
 
 This matters because the class shown above cannot be instantiated from Java:
-{code}
+```scala
 public class Test {
   public void newForeach() {
     new foo.UnitFunctionBridge<String>() {};
   }
 }
-{code}
+```
 
 if you try to compile you'll get:
-{code}
+```scala
 apply$mcLI$sp(int) in foo.UnitFunctionBridge cannot implement apply$mcLI$sp(int) in foo.CustomFunction1; attempting to use incompatible return type
 found   : java.lang.Object
 required: scala.runtime.BoxedUnit
     new foo.UnitFunctionBridge<String>() {};
-{code}
+```

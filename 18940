@@ -1,6 +1,5 @@
-When I try to use Scala's {{scala.concurrent.Future}} on Google App Engine, it fails because access to {{sun.misc.Unsafe}} is blocked by App Engine's security manager. This is reproducible using the App Engine Java SDK without uploading anything to Google, or needing a Google account:
-
-{noformat}
+When I try to use Scala's `scala.concurrent.Future` on Google App Engine, it fails because access to `sun.misc.Unsafe` is blocked by App Engine's security manager. This is reproducible using the App Engine Java SDK without uploading anything to Google, or needing a Google account:
+```
 HTTP ERROR 500
 
 Problem accessing /test. Reason:
@@ -183,11 +182,10 @@ java.security.AccessControlException: access denied ("java.lang.RuntimePermissio
 	at org.mortbay.jetty.HttpConnection.handle(HttpConnection.java:404)
 	at org.mortbay.io.nio.SelectChannelEndPoint.run(SelectChannelEndPoint.java:409)
 	at org.mortbay.thread.QueuedThreadPool$PoolThread.run(QueuedThreadPool.java:582)
-{noformat}
+```
 
 The basic code I'm using to reproduce this is below, my actual code was somewhat more complicated and involved blocking HTTP access in my threads:
-
-{noformat}
+```
 package zappenginefutures
 
 import java.util.concurrent.Executors
@@ -217,4 +215,4 @@ class TestServlet extends HttpServlet {
     resp.getWriter.println("OK")
   }
 }
-{noformat}
+```

@@ -1,6 +1,5 @@
 It seems that the scala compiler is generating multiple equals methods with the same signature. First of all here is a toy code sample that reproduces the issue:
-
-{code}
+```scala
 
 trait TestTrait[@specialized(Double) T] {
     var array: Array[T] = null
@@ -11,13 +10,11 @@ class MyClass extends TestTrait[Double] {
 }
 
 val tst = new MyClass
-
-{code}
+```
 
 
 This program compiles correctly using the scala compiler, however upon instantiation of MyClass at run time, the class loader throws the following exception:
-
-{code}
+```scala
 
 java.lang.ClassFormatError: Duplicate method name&signature in class file Main$$anon$1$MyClass
 	at java.lang.ClassLoader.defineClass1(Native Method)
@@ -31,23 +28,19 @@ java.lang.ClassFormatError: Duplicate method name&signature in class file Main$$
 	at java.net.URLClassLoader.findClass(URLClassLoader.java:190)
 	at java.lang.ClassLoader.loadClass(ClassLoader.java:306)
 	at java.lang.ClassLoader.loadClass(ClassLoader.java:247)
-
-{code}
+```
 
 
 Running javap shows the following duplicate method has been generated:
-
-{code}
+```scala
 
 $ javap MyClass.class | sort | uniq -d
 output: public void array_$eq(java.lang.Object);
-
-{code}
+```
 
 
 Additionally using JAD to decompile the class shows the source of the two methods:
-
-{code:java}
+```java
 
 public void array_$eq(Object x$1)
 {
@@ -58,8 +51,7 @@ public volatile void array_$eq(Object x$1)
 {
     array_$eq((double[])x$1);
 }
-
-{code}
+```
 
 
 FYI: I don't think this is a blocker, it's my first time filing an issue, and I was unable to change the default priority.

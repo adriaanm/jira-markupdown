@@ -2,8 +2,7 @@ In Java 8, when an interface overrides a method from another interface and narro
 This bridge method doesn't seem to be properly filtered by Scala reflection API, e.g. {{Symbol}}'s {{overrides}} method.
 
 Example:
-
-{code}
+```scala
 public interface DynamicGetter {
     public Object get(String property);
 }
@@ -19,11 +18,10 @@ public class Klass implements Base {
         return this;
     }
 }
-{code}
+```
 
 Manifestation:
-
-{code}
+```scala
 $ scala
 Welcome to Scala version 2.11.5 (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_25).
 Type in expressions to have them evaluated.
@@ -47,6 +45,6 @@ res2: List[$r.intp.global.Type] = List((x$1: String)Base, (x$1: String)Object)
 
 scala> typeOf[Base].member(TermName("get"))
 res3: $r.intp.global.Symbol = method get
-{code}
+```
 
 Original discussion: https://groups.google.com/forum/?fromgroups=#!topic/scala-user/IeD2siVXyss

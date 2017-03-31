@@ -1,25 +1,24 @@
-Trait {{scala.reflect.base.Symbols}} contains several traits with the base abstraction {{SymbolBase}}. Trait {{SymbolBase}} defines the methods
-{code}
+Trait `scala.reflect.base.Symbols` contains several traits with the base abstraction `SymbolBase`. Trait `SymbolBase` defines the methods
+```scala
 def isMethod: Boolean = false
 def isModule: Boolean = false
-{code}
-Trait {{SymbolBase}} is extended in trait {{TermSymbolBase}} and this trait has the two extendsions {{MethodSymbolBase}} and {{ModuleSymbolBase}}.
+```
+Trait `SymbolBase` is extended in trait `TermSymbolBase` and this trait has the two extendsions `MethodSymbolBase` and `ModuleSymbolBase`.
 
-If I override in trait {{ModuleSymbolBase}} method {{isMethod}} as
-{code}
+If I override in trait `ModuleSymbolBase` method `isMethod` as
+```scala
 override def isMethod = false
-{code}
+```
 then the build fails with the error message shown below.
-The build also fails (with a different error log) if I override in trait {{MethodSymbolBase}} method {{isModule}} as
-{code}
+The build also fails (with a different error log) if I override in trait `MethodSymbolBase` method `isModule` as
+```scala
 override def isModule = false
-{code}
+```
 
 Actually I wanted to override these methods with a final variant. But overriding with an equivalent version should definitely be possible.
 
 Below is the stack trace.
-
-{code}
+```scala
 quick.lib:
     [mkdir] Created dir: d:\Programming\Scala\scala\build\quick\classes\library
     [javac] Compiling 32 source files to d:\Programming\Scala\scala\build\quick\classes\library
@@ -712,4 +711,4 @@ quick.lib:
 [scalacfork] 	at scala.tools.nsc.Driver.process(Driver.scala:54)
 [scalacfork] 	at scala.tools.nsc.Driver.main(Driver.scala:67)
 [scalacfork] 	at scala.tools.nsc.Main.main(Main.scala)
-{code}
+```

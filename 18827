@@ -1,10 +1,10 @@
-{code}
+```scala
 public class C<K, V> {
   public C(C<? extends K, ? extends V> other) {}
   //public C(int i) {} uncomment and a different error appears at the call site, as this is chosen by overload resolution
 }
-{code}
-{code}
+```
+```scala
 object Test {
   new C(null)
   new E(null)
@@ -12,9 +12,8 @@ object Test {
 
 class E[K, V](other: E[_ <: K, _ <: V]) {
 }
-{code}
-
-{noformat}
+```
+```
 qbin/scalac sandbox/C.java sandbox/D.scala
 sandbox/D.scala:2: error: inferred type arguments [_$2,_$1] do not conform to class C's type parameter bounds [K,V]
   new C(null)
@@ -23,6 +22,6 @@ sandbox/D.scala:3: error: inferred type arguments [_$2,_$1] do not conform to cl
   new E(null)
   ^
 two errors found
-{noformat}
+```
 
 Maybe its more a limitation than a bug. The interaction with overloading (silently choosing an alternative) is pretty unfortunate.

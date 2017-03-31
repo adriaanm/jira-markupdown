@@ -1,18 +1,18 @@
-This seems related to: SI-8219
+This seems related to: scala/bug#8219
 
-*Reproduce code:*
-{code}
+**Reproduce code:**
+```scala
   case class Foo[+T[_]](activity:T[Long])
   type Cell[T] = T
   def insertCell(u:Foo[Cell]) = ???
   insertCell(Foo(5))
-{code}
+```
 
-*Expected result:*
+**Expected result:**
 Type error with line numer.
 
-*Actual result:*
-{noformat}
+**Actual result:**
+```
 [error] type mismatch;
 [error]  found   : Long
 [error]  required: ?T
@@ -20,11 +20,10 @@ Type error with line numer.
 [error]  both method longWrapper in class LowPriorityImplicits of type (x: Long)scala.runtime.RichLong
 [error]  and method any2Ensuring in object Predef of type [A](x: A)Ensuring[A]
 [error]  are possible conversion functions from Long to ?T
-{noformat}
+```
 
 It seems to be related to using a type alias and a long. Those all produce type errors with line numbers:
-
-{code}
+```scala
   case class Foo2[+T[_]](color:T[String])
   def insertCell2(u:Foo2[Cell]) = ???
   insertCell2(Foo2("color"))
@@ -34,13 +33,13 @@ It seems to be related to using a type alias and a long. Those all produce type 
 
   def insertOption2(u:Foo2[Option]) = ???
   insertOption2(Foo2("color"))
-{code}
+```
 
 Another code sample that produces the same error message without line number:
-{code}
+```scala
   class DefaultType[Name]
   case class Foo[+T[_]](
     activity:T[Long]
   )(t:DefaultType[T[_]])
   Foo(3)(new DefaultType[Option[_]])
-{code}
+```

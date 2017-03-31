@@ -1,16 +1,14 @@
 I implemented a benchmark using google caliper for the filter method. 
 
 Run with 
-
-{code}
+```scala
 java -cp scala-library.jar:caliper.jar:. FilterBenchmark
-{code}
+```
 
 The results on my development machine are as follows:
 
 Builder-based implementation:
-
-{code}
+```scala
    size          benchmark           ns linear runtime
       1         FilterTrue        19.68 =
       1 FilterThreeQuarter         7.17 =
@@ -32,11 +30,10 @@ Builder-based implementation:
 1000000         FilterHalf 108899815.71 ===============
 1000000      FilterQuarter  61353241.38 ========
 1000000        FilterFalse  15906104.10 ==
-{code}
+```
 
 Specialized implementation of filter:
-
-{code}
+```scala
    size          benchmark          ns linear runtime
       1         FilterTrue       19.13 =
       1 FilterThreeQuarter        7.04 =
@@ -58,7 +55,7 @@ Specialized implementation of filter:
 1000000         FilterHalf 51554796.54 ==============================
 1000000      FilterQuarter 44450213.28 =========================
 1000000        FilterFalse 34322142.71 ===================
-{code}
+```
 
 As you can see, the specialized implementation is up to a factor of 5.5 faster, not to mention the lack of temporary object creation and more structural sharing. 
 

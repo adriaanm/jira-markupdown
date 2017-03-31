@@ -3,25 +3,25 @@ This is in 2.8.0.RC2.
 Given these two source files:
 
 B.scala
-{code}
+```scala
 trait T[A,B] {
         type X[a <: A, b <: B] <: B
 }
-{code}
+```
 
 C.scala
-{code}
+```scala
 object F {
         type S = T[Any,Int] {
                 type X[N <: Any, Acc <: Int] = Acc
         }
 }
-{code}
+```
 
 They compile fine when B.scala and C.scala are compiled together.  When C.scala is compiled separately after B.scala, there is this compiler error:
-{code}
+```scala
 C.scala:3: error: The kind of type X does not conform to the expected kind of type X<: <?> in trait T.
                 type X[N <: Any, Acc <: Int] = Acc
                      ^
 one error found
-{code}
+```

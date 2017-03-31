@@ -1,5 +1,5 @@
 Actually this bug is invalid.  You're shadowing intWrapper, so 3 to 5 happily uses longWrapper instead.  Have to work pretty hard to mask everything which might handle Int, but:
-{code}
+```scala
 object foo {
   object Donotuseme
   implicit def any2Ensuring[A](x: A) = Donotuseme
@@ -12,8 +12,8 @@ object foo {
   5 ensuring true
   3 -> 5
 }
-{code}
-{noformat}
+```
+```
 test/files/neg/t4271.scala:12: error: value to is not a member of Int
   3 to 5
     ^
@@ -24,4 +24,4 @@ test/files/neg/t4271.scala:14: error: value -> is not a member of Int
   3 -> 5
     ^
 three errors found
-{noformat}
+```

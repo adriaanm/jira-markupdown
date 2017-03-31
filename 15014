@@ -1,14 +1,14 @@
-{code}
+```scala
 Welcome to Scala version 2.8.0.Beta1-prerelease (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_17).
 
 scala> 0 match { case List(_*) => true }    
 res0: Boolean = true
-{code}
+```
 
 eh?
 
 and now, after restarting the repl, if I type the following form twice, I get a nonsensical answer the first time, and a compiler crash the second time:
-{code}
+```scala
 Welcome to Scala version 2.8.0.Beta1-prerelease (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_17).
 
 scala> 0 match { case x @ List(_*) => x }
@@ -64,10 +64,10 @@ Exception in thread "main" java.lang.Error: symbol value x does not exist in lin
 	at scala.tools.nsc.MainGenericRunner$$.createLoop$$1(MainGenericRunner.scala:118)
 	at scala.tools.nsc.MainGenericRunner$$.main(MainGenericRunner.scala:143)
 	at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
-{code}
+```
 
 in Scala 2.7.7, I get this instead:
-{code}
+```scala
 Welcome to Scala version 2.7.7.final (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_17).
 Type in expressions to have them evaluated.
 Type :help for more information.
@@ -80,6 +80,6 @@ res1: Int with List[A] = 0
 
 scala> 0 match { case x @ List(_*) => x }
 res2: Int with List[A] = 0
-{code}
+```
 
 so the weird answers aren't a regression, but the compiler crash is.

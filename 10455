@@ -1,8 +1,7 @@
 Bumping LogPendingSubTypesThreshold from 50 to 500 avoids running into the problem. Well, that would just defer the problem.
 
 We'll have to look for something that's changed behind:
-
-{code}
+```scala
   class SubTypePair(val tp1: Type, val tp2: Type) {
     override def hashCode = tp1.hashCode * 41 + tp2.hashCode
     override def equals(other: Any) = (this eq other.asInstanceOf[AnyRef]) || (other match {
@@ -19,7 +18,7 @@ We'll have to look for something that's changed behind:
     })
     override def toString = tp1+" <:<? "+tp2
   }
-{code}
+```
 
 Another theory: we're hitting the recursion limit sooner in 2.11.x after refactorings in TypeComparers and the way retries are threaded through `isSubType`.
 

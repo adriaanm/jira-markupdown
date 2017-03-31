@@ -1,6 +1,5 @@
 The documentation for mutable.MultiMap reads as follows:
-
-{code}
+```scala
 /** Assigns the specified `value` to a specified `key`, replacing
    *  the existing value assigned to that `key` if it is equal to
    *  the specified value. Otherwise, simply adds another binding to
@@ -11,11 +10,10 @@ The documentation for mutable.MultiMap reads as follows:
    *  @return       A reference to this multimap.
    */
   def addBinding(key: A, value: B): this.type = {
-{code}
+```
 
 However I do not believe that the current value is replaced. Here is evidence:
-
-{code}
+```scala
 import scala.collection.mutable
 
 case class NodeBundle(
@@ -46,19 +44,17 @@ val b = NodeBundle("a", "b", true)
 nodeBundlesById.addBinding("1", a)
 nodeBundlesById.addBinding("1", b)
 }}
-{code}
+```
 
 The end result should be something like:
-
-{code}
+```scala
 res19: <refinement>.type = Map(1 -> Set(NodeBundle(a,b,true)))
-{code}
+```
 
 ...but it is:
-
-{code}
+```scala
 res19: <refinement>.type = Map(1 -> Set(NodeBundle(a,b,false)))
-{code}
+```
 
 ...so the value is not being replaced.
 

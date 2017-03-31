@@ -1,24 +1,23 @@
 Adriaan seems to agree in this pull request: https://github.com/scala/scala-dist/pull/127. I'm trying out the patch below, it does what I want, need to check for regressions. Before:
-{code}
+```scala
 $ scala
 Welcome to Scala version 2.10.3 (Java HotSpot(TM) 64-Bit Server VM, Java 1.7.0_51).
 scala> object Foo {type A}
 <console>:7: error: only classes can have declared but undefined members
        object Foo {type A}
                         ^
-{code}
+```
 
 After:
-
-{code}
+```scala
 $ ./qbin/scala
 Welcome to Scala version 2.11.0-20140131-194308-ea897b018a (Java HotSpot(TM) 64-Bit Server VM, Java 1.7.0_51).
 scala> object Foo {type A}
 defined object Foo
-{code}
+```
 
 Fix:
-{code}
+```scala
 --- a/src/compiler/scala/tools/nsc/typechecker/Namers.scala
 +++ b/src/compiler/scala/tools/nsc/typechecker/Namers.scala
 @@ -1617,6 +1617,7 @@ trait Namers extends MethodSynthesis {
@@ -29,10 +28,10 @@ Fix:
            || context.tree.isInstanceOf[ExistentialTypeTree]
          )
          // Does the symbol owner require no undefined members?
-{code}
+```
 
 I'm also wondering about extending the check to concrete classes, while at it, since the reimplementation of these checks in refchecks is not run by the presentation compiler:
-{code}
+```scala
 @@ -1623,7 +1624,8 @@ trait Namers extends MethodSynthesis {
          def ownerRequiresConcrete = (
               !sym.owner.isClass
@@ -42,4 +41,4 @@ I'm also wondering about extending the check to concrete classes, while at it, s
          )
          if (sym hasAnnotation NativeAttr)
            sym resetFlag DEFERRED
-{code}
+```

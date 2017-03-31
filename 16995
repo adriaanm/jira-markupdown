@@ -1,22 +1,20 @@
 Using the following code:
-
-{code}
+```scala
 object Macros {
   def publish2(f: => Unit) = macro publish2Impl
 
   def publish2Impl(c : Context)(f: c.Expr[Function0[Unit]]) = c.reify{implicit val foo: String = "foo"; f.eval}
 }
-{code}
+```
 
 You get the error:
-
-{code}
+```scala
 [error] C:\Users\szeiger\code\macrostuff\src\main\scala\com\novocode\macrostuff\MacroStuff.scala:69: macro implementation has wrong shape:
 [error]  required: (c: scala.reflect.makro.Context)(f: c.Expr[=> Unit]): c.Expr[() => Unit]
 [error]  found   : (c: scala.reflect.makro.Context)(f: c.Expr[() => Unit]): c.Expr[() => Unit]
 [error] type mismatch for parameter f: c.Expr[=> Unit] does not conform to c.Expr[() => Unit]
 [error]   def publish2(f: => Unit) = macro publish2Impl
 [error]                                    ^
-{code}
+```
 
 There is no way to write the expected type Expr[=> Unit]. Since call-by-name arguments are converted to Function0 internally, the type Expr[Function0[Unit]] should be accepted as a surrogate.

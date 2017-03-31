@@ -1,6 +1,5 @@
 New behaviour will be:
-
-{code}
+```scala
 Welcome to Scala version 2.8.0.r21963-b20100518213918 (Java HotSpot(TM) Server VM, Java 1.6.0_20).
 Type in expressions to have them evaluated.
 Type :help for more information.
@@ -34,14 +33,13 @@ res7: Int = 8
 
 scala> it.take(2).toList
 res8: List[Int] = List(9, 10)                                                                                                                                                    
-{code}
+```
 
 
 Note that this is not exactly the same as with the list iterator, but this is due to the `it` being consumed by the `take` - `it` shouldn't be used afterwards.
 
 To backup this claim, implementation of `drop` in `Iterator`:
-
-{code}
+```scala
   def drop(n: Int): Iterator[A] = {
     @tailrec
     def loop(left: Int): Iterator[A] =
@@ -50,6 +48,6 @@ To backup this claim, implementation of `drop` in `Iterator`:
     
     loop(n)
   }
-{code}
+```
 
 means there are other places where it's assumed that the original iterator shouldn't be used anymore after invoking a transformer, since the result may alias the old iterator.

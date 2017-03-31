@@ -1,5 +1,4 @@
-
-{code}
+```scala
 
 
   def main(args : Array[String]) : Unit = {
@@ -13,11 +12,10 @@
       g
     }
   }
-{code}
+```
 
 and
-
-{code}
+```scala
 package test
 object Go {
   def assert(b : Boolean) = {
@@ -30,9 +28,9 @@ object Go {
     Console.println("OK") 
   }
 }
-{code}
+```
 Disassembly for the first one:
-{code}
+```scala
    0:	aload_0
    1:	invokespecial	SI-49; //Method h$$0:()Lscala/Option;
    4:	astore_2
@@ -59,9 +57,8 @@ Disassembly for the first one:
    line 12: 5
    line 13: 28
    line 15: 35
-{code}
+```
 
 By the line number table, bytecode instruction 39 is said to be located at line 15, which is just false. If you are stepping through the debugger, it seems like "g" is being called even though it is not, because it happens to be at line 15. Bytecode instruction 39 should be at the end of the method (not on an instruction that isn't executed!). 
 
 The second example is related: set a break point at throw new Error, and it will stop there even if b is true! Return has to be fixed. I can trust the debugger anymore.
-

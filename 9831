@@ -1,8 +1,7 @@
 I just took a look at this test case. It looks like a deadlock, where the locks in play are the intrinsic locks on the corresponding Class objects that occur during class initialization [1].
 
 A Scala module `Foo` has a corresponding module class `Foo$`, which contains a static field `MODULE$`, which is initialized to `new Foo$` in the static initializer of the class.
-
-{noformat}
+```
 % cat sandbox/test.scala
 object O {
   println(Thread.currentThread.getStackTrace.toList.take(5).mkString("\n"))
@@ -19,10 +18,10 @@ O$.<init>(test.scala:2)
 O$.<clinit>(test.scala)
 Test$.main(test.scala:7)
 Test.main(test.scala) 
-{noformat}
+```
 
 Generates:
-{noformat}
+```
 scala> :javap -v -p O$
 Compiled from "test.scala"
 public final class O$ extends java.lang.Object
@@ -42,11 +41,10 @@ public static {};
 private O$();
   Code:
    Stack=3, Locals=1, Args_size=1
-{noformat}
+```
 
 If objects form a cycle, those class initialization locks can deadlock:
-
-{noformat}
+```
 object O1 {
   val x = O2.x
   def y = 0
@@ -58,7 +56,7 @@ object O2 {
 object Test extends App {
   Await.result(Future.sequence(List(future(O1.y), future(O2.x)), Duration.Inf)
 }
-{noformat}
+```
 
 Here's a stack overflow post about this topic [2].
 

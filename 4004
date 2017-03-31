@@ -1,6 +1,5 @@
-Another possibility would be to add a simple method {{future(resp: Responder)}} to scala.actors.Futures to convert a Responder into a Future:
-
-{code}
+Another possibility would be to add a simple method `future(resp: Responder)` to scala.actors.Futures to convert a Responder into a Future:
+```scala
 object Futures {
   ...
 
@@ -13,11 +12,10 @@ object Futures {
 
   def future[T](body: => T): Future[T] = {
   ...
-{code}
+```
 
 This would allow switching back from CPS to direct-style withough changing Future's API. I tried it, and this (almost) works now:
-
-{code}
+```scala
 import scala.actors._, scala.actors.Actor._, scala.actors.Futures._
 
 val a = actor { loop { react { case i:Int => Thread.sleep(2000); reply(i*2) } } }
@@ -27,6 +25,6 @@ val r = f map { _ + 1 }
 f() // necessary because of SI-3412
 
 println(future(r)())
-{code}
+```
 
-Almost, since it crashes if you take out the {{f()}}, because of SI-3412.
+Almost, since it crashes if you take out the `f()`, because of scala/bug#3412.

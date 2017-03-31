@@ -1,6 +1,6 @@
 === What steps will reproduce the problem (please be specific and use wikiformatting)? ===
 run the following code with "_scala script.scala_":
-{code}
+```scala
 trait Foo[TC[_], U] {
   def map[V](f: U => V): TC[V]
 }
@@ -17,7 +17,7 @@ println(mapping2(List(1,2,3), _ + 1)) // <-- no internal compiler error, but typ
 
 mapping[Int, List, List[Int], Int](List(1,2,3), _ + 1) // <-- compiles
 mapping2[Int, List, List[Int], Int](List(1,2,3), _ + 1) // <-- compiles
-{code} 
+```
 
 
 === What is the expected behavior? ===
@@ -27,7 +27,7 @@ No exception from the compiler and better type inference if possible.
 The compiler throws a java.lang.Error with the error message "trying to do lub/glb of typevar ?U".
 
 The stacktrace is:
-{code}
+```scala
 java.lang.Error: trying to do lub/glb of typevar ?U
 	at scala.tools.nsc.symtab.SymbolTable.abort(SymbolTable.scala:33)
 	at scala.tools.nsc.symtab.Types$$class.stripType$$1(Types.scala:5024)
@@ -137,7 +137,7 @@ java.lang.Error: trying to do lub/glb of typevar ?U
 	at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
 error: fatal error (server aborted): trying to do lub/glb of typevar ?U
 two errors found
-{code}
+```
 
 
 === What versions of the following are you using? ===

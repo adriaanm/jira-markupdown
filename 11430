@@ -1,8 +1,7 @@
-Here's a closely related problem in the batch compiler. The reference to a private case class parameter in the synthetic unapply method uses the case accessor if defined after the case class, but directly uses the private accessor (which is duly made {{nonPRIVATE}} with an expanded name) otherwise.
+Here's a closely related problem in the batch compiler. The reference to a private case class parameter in the synthetic unapply method uses the case accessor if defined after the case class, but directly uses the private accessor (which is duly made `nonPRIVATE` with an expanded name) otherwise.
 
-The order of typechecking matters for interactions with the per-run map {{renamedCaseAccessors}}
-
-{noformat}
+The order of typechecking matters for interactions with the per-run map `renamedCaseAccessors`
+```
 % cat test/files/presentation/private-case-class-members/src/State.scala
 object State
 case class State(private val foo: Int)
@@ -66,4 +65,4 @@ public scala.Option unapply(State2);
    0      25      1    x$0       LState2;
 
 scala> :quit
-{noformat}
+```

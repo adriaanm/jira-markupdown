@@ -1,5 +1,5 @@
-See also SI-2897, SI-4202.  I'm calling this a different bug because it is only incurred if there is an override.
-{code}
+See also scala/bug#2897, scala/bug#4202.  I'm calling this a different bug because it is only incurred if there is an override.
+```scala
 object Test {
   trait Suite { def bar() = () }
 
@@ -8,14 +8,14 @@ object Test {
     class MySuite extends FunkySuite { }
   }
 }
-{code}
+```
 Also of interest is that this is the usage pattern which generates names like $$class$$1.  I presently have a comment in NameManglers about this issue, because in fixing another bug I discovered that such named classes exist and are not correctly recognized.
-{code}
+```scala
 /** !!! Foo$$class$$1 is an implClassName, I think.  */
 def isImplClassName(name: Name)         = name endsWith IMPL_CLASS_SUFFIX
-{code}
+```
 The code up top fails:
-{code}
+```scala
 assertion failed: method $$init$$ in object Test$$$$anonfun$$1$$FunkySuite$$class$$1 in package <empty>
 [snip long list of classes]  
 at scala.Predef$$.assert(Predef.scala:100)
@@ -26,4 +26,4 @@ at scala.tools.nsc.transform.Mixin$$MixinTransformer$$$$anonfun$$23.apply(Mixin.
 at scala.tools.nsc.transform.Mixin$$MixinTransformer$$$$anonfun$$23.apply(Mixin.scala:1233)
 at scala.tools.nsc.symtab.SymbolTable.atPhase(SymbolTable.scala:96)
 at scala.tools.nsc.transform.Mixin$$MixinTransformer.transform(Mixin.scala:1233)
-{code}
+```

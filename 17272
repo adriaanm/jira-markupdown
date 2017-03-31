@@ -1,4 +1,4 @@
-{code}
+```scala
 
 scala> def getClassSafe(fullName: String): Option[String] = try {
      |                Some(definitions.getClass(newTypeName(fullName)))
@@ -10,7 +10,7 @@ scala> def getClassSafe(fullName: String): Option[String] = try {
 
                       Some(definitions.getClass(newTypeName(fullName)))
                                                ^
-{code}
+```
 
 
 note the cliff hanger, there -- no alternatives are reported
@@ -18,8 +18,7 @@ note the cliff hanger, there -- no alternatives are reported
 I think the problem is that the getClass symbol is overloaded, but the tree's type is already <error> by the time the error message is synthesized (the error arises from the erroroneous return type `Option[String]`)
 
 Taking the relevant pieces of code:
-
-{code}
+```scala
 if (sym.isOverloaded) overloadedMessage
 
 def overloadedMessage = "overloaded method " + sym + " with alternatives:\n" + alternativesString(tree)
@@ -29,7 +28,6 @@ def alternativesString(tree: Tree) =
 
 def alternatives(tree: Tree): List[Type] = tree.tpe match {
   case OverloadedType(pre, alternatives)  => alternatives map pre.memberType
-
-{code}
+```
 
 this assumes `tree.symbol.isOverloaded` implies `tree.tpe.isInstanceOf[OverloadedType]`, which this bug illustrates is not necessarily the case

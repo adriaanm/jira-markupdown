@@ -1,5 +1,5 @@
 Consider the following Java interface that defines default method:
-{code}
+```scala
 interface TestInterface{
   public void testMe();
    
@@ -7,19 +7,18 @@ interface TestInterface{
     System.out.println("Default from interface");
   }
 }
-{code}
+```
 
 and the following Scala code:
-{code}
+```scala
 class TestImpl extends TestInterface {
 	def testMe() { println("TestImpl.testMe") }
 	/*override def aDefaulter() { { println("TestImpl.aDefaulter") } }*/
 }
-{code}
+```
 
 When we try to compile it by passing both source files, Scala's parser for java files chokes on default modifier:
-
-{code}
+```scala
 scalac -d classes/ src/TestInterface.java src/TestImpl.scala
 src/TestInterface.java:4: error: illegal start of type
   default public void aDefaulter() {
@@ -28,4 +27,4 @@ src/TestInterface.java:7: error: identifier expected but `}' found.
 }
 ^
 two errors found
-{code}
+```

@@ -1,6 +1,5 @@
-The following should not compile; {{outerd}} cannot prove that there exists one {{E}} that unifies the {{left.S}} and {{right.S}}, but introduces one anyway.  We use that to throw a {{ClassCastException}}.
-
-{code}
+The following should not compile; `outerd` cannot prove that there exists one `E` that unifies the `left.S` and `right.S`, but introduces one anyway.  We use that to throw a `ClassCastException`.
+```scala
 package forsomescope
 
 trait Magic {
@@ -46,11 +45,10 @@ object Main extends App {
 
   boom
 }
-{code}
+```
 
 ([scastie here|http://scastie.org/11000]) throws
-
-{noformat}
+```
 java.lang.ClassCastException: java.lang.String cannot be cast to java.lang.Integer
 	at scala.runtime.BoxesRunTime.unboxToInt(BoxesRunTime.java:101)
 	at forsomescope.Main$$anon$2.step(test.scala:42)
@@ -59,11 +57,10 @@ java.lang.ClassCastException: java.lang.String cannot be cast to java.lang.Integ
 	at forsomescope.Main$.outerd(test.scala:34)
 	at forsomescope.Main$.boom(test.scala:37)
 	at forsomescope.Main$.delayedEndpoint$forsomescope$Main$1(test.scala:48)
-{noformat}
+```
 
-On the other hand, if {{outerd}} directly calls the morally equivalent {{outertp}} ([scastie here|http://scastie.org/11001]), we correctly get an error:
-
-{noformat}
+On the other hand, if `outerd` directly calls the morally equivalent `outertp` ([scastie here|http://scastie.org/11001]), we correctly get an error:
+```
 /tmp/rendererWlqSMa9Oi9/src/main/scala/test.scala:28: type mismatch;
  found   : forsomescope.Pair[forsomescope.Magic]
  required: forsomescope.Pair[forsomescope.Main.Aux[this.S]]
@@ -72,21 +69,19 @@ Note: forsomescope.Magic >: forsomescope.Main.Aux[this.S], but class Pair is inv
 You may wish to define A as -A instead. (SLS 4.5)
     outertp(p)
             ^
-{noformat}
+```
             
 Although, a better error would be more like when you do
-
-{code}
+```scala
 import java.util.{ List => JList }
  
 def doit[A](xs: JList[JList[A]]) = 42
  
 def brokeit(xs: JList[JList[_]]) = doit(xs)
-{code}
+```
 
 Which appropriately fails to compile ([scastie here|http://scastie.org/11003]):
-
-{noformat}
+```
 /tmp/rendererWlqSMa9Oi9/src/main/scala/test.scala:11: no type parameters for method doit: (xs: java.util.List[java.util.List[A]])Int exist so that it can be applied to arguments (java.util.List[java.util.List[_]])
  --- because ---
 argument expression's type is not compatible with formal parameter type;
@@ -96,6 +91,6 @@ Note: java.util.List[_] >: java.util.List[?A], but Java-defined trait List is in
 You may wish to investigate a wildcard type such as `_ >: java.util.List[?A]`. (SLS 3.2.10)
   def brokeit(xs: JList[JList[_]]) = doit(xs)
                                      ^
-{noformat}
+```
 
-[Original discovery context here.|https://github.com/S11001001/typelevel.github.com/blob/9f4060be02ce36487082967c60a7d2e0c09c17a4/_posts/2015-07-27-nested-existentials.md#a-triangular-generalization]
+[Original discovery context here.](https://github.com/S11001001/typelevel.github.com/blob/9f4060be02ce36487082967c60a7d2e0c09c17a4/_posts/2015-07-27-nested-existentials.md#a-triangular-generalization)

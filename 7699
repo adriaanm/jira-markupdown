@@ -1,10 +1,9 @@
 Just imagine a call to collection.mutable.Map.map where the return type is another mutable map with different type parameters:
-
-{code}
+```scala
 import collection._
 val intMap: mutable.Map[String, Int] = ...
 val stringMap: mutable.Map[String, String] = intMap map { case (s, i) => s -> i.toString }
-{code}
+```
 
 Then the compiler will inject the implicit collection.mutable.Map.canBuildFrom which will in turn use the collection.mutable.MapBuilder. Now if intMap has a large number of entries n, then the damage is done due to the O(n*n) runtime.
 

@@ -1,12 +1,10 @@
 Consider the following snippet:
-
-{code}
+```scala
 <c><a b="7" c="10"/><a b="5" c="12"/></c>.child contains <a b="5" c="12"/>
-{code}
+```
 
-Obviously, this should return *true*.  However, the actual result is the following NullPointerException:
-
-{code}
+Obviously, this should return **true**.  However, the actual result is the following NullPointerException:
+```scala
 java.lang.NullPointerException
 	at scala.xml.MetaData.containedIn1(MetaData.scala:140)
 	at scala.xml.MetaData.containedIn1(MetaData.scala:140)
@@ -42,19 +40,16 @@ java.lang.NullPointerException
 	at scala.tools.nsc.InterpreterLoop.main(InterpreterLoop.scala:298)
 	at scala.tools.nsc.MainGenericRunner$$.main(MainGenericRunner.scala:141)
 	at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
-{code}
+```
 
 This appears to stem from the following method in MetaData:
-
-{code}
+```scala
   def containedIn1(m: MetaData): Boolean =
     m.equals1(this) || containedIn1(m.next)
-{code}
+```
 
 I suspect that this should be changed to the following:
-
-{code}
+```scala
   def containedIn1(m: MetaData): Boolean =
     m.equals1(this) || (m.hasNext && containedIn1(m.next))
-{code}
-
+```

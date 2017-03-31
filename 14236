@@ -1,4 +1,4 @@
-{code}
+```scala
 object forbug {
   val l1 = List(List(ValDef(new A)), List(ValDef(new A)))
   for ((e1s, e2s) <- l1.zip(l1);
@@ -17,22 +17,18 @@ class A {
 }
 
 case class ValDef(a: A)
+```
 
-{code}
-
-crashes the current trunk. un-commenting the {{()}} is a work-around.
+crashes the current trunk. un-commenting the `()` is a work-around.
 
 The crash happens during UnCurry:
-
-
-{code}
+```scala
 
 exception when traversing ((x$$1: (ValDef, ValDef)) => (x$$1: (ValDef, ValDef) @unchecked) match {
   case (ValDef,ValDef)(ValDef, ValDef)((e1 @ _), (e2 @ _)) => e1.a.doSome(20)
 })
-{code}
-
-{code}
+```
+```scala
 Exception in thread "main" scala.tools.nsc.symtab.Types$$TypeError: type mismatch;
  found   : e1.a.type (with underlying type A)
  required: ValDef#a.type
@@ -108,4 +104,4 @@ Exception in thread "main" scala.tools.nsc.symtab.Types$$TypeError: type mismatc
         at scala.tools.nsc.transform.UnCurry$$UnCurryTransformer.transform(UnCurry.scala:150)
         at scala.tools.nsc.ast.Trees$$Transformer$$$$anonfun$$transformStats$$1.apply(Trees.scala:1485)
 [.....]
-{code}
+```

@@ -1,4 +1,4 @@
-{code}
+```scala
 // J.java
 package foo;
 
@@ -9,8 +9,8 @@ package bar
 
 class SC1 extends foo.J("")
 class SC2 extends foo.J[String]("")
-{code}
-{noformat}
+```
+```
 % scalac -d out -cp out S.scala 
 S.scala:3: error: constructor J in class J cannot be accessed in package bar
  Access to protected constructor J not permitted because
@@ -19,7 +19,7 @@ S.scala:3: error: constructor J in class J cannot be accessed in package bar
 class SC1 extends foo.J("")
           ^
 one error found
-{noformat}
+```
 Compiles in 2.8, regressed somewhere between 2.8 and 2.9. The fact that the type parameter is not inferred is not that big a deal by itself, but it is made much worse by the error message.
 
 Notes: if S and J are in the same package, it compiles. If J is not parameterized, it compiles. If J is instead the equivalent scala class with a protected[foo] constructor, it compiles.

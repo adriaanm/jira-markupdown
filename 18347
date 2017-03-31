@@ -2,7 +2,7 @@ scalac shows a type error when dao.scala is compiled separately from tables.scal
 
 Also see same bug at sbt issue tracker https://github.com/sbt/sbt/issues/786 .
 
-*reproduce code*
+**reproduce code**
 {code:title="tables.scala"}
 trait H2Driver{
     abstract class Table[T]
@@ -14,7 +14,7 @@ object Config {
 }
 
 class Sites extends Config.driver.Table[String]
-{code}
+```scala
 {code:title="dao.scala"}
 class DAOBase[E]{
   type TableType <: Config.driver.Table[E]
@@ -22,17 +22,17 @@ class DAOBase[E]{
 class SitesDAO extends DAOBase[String]{
   type TableType = Sites
 }
-{code}
+```
 
-*expected*
-{noformat}
+**expected**
+```
 $ scalac -cp . dao.scala tables.scala 
 $ scalac -cp . dao.scala
 $
-{noformat}
+```
 
-*actual*
-{noformat}
+**actual**
+```
 $ scalac . dao.scala tables.scala 
 $ scalac . dao.scala
 
@@ -42,4 +42,4 @@ dao.scala:5: error: overriding type TableType in class DAOBase with bounds <: Co
        ^
 one error found
 $
-{noformat}
+```

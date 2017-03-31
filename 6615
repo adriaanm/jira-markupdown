@@ -1,23 +1,21 @@
-Thinking a bit more about this, given an invocation of {{shouldLoadImplFor}} with arguments:
-
-{noformat}
+Thinking a bit more about this, given an invocation of `shouldLoadImplFor` with arguments:
+```
   sym      == method apply$mcZL$sp
   receiver == anonymous class A$$anonfun$foo$1
-{noformat}
+```
 
-as above, then {{sym.isEffectivelyFinal}} is doing the right thing when reporting {{false}}.
+as above, then `sym.isEffectivelyFinal` is doing the right thing when reporting `false`.
 
-Rather, what {{shouldLoadImplFor}}  does _not_ check is:
-- a final {{receiver}} implies that non-overridden methods must be inherited from a superclass
+Rather, what `shouldLoadImplFor`  does *not* check is:
+- a final `receiver` implies that non-overridden methods must be inherited from a superclass
 
-The question then is whether ICode can be loaded for {{receiver}} and its superclasses (if not available). For inspiration one can look at:
-
-{noformat}
+The question then is whether ICode can be loaded for `receiver` and its superclasses (if not available). For inspiration one can look at:
+```
     def lookupIMethod(meth: Symbol, receiver: Symbol): Option[IMethod] = {
       def tryParent(sym: Symbol) = icodes icode sym flatMap (_ lookupMethod meth)
 
       (receiver.info.baseClasses.iterator map tryParent find (_.isDefined)).flatten
     }
-{noformat}
+```
 
-In the case at hand, an attempt is made to load ICode for {{concreteMethod.enclosingClass}}, which doesn't help.
+In the case at hand, an attempt is made to load ICode for `concreteMethod.enclosingClass`, which doesn't help.

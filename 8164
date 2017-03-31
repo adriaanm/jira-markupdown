@@ -2,8 +2,8 @@ The cause of this bug lies not so much in {{Inliner}} but in {{ICodeReader}}, wh
 
 The short term solution consists in preventing inlining of callees containing EHs. Doing so also avoids class file format errors where a try expression is inlined at a non-empty-stack program point (same thing that "lift try" in UnCurry avoids).
 
-For reference, this is where {{ICodeReader}} meets bytecode-level EHs:
-{noformat}
+For reference, this is where `ICodeReader` meets bytecode-level EHs:
+```
     while (i < exceptionEntries) {
       // skip start end PC
       in.skip(4)
@@ -14,5 +14,5 @@ For reference, this is where {{ICodeReader}} meets bytecode-level EHs:
       i += 1
     }
     skipAttributes()
-{noformat}
+```
 

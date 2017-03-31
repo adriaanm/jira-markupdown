@@ -1,6 +1,5 @@
 I've come up with a similarly puzzling case without inheritance.
-
-{code}
+```scala
 class Foo[@specialized(Int) A] {
   def foo[@specialized(Int) B](f: Function2[B, A, B])(b: B, a: A): B = f(b, a)
 }
@@ -10,11 +9,10 @@ class Bar[@specialized(Int) A] {
   def fun(a: A, b: A): A = a
   def bar(a: A, b: A): A = aFoo.foo(fun)(a, b)
 }
-{code}
+```
 
 In the byte code, do I understand correctly that the foo invocation (invokevirtual #43) is invoking the non-specialized Foo class's (specialized) method? My profiling reveals boxing & unboxing.
-
-{code}
+```scala
 public class Bar$mcI$sp extends Bar<java.lang.Object> {
   public final Foo<java.lang.Object> aFoo$mcI$sp;
 
@@ -31,6 +29,6 @@ public class Bar$mcI$sp extends Bar<java.lang.Object> {
       14: invokevirtual #43                 // Method Foo.foo$mIcI$sp:(Lscala/Function2;II)I
       17: ireturn       
 }
-{code}
+```
 
 This is certainly undesirable, but is it somehow necessary?

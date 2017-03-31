@@ -1,8 +1,7 @@
 Not sure what to do here. The thing is that super.foo doesn't bind statically, so when compiling this code we don't know in advance whether it's going to call into a compileTimeOnly method or not.
 
 One idea would be to introduce an additional check in the backend, but it looks like even if we can figure out statically that T1.foo is going to be called, the binding is still dynamic, so it's definitely not easy:
-
-{code}
+```scala
 trait T1 {
   @scala.annotation.compileTimeOnly("oops!") def foo = 3
 }
@@ -45,8 +44,8 @@ package <empty> {
     }
   }
 }
-{code}
+```
 
-In principle, we can hack up something by going through all ClassDefs, checking their super$xxx methods, computing their targets and, if they are static, verifying that they don't end up being compileTimeOnly, but I'm not sure how/whether that could be done. [~retronym], what do you think?
+In principle, we can hack up something by going through all ClassDefs, checking their super$xxx methods, computing their targets and, if they are static, verifying that they don't end up being compileTimeOnly, but I'm not sure how/whether that could be done. @retronym, what do you think?
 
 P.S. Changing super.foo into super[T1].foo works as you expected.

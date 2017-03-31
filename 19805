@@ -1,6 +1,5 @@
-Inside a trait, {{typeOf[this.type]}} results in equivalent Types for distinct objects, as shown below:
-
-{code}
+Inside a trait, `typeOf[this.type]` results in equivalent Types for distinct objects, as shown below:
+```scala
 import scala.reflect.runtime.universe._
 
 trait Trait {
@@ -14,16 +13,14 @@ object Instance2 extends Trait
 
 println(typeOf[Instance1.type] =:= typeOf[Instance2.type])  // Should be false
 println(Instance1.ttag =:= Instance2.ttag)                  // Should be false
-
-{code} 
+```
 
 Actual output:
-
-{code}
+```scala
 Trait constructor: $line9.$read$$iw$$iw$$iw$$iw$Instance1$@58c46295
 Trait constructor: $line10.$read$$iw$$iw$$iw$$iw$Instance2$@452451ba
 false    // As expected: the singleton types of two objects are different
 true     // But the this.type tags are equivalent!
-{code} 
+```
 
 First reported at http://stackoverflow.com/q/32083332/1393162

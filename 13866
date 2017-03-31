@@ -1,5 +1,5 @@
-I'm having some trouble with the fsc ant task. Building the attached project with {{ant compile.fsc}} produces the following output:
-{code}
+I'm having some trouble with the fsc ant task. Building the attached project with `ant compile.fsc` produces the following output:
+```scala
 Buildfile: build.xml
      [echo] scala home is at /home/rompf/scala/build/pack/
 
@@ -21,20 +21,19 @@ compiler.jar:/home/rompf/scala/build/pack/lib/scala-library.jar
       [fsc] [Executed command: scala scala.tools.nsc.CompileServer]
       [fsc] [Port number: -1]
       [fsc] Could not connect to compilation daemon.
+```
+whereas running `ant compile.scalac` works fine.
 
-{code}
-whereas running {{ant compile.scalac}} works fine.
-
-Running {{fsc -verbose}} from the shell also works and produces the following output
-{code}
+Running `fsc -verbose` from the shell also works and produces the following output
+```scala
 [Server arguments: -d /home/rompf/unpack/bugreports/ant/. -verbose]
 [VM arguments: ]
 [Temp directory: /home/rompf/scala/build/pack/var/scala-devel]
 [Port number: 44162]
 [Connected to compilation daemon at port 44162]
 ...
-{code}
+```
 
-A reason for the observed behavior might be that {{scala.tools.nsc.Properties.scalaHome}} is defined as {{System.getProperty("scala.home")}}, which might, I would suspect, not be available to the ant task. The command-line fsc tool wrapper sets this property explicitly using {{-D...}} when starting the VM.
+A reason for the observed behavior might be that `scala.tools.nsc.Properties.scalaHome` is defined as `System.getProperty("scala.home")`, which might, I would suspect, not be available to the ant task. The command-line fsc tool wrapper sets this property explicitly using `-D...` when starting the VM.
 
-An easy fix would be to pass {{scala.home}} directly to the ant task as a seperate property.
+An easy fix would be to pass `scala.home` directly to the ant task as a seperate property.

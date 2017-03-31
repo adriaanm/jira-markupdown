@@ -1,6 +1,5 @@
 Reduced a little: 
-
-{code}
+```scala
 trait A {
   type D >: Null <: C
   def foo(d: D)(d2: d.type): Unit
@@ -17,9 +16,8 @@ object B extends A {
 object Test extends App {
   new B.D().bar
 }
-{code}
-
-{noformat}
+```
+```
 scala> :javap -private A
 Compiled from "t6443.scala"
 public interface A{
@@ -35,6 +33,6 @@ public final class B$ extends java.lang.Object implements A{
     public void foo(B$D, B$D);
     private B$();
 }
-{noformat}
+```
 
-We're missing a bridge method in {{B$}} with the signature {{public void foo(A$C, A$C)}}.
+We're missing a bridge method in `B$` with the signature `public void foo(A$C, A$C)`.

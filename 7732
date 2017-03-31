@@ -3,17 +3,16 @@ There is a bug in the fix. Or at least the behavior of the merged method if the 
 Given two maps a and b, a.merged(b)(null) should only take elements from b if there is no collision, right? So it should be equivalent with b ++ a, where all elements in a replace elements in b. But it is not. See test case. 
 
 The reason is the following: if a merger is given, the number of times invert has been called on it keeps track of the number of times the order of the arguments has been reversed. It essentially acts as a flag that is negated every time the arguments are swapped, like e.g. in 
-
-{code}
+```scala
     protected override def merge0[B1 >: B](that: HashMap[A, B1], level: Int, merger: Merger[A, B1]): HashMap[A, B1] = {
       that.updated0(key, hash, level, value, kv, if (merger ne null) merger.invert else null)
     }
-{code}
+```
 
 But when the merger is null there is no way to keep track of the number of flips, so whether you get something from the first or the second map depends on the structure of the map (depth, number of collisions, etc).
 
 Here is some code to reproduce the bug:
-{code}
+```scala
   val n = 10
   val keys = (0 until n)
   val sa = keys.map(key => key -> "a")
@@ -33,7 +32,7 @@ Here is some code to reproduce the bug:
     }
     println(r1 == r2)
   }
-{code}
+```
 
 I would suggest dropping the merger stuff and just having an additional boolean argument "flipped" that just keeps track of whether the order of the arguments was flipped. That way it works even if the merger is null.
 

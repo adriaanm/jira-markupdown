@@ -1,9 +1,7 @@
 There's something really off about the type inference when I use quasiquotes
 
 Take this example (from Programming Scala book, 2nd Edition):
-
-
-{code:java}
+```java
 
 // src/main/scala/progscala2/metaprogramming/invariant2.scala
 package metaprogramming
@@ -45,8 +43,7 @@ object invariant2 {
 
   case class InvariantFailure(msg: String) extends RuntimeException(msg)
 }
-
-{code}
+```
 
 ^ Everything works. Now look at what happens when I ask for the types:
 
@@ -57,9 +54,7 @@ type of "statement":
 statement: Trees#Tree
 
 Okay. Now I put these type annotations on "statement" and "statements" and compile
-
-
-{code:java}
+```java
 
 // src/main/scala/progscala2/metaprogramming/invariant2.scala
 package metaprogramming
@@ -101,8 +96,7 @@ object invariant2 {
 
   case class InvariantFailure(msg: String) extends RuntimeException(msg)
 }
-
-{code}
+```
 
 Compile/Run:
 
@@ -121,9 +115,7 @@ Compile/Run:
 This is very peculiar. The type inference told me that "statement" IS of type Trees#Tree
 
 What if I annotate it with "context.universe.Tree" instead
-
-
-{code:java}
+```java
 
 // src/main/scala/progscala2/metaprogramming/invariant2.scala
 package metaprogramming
@@ -165,7 +157,7 @@ object invariant2 {
 
   case class InvariantFailure(msg: String) extends RuntimeException(msg)
 }
-{code}
+```
 
 
 The IDE says "expression of type Tree#Tree does not conform to type context.universe.Tree", but it compiles. What is going on with the wacky type inference here?

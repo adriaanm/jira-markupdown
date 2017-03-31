@@ -1,21 +1,19 @@
 Fix pending in [https://github.com/lrytz/scala/tree/t5610].
 
-However, this issue is blocked by SI-5796. Another option is to use a {{Function0}} instead of a lazy val, i.e.
-
-{code}
+However, this issue is blocked by scala/bug#5796. Another option is to use a `Function0` instead of a lazy val, i.e.
+```scala
 val fun1: Int => (() => Unit) = {
   <synthetic> val eta$0$1: () => String = () => test;      // Create Function0 value
   ((dummy: Int) => Bug.this.foo(eta$0$1())(dummy))         // Apply the function here
 };
 val fun2: Int => (() => Unit) = ((x$1: Int) => Bug.this.foo(test)(x$1));
-{code}
+```
 
-This is what is currently done for named arguments, i.e. given {{def f(a: Int, b: => Int)}}, a call {{f(b = expr, a = 1)}} is transformed to
-
-{code}
+This is what is currently done for named arguments, i.e. given `def f(a: Int, b: => Int)`, a call `f(b = expr, a = 1)` is transformed to
+```scala
 {
   val x$1: () => Int = () => expr
   val x$2: Int = 1
   f(x$2, x$1)
 }
-{code}
+```

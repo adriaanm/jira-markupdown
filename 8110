@@ -1,6 +1,5 @@
 Here's a seemingly related problem reported on the mailing list (https://groups.google.com/forum/?fromgroups=#!topic/scala-user/1VYTLcxmL8g):
-
-{code}
+```scala
   trait A {
     type Element<:Elt
     trait Elt {
@@ -20,14 +19,13 @@ Here's a seemingly related problem reported on the mailing list (https://groups.
       override def child(e:Element):Unit = super.child(e)
     }
   }
-{code}
-
-{quote}
+```
+```
 In class A2, method child, the call to super fails with "ambiguous reference to overloaded definition".
 
 I do not understand why:
 - super.Element is the direct descendant from the concrete class A1#Element,so super.child should refer to its child method.
 - anyway, Elt.child is abstract so it should not be considered.
-{quote}
+```
 
 If it proves to be a separate issue, we could spawn a new ticket.

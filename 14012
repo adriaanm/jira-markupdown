@@ -1,4 +1,4 @@
-{code}
+```scala
 Java:
 
 public class M { public static <T> String bind(Class<T> c1, Class<? extends T> c2) { return null; } }
@@ -23,11 +23,11 @@ X.scala:7: error: type mismatch;
  found   : java.lang.Class[A]
  required: java.lang.Class[_ <: ?]
   M.bind( classOf[A], classOf[A] )
-{code}
+```
 I couldn't figure out how to call that bind method even using arbitrary casts.
 
 But if the type parameter is moved upward:
-{code}
+```scala
 Java:
 public class M2<T> { public String bind(Class<T> c1, Class<? extends T> c2) { return null; } }
 
@@ -36,9 +36,9 @@ class A
 class B extends A
 
 object X2 { (new M2[A]).bind( classOf[A], classOf[B] ) }
-{code}
+```
 ...then it works.
 
 This came up trying to use tapestry, http://tapestry.apache.org/ .
 
-I hope this isn't a duplicate; there are many bugs involving generics in trac and I don't understand all of them.  Likely related at least is SI-490.
+I hope this isn't a duplicate; there are many bugs involving generics in trac and I don't understand all of them.  Likely related at least is scala/bug#490.

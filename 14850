@@ -1,26 +1,23 @@
 This innocent code has no problems:
-
-{code}
+```scala
 object Stooges extends Enumeration {
   type Stooge = Value
   val Larry, Curly, Moe = Value
 }
-{code}
+```
 
 This still innocent code produces the weirdest stuff:
-
-{code}
+```scala
 object Stooges extends Enumeration {
   type Stooge = Value
   val Larry, Curly, Moe = Value
   def nextStooge(v:Stooges.Stooge):Stooges.Stooge =
     Stooges((v.id+1) % Stooges.maxId)
 }
-{code}
+```
 
 By weirdest, I mean the following:
-
-{code}
+```scala
 scala> Stooges.Larry
 java.lang.IllegalArgumentException: wrong number of arguments
         at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
@@ -91,7 +88,7 @@ java.lang.IllegalArgumentException: wrong number of arguments
         at scala.tools.nsc.InterpreterLoop.processLine...
 scala> Stooges.Moe
 res2: Stooges.Value = Moe
-{code}
+```
 
 The `Stooge` which won't crash has varied in my tests with no discernible pattern I could detect. Granted, I didn't spend much time trying to detect a pattern.
 

@@ -1,30 +1,27 @@
 Strictly speaking, this is not a regression, but causes other regressions in the standard library (see https://issues.scala-lang.org/browse/SI-6101, https://issues.scala-lang.org/browse/SI-5976), and may be a blocker.
 
 Scala file:
-
-{code}
+```scala
 trait Func1[R] {
   def apply(): R = null.asInstanceOf[R]
 }
 
 
 class Func1ReturnString extends Func1[String]
-{code}
+```
 
 Java file:
-
-{code}
+```scala
 public class Test {
     public static void main(String[] args) {
 	Func1ReturnString b = new Func1ReturnString() {};
 	b.apply();
     }
 }
-{code}
+```
 
-This crashes {{javac}}:
-
-{code}
+This crashes `javac`:
+```scala
 Test.java:7: error: apply() in Func1ReturnString cannot implement apply() in Func1
 	Func1ReturnString b = new Func1ReturnString() {};
 	                                              ^
@@ -32,11 +29,10 @@ Test.java:7: error: apply() in Func1ReturnString cannot implement apply() in Fun
   where R is a type-variable:
     R extends Object declared in interface Func1
 1 error
-{code}
+```
 
-The reason is that {{mixin}} does not generate an appropriate signature for {{apply}}. Trees at the end of {{cleanup}}:
-
-{code}
+The reason is that `mixin` does not generate an appropriate signature for `apply`. Trees at the end of `cleanup`:
+```scala
 package <empty> {
   abstract trait Func1 extends Object {
     def apply(): Object
@@ -56,21 +52,20 @@ package <empty> {
     }
   }
 }
-{code}
+```
 
-If you look at {{apply}} above, the return type is {{Object}} instead of {{String}}. This happens in general whenever a method signature changes due to a more refined type environment in an inheriting class and the method is not overridden/implemented in the inheriting class.
+If you look at `apply` above, the return type is `Object` instead of `String`. This happens in general whenever a method signature changes due to a more refined type environment in an inheriting class and the method is not overridden/implemented in the inheriting class.
 
-In some other situations {{javac}} compiles the file, but produces bytecode which refers to a non-existing method (signature-wise). See an example in a comment below.
+In some other situations `javac` compiles the file, but produces bytecode which refers to a non-existing method (signature-wise). See an example in a comment below.
 
 This happens both with Scala 2.9.2 and Scala 2.10.x.
 
 It does not happen with Scala 2.8.2, but we think this is because in Scala 2.8.2 the generic signatures were broken in other ways. Furthermore, it also breaks with 2.8.2 if you change the Java code a bit:
-
-{code}
+```scala
 public class Test {
     public static void main(String[] args) {
 	Func1ReturnString b = new Func1ReturnString() {};
 	String s = b.apply();
     }
 }
-{code}
+```

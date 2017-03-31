@@ -3,8 +3,7 @@ Parsing using StreamReader is very slow on input files containing long lines (I 
 I use PagedSeqReader as a workaround, but it seems poorly documented. Do any of these readers load all file in memory? Is there any benefit in using a java.io.BufferedReader before passing it to StreamReader/PagedSeqReader?
 
 Test code follows. Attached data example file parses in over 80 s on my high-end computer (OpenJDK 7 JVM), falls down to under one second using PagedSeqReader.
-
-{code}
+```scala
 object Parser extends RegexParsers {
   def parse(is: InputStream): Any = {
     val reader = new InputStreamReader(is)
@@ -32,4 +31,4 @@ object Test extends App {
   println(r)
   println(time / 1e9)
 }
-{code}
+```

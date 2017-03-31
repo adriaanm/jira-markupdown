@@ -1,19 +1,16 @@
 Looks like an oversight in the implementation to me. `Typer::preSelectOverloaded` is responsible for filtering out alternatives based on arity (also based on the "shape type" of function literal arguments), but this is bypassed in this case.
-
-{code}
+```scala
       def preSelectOverloaded(fun: Tree): Tree = {
         if (fun.hasSymbolField && fun.symbol.isOverloaded) {
-
-{code}
+```
 
 We have:
-
-{noformat}
+```
 fun = A.this.f[Int] / TypeApply(Select(...., f), TypeTree(Int))
 fun.hasSymbolField = false
 fun.tpe = OverloadedType((f: Any => Int, v: Int)Unit <and> (f: Any => Int)Unit)
 fun.fun.symbol.info = [T](f: Any => T, v: Int)Unit <and> (f: Any => T)Unit
-{noformat}
+```
 
 After filtering, we can end up with a new symbol: either a single method symbol, or a new overloaded symbol with fewer alternatives. This needs to be assigned back to the tree `fun`. We can't just assign
 

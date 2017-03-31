@@ -1,19 +1,17 @@
 Regarding the case that I've seen a lot in practice:
-
-{code}
+```scala
 package object demo extends demo.A
-{code}
+```
 
 Martin suggests that if we took a strict approach we would outlaw this with a cyclic reference error, as it is conceptually the same manner as:
-
-{code}
+```scala
 scala> object demo extends demo.A {
      |   trait A
      | }
 <console>:7: error: illegal cyclic reference involving object demo
        object demo extends demo.A {
                            ^
-{code}
+```
 
 This would break quite a lot of code, as nested types in the package are the most appealing for the package object to inherit. So we would have to deprecate it, or just leave it in a "use-at-your-own-risk" zone. We can tailor the error message for package objects to suggest a clean build.
 

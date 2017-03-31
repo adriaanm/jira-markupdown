@@ -1,19 +1,17 @@
 The workaround is to dissociate the skolem from the free term, e.g. by creating the info for the free term manually like this.
 
 2.10.x:
-
-{code}
+```scala
 -val tree = q"${reify(c).tree}"
 +val csym = build.newFreeTerm("c", c)
 +build.setTypeSignature(csym, typeOf[C[_]])
 +val tree = q"$csym.i"
-{code}
+```
 
 2.11.x:
-
-{code}
+```scala
 -val tree = q"${reify(c).tree}"
 +val csym = internal.reificationSupport.newFreeTerm("c", c)
 +internal.reificationSupport.setInfo(csym, typeOf[C[_]])
 +val tree = q"$csym.i"
-{code}
+```

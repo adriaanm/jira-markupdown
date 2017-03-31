@@ -1,8 +1,7 @@
 According to the new collections document, any Traversable object should support the ++ method.  But the ++ method is deprecated in BufferLike, and the implementation actually appends to the existing buffer rather than create a new collection.
 
 Maybe the intent was to prevent collection implementers from accidentally invoking the ++ method of BufferLike, which would probably be the wrong thing, but the deprecated ++ operator is exposed through the ListBuffer class at least, with the result that invoking ++ on a ListBuffer instance directly generates a deprecation warning and improperly updates the collection, while invoking ++ on any random Traversable instance (which may actually be ListBuffer) is fine and seems to do the right thing.
-
-{code}
+```scala
 scala> val b = new ListBuffer[Int]
 b: scala.collection.mutable.ListBuffer[Int] = ListBuffer()
 
@@ -30,7 +29,7 @@ res23: Traversable[Int] = ListBuffer(1, 2, 2)
 
 scala> b
 res24: scala.collection.mutable.ListBuffer[Int] = ListBuffer(1, 2)
-{code}
+```
 
 Invoking ++ on a collection is the canonical way to create a new collection that contains all of the elements of the left-hand collection followed by all of the elements of the right-hand collection.  It shouldn't generate a warning and/or work differently just because the left-hand collection type happens to be ListBuffer.
 

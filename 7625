@@ -1,26 +1,23 @@
-{{AddInterfaces}} unlinks and creates a fresh symbol for the {{Function2}} implementation class, noting:
-
-{quote}
+`AddInterfaces` unlinks and creates a fresh symbol for the `Function2` implementation class, noting:
+```
 Unlink a pre-existing symbol only if the implementation class is
 visible on the compilation classpath.  In general this is true under
 -optimise and not otherwise, but the classpath can use arbitrary
 logic so the classpath must be queried.
-{quote}
-
-{code}
+```
+```scala
 [log erasure(->posterasure ->posterasure)] Creating implClass for trait Function2#1114
 [log erasure(->posterasure ->posterasure)] trait Function2#1114.implClass already exists: class Function2$class#787
 [log erasure(->posterasure ->posterasure)] unlinking impl class class Function2$class#787
 [log erasure(->posterasure ->posterasure)] Creating implClass for trait Function2$mcIII$sp#48400
 [log erasure(->posterasure ->posterasure)] trait Function2$mcIII$sp#48400.implClass already exists: class Function2$mcIII$sp$class#922
 [log erasure(->posterasure ->posterasure)] unlinking impl class class Function2$mcIII$sp$class#922
-{code}
+```
 
-But later, the original symbol turns up, stripped of its {{IMPLCLASS}} flag.
-
-{code}
+But later, the original symbol turns up, stripped of its `IMPLCLASS` flag.
+```scala
 mixinImplClassMembers(mixinClass = class Function2$class#787, mixinInterface = trait Function2#1114)
 mixinClass.isImplClass = false
-{code}
+```
 
 [1] https://github.com/scala/scala/blob/master/src/compiler/scala/tools/nsc/transform/AddInterfaces.scala#L77

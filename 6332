@@ -1,10 +1,9 @@
-{{GenJVM}} has the following guard whose then-branch gets to run for both the module-symbol (because of the first or'ed expression) and also for its companion class (because of the 2nd). 
+`GenJVM` has the following guard whose then-branch gets to run for both the module-symbol (because of the first or'ed expression) and also for its companion class (because of the 2nd). 
 
-Looks like the intention was to have {{addStaticInit()}} executed (because {{GenJVM}} intializes the {{serialVersionUID}} static field in the {{<clinit>()}} added by {{addStaticInit()}} ). That gets done. However by not taking the else-branch for the companion class, {{addForwarders()}} doesn't get a chance to run.
+Looks like the intention was to have `addStaticInit()` executed (because `GenJVM` intializes the `serialVersionUID` static field in the `<clinit>()` added by `addStaticInit()` ). That gets done. However by not taking the else-branch for the companion class, `addForwarders()` doesn't get a chance to run.
 
-The {{GenASM}} control-flow is different but also gets tripped by this bug. I'll try to adapt the fix from {{GenASM}} to  {{GenJVM}}. But the solutions are actually independent (ie, if you're familiar with {{GenJVM}}, your help is welcome).
-
-{noformat}
+The `GenASM` control-flow is different but also gets tripped by this bug. I'll try to adapt the fix from `GenASM` to  `GenJVM`. But the solutions are actually independent (ie, if you're familiar with `GenJVM`, your help is welcome).
+```
       if (isStaticModule(c.symbol) || serialVUID != None || isParcelableClass) {
         if (isStaticModule(c.symbol))
           addModuleInstanceField
@@ -19,4 +18,4 @@ The {{GenASM}} control-flow is different but also gets tripped by this bug. I'll
         }
       }
       else {
-{noformat}
+```

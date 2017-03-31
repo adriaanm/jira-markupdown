@@ -1,6 +1,5 @@
-The two tests below are different only in an aspect which is apparently irrelevant to the tests, yet one passes and one fails. Investigating further, I've understood that I was wrong in my expectation, but it took me REALLY long -- even though I read everything I could find (including "How the constructors phase works" by Miguel Garcia, which is pretty detailed). Of course documentation bug SI-4467 didn't help, but even with the correction I doubt I would have understood much faster.
-
-{code}
+The two tests below are different only in an aspect which is apparently irrelevant to the tests, yet one passes and one fails. Investigating further, I've understood that I was wrong in my expectation, but it took me REALLY long -- even though I read everything I could find (including "How the constructors phase works" by Miguel Garcia, which is pretty detailed). Of course documentation bug scala/bug#4467 didn't help, but even with the correction I doubt I would have understood much faster.
+```scala
 import org.scalatest.Suite
 import org.scalatest.junit.AssertionsForJUnit
 import org.junit.Test
@@ -43,11 +42,10 @@ class ClassB extends DelayedInit {
 object ObjectB extends ClassB {
   val x = 1
 }
-{code}
+```
 
 Here's a proposal for improvement (though I'm not too happy about it's clarity, so I'd appreciate help from someone native in English and Scala):
-
-{quote}
+```
 All objects, classes and traits directly or indirectly inheriting 
 the `DelayedInit` marker trait will have their initialization code
 rewritten as follows:
@@ -63,4 +61,4 @@ Note that this rewriting will occur at each object/class/trait in an
 inheritance chain below the level where DelayedInit is inherited,
 which may result in multiple calls to delayedInit methods as the
 different levels of the hierarchy are initialized.
-{quote}
+```

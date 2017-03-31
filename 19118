@@ -1,21 +1,18 @@
 I've found that a constant source of performance issues is the lack of this method in the Map trait:
-
-{code}
+```scala
 trait Map[K, V] {
   def mapEntries[V2](f: (K, V) => V2): Map[K, V2]
 }
-{code}
-Ultimately, if you want to build a new Map from an existing Map (and which has the same keys), but the values of the new map are defined by a function which depends on both the key _and_ value (by far the most common case, in my experience), you have to do this (which is O(N)):
-
-{code}
+```
+Ultimately, if you want to build a new Map from an existing Map (and which has the same keys), but the values of the new map are defined by a function which depends on both the key *and* value (by far the most common case, in my experience), you have to do this (which is O(N)):
+```scala
 kvs map { case (k, v) => k -> f(k, v) }
-{code}
+```
 
-What's more, using the enhance-my-library pattern to add {{mapEntries}} to Map, or even to construct ones own Map type which contains this method is sub-optimal, the former because each time a Map is converted to a MappedEntriesMap, that is O(N) and the latter, well, that's because it involves MapLike, MapFactory and general unpleasantness. What's more, you still lose because you pay a gradual price in extra object creation overhead (I attach a file, {{map.scala}} which contains such a new Map type, so you can see what the overhead is)
+What's more, using the enhance-my-library pattern to add `mapEntries` to Map, or even to construct ones own Map type which contains this method is sub-optimal, the former because each time a Map is converted to a MappedEntriesMap, that is O(N) and the latter, well, that's because it involves MapLike, MapFactory and general unpleasantness. What's more, you still lose because you pay a gradual price in extra object creation overhead (I attach a file, `map.scala` which contains such a new Map type, so you can see what the overhead is)
 
-All in all, it would be nice if instead of this in {{collection.MapLike}}:
-
-{code}
+All in all, it would be nice if instead of this in `collection.MapLike`:
+```scala
 def mapValues[C](f: B => C): Map[A, C] = new MappedValues(f)
 protected class MappedValues[C](f: B => C) extends AbstractMap[A, C] with DefaultMap[A, C] {
   override def foreach[D](g: ((A, C)) => D): Unit = for ((k, v) <- self) g((k, f(v)))
@@ -24,10 +21,9 @@ protected class MappedValues[C](f: B => C) extends AbstractMap[A, C] with Defaul
   override def contains(key: A) = self.contains(key)
   def get(key: A) = self.get(key).map(f)
 }
-{code}
+```
 We had this:
-
-{code}
+```scala
 def mapEntries[C](f: (A, B) => C): Map[A, C] = new MappedEntries(f)
 protected class MappedEntries[C](f: (A, B) => C) extends AbstractMap[A, C] with DefaultMap[A, C] {
   override def foreach[D](g: ((A, C)) => D): Unit = for ((k, v) <- self) g((k, f(k, v)))
@@ -36,9 +32,9 @@ protected class MappedEntries[C](f: (A, B) => C) extends AbstractMap[A, C] with 
   override def contains(key: A) = self.contains(key)
   def get(key: A) = self.get(key).map(v => f(key, v))
 }
-{code}
+```
 Then the mapValues implementation just becomes:
-{code}
+```scala
 def mapValues[C](f: B => C): Map[A, C] = mapEntries((_, b) => f(b))
-{code}
+```
 This is a pretty simple change and (it seems to me) a rather big win for little effort.

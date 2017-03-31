@@ -1,6 +1,5 @@
 I believe this provides a better look at Miles' reported problem:
-
-{code}
+```scala
 import scala.language.{ higherKinds, implicitConversions }
  
 trait Foo { type Out }
@@ -37,20 +36,19 @@ object Test {
 
   }
 }
-{code}
+```
 
 First of all, I needed to refine `instance` in the return type of `conv`. Without that, I don't believe that one could expect this example to work.
 
 However, after doing that, we can still see a difference between the case when the first argument to `indirect` is a stable value vs when it is a method call to `conv`. I've annotated the computed types in those expressions above.
-
-{noformat}
+```
 actuals = SI{type Out = foo.Out; val instance: Test.<refinement>.type}
 params =  value si
 actuals.head.isStable = false
-{noformat}
+```
 
-The unstable type of the argument is intentionally *not* substituted for `si`. This behaviour is a fix for a soundness hole, SI-3873.
+The unstable type of the argument is intentionally **not** substituted for `si`. This behaviour is a fix for a soundness hole, scala/bug#3873.
 
 My conclusion is that this isn't a bug. I'm going to mark it as such, but feel free to reopen if you think I've got it wrong.
 
-I'll move Paul's test case over to SI-8177. It is a bug in as-seen-from.
+I'll move Paul's test case over to scala/bug#8177. It is a bug in as-seen-from.

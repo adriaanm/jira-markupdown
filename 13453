@@ -1,24 +1,24 @@
 A Java generic class that refers to its own type crashes the classfile parser.
 
 Java:
-{code}
+```scala
 interface Field<A> {
 }
 
 public class Amount<Q> extends Object 
     implements Field<Amount<?>> {
 }
-{code}
+```
 
 Scala:
-{code}
+```scala
 abstract class Foo {
   val x: Amount[Foo]
 }
-{code}
+```
 
 The classfile parser will try to resolve the `Amount` class type while parsing `Amount`, resulting in a busy assertion:
-{code}
+```scala
 Exception in thread "main" java.lang.AssertionError: assertion failed: internal error: illegal class file dependency in classes/Amount.class
         at scala.Predef$$.assert(Predef.scala:92)
         at scala.tools.nsc.symtab.classfile.ClassfileParser.parse(ClassfileParser.scala:60)
@@ -99,4 +99,4 @@ Exception in thread "main" java.lang.AssertionError: assertion failed: internal 
         at scala.tools.nsc.Main$$.process(Main.scala:84)
         at scala.tools.nsc.Main$$.main(Main.scala:98)
         at scala.tools.nsc.Main.main(Main.scala)
-{code}
+```

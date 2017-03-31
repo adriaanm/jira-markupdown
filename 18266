@@ -3,16 +3,14 @@ The meaning of the following comment in Plugins.scala is that `loadAllFrom` in P
 The continuations plugin relies on this behavior, for instance.  Once instantiated, a plugin is free to muck with its global. (A Subcomponent has no lifecycle for init and destroy operations.)
 
 If two continuations plugins are specified, the second, "stale" checker will not be "enabled." The enabled flag is propagated from the (proper) plugin to its subcomponents and to its checkers.
-
-{code}
+```scala
 // Each plugin must only be instantiated once. A common pattern
 // is to register annotation checkers during object construction, so
 // creating multiple plugin instances will leave behind stale checkers.
-{code}
+```
 
 Sample confusing output, which also occurs on 2.10 if $CJ is a nefarious file name like my-continuations.jar:
-
-{code}
+```scala
 $ scalac -verbose -Ylog:all -P:continuations:enable -Xplugin:$CJ t1807.scala
 ***
 [log <no phase>] instantiated cps plugin: scala.tools.selectivecps.SelectiveCPSPlugin@6fc33c70
@@ -29,7 +27,7 @@ t1807.scala:10: error: this code must be compiled with the Scala continuations p
                                            ^
 ***
 four errors found
-{code}
+```
 
 That's one more error than if you don't specify -P::enabled at all, so go figure.
 

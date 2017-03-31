@@ -1,18 +1,16 @@
-First, I agree that using {{setStackTrace}} could be a solution (though a non-standard one AFAIK). Also, yes, checked exceptions are probably the main reasons for the wrapper exceptions. Still, that means that wrapper exceptions are not a new thing.
+First, I agree that using `setStackTrace` could be a solution (though a non-standard one AFAIK). Also, yes, checked exceptions are probably the main reasons for the wrapper exceptions. Still, that means that wrapper exceptions are not a new thing.
 
-But stepping back a bit, maybe let's focus on the problem. My basic problem is that {{Try.get}} doesn't work consistently with {{Option.get}} or {{Either.right.get}} and that was what I expected (and I guess other people as well). I regard all of the {{get}} methods as a shortcut for an assertion and a cast:
-
-{code}
+But stepping back a bit, maybe let's focus on the problem. My basic problem is that `Try.get` doesn't work consistently with `Option.get` or `Either.right.get` and that was what I expected (and I guess other people as well). I regard all of the `get` methods as a shortcut for an assertion and a cast:
+```scala
 val x: Option[Int]
 x.get
 // = 
 // assert(x.isDefined, "programmer assumed that x.isDefined")
 // x.asInstanceOf[Some].value
-{code}
+```
 
 Here's now an example showing the inconsistency:
-
-{code}
+```scala
   def optionTest(x: Option[Int]): Unit = {
     x.get // oops, unguarded access, bug in this line
 
@@ -43,7 +41,7 @@ Here's now an example showing the inconsistency:
     //  at example.Service$.tryResult(GetInconsistence.scala:9)
     // 	at example.GetInconsistence$$anonfun$3.apply$mcV$sp(GetInconsistence.scala:50)
   }
-{code}
+```
 
 If we classify this inconsistency as a problem introducing a new method with new semantics won't solve the problem: users may still assume consistency and use the old method as before.
 
@@ -51,6 +49,6 @@ IMO the long-term solution could be:
  - {{Failure.get}} wraps the exception
  - there's a new method {{Try.getOrRethrow}} that mimics the current semantics for everyone who relies on it
 
-I don't suggest wrapping the exception in any case, you can still pattern match on {{Try}} and get the original message out of the {{Failure}} object as before, I just suggest to change the semantics of {{Failure.get}} in the long term.
+I don't suggest wrapping the exception in any case, you can still pattern match on `Try` and get the original message out of the `Failure` object as before, I just suggest to change the semantics of `Failure.get` in the long term.
 
 How to deal with the compatibility problems is another topic that needs to be solved but maybe we should agree on the problem first :)

@@ -16,15 +16,14 @@ class Foo(bar: String) {
 object Main extends App {
   new Foo()
 }
-{code}
+```scala
 
 I've tested the code on versions 2.11.(1, 4, 7) and all of them will fail with the same error message of {{value <none> is not a member of Object}}.
 
 This issue seems to be related to SI-7853.
 
 Compiling {{Main.scala}} with {{scalac}} version 2.11.7 on my Windows machine results in the following stack trace:
-
-{code}
+```
 error: scala.reflect.internal.Types$TypeError: value <none> is not a member of Object
         at scala.tools.nsc.typechecker.Contexts$ThrowingReporter.handleError(Contexts.scala:1390)
         at scala.tools.nsc.typechecker.Contexts$ContextReporter.issue(Contexts.scala:1242)
@@ -237,7 +236,7 @@ error: scala.reflect.internal.Types$TypeError: value <none> is not a member of O
         at scala.tools.nsc.Driver.process(Driver.scala:51)
         at scala.tools.nsc.Driver.main(Driver.scala:64)
         at scala.tools.nsc.Main.main(Main.scala)
-{code}
+```scala
 
 This at least seems to be a very specific issue issue with using self references in anonymous classes also in secondary constructors as this will compile without crashing the compiler which serves as a temporary fix in some cases:
 
@@ -258,4 +257,4 @@ class Foo(bar: String) {
 object Main extends App {
   new Foo()
 }
-{code}
+```

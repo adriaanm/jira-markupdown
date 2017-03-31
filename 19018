@@ -1,6 +1,5 @@
 I get a crash in the type checker when asking for completions after the dot of a class that extends `Dynamic`.
-
-{code}
+```scala
 import scala.language.dynamics
 
 class F extends Dynamic {
@@ -13,11 +12,10 @@ class Foo {
   
   bar. // ask for completion, with nothing after the dot
 }
-{code}
+```
 
 stack trace:
-
-{code}
+```scala
 java.lang.RuntimeException: bad position: [251:250]
 	at scala.sys.package$.error(package.scala:27)
 	at scala.reflect.internal.util.RangePosition.<init>(Position.scala:273)
@@ -70,4 +68,4 @@ java.lang.RuntimeException: bad position: [251:250]
 	at scala.tools.nsc.interactive.CompilerControl$AskScopeCompletionItem.apply$mcV$sp(CompilerControl.scala:378)
 	at scala.tools.nsc.interactive.Global.pollForWork(Global.scala:395)
 	at scala.tools.nsc.interactive.PresentationCompilerThread.run(PresentationCompilerThread.scala:22)
-{code}
+```

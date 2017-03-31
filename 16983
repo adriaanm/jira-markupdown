@@ -1,4 +1,4 @@
-{code}
+```scala
 class D[-A](x: A) { }
 
 object Test {
@@ -20,14 +20,14 @@ mismatch anonymous class $anon List(Int) List()
 	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:5004)
 	at scala.tools.nsc.typechecker.Typers$Typer.typedStat$1(Typers.scala:2558)
 **/
-{code}
+```
 Horrifyingly, this does NOT crash:
-{code}
+```scala
 class D[-A](x: A) { }
 
 object Test {
   println(new D[Int]())   // no crash
   println(new D[Int]{})   // crash
 }
-{code}
+```
 In other words, attempting to instantiate it with empty parens induces it to give the correct error message for empty braces.

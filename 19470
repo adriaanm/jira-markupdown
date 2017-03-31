@@ -1,5 +1,5 @@
 Compiling our project fails with NPE:
-{noformat}
+```
 java.lang.NullPointerException
         at scala.tools.nsc.transform.Mixin$MixinTransformer.scala$tools$nsc$transform$Mixin$MixinTransformer$$postTransform(Mixin.scala:1154)
         at scala.tools.nsc.transform.Mixin$MixinTransformer$$anonfun$transform$1.apply(Mixin.scala:1261)
@@ -57,10 +57,10 @@ java.lang.NullPointerException
         at scala.reflect.api.Trees$Transformer.transformTemplate(Trees.scala:2563)
         at scala.reflect.internal.Trees$$anonfun$itransform$4.apply(Trees.scala:1401)
         at scala.reflect.internal.Trees$$anonfun$itransform$4.apply(Trees.scala:1400)
-{noformat}
+```
 
 Code causing this:
-{code}
+```scala
 val survey = SurveyDefinitionTest.create(modules = Seq(ModuleDefinitionTest.create(
   `type` = ModuleType.closed,
   moduleItems = WrapAsScala.asScalaBuffer(items).map(itemCode => ModuleItemDefinitionTest.create(itemCode, identifying = true)))
@@ -69,10 +69,10 @@ val survey = SurveyDefinitionTest.create(modules = Seq(ModuleDefinitionTest.crea
 val modules: Map[String, Module] = Statement.createModules(survey.modules))
 val strValues = modules.flatMap(_._2.asInstanceOf[ClosedModule].getValues.flatMap(_.value))
 strValues.mkString("[", ", ", "]")
-{code}
+```
 
-When there is no type annotation on {{val modules}}, then compilation fails with NPE. When type is present, compilation works fine. All called methods have explicit types:
-{code}
+When there is no type annotation on `val modules`, then compilation fails with NPE. When type is present, compilation works fine. All called methods have explicit types:
+```scala
 object SurveyDefinitionTest {
   def create(...): SurveyDefinition 
 }
@@ -80,10 +80,10 @@ object SurveyDefinitionTest {
 object Statement {
   def createModules(metadata: Seq[ModuleDefinition]): Map[String, Module]
 }
-{code}
+```
 
 I tried to distill test case from our complicated project, but there were no further compiler failures. Is there any way to pin this failure (e.g. some output from scalac that will help)?
 
 But even in this distilled example (see attachment) compiler results were somewhat strange:
-* no type annotations on {{val survey}} and {{val modules}} fails with compiler error *recursive value survey needs type*
-* type annotation on {{val modules}} or {{val survey}} *compiles successfully*
+- no type annotations on `val survey` and `val modules` fails with compiler error **recursive value survey needs type**
+- type annotation on `val modules` or `val survey` **compiles successfully**

@@ -1,17 +1,15 @@
 Consider the following:
-
-{code}
+```scala
 import scala.annotation._
 import meta._
 
 class Foo extends scala.annotation.Annotation
 
 case class A(@(Foo@field) x: Int)
-{code}
+```
 
-We would expect the annotation {{Foo}} to be put on the accessor of {{x}} only. However, the synthesized {{apply}} method's parameter {{x}} still has the annotation:
-
-{code}
+We would expect the annotation `Foo` to be put on the accessor of `x` only. However, the synthesized `apply` method's parameter `x` still has the annotation:
+```scala
 [[syntax trees at end of                     typer]] // test.scala
 package <empty> {
   import scala.annotation._;
@@ -67,4 +65,4 @@ package <empty> {
     <synthetic> private def readResolve(): Object = A
   }
 }
-{code}
+```

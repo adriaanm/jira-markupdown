@@ -1,6 +1,5 @@
 Noting that my patch can lead to SOE.
-
-{code}
+```scala
 scala> trait T[A] { val foo: { type B = A } = ???; def bar(b: foo.B) = () }
 defined trait T
 
@@ -27,6 +26,6 @@ paramTypePreInfo: $r.intp.global.Type = AnyRef{type B = A}
 
 scala> seenFromParamTypePreInfo <:< paramTypePreInfo
 KABOOM
-{code}
+```
 
 The `<:<` added to `nextBase` can recursively call `asSeenFrom` by way of `specializedSym`.

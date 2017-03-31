@@ -1,20 +1,20 @@
 I propose adding a trait like the following to the standard library:
-{code}
+```scala
 trait Comprehendable[C[+_], +A] {
   def map[B](f: A => B): C[B]
   def flatMap[B](f: A => C[B]): C[B]
   def filter(p: A => Boolean): C[A]
 }
-{code}
+```
 This trait would then be mixed into those traits and classes that currently implement the methods required for comprehensions.  The primary advantage of this is it makes it easier to explain how to make something work with comprehensions, and common related functionality could be refactored into this particular trait.
 
 I am open to suggestions on the name.  I would be okay with calling in MonadZero or some such, but I figure Comprehendable might be clearer to most people.
 
 The only real problem at the moment is that Seq implements
-{code}
+```scala
   def flatMap[B](f: A => Iterable[B]): Seq[B]
-{code}
+```
 rather than
-{code}
+```scala
   def flatMap[B](f: A => Seq[B]): Seq[B]
-{code}
+```

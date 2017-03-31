@@ -1,6 +1,5 @@
 The wrong forkJoinPool is used in the following example:
-
-{code:scala}
+```scala
 implicit val someForkJoinPoolExecutionContext = ...
 val otherForkJoinPoolEC = ...
 val someCollection = ...
@@ -13,13 +12,12 @@ def foo() {
        parCollection.foreach(...)
     }
 } 
-{code}
+```
 
 In Tasks.scala, we see at line 420: 
 https://github.com/scala/scala/blob/5cb3d4ec14488ce2fc5a1cc8ebdd12845859c57d/src/library/scala/collection/parallel/Tasks.scala#L420
-
-{code:scala}
+```scala
 if (Thread.currentThread.isInstanceOf[ForkJoinWorkerThread]) {
-{code}
+```
 
 Which overrides the given tasksupport, preferring the executioncontext of the currentThread. 

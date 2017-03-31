@@ -1,22 +1,19 @@
 The complete program
-
-{code}
+```scala
 case class Foo
 case class Prd (pred : Char => Boolean) extends Foo
-{code}
+```
 
 causes the compiler to get a null pointer exception (see attached files for logs). I have tested this on Mac OS X 10.5.3 running the 2.7.1.final version of Scala and also the SVN version of the compiler checked out today.
 
 The crash goes away if "case class" is changed to "class" or if the type of the pred field is changed to "Char".
 
 Top of the stack trace is as follows.
-
-{code}
+```scala
 java.lang.NullPointerException
 	at scala.tools.nsc.typechecker.EtaExpansion$$class.freshName$$1(EtaExpansion.scala:57)
 	at scala.tools.nsc.typechecker.EtaExpansion$$class.liftout$$1(EtaExpansion.scala:82)
 	at scala.tools.nsc.typechecker.EtaExpansion$$class.liftoutPrefix$$1(EtaExpansion.scala:92)
 	at scala.tools.nsc.typechecker.EtaExpansion$$class.etaExpand(EtaExpansion.scala:121)
 	at scala.tools.nsc.Global$$analyzer$$.etaExpand(Global.scala:284)
-{code}
-
+```

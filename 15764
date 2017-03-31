@@ -1,7 +1,7 @@
 One of those issues I've been sitting on forever and talking to adriaan makes me realize that maybe everyone else doesn't cry for half an hour every morning about it and that the mere act of opening a ticket might make a difference.
 
 And so! I believe this code should work:
-{code}
+```scala
 object Test {
   object Bob
   class Foo { def bippy = 42 }
@@ -17,9 +17,9 @@ object Test {
 //     println(Bob.bippy)
 //                 ^
 // one error found
-{code}
+```
 And were it to work, I would also hope for this to work, as it does for the analogous case for normal classes:
-{code}
+```scala
 object Test {
   class Base 
   object Bob extends Base
@@ -35,9 +35,9 @@ object Test {
     println(Bob.bippy)
   }
 }
-{code}
-I am familiar with SI-1208 and the fact that singleton types will not sing and dance with wild abandon.  I'm hoping this situation doesn't fall under the general umbrella both because it would be super useful, and because it would mean implicit search doesn't use normal function application rules, as visible here:
-{code}
+```
+I am familiar with scala/bug#1208 and the fact that singleton types will not sing and dance with wild abandon.  I'm hoping this situation doesn't fall under the general umbrella both because it would be super useful, and because it would mean implicit search doesn't use normal function application rules, as visible here:
+```scala
 object Test {
   object Bob
   class Foo { def bippy = 42 }
@@ -54,4 +54,4 @@ object Test {
     f1(Dingus: Bob.type).bippy
   }
 }
-{code}
+```

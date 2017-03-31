@@ -1,22 +1,19 @@
 Crashes as far back as 2.10.0-M1 (we don't have historical builds easily available earlier).
-
-{code}
+```scala
 % sbt -scala-home `scala-hash -h v2.10.0-M1` compile
 ...
 [error] Player in trait AbstractRole cannot be instantiated from AbstractRole.this.type with Player
 scala.reflect.internal.FatalError: Player in trait AbstractRole cannot be instantiated from AbstractRole.this.type with Player
-{code}
+```
 
 The API extraction calls:
-
-{noformat}
+```
 <AbstractRole.this.type with Player>.members
-{noformat}
+```
 
 
 This leads to the errant as-seen-from computation:
-
-{noformat}
+```
 this = {scala.reflect.internal.Types$NullaryMethodType@7215}"=> Player"
 clazz = {scala.reflect.internal.Symbols$ClassSymbol@7271}"trait AbstractRole"
 pre = {scala.reflect.internal.Types$UniqueThisType@7216}"scala.roles.internal.Collaboration.AbstractRole.<refinement>.type"
@@ -32,8 +29,7 @@ pre.underlying.sym.info() ={scala.reflect.internal.Types$RefinedType0@7218}"Abst
 [6] = {scala.reflect.internal.Types$TypeRef$$anon$6@8276}"Any"
 
 <AbstractRole.this.type with Player>.baseType(<trait AbstractRole>) = <AbstractRole.this.type>
-
-{noformat}
+```
 
 The {{ThisType}} is not expected in {{toInstance}}, only {{TypeRef}}-s and {{ExistentialTypes}} as treated.
 

@@ -2,7 +2,7 @@ When repeating many small interpretations the heap is full after a while.
 Test Case:
 ---
 $intp.interpret("var i = 0")
-while (true) {$intp.interpret("""i += 1;println(i + ":" + new java.util.Date)""")}
+while (true) {$intp.interpret("""i <ins>= 1;println(i </ins> ":" + new java.util.Date)""")}
 ---
 This provides the following output, showing that things first get faster and then slower and slower until the heap is full.
 The fastest period of the execution (1046..1076) enables the creation of aorund 30 objects per second.
@@ -15,7 +15,7 @@ Type :help for more information.
 
 scala> $intp.interpret("var i = 0")
 i: Int = 0
-scala> while (true) {$intp.interpret("""i += 1;println(i + ":" + new java.util.Date)""")}
+scala> while (true) {$intp.interpret("""i <ins>= 1;println(i </ins> ":" + new java.util.Date)""")}
 1:Sat Apr 13 15:29:25 CEST 2013
 2:Sat Apr 13 15:29:26 CEST 2013
 3:Sat Apr 13 15:29:26 CEST 2013

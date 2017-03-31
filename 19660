@@ -1,29 +1,27 @@
-{code}
+```scala
 object Foo {
   def bar[A](a1: A)(a2: A) = {}
 }
 
 Foo.bar(Left(1))(Right(2))
-{code}
+```
 
 does not compile:
-
-{code}
+```scala
 error: type mismatch;
  found   : scala.util.Right[Nothing,Int]
  required: scala.util.Left[Int,Nothing]
               Foo.bar(Left(1))(Right(2))
                                     ^
-{code}
+```
 
 If a single parameter list is used, A is inferred as Either[Int, Int], as hoped.
-
-{code}
+```scala
 object Foo {
   def bar[A](a1: A, a2: A) = {}
 }
 
 Foo.bar(Left(1), Right(2))
-{code}
+```
 
 A real-world example of this is Option.fold, which requires an explicit type in circumstances where pattern-matching, or map/getOrElse would not.

@@ -1,11 +1,10 @@
 Hello,
-I'm facing a similar issue in Scala 2.10.3, +only+ when extending a Java class from a Scala class. This issue is not reproduced if AMapper (see code below) is implemented as a Scala class.
+I'm facing a similar issue in Scala 2.10.3, <ins>only</ins> when extending a Java class from a Scala class. This issue is not reproduced if AMapper (see code below) is implemented as a Scala class.
 
-h4. Code
+#### Code
 
 Here is my project layout:
-
-{code}
+```scala
 src
   main
     java
@@ -14,8 +13,7 @@ src
     scala
       myhadoop
         MyMapper.scala
-
-{code}
+```
 
 And these are my classes' sources:
 
@@ -31,7 +29,7 @@ public class AMapper extends Mapper<Text, BytesWritable, Text, Text> {
     // not relevant to this test
   }
 }
-{code}
+```scala
 
 {code:title=MyMapper.scala source code}
 package myhadoop
@@ -45,21 +43,20 @@ class MyMapper extends AMapper {
     handleThis(key, context, new Text(value.getBytes))
   }
 }
-{code}
+```
 
-h4. Error
+#### Error
 
 Compiling this code will raise the following error:
-
-{code}
+```scala
 error: type mismatch;
 found: org.apache.hadoop.mapreduce.Mapper[org.apache.hadoop.io.Text,org.apache.hadoop.io.BytesWritable,org.apache.hadoop.io.Text,org.apache.hadoop.io.Text]#Context
 required: org.apache.hadoop.mapreduce.Mapper[KEYIN,VALUEIN,KEYOUT,VALUEOUT]#Context
-{code}
+```
 
-pointing to the {{handleThis(key, context, new Text(bytes))}} line.
+pointing to the `handleThis(key, context, new Text(bytes))` line.
 
-h4. Environment
+#### Environment
 
 Scala 2.10.3
 Java 1.7.0u21

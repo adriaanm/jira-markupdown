@@ -1,8 +1,7 @@
 Implicits must be explicitly type annotated, otherwise the typechecker may ignore them from preceding parts of the same source file. This is done to avoid triggering spurious cycles in type inference.
 
 Unfortunately, there is no way to explicitly annotated the type of an implicit val with a pattern on the LHS of the =.
-
-{code}
+```scala
 % qscala -Xprint:parser -e 'implicit val (a, b): (Int, Int) = (1, 2)'
 [[syntax trees at end of                    parser]] // scalacmd6461168732762336959.scala
 package <empty> {
@@ -27,6 +26,6 @@ package <empty> {
     }
   }
 }
-{code}
+```
 
 We should add a style checking rule to https://github.com/scala/scala-abide/blob/master/README.md to help find such implicits. It is probably that a future version of Scala will actually enforce that implicits are type annotated.

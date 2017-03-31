@@ -1,16 +1,15 @@
-I discovered this ticket during the time when I try to fix SI-2634.
-I have spend a couple of hours try to find why my solution which mentioned in SI-3265 didn't work. It confused my very much. I still don't know the reason, but I find something interested. 
+I discovered this ticket during the time when I try to fix scala/bug#2634.
+I have spend a couple of hours try to find why my solution which mentioned in scala/bug#3265 didn't work. It confused my very much. I still don't know the reason, but I find something interested. 
 In the following code, we can only get a StackOverflowError if using 
 {code}
 val fib: Stream[Int] = 1 #:: 1 #:: (fib, fib.tail).zippedx2.map(_ + _)
 {code}.
 We can get fib(2) and a StackOverflowError if using 
-{code}
+```scala
 val fib: Stream[Int] = 1 #:: 1 #:: (fib, fib.tail).zippedx.map(_ + _)
-{code}
-While I expected to get fib(3) without any exception. I must have something missed. Is there any one to tell me why. I believe it is the key to fix SI-3273
-
-{code}
+```
+While I expected to get fib(3) without any exception. I must have something missed. Is there any one to tell me why. I believe it is the key to fix scala/bug#3273
+```scala
 import scala.collection.{TraversableLike, IterableLike}
 import scala.collection.generic.CanBuildFrom
 
@@ -64,13 +63,4 @@ object Debug extends Application {
 	println(fib(2))
 	println(fib(3))
 }
-  
-
-
-
-
- 
-  
-  
-
-{code}
+```

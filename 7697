@@ -1,12 +1,11 @@
 Well, the issue that concerns me is that MapBuilder is a member of the package collection.mutable, so one should safely assume that it would work well for mutable maps, but unfortunately it doesn't.
 
 One way to work around this issue without raising the bar for the type parameter of the collection is to do a runtime test along these lines:
-
-{code}
+```scala
 coll match {
   case map: collection.mutable.Map => map += ...
   case _ => coll = coll + ...
 }
-{code}
+```
 
 Ideally, you would do this case distinction only once, not on every iteration. You might want to apply the state pattern for this.

@@ -1,6 +1,5 @@
 Negative number literals are handled inconsistently for floating point numbers and integral numbers:
-
-{code}
+```scala
 Welcome to Scala version 2.8.0.RC6 (Java HotSpot(TM) 64-Bit Server VM,
 Java 1.6.0_20).
 Type in expressions to have them evaluated.
@@ -19,9 +18,9 @@ scala> -34.max(33)
 <console>:1: error: ';' expected but '.' found.
       -34.max(33)
          ^
-{code}
+```
 
-Part of the problem is the fix for SI-2378 in r19950 which replaces an floating point integer -5.63 by 5.63.unary_-.
+Part of the problem is the fix for scala/bug#2378 in r19950 which replaces an floating point integer ~~5.63 by 5.63.unary_~~.
 
 Here's my analysis which I posted on the mailing list as well:
 
@@ -29,7 +28,7 @@ I've done some diggin' (and moved to internals):
 
 Originally(*), and despite of the language specification (**),
 negative number literals could not appear in a select expression
-(-1.max(5)). Since r19950 which 'fixed' SI-2378 (***), the balance
+(-1.max(5)). Since r19950 which 'fixed' scala/bug#2378 (***), the balance
 between integer and floating point literals drifted: for with what the
 parser was concerned, negative floating point literals received no
 special treating any more, so -5f.max(2) was seen as
@@ -48,8 +47,7 @@ would all consistently return 2. Negative number literals are negative
 number literals are negative number literals.
 
 To make that work one could use a patch like that:
-
-{code}
+```scala
 --- a/src/compiler/scala/tools/nsc/ast/parser/Parsers.scala
 +++ b/src/compiler/scala/tools/nsc/ast/parser/Parsers.scala
 @@ -1243,7 +1243,7 @@ self =>
@@ -61,10 +59,10 @@ To make that work one could use a patch like that:
             case _ => Select(stripParens(simpleExpr()), name)
           }
         }
-{code}
+```
 
-and then fix SI-2378 properly by fixing fjbg. It has a small regression
-risk because of the new behaviour introduced by the fix for SI-2378
+and then fix scala/bug#2378 properly by fixing fjbg. It has a small regression
+risk because of the new behaviour introduced by the fix for scala/bug#2378
 (which the OP was about). That's a pity because the new and
 inconsistent behaviour will probably ship with 2.8.0.
 

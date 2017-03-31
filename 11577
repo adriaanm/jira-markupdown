@@ -1,16 +1,14 @@
 [~chris-martin] The specific example you give adds value, but not very much value.  And you lose value at the same time.  Take for instance
-
-{code:scala}
+```scala
   var stack: List[A] = ???
   stack = prefix ::: stack
-{code}
+```
 
 You'd think that
-
-{code:scala}
+```scala
   var stack: mutable.Stack[A] = ???
   stack = prefix ++: stack
-{code}
+```
 
 might work, but you'd be wrong because ++: isn't overridden.  (Even +: isn't overridden.)  You have to use {{pushAll}} instead.  And {{dropWhile}}?  Nope, it defers back to {{TraversableLike}}, which makes a new builder and reallocates the tail all over again.
 

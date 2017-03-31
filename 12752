@@ -1,5 +1,5 @@
 The following code:
-{code}
+```scala
 package x.y
 
 trait Trait {
@@ -9,9 +9,9 @@ trait Trait {
 class OuterClass {
         object InnerObject extends Trait
 }
-{code}
+```
 produces the following compiler exception (with Scala 2.6.0-rc2):
-{code}
+```scala
 Exception in thread "main" java.lang.AssertionError: assertion failed: type error: can't convert from REFERENCE(x.y) to REFERENCE(java.lang.Object) in unit t.scala
         at scala.Predef$$.assert(Predef.scala:96)
         at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.adapt(GenICode.scala:1044)
@@ -90,6 +90,6 @@ Exception in thread "main" java.lang.AssertionError: assertion failed: type erro
         at scala.tools.nsc.Main$$.process(Main.scala:86)
         at scala.tools.nsc.Main$$.main(Main.scala:107)
         at scala.tools.nsc.Main.main(Main.scala)
-{code}
+```
 
 All the elements (lazy val, trait, inner object) seem to be necessary to produce the exception.  The package name must also contain at least one dot.

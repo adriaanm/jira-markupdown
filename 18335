@@ -1,14 +1,12 @@
 I don't have a good way to reproduce this, but it looks like something related to package objects confuses the presentation compiler. package.scala has the following:
-
-{code}
+```scala
   @deprecated("Moved to scala.reflect.internal.util.ScalaClassLoader", "2.11.0")
   val ScalaClassLoader = scala.reflect.internal.util.ScalaClassLoader
 
   @deprecated("Moved to scala.reflect.internal.util.ScalaClassLoader", "2.11.0")
   type ScalaClassLoader = scala.reflect.internal.util.ScalaClassLoader
-{code}
-
-{code}
+```
+```scala
 java.lang.AssertionError: assertion failed: Inconsistent class/module symbol pair for `ScalaClassLoader` loaded from type ScalaClassLoader in package util (from /Users/dragos/workspace/git/scala/src/compiler/scala/tools/nsc/util/package.scala).
 clazz = type ScalaClassLoader in package util (from /Users/dragos/workspace/git/scala/src/compiler/scala/tools/nsc/util/package.scala); clazz.companionModule = <none>
 module = type ScalaClassLoader in package util (from /Users/dragos/workspace/git/scala/src/compiler/scala/tools/nsc/util/package.scala); module.companionClass = type ScalaClassLoader
@@ -220,4 +218,4 @@ module = type ScalaClassLoader in package util (from /Users/dragos/workspace/git
 	at scala.tools.nsc.util.InterruptReq.execute(InterruptReq.scala:26)
 	at scala.tools.nsc.interactive.Global.pollForWork(Global.scala:339)
 	at scala.tools.nsc.interactive.PresentationCompilerThread.run(PresentationCompilerThread.scala:22)
-{code}
+```

@@ -1,6 +1,5 @@
 Compiling the following code:
-
-{code}
+```scala
 package valueClass.classes {
 
   trait A extends Any {
@@ -25,11 +24,10 @@ package valueClass.test {
     C( 1 ).a
   }
 }
-{code}
+```
 
 results in
-
-{noformat}
+```
 error: should have been unboxed by erasure: new valueClass.classes.C(1).$asInstanceOf[Int]()
 error: scala.reflect.internal.FatalError:
   should have been unboxed by erasure: new valueClass.classes.C(1).$asInstanceOf[Int]()
@@ -103,7 +101,7 @@ error: scala.reflect.internal.FatalError:
         at scala.tools.nsc.Driver.process(Driver.scala:55)
         at scala.tools.nsc.Driver.main(Driver.scala:68)
         at scala.tools.nsc.Main.main(Main.scala)
-{noformat}
+```
 
 The cause seems to be the combination of the reduced scope of B and the usage of a value class.
-Removing either {{private\[classes\]}} or {{extends AnyVal}} works.
+Removing either `private\[classes\]` or `extends AnyVal` works.

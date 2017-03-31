@@ -1,14 +1,13 @@
-*NOTE: this was an orphaned page on the wiki but is actually a bug report. I (ymasory) have no idea who wrote it so I'm putting in JIRA where it belongs.*
+**NOTE: this was an orphaned page on the wiki but is actually a bug report. I (ymasory) have no idea who wrote it so I'm putting in JIRA where it belongs.**
 
 Ran eclipse from the terminal with the \-clean switch
 
-h3. Observed issue
+### Observed issue
 
 An infinite loop of Eclipse instances, each process dying 3 seconds after it was created, but first creating a new process that did the same thing. Hence, only "killall eclipse" would get rid of it.
 
 The terminal displays the following stack trace upon each launch of the soon-to-die Eclipse process:
-
-{noformat}
+```
 [org.eclipse.equinox.weaving.hook] info adding AspectJ hooks ...
 org.osgi.framework.BundleException: The state indicates the bundle is resolved
    at org.eclipse.osgi.framework.internal.core.AbstractBundle.getResolutionFailureException(AbstractBundle.java:1296)
@@ -33,19 +32,17 @@ org.osgi.framework.BundleException: The state indicates the bundle is resolved
    at org.eclipse.osgi.framework.internal.core.StartLevelManager.dispatchEvent(StartLevelManager.java:445)
    at org.eclipse.osgi.framework.eventmgr.EventManager.dispatchEvent(EventManager.java:227)
    at org.eclipse.osgi.framework.eventmgr.EventManager$EventThread.run(EventManager.java:337)
+```
 
-{noformat}
-
-h3. Workaround
+### Workaround
 
 I'm not completely sure what the issue is, but it is definitely related to multiple versions of the aspect plugins being installed (such as when you upgrade an existing install). Apparently, when osgi tries to rebuild whatever gets cleaned by "clean" (which I still don't quite understand), it gets very confused by multiple versions of the these plugins appearing in the file
-
-{noformat}
+```
 <eclipse install dir>/eclipse/configuration/org.eclipse.equinox.simpleconfigurator/bundles.info
-{noformat}
+```
 
 Removing or commenting out the references to the older plugin versions solves the problem: no crash when running with \-clean.
 
-h3. Additional
+### Additional
 
 I wanted this to be documented, in case there is some sort of interaction regarding the Scala plugin installation. 

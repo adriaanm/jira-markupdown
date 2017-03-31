@@ -1,24 +1,21 @@
-Under certain circumstances, the presentation compiler seems to incorrectly separate certain path dependent types on self.  I have been entirely unsuccessful in my efforts to minimize this issue, but I can reproduce it with 100% reliability on larger projects.  For example, commit 9575785 of my gll-combinators project exhibits this problem.  (https://github.com/djspiewak/gll-combinators/commit/9575785b2ad78d6115d531552c6942df15173d3a)  Note, the issue was not _introduced_ by that commit, this is simply a stable state that you can look at.
+Under certain circumstances, the presentation compiler seems to incorrectly separate certain path dependent types on self.  I have been entirely unsuccessful in my efforts to minimize this issue, but I can reproduce it with 100% reliability on larger projects.  For example, commit 9575785 of my gll-combinators project exhibits this problem.  (https://github.com/djspiewak/gll-combinators/commit/9575785b2ad78d6115d531552c6942df15173d3a)  Note, the issue was not *introduced* by that commit, this is simply a stable state that you can look at.
 
 The project builds fine under SBT.  However, when I run the presentation compiler, I get several spurious errors.  The most immediate of which is in src/main/scala/com/codecommit/gll/RegexParsers.scala line 41:
-
-{noformat}
+```
 implicit def funRegexSyntax(p: Regex) = new RichSyntax1(regex(p))
-{noformat}
+```
 
 The error I get is as follows:
-
-{noformat}
+```
 found:    RegexParsers.this.RegexParser
 required: RegexParsers.this.Parser[?]
 Note: implicit method funRegexSyntax is inapplicable here because it comes after the application point and lacks an explicit result type
-{noformat}
+```
 
 A similar error may be seen on line 67 (error on the `left` actual of the RichParser constructor):
-
-{noformat}
+```
 class RichRegexParser(left: RegexParser) extends RichParser(left)
-{noformat}
+```
 
 RegexParser is a class within the RegexParsers trait.  It extends Parser, which takes a single covariant type parameter of kind *.  Parser is defined within the Parsers trait, which is a super-trait of RegexParsers.  funRegexSyntax is also within RegexParsers.  RichSyntax1 is a class defined in Parsers which takes a single Parser as its constructor parameter.  Thus, the type error is caused by the fact that the required parameter must be of type this.Parser.  The type returned by the regex function is this.RegexParser, which extends this.Parser.
 

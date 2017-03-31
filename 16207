@@ -1,4 +1,4 @@
-{noformat}
+```
 trait Bug1[@specialized +A] extends TraversableOnce[A] {  
   def ++[B >: A](that: TraversableOnce[B]): Iterator[B] = new Iterator[B] {
     lazy val it = that.toIterator
@@ -6,7 +6,7 @@ trait Bug1[@specialized +A] extends TraversableOnce[A] {
     def next = it.next
   }
 }
-{noformat}
+```
 
 [running phase cleanup on bug1.scala]
 [running phase icode on bug1.scala]
@@ -16,8 +16,7 @@ error: java.lang.Error: Unknown type: [<deferred> <param> T0 >: ? <: ?]()T0, [<d
 
 
 Analysis points the finger at mixin. 
-
-{noformat}
+```
 // before mixin - asInstanceOf[Iterator]
 private <stable> <accessor> lazy def it(): Iterator = {
   Bug1$mcD$sp$$anon$10.this.it _=(Bug1$mcD$sp$$anon$10.this.that$10.toIterator());
@@ -42,4 +41,4 @@ private <stable> <accessor> lazy def it(): Iterator = {
     };
   Bug1$mcD$sp$$anon$10.this.$asInstanceOf
 };
-{noformat}
+```

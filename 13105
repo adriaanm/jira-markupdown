@@ -1,6 +1,5 @@
 In 2.7.0-RC1 and -RC2 I get an AssertionError when referencing a classfile that has a method signature of the form `L`_identifier_`<L`_identifier_`;>.`_identifier_`;`. `ClassFileParser` expects a `;` after the `>`, and crashes when it sees a `.` instead.
-
-{code}
+```scala
 Exception in thread "main" java.lang.AssertionError: assertion failed
         at scala.Predef$$.assert(Predef.scala:87)
         at scala.tools.nsc.symtab.classfile.ClassfileParser.accept$$1(ClassfileParser.scala:451)
@@ -69,13 +68,12 @@ Exception in thread "main" java.lang.AssertionError: assertion failed
         at scala.tools.nsc.Main$$.process(Main.scala:86)
         at scala.tools.nsc.Main$$.main(Main.scala:107)
         at scala.tools.nsc.Main.main(Main.scala)
-{code}
+```
 
 I originally got this error when accessing [http://mina.apache.org/report/trunk/xref/org/apache/mina/transport/socket/nio/NioSocketConnector.html MINA's `NioSocketConnector`] from Scala code, but I've also created a smaller test class.
 
 Java code with unparsable method signature:
-
-{code}
+```scala
 class ParentClass<T> {
     class ParentInnerClass {}
 }
@@ -87,12 +85,11 @@ public class HardToParse extends ParentClass<Object>
 	return null;
     }
 }
-{code}
+```
 
 Scala code that crashes the compiler:
-
-{code}
+```scala
 class ForceParse extends HardToParse
-{code}
+```
 
 I haven't checked whether it's possible to reproduce this problem with a pure Scala solution.

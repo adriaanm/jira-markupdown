@@ -1,8 +1,7 @@
 This is such a fragile area. The root problem is that we have implicits defined in the companion scope of both `Ordering` and of `Ordered`, and there is no means to prioritize one over the other, which is the usual means to shephard implicit search away from divergence errors.
 
 Here's a aimilar example, teased apart from the standard library:
-
-{noformat}
+```
 % scalac-hash v2.10.4 test/files/pos/t8541.scala
 
 % scalac-hash v2.10.4 -Xdivergence211 test/files/pos/t8541.scala
@@ -17,8 +16,8 @@ starting with method orderingToOrdered in object Implicits2
 two errors found
 
 % cat test/files/pos/t8541.scala
-{noformat}
-{code}
+```
+```scala
 object Test2 {
   import Test._, Implicits1._, Implicits2._
 
@@ -44,27 +43,24 @@ object Test {
     implicit def orderingToOrdered[T](x: T)(implicit ord: Ordering[T]): Ordered[T] = ???
   }
 }
-{code}
+```
 
 The troublesome implicit is:
-
-{code}
+```scala
 implicit def ordered[A <% java.lang.Comparable[A]]: Ordering[A] = ???
-{code}
+```
 
 This should have instead been declared as:
-
-{code}
+```scala
 implicit def ordered[A <: java.lang.Comparable[A]]: Ordering[A] = ???
-{code}
+```
 
 But it is pretty hard to fix this sort of design error with our backwards compat. constraints.
 
 My example above actually works again in 2.11.0, after a last minute tweak we made to divergence checking to try to make it more lenient and more compatible with 2.11.0. But your example is not rescued. I haven't dug in to the exact reason for that.
 
 My recommendation to work around this issue is to explicitly publish an `Orderinging[Timestamp]` instance, rather than relying on the implicit from `Comparable[T] => Ordering[T]`
-
-{code}
+```scala
 object Test2 {
    class TimeStamp(val toLong: Long) extends AnyVal
    object TimeStamp {
@@ -78,4 +74,4 @@ object Test2 {
    // this line triggers compiler error "diverging implicit expansion for type scala.math.Ordering[(Int, Test2.TimeStamp)] starting with method $conforms in object Predef"
    List.empty[(Int,TimeStamp)].sorted  
 }
-{code}
+```

@@ -1,6 +1,5 @@
 Consider this code:
-
-{code}
+```scala
 trait Queue[T] 
 object Queue {
     def apply[T](xs: T*): Queue[T] = new QueueImpl[T](xs.toList, Nil)
@@ -10,22 +9,20 @@ object Queue {
         private val trailing: List[T]
     ) extends Queue[T]
 }
-{code}
+```
 
 It fails (which is correct (and it works with a non-private constrcutor)), but the error message is wrong in Scala >= 2.9:
-
-{code}
+```scala
 <console>:10: error: type mismatch;
  found   : scala.runtime.StringAdd
  required: Queue[T]
            def apply[T](xs: T*): Queue[T] = new QueueImpl[T](xs.toList, Nil)
                                             ^
-{code}
+```
 
 It is correctly reported in 2.8 though:
-
-{code}
+```scala
 error: constructor QueueImpl cannot be accessed in object Queue
            def apply[T](xs: T*): Queue[T] = new QueueImpl[T](xs.toList, Nil)
                                             ^
-{code}
+```

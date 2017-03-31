@@ -36,11 +36,10 @@ object Test { def main(args: Array[String]) {
   val c = new java.util.Comparator[String]{ def compare(s: String, t: String) = s compareTo t }
   println(st.map[String]((s: String) => s + s).max(c))
 }}
-{code}
+```scala
 
 This compiles and runs successfully.  However, when the contents of {{main}} are entered in the REPL, the last line hangs.  Stack trace:
-
-{code}
+```
 "ForkJoinPool.commonPool-worker-1" #14 daemon prio=5 os_prio=0 tid=0x00007f966855f800 nid=0x721f in Object.wait() [0x00007f964a18b000]
    java.lang.Thread.State: RUNNABLE
 	at $line6.$read$$iw$$iw$$anonfun$1.apply(<console>:11)
@@ -49,7 +48,7 @@ This compiles and runs successfully.  However, when the contents of {{main}} are
 	at xp.Aspi.tryAdvance(Test.scala:14)
 	at java.util.Spliterator.forEachRemaining(Spliterator.java:326)
         ...
-{code}
+```scala
 
 Explicitly creating the SAM like so:
 
@@ -57,6 +56,6 @@ Explicitly creating the SAM like so:
 println(st.map[String](new java.util.function.Function[String, String] {
   def apply(s: String) = s + s
 }).max(c))
-{code}
+```
 
 solves the issue.  (Note: I have not tried this on 2.11.5; I assumed 2.12.x was up to date in anything relevant.)

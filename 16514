@@ -1,13 +1,13 @@
 I have a non-trivial jumble of code which is using ParSet (implementing breadth-first search, if it helps).  I can't share the code, but I went through and found all the operations I'm performing on ParSet:
 
-* &~ (with ParSet)
-* partition
-* flatMap (function returning ParSet)
-* ++ (with ParSet)
-* map
-* foldLeft
+- &~ (with ParSet)
+- partition
+- flatMap (function returning ParSet)
+- ++ (with ParSet)
+- map
+- foldLeft
 
-There are several sets involved here (obviously).  One of the sets that I'm mapping over is a ParSet[PartialFunction[A, ParSet[A]].  This set appears to be the root of the problem, though I can't explain how in any non-circumstantial way.  I am *deterministically* getting the following stack trace:
+There are several sets involved here (obviously).  One of the sets that I'm mapping over is a ParSet[PartialFunction[A, ParSet[A]].  This set appears to be the root of the problem, though I can't explain how in any non-circumstantial way.  I am **deterministically** getting the following stack trace:
 
 java.lang.ArrayIndexOutOfBoundsException: 128
 	at scala.collection.parallel.mutable.ParFlatHashTable$ParFlatHashTableIterator.scan(ParFlatHashTable.scala:36)

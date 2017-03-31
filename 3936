@@ -1,15 +1,13 @@
 the problem is still there in RC5. strangely, it doesn't occur with overloaded methods:
-
-{code}
+```scala
 val x = (SynthDef("X") {
    val freq = 333
    Out.ar( 0, SinOsc.ar( freq ))
 }).play( s.defaultGroup )
-{code}
+```
 
 this one fails with
-
-{code}
+```scala
 java.lang.Error: symbol value freq$$1 does not exist in line30$$object$$$$iw$$$$iw$$$$iw$$$$iw$$$$iw$$$$iw$$$$iw$$$$iw$$$$iw$$$$iw$$$$iw$$$$iw$$$$iw$$$$iw$$$$iw$$$$iw.<init>
 	at scala.tools.nsc.symtab.SymbolTable.abort(SymbolTable.scala:33)
 	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:843)
@@ -17,22 +15,20 @@ java.lang.Error: symbol value freq$$1 does not exist in line30$$object$$$$iw$$$$
 	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:663)
 	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:877)
 	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:869)
-{code}
+```
 
 but this one:
-
-{code}
+```scala
 val x = (SynthDef("X") {
    val freq = 333
    Out.ar( 0, SinOsc.ar( freq ))
 }).play
-{code}
+```
 
 has no problems. the respective methods in SynthDef are:
-
-{code}
+```scala
 def play: Synth = play()
 def play( target: Node = Server.default, args: Seq[ ControlSetMap ] = Nil, addAction: AddAction = addToHead ) : Synth = { ... }
-{code}
+```
 
 trying to isolate this, but it's difficult...

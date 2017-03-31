@@ -1,10 +1,8 @@
 Just tried to update this patch to finally get rid of this ticket: https://github.com/soc/scala/tree/SI-4788-new ... apart from the known issue of scalac thinking that classOf doesn't exist in Predef, the test suite now fails with over 400 failures + nondeterminism:
-
-{code}
+```scala
 test/partest --failed
-{code}
-
-{code}
+```
+```scala
 Selected 402 tests drawn from previously failed tests
 
 # starting 60 tests in pos
@@ -17,16 +15,15 @@ ok  6 - pos/List1.scala
 ok  7 - pos/MailBox.scala                       
 !!  8 - pos/inline-access-levels                  [compilation failed]
 ...
-{code}
+```
 
 Many of the failures are related to annotated elements just "disappearing":
-
-{code}
+```scala
 @foo val bar = 1
 //Somewhere else:
 println(bar)
 // scalac: Hey dude, bar doesn't exist, amiright?!
-{code}
+```
 
 But not all of the failures use annotations.
 

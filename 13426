@@ -1,13 +1,11 @@
 Please rename ~ operator to !~~ in parser combinator, because ~ has higher priority then <~ and ~>. I spend a lot of time until understood why the following cannot be compiled:
-
-{code}
+```scala
 def temp: Parser[Boolean] = opt("A") <~ "B" ~ opt("C") ^^ { case a ~ c => true }
-{code}
+```
 
 It is because it is equivalent to
-
-{code}
+```scala
 def temp: Parser[Boolean] = opt("A") <~ ("B" ~ opt("C")) ^^ { case a ~ c => true }
-{code}
+```
 
 If you reject my proposal then at least add note about priority to ~ method.

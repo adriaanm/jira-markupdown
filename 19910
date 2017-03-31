@@ -4,11 +4,10 @@ When compiling a statement which concatenates primitives:
 class Foo {
   def bar(text: String, ch: Char) = text + ch + 1
 }
-{code}
+```scala
 
 The following boxing occurs:
-
-{code}
+```
 .method public bar : (Ljava/lang/String;C)Ljava/lang/String;
 	; method code size: 29 bytes
 	.limit stack 2
@@ -28,13 +27,12 @@ The following boxing occurs:
 	areturn
 .end method 
 .const [_18] = Utf8 (Ljava/lang/Object;)Lscala/collection/mutable/StringBuilder;
-{code}
+```scala
 
 This boxing invokes the generic {{StringBuilder.append(Any)}} method and also produces unnecessary GC overhead.
 
 A proposal would be to optimize the use case of primitive concatenation by invoking the {{StringBuilder.append(primitive)}} methods directly.
-
-{code}
+```
 .method public bar : (Ljava/lang/String;C)Ljava/lang/String;
 	; method code size: 23 bytes
 	.limit stack 2
@@ -56,4 +54,4 @@ A proposal would be to optimize the use case of primitive concatenation by invok
 I've submitted a proof-of-concept patch that needs to be polished, but demonstrates optimization of the use case:
 https://github.com/melezov/scala/tree/SI-9571
 
-The {{StringBuilderAppendable}} extractor will probably need a better place than in the {{BCodeBodyBuilder.scala}}, and I'm willing to work out a proper test harness, if this makes sense.
+The `StringBuilderAppendable` extractor will probably need a better place than in the `BCodeBodyBuilder.scala`, and I'm willing to work out a proper test harness, if this makes sense.

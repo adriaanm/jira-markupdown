@@ -1,6 +1,5 @@
 The following will fail in the interpreter with a NoClassDefFoundError.
-
-{code}
+```scala
 class V {
   override def toString(): String = {
     val z=getClass().getSimpleName()
@@ -14,11 +13,10 @@ java.lang.NoClassDefFoundError: $$iw
 	at java.lang.Class.getSimpleBinaryName(Class.java:1216)
 	at java.lang.Class.getSimpleName(Class.java:1108)
 	at V.toString(<console>:6)
-{code}
+```
 
 The same will happen when overriding other methods of Object (hashCode(), for instance), but not if a regular def (without override) is used. All works in the compiler, however:
-
-{code}
+```scala
 $$ cat bug.scala
 class V {
   override def toString(): String = {
@@ -34,4 +32,4 @@ object Z {
 $$ scalac bug.scala
 $$ scala Z
 x
-{code}
+```

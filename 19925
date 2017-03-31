@@ -1,5 +1,5 @@
 This works:
-{code}
+```scala
 class Bar[A] { 
   def foo(x: collection.GenTraversableOnce[A]) = 3 
 }
@@ -8,15 +8,14 @@ implicit class BarOps[A](b: Bar[A]) {
 }
 (new Bar).foo(List(3)) // returns 3
 (new Bar).foo(scalaz.IList(3)) // returns 4
-{code}
+```
 
 This doesn't work:
-{code}
+```scala
 implicit class BarOps[A](b: Bar[A]) { 
   def foo[F[_]](f: F[A]) = 4 // changed Int to A
 }
 (new Bar).foo(scalaz.IList(3)) // error: type mismatch;
 //   found : scalaz.IList[Int]
 //   required: scala.collection.GenTraversableOnce[?]
-
-{code}
+```

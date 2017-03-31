@@ -1,14 +1,14 @@
 Thank you for your demonstration of the value of my having unified the Traversable and Iterator implementations under TraversableOnce.  (In other words this is already fixed, although I didn't know it was there.)
 
 BTW your implementation (like the one in trunk before) is not tail recursive and would easily blow the stack:
-{code}
+```scala
 scala> (1 to 10000).iterator reduceRight (_ - _)
 java.lang.StackOverflowError
 	at scala.collection.immutable.Range.apply(Range.scala:29)
 	at scala.collection.IndexedSeqLike$$Elements.next(IndexedSeqLike.scala:54)
-{code}
+```
 No problem anymore:
-{code}
+```scala
 scala> (1 to 1000000).iterator reduceRight (_ - _)
 res1: Int = -500000
-{code}
+```

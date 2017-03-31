@@ -1,30 +1,29 @@
 Any update on this bug? I just ran into a problem that's related to this one (I think). In my code, if I do the following, I do not get any errors:
-
-{code:scala}
+```scala
 trait BinaryTree {
   trait Payload  
   sealed trait Node
   case class Parent(left: Option[Node], right: Option[Node]) extends Node
   case class Leaf(data: Payload) extends Node
 }
-{code}
+```
 
 However, if I add `final` to the case classes, then I get the following compiler error:
 
-{{The outer reference in this type test cannot be checked at run time.}}
-{{final case class Leaf(d: Payload) extends Node}}
+`The outer reference in this type test cannot be checked at run time.`
+`final case class Leaf(d: Payload) extends Node`
 
 (Note: I get the same error message for both `Leaf` and `Parent`.)
 
 My current solution is to use `sealed` instead of `final`. Unlike `final`, using `sealed` actually works! Specifically, the following compiles:
-{code:scala}
+```scala
 trait BinaryTree {
   trait Payload  
   sealed trait Node
   sealed case class Parent(left: Option[Node], right: Option[Node]) extends Node
   sealed case class Leaf(data: Payload) extends Node
 }
-{code}
+```
 
 Any thoughts on this? I'd like to express the fact that this ADT definition cannot be changed. Including the definitions for `Leaf` and `Parent`. Since I'm controlling the definition of the ADT here, I think that using `sealed` suffices. I'd welcome any other ideas though!
 

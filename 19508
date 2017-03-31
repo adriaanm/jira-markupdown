@@ -1,22 +1,20 @@
 Can't even parse that:
-
-{code}
+```scala
 scala> type Foo = AnyRef { implicit val fooMsg: String }
 <console>:1: error: illegal start of declaration
        type Foo = AnyRef { implicit val fooMsg: String }
-{code}
+```
 
 But can do this (pay attention for the inferred structural type):
-
-{code}
+```scala
 scala> val a = new { implicit val fooMsg: String = "a" }
 a: AnyRef{implicit val fooMsg: String} = $anon$1@7b7b04e9
-{code}
+```
 
 So, {code} AnyRef{implicit val fooMsg: String} {code} seems to be very confusing for the user especially as it can't even be parsed 
 
 As it has no actual effect:
-{code}
+```scala
 scala> var b = a
 b: AnyRef{implicit val fooMsg: String} = $anon$1@7b7b04e9
 
@@ -32,13 +30,13 @@ scala> b = new { val fooMsgg: String = "v" }
  required: AnyRef{implicit val fooMsg: String}
        b = new { val fooMsgg: String = "v" }
            ^
-{code}
+```
 
 I would either
 - parse `implicit` keyword and say "we will ignore it in typecheck as it can be overriden with non-implicit"
 - or just remove it form "toString" (the only problem is you can actually use this implicit), like annotations for example :
-{code}
+```scala
 scala> val a = new { @volatile var fooMsg: String = "a" }
 a: AnyRef{def fooMsg: String; def fooMsg_=(x$1: String): Unit} = $anon$1@2395330e //so it's steel annotaited, but typecheck doesn't see it
-{code}
+```
 

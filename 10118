@@ -1,21 +1,19 @@
 But it doesn't:
-
-{code}
+```scala
 class Foo(a: Int = 0) { 
   def this(a: String = "0") = this(a.toInt)
 }
-{code}
+```
 
 Furthermore, these snippets compiles too:
-
-{code}
+```scala
 class Foo(a: String = "0") { def this(p1: String, p2: Int = 0) = this(p1 + p2.toString) }
 
 class Foo(val a: String = "0") { 
   def this(p1: String, p2: String = "0") = this(p1 + p2.toString)
 }
-{code}
+```
 
-In these two examples above, I have constructors with default parameters, and Scala can inflect which one I want (even in the second case, when it's not really clear if I do {{new Foo("A String")}} if it should call the primary or the secondary).
+In these two examples above, I have constructors with default parameters, and Scala can inflect which one I want (even in the second case, when it's not really clear if I do `new Foo("A String")` if it should call the primary or the secondary).
 
 In the ticket's example, it's clear that the secondary constructor is not "ambiguous" nor "double defined", as the first parameter it expects is a mandatory one AND has no default parameter.

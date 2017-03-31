@@ -1,14 +1,13 @@
 Not sure whether this is truly a bug, but when I search for "scala is not an enclosing class", the top hit claims that this represents a (family of) bugs in the Scala type checking system: http://stackoverflow.com/questions/5143849/scala-is-not-an-enclosing-class
 
 At any rate, here's the code that produces the message:
-
-{code}
+```scala
 object Test {
   import net.liftweb.json.JObject
   import net.liftweb.json.JsonDSL._
   val map: Map[Int, String] = Map(1 -> "one")
   val json: JObject = ("myMap" -> map)
 }
-{code}
+```
 
 The error message would be clearer if it gave some clue that the problem is that you can convert from a Map[String, ?] to a JObject, but not a Map[Int, ?].

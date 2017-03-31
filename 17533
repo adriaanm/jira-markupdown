@@ -1,7 +1,7 @@
 It would be nice if the Scala compiler would generate errors or warnings when using isInstanceOf or asInstanceOf in nonsensical ways, using the static types.
 
 For example:
-{noformat}
+```
 scala> val x = ""
 x: String = ""
 
@@ -17,7 +17,7 @@ res3: Boolean = false
 scala> x.asInstanceOf[Int] // why can't this be a compile-time issue
 java.lang.ClassCastException: java.lang.String cannot be cast to java.lang.Integer
 [...]
-{noformat}
+```
 
 I know it's not the best style to use isInstanceOf/asInstanceOf. But I've been bitten by this issue twice in the past week, where I refactored the return type of a method (from a type to a bigger data structure containing that type via composition), and an isInstanceOf check on that return type became nonsensical. While using pattern matching would have prevented this problem, isInstanceOf was a much simpler way to express the code.
 

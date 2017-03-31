@@ -1,16 +1,16 @@
 I don't think there is a way to specify the type, so Any seems unavoidable:
 
 http://java.sun.com/javase/6/docs/api/javax/script/ScriptContext.html
-{code}
+```scala
 void setAttribute(String name, Object value, int scope)
-{code}
+```
 Hence, there is a type unsafety in this scripting interface, but I think it is by design : all scripts don't have the same type system (as Java).
 Regarding the return value, it is easy to say in Scala, but how do you code in Java:
-{code}
+```scala
     interp.interpret("ret(0)="+str) match {
       case InterpreterResults.Success => ret(0) toString
       case InterpreterResults.Error => "error"
       case _ => ""
     }
-{code}
-? Beside, what would be useful is if the interpret(str) method could return not just a success flag, but the whole evaluation of the expression (when the input statement is an expression), as is the case with {{ScriptEngine.eval(str)}}. That way, one wouldn't have to use a reference object to pass it, like ret, above.
+```
+? Beside, what would be useful is if the interpret(str) method could return not just a success flag, but the whole evaluation of the expression (when the input statement is an expression), as is the case with `ScriptEngine.eval(str)`. That way, one wouldn't have to use a reference object to pass it, like ret, above.

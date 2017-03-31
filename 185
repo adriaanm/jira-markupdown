@@ -1,15 +1,15 @@
 For the time being, here is a more distilled crasher:
-{code}
+```scala
 object Obj
 
 trait O { self: Obj.type =>
   Nil foreach identity
 }
-{code}
+```
 The problem is that anonymous function objects inside a template which has an explicit singleton self-type get confused trying to find their $$outer pointer, encountering a type error like this:
-{code}
+```scala
 Exception in thread "main" scala.tools.nsc.symtab.Types$$TypeError: type mismatch;
  found   : O.this.type (with underlying type O with Obj.type)
  required: O with Obj.type
-{code}
+```
 I'm guessing this will come down to a small bugfix somewhere which takes self-type into account instead of naively using the name of the enclosing template, but I haven't hit upon the right spot just yet.

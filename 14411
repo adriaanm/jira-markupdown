@@ -3,13 +3,12 @@ The Iterator returned by ListBuffer.elements (ListBuffer.iterator in SVN) define
 Perhaps the test (cursor != last0) was intended to be !(cursor eq last0).
 
 To replicate:
-
-{code}
+```scala
 class C { override def equals(rhs: Any) = throw new Error }
 val buf = new scala.collection.mutable.ListBuffer[C]         
 buf += new C
 buf += new C
 for (elem <- buf) {}
-{code}
+```
 
 An exception will be thrown.  This bug is present in the stable release and in the most recent code checked into subversion.

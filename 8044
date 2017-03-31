@@ -1,6 +1,5 @@
 Doesn't even need to be two ListWrappers.  One and an ordinary Scala list does the same thing:
-
-{code}
+```scala
 scala> val list = new java.util.ArrayList[Int]
 list: java.util.ArrayList[Int] = []
 
@@ -24,6 +23,6 @@ res4: scala.collection.mutable.Buffer[Int] = Buffer(1, 2, 3, 4, 5, 6)
 
 scala> list
 res5: java.util.ArrayList[Int] = [1, 2, 3, 4, 5, 6]
-{code}
+```
 
-I believe the bug is that {{BufferLike.++}} is implemented as "{{clone() ++= that}}" and {{JListWrapper}} doesn't override {{clone}}, so it's making a shallow copy, with the clone and the original sharing a reference to the same underlying {{ArrayList}}.
+I believe the bug is that `BufferLike.++` is implemented as "{{clone() ++= that}}" and `JListWrapper` doesn't override `clone`, so it's making a shallow copy, with the clone and the original sharing a reference to the same underlying `ArrayList`.

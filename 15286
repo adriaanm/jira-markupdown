@@ -1,6 +1,5 @@
 The following code triggers an AssertionError because of the usage of the extractor at `case a @ A (a.Ex(i))`.
-
-{code}
+```scala
 object Extractor {
   
   case class A(a: Int) {
@@ -22,11 +21,10 @@ object Extractor {
     }
   }
 }
-{code}
+```
 
 If I use `case a @ A (Ex2(i))` instead, then it works fine. This is with the latest trunk from this morning, but I can't tell whether it used to work before that.
-
-{code}
+```scala
 java.lang.AssertionError: assertion failed
 	at scala.Predef$$.assert(Predef.scala:79)
 	at scala.tools.nsc.symtab.Symbols$$Symbol.rawInfo(Symbols.scala:788)
@@ -122,8 +120,7 @@ java.lang.AssertionError: assertion failed
 	at scala.tools.nsc.interactive.CompilerControl$$$$anon$$3.apply$$mcV$$sp(CompilerControl.scala:95)
 	at scala.tools.nsc.interactive.Global.pollForWork(Global.scala:132)
 	at scala.tools.nsc.interactive.Global$$$$anon$$2.run(Global.scala:192)
-
-{code}
+```
 
 Regards
 

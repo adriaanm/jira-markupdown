@@ -1,5 +1,5 @@
 This took me way too long to figure out.  Running the test suite I was seeing tests fail which had no business failing:
-{code}
+```scala
   [partest] testing: [...]/files/pos/bug1737                                      [FAILED]
   [partest] c.scala:1: error: not found: type B
   [partest] class C extends B {
@@ -8,7 +8,7 @@ This took me way too long to figure out.  Running the test suite I was seeing te
   [partest]     this: A[_] =>
   [partest]           ^
   [partest] two errors found
-{code}
+```
 Eventually I discovered that as a result of an experiment the previous day, I had unwittingly left some classfiles (including A.class and B.class) in the scala trunk root.  These files are intentionally ignored by svn, and by extension by git, so they're easy to overlook if they appear.  Once I removed them the failing tests passed.
 
 There's no way the partest classpath should have the least knowledge of the root repository directory.

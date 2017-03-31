@@ -1,28 +1,24 @@
-fsc fails with a {{notype}} error every other time (first compilation succeeds, next one fails, next succeeds, next fails, etc.) when referring to a public enum declared inside a Java class.
+fsc fails with a `notype` error every other time (first compilation succeeds, next one fails, next succeeds, next fails, etc.) when referring to a public enum declared inside a Java class.
 
 The error can be reproduced with the following code.  Breaking.java:
-
-{code}
+```scala
 public class Breaking { public enum Broke { SHARD, CHIP } }
-{code}
+```
 
 Broken.scala:
-
-{code}
+```scala
 class Broken() { def broken() = Breaking.Broke.CHIP }
-{code}
+```
 
 And to demonstrate the problem:
-
-{code}
+```scala
 javac Breaking.java; fsc Broken.scala; fsc Broken.scala
-{code}
+```
 
-or {{scalac -Xresident}} with {{Broken.scala}} entered twice.
+or `scalac -Xresident` with `Broken.scala` entered twice.
 
 The 20121101 nightly is still broken.  MC3 worked.  20120918 breaks on the same code, but has a complaint (again, only on the second try; in -Xresident mode) not present in later builds:
-
-{code}
+```scala
 TypeRef(
   TypeSymbol(final sealed abstract class Breaking$Broke extends Enum)
 )
@@ -55,6 +51,6 @@ how can getCommonSuperclass() do its job if different class symbols get the same
 	at scala.tools.nsc.Driver.process(Driver.scala:54)
 	at scala.tools.nsc.Driver.main(Driver.scala:67)
 	at scala.tools.nsc.Main.main(Main.scala)
-{code}
+```
 
-Not sure if this is related to the reflection bug on enums ([this one|https://issues.scala-lang.org/browse/SI-6548]), but this one is more serious as it randomly cripples builds if {{fsc}} is used.
+Not sure if this is related to the reflection bug on enums ([this one|https://issues.scala-lang.org/browse/SI-6548]), but this one is more serious as it randomly cripples builds if `fsc` is used.

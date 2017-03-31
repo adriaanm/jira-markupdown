@@ -1,13 +1,13 @@
 I don't know what I'm doing, but poking around at things is sort of a hobby of mine, so:
-{code}
+```scala
 scala> import Functors._
 import Functors._
 
 scala> Cat.compose[List,Option].Functor.map(List(Some(1), Some(2)), (x: Int) => x + 2)
 res0: List[Option[Int]] = List(Some(3), Some(4))  
-{code}
+```
 Here's the diff against trunk which made the bad men go away (in this example anyway, I make no claims of generality.)
-{code}
+```scala
 diff --git a/src/compiler/scala/tools/nsc/symtab/Types.scala b/src/compiler/scala/tools/nsc/symtab/Types.scala
 index 9967d07..9bf9ff9 100644
 --- a/src/compiler/scala/tools/nsc/symtab/Types.scala
@@ -22,5 +22,4 @@ index 9967d07..9bf9ff9 100644
                  else if (sym eq ps.head)  
                    // @M! don't just replace the whole thing, might be followed by type application
                    appliedType(as.head, args mapConserve (this)) // @M: was as.head   
-
-{code}
+```

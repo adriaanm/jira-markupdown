@@ -1,13 +1,13 @@
 OK, I got it in r17716.  Before:
-{code}
+```scala
 $$ scalac28 meredith.scala  ; scala28 -e 'println(com.sap.dspace.model.othello.thePOJO2XMLRenderer)'
 java.lang.RuntimeException: malformed Scala signature of XMLRenderer at 1152; reference type _2 of <none> refers to nonexisting symbol.
 	at scala.tools.nsc.symtab.classfile.UnPickler$$UnPickle.errorBadSignature(UnPickler.scala:760)
 	at scala.tools.nsc.symtab.classfile.UnPickler$$UnPickle.scala$$tools$$nsc$$symtab$$classfile$$UnPickler$$UnPickle$$$$readSymbol(UnPickler.scala:172)
-{code}
+```
 After:
-{code}
+```scala
 $$ scalac meredith.scala  ; scala -e 'println(com.sap.dspace.model.othello.thePOJO2XMLRenderer)'
 POJO2XMLRenderer(true)
-{code}
+```
 Pickler's pretty freaking complicated so there could be any number of additional bugs in there (and I still hope to rewrite it with my almost-provably-correct strategy) but hopefully the existing troubles all stemmed from this bug.

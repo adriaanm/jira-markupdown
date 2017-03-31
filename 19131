@@ -1,21 +1,20 @@
 It would be nice if
-{code}
+```scala
 f"hello, world"  // scala.this.Predef.augmentString("hi").format()
-{code}
+```
 produced just a constant string.
 
 That enables
-{code}
+```scala
 f"$$ordinary"  // no cost
 "$ordinary"     // looks like missing interpolator
 f"$$ordinary%n"  // requires format, though could be improved
-{code}
+```
 
 Locale is never used in rendering FixedString text.
 
 But `f` just emits "hi".format() and the enhancement could be diverted:
-
-{code}
+```scala
 package goodbye
 
 import Predef.{ augmentString => _ }
@@ -31,5 +30,5 @@ object Test extends App {
 
   Console println f"hello, world"
 }
-{code}
+```
 It's not obvious that this is sipped behavior.  Someone wanting a special format could subvert the interpolator directly.

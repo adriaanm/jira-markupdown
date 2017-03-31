@@ -1,20 +1,18 @@
 I think this is related:
-
-{code}
+```scala
 implicit case class Foo(val foo: Int)
 Foo(1)
-{code}
+```
 
 This fails:
-
-{code}
+```scala
 <console>:10: error: ambiguous reference to overloaded definition,
 both method Foo of type (foo: Int)Foo
 and  object Foo of type Foo.type
 match argument types (Int)
               Foo(1)
               ^
-{code}
+```
 
 This is because the implicit class is desugared to an implicit method with the same name as the class, which makes the code ambiguous from the compiler POV.
-In my opinion it would make sense to desugar the implicit class to a different method name, like {{FooImplicit}}.
+In my opinion it would make sense to desugar the implicit class to a different method name, like `FooImplicit`.

@@ -6,22 +6,22 @@ Replying to [comment:4 odersky]:
 
 So basically whenever your method parameter is an _Iterable_, you cannot have side-effect on its elements(*). The only secure way would be to use a _match_/_instanceOf_[Projection] call, then cast and use _force_ - in the beginning of EVERY such method, because _Projection_ extends _Iteration_!
 
-*Therefore under-specified abstraction are bad object-oriented design.*
+**Therefore under-specified abstraction are bad object-oriented design.**
 
-This could be somehow fixed or at least improved by adding a method _forceIfProjection_ to _Iterable_
+This could be somehow fixed or at least improved by adding a method *forceIfProjection* to *Iterable*
 
-However, what makes is worse is that _Stream.map_ behaves like a mix of the _Iterable_ and _Projection_ version: 
-It is non-strict in the way that the code passed to _map_/_foreach_/.. is not called for all elements immediately. However it ignores that elements might NOT be immutable and therefore calls the passed code only once per elements, which is of course always fine with a strict _Iterable_.
+However, what makes is worse is that *Stream.map* behaves like a mix of the *Iterable* and *Projection* version: 
+It is non-strict in the way that the code passed to *map*/*foreach*/.. is not called for all elements immediately. However it ignores that elements might NOT be immutable and therefore calls the passed code only once per elements, which is of course always fine with a strict *Iterable*.
 
 
 I really like Scala because of the functional concepts beside OO and the general language design! Therefore hate to say it, but such a bad object-oriented design of the standard library not being fixed forces me to give up on Scala :-(
 
 
 (*) unsafe accordingly to you, because _it_ could be a _Projection_ and therefore the _map_ behavior is ambiguous due to the under-specified abstraction:(_Array.Projection_+_Set.Projection_, _Stream_):
-{code}
+```scala
 def foo[A] ( it : Iterable[A] ) 
 {
 ... code with side-effect(s) on the elements of it
 ... e.g.: for ( it <- elem ) it.update(...)
 }
-{code}
+```

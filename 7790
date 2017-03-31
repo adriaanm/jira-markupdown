@@ -1,6 +1,5 @@
 Nice example which illustrates once again why reify isn't always applicable:
-
-{code}
+```scala
  def pack[A](a: A): Array[Byte] = macro pack_impl[A]
 
    def pack_impl[A: c.TypeTag](c: Context)(a: c.Expr[A]): c.Expr[Array[Byte]] = {
@@ -17,7 +16,7 @@ Nice example which illustrates once again why reify isn't always applicable:
    def packto[A](output: OutputStream, value: A): Unit = macro packto_impl[A]
 
    def packto_impl[A: c.TypeTag](c: Context)(output: c.Expr[OutputStream], value: c.Expr[A]): c.Expr[Unit] = { .... }
-{code}
+```
 
 Compiling this code will signalize about cross-stage evaluation. This is justified, because the value of baos (as a free variable) will be captured by reification. But this value is only available at runtime, while splice in question needs to work at compile-time.
 

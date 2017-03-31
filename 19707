@@ -1,7 +1,7 @@
-Running {{scalac -verbose}} shows very negative times for compiler phases, and some other things with elapsed times.
+Running `scalac -verbose` shows very negative times for compiler phases, and some other things with elapsed times.
 
 E.g.:
-{quote}
+```
 ...
 [loaded package loader stream in -1432078359796ms]
 [loaded class file C:\Program Files\Java\jdk1.8.0_45\jre\lib\rt.jar(java/lang/CharSequence.class) in -1432078359792ms]
@@ -10,10 +10,10 @@ E.g.:
 [superaccessors in -1432078359790ms]
 [extmethods in -1432078359800ms]
 ...
-{quote}
+```
 
-It looks like this change was introduced with work for SI-7546. 
+It looks like this change was introduced with work for scala/bug#7546. 
 
-[Here|https://github.com/scala/scala/blob/3c7b1e3d953703582aae81506f8b27732a603bfe/src/reflect/scala/reflect/internal/SymbolTable.scala#L56], elapsedMessage is constructed by subtracting {{startTime}} from {{System.nanoTime}} converted to milliseconds.
+[Here](https://github.com/scala/scala/blob/3c7b1e3d953703582aae81506f8b27732a603bfe/src/reflect/scala/reflect/internal/SymbolTable.scala#L56), elapsedMessage is constructed by subtracting `startTime` from `System.nanoTime` converted to milliseconds.
 
-[Here|https://github.com/scala/scala/blob/3c7b1e3d953703582aae81506f8b27732a603bfe/src/compiler/scala/tools/nsc/Global.scala#L1491], {{informTime}} is called with {{currentTime}} imported from {{Platform}}, which is the only source of this I could find. 
+[Here](https://github.com/scala/scala/blob/3c7b1e3d953703582aae81506f8b27732a603bfe/src/compiler/scala/tools/nsc/Global.scala#L1491), `informTime` is called with `currentTime` imported from `Platform`, which is the only source of this I could find. 

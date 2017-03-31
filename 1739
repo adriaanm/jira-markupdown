@@ -1,13 +1,13 @@
 This is more involved and annoying to figure out than I'd thought, but when all is said and done I will have written verification tools which will increase the amount of info we have about classfiles.
 
 Here's a fun fact: if you call .getGenericParameterTypes on trackSetInfo from the borked classfile, the JVM will chug away until it runs out of memory.
-{code}
+```scala
 "Exception Catcher Thread" prio=10 tid=0x01001770 nid=0x80ac00 runnable 
 java.lang.OutOfMemoryError: Java heap space
 	at java.util.ArrayList.<init>(ArrayList.java:113)
-{code}
+```
 Here's where:
-{code}
+```scala
 	at java.lang.System.arraycopy(Native Method)
 	at java.util.ArrayList.toArray(ArrayList.java:304)
 	at sun.reflect.generics.parser.SignatureParser.parseZeroOrMoreBounds(SignatureParser.java:418)
@@ -16,5 +16,5 @@ Here's where:
 	at sun.reflect.generics.parser.SignatureParser.parseZeroOrMoreFormalTypeParameters(SignatureParser.java:177)
 	at sun.reflect.generics.parser.SignatureParser.parseMethodTypeSignature(SignatureParser.java:436)
 	at sun.reflect.generics.parser.SignatureParser.parseMethodSig(SignatureParser.java:141)
-{code}
+```
 Clearly scalac is generating bad signatures and the JVM (and most of the rest of the world) is less than robust in dealing with them.

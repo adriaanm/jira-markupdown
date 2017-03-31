@@ -1,8 +1,7 @@
 This is on hold until a good & feasible solution is proposed (http://www.nabble.com/-scala--properties---bean-properties-td25028167.html)
 
 Another idea is to define the validation logic in a separate private method, e.g.
-
-{code}
+```scala
 class A {
   @BeanProperty @preGet(preHoovesGet) @preSet(preHoovesSet) var hooves = 0
   private def preHoovesSet(h: Int) = {
@@ -14,11 +13,10 @@ class A {
     h
   }
 }
-{code}
+```
 
 the generated getter / setter would then have the form ({{`hooves`}} denotes the actual field)
-
-{code}
+```scala
 def hooves: Int = preHoovesGet(`hooves`)
 def hooves_=(h: Int) { `hooves` = preHoovesSet(h) }
-{code}
+```

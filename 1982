@@ -1,14 +1,14 @@
 I suppose this is really about the not quite working view code making its way out into the world through Range's inherent viewness.  Looking around the other view classes I see there is more trouble.
-{code}
+```scala
 scala> List.range(1,11).view.patch(5, List(100,101), 2)
 java.lang.NullPointerException
 	at scala.collection.generic.SequenceViewTemplate$$Patched$$class.$$init$$(SequenceViewTemplate.scala:115)
 	at scala.collection.generic.SequenceViewTemplate$$$$anon$$9.<init>(SequenceViewTemplate.scala:144)
-{code}
+```
 Oh look, that's an initialization order fail! How timely.
-{code}
+```scala
     protected[this] val from: Int
     protected[this] val patch: Sequence[B]
     protected[this] val replaced: Int
     private val plen = patch.length   // uh-oh mr. plen, meet mr. abstract null
-{code}
+```

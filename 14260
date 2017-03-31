@@ -3,7 +3,7 @@ It's a little more complicated than the title suggests, could not think of a bet
 The compiler crashes with both 2.7.4 and nightly build 2.8.0r17986
 
 In any case here is the code:
-{code}
+```scala
 object TypedConverter {
   def apply[A,B](from : Class[A], to : Class[B])(convert : (A)=>B) = {
     new TypedConverter[A,B](from, to, convert)
@@ -33,10 +33,10 @@ object StandardConverters {
       TypedConverter(f,t){x: a => t.cast(x)}
     }
 }
-{code}
+```
 
 Here is the 2.8.0 explosion trace (props to showing more than the stack trace, makes it easier to find & work around the problem in large scala projects when you aren't very sure which file is causing the crash)
-{code}
+```scala
 exception when typing comb2(List(java.lang.Integer.TYPE, classOf[java.lang.Integer], classOf[Int])).map(<empty> match {
   case scala.Tuple2((f @ _), (t @ _)) => TypedConverter(f, t)((t.cast: (() => <empty>)))
 }), pt = ?
@@ -235,10 +235,10 @@ Exception in thread "main" java.lang.AssertionError: assertion failed: type _1
 	at scala.tools.nsc.Main$$.process(Main.scala:73)
 	at scala.tools.nsc.Main$$.main(Main.scala:87)
 	at scala.tools.nsc.Main.main(Main.scala)
-{code}
+```
 
 and here is the 2.7.4 trace (in case anyone cares)
-{code}
+```scala
 java.lang.Error: Unknown type: ?
 	at scala.tools.nsc.Global.abort(Global.scala:154)
 	at scala.tools.nsc.backend.icode.TypeKinds$$class.toTypeKind(TypeKinds.scala:453)
@@ -288,4 +288,4 @@ java.lang.Error: Unknown type: ?
 	at scala.actors.Scheduler$$$$anon$$3.run(Scheduler.scala:88)
 	at scala.actors.FJTaskRunner.scanWhileIdling(Unknown Source)
 	at scala.actors.FJTaskRunner.run(Unknown Source)
-{code}
+```

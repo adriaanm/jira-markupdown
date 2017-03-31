@@ -1,6 +1,5 @@
 The smallest example I was able to distill involves a type lambda:
-
-{code:scala}
+```scala
 sealed trait Foo[F[_]]
 case class Bar[F[_]]() extends Foo[F]
 
@@ -14,11 +13,10 @@ object Test {
                   //  required: Foo[[X]String]
   }
 }
-{code}
+```
 
 It is reproducible also without type lambdas, but the example is slightly more involved (some simpler cases do work):
-
-{code:scala}
+```scala
 sealed trait Foo[F[_]]
 case class Bar[F[_]]() extends Foo[F]
 
@@ -40,6 +38,6 @@ object TC {
                   //  required: Foo[[X]String]
   }
 }
-{code}
+```
 
 In both cases, it seems it got the shape of type arguments right, but doesn't unify F[_] with [X]String.

@@ -1,25 +1,25 @@
 This problem can be a blocker when working with inner class inheritance hierarchies.
 
-*Reproduce code*
-{code}
+**Reproduce code**
+```scala
 trait A{ trait Foo }
 trait B extends A{ trait Foo extends super.Foo }
 val b: B = new B{}
 val a: A = b
 new b.Foo with a.Foo
-{code}
+```
 
-*Expected result*
+**Expected result**
 compiles fine
 
-*Actual result*
-{code}
+**Actual result**
+```scala
 error: illegal inheritance;
  <$anon: b.Foo with a.Foo> inherits different type instances of trait Foo:
 a.Foo and b.Foo
               new b.Foo with a.Foo
                   ^
-{code}
+```
 
 Note that this happens even if the inner child class does not have the same name as the inner parent, but this fact forces having to upcast to B in order to access the inner parent.
 

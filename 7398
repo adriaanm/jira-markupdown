@@ -1,6 +1,5 @@
 Here's better look at the original problem.
-
-{code}
+```scala
 2.10.x ~/code/scala for f in sandbox/t5604/*.scala; do echo;echo // $f; cat $f; done
 
 // sandbox/t5604/T.scala
@@ -51,6 +50,6 @@ Bug: found package class where package object expected.  Converting.
 
 2.10.x ~/code/scala scala-hash '2.10.x' -d sandbox/t5604/out.jar sandbox/t5604/*.scala
 2.10.x ~/code/scala scala-hash '2.10.x' -classpath sandbox/t5604/out.jar sandbox/t5604/T*.scala 
-{code}
+```
 
 In summary: the bug is triggered by recompiling a trait that is mixed into a package object, without recompiling that package object at the same time. Paul's workaround changed the crash to an error, but that has since disappeared, suggesting the underlying issue might be resolved.

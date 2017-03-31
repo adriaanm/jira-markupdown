@@ -1,15 +1,15 @@
-Based on the resolution of SI-2133, this isn't even a bug unless there will
+Based on the resolution of scala/bug#2133, this isn't even a bug unless there will
 be different rules for java.  Martin said:
-{code}
+```scala
 Stephane's original example is not covered by the spec, which says that
 all importable members are counted. A member is importable as long as
 it is not private[this]. Why this wording? Because an inner class might
 validly import the private members of its companion object.  
-{code}
+```
 That would be a distressing outcome, and not just for this.  It seems like we shouldn't have to pollute the namespace of everyone who imports a package with a bunch of inaccessible symbols, just to keep the door open for some hypothetical inner classes.
 
-Also, see previous ticket of mine SI-3836, "ambiguous references which aren't." But it's worse than I had realized at the time.  You can't even use aliases in your own package, private to your own package, without ruining the package.
-{code}
+Also, see previous ticket of mine scala/bug#3836, "ambiguous references which aren't." But it's worse than I had realized at the time.  You can't even use aliases in your own package, private to your own package, without ruining the package.
+```scala
 package object foo {
   private[foo] type InputStream = java.io.InputStream
   // oddly there is no conflict if there's no qualifier,
@@ -31,11 +31,11 @@ object bar {
 //   var x: InputStream = null
 //          ^
 // one error found
-{code}
+```
 I think this is terribly unfortunate.  And should be treated as an
 encapsulation failure, not a mere inconvenience (though it is quite
 inconvenient.)
 
-In the wontfix for SI-3836 martin says he doesn't want name lookup to start intruding on symbol resolution and typing.  That's fine.  I see this as like implicit resolution or type inference, where there is often some ambiguity which would be resolved if the process continued.  An implicit is ruled out because the type parameters don't match its bounds, etc.
+In the wontfix for scala/bug#3836 martin says he doesn't want name lookup to start intruding on symbol resolution and typing.  That's fine.  I see this as like implicit resolution or type inference, where there is often some ambiguity which would be resolved if the process continued.  An implicit is ruled out because the type parameters don't match its bounds, etc.
 
 But the biggest thing is that private names which affect an unrelated class's namespace cannot really be called private.

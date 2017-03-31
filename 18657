@@ -1,6 +1,5 @@
-A call of an {{applyDynamicNamed}} results in a NoPosition error:
-
-{code}
+A call of an `applyDynamicNamed` results in a NoPosition error:
+```scala
 object X {
   val d = new D
   d.meth(value1 = 10, value2 = 100)
@@ -10,11 +9,10 @@ import language.dynamics
 class D extends Dynamic {
   def applyDynamicNamed(name: String)(value: (String, Any)*) = name
 }
-{code}
+```
 
-Compiled with {{scalac -Yrangepos -Xprint-pos -Xprint:typer -Ystop-after:typer x.scala}}:
-
-{code}
+Compiled with `scalac -Yrangepos -Xprint-pos -Xprint:typer -Ystop-after:typer x.scala`:
+```scala
 ======= Position error
 Unpositioned tree #467
    unpositioned [L  -1 P#  472] #467    [NoPosition]    Apply      // Apply(method apply)
@@ -45,4 +43,4 @@ error:
                  tpe: String
        symbol owners: class String -> package lang
       context owners: value value -> method applyDynamicNamed -> class D -> package <empty>
-{code}
+```

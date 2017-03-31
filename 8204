@@ -1,4 +1,4 @@
-{code}
+```scala
         case Select(qual, name) if sym.owner.isImplClass && !isStaticOnly(sym) =>
           assert(!sym.isMethod, "no method allowed here: %s%s %s".format(sym, sym.isImplOnly, flagsToString(sym.flags)))
           // refer to fields in some implementation class via an abstract
@@ -7,13 +7,12 @@
           val getter = sym getter iface orElse abort("No getter for " + sym + " in " + iface)
 
           typedPos(tree.pos)((qual DOT getter)())
-{code}
+```
 
-{{sym.owner.tpe}} (the trait implementation class) contains the a member, ev$1, but this isn't reflected in the trait interface.
+`sym.owner.tpe` (the trait implementation class) contains the a member, ev$1, but this isn't reflected in the trait interface.
 
 This comment seems relevant:
-
-{code}
+```scala
     /** If this symbol is an implementation class, its interface, otherwise the symbol itself
      *  The method follows two strategies to determine the interface.
      *   - during or after erasure, it takes the last parent of the implementation class
@@ -23,4 +22,4 @@ This comment seems relevant:
      *     !!! Why?
      */
     def toInterface: Symbol = this
-{code}
+```

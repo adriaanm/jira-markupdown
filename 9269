@@ -1,11 +1,9 @@
 Who would have thought that this could go wrong? https://github.com/scala/scala/commit/86397c9
-
-{code}
+```scala
 // typedCompoundTypeTree
 newTyper(context.make(templ, self.typeSymbol, decls)).typedRefinement(templ)
-{code}
-
-{code}
+```
+```scala
     def typedRefinement(templ: Template) {
       val stats = templ.body
       namer.enterSyms(stats)
@@ -28,10 +26,10 @@ newTyper(context.make(templ, self.typeSymbol, decls)).typedRefinement(templ)
         }
       }
     }
-{code}
+```
 
-The lowest friction solution for this would be to make {{CompoundTypeTreeOriginalAttachment}} mutable. We could then attach it to {{templ}} immediately. The deferred code would operate on that attachment, which would have been passed to the copy of tree.
+The lowest friction solution for this would be to make `CompoundTypeTreeOriginalAttachment` mutable. We could then attach it to `templ` immediately. The deferred code would operate on that attachment, which would have been passed to the copy of tree.
 
-15% less hacky, we could avoid registering this with `unit.toCheck`, and instead have a standard {{ToCheck(() => Unit)}} attachment. At the end of each typing a compilation unit, we would traverse the final tree and execute these blocks of code.
+15% less hacky, we could avoid registering this with `unit.toCheck`, and instead have a standard `ToCheck(() => Unit)` attachment. At the end of each typing a compilation unit, we would traverse the final tree and execute these blocks of code.
 
 Or find some other way to break the cycles.

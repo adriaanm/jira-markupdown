@@ -1,8 +1,7 @@
-I think the problem is in {{Iterator.span}} in {{Leading.advance()}}. If the trailing iterator starts iterating before the leading iterator starts, and the leading iterator starts iterating before the trailing iterator finishes, the leading iterator may end up stealing some elements that belong to the trailing iterator in {{advance()}}.
+I think the problem is in `Iterator.span` in `Leading.advance()`. If the trailing iterator starts iterating before the leading iterator starts, and the leading iterator starts iterating before the trailing iterator finishes, the leading iterator may end up stealing some elements that belong to the trailing iterator in `advance()`.
 
-The problem appears to be resolved by checking {{isDone}} in {{advance()}} in {{src/library/scala/collection/Iterator.scala}}, which currently is set but never checked:
-
-{noformat}
+The problem appears to be resolved by checking `isDone` in `advance()` in `src/library/scala/collection/Iterator.scala`, which currently is set but never checked:
+```
 @@ -564,7 +564,7 @@ trait Iterator[+A] extends TraversableOnce[A] {
      class Leading extends AbstractIterator[A] {
        val lookahead = new mutable.Queue[A]
@@ -12,25 +11,23 @@ The problem appears to be resolved by checking {{isDone}} in {{advance()}} in {{
            lookahead += self.next
            true
          }
-{noformat}
+```
 
 When I make this change, I get the following output for your test:
-
-{noformat}
+```
 A1: (List(1),List(2, 3))
 B1: (List(1),List(2, 3))
 
 A2: (List(1),List(2, 1))
 B2: (List(1),List(2, 1))
-{noformat}
+```
 
 I also made another simple example to illustrate:
-
-{code}
+```scala
 val original = List(1, 2, 3).iterator
 val (front, back) = original.span(_ != 2)
 back.drop(1)
 println(front.toList)
-{code}
+```
 
-Before making the change to {{Iterator.scala}}, this incorrectly results in {{List(1, 3)}}. After making the change, it correctly results in {{List(1)}}.
+Before making the change to `Iterator.scala`, this incorrectly results in `List(1, 3)`. After making the change, it correctly results in `List(1)`.

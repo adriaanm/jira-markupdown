@@ -1,6 +1,5 @@
 ugh... minimal test case:
-
-{code}
+```scala
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter
 import javax.xml.bind.annotation.adapters.XmlAdapter
 
@@ -10,13 +9,13 @@ import javax.xml.bind.annotation.adapters.XmlAdapter
 
 // does not type check unless above definition is uncommented
 case class Link(@XmlJavaTypeAdapter(classOf[XmlAdapter[String, Option[String]]]) val title: Option[String])
-{code}
+```
 
 
 I almost daren't suggest it, but here's a patch that "fixes" this bug (and probably introduces another one... like relaxing kind-checking when java and scala type constructors are mixed :-s)
 
 in   `def isHKSubType0(tp1: Type, tp2: Type, depth: Int): Boolean = ...`
-{code}
+```scala
 -      case (_, _) => false // @assume !tp1.isHigherKinded || !tp2.isHigherKinded 
 -      // --> thus, cannot be subtypes (Any/Nothing has already been checked)
 +      case (_, _) => 
@@ -27,6 +26,6 @@ in   `def isHKSubType0(tp1: Type, tp2: Type, depth: Int): Boolean = ...`
 +        val tp1r = HK2Raw(tp1) 
 +        val tp2r = HK2Raw(tp2)
 +        !(tp1r.isHigherKinded || tp2r.isHigherKinded) && (tp1r <:< tp2r)
-{code}
+```
 
 Martin: what do you think?

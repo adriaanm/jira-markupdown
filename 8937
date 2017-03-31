@@ -1,5 +1,5 @@
 True, but given:
-{code}
+```scala
 trait SuperC[A,B] {
   def getB(a: A): B
 }
@@ -23,9 +23,9 @@ trait MyC extends SuperC[Int,Int]
 class MySubC extends MyC{
   def getB(a: Int): Int = 3
 }
-{code}
+```
 I can:
-{code}
+```scala
 object Main_ {
   val myFoo = new MyFoo
   val mySC = new MySubC
@@ -38,9 +38,9 @@ error: type mismatch;
          new Bar(3, mySC)
                  ^
 */
-{code}
+```
 or
-{code}
+```scala
 object Main_ {
   val myFoo = new MyFoo
   val mySC = new MySubC
@@ -51,17 +51,17 @@ error: type arguments [MyFoo] do not conform to class Bar's type parameter bound
          new Bar[MyFoo](3, mySC)
              ^
 */
-{code}
+```
 or
-{code}
+```scala
 object Main_ {
   val myFoo = new MyFoo
   val mySC = new MySubC
   val bar = new Bar[MyFoo with Singleton](3, mySC)
 }
-{code}
+```
 But then I have to drag Singleton around everywhere.  And if I pop up a level on my simplification stack:
-{code}
+```scala
   trait SuperC[A,B] {
     def getB(a: A): B
   }
@@ -91,7 +91,7 @@ But then I have to drag Singleton around everywhere.  And if I pop up a level on
     val mySC = new MySubC
     new Bar[MyFoo with Singleton](3, mySC)
   }
-{code}
+```
 I'm accumulating Singleton at an alarming pace :-)
 
 But at any rate, as much as I'd like to get help fixing my design, I don't mean to spam up this error-message-improving ticket.

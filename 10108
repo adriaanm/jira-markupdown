@@ -1,8 +1,7 @@
 Looks like a few bits were twiddled between the original bug and this report. Sorry for the noise. Must have been a strong set of solar flares that day.
 
 Here's a CCE. We should check that `isEmpty` returns boolean.
-
-{code}
+```scala
 class Casey(a: Int) { def isEmpty = this; def get = this }
 object Casey { def unapply(a: Casey) = a }
  
@@ -11,9 +10,8 @@ object Test {
     val Casey(x) = new Casey(1)
   }
 }
-{code}
-
-{noformat}
+```
+```
  (export V=v2.11.0-M5 && scalac-hash $V sandbox/test.scala && scala-hash $V Test)
 sandbox/test.scala:7: warning: Casey and Int are unrelated: they will most likely never compare equal
     assert(x == 1, x)
@@ -27,4 +25,4 @@ sandbox/test.scala:7: warning: Casey and Int are unrelated: they will most likel
              ^
 one warning found
 java.lang.ClassCastException: Casey cannot be cast to java.lang.Boolean
-{noformat}
+```

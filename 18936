@@ -1,17 +1,16 @@
-Even after the fix to SI-6447, there are bugs in type substitution for macros. But to trigger this variant, you need to access type members of value members.
+Even after the fix to scala/bug#6447, there are bugs in type substitution for macros. But to trigger this variant, you need to access type members of value members.
 
-Substitution fails on {{X.this.v.T}}, and one can see that [SigmaTypeMap|https://github.com/scala/scala/blob/fabc9f1424824975943241b9bb2c9b7669f805bd/src/compiler/scala/reflect/macros/compiler/Validators.scala#L172] is too restrictive to handle that — instead of having the logic into non-recursive mapPrefix (only applied to prefixes), that logic should IMHO be in apply (at least looking at this example).
+Substitution fails on `X.this.v.T`, and one can see that [SigmaTypeMap](https://github.com/scala/scala/blob/fabc9f1424824975943241b9bb2c9b7669f805bd/src/compiler/scala/reflect/macros/compiler/Validators.scala#L172) is too restrictive to handle that — instead of having the logic into non-recursive mapPrefix (only applied to prefixes), that logic should IMHO be in apply (at least looking at this example).
 
-Concretely, {{X.this.v.T}} seems to become
+Concretely, `X.this.v.T` seems to become
 TypeRef(SingleType(ThisType(TypeName("X")), TermName("v")), TypeName("T"), List()) at that point, and mapPrefix won't handle a ThisType nested inside a SingleType. (IOW, that code is not compositional enough). See transcript at the end.
 
 On the other hand, I'm also not sure why there must be a difference between TypeRef and Select.
 
-(BTW, [the discussion for SI-6447|https://github.com/paulp/scala/commit/9ad98963d092d91ca3da6dc7fcc935c386f49a74#commitcomment-1923895] suggests that the substitution to compute the macro shape should use SubstMap, but it seems this has not yet been done. However, I can't say this wouldn't have helped here.)
+(BTW, [the discussion for SI-6447](https://github.com/paulp/scala/commit/9ad98963d092d91ca3da6dc7fcc935c386f49a74#commitcomment-1923895) suggests that the substitution to compute the macro shape should use SubstMap, but it seems this has not yet been done. However, I can't say this wouldn't have helped here.)
 
 I would also argue that this is a blocker because a fix would break one current workaround — in fact, it would break code which would silently compile — see X1 below. Please correct me if that's too hasty (impact is in fact somewhat low, as this is hard to trigger).
-
-{code}
+```scala
 import scala.reflect.macros.Context
 import scala.language.experimental.macros
 
@@ -62,10 +61,10 @@ class X(val v: Y) {
 object TestMacros {
   def foo(c: Context { type PrefixType = X })(t: c.Expr[c.prefix.value.v.T]): c.Expr[c.prefix.value.v.T] = ???
 }
-{code}
+```
 
 Errors:
-{code}
+```scala
 [error] /Users/pgiarrusso/Documents/Research/Sorgenti/hoas-with-names/macros/foo.scala:22: macro implementation has incompatible shape:
 [error]  required: (c: scala.reflect.macros.whitebox.Context)(t: c.Expr[X1.v.T]): c.Expr[X1.v.T]
 [error]  or      : (c: scala.reflect.macros.whitebox.Context)(t: c.Tree): c.Tree
@@ -80,11 +79,10 @@ Errors:
 [error] type mismatch for parameter t: c.Expr[X.this.v.T] does not conform to c.Expr[c.prefix.value.v.T]
 [error]   def m(t: T): T = macro TestMacros.foo
 [error]                                     ^
-{code}
+```
 
-To see what X.this.v.T becomes, I did the following — look at type {{\[29]}} at the end of the transcript.
-
-{code}
+To see what X.this.v.T becomes, I did the following — look at type `\[29]` at the end of the transcript.
+```scala
 scala> import scala.reflect.runtime.universe._
 import scala.reflect.runtime.universe._
 
@@ -134,4 +132,4 @@ Block[1](List(ClassDef[2](Modifiers(), TypeName("Y"), List(), Template[24](List(
 [28] SuperType(ThisType(TypeName("X")), TypeRef(ThisType(scala), TypeName("AnyRef"), List()))
 [29] TypeRef(SingleType(ThisType(TypeName("X")), TermName("v")), TypeName("T"), List())
 [30] SingleType(ThisType(TypeName("X")), TermName("v"))
-{code}
+```

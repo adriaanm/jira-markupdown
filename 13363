@@ -1,15 +1,13 @@
 Current scala compiler has some magic, so field
-
-{code}
+```scala
 var table: Array[Entry]
-{code}
+```
 
 of trait !HashTable is compiled to !BoxedAnyArray, because Entry is a generic type. For performance reason "table" field should be plain array. Patch attached.
 
 I'm trying to speed up Scala compiler. After applying patch compilation of simple
-
-{code}
+```scala
 class A
-{code}
+```
 
 sped up for about 1% (Sun JDK 1.6).

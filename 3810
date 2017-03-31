@@ -1,4 +1,4 @@
-(In r23244) closes SI-3281, SI-3866. !!! rollback constraints accumulated during isCoercible check. also had to disable clearing of the undoLog.
+(In r23244) closes scala/bug#3281, scala/bug#3866. !!! rollback constraints accumulated during isCoercible check. also had to disable clearing of the undoLog.
 
 I don't understand why we had to clear() the undoLog in the first place, since the undoXXX methods increase and decrease its size symmetrically, so the log should always be empty once they have all unwound. Was it a (premature) optimisation or was there some kind of semantic meaning to it that I didn't see?
 

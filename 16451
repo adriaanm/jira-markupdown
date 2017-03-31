@@ -1,13 +1,13 @@
 It seems there is a bug in Predef:
 
-{{def readLine(text: String, args: Any*) = Console.readLine(text, args)}}
+`def readLine(text: String, args: Any*) = Console.readLine(text, args)`
 
 When I think it should be:
 
-{{def readLine(text: String, args: Any*) = Console.readLine(text, args: _*)}}
+`def readLine(text: String, args: Any*) = Console.readLine(text, args: _*)`
 
-The first version causes the args to be be wrapped in {{WrappedArray}} when called like this: {{readLine("hello %s%n", "world")}}
+The first version causes the args to be be wrapped in `WrappedArray` when called like this: `readLine("hello %s%n", "world")`
 
 See http://stackoverflow.com/questions/7693872/predef-readline-behaviour
 
-I'm not sure why {{WrappedArray}} but a quick test in REPL shows the second version would work and also it makes sense to use the type ascription to use the seq as a repeated parameter.
+I'm not sure why `WrappedArray` but a quick test in REPL shows the second version would work and also it makes sense to use the type ascription to use the seq as a repeated parameter.

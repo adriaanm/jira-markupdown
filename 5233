@@ -1,6 +1,6 @@
 Some additional information, I modified the Types.scala
 in the 2.9.0.r23773-b20101215122332
-{code}
+```scala
             else {
               if (sym == null) {
                 println("XXXXXXXXXXXXXXXXXX")
@@ -18,13 +18,12 @@ in the 2.9.0.r23773-b20101215122332
               sym.info.baseTypeSeq map transform
             }
             //else sym.info.baseTypeSeq map transform
-
-{code}
+```
 
 And got the following information and a NullPointerException
 in another part of Types.scala while it was trying to
 convert sym.info to a string:
-{code}
+```scala
    [scalac] XXXXXXXXXXXXXXXXXX
    [scalac] sym.info.baseTypeSeq == null
    [scalac] sym=class Component
@@ -70,14 +69,14 @@ convert sym.info to a string:
    [scalac]     at java.lang.String.valueOf(String.java:2826)
    [scalac]     at scala.collection.mutable.StringBuilder.append(StringBuilder.scala:185)
    [scalac]     at scala.tools.nsc.symtab.Types$$TypeRef.baseTypeSeq(Types.scala:1902)
-{code}
+```
 The line number 1902 is the position of:
-{code}
+```scala
                 println("sym.info="+sym.info)
-{code}
+```
 The new NullPointerException occurs in the baseTypeIndex
 method
-{code}
+```scala
     def baseTypeIndex(sym: Symbol): Int = {
       val bts = baseTypeSeq
       var lo = 0
@@ -92,8 +91,8 @@ method
       }
       -1
     }
-{code}
+```
 on the line
-{code}
+```scala
       var hi = bts.length - 1
-{code}
+```

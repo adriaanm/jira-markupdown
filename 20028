@@ -1,7 +1,7 @@
 I'm trying circe for Json, and the presentation compiler (that's the Scala IDE dev who said it :) is reporting false errors, as soon as I tried to do... well, almost anything related to circe jsons decoder :)
 
 For example:
-{code}
+```scala
     // depency on circe 0.3.0, see: https://github.com/travisbrown/circe/
     import io.circe._
     import io.circe.generic.semiauto._
@@ -12,23 +12,21 @@ For example:
     object UserDecode {
       implicit lazy val userEventDecoder: Decoder[User] = deriveDecoder[User]
     }
-{code}
+```
 The code compile, but on line 'implicit lazy val...', eclipse show a red-cross error under User:
-
-{noformat}
+```
 Multiple markers at this line:
   not enough arguments for method deriveDecoder: (implicit decode: shapeless.Lazy[io.circe.generic.decoding.DerivedDecoder[nrm_marketing_data.User]])io.circe.Decoder[nrm_marketing_data.User]. Unspecified value parameter decode.
   could not find implicit value for parameter decode: shapeless.Lazy[io.circe.generic.decoding.DerivedDecoder[nrm_marketing_data.User]]
-{noformat}
+```
 
 The same symptoms are appering with several cats methods, like traverseU.
 Also: I don't have completion on anyting after the error, in the scope, for example in:
-
-{code}
+```scala
     ...... = {
     deriveDecoder[User].prepare( _.downField("user").downField("firstName")
     }
-{code}
+```
 
 I don't have completion on prepare, and hitting crtl+space after ".p" leads to 0 scala completion.
 Also, the type given on tooltip on mouse over is "val somevar: <error>"

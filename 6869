@@ -1,5 +1,5 @@
 I think this bug is legitimate, or at least warrants clarification.  The issue at hand is presented more clearly as follows:
-{code}
+```scala
 object A {
   val x: Int = List("a")
   implicit lazy val O1: (List[String] => Int) = ???
@@ -17,10 +17,10 @@ object B {
                    ^
 one error found
 */
-{code}
+```
 
 object O2 is considered to be typeless.  I think it makes a lot more sense to either a) consider it to have type "O2.type" or b) failing that, to at least offer some means of giving it a so-called explicit result type.  Because right now there's no way to do it at all.  Naively, one might think this would work:
-{code}
+```scala
 object C {
   val x: Int = List("a")
   implicit object O3 extends (List[String] => Int) {
@@ -29,5 +29,5 @@ object C {
     def apply(x: List[String]): Int = ???
   }
 }
-{code}
+```
 But it doesn't.

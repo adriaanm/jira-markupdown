@@ -1,14 +1,12 @@
 I'm pleased to see the inclusion of the @static annotation in Scala 2.10.0-M6. I noticed that @static vals don't get marked final, which limits HotSpot optimizations and jeopardizes the fabric of the cosmos. Heads up!
-
-{code}
+```scala
 object Constants {
   import scala.annotation.static
   @static val Const: Int = 0 // should generate a static final field
   @static final val FinalConst: Int = 0 // ditto
 }
-{code}
-
-{code}
+```
+```scala
 public class Constants {
   public static int Const;
 
@@ -28,4 +26,4 @@ public class Constants {
        1: invokespecial #17                 // Method java/lang/Object."<init>":()V
        4: return        
 }
-{code}
+```

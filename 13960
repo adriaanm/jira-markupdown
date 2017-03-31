@@ -1,10 +1,9 @@
-{code}
+```scala
 Scala code runner version 2.7.2.final -- Copyright 2002-2008, LAMP/EPFL
-{code}
+```
 
 When file `bar.scala` below is compiled after `foo.scala`, the compiler throws an exception.
-
-{code}
+```scala
 // foo.scala
 trait Foo {
     def foo(arg: List[_])
@@ -17,26 +16,23 @@ trait AbstractOverrideFoo extends Foo {
         super.foo(arg)
     }
 }
-{code}
-
-{code}
+```
+```scala
 // bar.scala
 object Bar {
     val a = new FooImpl with AbstractOverrideFoo
 }
-{code}
+```
 
 To reproduce:
-
-{code}
+```scala
 $$ scalac foo.scala
 $$ scalac bar.scala
-{code}
+```
 
 This exception does not occur if the two files are compiled in a single invocation ...
-
-{code}
+```scala
 $$ scalac foo.scala bar.scala
-{code}
+```
 
 ... or if the existential wildcard is replaced with a concrete type such as `Any`.

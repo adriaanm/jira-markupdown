@@ -1,5 +1,5 @@
 === What steps will reproduce the problem? ===
-{code}
+```scala
 object Pimper {
  implicit def pimp(i: Int) = new {
     def test: String = i.toString
@@ -23,7 +23,7 @@ object Test extends A with B {
     test
   }
 }
-{code} 
+```
 
 
 
@@ -34,7 +34,7 @@ object Test extends A with B {
 === What do you see instead? ===
 
 A runtime error:
-{code}
+```scala
 java.lang.NoSuchFieldError: reflPoly$$Cache1
 	at T1$$class.reflMethod$$Method1(Test.scala:16)
 	at T1$$class.test(Test.scala:16)
@@ -52,16 +52,15 @@ java.lang.NoSuchFieldError: reflPoly$$Cache1
 	at sbt.Run$$$$anonfun$$run$$2.apply(Run.scala:51)
 	at sbt.TrapExit$$.executeMain$$1(TrapExit.scala:33)
 	at sbt.TrapExit$$$$anon$$1.run(TrapExit.scala:42)
-{code}
+```
 === Additional information ===
 
 This happens since 2.9.0.RC2 (RC1 was fine) and happens only with the self-type in place. The problem seems to be that the reflection cache inside of `B$$class` looks for the cache field inside of class `B`:
-
-{code}
+```scala
 public static java.lang.reflect.Method reflMethod$$Method1(java.lang.Class);
   Code:
    Stack=5, Locals=2, Args_size=1
    0:   getstatic       SI-33; //Field B.reflPoly$$Cache1:Ljava/lang/ref/SoftReference;
-{code}
+```
 
 In another [http://groups.google.com/group/spray-user/msg/59eb57b6cb2ce512 case] for some reason the cache was looked for in a class declared as the self-type.

@@ -1,6 +1,5 @@
 Compile the following program with -Xprint:typer -Ycheck:typer. 
-
-{code}
+```scala
 class C {
   def f(v: => Int, b: Boolean = true) = 0
 }
@@ -8,10 +7,10 @@ class C {
 object t {
   (new C).f(1)
 }
-{code}
+```
 
 You'll get an error at the check phase.
-{noformat}
+```
 
 [...]
 
@@ -34,14 +33,14 @@ type mismatch;
             ^
 one error found
 new-host:sandbox luc$ 
-{noformat}
+```
 
 The problem is that there is a closure generated 
-{code}
+```scala
       val x$1: () => Int(1) = (() => 1);
-{code}
+```
 which is not typable (because of the constant type in the result type). The closure is also useless, it will never be called. If you write a closure such as 
-{code}
+```scala
 ()=> 34
-{code}
+```
 the problem does not arise; the return type is Int, instead of Int(34).

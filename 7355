@@ -1,11 +1,10 @@
 More generally, you're not allowed to do a call such as this one:
-
-{code}
+```scala
 class Foo[/*@specialized(Int) */T, A] {
   def bar[B >: A <: AnyRef]: T = throw new Exception
   
   bar[A]
 }
-{code}
+```
 
 since it's possible that `A` is not a subtype of `AnyRef` at all in certain contexts. So, generating a bridge `bar$mcI$sp` for `bar` will contain an expression which is not type-safe. Meaning that instead of the compiler failing, an error should be reported here.

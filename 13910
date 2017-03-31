@@ -2,16 +2,15 @@ When the interpreter catches an exception that wraps another exception (i.e. `ge
 
 == To reproduce ==
 
-{{Scala code runner version 2.7.2.final -- Copyright 2002-2008, LAMP/EPFL}}
+`Scala code runner version 2.7.2.final -- Copyright 2002-2008, LAMP/EPFL`
 
 Enter the following at the interpreter:
-
-{code}
+```scala
 throw new IllegalArgumentException(new ClassCastException)
-{code}
+```
 
 == Expected behaviour ==
-The interpreter prints a stack trace for the _outermost_ exception in the chain (`IllegalArgumentException` in the example).
+The interpreter prints a stack trace for the *outermost* exception in the chain (`IllegalArgumentException` in the example).
 
 == Actual behaviour ==
-The interpreter prints a stack trace for the _innermost_ exception (`ClassCastException` in the example), and discards all outer exceptions without notice.
+The interpreter prints a stack trace for the *innermost* exception (`ClassCastException` in the example), and discards all outer exceptions without notice.

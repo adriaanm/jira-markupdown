@@ -1,12 +1,11 @@
 not completely sure it's relevant to your actual code, but I'd like to note it here, since it came up for me right away experimenting with implementing the English description ("We have a class...") above:
 
-any time you have the {{Foo extends FunctionN}} pattern you may run into https://github.com/scala/scala-dev/issues/138 which prevents even something as simple as:
-
-{code:scala}
+any time you have the `Foo extends FunctionN` pattern you may run into https://github.com/scala/scala-dev/issues/138 which prevents even something as simple as:
+```scala
 abstract class Service extends (Int => String)
 (_.toString): Service
-{code}
+```
 
 from compiling. (Noticed first by Lukas, https://github.com/scala/scala/pull/5307#issuecomment-238858157)
 
-Adriaan has a WIP patch at https://github.com/scala/scala/pull/5126 but its future is unclear (in any case, it won't make 2.12.0). making this compile makes other things _not_ compile (since new ambiguities are possible), so it's not clear-cut what to do.
+Adriaan has a WIP patch at https://github.com/scala/scala/pull/5126 but its future is unclear (in any case, it won't make 2.12.0). making this compile makes other things *not* compile (since new ambiguities are possible), so it's not clear-cut what to do.

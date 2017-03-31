@@ -1,14 +1,13 @@
 During typechecking in Erasure:
 
-1. {{typedNew}} calls {{<class Array>.tpe}}, which calls {{unsafeTypeParams}}.
+1. `typedNew` calls `<class Array>.tpe`, which calls `unsafeTypeParams`.
 
 2. {{unsafeTypeParams}} runs the specialization info transformer (Array.class is not in this compilation run, so this is expected, even under {{-no-specialization}})
 
-3. This info transformer computes {{<method Array#clone>.allOverriddenSymbols}}
+3. This info transformer computes `<method Array#clone>.allOverriddenSymbols`
 
-4. During an {{AsSeenFrom}}, {{<ThisType(Array)>.underlying}} calls {{<class Array>.typeOfThis}}, which final cycles back into {{<class Array>.tpe}}
-
-{noformat}
+4. During an `AsSeenFrom`, `<ThisType(Array)>.underlying` calls `<class Array>.typeOfThis`, which final cycles back into `<class Array>.tpe`
+```
   at scala.reflect.internal.Symbols$CyclicReference.<init>(Symbols.scala:3338)
 	  at scala.reflect.internal.Symbols$TypeSymbol.tpe(Symbols.scala:2759)
 	  at scala.reflect.internal.Symbols$Symbol.typeOfThis(Symbols.scala:1743)
@@ -55,4 +54,4 @@ During typechecking in Erasure:
 	  at scala.reflect.internal.Symbols$Symbol.unsafeTypeParams(Symbols.scala:1468)
 	  at scala.reflect.internal.Symbols$TypeSymbol.tpe(Symbols.scala:2768)
 	  at scala.tools.nsc.typechecker.Typers$Typer.typedNew$1(Typers.scala:4399)
-{noformat}
+```

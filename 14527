@@ -1,5 +1,5 @@
 Given the following:
-{code}
+```scala
 abstract class A[T <: A[T]] {
   def foo: X[T]
 }
@@ -19,16 +19,16 @@ object Test {
     f(a.foo)
   }
 }
-{code}
+```
 
 compilation fails as: 
-{code}
+```scala
 Test.scala:18: error: inferred type arguments [_$$2] do not conform to method f's type parameter bounds [T <: A[T]]
     f(a.foo)
     ^
-{code}
+```
 even though it is not possible for any instance of A to fail to satisfy this bound. Explicitly specifying the existential type allows correct compilation:
-{code}
+```scala
 object Test {
   def test: X[_] = {
     val a: A[T] forSome {type T <: A[T]} = new B
@@ -38,6 +38,6 @@ object Test {
     f(a.foo)
   }
 }
-{code}
+```
 
 It seems like A[_] is naively being expanded to A[T] forSome {type T} instead of respecting the bound declared in A. Minor, but unexpected.

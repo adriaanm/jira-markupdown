@@ -1,12 +1,12 @@
 If A.x is:
-{code}
+```scala
 def x[@specialized("Int") T](t: T) = t
-{code}
+```
 
 Modifying it to be:
-{code}
+```scala
 def x[@specialized("Long") T](t: T) = t
-{code}
+```
 causes B to correctly be recompiled because B used a specialized method that is now gone.
 
 However, changing it back to "Int" will not recompile B because it uses the unspecialized method now and annotation arguments are not compared.  B should be recompiled because x is now specialized to Int.

@@ -1,8 +1,7 @@
 A potential workaround, for those who would like to get something working with 2.10.0, is to undo the translation of pattern matching anonymous partial functions.
 
-Care must be taken in the other parts of the macro to then treat {{Match(EmptyTree, cases)}} as such a contruct, rather than a regular pattern match. If you weren't doing that anyway, your macro might not work under {{-Xoldpatmat}}.
-
-{code}
+Care must be taken in the other parts of the macro to then treat `Match(EmptyTree, cases)` as such a contruct, rather than a regular pattern match. If you weren't doing that anyway, your macro might not work under `-Xoldpatmat`.
+```scala
   private object RestorePatternMatchingFunctions extends Transformer {
 
     override def transform(tree: Tree): Tree = {
@@ -24,5 +23,5 @@ Care must be taken in the other parts of the macro to then treat {{Match(EmptyTr
       }
     }
   }
-{code}
+```
 

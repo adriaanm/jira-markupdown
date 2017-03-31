@@ -1,4 +1,4 @@
-{code}
+```scala
 trait ListMatcher {                                                                
   object __match {                                                                 
     def one[T](x: T): List[T] = List(x)                                            
@@ -23,25 +23,25 @@ object Test extends App with ListMatcher {
   }                                                                                
   println(f("hello"))                                                              
 }
-{code}
+```
 
 When compiling this snippet with flags -Xexperimental, we get a compiler crash:
-{noformat}
+```
 error: java.lang.NullPointerException
 	at scala.tools.nsc.typechecker.PatternMatching$MatchTranslation$ExtractorCallProd.rawSubPatTypes(PatternMatching.scala:732)
 	at scala.tools.nsc.typechecker.PatternMatching$MatchTranslation$ExtractorCallProd.isSeq(PatternMatching.scala:731)
 	at scala.tools.nsc.typechecker.PatternMatching$MatchTranslation$ExtractorCall.subPatTypes(PatternMatching.scala:641)
 ...
-{noformat}
+```
 
 The problem is that Infer.extractorFormalTypes is hard-coded for the Option monad. A quick fix is simply changing
-{code}
+```scala
 lazy val optionArgs = resTp.baseType(OptionClass).typeArgs
-{code}
+```
 to
-{code}
+```scala
 lazy val optionArgs = resTp.typeArgs
-{code}
+```
 in https://github.com/scala/scala/blob/2.10.x/src/compiler/scala/tools/nsc/typechecker/Infer.scala#L98
 
 Then the snippet runs, with the expected result: List(h, e, l, l, o).

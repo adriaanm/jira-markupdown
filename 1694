@@ -1,13 +1,13 @@
-This is essentially a duplicate of SI-1209 and at least one other ticket I can't find right now.  If you want your implicits to work everywhere, declare the return type.
-{code}
+This is essentially a duplicate of scala/bug#1209 and at least one other ticket I can't find right now.  If you want your implicits to work everywhere, declare the return type.
+```scala
   implicit def string2FooString(s: String): FooString = new FooString(s)
-{code}
+```
 That works.
-{code}
+```scala
   //println(string2FooString("%s = %s") % ("foo", "bar")); // this line causes next line to compile!
-{code}
+```
 That works because calling it explicitly causes the return type to be resolved.
-{code}
+```scala
 // if this module is moved to the top of the file, the code compiles
-{code}
+```
 That works because then the implicit's return type is resolved before it gets to the operation which needs it.

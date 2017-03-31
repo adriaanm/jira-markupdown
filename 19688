@@ -1,27 +1,27 @@
 It looks like scalac tries to semi-erase value classes in Java-defined symbols, which of course doesn't make sense since these symbols come from a classfile:
 
 Meter.scala:
-{code:scala}
+```scala
 class Meter(val x: Int) extends AnyVal
-{code}
+```
 JUse.java:
-{code:java}
+```java
 class JUse {
   public static Meter jm() {
     return new Meter(2);
   }
 }
-{code}
+```
 Use.scala:
-{code:scala}
+```scala
 object Use {
   def main(args: Array[String]): Unit = {
     val x: Meter = JUse.jm
   }
 }
-{code}
+```
 Runtime error:
-{code:scala}
+```scala
 % scala Use
 java.lang.NoSuchMethodError: JUse.jm()I
         at Use$.main(Use.scala:5)
@@ -44,11 +44,11 @@ java.lang.NoSuchMethodError: JUse.jm()I
         at scala.tools.nsc.MainGenericRunner.process(MainGenericRunner.scala:98)
         at scala.tools.nsc.MainGenericRunner$.main(MainGenericRunner.scala:103)
         at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
-{code}
+```
 
 
 The output of Erasure confirms that the compiler has completely lost its mind as it tries to cast an Integer to a Meter:
-{code:scala}
+```scala
   object Use extends Object {
     def <init>(): Use.type = {
       Use.super.<init>();
@@ -59,5 +59,4 @@ The output of Erasure confirms that the compiler has completely lost its mind as
       ()
     }
   }
-
-{code}
+```

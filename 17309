@@ -1,15 +1,13 @@
 The following macro definition and usage shows a problematic interaction between resetLocalAttrs and partial functions.
 
 Usage:
-
-{code:java}
+```java
 def m[T](t: T): List[List[T]] =
   demo( List((t,true)) collect { case (x,true) => x } )
-{code}
+```
 
 Definition:
-
-{code:java}
+```java
 def demo[T](t: T): List[T] = macro macroImpl[T]
 
 def macroImpl[T: c.AbsTypeTag](c: Context)(t: c.Expr[T]): c.Expr[List[T]] =
@@ -17,21 +15,19 @@ def macroImpl[T: c.AbsTypeTag](c: Context)(t: c.Expr[T]): c.Expr[List[T]] =
   val r = c.universe.reify { List(t.splice) }
   c.Expr[List[T]]( c.resetLocalAttrs(r.tree) )
 }
-{code}
+```
 
 The error is:
-
-{code}
+```scala
 class Any is abstract; cannot be instantiated
      demo( List((t,true)) collect { case (x,true) => x })
                                   ^
-{code}
+```
 
 The tree before and after calling resetLocalAttrs:
 
 Before:
-
-{code:java}
+```java
  immutable.this.List.apply(immutable.this.List.apply[(T, Boolean)](scala.Tuple2.apply[T, Boolean](t, true)).collect[T, List[T]]({
   @SerialVersionUID(0) final <synthetic> class $anonfun extends scala.runtime.AbstractPartialFunction[(T, Boolean),T] with Serializable {
     def <init>(): anonymous class $anonfun = {
@@ -47,11 +43,10 @@ Before:
   };
   new anonymous class $anonfun()
 })(immutable.this.List.canBuildFrom[T]))
-{code}
+```
 
 After:
-
-{code:java}
+```java
  immutable.this.List.apply(immutable.this.List.apply[(T, Boolean)](scala.Tuple2.apply[T, Boolean](t, true)).collect[T, List[T]]({
   final <synthetic> class $anonfun extends scala.runtime.AbstractPartialFunction[(T, Boolean),T] with Serializable {
     def <init>() = {
@@ -67,4 +62,4 @@ After:
   };
   new <type ?>()
 })(immutable.this.List.canBuildFrom[T])) 
-{code}
+```

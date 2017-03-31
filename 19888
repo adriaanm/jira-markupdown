@@ -1,15 +1,14 @@
 I want a case class where the access to its constructors (including companion.apply) is private, or to not have the synthetic constructor created.
-
-{code}
+```scala
 case class Foo private(x: Int)
 object Foo {
   // apply not public
   def make(x: Int): Option[Foo] = ??? // public constructor
 }
-{code}
+```
 
 Adding or overriding Foo.apply causes "{{error: method apply is defined twice}}".
 
-The only workaround I could find is to not use a case class;  use a regular class, and define your own {{val}}, {{apply}}, {{unapply}}, {{toString}}, {{canEqual}}, {{equals}}, {{hashCode}}; seems unfortunate.
+The only workaround I could find is to not use a case class;  use a regular class, and define your own `val`, `apply`, `unapply`, `toString`, `canEqual`, `equals`, `hashCode`; seems unfortunate.
 
 

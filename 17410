@@ -1,17 +1,16 @@
-{code:none}
+```none
 git clone http://github.com/akshaal/akmacros.git
 cd akmacros
 sbt console
 import info.akshaal.clazz._
 class Ann(f : Int => Int) extends annotation.StaticAnnotation
-{code}
+```
 
 and then the following will trigger exception in scala compiler (should be posted as one line):
-{code:none}
+```none
 case class Test(@Ann(_ + 3) d : String); val z = fields[Ann, Test, Any, Tuple1[(Int => Int)]]('valueIdentity)
-{code}
-
-{code:none}
+```
+```none
         during phase: global=lambdalift, atPhase=constructors
 [...]
   last tree to typer: term z
@@ -44,5 +43,5 @@ DefDef( // final def apply(x$1: Int): Int
 == Expanded type of tree ==
 
 <notype>
-{code}
+```
 You will find the rest of it in the attached file.

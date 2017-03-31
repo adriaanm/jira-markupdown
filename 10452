@@ -1,8 +1,7 @@
 Good catch.
 
 Seems like every call to `Symbol#isPrivate` represents a potential bug:
-
-{code}
+```scala
 scala> object O { trait T { private[O] def foo = 0 } }
 defined module O
 
@@ -14,11 +13,10 @@ res0: Boolean = false
 
 scala> foo.privateWithin
 res1: $r.intp.global.Symbol = object O
-{code}
-
-{code}
+```
+```scala
 // RefChecks
 if (member.isPrivate) // (1.1)
             overrideError("has weaker access privileges; it should not be private")
           member.privateWithin
-{code}
+```

@@ -1,24 +1,21 @@
-While SI-400 is fixed, here is another related problem. Again, two Java classes but this time with two constructors:
-
-{code}
+While scala/bug#400 is fixed, here is another related problem. Again, two Java classes but this time with two constructors:
+```scala
 public class Par<T> {}
 
 public class Foo {
   public Foo(Par p) {} // note the raw type
   public Foo(String s) {}
 }
-{code}
+```
 
 The constructor that takes a Par cannot be resolved:
-
-{code}
+```scala
 new Foo(new Par[Int])
-{code}
+```
 
 gives
-
-{code}
+```scala
 overloaded method constructor Foo with alternatives (java.lang.String)Foo <and> (Par)Foo cannot be applied to (Par[Int])
-{code}
+```
 
 It works when the parameter type is changed from Par to Par<?>

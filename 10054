@@ -1,12 +1,11 @@
 Easy cake for GenBCode, whether optimization is on or not.
 
-Not sure whether this bug shares a root cause with https://issues.scala-lang.org/browse/SI-7407 . The problem there last time I checked was a per-design best-effort shuffling of ICode CFG blocks aiming to comply with bytecode verification.
+Not sure whether this bug shares a root cause with scala/bug#7407 . The problem there last time I checked was a per-design best-effort shuffling of ICode CFG blocks aiming to comply with bytecode verification.
 
 In contrast, the bytecode emitted by GenBCode reflects the lexical nesting of try-catch-finally, thus it always passes bytecode verification.
 
 To better see the ordering of side-effects:
-
-{noformat}
+```
 import scala.util.control.ControlThrowable
 
 object Test {
@@ -24,4 +23,4 @@ object Test {
     }
   }
 }
-{noformat}
+```

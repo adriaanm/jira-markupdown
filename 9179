@@ -1,5 +1,5 @@
 Reflecting my way to the same conclusions as you reached:
-{code}
+```scala
 scala> :power
 Already in power mode.
 
@@ -22,11 +22,10 @@ res62: Boolean = true
 
 scala> aSym.owner
 res63: u.Symbol = method id
-{code}
+```
 
 I was also unable to poke a soundness hole:
-
-{code}
+```scala
 object Foo {
   trait A { trait X { type A; def f(a: A); val a: A }; def X: X };
   object i extends A { object X extends super.X { type A = Int; def f(a: Int) = (); val a = 0 } };
@@ -41,8 +40,8 @@ object Foo {
   // required: _31.A where val _31: a.X
   //            id(i : A).f(id(s : A).a)
 }
-{code}
+```
 
-This commit to {{InstantiateDependentMap}} is work a look:
+This commit to `InstantiateDependentMap` is work a look:
 
   https://github.com/scala/scala/commit/b40f4ba322

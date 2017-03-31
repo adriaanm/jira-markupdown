@@ -1,18 +1,16 @@
 The secondary problem (spurious errors in subsequent compilation unit) were due to an uncleared error buffer in the context.
 
 Code like:
-
-{code}
+```scala
 context.condBufferFlush(_.kind != ErrorKinds.Divergent)
-{code}
+```
 
 is surely involved.
 
 But I didn't find a way to trigger that problem without this bug.
 
 For posterity, the reproduction is:
-
-{noformat}
+```
 % git checkout v2.11.0-M1-76-ga2a37ed
 % cat test/files/pos/t6966.scala
 import Ordering.{Byte, comparatorToOrdering}
@@ -54,4 +52,4 @@ test/files/pos/t6966b.scala:3: warning: a pure expression does nothing in statem
           ^
 one warning found
 two errors found
-{noformat}
+```

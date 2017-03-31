@@ -9,7 +9,7 @@ I checked right-click-Project > Properties > Scala Compiler Properties to get.  
 [[Image(ScalaSettings.png)]]
 
 I checked build.xml (also available at [https://projectfortress.sun.com/Projects/Community/browser/trunk/ProjectFortress/build.xml build.xml] ) , and it looks very ordinary to me, too:
-{code}
+```scala
   <target name="compileAll" depends="compileCommon, makeAST, parser, operatorsGen"
           description="Compile all Fortress code.">
     <scalac
@@ -38,11 +38,10 @@ I checked build.xml (also available at [https://projectfortress.sun.com/Projects
       <exclude name="${unicodePackage}/*.java"/>
     </javac>
   </target>
-{code}
+```
 
 And the Eclipse error log, would that be workspace/.metadata/.log ?  I triggered a rebuild (Project > Clean...) and no new entries appeared.
 
 I have a minor theory, and it is that there is something different about the search paths or scope being used to compile within Eclipse, vs outside.  Superficially, the errors being reported are in fact correct, but they are not reported by the compiler, presumably because it has some additional disambiguating context (I am NOT a Scala expert).  Is there any way to get at that information?
 
 And barring that, are there any Scala plugins for any other IDEs that might work better?
-

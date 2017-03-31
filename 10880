@@ -1,14 +1,13 @@
 EDIT: the below is wrong (and I should be commenting on the other ticket, but I got pre-empted so let me brain dump), the bounds seen in this line: `          val repl = if (variance.isPositive) dropSingletonType(tp1.bounds.hi) else tp1.bounds.lo` are wrong already 
 
-I've been poking around here a bit as well, which made me circle back to the hack in SI-4365.
+I've been poking around here a bit as well, which made me circle back to the hack in scala/bug#4365.
 Ugh. Looks like the root cause of the symbol mismatch over there is TypeMaps going off the rails:
-
-{code}
+```scala
       case PolyType(tparams, result) =>
         val tparams1 = flipped(mapOver(tparams))
         val result1 = this(result)
         if ((tparams1 eq tparams) && (result1 eq result)) tp
         else PolyType(tparams1, result1.substSym(tparams, tparams1))
-{code}
+```
 
 The problem is that `result` is a type that correctly refers to `tparams`, but this connection is lost when `tparams1` and `result1` are transformed separately, so that by the time we do `result1.substSym(tparams, tparams1)`, the symbols in `tparams` no longer occur in `result1`.

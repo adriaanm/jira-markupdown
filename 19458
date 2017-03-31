@@ -1,4 +1,4 @@
-{code}
+```scala
 import scala.annotation.varargs
 
 abstract class VarargAbstractClass {
@@ -8,17 +8,16 @@ abstract class VarargAbstractClass {
 class ClassImplementsClass extends VarargAbstractClass {
   override def x(els: String*): Int = els.length
 }
-{code}
+```
 
-fails with an {{AbstractMethodError}} when the method is called from Java like this:
-
-{code}
+fails with an `AbstractMethodError` when the method is called from Java like this:
+```scala
 VarargAbstractClass i = new ClassImplementsClass();
 i.x("a", "b", "c");
-{code}
+```
 
 See more examples in this file:
 
 https://github.com/jrudolph/scala-broken-java-varargs/blob/master/src/test/java/example/Test.java
 
-I first thought that this was related to SI-1459 but I know think it is a separate issue. It seems the main problem is that the forwarder in {{VarargAbstractClass}} is created as {{abstract}} because in Uncurry flags from the original method are just copied to the forwarder method. Clearing the {{DEFERRED}} flag for the forwarder method seems to fix this issue for me (but I didn't run the complete test suite to look for other problems).
+I first thought that this was related to scala/bug#1459 but I know think it is a separate issue. It seems the main problem is that the forwarder in `VarargAbstractClass` is created as `abstract` because in Uncurry flags from the original method are just copied to the forwarder method. Clearing the `DEFERRED` flag for the forwarder method seems to fix this issue for me (but I didn't run the complete test suite to look for other problems).

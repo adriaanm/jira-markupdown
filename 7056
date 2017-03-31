@@ -2,8 +2,7 @@ I'm pretty sure this is to blame.
  https://github.com/scala/scala/commit/b7b81ca2
 
 At least this example compiles with that reverted (actually, just with this line https://github.com/scala/scala/commit/b7b81ca2#L0L567):
-
-{code}
+```scala
 
 trait FM[A] {
   def map(f: A => Any)
@@ -17,13 +16,12 @@ object test {
   def kaboom(xs: M[_]) = xs map (x => ()) // missing parameter type.
 
 }
-{code}
+```
 
-Without this, {{M#map}} does not match {{FM#map}}, as {{A}} gets a different existential symbol.
-
-{code}
+Without this, `M#map` does not match `FM#map`, as `A` gets a different existential symbol.
+```scala
 {(f#7469: A#7103 => Any#3533)Unit#1690}.asSeenFrom(xs#8667.type, trait M#9)
 
 tp1 = (f#8670: _$1#8669 => Any#3533)Unit#1690
 result = (f#8673: _$1#8671 => Any#3533)Unit#1690
-{code}
+```

@@ -1,25 +1,22 @@
 The following compiles, although I think the conversion to type PartialFunction from this anonymous function expression is disallowed (there is no mention in SLS, Section 6.23, Anonymous Functions)
-
-{code}
+```scala
 val g: PartialFunction[Int, Int] = (x => x match { case 2 => 3 })
-{code}
+```
 
 Section 8.5, Pattern Matching Anonymous Functions, introduces the syntax `{case ...}` for defining a PartialFunction. If a Function type is expected, then the expression `{case ...}` is reinterpreted as `x => x match {case ...}`. The strange thing here is that the opposite conversion is happening: a Function expression `x => x match {case ...}` is given, and the compiler is interpreting it as a PartialFunction, `{case ...}`.
 
 Here's another example:
-
-{code}
+```scala
 Seq(1, "a").collect(x => x match { case s: String => s }) // evaluates to Seq(a)
-{code}
+```
 
 If the Function expression gets a little more complicated, the conversion from Function to PartialFunction fails:
-
-{code}
+```scala
 // this compiles
 val g: PartialFunction[Int, Int] = (x: Int) => {x match { case 2 => 3 }}
 
 // this fails; found Function[Int, Int], required PartialFunction[Int, Int]
 val g: PartialFunction[Int, Int] = (x: Int) => {(); x match { case 2 => 3 }}
-{code}
+```
 
 Apologies if I am misunderstanding the Spec.

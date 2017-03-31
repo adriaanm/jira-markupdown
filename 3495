@@ -5,15 +5,14 @@ To me, it's a shame that this behavior is being retained despite all of the effo
 If Buffer is ever made to implement ++ according to the specification, then at that point, developers who depend on the old behavior will have to change their code.  The right time to do that is now, because the change is trivial (change "++" to "++=" or "{ x ++= y; x }" at the very worst), the word is already out that the collections have undergone major changes for 2.8, and developers will be scrutinizing their collection-using code when upgrading to 2.8.
 
 Consider also that the goal of retaining the 2.7 behavior has already been compromised.  While in the trival case of using ++ to append to a ListBuffer works in 2.8, this code produces different results in 2.7 in 2.8:
-
-{code}
+```scala
 import scala.collection.mutable.ListBuffer
 val a = new ListBuffer[Int]
 a ++ List(1, 2, 3)
 val b = a ++ List("a", "b", "c")
 b ++ List(4,5,6)
 b
-{code}
+```
 
 Basically in 2.7 the second-to-last line creates a new collection while in 2.8 it appends to b.
 

@@ -1,7 +1,5 @@
 Nope. See this:
-
-
-{code}
+```scala
 
 object A {
   class C
@@ -22,11 +20,10 @@ object A {
   }
   
 }
-{code}
+```
 
 That compiles. But, if you move the implicit conversion definition to the point after where it's needed, you get an error:
-
-{code}
+```scala
 
 object A {
   class C
@@ -47,9 +44,8 @@ object A {
   implicit def toD(x: C) = new D
   
 }
-{code}
-
-{code}
+```
+```scala
 t5197.scala:11: error: type mismatch;
  found   : A.C
  required: A.D
@@ -57,6 +53,6 @@ t5197.scala:11: error: type mismatch;
   implicit object O extends O(new C) with (D => C) {
                               ^
 one error found
-{code}
+```
 
 So this doesn't have to do with implicit objects per se.

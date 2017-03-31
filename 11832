@@ -1,27 +1,24 @@
 I'm testing with a 2.11.8 snapshot (7a950df664405ff9abe5068f70f6e2e6d586c541), and OpenJDK 1.8.0_66-internal-b01.
 
-Without the {{() => x}}, {{javap}} gives:
-
-{noformat}
+Without the `() => x`, `javap` gives:
+```
 public class scala.reflect.FieldAccessTest$TestClass {
   private final int x;
   ...
   private int x();
   ...
 }
-{noformat}
+```
 
 With it:
-
-{noformat}
+```
   private final int scala$reflect$FieldAccessTest$TestClass$$x;
   ...
   public int scala$reflect$FieldAccessTest$TestClass$$x();
-{noformat}
+```
 
-{{JavaMirrors.fieldToJava()}} is called from {{reflectField()}}, and it calls {{jclazz getDeclaredField expandedName(fld)}} in line 1261:
-
-{code}
+`JavaMirrors.fieldToJava()` is called from `reflectField()`, and it calls `jclazz getDeclaredField expandedName(fld)` in line 1261:
+```scala
 def fieldToJava(fld: TermSymbol): jField = fieldCache.toJava(fld) {
   val jclazz = classToJava(fld.owner.asClass)
   val jname = fld.name.dropLocal.toString
@@ -30,11 +27,10 @@ def fieldToJava(fld: TermSymbol): jField = fieldCache.toJava(fld) {
     case ex: NoSuchFieldException => jclazz getDeclaredField expandedName(fld)
   }
 }
-{code}
+```
 
-Inside {{Class.getDeclaredField()}}, {{Class.searchFields()}} is called and fails to match the expanded name {{scala$reflect$FieldAccessTest$TestClass$$x}} to the interned name on line 2958:
-
-{code}
+Inside `Class.getDeclaredField()`, `Class.searchFields()` is called and fails to match the expanded name `scala$reflect$FieldAccessTest$TestClass$$x` to the interned name on line 2958:
+```scala
 private static Field searchFields(Field[] fields, String name) {
     String internedName = name.intern();
     for (int i = 0; i < fields.length; i++) {
@@ -44,6 +40,6 @@ private static Field searchFields(Field[] fields, String name) {
     }
     return null;
 }
-{code}
+```
 
 Which leads me to believe that the expanded names are not being interned.

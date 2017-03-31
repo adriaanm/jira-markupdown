@@ -1,14 +1,13 @@
 After reading the specs, I'm convinced I should have:
-{code}
+```scala
 TPlus { type T <: Nothing } <:< TPlus { type T <: TPlus {type H <: A} } 
-{code}
+```
 simply because 
-{code}
+```scala
 Nothing <:< TPlus {type H <: A}
-{code}
+```
 but the former does not hold while the latter does, as you can see below.
-
-{code}
+```scala
 package shapelessexperiments
 
 sealed trait Coproduct
@@ -31,6 +30,6 @@ object Bug {
 
   implicitly[TPlus { type H <: A; type T <: TPlus { type H <: Nothing } } <:< TPlus { type H <: A; type T <: TPlus { type H <: B } }]
 }
-{code}
+```
 
 At the very least, dotty agrees with me.

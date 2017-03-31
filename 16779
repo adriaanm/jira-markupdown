@@ -1,6 +1,5 @@
-This pattern is used in {{scala.reflect._}}. I haven't managed to produce a standalone reproduction.
-
-{code}
+This pattern is used in `scala.reflect._`. I haven't managed to produce a standalone reproduction.
+```scala
 $ ./build/quick/bin/scala -unchecked
 Welcome to Scala version 2.10.0-M1-0362-g2fe570291a-2012-02-18 (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_29).
 
@@ -10,12 +9,10 @@ import reflect.mirror._
 scala> object A { def foo(t: Tree) = t.tpe match { case MethodType(_, _) => 0 }} 
 <console>:13: warning: abstract type reflect.mirror.MethodType in type pattern reflect.mirror.MethodType is unchecked since it is eliminated by erasure
        object A { def foo(t: Tree) = t.tpe match { case MethodType(_, _) => 0 }}
-
-{code}
+```
 
 Inspection of the generated code shows that the extractor is being used.
-
-{code}
+```scala
                                                                   ^
 defined module A
 
@@ -48,4 +45,4 @@ public int foo(scala.reflect.api.Trees$Tree);
   LineNumberTable: 
    line 13: 0
 ...
-{code}
+```

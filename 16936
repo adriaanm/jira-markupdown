@@ -4,9 +4,8 @@ Sending a message to a remote actor which cannot be deserialized fails with no e
  # compile and run server.scala under 2.9.1
  # compile and run Client.scala under 2.9.2
 
-You will see that nothing is printed to either stdout or stderr. What is happening is that the serialized form of the {{case object}} message which is being sent by the client has a different {{serialVersionUID}} as that on the server (see [https://issues.scala-lang.org/browse/SI-5697]). This exception should not be swallowed.
-
-{code}
+You will see that nothing is printed to either stdout or stderr. What is happening is that the serialized form of the `case object` message which is being sent by the client has a different `serialVersionUID` as that on the server (see [https://issues.scala-lang.org/browse/SI-5697]). This exception should not be swallowed.
+```scala
 package client
 
 object Client extends App {
@@ -15,17 +14,13 @@ object Client extends App {
   val a = actors.remote.RemoteActor.select(peer, 'test)
   a ! common.TestMsg
 }
-{code}
-
-
-{code}
+```
+```scala
 package common
 
 case object TestMsg
-{code}
-
-
-{code}
+```
+```scala
 package server
 
 object Server extends App {
@@ -43,4 +38,4 @@ object Server extends App {
   val a = new ServerActor
   a.start()
 }
-{code}
+```

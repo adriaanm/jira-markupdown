@@ -1,11 +1,10 @@
-Which is just SI-3452, and is fixed by the almost-there patch of Paul's https://github.com/paulp/scala/commit/c007b7dedb6e769f68dca5ec1898b4eeb616e297
-
-{noformat}
+Which is just scala/bug#3452, and is fixed by the almost-there patch of Paul's https://github.com/paulp/scala/commit/c007b7dedb6e769f68dca5ec1898b4eeb616e297
+```
 scala> classOf[MyAbstractTraversable].getMethod("tail")
 res0: java.lang.reflect.Method = public java.lang.Object MyAbstractTraversable.tail()
 
 scala> classOf[MyAbstractTraversable].getMethod("tail").toGenericString
 res1: String = public java.lang.Object MyAbstractTraversable.tail()
-{noformat}
+```
 
-I think I finally understand Paul's assertion that "we need more bridges". Rather than making the weakening generic signature to meet the erasure to {{Object}} we could (should?) sharpen the erasure of {{tail}} to {{Traversable}}, in the process installing a bridge for the covariant override. Currently, bridges are only added in the erasure phase, so later phases (importantly: mixin) are restricted to generating signatures that exactly match the overriden signature.
+I think I finally understand Paul's assertion that "we need more bridges". Rather than making the weakening generic signature to meet the erasure to `Object` we could (should?) sharpen the erasure of `tail` to `Traversable`, in the process installing a bridge for the covariant override. Currently, bridges are only added in the erasure phase, so later phases (importantly: mixin) are restricted to generating signatures that exactly match the overriden signature.

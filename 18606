@@ -1,6 +1,5 @@
 I had the following code:
-
-{code}
+```scala
 package mytest
 
 import scala.concurrent.Future
@@ -11,11 +10,10 @@ package object another {
     def fold = ""
   }
 }
-{code}
+```
 
 It resulted in a compiler crash (logged on the console). It is non-deterministic, and it probably has to do with an unfortunate ordering of forcing symbols.
-
-{code}
+```scala
 2013-10-29 10:50:42,469 DEBUG [main] - ProjectPartListener - open package.scala
 [package.scala]: exception during background compile: java.lang.AssertionError: assertion failed: not found: FutureOps in package package Scope{
   def <init>: <?>
@@ -74,4 +72,4 @@ java.lang.AssertionError: assertion failed: not found: FutureOps in package pack
 	at scala.collection.TraversableLike$WithFilter.foreach(TraversableLike.scala:771)
 	at scala.tools.nsc.interactive.Global.backgroundCompile(Global.scala:497)
 	at scala.tools.nsc.interactive.PresentationCompilerThread.run(PresentationCompilerThread.scala:25)
-{code}
+```

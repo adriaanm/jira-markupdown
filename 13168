@@ -1,6 +1,5 @@
 given (note that this only happens when Foo's T parameter is instantiated to Object.. extending Foo<String> does not trigger this bug)
-
-{code}
+```scala
 package test;
 
 class Foo<T> {
@@ -14,11 +13,10 @@ class Bar extends Foo<Object> { // only goes wrong for Object
 
   public void foo(Object a) { }
 }
-{code}
+```
 
 and 
-
-{code}
+```scala
 package test
 
 object Test {
@@ -26,11 +24,10 @@ object Test {
   // crafted to produce a more meaningful error message
   val f: Nothing => Unit = (new Bar).foo 
 }
-{code}
+```
 
 The compiler (2.7.0-RC2) complains as follows:
-
-{code}
+```scala
 error: type mismatch;
  found   : Any
  required: java.lang.Object
@@ -45,4 +42,4 @@ match expected type (Nothing) => Unit
   val f: Nothing => Unit = (new Bar).foo // should compile, as no overloading should occur
                                      ^
 two errors found
-{code}
+```

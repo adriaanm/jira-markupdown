@@ -1,6 +1,5 @@
-The same problem applies to {{Map\[A,B\]}}:
-
-{code}
+The same problem applies to `Map\[A,B\]`:
+```scala
 scala> val m = Map[Int,Int]().withDefaultValue(42)
 m: scala.collection.immutable.Map[Int,Int] = Map()
  
@@ -12,8 +11,8 @@ res11: Option[Int] = None
  
 scala> m.isDefinedAt(5)
 res12: Boolean = false
-{code}
+```
 
-This seems pretty serious -- currently, if I write a function accepting {{Map}}, I have no airtight way to know if map(v) is defined or not.  If it has a default value set, then map.get(v) and map.isDefinedAt(v) are effectively lying to me.  However, if I just invoke map(v), and there is no default set, then I am open to throwing an exception.
+This seems pretty serious -- currently, if I write a function accepting `Map`, I have no airtight way to know if map(v) is defined or not.  If it has a default value set, then map.get(v) and map.isDefinedAt(v) are effectively lying to me.  However, if I just invoke map(v), and there is no default set, then I am open to throwing an exception.
 
 The only way to work around this is to enclose my map access in side a try/catch.

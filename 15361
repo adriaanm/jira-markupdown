@@ -1,8 +1,7 @@
 Use of sequence extractors in a particular order induces an incorrect match.  The test case below fails under 2.8.0.RC2, but works correctly under 2.7.7
 
 Here is the test case:
-
-{code}
+```scala
 case class Wrapper(list: List[String]) {
   def check(pf: PartialFunction[Wrapper,Any]) {
     if (pf.isDefinedAt(this)) pf(this)
@@ -45,11 +44,10 @@ Wrapper(List("a", "b")) match {
   case Unwrap("c", "d") => assert(false, "c, d")
   case Unwrap("e") => assert(false, "e")
 }
-{code}
+```
 
 And here is the interpreter transcript:
-
-{code}
+```scala
 Welcome to Scala version 2.8.0.RC2 (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_20).
 Type in expressions to have them evaluated.
 Type :help for more information.
@@ -148,4 +146,4 @@ java.lang.AssertionError: assertion failed: e
 	at scala.tools.nsc.Interpreter$$Request$$$$anonfun$$loadAndRun$$1$$$$anonfun$$apply$$18.apply(Interpreter.scala:984)
 	at scala.util.control.Exc...
 scala> 
-{code}
+```

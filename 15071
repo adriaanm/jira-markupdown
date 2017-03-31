@@ -1,15 +1,15 @@
 given the following script with a syntax error:
-{code}
+```scala
   ~> cat S.scala
 #!/bin/sh
 exec scala $$0 $$@
 !#
 
 xxx
-{code}
+```
 
 the 2.7.7 script runner reports the error correctly:
-{code}
+```scala
   ~> /usr/local/scala-2.7.7.final/bin/scala S.scala
 (fragment of S.scala):2: error: not found: value xxx
 xxx
@@ -17,15 +17,15 @@ xxx
 one error found
 !!!
 discarding <script preamble>
-{code}
+```
 
 but the 2.8.0.Beta1 script runner just hangs:
-{code}
+```scala
   ~> /usr/local/scala-2.8.0.Beta1-prerelease/bin/scala S.scala
-{code}
+```
 
 requesting a stack trace from the hung VM results in this:
-{code}
+```scala
 "main" prio=5 tid=0x0000000102800800 nid=0x100501000 runnable [0x00000001004ff000]
    java.lang.Thread.State: RUNNABLE
 	at java.net.SocketInputStream.socketRead0(Native Method)
@@ -60,6 +60,6 @@ requesting a stack trace from the hung VM results in this:
 	at scala.tools.nsc.ScriptRunner$$.runScript(ScriptRunner.scala:353)
 	at scala.tools.nsc.MainGenericRunner$$.main(MainGenericRunner.scala:161)
 	at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
-{code}
+```
 
 it seems to be hung expecting further input.

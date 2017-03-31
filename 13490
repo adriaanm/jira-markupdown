@@ -3,8 +3,7 @@ MSIL version of Scala.
 I’ve run into this problem in a few different contexts. Basically it seems that in many circumstances, the default element-equality algorithm for collections wants to turn the elements into integers-- and then fails when it cannot parse string elements as ints.
 
 For example:
-
-{code}
+```scala
 import scala.collection.immutable.HashSet
 
 object MapBug extends Application {
@@ -16,11 +15,10 @@ object MapBug extends Application {
 	var buggy = Set[String]("A", "B")
 	println("contains(B) == " + buggy.contains("B"))	
 }
-{code}
+```
 
 Outputs:
-
-{code}
+```scala
 contains(A) == True
 
 Unhandled Exception: System.TypeInitializationException: An exception was thrown by the type initializer for MapBug$$ ---> System.FormatException: Input string was not in the correct format
@@ -46,8 +44,7 @@ Unhandled Exception: System.TypeInitializationException: An exception was thrown
   at MapBug$$..cctor () [0x00000] --- End of inner exception stack trace ---
 
   at <Module>.Main (System.String[] args) [0x00000] 
-{code}
+```
 
 scalac-net -version
 Scala compiler version 2.7.1.final -- Copyright 2002-2008, LAMP/EPFL
-

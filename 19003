@@ -3,8 +3,7 @@ The source code is below. Additionally, I made a git repo to reproduce the probl
  I am running Scala 2.10.4. I have the following library dependency: "com.typesafe.scala-logging" % "scala-logging-slf4j_2.11.0-RC3" % "2.0.0"
 
 When I used the 2.10 version of scala-logging, I cannot reproduce this scala.MatchError. But it is reproducible when using the scala-logging for 2.11.0-RC3. 
-
-{code}
+```scala
 import com.typesafe.scalalogging.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -12,11 +11,10 @@ trait Crash {
   lazy val logger = Logger(LoggerFactory.getLogger("example.Crash"))
   logger.error("oops")
 }
-{code}
+```
 
 And the error:
-
-{code}
+```scala
 [error]
 [error]      while compiling: /Users/alissapajer/compilercrash/src/main/scala/example/crash.scala
 [error]         during phase: typer
@@ -183,4 +181,4 @@ scala.MatchError: false (of class scala.reflect.internal.Trees$Literal)
 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:615)
 	at java.lang.Thread.run(Thread.java:724)
 [error] (compile:compile) scala.MatchError: false (of class scala.reflect.internal.Trees$Literal)
-{code}
+```

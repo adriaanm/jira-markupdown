@@ -1,5 +1,5 @@
 It's undoubtedly a bug. I am now trying to find out how serious it is. Note that Paul's example is slightly off wrt situation with Range. Here is a more accurate rendition:
-{code}
+```scala
 package scala
 
 import annotation.bridge
@@ -17,16 +17,15 @@ object Test {
   def main(args: Array[String]) = {
     println(new B().f())  }
 }
-{code}
+```
 If I run this under java version "1.6.0_24" on MacOS, everything runs as it should:
-{code}
+```scala
 /Users/odersky/workspace/scala/test/files/new> java -verify scala.Test
 scala.A@28bb0d0d
-{code}
+```
 Note that the bridge method was not called, but the original method in A was called instead.
 
 If I would compile with an old binary that did refer to the bridge method signature directly, I would indeed get a VerifyError. So, we know for certain that bridge methods in Range are ineffective (without them you got a MissingMethodError, now you get a VerifyError, makes no practical difference).
 
 But now I ask myself: Why did the bridge method not get verified, whereas in the original example it did? What's different between by setting and tomcats? Does tomcat somehow do different verification than java, or does Ismaels WAR contain some 2.8 code that calls the bridge method? In the first case, the error would be very serious, so that we'd have to put out a patch quickly. 
-
 

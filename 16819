@@ -1,6 +1,5 @@
 Here's the test case:
-
-{code}
+```scala
 import scala.{specialized => spec}
 class C[@spec(Int) A](a:A) {
   lazy val b = (a, a)
@@ -12,21 +11,19 @@ object Test {
     println(new C(3.0).c)
   }
 }
-{code}
+```
 
 Expected output:
-
-{code}
+```scala
 (3,3)
 (3.0,3.0)
-{code}
+```
 
 Actual output:
-
-{code}
+```scala
 null
 (3.0,3.0)
-{code}
+```
 
 The problem seems to be that the specialized subclass doesn't get its own bitmap... it just assumes its lazy val field has already been initialized. I'm not really an expert on lazy val, but barring deeper changes (e.g. not duplicating vals between generic class and specialized subclass) I think we need to copy the bitmask and the code in b that checks it.
 

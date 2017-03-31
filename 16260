@@ -1,24 +1,24 @@
 If I annotate a class in scala, using a annotation defined in java with RetentionPolicy.CLASS, the annotation is retained at runtime.
 
 Here's a typical example using Peter Kriens' annotations for OSGi:
-{code}
+```scala
 @aQute.bnd.annotation.component.Component class MyComp
-{code}
+```
 
 If I launch the REPL with my class in the classpath, but without the definition of the annotation, and I simply try to instantiate the class, I get the following error:
-{code}
+```scala
 scala> val c = new MyComp
 error: error while loading MyComp, Missing dependency 'class aQute.bnd.annotation.component.Component', required by ./MyComp.class
 <console>:5: error: MyComp does not have a constructor
        val c = new MyComp
-{code}
+```
 
 And if I use Peter Kriens' class dump utility, it shows the following information:
-{code}
+```scala
 2: attribute                   RuntimeVisibleAnnotations(#16)
 2: Number of annotations       2
 2: type                        LaQute/bnd/annotation/component/Component;(#12)2: num_element_value_pairs     0
 2: type                        Lscala/reflect/ScalaSignature;(#13)2: num_element_value_pairs     1
-{code}
+```
 
 This is very problematic in an OSGi environment where the package should not even need to be imported. 

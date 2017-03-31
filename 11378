@@ -1,6 +1,5 @@
-Making {{filterImpl}} non-private in [PR #3949|https://github.com/scala/scala/pull/3949] was indeed not binary compatible. The problem is that making a trait method non-private changes its calling convention. Here's an example:
-
-{code}
+Making `filterImpl` non-private in [PR #3949](https://github.com/scala/scala/pull/3949) was indeed not binary compatible. The problem is that making a trait method non-private changes its calling convention. Here's an example:
+```scala
 trait Tl {
   private def f1Impl = 0
   def f1 = f1Impl
@@ -10,13 +9,12 @@ trait Tl {
 }
 
 class Mp extends Tl
-{code}
+```
 
-The point is that the invocation of {{f1Impl}} is statically known. So the compiler optimizes it and directly invokes the static method {{f1Impl}} in the trait implementation class {{Tl$class}}.
+The point is that the invocation of `f1Impl` is statically known. So the compiler optimizes it and directly invokes the static method `f1Impl` in the trait implementation class `Tl$class`.
 
-Method {{f2Impl}} on the other hand may be overwritten in subclasses of {{Tl}}, therefore the invocation is compiled as an invoke-interface of the method {{f2Impl}} in interface {{Tl}}. In the subclass {{Mp}}, a mixin is generated for {{f2Impl}}.
-
-{noformat}
+Method `f2Impl` on the other hand may be overwritten in subclasses of `Tl`, therefore the invocation is compiled as an invoke-interface of the method `f2Impl` in interface `Tl`. In the subclass `Mp`, a mixin is generated for `f2Impl`.
+```
 
 public abstract interface p/Tl {
   // NOTE: f1Impl is missing - it's private!
@@ -43,6 +41,6 @@ public class p/Mp implements p/Tl  {
   public f2Impl()I
   public f2()I
 }
-{noformat}
+```
 
-The manifestation: subclasses of TraversableLike compiled with 2.11.2 don't have a mixin for {{filterImpl}}, but the standard library of 2.11.3 invokes the interface method.
+The manifestation: subclasses of TraversableLike compiled with 2.11.2 don't have a mixin for `filterImpl`, but the standard library of 2.11.3 invokes the interface method.

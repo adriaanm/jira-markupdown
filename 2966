@@ -1,6 +1,6 @@
 OK, I see what you're saying and the covariance aspects was bothering me, and the erasure fix was just what I did.  However I'm still not able to wrap my head around why the match has to return Any.  There are only two non-exceptional cases:
-{code}
+```scala
       case x: Array[Int]    => x(0)
       case x: Array[Double] => 5
-{code}
+```
 If it's meaningful to match on "Array[Int]" (as opposed to it simply meaning Array[_]) then the only types that match can produce are Int or Nothing.  Regardless of the class type parameter, regardless of what the scrutinee even is.  I was operating under the belief that now that arrays are real arrays, such a match should (unlike say List[Int]) actually mean a native int array.  So is that not the case? One of my premises must be wrong?

@@ -1,6 +1,5 @@
 It would be nice if the following worked:
-
-{code}
+```scala
 scala>  def foo[T](implicit clazz : Class[T]) = clazz
 foo: [T](implicit Class[T])Class[T]
 
@@ -8,14 +7,13 @@ scala> foo[String]
 <console>:6: error: no implicit argument matching parameter type Class[String] was found.
        foo[String]
        ^
-{code}
+```
 
 i.e. if we had magic compiler support that made the concrete class object for Class[T] available implicitly.
 
 In particular this could then change classOf from compiler magic to the following in predef:
-
-{code}
+```scala
   def classOf[T](implicit clazz : Class[T]) = clazz;
-{code}
+```
 
 Which would mean that this would now work as a normal method.

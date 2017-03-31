@@ -1,7 +1,7 @@
-From [Constructors.scala#L269|https://github.com/scala/scala/blob/b79c0d124e839e9e7ae5db883488c0134642472b/src/compiler/scala/tools/nsc/transform/Constructors.scala#L269] it looks like {{outerField}} is never given a {{SYNTHETIC}} flag. Also, looking a bit through the history of this Transformer, it doesn't seem to have ever been applying {{SYNTHETIC}} on that field unlike what you'd find in {{ExplicitOuter}}.
+From [Constructors.scala#L269](https://github.com/scala/scala/blob/b79c0d124e839e9e7ae5db883488c0134642472b/src/compiler/scala/tools/nsc/transform/Constructors.scala#L269) it looks like `outerField` is never given a `SYNTHETIC` flag. Also, looking a bit through the history of this Transformer, it doesn't seem to have ever been applying `SYNTHETIC` on that field unlike what you'd find in `ExplicitOuter`.
 
-However, the syntax tree for the example provided seems to generate a {{<synthetic>}} {{Outer$delayedInit$body}}, which in turn contains the {{$outer}} which is not marked {{<synthetic>}} as shown below:
-{code}
+However, the syntax tree for the example provided seems to generate a `<synthetic>` `Outer$delayedInit$body`, which in turn contains the `$outer` which is not marked `<synthetic>` as shown below:
+```scala
 package <empty> {
   class Outer extends Object with DelayedInit {
     private[this] val code: scala.collection.mutable.ListBuffer = _;
@@ -36,4 +36,4 @@ package <empty> {
     }
   }
 }
-{code}
+```

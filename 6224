@@ -1,5 +1,5 @@
 Among the many problems we find here is that making J public changes the behavior: in that case compiling against source or bytecode it is the same, it rejects it either way.
-{noformat}
+```
 % scalac3 s/s.scala j/J.java 
 s/s.scala:6: error: class JavaInnerClass in class J cannot be accessed in j.J
  Access to protected class JavaInnerClass not permitted because
@@ -8,11 +8,11 @@ s/s.scala:6: error: class JavaInnerClass in class J cannot be accessed in j.J
   override def method(javaInnerClass: J#JavaInnerClass) {
                                         ^
 one error found
-{noformat}
+```
 So in other words, in order for ScalaSubClass to refer to J#JavaInnerClass, the access has to be  made MORE restrictive.  So that's obviously a bug too.
 
 The only thing that makes sense from my point of view is to allow an access-restricted java-defined inner class to be referenced from any subclass or other class with access if the given prefix is the java class inside which it was defined.  Otherwise you can easily run into situations where you e.g. can't override a method because you can't refer to the parameter type, as shown here.
 
 I'm not sure what good it does to have vigilant enforcement of access restrictions on when and how you refer, just refer, to types.  There are other variations on the theme where you can't override something because you're not allowed to express the type of the thing you're overriding, even though you have access due to subclassing.  Or you can override it, but because you aren't allowed to say the type, you can't preserve the existing access restrictions; or, you are forced to let the expression type be inferred when you wanted to express something less precise but couldn't.
 
-See also: SI-1352, SI-1994, SI-1800, SI-3272, SI-1469.
+See also: scala/bug#1352, scala/bug#1994, scala/bug#1800, scala/bug#3272, scala/bug#1469.

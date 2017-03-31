@@ -1,4 +1,4 @@
-{code}
+```scala
 object Test {
   // this works.
   trait A { def f (): Unit }
@@ -13,16 +13,16 @@ object Test {
     new D with C { }
   }
 }
-{code}
+```
 The error is this:
-{code}
+```scala
 // java.lang.VerifyError: class Main$$C overrides final method wait.()V
 //  at java.lang.ClassLoader.defineClass1(Native Method)
 //  at java.lang.ClassLoader.defineClassCond(ClassLoader.java:632)
 //  at java.lang.ClassLoader.defineClass(ClassLoader.java:616)
-{code}
+```
 This may just be a jvm limitation for methods defined in Object, because the bytecode for C looks pretty innocuous.
-{code}
+```scala
 public abstract void wait();
-{code}
+```
 But if interfaces are treated like classes and Object is an assumed parent, I can see why it would consider that interface unacceptable.  In which case we need to catch such declarations at compile time.

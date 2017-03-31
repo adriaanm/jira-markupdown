@@ -1,14 +1,14 @@
 Note that without the second parameter to Unravel, this is correctly failed in 2.10 (but not in 2.9.)
-{code}
+```scala
 a.scala:11: error: type mismatch;
  found   : Contra[Nothing]
  required: Contra[Any]
     case Unravel(m) => g(m)
                          ^
 one error found
-{code}
+```
 But with it:
-{code}
+```scala
 trait Covariant[+A]
 trait Contra[-A] { def accept(p: A): Unit }
 trait Invariant[A] extends Covariant[A] with Contra[A]
@@ -31,4 +31,4 @@ object Test extends Covariant[Any] {
 //   at Test$.f(a.scala:15)
 //   at Test$.main(a.scala:18)
 //   at Test.main(a.scala)
-{code}
+```

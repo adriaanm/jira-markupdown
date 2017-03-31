@@ -1,13 +1,13 @@
 Mmm, that's pretty spectacularly broken.  It's been like that forever too.
 
 Simpler reproduction:
-{code}
+```scala
 scala> case class Fn[A, B](f: A => B) ; def f(x: Any) = x match { case Fn(f) => f(5) } ; f(Fn((x: String) => x))
 java.lang.ClassCastException: java.lang.Integer cannot be cast to java.lang.String
 	at $anonfun$1.apply(<console>:12)
 	at .f(<console>:10)
 	at .<init>(<console>:12)
-{code}
+```
 
 I think the inferred type should be Fn[Nothing => Any] and instead is inferring Fn[Any => Any], which of course means it's telling itself that it can be applied to anything.  The contravariant parameter is not flipping the flippy bits.
 

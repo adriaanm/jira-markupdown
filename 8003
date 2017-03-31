@@ -1,14 +1,13 @@
 You need to provide some evidence they are not equivalent types.  They look equivalent to me.
-
-{code}
+```scala
 scala> def f(xs: List[_]): List[Any] = xs
 f: (xs: List[_])List[Any]
 
 scala> def f(xs: List[Any]): List[_] = xs
 f: (xs: List[Any])List[_]
-{code}
+```
 Maybe you are not accounting for variance.
-{code}
+```scala
 scala> def f(xs: Set[_]): Set[Any] = xs
 <console>:7: error: type mismatch;
  found   : Set[_$1] where type _$1
@@ -22,4 +21,4 @@ scala> implicitly[Set[Any] =:= Set[_]]
 <console>:8: error: Cannot prove that Set[Any] =:= Set[_].
               implicitly[Set[Any] =:= Set[_]]
                         ^
-{code}
+```

@@ -3,8 +3,7 @@ Okay, I think I understand the overloading resolution. Predef.conforms returns a
 The change in Predef to return a (A <:< A) from conforms solves other problems, but there is no way to be backwards compatible without a special case in the compiler.
 
 I played around with this some more and found a few more unexplained phenomona -- see the inline comments below.
-
-{code}
+```scala
 object test1 {
   implicit def s2s(s: String): String = "s2s"
   assert(implicitly[String => String].apply("foo") == "foo")
@@ -43,4 +42,4 @@ object test3 {
     assert(implicitly[String => String].apply("foo") == "s2s")
   }
 }
-{code}
+```

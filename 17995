@@ -1,17 +1,17 @@
-In Types.scala we have the following [code|https://github.com/scala/scala/blob/bafebe1c161f8db0be758c30fe5cc51082a56427/src/reflect/scala/reflect/internal/Types.scala#L7157]:
-{code}
+In Types.scala we have the following [code](https://github.com/scala/scala/blob/bafebe1c161f8db0be758c30fe5cc51082a56427/src/reflect/scala/reflect/internal/Types.scala#L7157):
+```scala
   Statistics.newView("#unique types") { if (uniques == null) 0 else uniques.size }
-{code}
+```
 
-Let's have a closer look at [{{Statistics.newView}}|https://github.com/scala/scala/blob/bafebe1c161f8db0be758c30fe5cc51082a56427/src/reflect/scala/reflect/internal/util/Statistics.scala#L88]:
-{code}
+Let's have a closer look at [{{Statistics.newView}}](https://github.com/scala/scala/blob/bafebe1c161f8db0be758c30fe5cc51082a56427/src/reflect/scala/reflect/internal/util/Statistics.scala#L88):
+```scala
 def newView(prefix: String, phases: String*)(quant: => Any): View = new View(prefix, phases, quant)
-{code}
+```
 
-As you can see {{newView}} takes by-name argument (that in our case closes over the whole Global) and passes it to {{View}}.
+As you can see `newView` takes by-name argument (that in our case closes over the whole Global) and passes it to `View`.
 
-The {{View}} class inherits from Quantity that is defined as follows:
-{code}
+The `View` class inherits from Quantity that is defined as follows:
+```scala
   trait Quantity {
     if (prefix.nonEmpty) {
       val key = s"${if (underlying != this) underlying.prefix else ""}/$prefix"
@@ -24,6 +24,6 @@ The {{View}} class inherits from Quantity that is defined as follows:
     def line = f"$prefix%-30s: ${this}"
     val children = new mutable.ListBuffer[Quantity]
   }
-{code}
+```
 
-So we register {{this}} in global (defined in top-level object) HashMap stored in variable {{qs}}. The consequence is that even if you don't use Global it'll be still hanging there because Statistics holds reference to it. This is a memory leak that I observed while using Scala IDE where Global used for compiling the code was kept around and consumed aroung 0.5GB of heap.
+So we register `this` in global (defined in top-level object) HashMap stored in variable `qs`. The consequence is that even if you don't use Global it'll be still hanging there because Statistics holds reference to it. This is a memory leak that I observed while using Scala IDE where Global used for compiling the code was kept around and consumed aroung 0.5GB of heap.

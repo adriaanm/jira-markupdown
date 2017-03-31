@@ -1,6 +1,5 @@
 Best to show a sample. This was checked against 2.10.x and master
-
-{code}
+```scala
 class Foo[@specialized(Int) A] {
   def barA(a: A): A = barB[A](a)
   def barB[@specialized(Int) B](b: B): B = b
@@ -13,11 +12,10 @@ object Test {
     println(foo.barB(2))
   }
 }
-{code}
+```
 
 Checking javap -verbose Foo, we see that barA$mcI$sp calls its generic counterpart.
-
-{code}
+```scala
 public int barA$mcI$sp(int);
   Code:
    Stack=2, Locals=2, Args_size=2
@@ -34,4 +32,4 @@ public int barA$mcI$sp(int);
 
   LineNumberTable: 
    line 2: 0
-{code}
+```

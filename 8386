@@ -1,5 +1,5 @@
 Going to revert the implementation restriction, because I thought of this, which does work given explicit type application:
-{code}
+```scala
 import scala.language.dynamics
 
 class A extends Dynamic {
@@ -14,5 +14,5 @@ object Test {
     println(x[Int, String](5, "a"))
   }
 }
-{code}
+```
 However, I hope this causes people reconsider whether the overloading-hostile structure of applyDynamic makes sense. I think this shows that it does not. With no way to express a variable-length type parameter list, we have again, following in the footsteps of structural types, created a pseudo-general mechanism which is incapable by design of being used in common situations for which it would otherwise be useful, creating unnecessary surprises and friction. There is no way to write a dynamic method which can receive every application of a method name. You could push the above out to N type parameters, but then there's no way to avoid explicit type application.

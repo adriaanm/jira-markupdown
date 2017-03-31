@@ -1,11 +1,10 @@
 The recursive call to f() below, from inside g(), is not recognized as either happening in tail position or as causing an error, hence producing code consuming an non-constant amount of stack space:
-
-{code}
+```scala
 val foo = false; @tailrec def f(): Int = { if (foo) f() else g() }; def g(): Int = f();
-{code}
-{code}
+```
+```scala
 @tailrec def f[T](l: List[T]): Int = { val v = l match { case Nil => 0; case a :: l1 => g(l1) }; f[T](Nil)}; def g[T](l1: List[T]): Int = f(l1);
-{code}
+```
 
 If you wonder why would one care, the original example is in unificationHelper here — I noticed because of a StackOverflowException:
 

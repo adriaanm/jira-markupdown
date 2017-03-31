@@ -1,11 +1,11 @@
 The following code:
-{code}
+```scala
 object Test {
   def fn[@specialized T, @specialized U](t : T => Int, u : U => Int) : T = null.asInstanceOf[T]
 }
-{code}
+```
 gives the compiler error:
-{code}
+```scala
 src\stream\Test.scala:4: error: double definition:
 method fn$$mDc$$sp:(t: (Double) => Int,u: (Double) => Int)Double and
 method fn$$mDc$$sp:(t: (Double) => Int,u: (Float) => Int)Double at line 4
@@ -13,7 +13,7 @@ have same type after erasure: (t: Function1,u: Function1)Double
   def fn[@specialized T, @specialized U](t : T => Int, u : U => Int) : T = null.asInstanceOf[T]
       ^
 one error found
-{code}
+```
 It compiles fine if the return type is not parametric or the second type parameter is removed.
 
 Tested with Scala compiler version 2.8.0.r21907-b20100512020118.

@@ -1,5 +1,5 @@
 Given classfiles built from these should-be-equivalent scala and java sources:
-{code}
+```scala
 // scala
 package s
 
@@ -15,14 +15,13 @@ public class JFoo<A> {
   public abstract class Bar implements java.util.Iterator<A> { }
   public abstract class SubBar extends Bar { }
 }
-{code}
+```
 
 ...we are given a malformed prefix for java's SubBar, and a correct one for scala's.
-
-{noformat}
+```
 scala> (typeOf[s.Foo[_]] member TypeName("SubBar")).info.parents
 res1: List[$r.intp.global.Type] = List(Foo.this.Bar)
 
 scala> (typeOf[j.JFoo[_]] member TypeName("SubBar")).info.parents
 res2: List[$r.intp.global.Type] = List(j.JFoo[A]#Bar)
-{noformat}
+```

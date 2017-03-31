@@ -1,9 +1,7 @@
 I am using 2.7.1.r15559-b20080717010056.
 
 The following breaks the compiler:
-
-
-{code}
+```scala
 object Test {
   type _0[s[_], z] = z
   type plus[m[s[_], z], n[s[_], z], s[_], z] = n[s, m[s, z]]
@@ -11,13 +9,10 @@ object Test {
   trait Test[T]
   trait Bad[Num[s[_], z], s[_], z] extends Test[Bad[plus[_0, Num, s, z][s, z], s, z]]
 }
-
-{code}
+```
 
 The error I get is:
-
-
-{code}
+```scala
 Exception in thread "main" java.lang.AssertionError: assertion failed: n[s,m[s,z]]
         at scala.Predef$$.assert(Predef.scala:92)
         at scala.tools.nsc.symtab.Types$$TypeRef.transform(Types.scala:1400)
@@ -137,6 +132,6 @@ Exception in thread "main" java.lang.AssertionError: assertion failed: n[s,m[s,z
         at scala.tools.nsc.InterpreterLoop.main(InterpreterLoop.scala:298)
         at scala.tools.nsc.MainGenericRunner$$.main(MainGenericRunner.scala:150)
         at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
-{code}
+```
 
 Also find the offending code as an attachment Test.scala.

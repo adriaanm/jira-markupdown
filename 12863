@@ -1,4 +1,4 @@
-{code}
+```scala
 trait ModularParsers {
   val Parser: ParserCompanion
   
@@ -15,11 +15,10 @@ object Test extends ModularParsers with Application {
  
   Parser.callApply // boom!
 }
-{code}
+```
 
 compiling and running with versions (2.2.0, 2.3.1, 2.3.2, 2.3.3, 2.4.0, 2.4.0-RC1, 2.4.0-RC2, 2.5.0-RC1, 2.5.0-final, 2.5.1-RC1, 2.6.0-RC1, 2.6.0-RC3, 2.6.0-final) consistently (modulo line numbers of course) results in:
-
-{code}
+```scala
 java.lang.AbstractMethodError: Test$$.Parser()LModularParsers$$ParserCompanion;
         at ModularParsers$$ParserCompanion$$class.callApply(parser_absmethod.scala:6)
         at Test$$Parser$$.callApply(parser_absmethod.scala:11)
@@ -35,6 +34,6 @@ java.lang.AbstractMethodError: Test$$.Parser()LModularParsers$$ParserCompanion;
         at scala.tools.nsc.ObjectRunner$$.run(ObjectRunner.scala:74)
         at scala.tools.nsc.MainGenericRunner$$.main(MainGenericRunner.scala:154)
         at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
-{code}
+```
 
 I expected this to run properly.  If an object should not override an abstract val, a compile-time error should be emitted.

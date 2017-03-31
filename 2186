@@ -1,7 +1,7 @@
 bug1001 failed because the existential type that's constructed by  `mergePrefixAndArgs` does not meet the f-bounds.
 
 Compiler output (edited to remove irrelevant stuff -- with printLubs enabled and some diagnostics in mergePrefixAndArgs):
-{code}
+```scala
 lub of List(D, C) at depth 2
   lub of List(D, C) at depth 1
     lub of List(D, C) at depth 0
@@ -17,7 +17,7 @@ lub of List(D, C) is B[_ >: D with C <: B[_ >: D with C <: A]]
   val data: List[A] = List(new C, new D)
                       ^
 one error found
-{code}
+```
 
 Maybe this is the expected behaviour then? Should we focus on providing a better error message and leave mergePrefixAndArgs as it was?
 
@@ -35,4 +35,3 @@ it's interesting that this first type is the unrolling (up to a certain depth) o
 I'm not sure whether this could work, but maybe we could improve mergePrefixAndArgs so that it detects f-bounds (with a more robust check) and then takes the type schema and replaces the type parameters by existentials?
 
 E.g.,  `Foo[T <: Foo[U, U], U <: T]` would become `Foo[A, B] forSome {type A <: Foo[B, B]; type B <: A}`. As a further refinement, we could take the lub and glb of the type arguments that Foo was applied to and add them to the bounds of the type variables of the existential.
-

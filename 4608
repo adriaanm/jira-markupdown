@@ -1,8 +1,8 @@
 I am happy to say that I thought of this case when implementing ##...
-{code}
+```scala
   // Intercept super.## and translate it to this.##
   // which is fine since it's final.
   case Select(sup @ Super(_, _), nme.HASHHASH)  =>
     Select(gen.mkAttributedThis(sup.symbol), Object_##) setType IntClass.tpe
-{code}
+```
 ...and sorry to say it didn't occur to me that previously existing code might need the same handling.  Makes the fix easy enough.

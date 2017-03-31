@@ -1,4 +1,4 @@
-{code}
+```scala
 Welcome to Scala version 2.9.1.final (Java HotSpot(TM) 64-Bit Server VM, Java 1.7.0_02).
 Type in expressions to have them evaluated.
 Type :help for more information.
@@ -22,12 +22,10 @@ scala> f(b)
 res1: Double = -9.223372036854776E18
 
 res1 should be equal to res0 !
-
-{code}
+```
 
 Problem seems to be in the conversion to Long in scala.math.Numeric:
-
-{code}
+```scala
 27	  trait BigIntIsIntegral extends Integral[BigInt] {
 28	    def plus(x: BigInt, y: BigInt): BigInt = x + y
 29	    def minus(x: BigInt, y: BigInt): BigInt = x - y
@@ -41,5 +39,4 @@ Problem seems to be in the conversion to Long in scala.math.Numeric:
 37	    def toFloat(x: BigInt): Float = x.longValue.toFloat
 ======>     def toDouble(x: BigInt): Double = x.longValue.toDouble   <======
 39	  }
-
-{code}
+```

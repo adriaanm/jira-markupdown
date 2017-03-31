@@ -1,6 +1,5 @@
 When both apply() and update() are present and apply() takes a simple parameter and an implicit parameter, shorthand operators like += produce a compile error. See the following example.
-
-{code}
+```scala
 class ImplicitThing
 
 class Foo {
@@ -20,17 +19,16 @@ object TestCase extends App {
   foo(3) = foo(3) + 4  // works
   foo(3) += 4          // <-- compile error
 }
-{code}
+```
 
 The error is as follows.
-
-{noformat}
+```
 ../src/TestCase.scala:18: error: type mismatch;
  found   : ImplicitThing
  required: Int
   foo(3) += 4
      ^
 one error found
-{noformat}
+```
 
 Removing the implicit parameter from apply() fixes the error. It doesn't matter whether update() has the implicit parameter. Also, the version with type parameters works for some reason. All cases behaved the same with both 2.9.1 and 2.10.0 RC2.

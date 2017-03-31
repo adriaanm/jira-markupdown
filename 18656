@@ -1,6 +1,5 @@
 A call of an applyDynamic method has wrong positions:
-
-{code}
+```scala
 object X {
   val d = new D
   d.method(10)
@@ -10,13 +9,12 @@ import language.dynamics
 class D extends Dynamic {
   def applyDynamic(name: String)(value: Any) = name
 }
-{code}
+```
 
-Compiled with {{scalac -Yrangepos -Xprint-pos -Xprint:typer -Ystop-after:typer x.scala}}:
-
-{code}
+Compiled with `scalac -Yrangepos -Xprint-pos -Xprint:typer -Ystop-after:typer x.scala`:
+```scala
     [29:41][29:30][29:30][29]X.this.d.applyDynamic([29]"method")([38:40]10);
     [44:49]<44:45><44:45>[44]X.this.d.applyDynamic(<44:45>"apply")([46:48]10)
-{code}
+```
 
-where {{\[29]}} in the first line is not correct.
+where `\[29]` in the first line is not correct.

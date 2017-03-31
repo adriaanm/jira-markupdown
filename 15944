@@ -1,5 +1,5 @@
 === What steps will reproduce the problem ===
-{code}
+```scala
 scala> def f[A: Manifest](a: A) = java.util.Arrays.asList(Array(a): _*)
 f: [A](a: A)(implicit evidence$$1: Manifest[A])java.util.List[A]
 
@@ -8,19 +8,18 @@ res0: java.util.List[java.lang.String] = []
 
 scala> f(0)
 java.lang.ClassCastException: [I cannot be cast to [Ljava.lang.Object;
-{code} 
+```
 
 === What is the expected behavior? ===
 
-Box primitives into an Array[Object], as per SI-3304 / r21981.
-
-{code}
+Box primitives into an Array[Object], as per scala/bug#3304 / r21981.
+```scala
 scala> java.util.Arrays.asList(Array(0): _*)
 res17: java.util.List[Int] = r0
 
 scala> res17.asInstanceOf[java.util.List[_ <: AnyRef]].get(0).getClass
 res18: java.lang.Class[_] = class java.lang.Integer
-{code}
+```
 
 === What do you see instead? ===
 
@@ -30,8 +29,7 @@ res18: java.lang.Class[_] = class java.lang.Integer
 (for instance, a link to a relevant mailing list discussion)
 
 No probs with Scala varargs:
-
-{code}
+```scala
 scala> def g[A](a: A*) = ()
 g: [A](a: A*)Unit
 
@@ -41,7 +39,7 @@ h: [A](a: A)(implicit evidence$$1: Manifest[A])Unit
 scala> h("")
 
 scala> h(0)
-{code}
+```
 
 === What versions of the following are you using? ===
   - Scala: 2.8.1, 2.9.0.r24145-b20110130020134

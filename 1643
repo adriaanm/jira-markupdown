@@ -1,8 +1,7 @@
 I have never run Scala except from our ant build script or from Eclipse, so some hand-holding will be required.
 
 I attempted to redirect the ant file to use the .jar files from the Eclipse plugins directory, the build succeeded (or at least, it pretended to succeed) and the verify error did not recur when I reran the command. However, when I attempted to "clean the cache" (we have caches) to ensure a rebuild, it failed like so:
-
-{code}
+```scala
 dr2chase:ProjectFortress dr2chase$$ ant cleanCache
 Using JAVACMD="/usr/bin/java"
 Using ANT_OPTS="-Xmx256m -Xss8m"
@@ -13,8 +12,7 @@ BUILD FAILED
 jar:file:/Applications/eclipse-3.4.1/plugins/scala.tools.nsc_2.8.0.r17250-b20090306020955.jar!/scala/tools/ant/antlib.xml:5: taskdef A class needed by class scala.tools.ant.FastScalac cannot be found: scala/ScalaObject
 
 Total time: 0 seconds
-{code}
+```
 This indicates that my substitution is not necessarily up to snuff.
 
 So there you are, I've done what I can.  I have one suggestion -- my hypothesis for non-compiler error, is confusion of compiler and library versions.  It would be a good idea to maintain and check version numbers to detect and report this sort of error, because figuring that out by hand is a tedious job for a Scala compiler expert.
-

@@ -1,6 +1,5 @@
-I saw Eric's [post to scala-lang|https://groups.google.com/forum/#!topic/scala-language/pPGjYI6r5GE]:
-
-{code}
+I saw Eric's [post to scala-lang](https://groups.google.com/forum/#!topic/scala-language/pPGjYI6r5GE):
+```scala
 case class Converted[+T](t: () => T)
 implicit def convert[T](t: =>T) = Converted(() => t)
   
@@ -9,17 +8,15 @@ val t: Converted[Int] = { evaluated = true; 1 }
 
 // prints true
 evaluated
-{code}
+```
 
 The above behavior looks pathological given the following explicit application does not trigger the side effect:
-
-{code}
+```scala
 convert { evaluated = true; 1 }
-{code}
+```
 
 Here are the relevant sections in the Scala Language Specification:
-
-{quote}
+```
 h3. 7.3 Views
 
 Implicit parameters and methods can also define implicit conversions called views. A view from type _S_ to type _T_ is defined by an implicit value which has function type _S=>T_ or _(=>S)=>T_ or by a method convertible to a value of that type.
@@ -38,12 +35,11 @@ Syntax:
 {code}    ParamType ::= '=>' Type{code}
 
 The type of a value parameter may be prefixed by _=>_, e.g. _x: => T_. The type of such a parameter is then the parameterless method type _=> T_. This indicates that the corresponding argument is not evaluated at the point of function application, but instead is evaluated at each use within the function. That is, the argument is evaluated using _call-by-name_.
-{quote}
+```
 
-Because the block evaluating to 1 does not conform to Converted[Int], it's the first condition of view that's being used, not the missing method or incompatible arg case. According to the spec, this converts the expression _e_ to _v(e)_, which in this case is:
-
-{code}
+Because the block evaluating to 1 does not conform to Converted[Int], it's the first condition of view that's being used, not the missing method or incompatible arg case. According to the spec, this converts the expression *e* to *v(e)*, which in this case is:
+```scala
 convert { evaluated = true; 1 }
-{code}
+```
 
-Unless _t.t_ is invoked, I don't see why this block should be evaluated.
+Unless *t.t* is invoked, I don't see why this block should be evaluated.

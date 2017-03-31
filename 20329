@@ -5,9 +5,8 @@ I'm afraid it is due to some issue on Scala 2.12. This is a blocker issue for us
 
 Procedure to reproduce the situation:
 
-* Prepare skinny blank app
-
-{code}
+- Prepare skinny blank app
+```scala
 # macOS
 brew install skinny
 skinny new skinny-blank-app
@@ -16,17 +15,16 @@ skinny new skinny-blank-app
 wget https://github.com/skinny-framework/skinny-framework/releases/download/2.3.1/skinny-blank-app-with-deps.zip
 unzip skinny-blank-app-with-deps.zip
 cd ./skinny-blank-app
-{code}
+```
 
-* Switch to Scala 2.12.1
+- Switch to Scala 2.12.1
 
 Manually edit `build.sbt`.
 
-* invoke sbt console
+- invoke sbt console
 
 In the project, sbt invokes the Scala REPL with the following initialCommands:
-
-{code}
+```scala
 initialCommands := """
 import skinny._
 import _root_.controller._, model._
@@ -34,19 +32,17 @@ import org.joda.time._
 import scalikejdbc._, config._
 DBSettings.initialize()
 """,
-{code}
+```
 
 `skinny console` just does `sbt dev/console` internally. The `dev` is an sbt sub project.
-
-{code}
+```scala
 ./skinny console
-{code}
+```
 
-* outputs
+- outputs
 
 It fails to run initialCommands and the REPL aborts after that.
-
-{code}
+```scala
 Welcome to Scala 2.12.1 (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_71).
 Type in expressions for evaluation. Or try :help.
 
@@ -68,4 +64,4 @@ java.lang.InterruptedException
 	at scala.tools.nsc.interpreter.SplashLoop.run(InteractiveReader.scala:77)
 	at java.lang.Thread.run(Thread.java:745)
 [success] Total time: 36 s, completed Dec 11, 2016 10:35:10 AM
-{code}
+```

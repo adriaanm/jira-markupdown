@@ -1,15 +1,15 @@
-{{EXISTENTIAL}} flag is [declared|https://github.com/scala/scala/blob/2.9.x/src/library/scala/reflect/generic/Flags.scala#L70] as following constant (in 2.9.x branch):
-{code}
+`EXISTENTIAL` flag is [declared](https://github.com/scala/scala/blob/2.9.x/src/library/scala/reflect/generic/Flags.scala#L70) as following constant (in 2.9.x branch):
+```scala
 final val EXISTENTIAL   = 0x800000000L  // type is an existential parameter or skolem
-{code}
+```
 
-The {{PickledFlags}} [defined|https://github.com/scala/scala/blob/2.9.x/src/library/scala/reflect/generic/Flags.scala#L103] in the same file determines which flags get pickled:
-{code}
+The `PickledFlags` [defined](https://github.com/scala/scala/blob/2.9.x/src/library/scala/reflect/generic/Flags.scala#L103) in the same file determines which flags get pickled:
+```scala
 final val PickledFlags: Long  = 0xFFFFFFFFL
-{code}
+```
 
-Simple REPL experiment (instead of counting number of zeros...) shows that {{EXISTENTIAL}} flag does not get pickled:
-{code}
+Simple REPL experiment (instead of counting number of zeros...) shows that `EXISTENTIAL` flag does not get pickled:
+```scala
 scala> final val EXISTENTIAL   = 0x800000000L
 EXISTENTIAL: Long(34359738368L) = 34359738368
 
@@ -18,13 +18,13 @@ PickledFlags: Long = 4294967295
 
 scala> EXISTENTIAL & PickledFlags
 res0: Long = 0
-{code}
+```
 
-This results in symbols for existential types being entered as decls when [unpickling|:https://github.com/scala/scala/blob/2.9.x/src/library/scala/reflect/generic/UnPickler.scala#L297]:
-{code}
+This results in symbols for existential types being entered as decls when [unpickling](:https://github.com/scala/scala/blob/2.9.x/src/library/scala/reflect/generic/UnPickler.scala#L297):
+```scala
 if (sym.owner.isClass && sym != classRoot && sym != moduleRoot &&
             !sym.isModuleClass && !sym.isRefinementClass && !sym.isTypeParameter && !sym.isExistentiallyBound)
           symScope(sym.owner) enter sym
-{code}
+```
 
-due to {{!sym.isExistentiallyBound}} returning wrong result (true). This has severe consequences for sbt's incremental compilation because sbt thinks that API has changed. See https://groups.google.com/d/topic/simple-build-tool/Anumu_erCVY/discussion for example.
+due to `!sym.isExistentiallyBound` returning wrong result (true). This has severe consequences for sbt's incremental compilation because sbt thinks that API has changed. See https://groups.google.com/d/topic/simple-build-tool/Anumu_erCVY/discussion for example.

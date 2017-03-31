@@ -1,16 +1,15 @@
 The following code:
-{code}
+```scala
 class Foo {  
   def foo(x: AnyRef): Unit = {
     x.isInstanceOf[Tuple2[_, Tuple1[_]]]
     ()
   }
 }
-{code}
+```
 
 crashes on latest 2.10.x branch (including 2.10.0-M7):
-
-{code}
+```scala
      while compiling: Test.scala
         during phase: typer
      library version: version 2.10.0-20120820-123254-1ab4994990
@@ -87,6 +86,6 @@ error: scala.MatchError: Tuple1[_] (of class scala.reflect.internal.Types$Existe
 	at scala.tools.nsc.typechecker.Typers$Typer.scala$tools$nsc$typechecker$Typers$Typer$$typedStat$1(Typers.scala:2672)
 	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$53.apply(Typers.scala:2766)
 	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$53.apply(Typers.scala:2766)
-{code}
+```
 
 It works on 2.10.0-M6 and 2.9.2 so I mark this as critical because it's a regression.

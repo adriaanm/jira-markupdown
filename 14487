@@ -1,14 +1,14 @@
 Compiling the code below
-{code}
+```scala
 class Foo[A] {
   class Bar[B >: A](x: B) extends Foo[B]
 }
 object bug {
   new Foo[Int]#Bar(0)
 }
-{code}
+```
 produces the following exception (2.7.x and trunk):
-{code}
+```scala
 Exception in thread "main" java.lang.AssertionError: assertion failed: Foo[Int]
         at scala.Predef$$.assert(Predef.scala:107)
         at scala.tools.nsc.ast.TreeGen.mkAttributedQualifier(TreeGen.scala:76)
@@ -25,4 +25,4 @@ Exception in thread "main" java.lang.AssertionError: assertion failed: Foo[Int]
         at scala.collection.immutable.List.mapConserve(List.scala:140)
         at scala.tools.nsc.ast.Trees$$Transformer.transformStats(Trees.scala:1536)
 [...]
-{code}
+```

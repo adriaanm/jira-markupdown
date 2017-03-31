@@ -1,6 +1,5 @@
 The Scala compiler crashes when given the following code (for example when pasting it to the REPL):
-
-{code}
+```scala
 import scala.collection.immutable.TreeMap
 import scala.math.Ordering
 
@@ -14,12 +13,10 @@ class Test[K](param:TreeMap[K,Int]){
       new TreeMap[K, Int]()
     })
 }
-{code}
+```
 
 Stack trace printed by the REPL:
-
-
-{code}
+```scala
 scala> class Test[K](param:TreeMap[K,Int]){
      |     def this() = this({
      |       implicit object TreeOrd extends Ordering[K](){
@@ -452,4 +449,4 @@ no-symbol does not have an owner
 	at scala.tools.nsc.transform.LambdaLift$LambdaLifter.transform(LambdaLift.scala:42)
 	at scala.reflect.api.Trees$Transformer$$anonfun$transformStats$1.apply(Trees.scala:2863)
 ...
-{code}
+```

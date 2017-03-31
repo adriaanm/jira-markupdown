@@ -1,22 +1,20 @@
-{{Iterator.toStream}} run through the whole Iterator at once, which both
+`Iterator.toStream` run through the whole Iterator at once, which both
 defeats the purpose of Stream and also results in an infinite
-loop when calling {{toStream}} on an infinite {{Iterator}}.
+loop when calling `toStream` on an infinite `Iterator`.
 
-Reason: Currently, {{Iterator.toStream}} is inherited from
-{{TraversableOnce.toStream}}, which is defined as
-
-{code}
+Reason: Currently, `Iterator.toStream` is inherited from
+`TraversableOnce.toStream`, which is defined as
+```scala
 trait TraversableOnce[+A] {
   ...
   def toStream: Stream[A] = toList.toStream
   ...
 }
-{code}
+```
 
 
 Demonstration: The following script
-
-{code}
+```scala
 class Numbers extends Iterator[Int] {
   var i = 0;
   def hasNext = true;
@@ -26,11 +24,10 @@ class Numbers extends Iterator[Int] {
 val it = new Numbers
 val s = it.toStream
 s take(4) foreach println
-{code}
+```
 
 yields the output
-
-{code}
+```scala
 DEBUG: next at 0
 DEBUG: next at 1
 DEBUG: next at 2
@@ -39,13 +36,12 @@ DEBUG: next at 4
 DEBUG: next at 5
 DEBUG: next at 6
 ... (runs forever) ...
-{code}
+```
 
 
-Proposed solution: Give {{Iterator}} a dedicated implementation of
-{{toStream}} which fits the nature of {{Stream}}, e.g. like this:
-
-{code}
+Proposed solution: Give `Iterator` a dedicated implementation of
+`toStream` which fits the nature of `Stream`, e.g. like this:
+```scala
 trait {{Iterator[+A]}} extends TraversableOnce[A] {
   self =>
   ...
@@ -54,10 +50,9 @@ trait {{Iterator[+A]}} extends TraversableOnce[A] {
     else Stream.empty[A]
   ...
 }
-{code}
+```
 Demonstration:
-
-{code}
+```scala
 class Numbers extends Iterator[Int] {
   var i = 0;
   def hasNext = true;
@@ -71,11 +66,10 @@ def toStream[A](it: Iterator[A]): Stream[A] =
 val it = new Numbers
 val s = toStream(it)
 s take(4) foreach println
-{code}
+```
 
 produces the output
-
-{code}
+```scala
 DEBUG: next at 0
 1
 DEBUG: next at 1
@@ -84,17 +78,17 @@ DEBUG: next at 2
 3
 DEBUG: next at 3
 4
-{code}
+```
 
 
-Since lazy behaviour is the very purpose of {{Stream}} and also both infinite
+Since lazy behaviour is the very purpose of `Stream` and also both infinite
 Streams and Iterators are explicitly allowed, I propose to classify
 this as a defect.
 
 I'd vote to include this in 2.8.0.RC4, if accepted.
 
 System information, for completeness:
-{code}
+```scala
 $$ scala
 Welcome to Scala version 2.8.0.RC3 (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_20).
 
@@ -108,4 +102,4 @@ Linux host 2.6.31-21-generic SI-59-Ubuntu SMP Wed Mar 24 07:28:27 UTC 2010 x86_6
 
 $$ lsb_release -d -s
 Ubuntu 9.10
-{code}
+```

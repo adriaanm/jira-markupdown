@@ -1,6 +1,5 @@
-Test case derived by [~moors] from SI-7343:
-
-{code}
+Test case derived by @adriaanm from scala/bug#7343:
+```scala
 class Parent[@specialized(Int) T] 
 
 object Test extends App {
@@ -57,18 +56,16 @@ object Test extends App {
    * member of the class, making it impossible to force its duplication.
    */
 }
-{code}
+```
 
 Note this construct:
-
-{code}
+```scala
     var check: T = _
     check = { ... }
-{code}
+```
 
 This crashes the backend:
-
-{code}
+```scala
 error:
   Unknown type: => String, => String [class scala.reflect.internal.Types$NullaryMethodType, class scala.reflect.internal.Types$NullaryMethodType] TypeRef? false
      while compiling: SI-7343.scala
@@ -195,4 +192,4 @@ error: scala.reflect.internal.FatalError:
 	at scala.tools.nsc.Driver.process(Driver.scala:51)
 	at scala.tools.nsc.Driver.main(Driver.scala:64)
 	at scala.tools.nsc.Main.main(Main.scala)
-{code}
+```

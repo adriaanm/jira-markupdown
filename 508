@@ -1,8 +1,7 @@
 This should trigger a type error, in my opinion. What value should we load in `x`? Java static classes are not values.
 
 I don't know how to handle it, though. Ideally, one would still be allowed to make selections on static members, like this:
-
-{code}
+```scala
 // Java
 public class O1 {
   public static class O2 {
@@ -12,11 +11,11 @@ public class O1 {
 
 // scala
 O1.O2.STR
-{code}
+```
 but disallow
-{code}
+```scala
 val x = O1.O2
-{code}
+```
 
 The classfile parser creates a new value in the static scope of the outer class (for O1) which is too permissive (it thinks it is a proper value). If I flag it as JAVA and MODULE, the problematic case is rejected by the type checker, but also the first one (that should pass).
 

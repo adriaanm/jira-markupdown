@@ -1,5 +1,5 @@
 Minimized test-case:
-{code}
+```scala
 object Temp extends App{
   val fut = scala.actors.Futures.future({ Thread.sleep(1000) ; 1 + 1 })
   fut.foreach( println _ )
@@ -7,7 +7,7 @@ object Temp extends App{
 
 $ scala -cp . t5574.scala
 scala.actors.SuspendActorControl
-{code}
+```
 
 
 
@@ -15,14 +15,13 @@ scala.actors.SuspendActorControl
 Old description follows.
 
 Doing this in the repl:
-{code}
+```scala
 val fut = scala.actors.Futures.future({ Thread.sleep(1000) ; 1 + 1 })
 fut.foreach( println _ )
-{code}
+```
 
 results in:
-
-{code}
+```scala
  scala.actors.ActorProxy@5629fbc9: caught java.lang.InterruptedException
 java.lang.InterruptedException
         at scala.actors.ActorProxy.exit(ActorProxy.scala:32)
@@ -45,19 +44,19 @@ java.lang.InterruptedException
         at scala.concurrent.forkjoin.ForkJoinTask.quietlyExec(ForkJoinTask.java:422)
         at scala.concurrent.forkjoin.ForkJoinWorkerThread.mainLoop(ForkJoinWorkerThread.java:340)
         at scala.concurrent.forkjoin.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:325)
-{code}
+```
 
 Problem was mentioned here: http://www.scala-lang.org/node/9298
 
 I think the problem is this:
 
 foreach defined in scala.Responder:
-{code}
+```scala
 def foreach(k: A => Unit) { respond(k) }
-{code}
+```
 
 Future respond() is:
-{code}
+```scala
   def respond(k: T => Unit) {
     if (isSet) k(fvalueTyped)
     else {
@@ -67,15 +66,15 @@ Future respond() is:
       }
     }
   }
-{code}
+```
 
 When the Future is not set foreach calls react on the input channel, which calls react back on the future.  In Reactor.scala line 200:
-{code}
+```scala
  protected def react(handler: PartialFunction[Msg, Unit]): Nothing = {
     synchronized { drainSendBuffer(mailbox) }
     searchMailbox(mailbox, handler, false)
     throw Actor.suspendException
   }
-{code}
+```
 
-See also: https://issues.scala-lang.org/browse/SI-3458
+See also: scala/bug#3458

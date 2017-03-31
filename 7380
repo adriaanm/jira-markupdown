@@ -1,17 +1,17 @@
 Nice moment of the day - after rewriting a core typer method and having a test failure, I sighed and took a look to find the test referenced above, with my comment:
-{code}
+```scala
 /** It's a pos test because it does indeed compile,
  *  not so much because I'm glad it does.  Testing
  *  that error messages created and discarded during
  *  implicit search don't blow it up.
  */
-{code}
+```
 Fixed as side effect of beautiful rewrite of isSameType.
-{noformat}
+```
 test/files/pos/t5580b.scala:17: error: polymorphic expression cannot be instantiated to expected type;
  found   : [A]scala.collection.mutable.Set[A]
  required: scala.collection.mutable.Map[bar,scala.collection.mutable.Set[bar]]
     if (map.get(tmp).isEmpty) map.put(tmp,collection.mutable.Set())
                                                                 ^
 one error found
-{noformat}
+```

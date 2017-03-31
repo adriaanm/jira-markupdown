@@ -1,21 +1,19 @@
 I have this piece of code
-
-{code}
+```scala
 trait Bound {
   private val support = new PropertyChangeSupport()
   
   def firePropertyChange(name:String, oldVal:Object, newVal:Object) = support.firePropertyChange(name, oldVal, newVal)
 }
-{code}
+```
 
 I realized that I used a constructor which is NOT present in the java class. How is that possible ? A decompile yielded:
-
-{code}
+```scala
     public static void $init$(Bound $this)
     {
         $this.scala$test$Bound$_setter_$scala$test$Bound$$support_$eq(new PropertyChangeSupport(BoxedUnit.UNIT));
     }
-{code}
+```
 
 So it seems the compiler tried to match the Object constructor with a default unit. Is this the proper behavior ?
 How can a programmer know that this substitution is happening ?

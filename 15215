@@ -1,6 +1,5 @@
 When playing with a function that duplicates a C construct:
-
-{code}
+```scala
 def cfor[@specialized(Int,Long,Double) T](t0: T, c: T => Boolean, s: T => T)(f: T => Unit) {
   var t = t0
   while( c(t) ) {
@@ -8,20 +7,18 @@ def cfor[@specialized(Int,Long,Double) T](t0: T, c: T => Boolean, s: T => T)(f: 
     t = s(t)
   }
 }
-{code}
+```
 
 the REPL uses specialized code if one then does
-
-{code}
+```scala
 var sum = 0
 cfor[Int](0, _<1000000000, _+1) { sum += _ }
-{code}
+```
 
 but it seems to produce anti-specialized code (i.e. it is alarmingly slow even for generic code) if one does
-
-{code}
+```scala
 var sum = 0; cfor[Int](0, _<1000000, _+1) { sum += _ }
-{code}
+```
 
 i.e. one puts the captured variable on the same line.
 

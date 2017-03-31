@@ -1,19 +1,19 @@
 @inline annotation causes java.lang.VerifyError:
-{code}
+```scala
 Exception in thread "main" java.lang.VerifyError: (class: pk.Main$$, method: main signature: ([Ljava/lang/String;)V) Accessing value from uninitialized register pair 4/5
         at pk.Main.main(Main.scala)
 Java Result: 1
-{code}
+```
 
 First part of the code. Can be compiled without any options. This part MUST BE IN A SEPARATE JAR for bug to occur.
-{code}
+```scala
 package mylib
 class Vec(var x: Double, var y: Double)
 object Vec { @inline def apply(x: Double, y: Double) = new Vec(x, y) }
-{code}
+```
 
 The second part of the code. Must be compiled with "-optimise" option (to activate inlining). Must be compiled separately from the first part.
-{code}
+```scala
 import mylib._
 object Main {
   def main(args: Array[String]) {
@@ -21,7 +21,7 @@ object Main {
     println(u)
   }
 }
-{code}
+```
 
 Note that the code will work without errors if both parts are placed in the same file. To reproduce the error, compile part1 and put it in a jar. Then include the jar on a classpath to compile part2.
 

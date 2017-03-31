@@ -1,6 +1,5 @@
 Self-contained, shorter, example. 
-
-{code}
+```scala
 package test
 
 class Pixel[@specialized T] protected (var v: T) 
@@ -11,11 +10,10 @@ object Pixel {
   
   def apply(v: Double): Pixel1d = new Pixel1d(v)
 }
-{code}
+```
 
 Causes the compiler (r24667) to crash upon displaying an error message: 
-
-{code}
+```scala
 error: scala.tools.nsc.symtab.Types$$TypeError: constructor Pixel$$mcD$$sp in class Pixel$$mcD$$sp cannot be accessed in object Pixel
  Access to protected constructor Pixel$$mcD$$sp not permitted because
  enclosing class object Pixel in package test is not a subclass of 
@@ -23,11 +21,10 @@ error: scala.tools.nsc.symtab.Types$$TypeError: constructor Pixel$$mcD$$sp in cl
 	at scala.tools.nsc.typechecker.Contexts$$Context.error(Contexts.scala:291)
 	at scala.tools.nsc.typechecker.Infer$$Inferencer.error(Infer.scala:205)
 	at scala.tools.nsc.typechecker.Infer$$Inferencer.errorTree(Infer.scala:209)
-{code}
+```
 
 Thrown nearby this snippet in `Contexts.scala`
-
-{code}
+```scala
       /** Is protected access to target symbol permitted */
       def isProtectedAccessOK(target: Symbol) = {
         val c = enclosingSubClassContext(sym.owner)
@@ -49,6 +46,6 @@ Thrown nearby this snippet in `Contexts.scala`
           res
         }
       }
-{code}
+```
 
 If the example is reworked to do away with `[@specialized T]` , then the compiler does not crash anymore. Same goes for removing `protected`. 

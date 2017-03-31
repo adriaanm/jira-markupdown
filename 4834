@@ -1,10 +1,9 @@
 There is no one 'right' lub after erasure, unfortunately. This is one of the reasons we still don't have a jvm6 backend. Add two methods to your example:
-
-{code}
+```scala
   def moo(x: Tom) {}
   def moo2(x: Product) {}
   moo(if (c) new Bob else new Harry)
   moo2(if (c) new Bob else new Harry)
-{code}
+```
 
 I agree the lub should list classes first, but it won't solve the icode checker issue. The best way would be to simply make the icode checker less precise, and use the JVM notion of subtyping (which basically considers any interface type to be `Object`). 

@@ -1,6 +1,6 @@
 Well I think you can get pretty close:
 (also use three curly braces to surround syntax, see the wiki formatting)
-{code}
+```scala
 object SqlDsl {
   case object *
   def SELECT(all : *.type) : SelectClause = SelectAllClause
@@ -13,18 +13,18 @@ object SqlDsl {
   case class Query(selectClause : SelectClause, fromClause : FromClause)
   case class FromClause(from : Symbol)
 }
-{code}
+```
 --usage:
 you have to have a parens around the items in the select call, though I don't see it as being all that terrible. I think that maybe you can get even better with perhaps 
-{code}
+```scala
 import SqlDsl._
 println(SELECT(*) FROM 'User)
 println(SELECT('Name, 'PreName) FROM 'User)
 println(SELECT ('Name, 'PreName) FROM 'User)
-{code}
+```
 yielding:
-{code}
+```scala
 Query(SelectAllClause,FromClause('User))
 Query(SelectSomeClause(Array('Name, 'PreName)),FromClause('User))
 Query(SelectSomeClause(Array('Name, 'PreName)),FromClause('User))
-{code}
+```

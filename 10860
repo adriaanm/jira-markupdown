@@ -1,6 +1,5 @@
 This is related to fresh names. See https://github.com/scala/scala/commit/47d1fb1#diff-892d58c3587ea926d0bce6d7d53f16c6R34
-
-{noformat}
+```
 % ack 'fresh' --scala
 macros/src/main/scala/spire/macros/Syntax.scala
 10:  def name(s: String) = newTermName(c.fresh(s + "$"))
@@ -15,16 +14,15 @@ macros/src/main/scala/spire/macros/Syntax.scala
 ticket/8425 ~/code/spire ack 'fresh' --scala
 macros/src/main/scala/spire/macros/Syntax.scala
 10:  def name(s: String) = newTermName(c.fresh(s + "$"))
-{noformat}
+```
 
 Now we helpfully add a second '$' in addition to the one added by Spire. The '$$' looks like an expanded name (ie, one that has the FQCN prepended to make it unique when we are forced to make something Scala-private JVM public).
 
 The `Constructors` phase uses `unexpandedName` which goes from `index$$macro$18$1` to `macro$18$1`:
-
-{code}
+```scala
     // The constructor parameter corresponding to an accessor
     def parameter(acc: Symbol): Symbol = parameterNamed(acc.unexpandedName.getterName)
-{code}
+```
 
 That doesn't exist in the list of constructor parameters.
 

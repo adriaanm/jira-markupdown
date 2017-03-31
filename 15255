@@ -2,18 +2,16 @@ I stumbled over a strange regression in scala-2.8.0.RC1, passing
 an unapplySeq match to a (=> Unit) parameter.
 
 The following code compiles and runs fine with scala-2.8.0.Beta1, but results in a compiler exception with scala-2.8.0.RC1
-
-{code}
+```scala
 case class Values(values: Int*)
 def foo(f: => Unit): Unit = { f }
 foo { Values(42) match { case Values(i) => println(i); case _ => } }
-{code}
+```
 
 This happens both in the REPL and with scalac encountering the code somewhere inside an arbitrary class.
 
 REPL Transscript:
-
-{code}
+```scala
 Welcome to Scala version 2.8.0.RC1 (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_15).
 Type in expressions to have them evaluated.
 Type :help for more information.
@@ -31,4 +29,4 @@ Exception in thread "main" java.lang.IllegalArgumentException: requirement faile
 	at scala.tools.nsc.matching.ParallelMatching$$MatchMatrix$$MixSequence.success(ParallelMatching.scala:471)
 	at scala.tools.nsc.matching.ParallelMatching$$MatchMatrix$$RuleApplication.codegen(ParallelMatching.scala:249)
 ...
-{code}
+```

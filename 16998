@@ -1,16 +1,14 @@
 This should produce a better error message.
 
 Java file:
-
-{code}
+```scala
 public class Test<T> {
   public T[] values;
 }
-{code}
+```
 
 Scala file:
-
-{code}
+```scala
 class T {
   def foo() {
     val t = new Test[Int]
@@ -18,11 +16,10 @@ class T {
     t.values = arr
   }
 }
-{code}
+```
 
-{{scalac}} barks (when compiling together, or the Java file first):
-
-{code}
+`scalac` barks (when compiling together, or the Java file first):
+```scala
 T.scala:8: error: type mismatch;
  found   : Array[Int]
  required: Array[Int]
@@ -31,4 +28,4 @@ You may wish to investigate a wildcard type such as `_ >: Int`. (SLS 3.2.10)
     t.values = arr
                ^
 one error found
-{code}
+```

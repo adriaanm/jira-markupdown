@@ -1,6 +1,6 @@
 It's due to a change in Predef, because what was identity is now called conforms.
 To make the test, if you rename s2s, or identity to conforms, it compiles:
-{code}
+```scala
 scala> implicit def conforms = (s: String) => "s2s"
 conforms: (String) => java.lang.String
 
@@ -9,5 +9,5 @@ implicitly: [A](implicit a: A)A
 
 scala> implicitly[String => String].apply("foo")
 res0: String = s2s
-{code}
+```
 The thing to keep in mind is that both the local and the Predef implicit are regarded as competing, unless they have the same name (in which case the local implicit will shadow the Predef implicit). In the example as given, the local implicit was a val and the Predef implicit was a def and the rules of overloading resolution pick the val over the def. 

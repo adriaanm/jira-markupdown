@@ -1,4 +1,4 @@
-{code}
+```scala
 import scala.language.experimental.macros
 import scala.reflect.macros.TypecheckException
 import scala.reflect.macros.whitebox.Context
@@ -20,9 +20,8 @@ object Macros {
 
   def typecheck(code: String): Option[String] = macro typecheck_impl
 }
-{code}
-
-{code}
+```
+```scala
 case class Foo(i: Int, c: Char)
 
 object Bar {
@@ -33,11 +32,10 @@ object Test {
   println(Macros.typecheck("val Foo(x, y, z) = Foo(1, 'a')"))
   println(Macros.typecheck("val Bar(x, y, z) = Foo(1, 'a')"))
 }
-{code}
-
-{code}
+```
+```scala
 <macro>:1: error: too many patterns for object Bar offering (Int, Char): expected 2, found 3
 val Bar(x, y, z) = Foo(1, 'a')
     ^
 one error found
-{code}
+```

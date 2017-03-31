@@ -10,25 +10,23 @@ that ever happens).
 On a related note, though, there may be room for improvement in the hash code
 for `Long` in `ScalaRunTime`. That is computed (as of
 scala-2.9.0.r23230-b20101012020216) as:
-
-{code}
+```scala
   @inline def hash(lv: Long): Int = {
     val iv = lv.toInt
     if (iv == lv) iv else lv.hashCode
   }
-{code}
+```
 
 The following formulation gives the same answer as the current function for
 the `Int` range (as required), but runs faster on my machine:
-
-{code}
+```scala
   @inline def hash(lv: Long): Int = {
     val low = lv.toInt
     val lowSign = low >>> 31
     val high = (lv >>> 32).toInt
     low ^ (high + lowSign)
   }
-{code}
+```
 
 In my experience, a conditional branch takes several times as long as a shift or
 add, which I believe is typical of modern processors.
@@ -39,4 +37,4 @@ collection of (possibly poorly distributed) bit fields, but that's a whole other
 topic.)
 
 There is also an issue for the hash code for `Double`, but as it appears to be an
-actual bug, I have opened Ticket SI-3957 for it.
+actual bug, I have opened Ticket scala/bug#3957 for it.

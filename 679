@@ -1,14 +1,12 @@
 I tried something like
-
-
-{code}
+```scala
     def addApplyUnapply(cdef: ClassDef, namer: Namer) {
       // does not yet take into consideration an overloaded "apply" method.
       if (!(cdef.symbol hasFlag ABSTRACT) && cdef.symbol.info.member(newTermName("apply")) == NoSymbol)
         namer.enterSyntheticSym(caseModuleApplyMeth(cdef))
       namer.enterSyntheticSym(caseModuleUnapplyMeth(cdef))
     }
-{code}
+```
 
 
 But still
@@ -20,7 +18,7 @@ one error found
 
 
 With some printlns:
-{code}
+```scala
     def addApplyUnapply(cdef: ClassDef, namer: Namer) {
 	println("trying to add apply and unapply")
       if (!(cdef.symbol hasFlag ABSTRACT) && cdef.symbol.info.member(newTermName("apply")) == NoSymbol)	{
@@ -30,7 +28,7 @@ With some printlns:
 	println("adding unapply")
       namer.enterSyntheticSym(caseModuleUnapplyMeth(cdef))
     }
-{code}
+```
 
 /opt/repos/scala-trunk/testing $$ ../build/quick/bin/scalac Foo.scala
 trying to add apply and unapply

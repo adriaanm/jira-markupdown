@@ -1,20 +1,19 @@
 This is a terrible example of using Lower Bounds but it does reveal a behaviour that seemed unexpected.
-
-{code:scala}
+```scala
 trait Animal
 case class Foo()
 case class Cage[A >: Animal](animal: A)
 val cage = Cage(Foo())
-{code}
+```
 
 In this example, I would expect that that the compiler would infer:
 
 {code: scala}
 cage: Cage[AnyRef] = Cage(Foo())
-{code}
+```scala
 
 But the compiler actually infers:
 
 {code: scala}
 cage: Cage[Object] = Cage(Foo())
-{code}
+```

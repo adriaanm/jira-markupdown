@@ -4,29 +4,28 @@ I improved the pattern matcher a bit to avoid emitting all these BoxedUnits,
 and then the diff between -optimize and -optimize -Xoldpatmat becomes
 
 new pattern matcher:
-{code}
+```scala
    0:	aload_0
    1:	invokespecial	#10; //Method java/lang/Object."<init>":()V
    4:	goto	8 // this should be a return! (it's completely wrong to jump to 8)
    7:	astore_1
    8:	aload_1
    9:	athrow
-{code}
+```
 
 correct bytecode:
-
-{code}
+```scala
    0:	aload_0
    1:	invokespecial	#10; //Method java/lang/Object."<init>":()V
    4:	return
    5:	astore_1
    6:	aload_1
    7:	athrow
-{code}
+```
 
 
 test code (bytecode above is for testIncompatStackHeight)
-{code}
+```scala
 class testIncompatStackHeight {
   null match { case _ => }
 
@@ -38,4 +37,4 @@ class testExpectedObjectRef {
 
   try { } finally { null match { case _ => } }
 }
-{code}
+```

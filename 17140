@@ -1,6 +1,5 @@
 I access the result type of a method ({{{Int}}}) and compiare it with {{{typeOf[Int]}}}, but that returns {{{false}}}. I expected to see {{{true}}}. 
-
-{code}
+```scala
 class X {
    def methodIntIntInt(x: Int, y: Int) = x+y
 }
@@ -13,11 +12,10 @@ val ts: Type = cs.typeSignature
 val ms: MethodSymbol = ts.declaration(newTermName("methodIntIntInt")).asMethodSymbol
 val MethodType( _, t1 ) = ms.typeSignature
 val t2 = typeOf[scala.Int]
-{code}
+```
 
 and now the output from the REPL:
-
-{code}
+```scala
 scala> t1
 res0: reflect.runtime.universe.Type = scala.Int
 
@@ -35,7 +33,6 @@ res4: Boolean = false
 
 scala> t1.normalize == t2.normalize
 res5: Boolean = false
-
-{code}
+```
 
 

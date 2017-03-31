@@ -1,17 +1,17 @@
-This issue is really different from SI-7278. Here class E is only used to force name expansion to make private def x that is visible according to scala lang, accessible at runtime by JVM.
+This issue is really different from scala/bug#7278. Here class E is only used to force name expansion to make private def x that is visible according to scala lang, accessible at runtime by JVM.
 Now why a single separator, rather than the name of the non-class owner is enough:
 The conflict is caused by inadvertent overriding with
-{quote}
+```
     val foo: D = {
     class D extends C.this.D {
     ...
-{quote}
+```
 
 This is possible because it's possible to reference D in outer scope. It's impossible to reference
-{quote}
+```
     val foo: D = {
     class D extends bar.D {
     ...
-{quote}
+```
 
 in scala since this means referencing a virtual class, and scala doesn't have them.

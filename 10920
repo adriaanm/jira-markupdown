@@ -1,6 +1,5 @@
 I am trying to track down the performance problem in the following, which was introduced by the supposed fix (https://github.com/slick/slick/pull/749), which actually made it worse. I got the code down to this:
-
-{code}
+```scala
 import scala.reflect.ClassTag
 import scala.slick.ast.{TypedType}
 import scala.slick.lifted.FlatShapeLevel
@@ -14,6 +13,6 @@ trait Tables {
   def x = implicitly[Shape[_ <: FlatShapeLevel, HCons[String,HNil.type], _, _]]
   val i = x
 }
-{code}
+```
 
 This takes like 20 seconds on my machine (add 6 elements to the list for 60 seconds). The odd thing is, if you remove the line with the val, it compiles in 1 second.

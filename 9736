@@ -1,15 +1,14 @@
 Lookahead doesn't consume input, but you can capture it explicitly just the same:
-{code}
+```scala
 scala> for (m <- """(a)(?=(a))""".r.findAllMatchIn("aaa")) yield (m group 1) + (m group 2)
 res8: Iterator[String] = non-empty iterator
 
 scala> .toList
 res9: List[String] = List(aa, aa)
-{code}
+```
 
 I kind of wish I could hop on sbaz and discover regex-related implicits in a repository. It could echo a line to paste into build.sbt and an import for my source, and then stick the code in my ivy cache.
-
-{code}
+```scala
 scala> implicit class AllIn(val s: String) extends AnyVal {
      | def allIn(t: String): List[String] = (
      | for (m <- s"(${s.head})(?=(${s.tail}))".r.findAllMatchIn(t))
@@ -26,6 +25,6 @@ res19: List[String] = List(abaaa, abbbaaa)
 
 scala> :javap
 :javap not yet working with java 1.7
-{code}
+```
 
 That's why I wind up never trying stuff out on 2.10.

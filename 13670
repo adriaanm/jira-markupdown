@@ -1,7 +1,7 @@
 this one is rather bizarre and took me quite a while to track down and isolate! it happens in two different places in my actual codebase.
 
 here's the failure:
-{code}
+```scala
   ~/newbug> cat j/J.java 
 package j;
 public class J { public enum E { e1 } }
@@ -17,17 +17,16 @@ j/J.java:2: non-static variable this cannot be referenced from a static context
 public class J { public enum E { e1 } }
                                  ^
 1 error
-{code}
+```
 
 and here's it succeeding when I don't try to use the Scala/Java mixing support:
-{code}
+```scala
   ~/newbug> rm **/*.class
   ~/newbug> javac j/J.java                                          
   ~/newbug> ~/scala/dists/latest/bin/scalac S.scala                 
   ~/newbug> javac J2.java 
-{code}
+```
 
 as for how to work around it, note that though J2 can do as little as import S and still trigger the bug, that doesn't mean the problem is tied to "import". you get the same error even if J2 uses S without importing it.
 
 the workaround I am currently using is to define E separately from J, rather than inside it.
-

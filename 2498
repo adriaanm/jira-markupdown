@@ -1,11 +1,10 @@
-Stefan's problem with Vaadin appears to stem from a deficient {{InnerClasses}} section in org.vaadin.sasha.portallayout.PortalLayout
-
-{noformat}
+Stefan's problem with Vaadin appears to stem from a deficient `InnerClasses` section in org.vaadin.sasha.portallayout.PortalLayout
+```
 % qbin/scala -Ydebug -classpath /Users/jason/Downloads/tiny-vaadin/vaadin-6.8.8.jar:/Users/jason/Downloads/tiny-vaadin/portallayout-1.3.1.jar:.
 
 % curl --silent https://vaadin-portal-layout.googlecode.com/svn-history/r10/trunk/src/org/vaadin/sasha/portallayout/PortalLayout.java | head -25
-{noformat}
-{code}
+```
+```scala
 package org.vaadin.sasha.portallayout;
 
 import java.util.Collections;
@@ -31,9 +30,8 @@ import com.vaadin.ui.ClientWidget.LoadStyle;
 @SuppressWarnings("serial")
 @ClientWidget(value = VPortalLayout.class, loadStyle = LoadStyle.EAGER)
 public class PortalLayout extends AbstractLayout {
-{code}
-
-{noformat}
+```
+```
 scala> :javap org.vaadin.sasha.portallayout.PortalLayout
 Compiled from "PortalLayout.java"
 public class org.vaadin.sasha.portallayout.PortalLayout extends com.vaadin.ui.AbstractLayout implements com.vaadin.ui.Layout$SpacingHandler,com.vaadin.event.LayoutEvents$LayoutClickNotifier
@@ -65,11 +63,10 @@ const #601 = Asciz	EAGER;
 const #602 = Asciz	InnerClasses;
 const #603 = class	#604;	//  com/vaadin/event/LayoutEvents
 ...
-{noformat}
+```
 
 I tried to compile a stripped down version of that class:
-
-{code}
+```scala
 package test;
 
 import com.vaadin.ui.AbstractLayout;
@@ -79,9 +76,8 @@ import com.vaadin.ui.ClientWidget.LoadStyle;
 @ClientWidget(value = com.vaadin.terminal.gwt.client.Paintable.class, loadStyle = LoadStyle.EAGER)
 public abstract class PortalLayout extends AbstractLayout {
 }
-{code}
-
-{noformat}
+```
+```
 % javac -version javac 1.6.0_37
 
 % qbin/scala -Ydebug -classpath /Users/jason/Downloads/tiny-vaadin/vaadin-6.8.8.jar:/Users/jason/Downloads/tiny-vaadin/portallayout-1.3.1.jar:.
@@ -123,24 +119,22 @@ const #22 = Asciz	com/vaadin/ui/AbstractLayout;
 const #23 = class	#25;	//  com/vaadin/ui/ClientWidget
 const #24 = Asciz	com/vaadin/ui/ClientWidget$LoadStyle;
 const #25 = Asciz	com/vaadin/ui/ClientWidget;
-{noformat}
+```
 
 The JAR file containing the class in question contains:
 
 META-INF:
-
-{noformat}
+```
 Manifest-Version: 1.0
 Implementation-Title: PortalLayout
 Implementation-Version: 1.3.1
 Vaadin-Package-Version: 1
 Class-Path: 
 Vaadin-Widgetsets: org.vaadin.sasha.portallayout.PortallayoutWidgetset
-{noformat}
+```
 
 rebel.xml
-
-{noformat}
+```
 <?xml version="1.0" encoding="UTF-8"?>
 <application xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.zeroturnaround.com" xsi:schemaLocation="http://www.zeroturnaround.com http://www.zeroturnaround.com/alderaan/rebel-2_0.xsd">
 
@@ -157,18 +151,16 @@ rebel.xml
 	</web>
 
 </application>
-
-{noformat}
+```
 
 The repository doesn't have an Ant/Maven build or the like. Not sure what Java compiler generated that bytecode, nor which tools had their way with it. (This is all GWT related, maybe that gets involved.)
 
 The JVM spec offers:
-
-{quote}
+```
 The InnerClasses attribute is a variable-length attribute in the attributes table of a ClassFile structure (§4.1). If the constant pool of a class or interface C contains a CONSTANT_Class_info entry which represents a class or interface that is not a member of a package, then C's ClassFile structure must have exactly one InnerClasses attribute in its attributes table.
 ...
 If a class has members that are classes or interfaces, its constant_pool table (and hence its InnerClasses attribute) must refer to each such member, even if that member is not otherwise mentioned by the class. These rules imply that a nested class or interface member will have 
 InnerClasses information for each enclosing class and for each immediate member.
-{quote}
+```
 
 Long story short, I'll submit Paul's patch to make us resilient against such bytecode.

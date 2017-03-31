@@ -1,8 +1,7 @@
 I guess this is related, so I'll attach it to this ticket:
 
 The following code compiles and runs fine with scala-2.8.0.Beta1, but results in a compiler exception with scala-2.8.0.RC1
-
-{code}
+```scala
 class A {}
 trait B {}
 
@@ -10,20 +9,18 @@ def foo(f: => Unit): Unit = { f }
 def bar(f: => Any): Any = { f }
 
 foo { bar { new A with B } }
-{code}
+```
 
 The error does not occur if bar is defined as
-
-{code}
+```scala
 def bar(f: => Unit): Unit = { f }
-{code}
+```
 
 It also does not occur if the call of bar is not wrapped in the call of foo. Also, A must be extended with B for this to happen.
 
 
 REPL Transscript:
-
-{code}
+```scala
 Welcome to Scala version 2.8.0.RC1 (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_15).
 
 scala> class A {}
@@ -51,11 +48,10 @@ Exception in thread "main" scala.tools.nsc.symtab.Types$$TypeError: type mismatc
 	at scala.tools.nsc.typechecker.Infer$$Inferencer.typeError(Infer.scala:279)
 	at scala.tools.nsc.typechecker.Infer$$Inferencer.typeErrorTree(Infer.scala:288)
 ...
-{code}
+```
 
 System Information:
-
-{code}
+```scala
 $$ java -version
 java version "1.6.0_15"
 Java(TM) SE Runtime Environment (build 1.6.0_15-b03)
@@ -64,4 +60,4 @@ $$ uname -a
 Linux ... 2.6.31-20-generic SI-58-Ubuntu SMP Fri Mar 12 04:38:19 UTC 2010 x86_64 GNU/Linux
 $$ lsb_release -d -s
 Ubuntu 9.10
-{code}
+```

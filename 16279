@@ -1,5 +1,5 @@
 Consider following code:
-{code}
+```scala
 
 package test
 
@@ -8,10 +8,10 @@ abstract class Test[A] {
   case object Y
   
 }
-{code}
+```
 
 Before r25326, badsigs.sh would report following errors:
-{code}
+```scala
 
 mac-grek:badsigs grek$ rm -rf classes/* && scalac -d classes/ Test.scala && ~/scala/badsigs/badsigs.sh `pwd`/classes
 Cleaning up /Users/grek/scala/badsigs/badsigs_working_dir
@@ -34,10 +34,10 @@ The class file Test<A> contains a signature '()Ltest/Test<TA;>.Y;' ill-formed at
 1 problem (1 error)
 
 Found 2 errors
-{code}
+```
 
 By updating compiler to r25326, we get a bit different signatures but still broken:
-{code}
+```scala
 
 mac-grek:badsigs grek$ rm -rf classes/* && scalac -d classes/ Test.scala && ~/scala/badsigs/badsigs.sh `pwd`/classes
 Cleaning up /Users/grek/scala/badsigs/badsigs_working_dir
@@ -60,4 +60,4 @@ The class file Test<A> contains a signature '()Ltest/Test<TA;>.Y$;' ill-formed a
 1 problem (1 error)
 
 Found 2 errors
-{code}
+```

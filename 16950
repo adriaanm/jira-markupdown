@@ -3,7 +3,7 @@ Utilizing JTree within Scala (JTree is it's own problem!) and came across this i
 Context: In Java, a class named jdcMutableTreeNode extends javax.swing.tree.DefaultMutableTreeNode (to solve an unrelated issue).  Then in Scala, the WrapTreeNode extends jdcMutableTreeNode (and provides most of the logic for the application).
 
 This Scala code:
-{noformat}
+```
         val treeNodes = model.getPathToRoot(this)
         val path = new TreePath(treeNodes)
         tree.expandPath(path)
@@ -33,19 +33,17 @@ Exception in thread "AWT-EventQueue-0" java.lang.ClassCastException: [Ljavax.swi
 	at java.awt.EventDispatchThread.pumpEvents(Unknown Source)
 	at java.awt.EventDispatchThread.pumpEvents(Unknown Source)
 	at java.awt.EventDispatchThread.run(Unknown Source)
+```
 
-{noformat}
+Couldn't quite figure out where the **[Ljavax.swing.tree.TreeNode** type came from.  If I stop it in the Eclipse debugger, everything looks as expected (path is listed as a TreePath by Eclipse, but also shows [[Ljavax.swing.tree.TreeNode;@88fdaf] if you click on TreePath in the Value pane).
 
-Couldn't quite figure out where the *[Ljavax.swing.tree.TreeNode* type came from.  If I stop it in the Eclipse debugger, everything looks as expected (path is listed as a TreePath by Eclipse, but also shows [[Ljavax.swing.tree.TreeNode;@88fdaf] if you click on TreePath in the Value pane).
-
-Anyway, as a workaround added this method in Java, invoked it instead of the above code, and it works as expected.  (The *tree.isCollapsed(path)* was omitted from the Scala code above just so I could force the Exception.  In the original Scala code it was present and worked OK.)
-
-{noformat}
+Anyway, as a workaround added this method in Java, invoked it instead of the above code, and it works as expected.  (The **tree.isCollapsed(path)** was omitted from the Scala code above just so I could force the Exception.  In the original Scala code it was present and worked OK.)
+```
   /** From Scala kept getting a weird class case Exception                    */
   public void makeSureNodeExpanded(JTree tree, DefaultTreeModel model, jdcMutableTreeNode node){
     TreePath path = new TreePath(model.getPathToRoot(node));
     if(tree.isCollapsed(path))
       tree.expandPath(path);
   }
-{noformat}
+```
 

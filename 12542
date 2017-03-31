@@ -1,7 +1,7 @@
 Maybe the missing param type exception for function literals can be extended to this case, so that a single missing type param is inferred from the type args of the candidate expected types.
 
 Problem statement:
-{code}
+```scala
 scala> class D[A] ; class C[A] { def f(x: C[A]): C[A] = new C[A] ; def f(x: D[A]): D[A] = new D[A] }
 defined class D
 defined class C
@@ -16,9 +16,9 @@ scala> new C[String]().f(d)
  cannot be applied to (D[Nothing])
        new C[String]().f(d)
                        ^
-{code}
+```
 This is not a workaround.
-{code}
+```scala
 scala> class D[A] ; class C[A] { def f(x: A => C[A]): C[A] = new C[A] ; def f(x: A => D[A]): D[A] = new D[A] }
 defined class D
 defined class C
@@ -41,4 +41,4 @@ scala> new C[String]().f(x => d[x.type])
  cannot be applied to (String => D[_ <: String with Singleton])
        new C[String]().f(x => d[x.type])
                        ^
-{code}
+```

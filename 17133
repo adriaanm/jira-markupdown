@@ -1,6 +1,5 @@
 In ScalaMock, I need to create instances of traits/classes that may contain abstract methods. To do this, I need to know the types of those methods. Right now, I'm using the following trick:
-
-{code}
+```scala
 scala> class Outer[T] { trait Inner[T]; def m(): Inner[T] = null }
 defined class Outer
 
@@ -12,14 +11,13 @@ m: reflect.runtime.universe.Symbol = method m
 
 scala> m.typeSignatureIn(SuperType(ThisType(t.typeSymbol), t))
 res0: reflect.runtime.universe.Type = ()Outer.this.Inner[Int]
-{code}
+```
 
 described by Martin as:
-
-{quote}
+```
 That looks like an ingenious exploitation of something that was not meant to be used that way. I do not see why it would not work, though. In general, I believe it's better to create an actual val with the proper type that can serve as prefix type.
-{quote}
+```
 
 Unfortunately, this leaves me with a catch-22 - I can't create an instance of that trait without providing implementations of all of its methods. And I can't implement its methods without knowing their types.
 
-Apparently there is a {{narrow}} method that does what I need. It would be helpful if it could be added to the reflection API.
+Apparently there is a `narrow` method that does what I need. It would be helpful if it could be added to the reflection API.

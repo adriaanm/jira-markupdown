@@ -1,14 +1,14 @@
 Ah, ok, I see now-- wasn't clear to me from the description. 
 
 So, I suppose, in an effort to support fully-qualified names being generated in some scenarios, but not in others (we don't want them generated all over the place when they don't need to be) we could at the entity-level: check if there are two or more types that appear with the same name, if so, compare the fully-qualified names, and append the prefixes to the entity name as follows:
-{code}
+```scala
 scala.collection.immutable.HashMap -> immutable.HashMap
 scala.collection.mutable.HashMap -> mutable.HashMap
 org.scalay.collection.immutable.HashMap -> org.scalay.collection.immutable.HashMap
-{code}
+```
 
 It's certainly possible, but the way I see to do it is to, as we produce the page template in Template.scala for a given entity, collect the fully-qualified names of every type/entity we encounter (i.e. param lists of members, return types, etc) in a Set or something private and top-level in Template.scala. But then the issue is that afterwards, we'd need to make a second pass through the whole page and rewrite duplicate-named entities with the qualified/fully-qualified names, where necessary. ...Which would require a larger refactoring... (Unless there's an easier way to do it that I'm missing, maybe in the model or something...)
 
 But...
 
-*Workaround:* in the meantime, one could use a use-case to insert better-qualified/fully-qualified names where needed.
+**Workaround:** in the meantime, one could use a use-case to insert better-qualified/fully-qualified names where needed.

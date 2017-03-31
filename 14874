@@ -1,17 +1,16 @@
 The MultiMap does not clear bindings when there are no longer values at a given key. For example, the following code prints true:
-{code}
+```scala
 import collection.mutable._
 val m = new HashMap[Int, Set[String]] with MultiMap[Int, String]
 m.addBinding(6, "London")
 m.removeBinding(6, "London")
 m.contains(6)
-{code}
+```
 
 There are 2 problems here: firstly there is a memory leak in that it is impossible to remove these empty sets and secondly the MultiMap reports (erroneously) that it contains mappings for the given Key, which it does not.
  
 I believe the body of the removeBinding method should look like the following:
-
-{code}
+```scala
   def removeBinding(key: A, value: B): this.type = {
     get(key) match {
       case None =>
@@ -19,4 +18,4 @@ I believe the body of the removeBinding method should look like the following:
     }
     this
   }
-{code}
+```

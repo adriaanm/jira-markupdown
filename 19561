@@ -1,12 +1,11 @@
-The {{concurrent.Map}} trait should override {{getOrElseUpdate}} as follows:
-
-{code}
+The `concurrent.Map` trait should override `getOrElseUpdate` as follows:
+```scala
 override def getOrElseUpdate(key: A, op: => B): B = get(key) match {
   case Some(v) => v
   case None =>
     val v = op
     putIfAbsent(key, v).getOrElse(v)
 }
-{code}
+```
 
-This is a continuation of https://issues.scala-lang.org/browse/SI-7943, where the more complete discussion lives.
+This is a continuation of scala/bug#7943, where the more complete discussion lives.

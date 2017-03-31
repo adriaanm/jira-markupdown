@@ -1,5 +1,5 @@
-It's not helpful that your first code sample doesn't generate a field in Derived.  There is a very serious bug here, which is related to SI-3194 but worse.
-{code}
+It's not helpful that your first code sample doesn't generate a field in Derived.  There is a very serious bug here, which is related to scala/bug#3194 but worse.
+```scala
 class A(var x: Int) {
   def increment() { x = x + 1 }
 }
@@ -14,5 +14,5 @@ object Test {
     assert(x.x == x.y)
   }
 }
-{code}
+```
 That assertion fails.  That is very bad.  It would be bad enough if "def y = x" asserted, which is what is being reported here, and which is a problem in its own right.  (And of course it does.) But to have "this.x" silently using the initial constructor parameter in this potentially common scenario with no warning or anything is a correctness disaster.

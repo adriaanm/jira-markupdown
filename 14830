@@ -1,7 +1,7 @@
 When I tried to lift-json use, I encountered a compiler error.
 
 This code failed.
-{code}
+```scala
 import net.liftweb.json.JsonParser.parse
 import net.liftweb.json.JsonAST._
 
@@ -13,19 +13,19 @@ val list = for {
  } yield item.values
 
 list.foreach(println _)
-{code}
+```
 
 with This Message
-{code}
+```scala
     :
 error: fatal error (server aborted): type mismatch;
  found   : (String, item.value.Values)
  required: (String, net.liftweb.json.JsonAST.JField#value.Values)
     :
-{code}
+```
 
 This code is no problem.
-{code}
+```scala
 import net.liftweb.json.JsonParser.parse
 
 val json_str = """{"a":1,"b":2,"c":3}"""
@@ -35,20 +35,19 @@ val list = for (
  ) yield item.values
 
 list.foreach(println _)
-{code}
+```
 
 I think that this problem is related to the source-code below.
 
 http://github.com/dpp/liftweb/blob/master/lift-base/lift-json/src/main/scala/net/liftweb/json/JsonAST.scala
-{code}
+```scala
         :
  case class JField(name: String, value: JValue) extends JValue {
 >>   type Values = (String, value.Values)
         :
  }
         :
-{code}
+```
 
 My environment,
  Scala 2.7.7 and lift-json 1.1 SNAPSHOT-20091216.
-

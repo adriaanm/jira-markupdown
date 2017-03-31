@@ -1,6 +1,5 @@
 The following code crashes the compiler (trunk)
-
-{code}
+```scala
 abstract class Type
 case class SingleType(a: AnyRef, b: AnyRef) extends Type
 
@@ -9,11 +8,10 @@ class Foo {
     case SingleType(_) => unify(tp1, tp2)
   }
 }
-{code}
+```
 
 Note that the case is wrong, as it uses `SingleType` with a single argument, while it is defined to take two. The stack trace is:
-
-{code}
+```scala
 Exception in thread "main" scala.MatchError: (a: AnyRef,b: AnyRef)SingleType
 	at scala.tools.nsc.typechecker.NamesDefaults$$class.baseFunBlock$$1(NamesDefaults.scala:164)
 	at scala.tools.nsc.typechecker.NamesDefaults$$class.transformNamedApplication(NamesDefaults.scala:288)
@@ -74,10 +72,10 @@ Exception in thread "main" scala.MatchError: (a: AnyRef,b: AnyRef)SingleType
 	at scala.tools.nsc.Main$$.process(Main.scala:73)
 	at scala.tools.nsc.Main$$.main(Main.scala:87)
 	at scala.tools.nsc.Main.main(Main.scala)
-{code}
+```
 
 The same code gives an error message on 2.7.5:
-{code}
+```scala
 namedparams.scala:6: error: wrong number of arguments for <none>: (AnyRef,AnyRef)SingleType
     case SingleType(_) => unify(tp1, tp2)
          ^
@@ -85,4 +83,4 @@ namedparams.scala:6: error: not found: value tp1
     case SingleType(_) => unify(tp1, tp2)
                                 ^
 two errors found
-{code}
+```

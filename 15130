@@ -1,15 +1,15 @@
 I can't say definitively this is a bug.  But I think it should be.  There is only one thing which "this.x" can mean.  It looks to me like this could be implemented with some extra logic in typedAssign.
-{code}
+```scala
 class A(var x: Int)
 class B(x: Int) extends A(x) { def update(z: Int) = this.x = z }
-{code}
-{code}
+```
+```scala
 a.scala:2: error: reassignment to val
 class B(x: Int) extends A(x) { def update(z: Int) = this.x = z }
                                                            ^
 one error found
-{code}
+```
 I would expect it to work like the common situation (common in java anyway) where one does:
-{code}
+```scala
 def f(x: Int) = this.x = x
-{code}
+```

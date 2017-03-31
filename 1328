@@ -4,4 +4,4 @@ I've implemented Martin's alternative proposal, which calls for determining the 
 
 However, Stable Identifier and Literal patterns are matched using `==`, which does not imply a type for the binder that binds the matched value. The behavior change due to this fix is that programs that used to crash with a CCE now get a weaker type instead (and no cast). They may still type check, or they may not.
 
-`case x@Foo => x` should be changed to `case x: Foo.type => x` if type propagation is important -- NOTE that I also intend to fix SI-4577, so that matching will use `eq` for singleton types, not `==` (so that the types are not a lie).
+`case x@Foo => x` should be changed to `case x: Foo.type => x` if type propagation is important -- NOTE that I also intend to fix scala/bug#4577, so that matching will use `eq` for singleton types, not `==` (so that the types are not a lie).

@@ -8,8 +8,7 @@ More details below:
 
 == Problem 1 - Incorrect !InnerClasses attributes ==
 This code demonstrates the problem:
-
-{code}
+```scala
 object OneLevelOuter {
     def bar = List(1,2).map(_*2)
 }
@@ -19,7 +18,7 @@ object TwoLevelOuter {
     def bar = List(1,2).map(_*2)
   }
 }  
-{code}
+```
 
 Here, !OneLevelOuter$$.class has an !InnerClasses attribute with the following information:[[BR]]
 inner_class_info: !OneLevelOuter$$$$anonfun$$bar$$1[[BR]]
@@ -32,15 +31,14 @@ outer_class_info: !TwoLevelOuter$$Outer. This looks incorrect. It should be: !Tw
 == Problem 2 - Incorrect Method Signature attributes involving Scala.Nothing and Scala.Null ==
 
 This code demonstrates the problem:
-
-{code}
+```scala
 object MethodSig {
   val Empty = new collection.immutable.Stack[Nothing]
   def m1: Nothing = {
     throw new RuntimeException()
   }
 }
-{code}
+```
 
 This translates to the following in the classfile for !MethodSig$$:
 
@@ -53,7 +51,6 @@ Descriptor: ()Lscala/runtime/Nothing$$;[[BR]]
 Signature: none, because this is not a generic method.
 
 As you can see, Nothing is referenced correctly in the Descriptor for m1, but not in the Signature for Empty.
-
 
 
 

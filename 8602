@@ -1,12 +1,10 @@
 You could pin the blame on two spots:
 
-The first would be addressed by this refinement to case (8) of {{adapt}}.
-
-{code}
+The first would be addressed by this refinement to case (8) of `adapt`.
+```scala
   *  (8) When in both EXPRmode and FUNmode, add apply method calls to values of object type.
-{code}
-
-{noformat}
+```
+```
 diff --git a/src/compiler/scala/tools/nsc/typechecker/Typers.scala b/src/compiler/scala/tools/nsc/typechecker/Typers.scala
 index f82786d..c139596 100644
 --- a/src/compiler/scala/tools/nsc/typechecker/Typers.scala
@@ -19,11 +17,10 @@ index f82786d..c139596 100644
              applyPossible)
              insertApply()
            else if (!context.undetparams.isEmpty && !inPolyMode(mode)) { // (9)
-{noformat}
+```
 
 The second part, which is what triggered the regression, is in:
-
-{code}
+```scala
 object dyna {
       import treeInfo.{isApplyDynamicName, DynamicUpdate, DynamicApplicationNamed}
 
@@ -40,6 +37,6 @@ object dyna {
                 applyMeth.filter(_.tpe.paramSectionCount > 0) != NoSymbol
             )
           }
-{code}
+```
 
-{{tp.typeSymbol isNonBottomSubClass DynamicClass}} holds in the case for the {{PolyType}} {{[T] => Lenser[T]}}.
+`tp.typeSymbol isNonBottomSubClass DynamicClass` holds in the case for the `PolyType` `[T] => Lenser[T]`.

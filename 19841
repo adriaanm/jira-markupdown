@@ -1,6 +1,5 @@
 When a type of an anonymous class is less specific that the definition of the class (AnyRef for example) the anonymous class methods become private. This happens with val, def and var definition inside the class.
-
-{code:scala}
+```scala
   type T = {val x: String; def y: String; var z: String}
 
   // This one generates to compile the anonymous class properly.
@@ -29,6 +28,6 @@ When a type of an anonymous class is less specific that the definition of the cl
   println("Methods:")
   // All methods are private but should be public
   obj.getClass.getDeclaredMethods.foreach(x => println(s"  $x"))
-{code}
+```
 
 It looks like a code pattern that should be avoided, but in Scala.js this is used to create javascript objects. https://github.com/scala-js/scala-js/issues/1899

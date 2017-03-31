@@ -1,34 +1,30 @@
 Inspired by noticing that when using Java methods that take functions as parameters needing type parameters in Scala (from http://scala-language.1934581.n4.nabble.com/Sammy-wildcards-type-inference-td4641501.html), it seems that changing this line:
-
-{code}
+```scala
 val undoManager = UndoManagerFactory.unlimitedHistoryUndoManager(
-{code}
+```
 
 to 
-
-{code}
+```scala
 val undoManager = UndoManagerFactory.unlimitedHistoryUndoManager[Change](
-{code}
+```
 
-allows the compiler to compile the project. The problem is then that the Scala compiler is unable to infer the type {{C}} for the signature
-
-{code}
+allows the compiler to compile the project. The problem is then that the Scala compiler is unable to infer the type `C` for the signature
+```scala
 public static <C> UndoManager unlimitedHistoryUndoManager(
             EventStream<C> changeStream,
             Function<? super C, ? extends C> invert,
             Consumer<C> apply)
-{code}
+```
 
 from the parameters given to the method.
 
 Note that if this was
-
-{code}
+```scala
 public static <C> UndoManager unlimitedHistoryUndoManager(
             EventStream<C> changeStream,
             Consumer<C> invert,
             Consumer<C> apply)
-{code}
+```
 
 inference works perfectly.
 

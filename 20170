@@ -1,6 +1,6 @@
-Having a base trait, {{AbstractOverrideTest}}, with a specialized version {{EnhancedAOT}}, intended to be implemented as a mixin using stacked traits pattern, results in the following code compiling, but throwing {{ClassCastException}} as the abstract override method expects
-an {{EnhancedAOT}} instead of root {{AbstractOverrideTest}}. In practice, the following mixin shouldn't compile:
-{code:scala}
+Having a base trait, `AbstractOverrideTest`, with a specialized version `EnhancedAOT`, intended to be implemented as a mixin using stacked traits pattern, results in the following code compiling, but throwing `ClassCastException` as the abstract override method expects
+an `EnhancedAOT` instead of root `AbstractOverrideTest`. In practice, the following mixin shouldn't compile:
+```scala
 trait AbstractOverrideTest[-I, +O] { self =>
 
 	def flatMap[T](f :O=>Seq[T]) :AbstractOverrideTest[I, T] //=
@@ -62,12 +62,10 @@ object AbstractOverrideApp extends App {
 	val mff = mf.flatMap(MakeSeq)
 	println(s"m.flatMap.flatMap:\n$mff\n")
 }
-
-{code}
+```
 
 And the resulting stack trace:
-
-{noformat}
+```
 m:
 Exception in thread "main" java.lang.ClassCastException: pl.proplus.station.recombiners.RealAOT cannot be cast to pl.proplus.station.recombiners.EnhancedAOT
 Mixed
@@ -94,13 +92,13 @@ EhancedMixin[Mixed].flatMap{ ...
 	at com.intellij.rt.execution.application.AppMain.main(AppMain.java:144)
 
 Process finished with exit code 1
-{noformat}
+```
 
 Proper implementation with the following change:
-{code:scala}
+```scala
 trait EnhancedMixin[-I, +O] extends AbstractOverrideTest[I, O] {
 	self : EnhancedAOT[I, O] =>
-{code}
+```
 
 Works as expected, so this is a minor issue which should just report an error during compilation.
 

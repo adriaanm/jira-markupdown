@@ -1,6 +1,5 @@
 Many months later, I still think this should be changed.  In response to the first comment from Donna, this behavior has EVERYTHING to do with the change to takeWhile.  While I'm sure the change was intended to tackle performance issues, it clearly changed behavior of takeWhile on BufferedIterator.
-
-{code:java}
+```java
 
 // enrich wrapper to give original functionality
 class EnrichedIterator[T](it: Iterator[T]) {
@@ -13,11 +12,10 @@ class EnrichedIterator[T](it: Iterator[T]) {
   }
 }
 implicit def enrichIterator[T](it: Iterator[T]) = new EnrichedIterator(it)
-{code}
+```
 
 With the original takeWhile.
-
-{code:java}
+```java
 scala> val x = List(1,2,3,4,5,6,7).iterator.buffered
 x: java.lang.Object with scala.collection.BufferedIterator[Int] = non-empty iterator
 
@@ -26,11 +24,10 @@ res2: List[Int] = List(1, 2, 3, 4)
 
 scala> x.next
 res3: Int = 5
-{code}
+```
 
 With the new takeWhile.
-
-{code:java}
+```java
 scala> val x = List(1,2,3,4,5,6,7).iterator.buffered
 x: java.lang.Object with scala.collection.BufferedIterator[Int] = non-empty iterator
 
@@ -39,4 +36,4 @@ res6: List[Int] = List(1, 2, 3, 4)
 
 scala> x.next
 res7: Int = 6
-{code}
+```

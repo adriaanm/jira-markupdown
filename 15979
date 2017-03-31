@@ -7,8 +7,7 @@ The ambiguity can be resolved by annotating the expression as a String.
 Perhaps this sounds like a corner case, but the three mkString overloads all go through the 3-argument version, so the natural/obvious way to change it is to override it.  And then xs.mkString no longer works.
 
 I suppose this is why all the collections which override it override all three overloads.
-
-{code}
+```scala
 class Bippy extends collection.TraversableViewLike[Int, List[Int], Bippy] with collection.TraversableView[Int, List[Int]] {
   def underlying = List(1,2,3)
   def foreach[U](f: Int => U) = underlying foreach f
@@ -30,10 +29,10 @@ object Test {
 //     println(x.mkString)
 //               ^
 // one error found
-{code}
+```
 
 Actually I see a collection on the compiler side which doesn't override all three, which demonstrates this is an issue in practice.
-{code}
+```scala
 scala[paulp@stem ~]$$ scala29 -Dscala.repl.power
 Welcome to Scala version 2.9.0.r24342-b20110223165026 (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_22).
 Type in expressions to have them evaluated.
@@ -47,4 +46,4 @@ and  method mkString in trait TraversableOnce of type => String
 match expected type ?
        global.newScope.mkString
                        ^
-{code}
+```

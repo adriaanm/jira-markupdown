@@ -1,6 +1,5 @@
 I have some code which calls the following method in the following inner class in scalaz 6.0.4:
-
-{noformat}
+```
 final class ApplicativeBuilder3[C](c: M[C]) {
 
   ...
@@ -11,15 +10,14 @@ final class ApplicativeBuilder3[C](c: M[C]) {
       ...
     }
 }
-{noformat}
+```
 
 When running test or run in my Play application, I get the following error:
 
 java.lang.NoSuchMethodError: scalaz.ApplicativeBuilder$ApplicativeBuilder3.$bar$at$bar(Ljava/lang/Object;)Lscalaz/ApplicativeBu$$$$fedb325b5cbd723ea8eb3a81591dc560$$$$ativeBuilder4;
 
 javap shows:
-
-{noformat}
+```
  /usr/lib/jvm/jdk1.6.0_32/bin/javap -classpath /home/robin/.ivy2/cache/org.scalaz/scalaz-core_2.10/jars/scalaz-core_2.10-6.0.4.jar 'scalaz.ApplicativeBuilder$ApplicativeBuilder3'
 Compiled from "ApplicativeBuilder.scala"
 public final class scalaz.ApplicativeBuilder$ApplicativeBuilder3 extends java.lang.Object{
@@ -31,13 +29,12 @@ public final class scalaz.ApplicativeBuilder$ApplicativeBuilder3 extends java.la
     public scalaz.ApplicativeBuilder scalaz$ApplicativeBuilder$ApplicativeBuilder3$$$outer();
     public scalaz.ApplicativeBuilder$ApplicativeBuilder3(scalaz.ApplicativeBuilder, java.lang.Object);
 }
-{noformat}
+```
 
 So it looks like scalac is regenerating the class name for the return type, when it should be using the existing return type verbatim, because this is a .class file dependency not a source dependency.
 
 Here is a piece of code to reproduce the bug:
-
-{noformat}
+```
 object MaxClassnameBug extends App { 
 
   import scalaz._
@@ -47,12 +44,11 @@ object MaxClassnameBug extends App {
   s |@| s |@| s |@| s
 
 }
-{noformat}
+```
 
 I obviously cannot incorporate the scalaz code into this file otherwise the test case no longer be a test case - the fact that the dependency is a .class file is an essential part of this bug!
 
 I compiled this as follows:
-
-{noformat}
+```
 $ ~/opened/scala-2.10.2/bin/scalac -Xmax-classfile-name 72 -classpath /home/robin/opened/scala-2.10.2/lib/scala-library.jar:.:/home/robin/.ivy2/cache/org.scalaz/scalaz-core_2.10/jars/scalaz-core_2.10-6.0.4.jar MaxClassnameBug.scala
-{noformat}
+```

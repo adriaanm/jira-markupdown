@@ -1,26 +1,23 @@
 HI All, The following code - 
-
-{code}
+```scala
 #!scala
 class A( var x : Int) {
   println( "x = " + x)
   x = 99
   println("x is now " + x)
 }
-{code}
+```
 
 produces the following output....
-
-{code}
+```scala
 x=10 
 x is now equal to 10 
-{code}
+```
 
 I believe correct behaviour should be that the second println would read '99'.
 
 A decompilation of the code produced shows this...
-
-{code}
+```scala
 #!java
 public class A
     implements ScalaObject
@@ -48,11 +45,10 @@ public class A
  
     private int x;
 }
-{code}
+```
 
 It looks like x is being shadowed by the constructor argument. Looks like x -> x() would have fixed the problem.
 
 Am running JVM 1.6.0_13 against the Beta1 prerelease of 2.8, although in discussion it has been confirmed the same behaviour is in Beta2 and the 2.7
-
 
 

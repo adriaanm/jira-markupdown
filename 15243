@@ -1,5 +1,5 @@
 The following code crashes the compiler in 2.8.RC1:
-{code}
+```scala
 class Test { 
   val a = new Container.GenericClass()
 }
@@ -9,12 +9,12 @@ object Container extends Container
 class Container {
   class GenericClass[T](arg: String = "")
 }
-{code}
+```
 
 If we delete the constructor invocation or if we move the !GenericClass at the top level or in an object the code compiles without problems.
 
 The stacktrace produced when trying to compile the above code:
-{code}
+```scala
 java.lang.Error: no-symbol does not have owner
 at scala.tools.nsc.symtab.SymbolTable.abort(SymbolTable.scala:34)
 at scala.tools.nsc.symtab.Symbols$$NoSymbol$$.owner(Symbols.scala:2029)
@@ -133,4 +133,4 @@ at org.eclipse.core.internal.events.BuildManager.build(BuildManager.java:341)
 at org.eclipse.core.internal.events.AutoBuildJob.doBuild(AutoBuildJob.java:140)
 at org.eclipse.core.internal.events.AutoBuildJob.run(AutoBuildJob.java:238)
 at org.eclipse.core.internal.jobs.Worker.run(Worker.java:55)
-{code}
+```

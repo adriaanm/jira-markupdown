@@ -1,5 +1,5 @@
 Well, the problem is the inferred type of f. Consider this example:
-{code}
+```scala
 scala> trait A { type T; def m(t : T) = t.toString }
 defined trait A
 
@@ -11,12 +11,12 @@ f: [T <: B[_]](a: Any,b: T)java.lang.String
 
 scala> f("Hello", new B[Int])
 res0: java.lang.String = Hello
-{code}
+```
 Which obviously is unsound (calling (new B[Int]).m with a String).
 
 Note that changing f to:
-{code}
+```scala
 def f[T <: A](a : T#T, b : T) = b.m(a)
-{code}
+```
 gives a compiler error. So the problem is obviously related to existential types.
 {code}

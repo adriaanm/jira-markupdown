@@ -3,44 +3,40 @@ Private constructors and methods are compiled to public visibility when a compan
 Per Simon Ochsenreither, the issue could be solvable by emitting an appropriate static forwarder in the class.
 
 Example with expected results (no companion object):
-
-{code}
+```scala
 class Private private(x: Int) {
   private[this] val y = x
   private def yValue = y
 }
-{code}
+```
 
 javap -p output with private constructor and method:
-
-{code}
+```scala
 public class Private implements scala.ScalaObject {
   private final int y;
   private int yValue();
   private Private(int);
 }
-{code}
+```
 
 This is expected.
 
 However, adding the companion object as follows results in the private constructor and method being generated as public.
-
-{code}
+```scala
 object Private {
   def main(args: Array[String]) {
     val p = new Private(7)
     p.yValue
   }
 }
-{code}
+```
 
 javap -p output with public constructor and method:
-
-{code}
+```scala
 public class Private implements scala.ScalaObject {
   private final int y;
   public static final void main(java.lang.String[]);
   public final int Private$$yValue();
   public Private(int);
 }
-{code}
+```

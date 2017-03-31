@@ -1,8 +1,7 @@
 The bug was apparent in the trunk three days ago so I believe it affects all versions.  The class under concern is scala.util.matching.Regex.
 
 The following exception is somewhat surprising and undocumented in the scaladoc.
-
-{code}
+```scala
 scala> "anything".r.replaceAllIn("anything", "\\")
 java.lang.StringIndexOutOfBoundsException: String index out of range: 1
        at java.lang.String.charAt(String.java:694)
@@ -23,13 +22,12 @@ java.lang.StringIndexOutOfBoundsException: String index out of range: 1
        at scala.tools.nsc.interpreter.Line$$anonfun$1.apply$mcV$sp(Line.scala:43)
        at scala.tools.nsc.io.package$$anon$2.run(package.scala:25)
        at java.lang.Thread.run(Thread.java:679)
-{code}
+```
 
 As the stacktrace suggests, Java has the same behavior.
-
-{code}
+```scala
     (Pattern.compile("anything").matcher("anything").replaceAll("\\")) 
-{code}
+```
 
 At the least, this should be documented.  More unfortunately, there is an overload for replaceAllIn that takes an anonymous function Match=>String.  Presently the user must remember to escape all backslashes and dollar signs or the code will break when certain match groups are used.  This is undocumented and unreasonable; this problem does not arise in Java.
 

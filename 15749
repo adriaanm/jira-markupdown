@@ -1,38 +1,35 @@
 Given the the following files:
 
 `p/J.java`
-
-{code}
+```scala
 package p;
 public class J {
     protected void m() { return; }
 }
-{code}
+```
 
 
 `p/S.scala`
-{code}
+```scala
 package p
 class S extends J {
   override protected def m { }
 }
-{code}
+```
 
 Compiling them together with `scalac` gives the correct error message:
-
-{code}
+```scala
 lamppc11:bug1 luc$$ ../../target/pack/bin/scalac p/J.java p/S.scala
 p/S.scala:3: error: overriding method m in class J of type ()Unit;
  method m has weaker access privileges; it should be at least protected[p]
   override protected def m { }
                          ^
 one error found
-{code}
+```
 
 However, when compiling first the Java file, then the Scala file there's no error message:
-
-{code}
+```scala
 lamppc11:bug1 luc$$ javac p/J.java 
 lamppc11:bug1 luc$$ ../../target/pack/bin/scalac p/S.scala 
 lamppc11:bug1 luc$$
-{code}
+```

@@ -1,6 +1,5 @@
 test case:
-
-{code}
+```scala
 object Test extends Application {
   def inferredType[T : Manifest](v : T) = println(manifest[T])
 
@@ -11,12 +10,11 @@ object Test extends Application {
   val name = new A with B
   inferredType(name)
 }
-{code}
+```
 
 the relevant fragment (abridged) after typer (with -Ydebug -uniqid):
 (note the type argument to inferredType in the very first line!)
-
-{code}
+```scala
     inferredType[anonymous class $$anon$$13406]({
       final class $$anon$$13406 extends Object with A with B ;
       new $$anon$$13406.this()
@@ -27,7 +25,7 @@ the relevant fragment (abridged) after typer (with -Ydebug -uniqid):
       new $$anon$$9257.this()
     };
     inferredType[Object with A with B{}](name)(Manifest.intersectionType[Object with A with B{}](Manifest.Object, Manifest.classType[A](classOf[Test$$$$A]), Manifest.classType[B](classOf[Test$$$$B])))
-{code}
+```
 
 
 question: is the symbol $$anon$$13406 supposed to be in scope in inferredType's type argument??

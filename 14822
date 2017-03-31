@@ -2,7 +2,7 @@ Defect is due to circular template parameter.
 scalac-2.7.7 (and previous versions I've tested) handles this just fine.
 
 I've minimized code excerpt to the following:
-{code}
+```scala
 package bug1
 
 trait Element[T] {
@@ -19,11 +19,11 @@ trait Transform { self: Config =>
     var X = new Array[T](1)
   }
 }
-{code}
+```
 
 To make it compile replace
-{{type T <: Element[T]}}
+`type T <: Element[T]`
 with
-{{type T <: Element[_]}}
+`type T <: Element[_]`
 
 stack trace and bug1.scala attached

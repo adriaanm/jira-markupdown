@@ -1,6 +1,5 @@
 The following file compiles nicely with scalac, but makes scaladoc complain about an error (tested with Scala 2.8.1 and the 2011-02-24 nightly):
-
-{code}
+```scala
 package org.example
 
 // A randomly chosen Java annotation with corresponding enum:
@@ -10,18 +9,17 @@ import java.lang.annotation.{Retention, RetentionPolicy}
 // scaladoc signal an error.
 @Retention(value=RetentionPolicy.SOURCE)
 object Dummy {}
-{code}
+```
 
 
 The scaladoc output says that it found one error:
-
-{code}
+```scala
 $$ scaladoc Dummy.scala 
 Dummy.scala:8: error: annotation argument needs to be a constant; found: RetentionPolicy.SOURCE
 @Retention(value=RetentionPolicy.SOURCE)
                                  ^
 model contains 0 documentable templates
 one error found
-{code}
+```
 
-As the annotation+enum used here is part of the JDK, and not something I've whipped together myself, I don't think this is a duplicate of bug SI-2764 (especially considering comments 30 and 31 in that bug).
+As the annotation+enum used here is part of the JDK, and not something I've whipped together myself, I don't think this is a duplicate of bug scala/bug#2764 (especially considering comments 30 and 31 in that bug).

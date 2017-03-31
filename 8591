@@ -1,39 +1,35 @@
 Regarding specialization.
 
-One reason {{-no-specialization}} avoids the crash under {{-target:jvm-1.6}} (which also runs GenASM) is that
-{{ConfigurableDefault$mcZ$sp$class}} is not emitted, but also because the method signature in {{ConfigurableDefault$class}} 
-
-{noformat}
+One reason `-no-specialization` avoids the crash under `-target:jvm-1.6` (which also runs GenASM) is that
+`ConfigurableDefault$mcZ$sp$class` is not emitted, but also because the method signature in `ConfigurableDefault$class` 
+```
 public static java.lang.Object fillArray(ConfigurableDefault, java.lang.Object, java.lang.Object);
-{noformat}
+```
 
 plus the snippet
-
-{noformat}
+```
    19:	aload_2
    20:	invokestatic	#16; //Method scala/runtime/BoxesRunTime.unboxToLong:(Ljava/lang/Object;)J
    23:	invokestatic	#20; //Method scala/runtime/BoxesRunTime.boxToLong:(J)Ljava/lang/Long;
    26:	astore_3
    27:	aload_3
    28:	areturn
-{noformat}
+```
 
 are accepted by the verifier. 
 
-When specialized to something other than {{Long}}, the case body for "case x: Array[Long]" is unreachable, yet GenASM attempts to compute stack-map frames for it (that in general is not possible, although the 1.6 verifier always insists on getting stack-map frames, even for unreachable code, see http://asm.ow2.org/doc/developer-guide.html#deadcode ).
+When specialized to something other than `Long`, the case body for "case x: Array[Long]" is unreachable, yet GenASM attempts to compute stack-map frames for it (that in general is not possible, although the 1.6 verifier always insists on getting stack-map frames, even for unreachable code, see http://asm.ow2.org/doc/developer-guide.html#deadcode ).
 
 In detail (when specialized to something other than {{Long}}) the case body for "case x: Array[Long]"  will never be reached by fall-through from the code below (ie the conditional branch is always taken, in fact we can determine statically that an array of something-other-than-long is not an instance of array of long):
-
-{noformat}
+```
    17:	aload	1
    19:	instanceof	#16; //class "[J"
    22:	ifeq	40
-{noformat}
+```
 
 The combination
-
-{noformat}
+```
 -Yinline -Yinline-handlers -Ydead-code -target:1.6
-{noformat}
+```
 
 (ie specialization on) might pass the verifier, but the code described above is unreachable all the same. With "closelim" it's additionally non-well-formed.

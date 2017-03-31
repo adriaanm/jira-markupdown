@@ -1,6 +1,5 @@
 Sorry for the somewhat vague and puzzling summary, but hopefully the sample code will clear things up:
-
-{code}
+```scala
 trait Base {
  lazy val l1, l2, l3, l4, l5, l6, l7, l8, l9, l10, l11, l12, l13, l14 = ""
  def content: String
@@ -18,13 +17,13 @@ class Child2 extends Child1 {
 }
 
 val o = new Child2 { override lazy val kaboom = "" }
-{code}
+```
 
 This code throws a NullPointerException that boils down to the "kaboom" lazy val override.
 One interesting point is that if I remove or add a lazy val in "Base", no exception occurs. Which makes me think that it might be related to the internal implementaiton of lazy vals, which if I'm not mistaken uses bit fields to record which lazy vals have already been evaluated or not. There might be some kind of overflow somewhere.
 
 This was tested against version 2.7.4 final, using the scala interpreter, giving the following stack trace:
-{code}
+```scala
 java.lang.NullPointerException
         at Child2.<init>(<console>:8)
         at $$anon$$1.<init>(<console>:7)
@@ -35,4 +34,4 @@ java.lang.NullPointerException
         at RequestResult$$result(<console>)
         at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
         at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAcces...
-{code}
+```

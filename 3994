@@ -1,20 +1,20 @@
 So, one just needs an explicit form of computing the hashcode of a sequence of consecutive numbers. As far as I can see the formula for (min to max).hashCode is:
-{code}
+```scala
 (...((Seq.hashCode * 41 + min.hashCode) * 41 + (min + 1).hashCode) * 41 + ...) * 41 + max.hashCode
-{code}
+```
 which is
-{code}
+```scala
 Seq.hashCode * Math.pow(41, max - min + 1) + (min to max).map(i => i * Math.pow(41, max - min - i)).sum
-{code}
+```
 Which essentially boils down to the problem, if there is a form of
-{code}
+```scala
 (1 to n).map(i => i * Math.pow(41, n - i)).sum
-{code}
+```
 without any form of loop like map, fold, or sum.
 But my math ends here.
 
 I did a quick test. A simple imperative style loop
-{code}
+```scala
 { var x = 0; for (i <- 1 to 100000000) x = x * 41 + i; x}
-{code}
+```
 is much faster, but still takes about one second to compute.

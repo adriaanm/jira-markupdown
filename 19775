@@ -1,15 +1,13 @@
-I found an instance where the scala optimizer is generating incorrect bytecode which results in broken integer arithmetic (given a 39 where it should give a -5000). It happens for all versions of scala {{2.11.x}} but worked correctly in {{2.10.x}}. It only happens with {{-optimize}}.
+I found an instance where the scala optimizer is generating incorrect bytecode which results in broken integer arithmetic (given a 39 where it should give a -5000). It happens for all versions of scala `2.11.x` but worked correctly in `2.10.x`. It only happens with `-optimize`.
 
-I've put the complete code necessary to reproduce on [github|https://github.com/jdolson/scala_optimizer_bug]. But I'll paste the important bits here. The following two files must in different projects (e.g. a main and a test project) in order to trigger the bug:
- 
-{code:scala}
+I've put the complete code necessary to reproduce on [github](https://github.com/jdolson/scala_optimizer_bug). But I'll paste the important bits here. The following two files must in different projects (e.g. a main and a test project) in order to trigger the bug:
+```scala
 package bug // in main
 final case class Bust (x: Long) extends AnyVal {
   @inline def bar: Long = 10000L / (if (x < 0) -2 else 2)
 }
-{code}
-
-{code:scala}
+```
+```scala
 package bug // in test
 object Busted {
   def main(args: Array[String]) {
@@ -18,10 +16,10 @@ object Busted {
     println(y) // should print -5000 but prints 39
   }
 }
-{code}
+```
 
-Looking at the bytecode the problem happens when the {{bar}} method is inlined. Scala 2.10 generates this
-{noformat}
+Looking at the bytecode the problem happens when the `bar` method is inlined. Scala 2.10 generates this
+```
 Compiled from "Busted.scala"
 public final class bug.Busted$ {
   public static final bug.Busted$ MODULE$;
@@ -53,11 +51,10 @@ public final class bug.Busted$ {
       31: invokevirtual #38                 // Method scala/Predef$.println:(Ljava/lang/Object;)V
       34: return        
 }
-{noformat}
+```
 
 whereas Scala 2.11 is generating this:
-
-{noformat}
+```
 Compiled from "Busted.scala"
 public final class bug.Busted$ {
   public static final bug.Busted$ MODULE$;
@@ -89,5 +86,5 @@ public final class bug.Busted$ {
       32: invokevirtual #38                 // Method scala/Predef$.println:(Ljava/lang/Object;)V
       35: return        
 }
-{noformat}
-The only meaningful difference is that {{bipush -2}} is getting replaced with {{sipush 254}}, which is clearly incorrect.
+```
+The only meaningful difference is that `bipush -2` is getting replaced with `sipush 254`, which is clearly incorrect.

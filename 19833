@@ -1,4 +1,4 @@
-{code}
+```scala
 $ cat uncurry-bug.scala 
 trait Ctx {
   trait Tree
@@ -47,13 +47,12 @@ package <empty> {
     def foo2[T](c: Ctx, l: Lst[c.Tree]): Nothing = l.zip[c.Tree, c.Tree](l)
   }
 }
-{code}
+```
 
 Notice the two signatures after uncurry:
-
-{code}
+```scala
 def foo1(c: Ctx, l: Lst[Ctx#Tree]): Nothing
 def foo2[T](c: Ctx, l: Lst[c.Tree]): Nothing
-{code}
+```
 
 I would say the 2nd one is incorrect, as it doesn't widen. Or is that a design decision?

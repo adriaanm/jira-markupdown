@@ -1,5 +1,5 @@
 Consider this code:
-{code}
+```scala
 trait T[A[C] <: T[A, B], B] {
   def x : T[A, B] = y
   def y : A[Int]
@@ -9,9 +9,9 @@ trait T[A[C] <: T[A, B], B] {
 case class T2[B](value : B) extends T[T2, B] {
   def y = new T2[Int](1)
 }
-{code}
+```
 The compiler assumes "T2[C] <: T[T2, B]" holds for all C and B, which obviously isn't true. Here's an example how it breaks down:
-{code}
+```scala
 scala> val t = T2[Double](10.1)
 t: T2[Double] = T2(10.1)
 
@@ -25,4 +25,4 @@ java.lang.ClassCastException: java.lang.Integer cannot be cast to java.lang.Doub
         at RequestResult$$result(<console>)
         at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
         at sun.reflect...
-{code}
+```

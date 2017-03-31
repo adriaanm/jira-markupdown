@@ -1,5 +1,5 @@
 Compiling the code below with Scala 2.8.x
-{code}
+```scala
 class bug2 {
   private class MyTask extends android.os.AsyncTask[Unit, String, Int] {
     override protected def doInBackground(params: Unit*): Int = {
@@ -13,9 +13,9 @@ class bug2 {
     }
   }
 }
-{code}
+```
 produces the following output :
-{code}
+```scala
 Exception in thread "main" scala.tools.nsc.symtab.Types$$TypeError: type mismatch;
  found   : <repeated...>[String]
  required: Seq[String]
@@ -28,8 +28,8 @@ Exception in thread "main" scala.tools.nsc.symtab.Types$$TypeError: type mismatc
 	at scala.tools.nsc.typechecker.Typers$$Typer.typed(Typers.scala:4046)
 	at scala.tools.nsc.typechecker.Typers$$Typer.typedArg(Typers.scala:2110)
         [..]
-{code}
+```
 You can specify the attached JAR file (a strongly shrinked version of android.jar from the Android SDK) to test the example :
-{code}
+```scala
 scala$$ scalac -cp android.os.jar -d /tmp bug2.scala
-{code}
+```

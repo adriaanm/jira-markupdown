@@ -1,14 +1,12 @@
 Test case below. Uncommenting the line makes the test throw:
-
-{quote}
+```
 scala.ScalaReflectionException: Scala field x  isn't represented as a Java field, neither it has a Java accessor method
 note that private parameters of class constructors don't get mapped onto fields and/or accessors,
 unless they are used outside of their declaring constructors.
-{quote}
+```
 
 Test case:
-
-{code}
+```scala
 class FieldAccessTest {
 
   class TestClass {
@@ -29,6 +27,6 @@ class FieldAccessTest {
     Assert.assertEquals(123, mirror.reflect(obj).reflectField(objFields.head).get)
   }
 }
-{code}
+```
 
 The problem appears to be caused by name mangling, which is triggered by the presence of the anonymous function. The field is then named "FieldAccessTest$TestClass$$x" instead of "x" in the resulting bytecode, which causes reflection to fail.

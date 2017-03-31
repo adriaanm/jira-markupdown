@@ -1,20 +1,20 @@
 The following code produces 
-{code}
+```scala
 type mismatch;  found   : candidateUpperObject.result.Lower
                 required: candidateUpperObject.result.Lower
 where val candidateUpperObject: CanonicalGeneration.this.Upper
-{code}
+```
 
 I tried adding -uniqid and -explaintypes, and then get 
-{code}
+```scala
 type mismatch;  found   : candidateUpperObject#44447.result#44239.Lower#44231
                 required: candidateUpperObject.result#44239.Lower#44231
 where val candidateUpperObject: CanonicalGeneration#9908.this.Upper#44230
-{code}
+```
 which doesn't add much to my understanding.
 
 Here's the code; I'm sure it can be reduced slightly.
-{code}
+```scala
 trait EquivalenceClass[X] {
   def representative: X
   def contains(x: X): Boolean
@@ -54,6 +54,6 @@ trait CanonicalGeneration[A <: CanonicalGeneration[A, G, B], G, B] {
     ) yield candidateUpperObject.result
   }
 }
-{code}
+```
 
 I'm reporting this as a bug on the presumption that when the types shown in after 'found' and 'required' print the same, it's at least a problem with error reporting, if not an actual type checker bug.

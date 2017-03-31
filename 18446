@@ -1,6 +1,5 @@
 repeated ++ of a single-item collection onto a Vector is outrageously slow compared to repeatedly adding one item with + :
-
-{noformat}
+```
 Welcome to Scala version 2.10.2 (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0-ea).
 
 scala> import System.{currentTimeMillis => millis}
@@ -20,6 +19,6 @@ res0: scala.collection.immutable.Stream[Long] = Stream(1, 0, 1, 4, 48, 77)
 
 scala> Stream.iterate(1)(_ * 10).map(n => time(slow(n))).take(6).force
 res1: scala.collection.immutable.Stream[Long] = Stream(1, 0, 1, 30, 974, 88617)
-{noformat}
+```
 
-Paul Chiusano pointed this out over at SI-4442, where he comments: "Since Vector has a constant time snoc operation, it seems like the default implementation of ++ should be repeated calls to :+, which doesn't require any internal changes to Vector."
+Paul Chiusano pointed this out over at scala/bug#4442, where he comments: "Since Vector has a constant time snoc operation, it seems like the default implementation of ++ should be repeated calls to :+, which doesn't require any internal changes to Vector."

@@ -1,5 +1,5 @@
-{{build.sbt}}
-{code}
+`build.sbt`
+```scala
 scalaVersion := "2.11.8"
 
 scalacOptions ++=
@@ -26,10 +26,10 @@ scalacOptions ++=
   )
 
 libraryDependency += "org.scala-lang.modules" %% "scala-java8-compat" % "0.7.0"
-{code}
+```
 
-{{T.scala}}
-{code}
+`T.scala`
+```scala
 import scala.tools.scalap.scalax.rules.scalasig._
 
 object Main {
@@ -44,10 +44,10 @@ object Main {
 case class T(s: String) {
   def toInt: Option[Int] = scala.util.control.Exception.catching(classOf[Exception]).opt(s.toInt)
 }
-{code}
+```
 
 Results in an exception at runtime
-{code}
+```scala
 [error] (run-main-0) scala.MatchError: 15 (of class java.lang.Integer)
 scala.MatchError: 15 (of class java.lang.Integer)
 	at scala.tools.scalap.scalax.rules.scalasig.ClassFileParser$$anonfun$29.apply(ClassFileParser.scala:118)
@@ -133,4 +133,4 @@ scala.MatchError: 15 (of class java.lang.Integer)
 	at scala.tools.scalap.scalax.rules.scalasig.ClassFileParser$.parse(ClassFileParser.scala:97)
 	at Main$.main(T.scala:7)
 	at Main.main(T.scala)
-{code}
+```

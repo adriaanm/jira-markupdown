@@ -1,5 +1,5 @@
 The super.dealias path is hit when compiling the library 6 times total, generally going through either typedTypeConstructor or typedHigherKindedType. For instance, the line containing GenPolyType below.
-{code}
+```scala
         val args1 = if (sameLength(args, tparams)) {
           //@M: in case TypeApply we can't check the kind-arities of the type arguments,
           // as we don't know which alternative to choose... here we do
@@ -12,5 +12,5 @@ The super.dealias path is hit when compiling the library 6 times total, generall
          // inferPolyAlternatives loops...  -- I have no idea why :-(
          // ...actually this was looping anyway, see bug #278.
           return TypedApplyWrongNumberOfTpeParametersError(fun, fun)
-{code}
+```
 One of those old beloved comments, "there's probably something wrong when args.length != tparams.length", yeah. Notice the usage of Any, which is kind-polymorphic, a code phrase which means "there will be bugs" in the mother tongue. We shouldn't have to work so hard to prevent type constructors which are being checked for well-kindedness from being confused with applied types and/or types undergoing other checks like bounds conformance. Aka explicit kinds.

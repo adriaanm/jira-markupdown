@@ -1,8 +1,8 @@
 I ran probably into the same problem. The simplest way to reproduce it are these two lines:
-{code}
+```scala
 (1 to 10000000).toStream.foldLeft(0)(_+_)
 (1 to 10000000).toStream.reduceLeft(_+_)
-{code}
+```
 Both are semantically equivalent. The first one runs correctly, and the second one throws an OutOfMemoryError.
 
 The reason for this is that reduceLeft calls foldLeft for the actual work. foldLeft it itself allows the garbage collection of the already processed part of the stream because it discards the reference to the original head of the stream by using tailrecursion. On the other hand, the call to reduceLeft is forwarded to foldLeft, and thus the stackframe of reduceLeft holds a reference to the original head of the stream during the full time of the call, such that nothing can be garbage collected.

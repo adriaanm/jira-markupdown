@@ -8,16 +8,15 @@ Steps to reproduce:
  3. sbt compile 
 
 After successful compilation of the `core` module, the `http` module will fail with:
-{code}
+```scala
 scalaz.this.Applicative.applicative is not a valid implicit value for scalaz.this.Applicative[scala.this.Option] because:
 polymorphic expression cannot be instantiated to expected type;
  found   : [<deferred> <param> Z[<deferred> <param> _]]scalaz.this.Applicative[Z]
  required: scalaz.this.Applicative[scala.this.Option]
 [error] E:\code\scalaz\http\src\main\scala\scalaz\http\Version.scala:85: could not find implicit value for parameter a: scalaz.Applicative[Option]
 [error]       List(major, minor) ? ((c: Char) => isDigit(c).option(c.toLong - 48L)) map { case List(maj, min) => version(maj, min) }   
-{code}
+```
 
 Joint compilation using IntelliJ works fine.
 
 Note that uncommenting http/src/main/scala/scalaz/Version.scala:90 works around the problem, although compilation will fail during icode with an unrelated bug that seems to be triggered by -Ylog-implicits -Ydebug.
-

@@ -1,19 +1,17 @@
-Aladdin: *[http://scala-webapps.epfl.ch/bugtracking/bugs/displayItem.do?id=1297 bug 1297]*
+Aladdin: **[http://scala-webapps.epfl.ch/bugtracking/bugs/displayItem.do?id=1297 bug 1297]**
 
 == Code ==
-
-{code}
+```scala
 adriaan-moors-computer:~ adriaan$$ ledit ~/src/scala/trunk/build/quick/bin/scala
 Welcome to Scala version 2.6.0.12630.20070822-153214.
 Type in expressions to have them evaluated.
 Type :help for more information.
 
 scala> def foo[A, B, C](l: List[A], f: A => B=>B, g: B=>B=>C): List[C] = l map (g compose f)
-{code}
+```
 
 == What happened ==
-
-{code}
+```scala
 Exception in thread "main" java.util.NoSuchElementException: head of empty list
         at scala.Nil$$.head(List.scala:1193)
         at scala.Nil$$.head(List.scala:1190)
@@ -54,9 +52,9 @@ Exception in thread "main" java.util.NoSuchElementException: head of empty list
         at scala.tools.nsc.typechecker.Typers$$Typer$$$$anonfun$$57.apply(Typers.scala:1493)
         at scala.List$$.loop$$0(List.scala:244)
         at scala.List$$.mapConserve(List.scala:261)
-{code}
+```
 
-*What expected*
+**What expected**
 
 no exception (if I uncomment my change to undoTo, the crash disappears, but it does not type check) Burak pointed out why it doesn't type check.. this works fine (i.e. no type error and no crash):
 

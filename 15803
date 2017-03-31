@@ -3,8 +3,7 @@ Manifest.equals is extremely slow in scala.2.8.1.final. While there is a noticab
 
 = analysis =
 Below is a short benchmark to estimate the performance of Manifest.equals. It is not very accurate, but enough to demonstrate perforamnce slower by a factor of 50x to 100x when comared to AnyValManifest.
-
-{code}
+```scala
 import scala.reflect._
 
 
@@ -127,22 +126,22 @@ object ManifestBench {
     a.toInt
   }
 }
-{code}
+```
 
 = enhancement recommendation =
 Manifests are very likely to be cached as global variables. Starting equals() implementation with a quick test for (this eq that) should significanly improve performance when comparing cached manifests.
 
 It is possible to use a workaround method:
-{code}
+```scala
 def compare(m1: Manifest[_], m2: Manifest[_]) : Boolean = {
   if (m1 eq m2) true else (m1 == m2)
 }
-{code}
+```
 
 However nothing can be done to improve the performance of pattern matching without patching the Manifest.equals method:
-{code}
+```scala
 m match  {
   case ManifestCache.MyManifest => //
   case ManifsetCache.AnotherManfiest => //
 }
-{code}
+```

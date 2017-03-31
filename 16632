@@ -1,6 +1,5 @@
 The following works fine:
-
-{code}
+```scala
     sealed trait Nat {
       type Fold[U, F[_ <: U] <: U, Z <: U] <: U
     }
@@ -29,22 +28,20 @@ The following works fine:
     type _2 = Succ[Succ[Zero.type]]
 
     val t1: Boolean = null.asInstanceOf[ l1.type#Drop[_2]#Head ]
-{code}
+```
 
 But using Apply[N] instead of Drop[N]#Head (which should be the identical) fails:
-
-{code}
+```scala
     HLTest.scala:31: error: type mismatch;
      found   : HLTest.l1.Apply[HLTest._2]
      required: Boolean
       val t2: Boolean = null.asInstanceOf[ l1.type#Apply[_2] ]
-{code}
+```
 
 It seems that a type xs#Apply[...] is always resolved to xs#Head, completely ignoring the Drop[N] part.
 
 Using a type lambda instead of plain application as a work-around:
-
-{code}
+```scala
   //type Apply[N <: Nat] = Drop[N]#Head
   type Apply[N <: Nat] = ({ type L[X <: HList] = X#Head })#L[Drop[N]]
-{code}
+```

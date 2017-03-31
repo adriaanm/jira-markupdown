@@ -3,16 +3,16 @@ Problem in Scala 2.8.x:
 With the change to named parameters r17916 a MethodType has now a list of Symbols for the formal parameters instead of the types. 
 
 When the Reifier is trying to convert such a type to scala.reflect.MethodType it calls
-{code}
+```scala
 reflect.MethodType(params.map(reify), reify(result))
-{code}
+```
 where `reify` references the reification function for symbols which looks principally good. 
 
 However, in `reify(Symbol)` the symbol isn't reified at all, because it has an owner term set but `NoSymbol` is returned:
-{code}
+```scala
 if (sym.owner.isTerm)
       reflect.NoSymbol
-{code}
+```
 
 This makes `scala.reflect.Code` pretty much useless if you have to detect which overloaded method alternative the Scala compiler chose before because all the information is now thrown away and can't be restored.
 

@@ -1,6 +1,5 @@
 2.10.2 is also susceptible to the problem:
-
-{code}
+```scala
 package pack
 
 object Test {
@@ -25,11 +24,10 @@ abstract class C[E] {
   // found   : B&1
   // required: ?BB
 }
-{code}
+```
 
 I had to switch the order of the `empty` methods around as a `inferExprAlternative` seems to try these in a a different order in master, and if the completers trigger earlier outside of:
-
-{code}
+```scala
       case ExistentialType(_, _) =>
         try {
           skolemizationLevel += 1
@@ -37,8 +35,7 @@ I had to switch the order of the `empty` methods around as a `inferExprAlternati
         } finally {
           skolemizationLevel -= 1
         }
-
-{code}
+```
 
 This test case regresses at: b74c33eb860622e363 "SI-1803, plus documentation and cleanups in Namers, mainly in typeSig".
 

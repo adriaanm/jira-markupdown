@@ -1,13 +1,13 @@
 The way I expect it to work is following:
 
 1. User calls f interpolator with heterogeneous arguments:
-{code}
+```scala
 StringContext(...).f(1, 2.0, 'three)
-{code}
+```
 2. Typer infers useless type for T
-{code}
+```scala
 StringContext(...).f[Any](1, 2.0, 'three)
-{code}
+```
 3. Macro comes and inspects .tpe of the arguments completely disregarding inferred T. 
 
 This way tpes should get attributed with proper concrete types rather than Any. I don't expect any problems wrt heterogeneous arguments. 

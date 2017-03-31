@@ -1,4 +1,4 @@
-The exponential cascade of implicit searches is the result of the change introduced in https://issues.scala-lang.org/browse/SI-3346.
+The exponential cascade of implicit searches is the result of the change introduced in scala/bug#3346.
 
 When trying to resolve the overload for `infix_abs(Math,_arg0)`, scalac tries to see whether `def infix_abs[T:Arith](self: Rep[DenseVector[T]]): Rep[DenseVector[T]]` is applicable. It sees an implicit conversion from Tuple2 to Rep[DenseVector], and goes for it, packing Math and _arg0 into a tuple and then trying to typecheck the application of the said conversion (`implicit def tupleToDense2[A:Arith,B](t: Tuple2[A,B]): Rep[DenseVector[A]]`) to `(Math,_arg0)`.
 

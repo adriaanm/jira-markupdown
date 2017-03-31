@@ -1,6 +1,5 @@
 Error mentioned in the comment above is now fixed. However, the error from OP is still there. Plus, I've discovered another flavor of the bug:
-
-{code}
+```scala
 import scala.tools.nsc.reporters._
 import scala.tools.nsc.Settings
 import reflect.runtime.Mirror.ToolBox
@@ -16,9 +15,8 @@ object Test extends App {
   val ttree = toolbox.typeCheck(code.tree)
   toolbox.runExpr(ttree)
 }
-{code}
-
-{code}
+```
+```scala
 error: object List does not take parameters
 error: type mismatch;
  found   : Any
@@ -59,6 +57,6 @@ java.lang.Error: reflective compilation has failed
         at scala.tools.nsc.MainGenericRunner.process(MainGenericRunner.scala:92)
         at scala.tools.nsc.MainGenericRunner$.main(MainGenericRunner.scala:101)
         at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
-{code}
+```
 
 Here's why it happens. Scalac wraps the scrutinee in @unchecked, and this generates AnnotatedType, which remembers its original. Original gets reified, but then (gasp!!) it gets typechecked. Of course, typechecking fails to find List, because in the original it's just an unqualified Ident("List"), and during reflective compilation we no longer have the lexical context and the imports.

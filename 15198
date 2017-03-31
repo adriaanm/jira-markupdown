@@ -1,15 +1,15 @@
-{{scala.xml.PrettyPrinter}} seems to change the values of attributes in some instances, by replacing repeated white space. Not always, though.  
+`scala.xml.PrettyPrinter` seems to change the values of attributes in some instances, by replacing repeated white space. Not always, though.  
 
 Notice in the example below how 
  {{  
 <babba orth="B    A"/>
-{code}
+```scala
 turns into 
  {{  
 <babba orth="B A"></babba>
-{code}
-after {{PrettyPrinting}}:
-{code}
+```
+after `PrettyPrinting`:
+```scala
 Welcome to Scala version 2.8.0.Beta1-prerelease (Java HotSpot(TM) Client VM, Java 1.6.0_16).
 Type in expressions to have them evaluated.
 Type :help for more information.
@@ -25,21 +25,21 @@ res2: String =
 <abba orth="A    B">
   <babba orth="B A"></babba>
 </abba>
-{code}
+```
 
 
 Crazy width and indentation nukes the multiple whitespaces in the attributes of both nodes:
-{code}
+```scala
 scala> new xml.PrettyPrinter(2, 20)  
 res8: scala.xml.PrettyPrinter = scala.xml.PrettyPrinter@1f0f0c8
 
 scala> res8.format(res0)           
 res9: String = 
 <abba orth="A B"><babba orth="B A"></babba></abba>
-{code}
+```
 We ran into this problem when checking whether some XML attributes were identical to the original input.
 
-I guess you should be able to trust {{Pretty Mr Printer}} not to change the values of any attributes? 
+I guess you should be able to trust `Pretty Mr Printer` not to change the values of any attributes? 
 
 Since I'm far from an expert in XML, I might be wrong about what is the correct way of treating whitespace inside attribute values.  Sorry if this already works according to the XML specs.
 

@@ -1,22 +1,21 @@
 I looked into this, but I guess I didn't figure anything Jason doesn't know already.
 
 The stacktrace shows that Scalac calls TypeMap.mapOver(tv) where tv is a TypeVar and tv.constr.inst is still a TypeVar, on which we recurse. Is this normal?
-
-{code}
+```scala
 //in mapOver:
       case tv@TypeVar(_, constr) =>
         if (constr.instValid) this(constr.inst)
 //this(constr.inst) reenters the same location.
-{code}
+```
 
 This recursion suggests that these links contain a loop, maybe because tv = tv.constr.inst? (TODO: run Scalac under the debugger on this code).
 
 The involved commits affect TypeVar.equals, but any further connection is unclear.
 
 Stacktrace on 2.10.2:
-{code}
+```scala
 	at scala.reflect.internal.Types$CommonOwnerMap.traverse(Types.scala:5091)
 	at scala.reflect.internal.Types$TypeTraverser.apply(Types.scala:4342)
 	at scala.reflect.internal.Types$TypeMap.mapOver(Types.scala:4237)
 [error] (los-root/compile:compile) java.lang.StackOverflowError
-{code}
+```

@@ -1,11 +1,10 @@
-It was a bug in GenASM's {{getCommonSuperclass()}}, which failed to account for the {{scala.runtime.Nothing$}} we emit for methods with {{Nothing}} return-type.
+It was a bug in GenASM's `getCommonSuperclass()`, which failed to account for the `scala.runtime.Nothing$` we emit for methods with `Nothing` return-type.
 
-The JVM-wise lub was set to {{j.l.Object}} when it should have been {{j.l.Throwable}} as shown below (lub of 
-{{j.l.Throwable}}  and {{scala.runtime.Nothing$}}  is {{j.l.Throwable}} )
+The JVM-wise lub was set to `j.l.Object` when it should have been `j.l.Throwable` as shown below (lub of 
+`j.l.Throwable`  and `scala.runtime.Nothing$`  is `j.l.Throwable` )
 
  With {{-Yinline-handlers}}, the protected minimized snippet includes two assignments to local slot 1 (ASM notation): 
-
-{noformat}
+```
 // single covered block
    L0
     ALOAD 0
@@ -19,5 +18,5 @@ The JVM-wise lub was set to {{j.l.Object}} when it should have been {{j.l.Throwa
     ALOAD 0
     INVOKEVIRTUAL Test.CertainException ()Ljava/lang/Throwable;
 . . .
-{noformat}
+```
 

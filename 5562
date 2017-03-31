@@ -1,5 +1,5 @@
 In 2.8.1 there was also this:
-{code}
+```scala
 scala> val sb = new StringBuilder ++= "Hello World"
 sb: StringBuilder = StringBuilder(H, e, l, l, o,  , W, o, r, l, d)
 
@@ -8,9 +8,9 @@ res0: String = ArrayBuffer(H, e, l, l, o,  , W, o, r, l)
 
 scala> sb.toString dropRight 1
 res1: String = Hello Worl  
-{code}
+```
 Now it acts like this:
-{code}
+```scala
 scala> val sb = new StringBuilder ++= "Hello World"
 sb: StringBuilder = Hello World
 
@@ -19,7 +19,7 @@ res0: java.lang.String = Hello Worl
 
 scala> sb.toString dropRight 1
 res1: String = Hello Worl  
-{code}
+```
 It is able to behave this way because StringBuilder is now a Builder for StringBuilders, not for Strings.
 
 A consequence of this is that .result() returns a StringBuilder.

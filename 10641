@@ -1,7 +1,6 @@
 I don't think it's directly related to overloading,  and implicit search seems completely in the clear for this one.
 This is the smallest failure I think is representative:
-
-{code}
+```scala
 class Bippy { trait Foo[A] }
 
 class Implicits(val c: Bippy) {
@@ -12,22 +11,21 @@ class Test {
   val c = new Bippy
   (new Implicits(c)).f[Int](5)(null: c.Foo[Int])
 }
-{code}
-
-{code}
+```
+```scala
 error: type mismatch;
  found   : Test.this.c.Foo[Int]
  required: _23.c.Foo[Int] where val _23: Implicits
 
          (new Implicits(c)).f[Int](5)(null: c.Foo[Int])
                                           ^
-{code}
+```
 
 adding the overloaded f produces a different error that indicates we got the existential's scope wrong:
-{code}
+```scala
  error: method f of type 
 ([A](x: A)(implicit ev: _25.c.Foo[A])Int) forSome { val _25: Implicits }
 does not take type parameters.
          (new Implicits(c)).f[Int](5)(null: c.Foo[Int])
                              ^
-{code}
+```

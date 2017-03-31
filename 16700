@@ -1,18 +1,18 @@
-I have my own {{MyPage}} extending {{scala.swing.TabbedPane.Page}}. When I add new page to {{TabbedPane}}:
-{code}
+I have my own `MyPage` extending `scala.swing.TabbedPane.Page`. When I add new page to `TabbedPane`:
+```scala
 pages += new MyPage
-{code}
+```
 
 Later, I can not use my pages by this way:
-{code}
+```scala
 for (page <- tabbedPane.pages) {
   if (page.isInstanceOf[MyPage])
     //
 }
-{code}
+```
 
-Look at {{TabbedPane.scala}}, I see that:
-{code}
+Look at `TabbedPane.scala`, I see that:
+```scala
 object pages extends BufferWrapper[Page] {
 
   ...
@@ -20,7 +20,7 @@ object pages extends BufferWrapper[Page] {
     UIElement.cachedWrapper[Component](peer.getComponentAt(n).asInstanceOf[javax.swing.JComponent]), 
     peer.getToolTipTextAt(n))
 }
-{code}
+```
 
 As my knowledge/ opinion, this is a bug. So please fix this. If you don't consider this is bug, please explain me why.
 

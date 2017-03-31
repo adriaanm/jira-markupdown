@@ -1,12 +1,11 @@
 OK, I'm pretty sure the issue is that makeSpecializedMembers/specName is linking the type params to the wrong class. For example:
-
-{code}
+```scala
 [log explicitouter] creating tree for C2$mcLV$sp.<init>
 [log explicitouter] specName(value v) env: Map(type A -> A$sp, type B -> scala.this.Unit) tvars: Set(type A)
 [log explicitouter] specName #2 Map(C2.A -> C2$mcLZ$sp.A$sp, C2.B -> scala.Unit)
 [log explicitouter] specName(value w) env: Map(type A -> A$sp, type B -> scala.this.Unit) tvars: Set(type B)
 [log explicitouter] specName #2 Map(C2.A -> C2$mcLZ$sp.A$sp, C2.B -> scala.Unit)
-{code}
+```
 
 (I added the "specName #2" log line which maps the value TypeRef into its symbol's fullName)
 

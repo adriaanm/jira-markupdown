@@ -1,16 +1,14 @@
 Hi,
 
 nesting a java annotation inside a scala StaticAnnotation is not allowed (I'll have to improve the error message). The reason is that arguments to scala annotations are type checked just like any other code. So if you write
-
-{code}
+```scala
 @ScalaAnnotation(new JavaAnnotation(arg1 = 1, arg2 = "two"))
-{code}
+```
 
 you will get an error
-
-{code}
+```scala
 "too many arguments for constructor JavaAnnotation"
-{code}
+```
 
 which is correct; the java annotation class does not have such a constructor. The reason why it works for non-nested java annotations is that we "abuse" the constructor / named arguments syntax for creating java annotations, so we don't actually type check it as an ordinary constructor call in that case.
 
@@ -40,4 +38,4 @@ Replying to [comment:20 julian.eberius]:
 > }
 > }}
 > 
-> I tried to implement the TargetedAnnotation from SI-1846, but for this I need to put complex java annotations inside a scala annotation.
+> I tried to implement the TargetedAnnotation from scala/bug#1846, but for this I need to put complex java annotations inside a scala annotation.

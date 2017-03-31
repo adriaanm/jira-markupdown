@@ -4,15 +4,15 @@ I mean that BigInt.equals(that: Any) iff "this" and "that" represent the same ra
 
 However, this is not always so.
 The value 2^64 can be represented exactly both by BigInt, Float and Double, but the assertions below fails.
-{code}
+```scala
 def testBigIntEquals {
  val bi = BigInt(1) << 64
  assert(bi == bi.toFloat)
  assert(bi == bi.toDouble)
 }
-{code}
+```
 The value 2^53 + 1 doesn't equal to 2^53 but the assertions below fails too
-{code}
+```scala
 def testBigIntEquals2 {
  val l = 1L << 53
  val f = l.toFloat
@@ -21,7 +21,7 @@ def testBigIntEquals2 {
  assert(bi != f)
  assert(bi != d)
 }
-{code}
+```
 
 I would like the same for equality between primitives too, but I understand
 the burden of compatibility with fuzzy Java definition of operators

@@ -1,6 +1,5 @@
-@Rene: Your problem is also fixed by Pauls experimental {{-Ybreak-cycles}} option.
-
-{code}
+@Rene: Your problem is also fixed by Pauls experimental `-Ybreak-cycles` option.
+```scala
   ~/code/scratch1 tail build.sbt test.scala
 ==> build.sbt <==
 libraryDependencies += "com.indextank" % "indextank-java" % "1.0.9"
@@ -15,19 +14,18 @@ object Test {
   ~/code/scratch1 scala-hash origin/master -nc -classpath /Users/jason/.ivy2/cache/com.indextank/indextank-java/jars/indextank-java-1.0.9.jar:/Users/jason/.ivy2/cache/com.googlecode.json-simple/json-simple/jars/json-simple-1.1.jar -Ybreak-cycles test.scala
 [info] origin/mas => /Users/jason/usr/scala-v2.11.0-M2-411-g9a2f6c7
 warning: Breaking cycle in base class computation of class IndexTankClient in com.flaptor.indextank.apiclient (List(class IndexTankClient, trait ApiClient, class Object, class Any))
-{code}
+```
 
 Unfortunately that option is not available in 2.10.x.
 
 Another way to break the cycle appears to be:
-
-{code}
+```scala
 import com.flaptor.indextank.apiclient.IndexTankClient
 object Test {
   def dummy[A]: Any = dummy[IndexTankClient];
 
   new IndexTankClient("")
 }
-{code}
+```
 
 

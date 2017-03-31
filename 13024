@@ -1,6 +1,5 @@
 I get an assertion failed error when trying to compile the following code:
-
-{code}
+```scala
 def leaves[V, T[_]](root: T[V], children: T[V] => Option[Iterable[T[V]]], 
   v: T[V] => V): Stream[V] = {
    children(root) match {
@@ -8,11 +7,10 @@ def leaves[V, T[_]](root: T[V], children: T[V] => Option[Iterable[T[V]]],
      case Some(e) => e.toStream.flatMap((x) => leaves(x, children, v))
    }
 }
-{code}
+```
 
 The stack trace is:
-
-{code}
+```scala
 java.lang.AssertionError: assertion failed
     at scala.Predef$$.assert(Predef.scala:91)
     at scala.tools.nsc.typechecker.Infer$$Inferencer.qualify$$1(Infer.scala:717)
@@ -111,4 +109,4 @@ java.lang.AssertionError: assertion failed
     at org.apache.tools.ant.Main.startAnt(Main.java:183)
     at org.apache.tools.ant.launch.Launcher.run(Launcher.java:197)
     at org.apache.tools.ant.launch.Launcher.main(Launcher.java:56)
-{code}
+```

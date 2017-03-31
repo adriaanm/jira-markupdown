@@ -1,9 +1,9 @@
-I see that this is a result of SI-3663 and the description "disregard package nesting for access check of java syms" makes it sound like it's intentional.  But it is not at all consonant with my impression of how java access is supposed to be mapped into scala.  If the spec carves out an exception for java here I can't find it, but what I can find is martin's source comment.  I expanded it recently so I'll rewind to the pure martin one so there is no ambiguity.
-{code}
+I see that this is a result of scala/bug#3663 and the description "disregard package nesting for access check of java syms" makes it sound like it's intentional.  But it is not at all consonant with my impression of how java access is supposed to be mapped into scala.  If the spec carves out an exception for java here I can't find it, but what I can find is martin's source comment.  I expanded it recently so I'll rewind to the pure martin one so there is no ambiguity.
+```scala
 Here's a tanslation of Java's accessibility modifiers:
      * Java private:   PRIVATE flag set, privateWithin == NoSymbol
      * Java package:   no flag set, privateWithin == enclosing package
      * Java protected:  PROTECTED flag set, privateWithin == enclosing package
      * Java public:   no flag set, privateWithin == NoSymbol
-{code}
+```
 Even if the limitation on package-scoped access from a nested package was intentional (which I assume it was not) it cannot be correct that S2, which subclasses J, cannot access a protected member.

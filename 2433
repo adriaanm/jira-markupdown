@@ -2,18 +2,18 @@ Replying to [comment:10 dragos]:
 > It's already there after explicit outer (I renamed 'e' to 'eee' to be easier to spot). There's only one appearance of 'eee', when it's used as a return value from a case branch:
 
 I still can't see the pattern matcher involvement.  I assume you're right, but I can't even try to fix it without first figuring out where. When I compile 2429B the context surrounding what you are calling eee is:
-{code}
+```scala
                         {
                           val e: Bug2429B.T1 = temp2;
                           body%0(e){
                             e
                           }
                         }
-{code}
+```
 Which looks normal to me, e there is a parameter to a LabelDef.
 
 When I put in the commented out Seq[T] type annotation and diff the output, the first interesting difference isn't until here:
-{code}
+```scala
 <     def item(text: Bug2429B#TSeq): Bug2429B#TSeq = Bug2429B.this.TSeq.fromSeq(immutable.this.Nil.map({
 <       (new anonymous class $$anonfun$$item$$1(e$$1): Function1)
 <     }, immutable.this.List.builderFactory()).$$asInstanceOf[Seq]());
@@ -21,18 +21,18 @@ When I put in the commented out Seq[T] type annotation and diff the output, the 
 >     def item(text: Bug2429B#TSeq): Bug2429B#TSeq = Bug2429B.this.TSeq.fromSeq((immutable.this.Nil.map({
 >       (new anonymous class $$anonfun$$item$$1(): Function1)
 >     }, immutable.this.List.builderFactory()).$$asInstanceOf[Seq](): Seq));
-{code}
+```
 In the crashy case it thinks "class $$anonfun$$item$$1" takes a constructor argument e$$1.  But that's not until lambdalifter.  If that's somehow leaking from a pattern matcher local variable I could use some clue into how that takes place.  In explicitouter it looks like this:
-{code}
+```scala
                           val e: Bug2429B.T1 = temp2;
                           body%0(e){
                             e
                           }
-{code}
+```
 In lambdalifter that becomes this:
-{code}
+```scala
                         val e: Bug2429B#T1 = temp2;
                         body%0(e){
                           $$anonfun$$item$$1.this.e$$1
                         }
-{code}
+```

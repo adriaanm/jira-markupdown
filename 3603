@@ -1,29 +1,25 @@
 The crux of the problem appears to be in `inferExpressionInstance` when called with these arguments:
-
-{code}
+```scala
 tree = "test.this.ListMA[Option[Int]]((immutable.this.Nil: List[Option[Int]])).sequence[N, B]"
 tparams = "List(type N, type B)"
 pt = "Option[List[Int]]"
 keepNothings = false
-{code}
+```
 
 It gets to a point where:
-
-{code}
+```scala
 detargs = "List(N, Int)"
 detparams = "List(type B)"
-{code}
+```
 
 Should there be an invariant that these lists are the same length?
 
 This mutates tree to:
-
-{code}
+```scala
 test.this.ListMA[Option[Int]]((immutable.this.Nil: List[Option[Int]])).sequence[N, N]
-{code}
+```
 
 and returns:
-
-{code}
+```scala
 undetparams$$3 = "List(type N)"
-{code}
+```

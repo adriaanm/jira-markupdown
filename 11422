@@ -1,6 +1,6 @@
 There is another thing bugging me with this bug.
-Why would {{Future.apply}} body throw an {{InterruptedException}} in the first place? Doesn't that mean that the asynchronous code that completes the {{Future}} was blocking? If so, that code, such as {{Thread.sleep}}, should have been wrapped in the {{blocking}} call:
+Why would `Future.apply` body throw an `InterruptedException` in the first place? Doesn't that mean that the asynchronous code that completes the `Future` was blocking? If so, that code, such as `Thread.sleep`, should have been wrapped in the `blocking` call:
 
 http://docs.scala-lang.org/sips/completed/futures-promises.html#blocking
 
-In that case, the {{blocking}} call should be catching the {{InterruptedException}} - if it wraps the exception into something else and rethrows, there is no need to update {{NonFatal}}.
+In that case, the `blocking` call should be catching the `InterruptedException` - if it wraps the exception into something else and rethrows, there is no need to update `NonFatal`.

@@ -2,8 +2,7 @@
 
 
 When the following ScalaTest is executed from within Intellij then an exception is throws (stacktrace see below) or it deadlocks if executed from within sbt (jstack output is attached).
-
-{code}
+```scala
 package eu.swdev.play.form
 
 import org.scalatest.FunSuite
@@ -37,12 +36,11 @@ class ReflectionTest extends FunSuite {
     val x = form2.g1.f1 // comment this line in order to make the test pass
   }
 }
-{code}
+```
 
 The really strange thing is that the check passes if the last line, i.e. the val x = ... assignment is commented.
 Stacktrace when executing test using Intellij:
-
-{code}
+```scala
 scala.reflect.internal.FatalError: no-symbol does not have an owner
 	at scala.reflect.internal.SymbolTable.abort(SymbolTable.scala:49)
 	at scala.reflect.internal.Symbols$NoSymbol.owner(Symbols.scala:3248)
@@ -145,5 +143,5 @@ scala.reflect.internal.FatalError: no-symbol does not have an owner
 	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
 	at java.lang.reflect.Method.invoke(Method.java:606)
 	at com.intellij.rt.execution.application.AppMain.main(AppMain.java:120)
-{code}
+```
 

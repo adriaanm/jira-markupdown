@@ -1,17 +1,17 @@
-{{cat inference/other/BaseClass.scala}}:
-{code} 
+`cat inference/other/BaseClass.scala`:
+```scala
 package inference.other
 class BaseClass[T] protected(value: T)
-{code}
+```
 
-{{cat inference/Derived.scala}}
-{code}
+`cat inference/Derived.scala`
+```scala
 package inference
 class Derived extends other.BaseClass("value")
-{code}
+```
 
 Compile:
-{code}
+```scala
 scalac inference/other/BaseClass.scala inference/Derived.scala 
 inference/Derived.scala:3: error: constructor BaseClass in class BaseClass cannot be accessed in package inference
  Access to protected constructor BaseClass not permitted because
@@ -23,6 +23,6 @@ inference/Derived.scala:3: error: no arguments allowed for nullary constructor O
 class Derived extends other.BaseClass("value")
                                       ^
 two errors found
-{code}
+```
 
-If classes in the same package, everything is fine. If type parameter is specified {{extends other.BaseClass[String]("value")}} everything is also fine.
+If classes in the same package, everything is fine. If type parameter is specified `extends other.BaseClass[String]("value")` everything is also fine.

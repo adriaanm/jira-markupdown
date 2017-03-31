@@ -1,5 +1,5 @@
 When I try to compile following code, with a for-comprehension of mostly Try (tries). UploadResult is a case class
-{code:scala}
+```scala
 for {
      _ <- markerUtil.uploadingStarted(source, destPath, files.map(_.path)) // Try[Unit]
      inputStream <- createInputStream(files) // Try[InputStream]
@@ -8,11 +8,10 @@ for {
      _ <- deleteFiles(files) // Try[Unit]
      _ <- markerUtil.uploadedDone(source) // Try[Unit]
    } yield ()
-{code}
+```
 
 I get following output. Strangely the error happens in a completely different part of the code (in another package).
-
-{code}
+```scala
 [INFO] /vagrant/core-compute-jobs-factstore/src/main/scala:-1: info: compiling
 [INFO] Compiling 14 source files to /vagrant/core-compute-jobs-factstore/target/classes at 1422892024304
 [WARNING] warning: Class org.joda.convert.FromString not found - continuing with a stub.
@@ -110,10 +109,10 @@ I get following output. Strangely the error happens in a completely different pa
 [ERROR] error: Operation not permitted
 [WARNING] 7 warnings found
 [ERROR] two errors found
-{code}
+```
 
 However when I assign the for-comprehension to a val, it compiles without issue:
-{code:scala}
+```scala
 val result = for {
      _ <- markerUtil.uploadingStarted(source, destPath, files.map(_.path))
      inputStream <- createInputStream(files)
@@ -123,6 +122,6 @@ val result = for {
      _ <- markerUtil.uploadedDone(source)
    } yield UploadResult(inputSize, destPath)
    result
-{code}
+```
 
 I also tried it by converting the for-yield to a flatMap, I get exactly the same errors, and it also gets resolved when I assign it to a val.

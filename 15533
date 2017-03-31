@@ -1,8 +1,7 @@
 hi,
 
 i tried to extract an intricate error with collections in scala 2.8.0 final. i stripped the prerequisites down to:
-
-{code}
+```scala
 import collection.immutable.{IndexedSeq=>IIdxSeq}
 trait GE { def outputs: IIdxSeq[ UGenIn ]}
 trait UGenIn extends GE { final def outputs = Vector( this )}
@@ -31,17 +30,15 @@ def graph( in: GE ) {
     val flt = verbs.outputs.take( numChannels )
     mix( flt )
 }
-{code}
+```
 
 now if you run this line:
-
-{code}
+```scala
 graph( GVerb( Test ))
-{code}
+```
 
 you get a runtime ClassCastException :
-
-{code}
+```scala
 java.lang.ClassCastException: scala.collection.immutable.Stream$$Cons cannot be cast to scala.collection.immutable.IndexedSeq
 	at .seqOfGEToGE(<console>:32)
 	at .graph(<console>:53)
@@ -56,4 +53,4 @@ java.lang.ClassCastException: scala.collection.immutable.Stream$$Cons cannot be 
 	at java.lang.reflect.Method.invoke(Method.java:597)
 	at scala.tools.nsc.Interpreter$$Request$$$$anonfun$$loadAndRun$$1$$$$anonfun$$apply$$18.apply(Interpreter.scala:981)
 	at scala.tools.nsc.Interpreter$$Request$$$$a...
-{code}
+```

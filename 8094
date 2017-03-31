@@ -1,8 +1,7 @@
 This is interesting stuff but it's late so here go partial conclusions.
 
-To get rid of the verbose {{null push, pop, null push, pop}} (an artifact of GenICode's {{adapt(_, NullReference))}} we can use:
-
-{noformat}
+To get rid of the verbose `null push, pop, null push, pop` (an artifact of GenICode's `adapt(_, NullReference))` we can use:
+```
 object Test {
 
   def foo(a: Any) {
@@ -17,13 +16,12 @@ object Test {
 
   def main(args: Array[String]): Unit = foo(0)
 }
-{noformat}
+```
 
-The purpose of `new { bar = a }` is just to capture {{bar}} so that its type is {{ObjectRef}}.
+The purpose of `new { bar = a }` is just to capture `bar` so that its type is `ObjectRef`.
 
 Resulting bytecode:
-
-{noformat}
+```
 public void foo(java.lang.Object);
   Code:
    0:   new     #16; //class scala/runtime/ObjectRef
@@ -41,14 +39,14 @@ public void foo(java.lang.Object);
   Exception table:
    from   to  target type
     18    22    12   any
-{noformat}
+```
 
 The relevant sections are:
-- the catch-clause comprises instructions 12: and 13:, they leave the contents of {{a}} on the operand stack (only) because entering a catch empties the operand stack.
-- the next instruction (the assignment to the ObjectRef's elem) expects two stack slots (thus the error msg 1 != 2), ie {{z}} and the rhs value to assign to {{z.elem}}.
+- the catch-clause comprises instructions 12: and 13:, they leave the contents of `a` on the operand stack (only) because entering a catch empties the operand stack.
+- the next instruction (the assignment to the ObjectRef's elem) expects two stack slots (thus the error msg 1 != 2), ie `z` and the rhs value to assign to `z.elem`.
 
 For non-exceptional control flow, the putfield is reached with those two values, which are pushed in 17: and 18:. Those two instructions where emitted after GenICode's genStat() finds a Select in the lhs.
 
 Guessing somewhat, the "try lifting" trick in Uncurry didn't notice that a few phases later (LambdaLift) the lhs would stop being an Ident and become a Select. Thus the try expression wasn't turned into a local method. If so, not a backend problem. 
 
-BTW `new { bar = a }` is elided from the resulting bytecode. Perhaps ... {{enterIgnoreMode()}} ?
+BTW `new { bar = a }` is elided from the resulting bytecode. Perhaps ... `enterIgnoreMode()` ?

@@ -1,11 +1,10 @@
 So... this one is a bit subtle.   It looks like the rule of 3 applies here.  If I have a generic class with a generic method, then I need a third method that also has generics to get the invalid signature.   Here's my simplifying from Option what will cause the problematic classfile to be generated:
-
-{code}
+```scala
 class A[U] { 
    def bar[B >: U](x : => B) = x
    def foo[C >: U](c : C) : C = bar(c)
 }
-{code}
+```
 
 Leads to the ever-so-helpful message:
 {{jsuereth@jsuereth-laptop:~/projects/blog/type-fun$$ scalac dummy.scala 

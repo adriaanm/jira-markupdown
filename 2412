@@ -1,6 +1,5 @@
 Daniel Mahler  reports:
-
-{code}
+```scala
 Welcome to Scala version 2.8.0.r19766-b20091122020238 (OpenJDK 64-Bit
 Server VM, Java 1.6.0_0).
 Type in expressions to have them evaluated.
@@ -59,8 +58,8 @@ scala> f
 <console>:16: error: type arguments [A] do not conform to method b's
 type parameter bounds [X <: B]
       f
-{code}
+```
 
-I determined that the fix I proposed originally does not suffice. It only checks the bounds of the type parameters that *do not occur* in the expression that's been inferred as the value for the required implicit. It should also check the implicit expression is well-typed. For example, `typedImplicit` should never return `b[A]`as a search result. type inference relies on refchecks to check type bounds, but implicit search failed to do this post-type inference validity check
+I determined that the fix I proposed originally does not suffice. It only checks the bounds of the type parameters that **do not occur** in the expression that's been inferred as the value for the required implicit. It should also check the implicit expression is well-typed. For example, `typedImplicit` should never return `b[A]`as a search result. type inference relies on refchecks to check type bounds, but implicit search failed to do this post-type inference validity check
 
 pending integration in trunk: patch is at http://github.com/adriaanm/scala/commit/68f6246d53eaeafe6d2e4f2bf5f86cc9426da4cd

@@ -1,8 +1,7 @@
 The classes in scala.util.parsing.json can only be used for parsing JSON into a domain object. It would be nice if there was a way to serialize JSONObject and JSONArray to a JSON string. Currently the .toString of those classes is a custom representation - I think it would be sufficient to change the .toString to output JSON.
 
 Here's the smallest change possible to enable that. It's not too hard to pretty-print the JSON either - I'll work on this if there's any interest.
-
-{code}
+```scala
 case class JSONObject (obj : Map[Any,Any]) extends JSONType {
   override def toString = "{" + obj.map({ case (k,v) => k + ": " + v }).mkString(", ") + "}"
 }
@@ -10,4 +9,4 @@ case class JSONObject (obj : Map[Any,Any]) extends JSONType {
 case class JSONArray (list : List[Any]) extends JSONType {
   override def toString = "[" + list.mkString(", ") + "]"
 }
-{code}
+```

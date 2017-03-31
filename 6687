@@ -1,16 +1,15 @@
-Ok, here's an example of code that might *stop* working:
-
-{code}
+Ok, here's an example of code that might **stop** working:
+```scala
 val emptyLine = """\s*(?:#.*)?""".r
 val code = """([^#]*)(?:#.*)?""".r
 def stripComments(lines: Seq[String]) = lines flatMap {
     case emptyLine => None
     case code(x)   => Some(x)
 }
-{code}
+```
 
-This will _stop working_ if matches suddenly become unanchored.
+This will *stop working* if matches suddenly become unanchored.
 
-As for lazy val, it doesn't have an impact only once. It has an impact *every time* pattern gets accessed, which is pretty much by any method called on the regex. The first time it goes through synchronization, but the other times it still has to go through a volatile flag check before retrieving the value.
+As for lazy val, it doesn't have an impact only once. It has an impact **every time** pattern gets accessed, which is pretty much by any method called on the regex. The first time it goes through synchronization, but the other times it still has to go through a volatile flag check before retrieving the value.
 
 

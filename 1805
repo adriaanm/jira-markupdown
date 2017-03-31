@@ -1,8 +1,7 @@
 It is perverse. Unfortunately, it is not easy to fix. If anyone feels like providing a patch...
 
 The problem is that a local method needs to be lifted, and right now all such methods are lifted to the enclosing class. But the JVM forbids calls to virtual methods on uninitialized instances. Here's the relevant code after lambda lifting:
-
-{code}
+```scala
    def this(): Foo = {
       Foo.this.this({
         Foo.this.bar$$1()
@@ -10,6 +9,6 @@ The problem is that a local method needs to be lifted, and right now all such me
       ()
     };
     final private[this] def bar$$1(): Int = 5;
-{code}
+```
 
 `Foo.this` is uninitialized before the call to another constructor, so we cannot call any methods on it. Some creative hacking could work around it when the defined method does not reference 'this', and make it a static method, or move it to another class. 

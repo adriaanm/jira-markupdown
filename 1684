@@ -3,7 +3,7 @@ To put that into context: I ran into the problem when I tried to write some Andr
 The workaround is to create an abstract class in Java implementing the interface which wraps accesses to the inner class. One may then implement this abstract class from Scala.
 
 In this particular case:
-{code}
+```scala
 #!java
 import android.widget.BaseAdapter;
 import android.widget.Filter;
@@ -35,8 +35,8 @@ public abstract class MyFilter<T> extends Filter{
         protected abstract int countFromData(T data);
         protected abstract T getResult(CharSequence constraint);
 }
-{code}
+```
 
-Hmm, I think I understand the problem: Scala interprets the Java class (`Test` resp. `Filter`) as a class *and* a companion object holding all the static members. So the easiest fix is not feasible - to allow implementing classes access to (protected) members of the companion object of the implemented class - because it would affect Scala code as well. So, could perhaps _protected_ static inner classes not be interpreted as (non-static) member classes as well? (What's the use case of protected static inner classes of objects in Scala?)
+Hmm, I think I understand the problem: Scala interprets the Java class (`Test` resp. `Filter`) as a class **and** a companion object holding all the static members. So the easiest fix is not feasible - to allow implementing classes access to (protected) members of the companion object of the implemented class - because it would affect Scala code as well. So, could perhaps *protected* static inner classes not be interpreted as (non-static) member classes as well? (What's the use case of protected static inner classes of objects in Scala?)
 
 BTW: Why does the import work, shouldn't that be disallowed as well?

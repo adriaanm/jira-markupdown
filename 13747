@@ -1,16 +1,14 @@
 I would like to suggest the compiler optimize the common case of for loops, that is, 
-
-{code}
+```scala
 for (var <- Range [by step])
 for (var <- int to int [by step])
 for (var <- int until int [by step])
-{code}
+```
 
 to use while loops under the covers instead of. Currently, nested for loops using ranges/iterators are sometimes an order of magnitude slower than while loops. However, while loop constructs for iterating over arrays are very cumbersome, and the functional style (foreach) is also cumbersome and introduces a lot of function call overhead as well.
 
 The following two matrix multipication implementations
-
-{code}
+```scala
   def matMulUsingIterators (
        a : Array[Array[Double]],
        b : Array[Array[Double]],
@@ -60,11 +58,10 @@ The following two matrix multipication implementations
         }
     }
   }
-{code}
+```
 
 are much slower than the same algorithm coded with while loops:
-
-{code}
+```scala
   def matMulUsingWhileLoop (
       a : Array[Array[Double]],
       b : Array[Array[Double]],
@@ -99,7 +96,7 @@ are much slower than the same algorithm coded with while loops:
         j += 1;
     }
   }
-{code}
+```
 
 but the while loop code is more complex and error prone.
 
@@ -108,12 +105,11 @@ added some explicit semis but might have missed some;
 I'll try attaching actual working source code)
 
 Running this while measuring time in nanoseconds:
-
-{code}
+```scala
 Iterators   2,807,815,301ns
 Ranges      2,789,958,191ns
 While Loop  190,778,574ns
-{code}
+```
 
 MatMul by Iterators is 14 times as slow as with while loops.
 

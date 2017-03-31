@@ -1,15 +1,13 @@
 Well, it's not that simple. Apparently, variables on the stack can still be GC roots. At least that's what JProfiler tells me. There's a very simple way to test this, simply replace Stream.foreach to
-
-{code}
+```scala
   override final def foreach(f: A => Unit) {
     if (isEmpty) {}
     else { f(head); tail.foreach(f) }
   }
-{code}
+```
 
 Tail call optimization turns the last call into a jump, and replaces the 'this' by `tail`. This should be even better than nulling the 'this' :) Then, the following program has a single GC root for cons objects (according to JProfiler):
-
-{code}
+```scala
 object Main {
   def main(args: Array[String]) {
     var n = 0
@@ -20,6 +18,6 @@ object Main {
     }
   }
 }
-{code}
+```
 
 I'm not sure why (and maybe JProfiler is not the best tool...). I might be missing something obvious, but right now I don't see any other references to the first stream cell than the one inside the `main` method's stack, before calling `foreach`.

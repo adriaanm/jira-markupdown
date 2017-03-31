@@ -1,12 +1,12 @@
 The source code and documentation of scala.collections.mutable.PriorityQueue states that for .iterator and various dependent functions (notably .toList and .toString) elements are returned in priority order, which is not what the implementation actually does. Other methods, in particular the critical methods .dequeue() and .dequeueAll() behave correctly.
 
 To reproduce:
-{code}
+```scala
      @Test def test() {
         val pq = new scala.collections.mutable.PriorityQueue[Int]()
         pq ++= List( 9,1,8,2,7,3 )
         println( pq.iterator.mkString(",") ) // = "9,7,8,1,2,3"
      }
-{code} 
+```
 
 Origin: came up via http://stackoverflow.com/questions/7792189/scala-what-is-the-most-appropriate-data-structure-for-sorted-subsets/7792837#7792837

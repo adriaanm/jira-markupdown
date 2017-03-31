@@ -1,22 +1,20 @@
 I started with the following two methods:
-
-{code:java}
+```java
 def getName: String = getString match {
   case None => return ""
   case Some(str) => return str
 }
 
 def getString: Option[String] = Some("abc")
-{code}
+```
 
 Then I changed the first method to
-
-{code:java}
+```java
 lazy val getName: String = getString match {
   case None => return ""
   case Some(str) => return str
 }
-{code}
+```
 
 Unfortunately, I forgot to remove the return statement. In this case, scala compiler should stop with the message "return outside method definition", but what it really did was:
 

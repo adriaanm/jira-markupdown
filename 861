@@ -1,5 +1,5 @@
 Seems to be a good helping of compiler/repl non-determinism revealed by this example.  At the time of martin's comment above, we had consistent behavior between three things: scalac a.scala, scala a.scala, and pasting the contents of a.scala into a repl. (Here's a.scala.)
-{code}
+```scala
 object T1053 {
   trait T[A] { 
     trait U { 
@@ -10,9 +10,9 @@ object T1053 {
   val x : ({ type V = T[this.type] })#V = null
   val y = new (x.type)#U { }
 }
-{code}
+```
 But as time marches onward, things change, and not consistently.  As of r20444, "scala a.scala" still fails as above, but scalac and pasting it into the interpreter both work.
-{code}
+```scala
 scala> object T1053 {
      |   trait T[A] { 
      |     trait U { 
@@ -27,9 +27,9 @@ defined module T1053
 
 scala> T1053.x
 res0: T1053.T[_2.type] forSome { val _2: AnyRef{type V = T1053.T[this.type]} } = null
-{code}
+```
 As of r20445 and up to and including beta1, compiling still succeeds, "scala a.scala" still fails, and pasting it into the repl crashes it.  Three distinct behaviors.
-{code}
+```scala
 [paulp@jon bisector (master)]$$ /scala/bisector/builds/trunk/r20445/bin/scala /scala/trac/1053/a.scala
 (fragment of a.scala):8: error: type mismatch;
  found   : Null(null)
@@ -62,4 +62,4 @@ Exception in thread "main" scala.tools.nsc.symtab.Types$$TypeError: type mismatc
 	at scala.tools.nsc.typechecker.Infer$$Inferencer.error(Infer.scala:270)
 	at scala.tools.nsc.typechecker.Infer$$Inferencer.typeError(Infer.scala:280)
 	at scala.tools.nsc.typechecker.Infer$$Inferencer.typeErrorTree(Infer.scala:289)
-{code}
+```

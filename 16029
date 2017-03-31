@@ -1,12 +1,12 @@
-{code}
+```scala
 // script.scala
 class Foo { }
 object Bar extends App { 
   val cbn = new Foo()
 }
 // no crash if we use a main method instead of App
-{code}
-{code}
+```
+```scala
 % scala29 -nc script.scala 
 java.lang.Error: symbol value $$outer does not exist in Main$$$$anon$$1$$Bar$$delayedInit$$body.apply
 	at scala.tools.nsc.symtab.SymbolTable.abort(SymbolTable.scala:35)
@@ -19,9 +19,9 @@ java.lang.Error: symbol value $$outer does not exist in Main$$$$anon$$1$$Bar$$de
 	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase.scala$$tools$$nsc$$backend$$icode$$GenICode$$ICodePhase$$$$genLoad(GenICode.scala:834)
 	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$genLoadArguments$$1.apply(GenICode.scala:1221)
 	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$genLoadArguments
-{code}
+```
 Since it's probably a consequence of the wrapping, here's -Xprint:parser showing it.
-{code}
+```scala
 package <empty> {
   object Main extends scala.ScalaObject {
     def <init>() = {
@@ -56,4 +56,4 @@ package <empty> {
     }
   }
 }
-{code}
+```

@@ -1,6 +1,5 @@
 If you want to systematically find methods that should be overriden methods, reflection is pretty handy:
-
-{code}
+```scala
 scala> val u = reflect.runtime.universeu: scala.reflect.api.JavaUniverse = scala.reflect.runtime.JavaUniverse@5d38c394
 
 scala> val t = u.typeOf[Stream[Any]]
@@ -209,8 +208,8 @@ scala> println(t.members.map(sym => (sym.name.decoded, sym.owner.fullName, t.bas
           withFilter inherited from s.c.immutable.Stream
                  zip inherited from s.c.immutable.Stream
         zipWithIndex inherited from s.c.immutable.Stream
-{code}
+```
 
 For Stream, I'm almost willing to add a test case that pins down this output, so that each new method added above it fails the build and forces us to consciously choose whether or not to override.
 
-For related reading, see SI-4290
+For related reading, see scala/bug#4290

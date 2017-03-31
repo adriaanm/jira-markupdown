@@ -1,17 +1,17 @@
 There are three test failures with the modified (or unmodified) patch in effect.
-{code}
+```scala
 files/pos/manifest1.scala
 files/run/names-defaults.scala
 files/jvm/manifests.scala
-{code}
+```
 Two involve manifests, and one looks like an issue with implicits+defaults where there is no implicit available: the method it's trying to call is:
-{code}
+```scala
   def test9(implicit x: Int = 1, z: String = "klfj") = z + x
 
 // and calling it outputs:
 a.scala:216: error: type mismatch;
  found   : <notype>
  required: String
-{code}
+```
 
 I put the failure output up here: http://www.improving.org/scala/bug2201-output.txt .  I don't have enough of a handle on this to intuit what else needs to be done.

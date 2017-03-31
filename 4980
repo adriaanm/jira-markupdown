@@ -1,8 +1,8 @@
 Inspection reveals this is happening because java is burning us once again: scala is generating the instanceof operator, and according to the JVM an Array[String] is indeed an Array[Object].
 
 I became uncertain and verified with the specification that this should not match. It seems pretty clear that it should not.
-{code}
+```scala
 First, unlike arrays in Java or C#, arrays in Scala are not co-variant; That is, S <: T does not imply Array[S] <: Array[T ] in Scala. However, it is possible to cast an array of S to an array of T if such a cast is permitted in the host environment.
 For instance Array[String] does not conform to Array[Object], even though String conforms to Object. However, it is possible to cast an expression of type Array[String] to Array[Object], and this cast will succeed without raising a ClassCastException. Example:
-{code}
+```
 I believe I know how to fix it, and I will now investigate this belief.

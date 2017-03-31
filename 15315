@@ -1,5 +1,5 @@
 The following code does not compile
-{code}
+```scala
 trait A[@specialized(Int) T] {
   def value: T
   def getWith[@specialized(Int) Z](f: T => Z) = f(value)
@@ -8,16 +8,16 @@ class C extends A[Int] {
   var value = 10
   override def getWith[@specialized(Int) Z](f: Int => Z) = f(value)
 }
-{code}
+```
 yielding the error
-{code}
+```scala
 <console>:8: error: double definition:
 method getWith:[Z](f: (Int) => Z)Z and
 method getWith:[Z](f: (Int) => Z)Z at line 8
 have same type
          override def getWith[@specialized(Int) Z](f: Int => Z) = f(value)
                       ^
-{code}
+```
 
 If I remove either of the specialized annotations from the declaration of the trait A (either on T or Z), it works.
 

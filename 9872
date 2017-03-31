@@ -1,6 +1,5 @@
 Here's another manifestation:
-
-{code}
+```scala
 package test
 
 import language.implicitConversions
@@ -9,13 +8,12 @@ object Test {
   type T = scala.languageFeature.implicitConversions
   implicit def foo(a: Int) = 0 
 }
-{code}
+```
 
-Hyperlink through the type {{implicitConversions}}, then edit this file to trigger a typechecking pass, and the feature warning is emitted.
+Hyperlink through the type `implicitConversions`, then edit this file to trigger a typechecking pass, and the feature warning is emitted.
 
 Using this test:
-
-{code}
+```scala
 import scala.tools.partest._
 
 object Test extends CompilerTest {
@@ -50,11 +48,10 @@ object Test extends CompilerTest {
   println(symFields.mkString("\n"))
 
 }
-{code}
+```
 
-I see these non-top-level symbols cached in {{Definitions}}:
-
-{noformat}
+I see these non-top-level symbols cached in `Definitions`:
+```
 Testing individual files
 testing: [...]/files/run/t7678.scala                                  [FAILED]
 (ExistentialsFeature,trait existentials)
@@ -161,6 +158,6 @@ testing: [...]/files/run/t7678.scala                                  [FAILED]
 (Boolean_not,method unary_!)
 (Boolean_or,method ||)
 (Boolean_and,method &&)
-{noformat}
+```
 
-I wonder whether the fix for this should be in {{Definitions}} (changing vals to defs), or in {{findMirrorSymbol}}.
+I wonder whether the fix for this should be in `Definitions` (changing vals to defs), or in `findMirrorSymbol`.

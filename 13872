@@ -1,15 +1,14 @@
 Given the following Java class:
-
-{code}
+```scala
 package a;
 
 public class A {
     int f = 42;
 }
-{code}
+```
 
 and the following Scala class:
-{code}
+```scala
 package b
 
 object B {
@@ -19,11 +18,10 @@ object B {
         println(x.f)
     }
 }
-{code}
+```
 
 Then scalac accepts the program, but the JVM throws an exception at runtime:
-
-{code}
+```scala
 wehr@anaehoomalu:~/tmp$$ scalac a/A.java b/B.scala 
 wehr@anaehoomalu:~/tmp$$ javac a/A.java
 wehr@anaehoomalu:~/tmp$$ scala b.B
@@ -43,14 +41,13 @@ wehr@anaehoomalu:~/tmp$$ scalac -version
 Scala compiler version 2.7.2.final -- Copyright 2002-2008, LAMP/EPFL
 wehr@anaehoomalu:~/tmp$$ scala -version
 Scala code runner version 2.7.2.final -- Copyright 2002-2008, LAMP/EPFL
-{code}
+```
 
 Changing the visibility modifier of f in class a.A to protected yields a compile-time error (as expected):
-
-{code}
+```scala
 wehr@anaehoomalu:~/tmp$$ scalac a/A.java b/B.scala
 b/B.scala:7: error: variable f cannot be accessed in a.A
         println(x.f)
                   ^
 one error found
-{code}
+```

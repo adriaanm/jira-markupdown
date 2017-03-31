@@ -1,13 +1,12 @@
-{code}
+```scala
 trait Foo[C[_]]
 
 object Test extends App {
   import scala.reflect.runtime.universe._
   typeTag[Foo[({type l[X] = (Int, X)})#l]]
 }
-{code}
-
-{code}
+```
+```scala
 C:\Projects\Kepler\sandbox @ topic/dont-unexpand-macros>scalac -Xlog-implicits Test.scala
 materializing requested reflect.runtime.universe.type.TypeTag[Foo[[X](Int, X)]] using `package`.this.materializeTypeTag[Foo[[X](Int, X)]](scala.reflect.runtime.`package`.universe)
 materializing requested reflect.runtime.universe.type.TypeTag[X] using `package`.this.materializeTypeTag[X](scala.reflect.runtime.`package`.universe)
@@ -20,4 +19,4 @@ Test.scala:5: error: No TypeTag available for Foo[[X](Int, X)]
   typeTag[Foo[({type l[X] = (Int, X)})#l]]
          ^
 one error found
-{code}
+```

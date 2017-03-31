@@ -3,15 +3,13 @@
 
 === What is the expected behavior? ===
 I would expect something like:
-
-{code}
+```scala
 UnicodeEscape ::= \u{u} hexDigit hexDigit hexDigit hexDigit
-{code}
+```
 
 
 See JSL 3.3:
-
-{code}
+```scala
 UnicodeInputCharacter:
 UnicodeEscape
 RawInputCharacter
@@ -20,34 +18,29 @@ UnicodeEscape:
 UnicodeMarker:
 u
 UnicodeMarker u
-{code}
+```
 
 
 === What do you see instead? ===
 Instead we have this:
-
-{code}
+```scala
 UnicodeEscape ::= \{\\}u{u} hexDigit hexDigit hexDigit hexDigit
-{code}
+```
 
 
 === Additional information ===
 This is quite possibly the issue being discussed here: http://scala-programming-language.1934581.n4.nabble.com/Unicode-escapes-td2217591.html. However, I don't see that a ticket was over opened or a correction made.
 
 If multiple backslashes was truly allowed then this program would compile:
-
-
-{code}
+```scala
 object Program {
   val \\\u1234 = ""
 }
-{code}
+```
 
 
 Instead we get:
-
-
-{code}
+```scala
 /home/yuvi/Desktop/Program.scala:2: error: illegal start of simple pattern
   val \\\u1234 = ""
                ^
@@ -55,8 +48,7 @@ Instead we get:
 }
 ^
 two errors found
-
-{code}
+```
 
 
 === What versions of the following are you using? ===

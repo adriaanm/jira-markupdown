@@ -1,9 +1,9 @@
 There are quite a few problems here, and they are really tricky to fix.
 
 The first problem is that `B` in this example actually refers to different symbols: that in `(A, B)` refers to the value type of the map, whilst that in `=> B` refers to the method's type parameter, so that the signature really should be read as:
-{code}
+```scala
 map [X] (f: ((A, B)) ⇒ X) : Map[X]
-{code}
+```
 This problem is an internal Scaladoc problem. It is not specific to use cases: in fact, the exact same problem appears with the full signature for that method. I don't know how to fix it best. Most likely, it requires a mechanism whereby a type that is transformed using "as seen from" (to adapt it to the local context) should be somehow checked to make sure that the same name does not refer to different symbols at that point.
 
 The second problem is specific to use cases. `Map[X]` is obviously a wrong type as `Map` takes two type parameters. Method `map` is inherited from `TraversableLike`, where the return type of the use case is defined as `$$Coll[B]` (the variable representing the current collection, with elements of type B). In `TraversableLike`, this looks fine because most of its subclasses are collections that only take a single type parameter. But `Map` is an exception, and there is no mechanism to change the expansion of `$$Coll` when the number of parameters changes. A solution would be to override `map` in `Map` so as to refine the use case, but that would introduce a refinement only to satisfy documentation. Maybe Scaladoc should allow overriding documentation separately from overriding actual members.

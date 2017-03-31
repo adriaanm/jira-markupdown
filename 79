@@ -1,6 +1,5 @@
 The first two examples crash the compiler:
-
-{code}
+```scala
 scala> val (is: Option[String], not: Option[String]) = ("a", "b") match {
      |   case ("b", _) => (Some("Dog"), None)
      |   case _ => (Some((1,2)), Some("Dog"))
@@ -31,9 +30,8 @@ java.lang.Error: symbol value x$$1 does not exist in <init>
 	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:69)
 	at scala.collection.LinearSeqOptimized$$class.foreach(LinearSeqOptimized.scala:59)
 	at scala.collection.immutable.List.foreach(List.scala:45)
-{code}
-
-{code}
+```
+```scala
 scala> val (tis, not: Option[String]) = ("a", "b") match {
      |   case ("b", _) => (Some("Dog"), None)
      |   case _ => (Some((1,2)), Some("Dog"))
@@ -64,23 +62,22 @@ java.lang.Error: symbol value x$$1 does not exist in <init>
 	at scala.tools.nsc.backend.icode.GenICode$$ICodePhase$$$$anonfun$$gen$$1.apply(GenICode.scala:69)
 	at scala.collection.LinearSeqOptimized$$class.foreach(LinearSeqOptimized.scala:59)
 	at scala.collection.immutable.List.foreach(List.scala:45)
-{code}
+```
 
 and the last two don't compile:
-{code}
+```scala
 scala> for (i: Int <- List('symbol, "string", true)) yield i // compiles
 <console>:8: error: type mismatch;
  found   : (Int) => Int
  required: (Any) => ?
        for (i: Int <- List('symbol, "string", true)) yield i // compiles
                    ^
-{code}
-
-{code}
+```
+```scala
 scala> for (i: Int <- List(false, true, false)) yield i // error
 <console>:8: error: type mismatch;
  found   : (Int) => Int
  required: (Boolean) => ?
        for (i: Int <- List(false, true, false)) yield i // error
                    ^
-{code}
+```

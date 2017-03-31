@@ -1,8 +1,7 @@
-Looking at the compiled bytecode, {{Product}} really isn't listed as a direct interface. I presume the scalac compiler has removed it (but not from the Signature). The tool javap confusingly lists the generic direct interfaces, not the plain direct interfaces.
+Looking at the compiled bytecode, `Product` really isn't listed as a direct interface. I presume the scalac compiler has removed it (but not from the Signature). The tool javap confusingly lists the generic direct interfaces, not the plain direct interfaces.
 
-With a lower-level tool, you should see the actual interfaces. E.g. with ProGuard's {{-dump}} option:
-
-{code}
+With a lower-level tool, you should see the actual interfaces. E.g. with ProGuard's `-dump` option:
+```scala
 java -jar proguard5.0/lib/proguard.jar \
   -dontshrink \
   -dontoptimize \
@@ -11,10 +10,10 @@ java -jar proguard5.0/lib/proguard.jar \
   -dump \
   -injars lib/scala-library.jar'(scala/Tuple1.class)' \
 | less
-{code}
+```
 
 You'll then see
-{code}
+```scala
 - Program class: scala/Tuple1
   Superclass:    java/lang/Object
 .....
@@ -25,5 +24,5 @@ Interfaces (count = 2):
 .....
   - Signature attribute:
     - Utf8 [<T1:Ljava/lang/Object;>Ljava/lang/Object;Lscala/Product1<TT1;>;Lscala/Product;Lscala/Serializable;]
-{code}
-Tools like asm or jad may provide the same information. Other tell-tale sign: {{scala/Product}} isn't present as a class constant in the bytecode.
+```
+Tools like asm or jad may provide the same information. Other tell-tale sign: `scala/Product` isn't present as a class constant in the bytecode.

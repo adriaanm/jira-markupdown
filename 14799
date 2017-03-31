@@ -3,48 +3,48 @@ Using Scala version 2.8.0.r20015-b20091205091141 (Java !HotSpot(TM) Server VM, J
 Given:
 
 package.scala
-{code}
+```scala
 package object d {
   val x = 4
 }
-{code}
+```
 
 T.scala
-{code}
+```scala
 package d
 object T {
   val y: Int = x
   def main(args: Array[String]) = println(y)
 }
-{code}
+```
 
 Run
-{code}
+```scala
 scalac -make:transitive *.scala
-{code}
+```
 
 `.scala_dependencies` contains
-{code}
+```scala
 T.scala -> T.scala
 package.scala -> package.scala
-{code}
+```
 
-It should contain {{T.scala -> package.scala}} as well.
+It should contain `T.scala -> package.scala` as well.
 
 With refined build manager:
 
  * Compile T.scala, package.scala
  * Modify package.scala to be
-{code}
+```scala
 package object d {
   val x = "4"
 }
-{code}
+```
  * Mark package.scala updated.  T.scala is not recompiled.
  * Explicitly marking T.scala updated gives the expected error
-{code}
+```scala
 T.scala:5: error: type mismatch;
  found   : java.lang.String
  required: Int
         val y: Int = x
-{code}
+```

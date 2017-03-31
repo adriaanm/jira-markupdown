@@ -1,21 +1,18 @@
 Possibly regression in scala 2.10/2.11/2.12
 See:
 http://stackoverflow.com/a/25738632/651140
-{code}
+```scala
 // Java API
 public interface JavaAPI {
   JustSomeAPISpecificType clone();
 }
-{code}
-
-{code}
+```
+```scala
 public enum JustSomeAPISpecificType{
 INSTANCE
 }
-
-{code}
-
-{code}
+```
+```scala
 public class Factory {
 
         public static class JavaApiImpl implements JavaAPI{
@@ -29,11 +26,10 @@ public class Factory {
                 return new JavaApiImpl();
         }
 }
-{code}
+```
 
 Test with sbt/scala console:
-
-{code}
+```scala
 scala> val api = Factory.getAPI
 api: JavaAPI = Factory$JavaApiImpl@57a645
 
@@ -43,5 +39,4 @@ scala> api.clone
  prefix type JavaAPI does not conform to
  object $iw where the access take place
               api.clone
-
-{code}
+```

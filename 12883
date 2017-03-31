@@ -4,8 +4,8 @@ It seems that the character '_' (that is '\u005F') it's not parsed as a letter.
 
 = Code =
 
-A simple parser for the language _SimpleProg_ ::= "_" & ident
-{code}
+A simple parser for the language *SimpleProg* ::= "_" & ident
+```scala
 import scala.util.parsing.input.Reader
 import scala.util.parsing.combinator.{ImplicitConversions,~}
 import scala.util.parsing.combinator.syntactical.StdTokenParsers
@@ -41,11 +41,10 @@ trait MyParser extends StdTokenParsers with ImplicitConversions {
 object Main extends MyParser with Application{
   println(parse("_ foo"))
 }
-
-{code}
+```
 
 = Compilation = 
-{code}
+```scala
 java.lang.ExceptionInInitializerError
         at Main.main(MyParser.scala)
         at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
@@ -71,13 +70,12 @@ Caused by: java.lang.UnsupportedOperationException: Nil.reduceRight
         at Main$$.<init>(MyParser.scala:38)
         at Main$$.<clinit>(MyParser.scala)
         ... 10 more
-{code}
+```
 
 = Quick Fix = 
 
 In order to get quickly rid of the problem I have found the following solution. Create a class that extends *StdLexical* and redefine the function _letter_. Then, in class *MyParser* assign the *val* _lexical_ to the newly created lexical class (e.g. *MyLexical*).
-
-{code}
+```scala
 class MyLexical extends StdLexical {
    override def letter = elem("letter", ch => (ch.isLetter ||ch == '\u005F'))
 }
@@ -87,6 +85,6 @@ trait MyParser extends StdTokenParsers with ImplicitConversions {
   val lexical = new MyLexical
   //[...]
 }
-{code}
+```
 
 Then it works perfectly.

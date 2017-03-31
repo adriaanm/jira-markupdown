@@ -3,8 +3,7 @@ While the new collections allow us to write a generic function which takes any k
 First, a CanBuildFrom implicit parameter is required. Next, because such parameter is required, one can't use view bounds or context bounds. Finally, to produce the desired results one needs to write long type declarations.
 
 For example, see the functions below.
-
-{code}
+```scala
 def quicksort
   [T, CC[X] <: Traversable[X] with TraversableLike[X, CC[X]]]      // My type parameters
   (coll: CC[T])                                                    // My explicit parameter
@@ -26,22 +25,20 @@ def mode
   val max = grouped.map(_._2).max
   grouped.filter(_._2 == max).map(_._1)(breakOut)
 }
-{code}
+```
 
 These declarations, however, can be improved by a few type and trait declarations. Take, for instance, the TraversableType and From declarations below:
-
-{code}
+```scala
 trait From[-Fr,-Elem] { 
   type CanBuild[+To[Elem]] = CanBuildFrom[Fr,Elem,To[Elem]]
 }
 
 type TraversableType[A, CC[T] <: Traversable[T] with
 TraversableLike[T,CC[T]] with GenericTraversableTemplate[T, CC]] = Traversable[A] with TraversableLike[A,CC[A]] with GenericTraversableTemplate[A, CC]
-{code}
+```
 
 With these, the example functions now can be declared as such:
-
-{code}
+```scala
 def quicksort
   [T <% Ordered[T], CC[X] <: TraversableType[X,CC] : From[CC[T],T]#CanBuild]
   (coll: CC[T]): CC[T] =
@@ -59,6 +56,6 @@ def mode
   val max = grouped.map(_._2).max
   grouped.filter(_._2 == max).map(_._1)(breakOut)
 }
-{code}
+```
 
 I ask, therefore, that the trait From, as listed above, plus suitable declartions of TraversableType, IterableType, MapType, SeqType and SetType be added to the standard library.

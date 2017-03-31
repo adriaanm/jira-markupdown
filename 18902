@@ -1,4 +1,4 @@
-{code}
+```scala
 class A {
   def crash(as: Listt): Unit = {
     map(as, (_: Any) => return)
@@ -11,9 +11,8 @@ class A {
 
 object Nill extends Listt
 class Listt
-{code}
-
-{noformat}
+```
+```
 scalac-hash v2.10.3 -Ylog:inliner,dce -Yinline -Ydead-code -Dlow=0 -Dhigh=1000000000 test/files/pos/nonlocal-unchecked.scala 2>&1 | tee sandbox/bad.log
 [log inliner]    class  Nill                                     // analyzing 1 methods in Nill
 [log inliner]    class  A$$anonfun$crash$1               // analyzing 3 methods in A$$anonfun$crash$1
@@ -60,4 +59,4 @@ Exception in thread "main" java.lang.RuntimeException: Could not find element ke
 	at scala.tools.nsc.backend.icode.analysis.ReachingDefinitions$ReachingDefinitionsAnalysis.forwardAnalysis(ReachingDefinitions.scala:62)
 	at scala.tools.nsc.backend.icode.analysis.ReachingDefinitions$ReachingDefinitionsAnalysis.run(ReachingDefinitions.scala:143)
 	at scala.tools.nsc.backend.opt.DeadCodeElimination$DeadCode.collectRDef(DeadCodeElimination.scala:110)
-{noformat}
+```

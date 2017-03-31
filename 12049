@@ -1,28 +1,26 @@
 I'm pretty sure this is a character encoding bug.
-
-{code}
+```scala
 object Test {
   def main(args: Array[String]): Unit = {
     import scala.reflect.runtime.universe._
     try { typeOf[List[String]] } catch { case ex: Throwable => sys.exit(1) }
   }
 }
-{code}
-
-{noformat}
+```
+```
 % scalac sandbox/test.scala && scala -Dfile.encoding=UTF-8 Test; echo $?
 0
 % scalac sandbox/test.scala && scala -Dfile.encoding=Cp1252 Test; echo $?
 0
 % scalac sandbox/test.scala && scala -Dfile.encoding=Cp1047 Test; echo $? # IBM EBDIC
 1
-{noformat}
+```
 
 The culpable code in Scala's runtime reflection is:
 
 https://github.com/scala/scala/blob/v2.11.7/src/reflect/scala/reflect/runtime/JavaMirrors.scala#L616
 https://github.com/scala/scala/blob/v2.11.7/src/reflect/scala/reflect/runtime/JavaMirrors.scala#L625
 
-It calls {{String#getBytes}} which uses the platform default encoding.
+It calls `String#getBytes` which uses the platform default encoding.
 
-Until we fix this, a workaround is to specify {{-Dfile.encoding=UTF-8}} in the JVM command line. You of course then must be careful if your code reads and writes files, and perhaps change it to use overloads of methods like {{String#getBytes}}, {{InputStreamReader#<init>}} that explicitly pass in an encoding.
+Until we fix this, a workaround is to specify `-Dfile.encoding=UTF-8` in the JVM command line. You of course then must be careful if your code reads and writes files, and perhaps change it to use overloads of methods like `String#getBytes`, `InputStreamReader#<init>` that explicitly pass in an encoding.

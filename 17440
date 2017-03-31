@@ -9,12 +9,12 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.FIELD, ElementType.METHOD, ElementType.TYPE})
 public @interface FooAnnotation {}
-{code}
+```scala
 
 {code:title=Foo.java|borderStyle=solid}
 @FooAnnotation
 public class Foo {}
-{code}
+```
 
 Compilation with javac succeeds as expected:
 {code}javac *.java{code}
@@ -24,7 +24,7 @@ Starting the Scala REPL with those files on the classpath...
 
 
 Java reflection works:
-{code}
+```scala
 scala> val javaFooClass = classOf[Foo]
 javaFooClass: Class[Foo] = class Foo
 
@@ -33,10 +33,10 @@ javaFooClassAnnotations: Array[java.lang.annotation.Annotation] = Array(@FooAnno
 
 val javaFooAnnotationAnnotations = javaFooClassAnnotations(0).annotationType.getAnnotations
 javaFooAnnotationAnnotations: Array[java.lang.annotation.Annotation] = Array(@java.lang.annotation.Retention(value=RUNTIME), @java.lang.annotation.Target(value=[FIELD, METHOD, TYPE]))
-{code}
+```
 
 But Scala reflection doesn't see anything:
-{code}
+```scala
 scala> import reflect.runtime.universe.typeOf
 import reflect.runtime.universe.typeOf
 
@@ -45,8 +45,8 @@ scalaFooType: reflect.runtime.universe.Type = Foo
 
 scala> val scalaFooTypeAnnotations = scalaFooType.typeSymbol.getAnnotations
 scalaFooTypeAnnotations: List[reflect.runtime.universe.AnnotationInfo] = List()
-{code}
+```
 
 The annotations should show up in Scala reflection, because they are clearly present at runtime, as shown with Java reflection.
 
-The problem is probably only slightly related to SI-32, because scalac's nonsupport of creating runtime-visible annotations doesn't get involved here (javac was used for that).
+The problem is probably only slightly related to scala/bug#32, because scalac's nonsupport of creating runtime-visible annotations doesn't get involved here (javac was used for that).

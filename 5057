@@ -11,8 +11,7 @@ In Scala's bugtracker, this is ticket 2097:
 http://lampsvn.epfl.ch/trac/scala/ticket/2097
 
 When I hit my original problem, I was running this slightly modified Cygwin.bat to make emacs happy:
-
-{code}
+```scala
 @echo off
 
 C:
@@ -20,21 +19,19 @@ chdir C:\cygwin\bin
 
 set CYGWIN=tty notitle glob
 bash --login -i
-{code}
+```
 
 If I comment out the `set` line, the problem goes away.
 
 Or, if I leave the `set` line in, I can apply the fix given in the links above, i.e. add this to the last line in bin/scala:
-
-{code}
+```scala
 -Djline.terminal=jline.UnixTerminal
-{code}
+```
 
 Either workaround gives me 3, not 12.
 
 Sadly, both approaches cause interactive scala to start with this unsightly stack trace (then continue unfazed):
-
-{code}
+```scala
 $$ scala
 java.io.IOException: Cannot run program "sh": CreateProcess error=2, The system cannot find the file specified
         at java.lang.ProcessBuilder.start(Unknown Source)
@@ -60,14 +57,12 @@ Caused by: java.io.IOException: CreateProcess error=2, The system cannot find th
         at java.lang.ProcessImpl.start(Unknown Source)
         ... 17 more
 Welcome to Scala ... [snip]
-{code}
+```
 
 Oh, by the way:
-
-{code}
+```scala
 $$ which sh
 /usr/bin/sh
-{code}
+```
 
 I take the sh stack trace to be incidental to the main problem here, which is that the tty library scala uses has trouble on Cygwin. But the stack trace makes the workaround rather alarming.
-

@@ -1,8 +1,7 @@
 The Scala compiler resolves unbound method applications by searching for implicit conversions in companion objects along a type's linearization. Leveraging this you can create statically dispatched polymorphic methods by placing definitions in an implicit class in the companion object of each template in a hierarchy. You might rightly discourage such a design, but doing so allows for aggressive inlining and closure elimination in abstract interfaces without overly constraining implementations. It also lets you override methods with incompatible type signatures.
 
 Scaladoc's new support for documenting implicits provides discoverability and clarity for such designs. Unfortunately, Scaladoc doesn't accurately reflect the compiler's interpretation of extension methods. The following code gives an example of this pattern and notes where Scaladoc misinterprets the definitions.
-
-{code}
+```scala
 package nonvirtual
 
 class A[X] { override def toString = "A" }
@@ -40,10 +39,10 @@ object Test extends App {
   println("a.f4: " + a.f4(identity))
   println("b.f4: " + b.f4(identity))
 }
-{code}
+```
 
 The test routine has no ambiguities and statically resolves method implementations as you would expect:
-{code}
+```scala
 a.f1: A
 b.f1: B
 a.f2: A
@@ -52,6 +51,6 @@ a.f3: A
 b.f3: B
 a.f4: A
 b.f4: B
-{code}
+```
 
 I appreciate all the effort that's gone into making Scaladoc such a great tool. Keep up the good work!

@@ -3,8 +3,7 @@ We want some way to perform macro expansion in left-hand side expressions in pat
 === A naive version ===
 
 Expands unapply into None. Sure thing, it won't work because inside a CaseDef one needs to expand into patterns.
-
-{code}
+```scala
 object Foo {
    import scala.reflect.makro.Context
    import language.experimental.macros
@@ -16,16 +15,14 @@ object Foo {
    def unapplyFoo(c: Context)(args: c.Expr[Any]*):
  c.Expr[Option[Seq[Any]]] = c.reify(None)
 }
-{code}
-
-{code}
+```
+```scala
 object Test extends App {
   import Foo._
   val foo"" = "whatever"
 }
-{code}
-
-{code}
+```
+```scala
 error: 
      while compiling: Test_2.scala
         during phase: typer
@@ -296,13 +293,12 @@ object None
   at scala.tools.nsc.Driver.process(Driver.scala:52)
   at scala.tools.nsc.Driver.main(Driver.scala:65)
   at scala.tools.nsc.Main.main(Main.scala)
-{code}
+```
 
 === A smarter version ===
 
 Expands into a block that returns Option[...], uses the <unapply-selector> thingie, which stands for a scrutinee, to inspect that scrutinee. Crashes because `extractFormalType` and `MatchTranslation` expect expressions involving <unapply-selector> to be unapply calls. 
-
-{code}
+```scala
 import scala.reflect.macros.Context
 import language.experimental.macros
 
@@ -341,9 +337,8 @@ object Macros {
     c.Expr[Any](Block(scrutinee +: partDefs, result))
   }
 }
-{code}
-
-{code}
+```
+```scala
 import Macros._
 
 object Test extends App {
@@ -356,9 +351,8 @@ object Test extends App {
   //   case _ => println("fail")
   // }
 }
-{code}
-
-{code}
+```
+```scala
 15:03 ~/Projects/210x/sandbox (2.10.x)$ scalac Macros.scala && scalac Test.scala
 {
   val scrut: Int = <unapply-selector>;
@@ -607,7 +601,7 @@ Exception in thread "main" java.lang.NullPointerException
 	at scala.tools.nsc.Driver.process(Driver.scala:54)
 	at scala.tools.nsc.Driver.main(Driver.scala:67)
 	at scala.tools.nsc.Main.main(Main.scala)
-{code}
+```
 
 === A cleaner version ===
 

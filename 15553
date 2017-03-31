@@ -15,9 +15,7 @@ It seems like there are a few choices here:
 3) Use a HasStringRepr view class, i.e. `def stringOf[A:HasStringRepr](arg : A)`.  This options seems the most flexible, as it will allow a custom string repr for Arrays, but requires more complexity in the Interpreter loop, because it can't easily be done by reflection.
 
 1 and 2 seem easy enough work-arounds for the near term.  I think 3 is the way to go, but there is some complexity to it.  I've worked out the details for doing this more generally here: http://github.com/scalanlp/scalanlp-core/blob/master/data/src/main/scala/scalanlp/serialization/TextSerialization.scala
-
-
-{code}
+```scala
 (scala.runtime.ScalaRuntime)
 237	  def stringOf(arg: Any): String = {
 238	    import collection.{SortedSet, SortedMap}
@@ -51,5 +49,4 @@ It seems like there are a few choices here:
 266	    nl + s + "\n"   
 267	  }
 268	}
-{code}
-
+```

@@ -1,15 +1,14 @@
 Consider the following code snippet:
-
-{code:scala}
+```scala
   def example(index: Int): Unit = index match {
     case 0 => println("I'm even!")
     case 1 => println("I'm odd!")
     case _ => example(index - 2)
   }
-{code}
+```
 
 This gets compiled to (using {{scala -print}}):
-{noformat}
+```
 def example(index: Int): Unit = {
   <synthetic> val _$this: Test.type = Test.this;
   _example(_$this: Test.type, index: Int){
@@ -33,8 +32,8 @@ def example(index: Int): Unit = {
     ()
   }
 };
-{noformat}
+```
 
-There is no need for the compiler to be generating {{scala.runtime.BoxedUnit.UNIT}}.
+There is no need for the compiler to be generating `scala.runtime.BoxedUnit.UNIT`.
 
-Decompiling the generated class file with {{javap}} confirms that {{scala.runtime.BoxedUnit.UNIT}} is being pushed to the stack, only to be immediately popped off again. Such inefficiencies are quite frustrating!
+Decompiling the generated class file with `javap` confirms that `scala.runtime.BoxedUnit.UNIT` is being pushed to the stack, only to be immediately popped off again. Such inefficiencies are quite frustrating!

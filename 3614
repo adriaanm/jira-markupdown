@@ -1,7 +1,7 @@
 Here's something weird. (Preface: apparently the addition of implicit def SeqDerived to Ordering means that adriaan's recent repro is now a diverging implicit expansion.  Is that indicative of a bigger problem? Should we maybe pull that? So one has to get rid of that to see this.)
 
 Why does ordered fail with the "enclosing class" error but Ordering completely differently?
-{code}
+```scala
 object Weird {
   def compare[T](x: Ordered[T], y: Ordered[T]) = error("")
   def mkEx: Ordered[_] = error("")
@@ -11,9 +11,9 @@ object Weird {
   def mkEx2: Ordering[_] = error("")
   compare2(mkEx2, mkEx2)
 }
-{code}
+```
 Failures:
-{code}
+```scala
 weird.scala:4: error: math is not an enclosing class
   compare(mkEx, mkEx)
           ^
@@ -35,4 +35,4 @@ You may wish to investigate a wildcard type such as `_ <: Any`. (SLS 3.2.10)
   compare2(mkEx2, mkEx2)
                   ^
 four errors found  
-{code}
+```

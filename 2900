@@ -1,6 +1,5 @@
 With dependent method types we have a somewhat cumbersome, but just about usable workaround. The key idea is to use implicits to destructure a type, and then pick out and use its component parts as dependent types.
-
-{code}
+```scala
 // Template we will unpack into
 trait UnpackM[MA] {
   type M[_]
@@ -27,6 +26,6 @@ def meh[MA](x : MA)(implicit u : UnpackM[MA]) : (u.M[String], List[u.A]) = null
   
 val m = meh{(x: Int) => x}
 implicitly[m.type <:< (Int => String, List[Int])]
-{code}
+```
 
-See also [here|http://goo.gl/efy8F] for a slightly more elaborate scalaz inspired example.
+See also [here](http://goo.gl/efy8F) for a slightly more elaborate scalaz inspired example.

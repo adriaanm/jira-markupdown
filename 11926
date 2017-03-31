@@ -1,21 +1,18 @@
 If the type of the scrutinee is not (effectively) sealed, exhaustiveness warnings aren't issued.
-
-{code}
+```scala
 scala> def foo(a: AnyRef) = a match { case _: String => }
 foo: (a: AnyRef)Unit
-{code}
+```
 
 The code that deems this "uncheckable" for exhaustivity is: https://github.com/scala/scala/blob/v2.11.6/src/compiler/scala/tools/nsc/transform/patmat/MatchAnalysis.scala#L203-L213
 
 I have a feeling that we might have carried this restricted checking across from the 2.9 era pattern matcher. I say this after comparing the analysis of a related match from 2.9 and 2.10:
-
-{code}
+```scala
 scala> def foo(a: AnyRef) = Option(a) match { case Some(_: String) => case None => }; scala.util.Properties.releaseVersion
 foo: (a: AnyRef)Unit
 res10: Option[String] = Some(2.9.2)
-{code}
-
-{code}
+```
+```scala
 scala> def foo(a: AnyRef) = Option(a) match { case Some(_: String) => case None => }; scala.util.Properties.releaseVersion
 <console>:7: warning: match may not be exhaustive.
 It would fail on the following input: Some((x: AnyRef forSome x not in String))
@@ -23,7 +20,7 @@ It would fail on the following input: Some((x: AnyRef forSome x not in String))
                                          ^
 foo: (a: AnyRef)Unit
 res0: Option[String] = Some(2.10.4)
-{code}
+```
 
 So given that the new pattern matcher has the ability to articulate the counter examples, we might be able to turn on the analysis for all matches.
 

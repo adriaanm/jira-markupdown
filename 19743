@@ -1,6 +1,5 @@
-When lazy vals are transient, the optimization in SI-720 is invalid, leading to NPEs. For instance
-
-{code}
+When lazy vals are transient, the optimization in scala/bug#720 is invalid, leading to NPEs. For instance
+```scala
 class Test(x: => Object) extends Serializable {
   @transient lazy val foo = x
 }
@@ -18,13 +17,12 @@ object Foo {
     println(t1.foo)
   }
 }
-{code}
-
-{code}
+```
+```scala
 foo
 Exception in thread "main" java.lang.NullPointerException
 	at test.Test.foo$lzycompute(Foo.scala:33)
 	at test.Test.foo(Foo.scala:33)
 	at test.Foo$.main(Foo.scala:46)
 	at test.Foo.main(Foo.scala)
-{code}
+```

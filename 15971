@@ -4,36 +4,36 @@ In this example, since the class `AbstractFoo` is the one that defines the field
 
 === What steps will reproduce the problem (please be specific and use wikiformatting)? ===
 `test/AbstractFoo.java`
-{code}
+```scala
 package test;
 
 /* package private */ class AbstractFoo {
   public int t;
 }
-{code} 
+```
 `ScalaBipp.scala`
-{code}
+```scala
 package test
 
 class ScalaBipp extends AbstractFoo {
   def make: Option[ScalaBipp] = Option(this)
 }
-{code}
+```
 `test.scala`
-{code}
+```scala
 package other
 
 object IllegalAccess {
     val x = (new test.ScalaBipp).make.get.t // java.lang.IllegalAccessError: tried to access class test.AbstractFoo from class other.IllegalAccess$$
 }
-{code}
+```
 
 === What is the expected behavior? ===
 No runtime failure.
 
 === What do you see instead? ===
 Runtime exception accessing class `test.AbstractFoo` and the following bytecode:
-{code}
+```scala
 javap -c other.IllegalAccess$$
 
    0:	new	SI-16; //class test/ScalaBipp
@@ -45,9 +45,7 @@ javap -c other.IllegalAccess$$
    16:	getfield	SI-34; //Field test/AbstractFoo.t:I
    19:	istore_2
    20:	return
-
-
-{code}
+```
 
 
 

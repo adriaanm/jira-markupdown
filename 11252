@@ -1,5 +1,5 @@
 When using the `to` method to generate a Double Range, the result was is not the same as Range.Double.
-{code}
+```scala
 scala> val possibleValues1 = Range.Double.inclusive(5.0,10.0,5.0/3.0)
 possibleValues1: scala.collection.immutable.NumericRange[Double] = NumericRange(5.0, 6.666666666666667, 8.333333333333334)
 
@@ -8,12 +8,12 @@ possibleValues2: scala.collection.immutable.NumericRange.Inclusive[Double] = Num
 
 scala> possibleValues2.toArray
 res0: Array[Double] = Array(5.0, 6.666666666666667, 8.333333333333334, 10.0)
-{code}
+```
 
 I have noticed that `Range.Double` internally generates a Range using `Range.BigDecimal` and then converting it to Double ([code|https://github.com/scala/scala/blob/2.12.x/src/library/scala/collection/immutable/Range.scala#L481]) whereas `FractionalProxy.to` creates a NumericRange of Type Double,
-{code}
+```scala
   def to(end: T): ResultWithoutStep  = new Range.Partial(NumericRange.inclusive(self, end, _))
-{code}
+```
 
 Which of the two is correct or expected behavior?
 

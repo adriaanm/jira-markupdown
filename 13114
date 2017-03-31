@@ -1,8 +1,7 @@
 Neither Seq.Projection or Iterable.Projection override drop or dropWhile, so they end up inheriting Iterable's strict versions. Seq.Projection needs to override these with non-strict versions based on Iterator's drop and dropWhile.
 
 The dropWhile is particularly a problem since it also affects Range and can force an otherwise lazy computation using Ranges to suddently blow up.
-
-{code}
+```scala
 scala> (1 to 10000).map{i => if (i == 100) error("100 hit") else i}.dropWhile(_ < 10)(0)
 java.lang.Error: 100 hit
 	at scala.Predef$$.error(Predef.scala:80)
@@ -34,4 +33,4 @@ java.lang.Error: 100 hit
 	at .<clinit>(<console>)
 	at RequestResult$$.<init>(<console>:3)
 ...
-{code}
+```

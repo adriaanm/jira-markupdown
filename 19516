@@ -1,14 +1,13 @@
 Something about compiler-internal CCEs makes me submit this for posterity.
-{code}
+```scala
 package object p {
   def free[A] = free.Free
 }
 package p.free {
   object Free
 }
-{code}
-
-{noformat}
+```
+```
 error: java.lang.ClassCastException: scala.reflect.internal.Trees$TypeApply cannot be cast to scala.reflect.internal.Trees$RefTree
 	at scala.tools.nsc.typechecker.Typers$Typer.typedPackageDef$1(Typers.scala:4915)
 	at scala.tools.nsc.typechecker.Typers$Typer.typedMemberDef$1(Typers.scala:5211)
@@ -17,4 +16,4 @@ error: java.lang.ClassCastException: scala.reflect.internal.Trees$TypeApply cann
 	at scala.tools.nsc.typechecker.Typers$Typer.scala$tools$nsc$typechecker$Typers$Typer$$typedInternal(Typers.scala:5322)
 	at scala.tools.nsc.typechecker.Typers$Typer.body$2(Typers.scala:5269)
 	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:5273)
-{noformat}
+```

@@ -1,8 +1,7 @@
 This isn't limited to just implicits; the regression affects any case class with more than one parameter list:
-
-{code}
+```scala
 case class Sad(i: Int)(j: Int)
 Sad(0)(0).copy()()
-{code}
+```
 
-In 2.9, this yielded another Sad(0)(0). In 2.10.0-M4, it's {{error: not enough arguments for method apply}}, thanks to the curried Function1 not having a default argument.
+In 2.9, this yielded another Sad(0)(0). In 2.10.0-M4, it's `error: not enough arguments for method apply`, thanks to the curried Function1 not having a default argument.

@@ -1,5 +1,5 @@
 Well this is an interesting one.  We're missing an entire category of superaccessor.  Watch what java does with these classes:
-{code}
+```scala
 // A.java
 package a;
 
@@ -12,10 +12,9 @@ class A {
 package a;
 
 public class A2 extends A { }
-{code}
+```
 Now look at A2.  It gets accessor methods for every method in A even though it can access them just fine since it's in the same package.  But its subclasses won't be able to, and thanks to separate compilation it has to assume the worst and put in forwarders for everything.  Nice.
-
-{noformat}
+```
 public class a.A2 extends a.A{
 public a.A2();
   Code:
@@ -42,5 +41,5 @@ public void foo1();
    4:	return
 
 }
-{noformat}
+```
 Of course if you make A public, A2 gets nothing.

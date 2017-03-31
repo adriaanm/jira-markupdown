@@ -16,7 +16,7 @@ details based on feedback from the community.
 
 For now my workaround is to stay with scala-2.8.1.
 
-# Summary of bug (when generated with scala-2.9.0):
+- Summary of bug (when generated with scala-2.9.0):
 
 If a generated apk contains the following scala code as a nested class 
 (or presumably a top level task) the "adb install 
@@ -26,35 +26,35 @@ dexfailure-testcase_2.9.0-0.1.apk" will fail.
   class ObservableTest extends ArrayBuffer[Int]
 </code>
 
-# Expected behavior
+- Expected behavior
 
 Install should not fail.  
 
-# Behavior with scala-2.8.1
+- Behavior with scala-2.8.1
 
 It is worth noting that the scala-2.8.1 based APK is substantially smaller than
 the scala-2.9.0 version (200k vs 450k)
 
-# Steps to reproduce
+- Steps to reproduce
 
-* Pull down this repo.  I've included prebuilt working and failing APKs in
+- Pull down this repo.  I've included prebuilt working and failing APKs in
 the target subdirectory if you don't want to build from source.
-* If you do want to build from source: cd into the repo and run 
+- If you do want to build from source: cd into the repo and run 
 "sbt reinstall-emulator"
-* Note the error message about INSTALL_FAILED_DEXOPT
+- Note the error message about INSTALL_FAILED_DEXOPT
 
 This failure seems to occur regardless of how much VMmax or RAM is given to the
 device.
 
-# Details on failure:
+- Details on failure:
 
-## Host reports:
+ - Host reports:
 
 [error] 1023 KB/s (434216 bytes in 0.414s)
 [info] 	pkg: /data/local/tmp/dexfailure-testcase_2.9.0-0.1.apk
 [info] Failure [INSTALL_FAILED_DEXOPT]
 
-## logcat on device shows:
+ - logcat on device shows:
 
 <pre>
 05-19 08:57:56.920: DEBUG/PackageManager(75): Scanning package com.ridemission.dexfail

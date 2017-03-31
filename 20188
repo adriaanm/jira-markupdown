@@ -1,19 +1,18 @@
 Scala appears to encode strings with a NUL byte "\u000" differently than Java. To reproduce this define a compile time constant in Java.
 
 Create a Java file (Test.java):
-
-{code:java}
+```java
 public class Test {
   public static final String TEST = "\0ABC";
 }
-{code}
+```
 
 Create a sample Scala main program and access TEST from there.
 
 When accessing the string TEST from scala, the NUL byte appears to be encoded with 2 bytes. So, even simple equality tests like 
-{code:java}
+```java
 "\0ABC".equals(Test.TEST) 
-{code}
+```
 fail and return false. 
 
 However, when TEST is made a private field in the class, and returned from class Test from a static getter function - getTestValue(), the equality check {code:java}  "\0ABC".equals(Test.getTestValue())  {code} passes and returns true.

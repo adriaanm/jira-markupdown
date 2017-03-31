@@ -1,9 +1,9 @@
 Deserialization is broken when many lambdas are declared in the same class. The problem is that that the compiler seems to be generating bytecode for deserialization logic that runs into some JVM limitations.
 
-h2. How to reproduce
+## How to reproduce
 
 E.g.:
-{code:scala}
+```scala
 import java.io.{ByteArrayInputStream, ByteArrayOutputStream, ObjectInputStream, ObjectOutputStream}
 
 object A {
@@ -278,11 +278,10 @@ object A {
     println(lambda2(1))
   }
 }
-{code}
+```
 
 fails with:
-
-{code}
+```scala
 [gkk@mbp ~/tmp/scalac-lambda-surplus]$ scala A
 java.io.IOException: unexpected exception type
 	at java.io.ObjectStreamClass.throwMiscException(ObjectStreamClass.java:1582)
@@ -332,11 +331,11 @@ Caused by: java.lang.BootstrapMethodError: too many bootstrap method arguments
 	at java.lang.invoke.MethodHandleNatives.linkCallSite(MethodHandleNatives.java:297)
 	at A$.$deserializeLambda$(A.scala)
 	... 37 more
-{code}
+```
 
-h2. How to work around
+## How to work around
 Given that this seems to be per-class limit. Moving lambdas to different classes (e.g. introducing an inner class for declaring lambdas) is a possible work-around.
 
 It's really problematic that you find out about broken bytecode only at runtime when deserialization is executed.
 
-This problem has been found in {{scalding-core}} during Stripe's experiment to update to Scala 2.12 (we're curious to see whether the new optimizer helps our ML infra perf).
+This problem has been found in `scalding-core` during Stripe's experiment to update to Scala 2.12 (we're curious to see whether the new optimizer helps our ML infra perf).

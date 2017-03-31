@@ -2,36 +2,36 @@ Array.range returns an Array ;
 List.range returns a List
 
 The documentation for
-{code}
+```scala
   Iterator.range(start : Int, end : Int)
   Iterator.range(start : Int, end : Int, step : Int)
-{code}
+```
 states that they "Create an iterator"
 
 But the return type (Range) is not an Iterator
 
 Here's a use case where I was expecting range to provide an Iterator
-{code}
+```scala
     def f(n: Int): Iterator[String] = error("...")
     val iter = Iterator.range(0, 10).flatMap[String](f _)
-{code}
-{code}
+```
+```scala
 error: type mismatch;
  found   : Iterator[String]
  required: Iterable[String]
     val iter = Iterator.range(0, 10).flatMap[String](f _)
                                                      ^
-{code}
+```
 
 A workaround is to use the other range method
-{code}
+```scala
     def inc(x: Int) = x + 1
     Iterator.range(0, 10, (inc _))
-{code}
+```
 or
-{code}
+```scala
     Iterator.range(0, 10).elements
-{code}
+```
 but no workaround should be needed.
 
 

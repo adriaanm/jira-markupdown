@@ -1,6 +1,5 @@
 This comes down to:
-
-{code}
+```scala
       // hashconsing trees (modulo value-equality)
       private[TreesAndTypesDomain] def uniqueTpForTree(t: Tree): Type =
         // a new type for every unstable symbol -- only stable value are uniqued
@@ -19,9 +18,8 @@ This comes down to:
             trees += treeWithNarrowedType
             treeWithNarrowedType.tpe
         }
-{code}
-
-{code}
+```
+```scala
       private[TreesAndTypesDomain] def unique(tp: Type, mkFresh: => Const): Const =
         uniques.get(tp).getOrElse(
           uniques.find {case (oldTp, oldC) => oldTp =:= tp} match {
@@ -34,13 +32,12 @@ This comes down to:
               uniques(tp) = fresh
               fresh
           })
-{code}
-
-{noformat}
+```
+```
 uniqued: (O.A,O.LK,O.<refinement>.type)
 checkableType(K with L): K with L
 uniqued const: (O.<refinement>.type,A)
 uniqued: (O.B,O.LK,O.<refinement>.type)
-{noformat}
+```
 
 O.A and O.B, seem to be incorrectly unified in the pattern match analysis because their types narrow to the same type.

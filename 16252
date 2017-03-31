@@ -1,6 +1,5 @@
 This code:
-
-{code}
+```scala
 class A(val a: Int = 13)
 class DefaultsTest(x: Int = 25) extends A(28)
 object DefaultsTest extends DefaultsTest(12)
@@ -8,11 +7,10 @@ object DefaultsTest extends DefaultsTest(12)
 object Main extends App {
   new DefaultsTest()
 }
-{code}
+```
 
 fails with:
-
-{noformat}
+```
 java.lang.VerifyError: class DefaultsTest$ overrides final method init$default$1.()I
 	at java.lang.ClassLoader.defineClass1(Native Method)
 	at java.lang.ClassLoader.defineClassCond(ClassLoader.java:632)
@@ -28,6 +26,6 @@ java.lang.VerifyError: class DefaultsTest$ overrides final method init$default$1
 	at Main$.<init>(DefaultsTest.scala:7)
 	at Main$.<clinit>(DefaultsTest.scala)
 	at Main.main(DefaultsTest.scala)
-{noformat}
+```
 
 For some reason, the `init$default$1` methods in `DefaultsTest` are static forwarders to the companion object while the companion object tries to implement the methods from the class in turn leading to the error.

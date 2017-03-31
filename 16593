@@ -1,16 +1,16 @@
 Currently, this is not allowed:
-{code}
+```scala
 class Foo(lazy val p: String)
-{code}
+```
 
 Although I can create another lazy val like this:
-{code}
+```scala
 class Foo(p: => String) {
   lazy val p2 = p
 }
-{code}
+```
 But it wastes memory since it creates three fields in byte codes:
-{code}
+```scala
 public class Foo implements scala.ScalaObject {
   private final scala.Function0<java.lang.String> p;
   private java.lang.String p2;
@@ -18,10 +18,10 @@ public class Foo implements scala.ScalaObject {
   public java.lang.String p2();
   public Foo(scala.Function0<java.lang.String>);
 }
-{code}
+```
 
-I suggest that scalac automatically generate code for {{ class Foo(lazy val p: String) }} like this:
-{code}
+I suggest that scalac automatically generate code for ` class Foo(lazy val p: String) ` like this:
+```scala
 object Foo {
 	private final def createLazy(setter: Function0[String] => Unit,
 			initial: => String) = { () =>
@@ -34,15 +34,15 @@ object Foo {
 class Foo(p: => String) {
 	var p2: Function0[String] = FasterLazy(p2_=, p)
 }
-{code}
+```
 This approach creates only one field:
-{code}
+```scala
 public class Foo implements scala.ScalaObject {
   private scala.Function0<java.lang.String> p2;
   public scala.Function0<java.lang.String> p2();
   public void p2_$eq(scala.Function0<java.lang.String>);
   public Foo(scala.Function0<java.lang.String>);
 }
-{code}
+```
 
-And it even a little faster than {{lazy val}}, since it omits checking if the field initialized or not.
+And it even a little faster than `lazy val`, since it omits checking if the field initialized or not.

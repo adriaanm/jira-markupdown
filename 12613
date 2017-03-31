@@ -1,9 +1,9 @@
 sbt runs the initialCommands early for legacy reasons; the import leaves the reporter with an error due to a separate bug.
 
-Normal {{scala -i}} loads init code only after compiler initialization is complete.
+Normal `scala -i` loads init code only after compiler initialization is complete.
 
-Here is a view of the error, which occurs when text-based REPL is trying to figure out what is imported by {{duration._}} (in order to enter it into its scope mechanism):
-{noformat}
+Here is a view of the error, which occurs when text-based REPL is trying to figure out what is imported by `duration._` (in order to enter it into its scope mechanism):
+```
 $ scala
 Welcome to Scala 2.12.1 (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_111).
 Type in expressions for evaluation. Or try :help.
@@ -55,11 +55,10 @@ object $iw {
 [silent] <console>:20: error: package a.b is not a value
        b
        ^
-{noformat}
+```
 
 The fix is to ignore the error when running under sbt.
-
-{noformat}
+```
 $ sbt
 [info] Loading project definition from /home/apm/tmp/dummy/project
 [info] Set current project to dummy (in build file:/home/apm/tmp/dummy/)
@@ -102,5 +101,4 @@ scala> Duration
 res1: scala.concurrent.duration.Duration.type = scala.concurrent.duration.Duration$@2338e345
 
 scala> 
-
-{noformat}
+```

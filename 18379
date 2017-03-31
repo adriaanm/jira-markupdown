@@ -1,20 +1,20 @@
 e.g. 
-{code}
+```scala
 def foo[T: Monoid](i:T) = null
-{code}
+```
 (using scalaz's Monoid typeclass) or
-{code}
+```scala
 def bar[T : scala.math.Ordering](t:T) = null
-{code}
+```
 , then 
-{code}
+```scala
 Some(5) map foo
-{code}
+```
  (or bar) gives "No implicit Monoid defined for T" (or Ordering).
 Variants that do work:
-{code}
+```scala
 Some(5) map foo[Int]
 Some(5).map[Null](foo)
 Some(5) map (x=>foo(x))
-{code}
+```
 Also, this doesn't appear to affect functions using [T : ClassTag] - that's resolved just fine.

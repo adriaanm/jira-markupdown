@@ -1,6 +1,5 @@
 Say an actor is a sink and receives messages from several other actors (e.g., listens to events). Then each actor is allocated the same slot by the executor, which means the other actors will put more messages than those the sink actor can consume. 
-
-{code}
+```scala
 scala> val sink = actor{loop{react{case x => if (mailboxSize > 10000) println(mailboxSize)}}}
 sink: scala.actors.Actor = scala.actors.Actor$$anon$1@a1ee92
 
@@ -10,7 +9,7 @@ scala> 10222
 45909
 82157
 ...
-{code}
+```
 
 Using schedulers is tricky (and i think it does not guarantee the actor will be able to consume all its messages)
 

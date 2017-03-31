@@ -1,8 +1,7 @@
 Replying to [comment:25 sentimental]:
 > case class User(val id: Int, val ts: List[Topic])
 I tried your code and as expected it broke the eclipse build:
-
-{code}
+```scala
 !MESSAGE Error in JDT Core during reconcile
 !STACK 1
 Java Model Exception: java.lang.ClassCastException
@@ -10,7 +9,7 @@ Java Model Exception: java.lang.ClassCastException
         at org.eclipse.jdt.internal.core.CompilationUnitProblemFinder.process_aroundBody1$$advice(CompilationUnitProblemFinder.java:246)
         at org.eclipse.jdt.internal.core.CompilationUnitProblemFinder.process_aroundBody2(CompilationUnitProblemFinder.java:1)
         at org.eclipse.jdt.internal.core.CompilationUnitProblemFinder$$AjcClosure3.run(CompilationUnitProblemFinder.java:1)
-{code}
+```
 
 It seems that scala List causes the problem. I tried to change to Seq[Topic] and it worked fine.
 

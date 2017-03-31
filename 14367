@@ -1,6 +1,5 @@
 The following code is problematic:
-
-{code}
+```scala
 abstract sealed class FinalResult[X]
 case class Error(msg:String) extends FinalResult[Nothing]
 case class Success[U](value:U) extends FinalResult[U]
@@ -20,7 +19,7 @@ class A {
         }
     }
 }
-{code}
+```
 
 It compiles, but with a warning about type erasure at line
 
@@ -31,4 +30,3 @@ However, there doesn't seem to be any way to get rid properly of that warning ex
 case r:Result[_] => Success(r.result.asInstanceOf[U])
 
 which is long to write and involves an unrequired cast even though we are ensured that r.result cannot be anything but type U.
-

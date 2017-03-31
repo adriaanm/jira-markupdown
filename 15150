@@ -1,5 +1,5 @@
 Consider this code:
-{code}
+```scala
 object LinePrinter {
   def main(args: Array[String]){
     // Note: \u000A is Unicode representation of linefeed (LF)
@@ -7,19 +7,17 @@ object LinePrinter {
     print(c)
   }
 }
-{code}
+```
 This code does not compile, giving the following error method:
-
-{code}
+```scala
 LinePrinter.scala:3: error: not found: value is
   // Note: \u000A is Unicode representation of linefeed (LF)
                   ^
 one error found
-{code}
+```
 
 The problem is that the compiler transforms unicode escapes before removing the comments, leading to the following code given to the next compile phase:
-
-{code}
+```scala
 object LinePrinter {
   def main(args: Array[String]){
     // Note:
@@ -28,11 +26,10 @@ object LinePrinter {
     print(c)
   }
 }
-{code}
+```
 
 This feature/bug is described in the Java book "Java Puzzlers" (see the sampler, it is Puzzle 2) as "thoroughly confusing". Corresponding Java spec is [JLS 3.4].
 
 I would like to suggest removing lines of comments before converting escapes, because how it works now is highly surprising and unexpected.
-
 
 

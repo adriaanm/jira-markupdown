@@ -1,14 +1,14 @@
 Just exploring the specialization code a little.  I can avert the crash like so:
-{code}
+```scala
 @@ -1131,7 +1131,7 @@ abstract class SpecializeTypes extends InfoTransform with 
  
          case Apply(sel @ Select(sup @ Super(qual, name), name1), args) =>
            val res = localTyper.typed(
 -            Apply(Select(Super(qual, name) setPos sup.pos, name1) setPos sel.po
 +            Apply(Select(Super(qual, name) setSymbol sup.symbol setPos sup.pos,
-{code}
+```
 Then of course Foo.say fails at runtime:
-{code}
+```scala
 java.lang.ClassCastException: Foo$$$$anonfun$$say$$1 cannot be cast to A
-{code}
+```
 I'm kind of curious how this is correctly fixed actually.

@@ -1,10 +1,10 @@
 A couple notes for your possible edification.  The private vals in MurmurHash are constant folded if you mark them final.  This seems like something you of all people would know, so maybe there's a reason you didn't? It knocks about 7% off the size of the MurmurHash$$ bytecode, to say nothing of whatever it does for performance.  (Hard to imagine it hurts.)
 
 Also, you translated a line like this:
-{code}
+```scala
 -      code = code * 41 + (if (elem == null) 0 else elem.##)
 +      h = extendHash(h, if (elem.asInstanceOf[AnyRef] eq null) 0 else elem.##, c, k)
-{code}
+```
 The "if (elem == null)" generates identical bytecode.  I can only imagine rewriting it like that if I thought otherwise.
 
 I will be checking something in soon.

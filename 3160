@@ -1,11 +1,11 @@
 It would seem the original example is now fixed in the nightly build, giving the error:
-{code}
+```scala
 test.scala:11: error: overriding type T in trait A with bounds >: Int <: Int;
  type T in trait B with bounds >: String <: String has incompatible type
   lazy val x : A with B = x
-{code}
+```
 However, it would seem the fix was shallow as the following program is still allowed:
-{code}
+```scala
  trait Bound { type T }
 
  trait X {
@@ -30,7 +30,6 @@ However, it would seem the fix was shallow as the following program is still all
    type A = YA with ZA
    lazy val x : A = x
  }
-
-{code}
+```
 
 It might be better to address the root of this deep problem, because it is easy to continue coming up with examples that ad-hoc checks will miss.

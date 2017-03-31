@@ -1,21 +1,20 @@
-The trait {{VanillaMatcher}} in the code below "re-implements"
+The trait `VanillaMatcher` in the code below "re-implements"
 Scala's native pattern matcher using pattern matching
-virtualization and the {{Option[_]}} monad.  It seems that there
+virtualization and the `Option[_]` monad.  It seems that there
 is a problem with extractor handling in virtualized matchers
 since the first two test cases (native pattern matcher and
-explicit call-chain of the {{__match}} methods) compile and give
+explicit call-chain of the `__match` methods) compile and give
 the expected result, while the last case (where the overloaded
 matcher is actually used) produces the following error:
-
-{noformat}
+```
 Test.scala:37: error: Could not typecheck extractor call: Test.this.Dummy.unapply: (s: String)Option[String] (symbol= method unapply).
       case Dummy(sf) => sf
                 ^
-{noformat}
+```
 
 The output after the typer ({{-Xprint:typer}}) for the second and
 third case are identical up to a missing/error type for the
-variables {{x2}} and {{sf}}, so it seems reasonable to assume
+variables `x2` and `sf`, so it seems reasonable to assume
 that the problem is in the compiler rather than the test case.
 
 {code:title=Test.scala}

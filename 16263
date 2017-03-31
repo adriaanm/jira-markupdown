@@ -5,8 +5,7 @@ https://groups.google.com/d/topic/scala-internals/pMTwrmZbPy0/discussion
 I just made a discovery that in trunk's Scala library there's one use of structural type. It's being used in implementation of Iterator.span (Iterator.scala:508).
 
 I'm pretty sure that structural type in that place is not intended and is there only because type inference inferred structural type. Given the fact that structural types are not very efficient on JVM I consider this as a bug that might affect the performance. Patch below fixes that problem.
-
-{code}
+```scala
 diff --git a/src/library/scala/collection/Iterator.scala b/src/library/scala/collection/Iterator.scala
 index c9f7500..afcd28f 100644
 --- a/src/library/scala/collection/Iterator.scala
@@ -35,4 +34,4 @@ index c9f7500..afcd28f 100644
      val trailing = new Iterator[A] {
        private lazy val it = {
          leading.finish()
-{code}
+```

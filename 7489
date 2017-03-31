@@ -2,8 +2,8 @@ With or without optimize, it works as of https://github.com/scala/scala/commit/6
 
 Anyway background follows.
 
-{{-Xprint:cleanup}} shows the println argument is a {{Block}} consisting of a {{ValDef}} and two {{LabelDef}}:
-{noformat}
+`-Xprint:cleanup` shows the println argument is a `Block` consisting of a `ValDef` and two `LabelDef`:
+```
     def broken(): Unit = scala.this.Predef.println({
       case <synthetic> val x1: Int = 1;
       case3(){
@@ -13,11 +13,10 @@ Anyway background follows.
         x
       }
     });
-{noformat}
+```
 
-The "case" labels above are due to {{LabelDef}} (there are no {{CaseDef}} around)
-
-{noformat}
+The "case" labels above are due to `LabelDef` (there are no `CaseDef` around)
+```
   Block( // tree.tpe=Object
     // 2 statements
     ValDef( // case val x1: Int
@@ -41,11 +40,10 @@ The "case" labels above are due to {{LabelDef}} (there are no {{CaseDef}} around
       "x" // x: Object, tree.tpe=Object
     )
   )
-{noformat}
+```
 
-After {{GenICode}}, the argument travels twice between stack and locals:
-
-{noformat}
+After `GenICode`, the argument travels twice between stack and locals:
+```
   // methods
   def broken(): Unit {
   locals: value x1, value x
@@ -72,11 +70,10 @@ After {{GenICode}}, the argument travels twice between stack and locals:
     3	RETURN(UNIT)
     
   }
-{noformat}
+```
 
-Actually {{-optimize}} manages to unclutter that:
-
-{noformat}
+Actually `-optimize` manages to unclutter that:
+```
 public void broken();
   Code:
    Stack=2, Locals=1, Args_size=1
@@ -87,16 +84,15 @@ public void broken();
    10:  return
   LineNumberTable:
    line 3: 0
-{noformat}
+```
 
 Reaching definitions does most of the simplification (try with {{-Yclosure-elim -Ydead-code}}) but that leaves us with a 
-
-{noformat}
+```
 astore_1
 aload_1
-{noformat}
+```
 
-that {{PeepholeOpt}} can reduce only after {{IMethod.normalize()}} has run, and it's only {{Inliner}} that calls {{IMethod.normalize()}}.  Therefore, we'll have to keep an eye on choppy {{BasicBlock}} (peephole optimizations don't straddle {{BasicBlock}} boundaries). Related: {{collapseJumpOnlyBlocks}} in {{GenASM}}.
+that `PeepholeOpt` can reduce only after `IMethod.normalize()` has run, and it's only `Inliner` that calls `IMethod.normalize()`.  Therefore, we'll have to keep an eye on choppy `BasicBlock` (peephole optimizations don't straddle `BasicBlock` boundaries). Related: `collapseJumpOnlyBlocks` in `GenASM`.
 
 There's no optimizer nor backend bug going on here. Any comments, before I close it as "Not-a-Bug" ?
 

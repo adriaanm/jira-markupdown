@@ -1,15 +1,15 @@
 The anon function's unbridged method should look like this:
-{code}
+```scala
 public final char apply(char);
-{code}
+```
 Instead it looks like this:
-{code}
+```scala
 public final char apply(java.lang.Object);
-{code}
+```
 So there's no Char => Char method generated.  I thought maybe this would be some weird fallout of AbstractFunction1, but I tried reverting that and it's still failing, so I think it's something else.  BTW there are a lot of ancillary bits in mapping Strings and using sortBy which have nothing to do with this: it's more directly illustrated like so.
-{code}
+```scala
 scala> List(1) map identity
 java.lang.NoSuchMethodError: $$anonfun$$1.apply(I)I
 scala> List(1) map identity[Int]
 res3: List[Int] = List(1)
-{code}
+```

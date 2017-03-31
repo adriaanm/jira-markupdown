@@ -3,21 +3,21 @@ I seem to have discovered a bug in the remote actors code when using hostnames r
 Everything here refers to the 2.8.0 RC releases, and also the latest SVN code. I am running the following:
 
 Scala:
-{code}
+```scala
 $$ scala
 Welcome to Scala version 2.8.0.r21968-b20100518235047 (Java HotSpot(TM) Server VM, Java 1.6.0_16).
-{code}
+```
 
 Java:
-{code}
+```scala
 $$ java -version
 java version "1.6.0_16"
 Java(TM) SE Runtime Environment (build 1.6.0_16-b01)
 Java HotSpot(TM) Server VM (build 14.2-b01, mixed mode)
-{code}
+```
 
 
-The bug: Sending messages from one remote actor to another using the -hostname- rather than IP address when selecting the remote actor will create two proxies on one side of the communication for message handling rather than one. These proxies retain session and channel mappings for synchronous messages and future-type requests. This state would normally be cleared as replies are received, but the bug means that outbound messages use a different Proxy to inbound messages, and so state is retained.
+The bug: Sending messages from one remote actor to another using the ~~hostname~~ rather than IP address when selecting the remote actor will create two proxies on one side of the communication for message handling rather than one. These proxies retain session and channel mappings for synchronous messages and future-type requests. This state would normally be cleared as replies are received, but the bug means that outbound messages use a different Proxy to inbound messages, and so state is retained.
 
 I have attached code which demonstrates this bug. The sequence of events, at a high level, is as follows; I have two machines, 'lifou' which sends synchronous messages, 192.168.1.5, and 'ikeq', 192.168.1.3, which receives and replies to messages:
 

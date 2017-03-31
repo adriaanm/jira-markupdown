@@ -1,8 +1,7 @@
 The core problem is that SBT, by deafault, has scala-library.jar in a parent classloader of the application classes.
 
 When we deserialize a List, we go through custom deserizalization code in object:
-
-{code}
+```scala
     // Java serialization calls this before readResolve during de-serialization.
     // Read the whole list and store it in `orig`.
     private def readObject(in: ObjectInputStream) {
@@ -15,11 +14,10 @@ When we deserialize a List, we go through custom deserizalization code in object
           builder += a.asInstanceOf[A]
       }
     }
-{code}
+```
 
 The `ObjectInputStream` provided by the JVM here internally resolves classes with the classloader the owner of closest enclosing method in the call stack. This is handled in `ObjectInputStream#resolveClass`.
-
-{code}
+```scala
 protected Class<?> resolveClass(ObjectStreamClass desc)
 	throws IOException, ClassNotFoundException
     {
@@ -35,19 +33,17 @@ protected Class<?> resolveClass(ObjectStreamClass desc)
 	    }
 	}
     }
-{code}
+```
 
 This ticket against OpenJDK suggests that this behaviour is buggy and instead the current thread's context class loader should be used. But the response is that the current behaviour is as specified.
 https://bugs.openjdk.java.net/browse/JDK-4340158
 
 Here's a further minimization:
-
-{code}
+```scala
 // src/test/scala/issue/Meh.scala
 class Meh
-{code}
-
-{code}
+```
+```scala
 // src/test/scala/issue/Main.scala
 package issue
 
@@ -74,6 +70,6 @@ object Test {
     is.readObject().asInstanceOf[A]
   }
 }
-{code}
+```
 
 I'm not sure if we can do anything to fix this in our custom serialization code. I would appreciate ideas from serialization experts.

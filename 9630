@@ -1,13 +1,12 @@
-Martin noted that in the early days of {{findMember}}, it used to exclude private members beyond the first base class. This was removed in 88a54be3877. He can't remember why. Theories: 1) to make sure that private members are intersected in refinement types (see example below that doesn't compile under my patch), or 2) to make sure private members are visible in classes with a self type.
-
-{code}
+Martin noted that in the early days of `findMember`, it used to exclude private members beyond the first base class. This was removed in 88a54be3877. He can't remember why. Theories: 1) to make sure that private members are intersected in refinement types (see example below that doesn't compile under my patch), or 2) to make sure private members are visible in classes with a self type.
+```scala
 trait T {
   type TT = T with Any
   private val priv = 0
   (??? : TT).priv // we currently allow this, and should continue to do so.
 }
-{code}
+```
 
-Collateral work: I just noticed that {{findMember}} is duplicated with {{findMembers}}. It was an attempted performance optimization: 04f0b659efe8. Needless to say, they have started to drift apart.
+Collateral work: I just noticed that `findMember` is duplicated with `findMembers`. It was an attempted performance optimization: 04f0b659efe8. Needless to say, they have started to drift apart.
 
 

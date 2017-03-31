@@ -1,6 +1,5 @@
 I have the following code:
-
-{code}
+```scala
 class Vector (val x: Double, val y: Double, val z: Double) {
   def *(f: Double) = new Vector(x * f, y * f, z * f)
   def +(v: Vector) = new Vector(x + v.x, y + v.y, z + v.z)
@@ -22,7 +21,7 @@ class Example {
     val v = interpolate(0.3, 2.5, 4.5)
   }
 }
-{code}
+```
 
 When I compile this with Scala 2.8.0.RC6, I get an unexpected error message:
 
@@ -35,8 +34,7 @@ and import Scope1._
 one error found
 
 Why does the compiler think the reference is ambiguous? The two interpolate methods have different signatures and it should be clear which one I want to apply. Note that if I put them both in class Example, without importing them, it works without a problem:
-
-{code}
+```scala
 // No problem
 class Example {
   def interpolate(t: Double, a: Double, b: Double): Double = a * (1.0 - t) + b * t
@@ -46,4 +44,4 @@ class Example {
     val v = interpolate(0.3, 2.5, 4.5)
   }
 }
-{code}
+```

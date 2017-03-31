@@ -1,6 +1,5 @@
-(Using Manifests to avoid interacting with SI-5990.)
-
-{code}
+(Using Manifests to avoid interacting with scala/bug#5990.)
+```scala
 def isItInferableAsATypeArg[A : Manifest](f: A => Unit) = manifest[A]
 
 object Repeated extends ((Int*) => Unit) {
@@ -12,23 +11,20 @@ object ByName extends ((=> Int) => Unit) {
 }
 
 isItInferableAsATypeArg(Repeated)
-{code}
-
-{noformat}
+```
+```
 error: type mismatch;
  found   : Repeated.type
  required: Seq[Int] => Unit
-{noformat}
+```
 
 Okay, so no then!
-
-{code}
+```scala
 isItInferableAsATypeArg(ByName)
-{code}
-
-{noformat}
+```
+```
 error: No Manifest available for => Int.
-{noformat}
+```
 
 Okay, so yes then?
 

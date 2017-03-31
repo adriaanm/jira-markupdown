@@ -1,26 +1,23 @@
 Presently, extracting groups from regex patterns in a pattern match requires matching twice:
-
-{code}
+```scala
 val Date = """(\d+)/(\d+)/(\d+)""".r
 for {
   date <- Date findFirstIn text
 } yield date match {
   case Date(a,b,c) => (a,b,c)
 }
-{code}
+```
 
 This can be easily remedied by providing a Regex.Groups object, similar to Regex.Match:
-
-{code}
+```scala
   /** An extractor object for Matches, yielding the matched groups */
   object Groups {
     def unapplySeq(m: Match): Option[Seq[String]] = if (m.groupCount > 0) Some(1 to m.groupCount map m.group) else None
   }
-{code}
+```
 
 Alternatively, or even in addition, the `unapplySeq` method on a Regex could be thus modified:
-
-{code}
+```scala
   def unapplySeq(target: Any): Option[List[String]] = target match {
     case s: java.lang.CharSequence =>
       val m = pattern.matcher(s)
@@ -31,12 +28,11 @@ Alternatively, or even in addition, the `unapplySeq` method on a Regex could be 
     case _ =>
       None
   }
-{code}
+```
 
 This doesn't change the semantics, just avoids rematching. By the way, on a `Regex`'s `unapplySeq`, the `toList` call seems to be unnecessary:
-
-{code}
+```scala
 if (m.matches) Some((1 to m.groupCount).toList map m.group)
-{code}
+```
 
 If the type was changed from `Option[List[String]]` to `Option[List[Seq]]`, one can remove that method.

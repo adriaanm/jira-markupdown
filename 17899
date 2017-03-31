@@ -1,6 +1,5 @@
 Power REPL shows the problem. See below for comments.
-
-{code}
+```scala
 scala
 Welcome to Scala version 2.10.0 (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_37).
 Type in expressions to have them evaluated.
@@ -24,9 +23,9 @@ throwsAnn: $r.intp.global.AnnotationInfo = throws(classOf[java.lang.reflect.Invo
 
 scala> throwsAnn.atp.typeParams
 res0: List[$r.intp.global.Symbol] = List(type T)
-{code}
+```
 
-As you can see, we get higher-kinded (unapplied) type for annotation. This is broken and I believe it caused by [PR-1347|https://github.com/scala/scala/pull/1347] which introduced type parameter for scala.throws annotation but forgot to change [{{parseExceptions}}|https://github.com/scala/scala/blob/master/src/compiler/scala/tools/nsc/symtab/classfile/ClassfileParser.scala#L1043] in {{ClassfileParser.scala}}.
+As you can see, we get higher-kinded (unapplied) type for annotation. This is broken and I believe it caused by [PR-1347](https://github.com/scala/scala/pull/1347) which introduced type parameter for scala.throws annotation but forgot to change [{{parseExceptions}}](https://github.com/scala/scala/blob/master/src/compiler/scala/tools/nsc/symtab/classfile/ClassfileParser.scala#L1043) in `ClassfileParser.scala`.
 
 This might be related to spurious API changes in sbt's incremental compiler reported here:
 https://github.com/sbt/sbt/issues/642#issuecomment-12577946

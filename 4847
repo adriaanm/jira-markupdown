@@ -1,11 +1,11 @@
 The main practical related concept for me right now is HList literals, especially for `HList => R` .  It is easy enough to implicitly convert between HList and TupleN, but it is harder when you want to infer the types for a function.  For sbt 0.9, I want to say:
-{code}
+```scala
   (taskA, taskB).map( (valueA, valueB) => ... )
-{code}
+```
 for arbitrary arity.  Underneath, I abstract over arity using HLists but provide conversions from TupleN to HList and FunctionN to `HList => R` for the user-facing interface.  The closest I came required explicitly annotating the arguments:
-{code}
+```scala
   (taskA, taskB).map( (valueA: A, valueB: B) => ... )
-{code}
+```
 So, I'd certainly use auto-tupling/hlisting function literals.
 
 Something simpler that would help make directly using HLists more user-friendly would be printing binary type constructors with symbolic names as infix types.  I have a [http://github.com/harrah/scala-starrless/tree/print_infix_types branch] that does this, but the part that detects when the simple name is ambiguous is an ugly hack.

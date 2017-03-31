@@ -8,7 +8,7 @@ The FuturesDeadlock object in the attached code repeats a matrix operation 50 ti
 not lasted 5000ms. 
 
 Here is the execution output.
-{code}
+```scala
      Iteration  1 of 256X256 max 256X256 succeeded in 736.55ms 
      Iteration 50 of 256X256 max 256X256 succeeded in 889.88ms 
      Iteration 50 of 256X256 max 256X256 succeeded in 499.62ms 
@@ -18,7 +18,7 @@ Here is the execution output.
      Iteration 50 of 256X256 max 256X256 succeeded in 497.60ms 
      Iteration 50 of 256X256 max 256X256 succeeded in 486.03ms 
 >>>> Iteration 50 of 256X256 max 256X256 failed after 380.79ms <<<<< 
-{code}
+```
 
 I infer that Futures is reusing earlier created Actors and the Timers scheduled in the first iteration are expiring
 during later iterations, timing out Futures that
@@ -27,5 +27,4 @@ should not be timed out.
 Thus, these timers must be canceled when a Future's actor completes normally so they do not send a TIMEOUT.
 
 Using much longer timeouts (i.e. 10 years: 10*365*24*60*60*1000) will work to prevent these overlapping timeout, but this basically makes stort-term timeout values unusable.
-
 

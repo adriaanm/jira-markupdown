@@ -1,6 +1,5 @@
-Scala-xml module is on the bootclasspath of the compiler because it's needed by scaladoc. However, Scala compiler will pick up all jars from bootclasspath (unless {{-nobootclasspath}} is passed). That's the reason Scala 2.11 compiles code containing xml literals even if we do not put scala-xml on the classpath explicitly:
-
-{code}
+Scala-xml module is on the bootclasspath of the compiler because it's needed by scaladoc. However, Scala compiler will pick up all jars from bootclasspath (unless `-nobootclasspath` is passed). That's the reason Scala 2.11 compiles code containing xml literals even if we do not put scala-xml on the classpath explicitly:
+```scala
 $ cat XMLHelloWorld.scala 
 object XMLHelloWorld {
   def main(args: Array[String]): Unit = {
@@ -9,11 +8,10 @@ object XMLHelloWorld {
   }
 }
 $ ./build/pack/bin/scalac -d sandbox/ XMLHelloWorld.scala
-{code}
+```
 
-For command line {{scalac}} that's the behavior we probably want to have. However, we get the same behavior in Maven. Consider project with the following pom.xml:
-
-{code}
+For command line `scalac` that's the behavior we probably want to have. However, we get the same behavior in Maven. Consider project with the following pom.xml:
+```scala
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
@@ -42,7 +40,7 @@ For command line {{scalac}} that's the behavior we probably want to have. Howeve
     </plugins>
   </build>
 </project>
-{code}
+```
 
 If you try to compile ({{mvn scala:compile}}) the same code as above with Maven Scala plugin, it will succeed. However, there's no dependency on xml declared so if you try to run your code you get:
 

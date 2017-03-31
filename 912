@@ -7,7 +7,7 @@ I'd actually prefer my solution, for a couple of reasons.
  * I can't serialize HOF's in this framework, since the compiler will always assume that the function in question can't be serialized. I can work around this in library code somewhat, but it's less than optimal.
 
 New test case:
-{code}
+```scala
 object Foo {
   def foo(x : Int) = {() =>x} 
   def bar(f : Int=>Int) = {() =>f(3)}
@@ -18,8 +18,8 @@ import java.io._;
 val out = new ObjectOutputStream(new FileOutputStream("foo"));
 out.writeObject(Foo.foo(3)); // Works great, thanks!
 out.writeObject(Foo.bar(3+)); // Still doesn't work.
-{code}
+```
 
 Thanks!
 
--- David
+ - David

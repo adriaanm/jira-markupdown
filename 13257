@@ -1,33 +1,33 @@
 With compiler built from r14440, it is not possible to parse certain Java 1.5 classfiles. Here is a testcase:
 
-_!HarderToParse.java_
-{code}
+*!HarderToParse.java*
+```scala
 public class HarderToParse<A> {
     class InnerClass {
 	// Cannot parse method signature: "()TA;"
 	public A method() { return null; }
     }
 }
-{code}
+```
 
-_!ForceParse.scala_
-{code}
+*!ForceParse.scala*
+```scala
 object ForceParse extends HarderToParse[AnyRef] {
   // Force import of HarderToParse<A>.InnerClass,
   // which has confusing method signature.
   var field: InnerClass = null
 }
-{code}
+```
 
 The compiler error message is:
-{code}
+```scala
 error: error while loading HarderToParse$$InnerClass, class file 'brokenclass/classes/HarderToParse$$InnerClass.class' is broken
 (key not found: A)
 one error found
-{code}
+```
 
-I assume it's getting confused by the type _A_, which is a type parameter of the parent class.
+I assume it's getting confused by the type *A*, which is a type parameter of the parent class.
 
 The compiler log, including stack trace, is attached.
 
-This error was found in the wild in the constructor of [http://mina.apache.org MINA's] !AbstractPollingIoConnector.!ConnectionRequest class. Another error parsing a MINA classfile was reported in SI-489.
+This error was found in the wild in the constructor of [http://mina.apache.org MINA's] !AbstractPollingIoConnector.!ConnectionRequest class. Another error parsing a MINA classfile was reported in scala/bug#489.

@@ -1,19 +1,17 @@
-In {{transform.Erasure}}, the {{Apply}} tree "{{Test.this.UNIT().getClass()}}" is matched by
-
-{noformat}
+In `transform.Erasure`, the `Apply` tree "{{Test.this.UNIT().getClass()}}" is matched by
+```
   case Apply(fn @ Select(qual, _), Nil) if interceptedMethods(fn.symbol) =>
-{noformat}
+```
 
 but then doesn't get into this branch
-
-{noformat}
+```
       // Rewrite 5.getClass to ScalaRunTime.anyValClass(5)
       else if (isPrimitiveValueClass(qual.tpe.typeSymbol))
         global.typer.typed(
           gen.mkRuntimeCall(
             nme.anyValClass,
             List(qual, typer.resolveErasureTag(tree.pos, qual.tpe.widen, true))))
-{noformat}
+```
 
-because the qualifier's {{tpe}} reads {{Test.<refinement>.type}}
+because the qualifier's `tpe` reads `Test.<refinement>.type`
 

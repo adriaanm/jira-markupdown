@@ -1,8 +1,7 @@
-Fascinating! As you know, it compiles ok on 2.11.8,.... *except* when you add `-Xprint:typer`! (In the example below I added -Ydebug for a better error message, but it's otherwise not involved.)
+Fascinating! As you know, it compiles ok on 2.11.8,.... **except** when you add `-Xprint:typer`! (In the example below I added -Ydebug for a better error message, but it's otherwise not involved.)
 
 This indicates to me it used to compile due to a latent bug in the old handling of fields. It still doesn't explain why it compiles on Dotty. Still investigating that avenue.
-
-{code}
+```scala
 ➜  scala git:(2.12.0) ~/scala/scala-2.11.8/bin/scalac /tmp/Eval.scala -Xprint:typer -Ydebug
 
 [...]
@@ -14,10 +13,8 @@ This indicates to me it used to compile due to a latent bug in the old handling 
           val start = c.start
               ^
 one error found
-{code}
-
-
-{code}
+```
+```scala
 sealed abstract class Eval[+A] {
   def flatMap[B](f: A => Eval[B]): Eval[B] =
     this match {
@@ -35,4 +32,4 @@ object Eval {
     val start: () => Eval[Start]
   }
 }
-{code}
+```

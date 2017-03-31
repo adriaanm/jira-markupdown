@@ -1,11 +1,10 @@
 During profiling my application with !YourKit, I've found that 2% of the execution time is consumed in `Predef.intWrapper` as called from:
-
-{code}
+```scala
 trait ResizableArray[A] ... { 
   // ...
   protected def initialSize: Int = 16
   protected var array: Array[AnyRef] = new Array[AnyRef](initialSize max 1)
-{code}
+```
 
 This is called when mapping over `ArrayBuffer`s.
 

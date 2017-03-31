@@ -1,6 +1,5 @@
 simplified test case:
-
-{code}
+```scala
 class A
 class B
 
@@ -16,11 +15,10 @@ object Test {
 	
   (new A) : Int // does not type check
 }
-{code}
+```
 
 For one, I think this patch is needed:
-
-{code}
+```scala
 --- a/src/compiler/scala/tools/nsc/typechecker/Contexts.scala
 +++ b/src/compiler/scala/tools/nsc/typechecker/Contexts.scala
 @@ -473,12 +473,14 @@ trait Contexts { self: Analyzer =>
@@ -37,6 +35,6 @@ For one, I think this patch is needed:
 +            // due to SI-2591: one name may map to several symbols
 +            collectImplicits(imp.allImportedSymbols filter (_.name == to), pre) ++ rest
 +          } else rest
-{code}
+```
 
 Martin, if appropriate, please re-assign to me with a hint on how to fix.

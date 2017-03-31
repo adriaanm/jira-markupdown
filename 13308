@@ -1,6 +1,5 @@
 An !AssertionError occurs when compiling the following code.  Versions 2.7.0-final, 2.6.1-final, and the April 16 nightly build all produce the error.
-
-{code}
+```scala
 
 
 class Top[A] {
@@ -17,20 +16,17 @@ class Main[NextType <: Node](value: Node { type T = NextType })
 	
 	new Main[AType]( (value: AType).prepend )
 }
-
-
-{code}
+```
 
 
 I meant to put 
 
-{{ type T <: NextType }} instead of {{ type T = NextType }}
+` type T <: NextType ` instead of ` type T = NextType `
 
 in the Main section and with this change, it compiles without an error.
 
 The stack trace using the April 16th nightly build:
-
-{code}
+```scala
 Exception in thread "main" java.lang.AssertionError: assertion failed: computing closure of Main.this.AType with Singleton:true
         at scala.Predef$$.assert(Predef.scala:92)
         at scala.tools.nsc.symtab.Types$$CompoundType.computeClosure$$1(Types.scala:1038)
@@ -107,4 +103,4 @@ Exception in thread "main" java.lang.AssertionError: assertion failed: computing
         at scala.tools.nsc.Main$$.process(Main.scala:84)
         at scala.tools.nsc.Main$$.main(Main.scala:98)
         at scala.tools.nsc.Main.main(Main.scala
-{code}
+```

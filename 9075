@@ -5,8 +5,7 @@ A few notes from discussion with Martin:
  - perhaps, though, we could re-spec things to say the withFilter is always included, but, the compiler
    will pass a specially tagged closure (e.g. it would have a marker trait `Constant` as a a parent),
    so that the withFilter implementation could avoid calling it.
-
-{code}
+```scala
 class Option[+A] { self =>
   class WithFilter(p: A => Boolean) {
     private val isConstant = p.isInstanceOf[ConstantFunction]
@@ -14,11 +13,10 @@ class Option[+A] { self =>
     ...
   }
 }
-{code}
+```
 
   - Treatment of `null` causes headaches: we ignore the possibility of null in the refutability checking (otherwise any pattern involving a type test would be refutable). Perhaps pattern generated should be changed:
-
-{code}
+```scala
   for ((x, y) <- null: Option[(Int, Int)]) yield x
 
   scala> val n = Some(null): Option[(Int, Int)]
@@ -41,4 +39,4 @@ class Option[+A] { self =>
 
   // Tentative proposal: the predicate should admit null.
   scala> n withFilter { case (x, y) => true; case null =>; case _ => false } map { case (x, y) => x }
-{code}
+```

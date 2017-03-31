@@ -1,5 +1,5 @@
-I am not sure this can be fixed due to language unsoundness described in SI-7278.
-{code}
+I am not sure this can be fixed due to language unsoundness described in scala/bug#7278.
+```scala
 package p {
   trait N { type Name ; def make(): Name }
   trait N1 extends N { class Name ; def make(): Name = new Name }
@@ -10,5 +10,5 @@ package p {
     // java.lang.ClassCastException: p.N1$Name cannot be cast to p.N2$Name
   }
 }
-{code}
+```
 Until we're talking about a language where object g doesn't freely discard information about the types of its inherited members, or where the type x.Name doesn't fluctuate depending on the static type of x, there's no way to draw sound inferences based on the way an abstract type is refined in a trait.

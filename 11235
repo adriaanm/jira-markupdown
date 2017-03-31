@@ -1,4 +1,4 @@
-I have not noticed problems reported in SI-7963, but I think it does not relate this. There is some problems in PipedProcesses as listed bellow:
+I have not noticed problems reported in scala/bug#7963, but I think it does not relate this. There is some problems in PipedProcesses as listed bellow:
 - source and sink leak when b.run() fails at https://github.com/scala/scala/blob/538aa22ec8144430e778a34bc749eccb6f5dbf4c/src/library/scala/sys/process/ProcessImpl.scala#L132
 
 - source, sink and second leak when a.run() fails at https://github.com/scala/scala/blob/538aa22ec8144430e778a34bc749eccb6f5dbf4c/src/library/scala/sys/process/ProcessImpl.scala#L133
@@ -16,17 +16,15 @@ And I have a question about BasicIO.transferFully.
 - process.onInterrupt catches InterruptedException. https://github.com/scala/scala/blob/159baa268e5cc14b50bf29a40fff922e36dd7bc9/src/library/scala/sys/process/package.scala#L238
 
 therefore it seems meaningless that BasicIO.transferFully using onInterrupt for catching a exception. I guess this originally intented to catch InterruptedIOException, and I suggest the correct implementation is:
-
-{code}
+```scala
       def onIOInterrupt[T](handler: => T): Throwable =?> T = {
         case _: InterruptedIOException => handler
       }
-{code}
-
-{code}
+```
+```scala
   def transferFully(in: InputStream, out: OutputStream): Unit =
     try transferFullyImpl(in, out)
     catch onIOInterrupt(())
-{code}
+```
 
 Is this prediction not wrong?

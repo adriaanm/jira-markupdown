@@ -1,8 +1,7 @@
 The order of implicit parameters matters during use site-inference.
 
 The method definitions below successfully compile. Actually using y and z yields a compile-time error with message: "diverging implicit expansion for type Ordering[A] starting with method Tuple9 in object Ordering"
-
-{code}
+```scala
 def x[A, B](b: B)(implicit t: B => Traversable[A], o: Ordering[A]) = b
 def y[A, B](b: B)(implicit o: Ordering[A], t: B => Traversable[A]) = b
 def z[A: Ordering, B](b: B)(implicit t: B => Traversable[A]) = b
@@ -11,6 +10,6 @@ val ls = List(42)
 x(ls) // works
 y(ls) // compile time-error
 z(ls) // compile time-error
-{code}
+```
 
 

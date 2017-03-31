@@ -3,8 +3,7 @@ According to the Scala spec (section 8.1.1):
 "A variable pattern x is a simple identifier which starts with a lower case letter."
 
 However, it appears that it must be a simple identifier that starts with an ASCII lowercase letter (i.e. a character in the range [a-z].)  Examples of lowercase letters that do not satisfy this:
-
-{code}
+```scala
 
 scala> (1, 2, 3) match { case (r, θ, φ) => r + θ + φ }
 <console>:6: error: not found: value θ
@@ -24,13 +23,12 @@ scala> 1 match { case � => � }
 <console>:6: error: not found: value �
        1 match { case � => � }
                            ^
-{code}
+```
 
 All three of these characters (θ, φ, �) are classified in Unicode as Ll (lowercase letters):
-
-{code}
+```scala
 scala> for { c <- List('θ', 'φ', '�') } yield (c.isLetter, c.isLower)
 res8: List[(Boolean, Boolean)] = List((true,true), (true,true), (true,true))
-{code}
+```
 
 Either the language specification should be tightened to clarify that only characters c s.t. 'a' <= c <= 'z' are allowed, or more preferably the implementation should be fixed so that any identifier beginning with a character c s.t. c.isLower is true is accepted as a variable pattern.

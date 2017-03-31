@@ -1,5 +1,5 @@
 @Eugene Both your points 1 and 2 are right, but the trouble is that the compiler is solving the type-check from the outside in. So it sees the block needs to have type Converted[Int], so it knows that the target type of 1 needs to be Converted[Int]. It doesn't backtrack out to the outer block when it sees that 1 does not have that type; it just applies the conversion locally.
 
-I don't think this is a violation of the spec; the spec just says that the type of a block shall be the type of its last expression, and that view conversions work by converting {{e}} to {{v(e)}}; it seems silent on the order in which these rules should be applied when solving the type-check (unless I'm missing something).
+I don't think this is a violation of the spec; the spec just says that the type of a block shall be the type of its last expression, and that view conversions work by converting `e` to `v(e)`; it seems silent on the order in which these rules should be applied when solving the type-check (unless I'm missing something).
 
 I wonder, though, if someone were to propose clarifying the spec on this point to explicitly pull back conversions to the largest scope to which they could apply, (A) how difficult that would be to implement (I imagine non-trivial, but I don't know much about it) and (B) whether that would have other undesirable consequences.

@@ -1,13 +1,12 @@
 The "spewing" should have been fixed by merging: https://github.com/scala/scala/pull/5063 and as such should only give this message once per run - is this not the case? :(
 
 Regarding the version number, we have this currently:
-
-{code:scala}
+```scala
 // src/scaladoc/tools/nsc/doc/html/page/Entity.scala:163
 if (version.length > "XX.XX.XX-XXX".length) {
   docletReporter.summaryWarning(s"doc-version ($version) was too long to be displayed in the webview, and will be left out. The max length is: XX.XX.XX-XXX")
   ""
 } else version
-{code}
+```
 
 The point here was, as you said - to eliminate weird overflow in the UI. It is slightly, albeit not wholly, incorrect to say that there is no way to know which build you're looking at - since the title header (i.e. the tab-pane) should contain the version number still. Perhaps an alternative would be to display the full version number in the footer (regardless of strlen)?

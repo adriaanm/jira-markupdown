@@ -1,7 +1,7 @@
 I discovered a strange behavior in which the Scala Interpreter cannot find a class in the classpath.
 
 Here's my Scala code that starts the interpreter:
-{code}
+```scala
 // MiniDebugger.scala
 
 package bugs
@@ -13,25 +13,25 @@ object MiniDebugger {
                 Interpreter.breakIf(true, "that" -> this)
         }
 }
-{code}
+```
 
 I can compile the file
-{code}
+```scala
 scalac MiniDebugger.scala
-{code}
+```
 and start it via
-{code}
+```scala
 scala bugs.MiniDebugger
-{code}
+```
 And it works without any problems.
 
 But when I try to start it from the parent directory:
-{code}
+```scala
 cd ..
 scala -cp x bugs.MiniDebugger
-{code}
+```
 I get the following exception:
-{code}
+```scala
 <script>:3: error: not found: value bugs
    var value: bugs.MiniDebugger$$ = _
               ^
@@ -68,7 +68,7 @@ java.util.NoSuchElementException: None.get
         at scala.tools.nsc.ObjectRunner$$.run(ObjectRunner.scala:33)
         at scala.tools.nsc.MainGenericRunner$$.main(MainGenericRunner.scala:129)
         at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
-{code}
+```
 
 I tested it even with the most recent release:
 

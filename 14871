@@ -1,21 +1,21 @@
-This problem occurs when objects are added to an {{ArrayBuffer}} and then later removed again:
-{code}
+This problem occurs when objects are added to an `ArrayBuffer` and then later removed again:
+```scala
 val buf = new ArrayBuffer[Array[Byte]]
 buf += new Array[Byte](1000000)
 ...
 buf.remove(buf.size-1)
-{code}
-Although it seems that the reference to the array has been removed from the buffer, it often still exists "invisibly" (in the underlying array) after the {{remove}} call. This keeps the removed object from being freed by the garbage collector.
+```
+Although it seems that the reference to the array has been removed from the buffer, it often still exists "invisibly" (in the underlying array) after the `remove` call. This keeps the removed object from being freed by the garbage collector.
 
 The effect is probably small in the average case. But the unpleasant aspect is that there can definitely be cases where significant amounts of memory are retained, and there is no obvious way to detect or anticipate this.
 
-Also, there is no really sensible workaround because the "invisible" fields of the array can not be accessed from outside the {{ArrayBuffer}}. One would probably have to do something like this:
-{code}
+Also, there is no really sensible workaround because the "invisible" fields of the array can not be accessed from outside the `ArrayBuffer`. One would probably have to do something like this:
+```scala
 buf.remove(buf.size-1)
 buf += null
 buf.remove(buf.size-1)
-{code}
+```
 
-SI-1677 is related to this, but while that defect is already fixed, the problem described here still exists.
+scala/bug#1677 is related to this, but while that defect is already fixed, the problem described here still exists.
 
 Scala version: 2.8.0.r20327-b20091231020112

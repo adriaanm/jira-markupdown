@@ -5,26 +5,25 @@ changed AbstractBase to a generic type and instantiated it with a
 java.lang.Integer, the runtime threw an AbstractMethodError.
 
 Here is AbstractBase.java:
-
-{code}
+```scala
 public abstract class AbstractBase<T> {
   abstract void doStuff(T... params);
 
     void callDoStuff(T... params) {
 	doStuff(params);
     }
-{code}
+```
 
 
 Concrete.scala:
-{code}
+```scala
 class Concrete extends AbstractBase[java.lang.Integer] {
   override def doStuff(params:java.lang.Integer*) = println("doStuff invoked")
 }
-{code}
+```
 
 Invoker.scala:
-{code}
+```scala
 object Invoker {
   def main(args: Array[String]) {
     val impl = new Concrete
@@ -32,16 +31,15 @@ object Invoker {
 
   }
 }
-{code}
+```
 
 If I compile and run with:
-{code}
+```scala
 javac *.java && scalac  *.scala && scala Invoker
-{code}
+```
 
 The result is:
-
-{code}
+```scala
 java.lang.AbstractMethodError: AbstractBase.doStuff([Ljava/lang/Object;)V
 	at AbstractBase.callDoStuff(AbstractBase.java:5)
 	at Invoker$$.main(Invoker.scala:4)
@@ -57,7 +55,7 @@ java.lang.AbstractMethodError: AbstractBase.doStuff([Ljava/lang/Object;)V
 	at scala.tools.nsc.util.ScalaClassLoader$$URLClassLoader.run(ScalaClassLoader.scala:86)
 	at scala.tools.nsc.MainGenericRunner$$.main(MainGenericRunner.scala:83)
 	at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
-{code}
+```
 
 Interestingly, if you replace java.lang.Integer with java.lang.Object
 and alter the call to callDoStuff accordingly, the code works without a hitch.
@@ -67,7 +65,7 @@ and alter the call to callDoStuff accordingly, the code works without a hitch.
 
 
 For the record, I'm running:
-{code}
+```scala
 $$ scala -version
 javaScala code runner version 2.8.1.final -- Copyright 2002-2010, LAMP/EPFL
 
@@ -75,14 +73,12 @@ $$ java -version
 java version "1.6.0_18"
 OpenJDK Runtime Environment (IcedTea6 1.8.2) (6b18-1.8.2-4ubuntu2)
 OpenJDK Server VM (build 16.0-b13, mixed mode)
-
-{code}
+```
 
 
 I have attached a .zip file containing a directory called "object",
 which instantiates AbstractBase with a java.lang.Object and works, and
 another directory called "integer", which instantiates AbstractBase
 with a java.lang.Integer and does not work. 
-
 
 

@@ -1,6 +1,5 @@
 The Scala-Compiler doesn't allow the beginning of function parameters to be after one or more new lines. Between the parameters of a parameter list there can be as many newlines as i want. 
-
-{code}
+```scala
   def greet(firstName: String, lastName: String) = println(s"Hello $firstName $lastName")
 
   // Works
@@ -14,15 +13,14 @@ The Scala-Compiler doesn't allow the beginning of function parameters to be afte
   // Doesn't work
   greet
   ("Felix", "Becker")
-{code} 
+```
 
 Expected behaviour: function name and beginning of the parameter list can be seperated by any spaces and newlines.
 
 I'm not sure if this is a bug or expected behaviour but it's currently a problem for me while creating DSLs with Scala.
 
 DSL-Example where this is a problem:
-
-{code}
+```scala
 import DSL._
 // Works
 object DSLFun extends App {
@@ -76,4 +74,4 @@ object DSL {
   implicit def packageToPackageSeq(pkg: Package): Seq[Package] = Seq(pkg)
   implicit def packageContentToSequence(pkgContent: PackageContent): Seq[PackageContent] = Seq(pkgContent)
 }
-{code}
+```

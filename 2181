@@ -3,8 +3,7 @@ The current action of @!BeanProperty is to copy the annotations to the generated
 I suggest something like the following:
 
 First, check the element type restrictions and move or copy as appropriate, if it can be determined from those. Second, obey instructions supplied in other annotations:
-
-{code}
+```scala
 @AnnotateGenerated(@Getters)
 class Person {
    @XmlAttribute
@@ -14,13 +13,13 @@ class Person {
    @XmlValue
    var details = ""
 }
-{code}
+```
 
 The parameter to @!AnnotateGenerated might be @Getters, @Setters, @Fields, @Accessors (getters and setters), or @All. The current behavior corresponds to @All.
 
 Allow !AnnotateGenerated on packages, classes, and members, so the annotations can applied to specific scopes. 
 
 It might make sense to further refine the instruction by annotation type:
-{code}
+```scala
 @AnnotateGenerated(XmlAttribute.class, @Getters)
-{code}
+```

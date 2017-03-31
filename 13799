@@ -1,6 +1,5 @@
 When passed an string containing a JSON object:
-
-{code}
+```scala
 {
             "username": "X1",
             "firstname": "X2",
@@ -9,10 +8,10 @@ When passed an string containing a JSON object:
             "isAdmin": false,
             "permissions": "X6"
 }
-{code}
+```
 
 parseFull returns an Option[List[Any]] (actually a List of pairs) instead of the Option[Map[String,Any]] that was promised.  I think I see the problem in the code.  When parseFull calls resolveType, resolveType seems to always return what it's given:
-{code}
+```scala
    def resolveType(input: List[Any]): Any = {  
      var objMap = Map[String, Any]()  
        
@@ -25,5 +24,5 @@ parseFull returns an Option[List[Any]] (actually a List of pairs) instead of the
      else  
        input  
    }  
-{code}
+```
 In particular, in the forall it seems to assume that all pairs are (String, List[_]) types.. but Strings, numbers etc.. aren't Lists.

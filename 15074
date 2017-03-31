@@ -7,8 +7,7 @@ So `a.b += c` gets transformed into `convertToT(a.b).+=(c)` instead of `a.b = a.
 The Implicit conversion must take a superclass of the attribute for this bug to occur.
 
 An example below demonstrates this behaviour. Notice that both code blocks in main() are exactly the same, yet produce different results. The first code block does not have the implicit conversion in scope, so it works as expected. The second block has the conversion in scope, and produces an unexpected result.
-
-{code}
+```scala
 package example {
     class IntHolder(private var i: Int) {
         import wrappedint._
@@ -57,12 +56,12 @@ package example {
         }
     }
 }
-{code}
+```
 
 output:
-{code}
+```scala
 2 + 2 = 4
 2 + 2 = 2
-{code}
+```
 
 Tested on scala-2.8.0.Beta1-prerelease and scala-2.8.0.r20995 with the same result.

@@ -6,7 +6,7 @@ Actors directly interact with ActorGC in three ways:
 3. Registering a function to be run on termination
 
 These all can be moved into IScheduler as follows:
-{code}
+```scala
   def registerActor(actor: Actor): Unit
   def unregisterActor(actor: Actor): Unit
   def addUnregisterHook(actor: Actor)(f: => Unit): Unit
@@ -14,7 +14,7 @@ These all can be moved into IScheduler as follows:
 and in cases when ActorGC is used, the scheduler can basically forward the calls onto it.  In other cases, they can be no-ops or perform other tasks.
 
 The behavior for using ActorGC can also be extracted into a mixin so that it can be easily added to any scheduler implementation:
-{code}
+```
 trait SchedulerGCSupport extends IScheduler {
   protected val actorGC = new ActorGC
   def registerActor(actor: Actor): Unit = actorGC.newActor(actor)

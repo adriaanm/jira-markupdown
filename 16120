@@ -1,13 +1,13 @@
 The following code works with Scala 2.8.1.final but produces ClassFormatError at runtime with 2.9.0.final.
 
 Used commands:
-{code}
+```scala
 $$ JAVA_OPTS="-Xss2M" scalac Bug.scala
 $$ java -cp $$SCALA_HOME/lib/scala-library.jar:. Main
-{code}
+```
 
 Stack trace:
-{code}
+```scala
 Exception in thread "main" java.lang.ClassFormatError: Invalid method Code length 66105 in class file Main$$$$anonfun$$1
         at java.lang.ClassLoader.defineClass1(Native Method)
         at java.lang.ClassLoader.defineClassCond(ClassLoader.java:631)
@@ -24,10 +24,10 @@ Exception in thread "main" java.lang.ClassFormatError: Invalid method Code lengt
         at Main$$.<init>(Bug.scala:25)
         at Main$$.<clinit>(Bug.scala)
         at Main.main(Bug.scala)
-{code}
+```
 
 Code (very long):
-{code}
+```scala
 package pkg {
   // Bug is manifested with arguments as Long and Double, but not with Int or String
   class Foo(val a0: Long, val a1: Long, val a2: Long, val a3: Long) {
@@ -1100,4 +1100,4 @@ object Main {
     
   }
 }
-{code}
+```

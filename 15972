@@ -1,22 +1,21 @@
 === What steps will reproduce the problem (please be specific and use wikiformatting)? ===
 
 Compile the following code with Scaladoc:
-{code}
+```scala
 class A(val a: Int = 4) {
    def k1(x:Int = (new B).t ):Int= x
 }
 class B {
    val t: Int = 0
 }
-{code} 
+```
 
 The generated Scaladoc, which uses range positions to extract default arguments from source, has the following signatures for A:
-
-{code}
+```scala
 class A(val a: Int) {
    def k1(x:Int = new B).t ):Int
 }
-{code} 
+```
 
 Notice:
   - The default argument for the constructor parameter disappeared because a non-ranged position is generated for it (so that its `startOrPoint` and `endOrPoint` indices are equal).

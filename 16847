@@ -1,13 +1,12 @@
 from Enumeration.Value, also in nightly:
-
-{code}
+```scala
 override def compare(that: Value): Int = this.id - that.id
-{code}
+```
 
-Comparing ints by subtracting them does not work - the result may overflow. For example: 2000000000 > -2000000000 is true, but 2000000000 - -2000000000 is negative. 
+Comparing ints by subtracting them does not work - the result may overflow. For example: 2000000000 > ~~2000000000 is true, but 2000000000 ~~ -2000000000 is negative. 
 
 Example:
-{code}
+```scala
 object Test {
   object MyEnum extends Enumeration {
     val Foo = Value(2000000000)
@@ -19,6 +18,6 @@ object Test {
     println("Should be true, but is: " + (Foo > Bar))
   }
 }
-{code}
+```
 
 See e.g. http://stackoverflow.com/questions/2728793/java-integer-what-is-faster-comparison-or-subtraction

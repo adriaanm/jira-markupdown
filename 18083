@@ -2,7 +2,7 @@ This reports that SQLiteDatabase instance cannot be closed due to "NoSuchMethodE
 I believe this is critical problem for all Android developers in Scala.
 
 ###Whole source codes:
-{code}
+```scala
 	class DemoActivity extends Activity{
 	  override def onCreate(savedInstanceState: Bundle) {
     	super.onCreate(savedInstanceState)
@@ -18,9 +18,9 @@ I believe this is critical problem for all Android developers in Scala.
 	  def onCreate(p1: SQLiteDatabase) {}
 	  def onUpgrade(p1: SQLiteDatabase, p2: Int, p3: Int) {}
 	}
-{code}
+```
 This seems to come from bytecode differences between Scala 2.10.x and Scala 2.9.x as shown below.
-{noformat}
+```
 ###Bytecode extracts
 **[Problem]Scala 2.10.0 android-16(Android4.1) bytecodes:**
 
@@ -43,7 +43,7 @@ This seems to come from bytecode differences between Scala 2.10.x and Scala 2.9.
    	58:invokevirtual#55; //Method android/database/sqlite/SQLiteDatabase.close:()V
    	61:return
 	}
-{noformat}
+```
 
 Although SQLiteDatabase has "close()" method in all Android version, "close()" is implemented in SQLiteDatabase class until Android 4.0 while it is inherited from SQLiteClosable which is super class of SQLiteDatabase from Android 4.1.
 

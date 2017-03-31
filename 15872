@@ -1,9 +1,9 @@
 === What steps will reproduce the problem? ===
-{code}
+```scala
   var t = collection.immutable.TreeMap.empty[Int, Int]
   for (i <- 1 to 100000)
     t = (t + (i -> i) - i)   
-{code} 
+```
 
 === What is the expected behavior? ===
 
@@ -12,21 +12,20 @@ The loop should require constant memory, regardless of the number of iterations.
 === What do you see instead? ===
 
 The memory footprint is increasing while the loop is running.
-When it finishes, there are exactly 100001 {{TreeMap}} and {{RedBlack$$Empty$$}} instances that cannot be garbage collected until the reference t goes out of scope. 
+When it finishes, there are exactly 100001 `TreeMap` and `RedBlack$$Empty$$` instances that cannot be garbage collected until the reference t goes out of scope. 
 
-If you run this loop for a larger number of iterations, you will get an {{OutOfMemoryError}} (out of JVM heap space). 
+If you run this loop for a larger number of iterations, you will get an `OutOfMemoryError` (out of JVM heap space). 
 
 === Additional information ===
 
-The problem goes away, when you always keep at least one element in the {{TreeMap}}. This code works correctly:
-
-{code}
+The problem goes away, when you always keep at least one element in the `TreeMap`. This code works correctly:
+```scala
 var t = collection.immutable.TreeMap(0 -> 0)  // never removed
 for (i <- 1 to 100000)
   t = (t + (i -> i) - i) 
-{code}
+```
 
-JVisualVM suggests also that the problem might be related to the $$outer reference preventing 0-sized {{TreeMap}} objects from being GCed. (https://lampsvn.epfl.ch/trac/scala/ticket/1419)
+JVisualVM suggests also that the problem might be related to the $$outer reference preventing 0-sized `TreeMap` objects from being GCed. (https://lampsvn.epfl.ch/trac/scala/ticket/1419)
 
 === What versions of the following are you using? ===
   - Scala: 2.8.1.final

@@ -2,7 +2,7 @@ Hi.
 I'm using Hibernate (3.5.1-Final) as JPA2-provider and am experiencing problems after upgrading to RC2.
 
 I have the following annotations:
-{code}
+```scala
 @Entity
 @Table(name = "origo_routable_entity")
 @PrimaryKeyJoinColumn(name = "entity_id")
@@ -20,14 +20,12 @@ class CalendarEntry(
 	@BeanProperty
 	@OneToOne(fetch = FetchType.LAZY, cascade = Array(CascadeType.ALL), mappedBy = "calendarEntry")
 	var routableEntity: RoutableEntity = null
-
-{code}
+```
 
 OneToOne relation between RoutableEntity and CalendarEntry where RoutableEntity is the "owning" side. This compiles just fine but throws an exception at runtime when starting the application:
-{code}
+```scala
 Caused by: org.hibernate.AnnotationException: Referenced property not a (One|Many)ToOne: no.officenet.origo.calendar.domain.model.calendarentry.RoutableEntity.calendarEntry in mappedBy of no.officenet.origo.calendar.domain.model.calendarentry.CalendarEntry.routableEntity
         at org.hibernate.cfg.OneToOneSecondPass.doSecondPass(OneToOneSecondPass.java:220)
-
-{code}
+```
 
 This works fine in RC1.

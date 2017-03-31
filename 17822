@@ -1,19 +1,17 @@
 Implicit resolution fails in 2.10 but worked in 2.9.2. I created a minimal example, to reproduce the issue. 
 
 Both classes (ImplicitTest and ImplicitTestBrokenIn210) compile in 2.9.2 but in 2.10.0-RC5 ImplicitTestBrokenIn210 fails with the following error message:
-
-{code}
+```scala
 /home/lefou/work/tmp/scala-2.10-bug/src/ImplicitBug.scala:20: error: could not find implicit value for parameter project: Project
     file = Path("tmp")
                ^
 one error found
-{code}
+```
 
 The implicit parameter of Path.apply has the same name as the var "project" in class Tool. Seems to be some kind of name collision. This problem also occurs, when the types of the two "project" names differs.
 
 Here is the example code to reproduce the bug.
-
-{code}
+```scala
 class Project
 
 object Path {
@@ -36,7 +34,7 @@ class ImplicitTestBrokenIn210(implicit project: Project) {
     file = Path("tmp")
   }
 }
-{code}
+```
 
 
 Kind regards and a happy new year,

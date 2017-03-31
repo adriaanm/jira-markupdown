@@ -1,17 +1,15 @@
 Running the following code:
-
-{code}
+```scala
 object Test {
   val a = for(l <- b) yield l
   val b: List[List[Int]] = a
 }
 
 Test.a
-{code}
+```
 
 causes the following exception:
-
-{code}
+```scala
 java.lang.NullPointerException
         at Main$$Test$$1$$.<init>((virtual file):5)
         at Main$$.Test$$0((virtual file):4)
@@ -30,6 +28,6 @@ java.lang.NullPointerException
         at scala.tools.nsc.ScriptRunner.runScript(ScriptRunner.scala:362)
         at scala.tools.nsc.MainGenericRunner$$.main(MainGenericRunner.scala:165)
         at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
-{code}
+```
 
 What you would expect is a `StackOverflow` exception on object initialisation, but instead the vals are initialised to `null`, and you get a `NullPointerException` when they are used. If you replace `val` with `def` you get the expected stack overflow.

@@ -1,6 +1,5 @@
 I believe that without the "luxury" of stripping types and starting again, you'll need to change:
-
-{code}
+```scala
       case TreeSplice(ReifiedTree(universe, mirror, symtab, rtree, tpe, rtpe, concrete)) =>
         if (reifyDebug) println("entering inlineable splice: " + tree)
         val inlinees = symtab.syms filter (_.isLocalToReifee)
@@ -8,35 +7,33 @@ I believe that without the "luxury" of stripping types and starting again, you'l
         val symtab1 = symtab -- inlinees
         if (reifyDebug) println("trimmed %s inlineable free defs from its symbol table: %s".format(inlinees.length, inlinees map (inlinee => symtab.symName(inlinee)) mkString(", ")))
         withinSplice { super.transform(TreeSplice(ReifiedTree(universe, mirror, symtab1, rtree, tpe, rtpe, concrete))) }
-{code}
+```
 
 .. to substitute the "$u" from the outer universe for the splicee's universe.
 
 Debug brain dump:
 
 Slick expands:
-
-{code}
+```scala
 query#15744.map#15757(((x$1#15957: Coffee#7531) => x$1#15957.name#8072)#15956).filter(((x$2#28373: String#7136) => x$2#28373.==#5721(""))#28372)
-{code}
+```
 
 This runs through:
-{code}
+```scala
  QueryableMacros.filter:90
    QueryableMacros._helper:78
      QueryableMacros._reifyTree():58
-{code}
+```
 
 Which calls `reifyTree` in the reflection API with:
-
-{noformat}
+```
        mirror = {scala.reflect.internal.Trees$EmptyTree$@3498}"<empty>"
        tree = {scala.reflect.internal.Trees$Apply@3727}"QueryOps#7847.query#15960[String#7136]({\n  val $u#16000: scala#23.reflect#2606.runtime#2792.package#13974.universe#14081.type = package#13974.this.universe#14081;\n  val $m#16001: $u#16000.Mirror#16006 = package#13974.this.universe#14081.runtimeMirror#1...
        universe = {scala.reflect.internal.Trees$Select@3726}"package#13974.this.universe#14081"
-{noformat}
+```
 
 The method involved in the slick Macro:
-{code}
+```scala
   def filter[T:c.WeakTypeTag]
     (c: scala.reflect.macros.Context)
     (projection: c.Expr[T => Boolean]): c.Expr[scala.slick.direct.Queryable[T]] = _helper[c.type,T]( c )( "filter", projection )
@@ -47,13 +44,12 @@ The method involved in the slick Macro:
       context.reifyTree( context.universe.treeBuild.mkRuntimeUniverseRef, EmptyTree, context.typeCheck(
         tree
       ).asInstanceOf[Tree]))
-{code}
+```
 
 Note the similarity to `test/files/run/macro-reify-nested-a/Impls_Macros_1.scala`
 
 The reifiee:
-
-{code}
+```scala
 QueryOps#7847.query#15960[String#7136]({
   val $u#16000: scala#23.reflect#2606.runtime#2792.package#13974.universe#14081.type = package#13974.this.universe#14081;
   val $m#16001: $u#16000.Mirror#16006 = package#13974.this.universe#14081.runtimeMirror#16011(this.getClass#2985().getClassLoader#18969());
@@ -87,12 +83,11 @@ QueryOps#7847.query#15960[String#7136]({
     new $typecreator2#28318()
   }))
 }.splice#11078).filter#15969(((x$2#28373: String#7136) => x$2#28373.==#5721(""))#28372)
-{code}
+```
 
 Which is reified into `rtree`
-
-{code}
+```scala
 rtree = $u.Apply($u.Select($u.Apply($u.Select($u.build.Ident($m.staticModule("scala.slick.direct.QueryOps")), $u.TermName("query")), scala.collection.immutable.List.apply($u#19444.Apply#10440.apply#10443($u#19444.Select#10477.apply#10480($u#19444.Apply#10440.apply#10443($u#19444.Select#10477.apply#10480($u#19444.build#12680.Ident#12721($m#19445.staticModule#19420("scala.slick.direct.QueryOps")), $u#19444.TermName#9933.apply#9936("query")), scala#22.collection#2627.immutable#5681.List#14910.apply#19532($u#19444.build#12680.Ident#12721(free$query1#19446))), $u#19444.TermName#9933.apply#9936("map")), scala#22.collection#2627.immutable#5681.List#14910.apply#19532($u#19444.Function#10298.apply#10301(scala#22.collection#2627.immutable#5681.List#14910.apply#19532($u#19444.ValDef#10118.apply#10121($u#19444.Modifiers#10973.apply#10977($u#19444.build#12680.FlagsRepr#12773.apply#12775(2105344L), $u#19444.TypeName#9940.apply#9943(""), immutable#5682.this.Nil#14130), $u#19444.TermName#9933.apply#9936("x$1"), $u#19444.TypeTree#10605.apply#10608(), $u#19444.EmptyTree#9997)), $u#19444.Select#10477.apply#10480($u#19444.Ident#10485.apply#10488($u#19444.TermName#9933.apply#9936("x$1")), $u#19444.TermName#9933.apply#9936("name"))))))), $u.TermName("filter")), scala.collection.immutable.List.apply($u.Function(scala.collection.immutable.List.apply($u.ValDef($u.Modifiers($u.build.FlagsRepr(2105344L), $u.TypeName(""), scala.collection.immutable.List.apply()), $u.TermName("x$2"), $u.TypeTree(), $u.EmptyTree)), $u.Apply($u.Select($u.Ident($u.TermName("x$2")), $u.TermName("$eq$eq")), scala.collection.immutable.List.apply($u.Literal($u.Constant("")))))))
-{code}
+```
 
 Before, the `resetAllAttrs` made the references to `$u#19444` bind to the outer `$u.

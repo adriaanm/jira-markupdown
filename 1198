@@ -1,7 +1,7 @@
 oh man. this was hard to isolate.
 
 full compilation, with all sources passed to scalac, succeeds. but then incremental recompilation, with only some sources passed to scalac, fails:
-{code}
+```scala
 % cat I.java
 interface I { enum E { E1 } ; }
 % cat J.java
@@ -16,10 +16,10 @@ J.java:1: error: not found: type E
 class J implements I { private E e = E.E1 ; }
                                ^
 one error found
-{code}
+```
 
 the problem goes away if E is fully qualified in J:
-{code}
+```scala
 % cat I.java
 interface I { enum E { E1 } ; }
 % cat J.java
@@ -30,4 +30,4 @@ class S extends J
 % javac I.java J.java
 % rm J.class S.class
 % /usr/local/scala-2.9.0.RC1/bin/scalac J.java S.scala
-{code}
+```

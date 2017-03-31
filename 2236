@@ -1,6 +1,5 @@
 I can override askShutdown() and askReset() as following code to force the runner thread poll a awake action:
-
-{code}
+```scala
   /**
    * In interactive.Global, the `newRunnerThread` always waits for `scheduler.waitForMoreWork()`
    * before `pollForWork()`, which may cause raised `except`s never have chance to be polled, if
@@ -16,11 +15,10 @@ I can override askShutdown() and askReset() as following code to force the runne
     scheduler.raise(new FreshRunReq)
     scheduler postWorkItem {() => println("A action to awake scheduler to process reset except")}
   }
-
-{code}
+```
 
 But, for "shudown", the loop seems not working, I think the proper approach to stop a thread should be something like:
-{code}
+```scala
   /** Create a new presentation compiler runner.
    */
   def newRunnerThread: Thread = new Thread("Scala Presentation Compiler") {
@@ -54,4 +52,4 @@ But, for "shudown", the loop seems not working, I think the proper approach to s
     }
     start()
   }
-{code}
+```

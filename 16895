@@ -1,6 +1,5 @@
 When trying to invoke a super method from java base class I got a very strange error:
-
-{code}
+```scala
 Unexpected tree in genLoad: Worker.super/class scala.reflect.api.Trees$Super at: source-..\Worker.scala,line-9,offset=130
 
 while compiling:  Worker.scala
@@ -42,14 +41,13 @@ at scala.tools.nsc.Main$.doCompile(Main.scala:81)
 at scala.tools.nsc.Driver.process(Driver.scala:52)
 at scala.tools.nsc.Driver.main(Driver.scala:65)
 at scala.tools.nsc.Main.main(Main.scala)
-{code}
+```
 
 Finally I was able to reproduce this case. The problem arise when you override a method in base class hierarchy
 where class which defines a given method has a package access modifier. 
 
 Here a example:
-
-{code}
+```scala
 //base abstract public class
 
 package com.test;
@@ -87,6 +85,6 @@ class Worker extends Top {
   }
 
 }
-{code}
+```
 
 Of course this case should be rare in practice but at least the compiler should not crash on this.

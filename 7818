@@ -1,6 +1,5 @@
 Linking this to a code comment:
-
-{quote}
+```
     // Modules whose members are in the default namespace
     // SI-5941: ScalaPackage and JavaLangPackage are never ever shared between mirrors
     // as a result, `Int` becomes `scala.Int` and `String` becomes `java.lang.String`
@@ -8,7 +7,7 @@ Linking this to a code comment:
     lazy val UnqualifiedModules = List(PredefModule, ScalaPackage, JavaLangPackage)
     // Those modules and their module classes
     lazy val UnqualifiedOwners  = UnqualifiedModules.toSet ++ UnqualifiedModules.map(_.moduleClass)
-{quote}
+```
 
 And a design doc on reflection:
 
@@ -17,8 +16,7 @@ https://docs.google.com/document/d/1nAwSw4TmMplsIlzh2shYLUJ5mVh3wndDa1Zm1H6an9A/
 And a related report from the mailing lists:
 
 https://groups.google.com/forum/#!msg/scala-language/6TyLTfk4E-I/sg33aLe_-40J
-
-{code}
+```scala
 On Wed, May 1, 2013 at 7:59 AM, Ryan Hendrickson <Ryan.Hen...@bwater.com> wrote:
 Any ideas as to why?
 
@@ -34,5 +32,5 @@ import reflect.runtime.universe._
 
 scala>  (typeOf[String].normalize.##, typeOf[java.lang.String].normalize.##)
 res0: (Int, Int) = (1712057924,559543568)
-{code}
+```
 

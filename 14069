@@ -1,15 +1,14 @@
 Compiling the following code with `-uniqid' produces invalid classfiles:
-
-{code}
+```scala
 object Main extends Application {
   val xs = List(1, 2, 3)
 
   println(xs map (_ + 1))
 }
-{code}
+```
 
 Running this gives:
-{code}
+```scala
 java.lang.NoSuchMethodError: scala.runtime.BoxesRunTime.unboxToIntSI-2527(Ljava/lang/Object;)I
 	at Main$$$$anonfun$$1.apply(box.scala:4)
 	at scala.List.map(List.scala:805)
@@ -25,6 +24,6 @@ java.lang.NoSuchMethodError: scala.runtime.BoxesRunTime.unboxToIntSI-2527(Ljava/
 	at scala.tools.nsc.ObjectRunner$$.run(ObjectRunner.scala:74)
 	at scala.tools.nsc.MainGenericRunner$$.main(MainGenericRunner.scala:154)
 	at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
-{code}
+```
 
 It looks like the uniq id of the target type is appended to the method name.

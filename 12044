@@ -1,7 +1,7 @@
 Okay, here's a diagnosis:
 
 1. In the constructors phase, the construction code for check is duplicated to have two versions: one for the generic class (protected by the specinstance check) and one for the specialized class:
-{code}
+```scala
 [[syntax trees at end of              constructors]] // t9531.scala
 package <empty> {
   class Val extends Object {
@@ -45,7 +45,7 @@ package <empty> {
     }
   }
 }
-{code}
+```
 
 2. When duplicating the code inside the constructor, duplicators.retyped clears the symbols for all definitions in the block and re-type-checks the block. Specifically, it clears the symbol for:
 ```
@@ -57,13 +57,13 @@ val actual: String = "xyz";
   * getter, which is assigned a NullaryMethodType(String)
 
 4. Later on, it rewires the reference to actual in assert(actual == "abc") to the getter:
-{code}
+```scala
      Val$mcI$sp#22027.this.check_=#8400({
         private[this] val actual#29539: String#232 = "xyz";
         scala#21.this.Predef#885.assert#7894(Val$mcI$sp#22027.this.actual#29538.==#5938("abc"));
         scala#21.this.Predef#885.???#7909()
       });
-{code}
+```
 Note the two "actual"-s:  private[this] val actual#29539 and Val$mcI$sp#22027.this.actual#29538, specifically 29539 vs 29538.
 
 5. Finally, since this happens in constructors, the NullaryMethodType is never seen by uncurry, so it never gets eliminated, crashing the backend.

@@ -1,14 +1,12 @@
 With the following Java source,
-
-{code}
+```scala
 public interface I {
   public class C implements I {}
 }
-{code}
+```
 
 the refined build manager fails with the following stacktrace,
-
-{code}
+```scala
 java.lang.Error: no-symbol does not have owner
 at scala.tools.nsc.symtab.Symbols$$NoSymbol$$.owner(Symbols.scala:1985)
 at scala.tools.nsc.symtab.Symbols$$Symbol.cloneSymbol(Symbols.scala:1042)
@@ -52,6 +50,6 @@ at org.eclipse.ui.actions.WorkspaceAction.execute(WorkspaceAction.java:162)
 at org.eclipse.ui.actions.WorkspaceAction$$2.runInWorkspace(WorkspaceAction.java:483)
 at org.eclipse.core.internal.resources.InternalWorkspaceJob.run(InternalWorkspaceJob.java:38)
 at org.eclipse.core.internal.jobs.Worker.run(Worker.java:55)
-{code}
+```
 
 in updateDefinitions. It seems that the dependency analyzer is reporting NoSymbol as the definition corresponding to C. Nb. if I is changed to a class with C extending it, then there is no error.

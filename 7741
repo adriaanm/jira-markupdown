@@ -1,10 +1,9 @@
-The difference between {{f0}} and {{f1}} boils down to the {{checkPackedConforms}} check in {{SuperAccessors}}, dating all the way back to the introduction of existentials.
+The difference between `f0` and `f1` boils down to the `checkPackedConforms` check in `SuperAccessors`, dating all the way back to the introduction of existentials.
 
   https://github.com/scala/scala/commit/8414eba#L10R56
 
-There doesn't appear to be any material difference in {{Typers}} itself; both variations lead to an existential skolem {{?0 <: A}} in the type of {{.getClass}}.
-
-{noformat}
+There doesn't appear to be any material difference in `Typers` itself; both variations lead to an existential skolem `?0 <: A` in the type of `.getClass`.
+```
 101,103c113,115
 <                 typed A.this.f0: [T](x: T)T
 <                 adapted A.this.f0: [T](x: T)T to ?, undetparams=type T
@@ -18,4 +17,4 @@ There doesn't appear to be any material difference in {{Typers}} itself; both va
 ---
 > [infer method] solving for T in (x: => T)T based on (Class[?0])T (solved: T=Class[?0])
 122c134
-{noformat}
+```

@@ -1,4 +1,4 @@
-{code}
+```scala
 import scala.reflect._
 
 case class T1()
@@ -25,11 +25,10 @@ object Test extends App {
   println(t1(VIn[T2]())) // T1 (bug)
   println(t2(VIn[T2]())) // T2 (ok)
 }
-{code}
+```
 
-Under {{-Xprint:typer}}
-
-{code}
+Under `-Xprint:typer`
+```scala
     def t1[T](v: In[T])(implicit evidence$1: scala.reflect.ClassTag[T]): String = v match {
       case (x @ (_: In[T1])) if scala.reflect.`package`.classTag[T](evidence$1).==(scala.reflect.`package`.classTag[T1](evidence$1)) => "T1"
       case (y @ (_: In[T2])) if scala.reflect.`package`.classTag[T](evidence$1).==(scala.reflect.`package`.classTag[T2](evidence$1)) => "T2"
@@ -38,11 +37,10 @@ Under {{-Xprint:typer}}
       case (x @ (_: In[_])) if scala.reflect.`package`.classTag[T](evidence$2).==(scala.reflect.`package`.classTag[T1]((ClassTag.apply[T1](classOf[T1]): scala.reflect.ClassTag[T1]))) => "T1"
       case (y @ (_: In[_])) if scala.reflect.`package`.classTag[T](evidence$2).==(scala.reflect.`package`.classTag[T2]((ClassTag.apply[T2](classOf[T2]): scala.reflect.ClassTag[T2]))) => "T2"
     };
-{code}
+```
 
-Log of {{-Ytyper-debug}}
-
-{noformat}
+Log of `-Ytyper-debug`
+```
 |    |    |    |-- classTag[T].$eq$eq(classTag[T1]) : pt=Boolean EXPRmode (site: method t1 in Test) 
 [...]
 |    |    |    |    |-- classTag[T1] : pt=Any BYVALmode-EXPRmode (silent: method t1 in Test) 
@@ -88,6 +86,6 @@ Log of {{-Ytyper-debug}}
 |    |    |    |    |    |    \-> scala.reflect.ClassTag[T1]
 |    |    |    |    |    [adapt] [T](implicit ctag: scala.reflect.ClassTag[T])scala.reflec... adapted to [T](implicit ctag: scala.reflect.ClassTag[T])scala.reflec... based on pt Any
 |    |    |    |    |    \-> scala.reflect.ClassTag[T1]
-{noformat}
+```
 
 Source: http://stackoverflow.com/questions/30877478/pattern-matching-chooses-the-wrong-case-if-used-with-classtag/30883009#30883009

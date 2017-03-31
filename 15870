@@ -1,5 +1,5 @@
 === How to reproduce ===
-{code}
+```scala
 scala> import scala.collection.mutable.LinkedList
 import scala.collection.mutable.LinkedList
 
@@ -10,13 +10,13 @@ scala> ll.insert(LinkedList(0))
 
 scala> ll
 res4: scala.collection.mutable.LinkedList[Int] = LinkedList(1, 2, 3, 0)
-{code} 
+```
 
 === Expected behavior ===
 
 From insert's scaladoc:
 
-> Insert linked list {{that}} at current position of this linked list
+> Insert linked list `that` at current position of this linked list
 
 
 === What do you see instead? ===
@@ -25,7 +25,7 @@ The "inserted" LinkedList is being appended.
 
 === Additional information ===
 
-This was broken on r22830, where {{that.append(next)}} became {{next.append(that)}}, at the same time that two lines of code were joined into one.
+This was broken on r22830, where `that.append(next)` became `next.append(that)`, at the same time that two lines of code were joined into one.
 
 So it is present on Scala 2.8.1, but not on Scala 2.8.0 (on which version LinkedList had a host of other problems).
 

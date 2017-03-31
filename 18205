@@ -1,16 +1,15 @@
-Nearly half of all Long values suffer from the defect that the hash value computed by {{##}} depends on whether or not the Long is boxed on unboxed: 
-
-{code}
+Nearly half of all Long values suffer from the defect that the hash value computed by `##` depends on whether or not the Long is boxed on unboxed: 
+```scala
 scala> Iterator.continually(util.Random.nextLong).take(1000000).count(x => x.## != (x: Any).##)
 res0: Int = 499569
-{code}
+```
 
-Here {{Any}} can be replaced with {{AnyRef}}, {{Number}}, or {{java.lang.Long}} with the same results.
+Here `Any` can be replaced with `AnyRef`, `Number`, or `java.lang.Long` with the same results.
 
-The issue is that there are two different implementations of {{##}}, one in {{ScalaRunTime}} and the other in {{BoxesRunTime}}, and which one gets called depends on whether the Long is boxed on not.
+The issue is that there are two different implementations of `##`, one in `ScalaRunTime` and the other in `BoxesRunTime`, and which one gets called depends on whether the Long is boxed on not.
 
-Note that both implementations are trying to satisfy the constraint {{(x.## == x.toLong.##)}} for all {{(x: Int)}} (particularly the negative ones), they just do so in different ways. 
+Note that both implementations are trying to satisfy the constraint `(x.## == x.toLong.##)` for all `(x: Int)` (particularly the negative ones), they just do so in different ways. 
 
 Paul suggests that "The boxed-type accepting methods should unbox and dispatch to the unboxed-type ones, and they should all be in the same place." \[[https://groups.google.com/d/msg/scala-language/P6LyQVK6iLA/WZwTMgFJ26gJ]\].
 
-There are also two implementations of {{##}} for Doubles and Floats, however, in this case the implementations are identical and so don't lead to problems. Still, having duplicate implementations seems like a recipe for trouble. One set or the other should be eliminated.
+There are also two implementations of `##` for Doubles and Floats, however, in this case the implementations are identical and so don't lead to problems. Still, having duplicate implementations seems like a recipe for trouble. One set or the other should be eliminated.

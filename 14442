@@ -1,6 +1,5 @@
 Simple use of RewriteRule/RuleTransformer on Scala 2.8 can cause stack overflow that doesn't happen with Scala 2.7.4. The code in question:
-
-{code}
+```scala
 scala> import scala.xml._
 import scala.xml._
 
@@ -50,11 +49,10 @@ java.lang.StackOverflowError
 :523)
         at scala.collection.Iterator$$class.foreach(Iterator.scala:500)
         at scala.collection.generic.LinearSequenceTemplate$$$$ano...
-{code}
+```
 
 A bigger stack trace:
-
-{code}
+```scala
 scala> lastException.printStackTrace
 java.lang.StackOverflowError
         at scala.collection.generic.TraversableTemplate$$$$anonfun$$take$$1$$$$anonfun$$apply$$7.apply(TraversableTemplate.scala
@@ -95,6 +93,6 @@ java.lang.StackOverflowError
         at scala.xml.transform.BasicTransformer$$$$anonfun$$transform$$2.apply(BasicTransformer.scala:46)
         at scala.collection.generic.LinearSequenceTemplate$$class.foreach(LinearSequenceTemplate.scala:81)
         at scala.collection.immutable.List.foreach(List.scala:26)
-{code}
+```
 
 Etc.

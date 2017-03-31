@@ -1,6 +1,5 @@
 spurious warning comes with following code
-
-{code}
+```scala
 import akka.actor.Actor
 
 /**
@@ -25,28 +24,25 @@ class TestPF extends Actor {
   def variant3: PartialFunction[Any, Unit] = x orElse y
 
 }
-{code}
+```
 
 It gives rise to the following warning message
-
-{code}
+```scala
 Warning:(22, 41) a type was inferred to be `Any`; this may indicate a programming error.
   def variant2 : Receive =   { x orElse y }
                                         ^
-{code}
+```
 
 for all versions except variant3
 
 Since Receive is defined to be 
-
-{code}
+```scala
 PartialFunction[Any, Unit]
-{code}
+```
 
 this seems spurious.
 
 sbt compiler options:
-
-{code}
+```scala
 scalacOptions := Seq("-feature" , "-deprecation" , "-encoding", "utf8" , "-Xlint")
-{code}
+```

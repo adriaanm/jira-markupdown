@@ -1,6 +1,5 @@
 Backing out the part of Viktor's SIP-14++ that caps the number of created threads is sufficient to get this working again:
-
-{code}
+```scala
 % git diff -U50
 diff --git a/src/library/scala/concurrent/impl/ExecutionContextImpl.scala b/src/library/scala/concurrent/impl/ExecutionContextImpl.scala
 index 32f30b9..627161a 100644
@@ -101,7 +100,6 @@ index 32f30b9..627161a 100644
          })
        } else null
    }
+```
 
-{code}
-
-This *might* indicate an upstream bug in ForkJoin triggered by a thread factory that occasionally returns `null`. But usually I'd suspect our code before Doug's.
+This **might** indicate an upstream bug in ForkJoin triggered by a thread factory that occasionally returns `null`. But usually I'd suspect our code before Doug's.

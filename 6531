@@ -1,19 +1,19 @@
 The cause seems to be thus:
 
 actors/Combinators.scala # L26
-{code:java}
+```java
   def loop(body: => Unit): Unit = body andThen loop(body)
-{code}
+```
 
 actors/Reactor.scala # L257
-{code:java}
+```java
   implicit def mkBody[A](body: => A) = new Actor.Body[A] {
     def andThen[B](other: => B): Unit = Reactor.this.seq(body, other)
   }
-{code}
+```
 
 actors/Reactor.scala # L269
-{code:java}
+```java
   private[actors] def seq[a, b](first: => a, next: => b): Unit = {
     val killNext = this.kill
     this.kill = () => {
@@ -28,6 +28,6 @@ actors/Reactor.scala # L269
     first
     throw new KillActorControl
   }
-{code}
+```
 
 Every time `loop` is called, the `kill` variable for that actor is switched out with a new one that links the old `kill`. Though it's likely that removing this will break other places where `Reactor.seq` will be used, at least in this case (where it's called by `loop`) I'm not sure that it serves any purpose.

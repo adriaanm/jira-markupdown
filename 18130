@@ -1,5 +1,5 @@
 Consider the following code:
-{code}
+```scala
 def iterate(n: Int): Iterator[Int] = Iterator.single(n) ++ (if (n == 0) Iterator.empty else iterate(n-1))
 
 def time[T](label: String)(thunk: => T): T = {
@@ -15,10 +15,10 @@ for (n <- 0 to 2000 by 200) {
 		iterate(n).foreach(_ => ())
 	}
 }
-{code}
+```
 
 when run I get:
-{code}
+```scala
 $ scala iterate.scala 
 iterate(0) took 1 ms
 iterate(200) took 9 ms
@@ -31,6 +31,6 @@ iterate(1400) took 1360 ms
 iterate(1600) took 2123 ms
 iterate(1800) took 3091 ms
 iterate(2000) took 4078 ms
-{code}
+```
 
 One would expect linear increase of the time we need to iterate all elements returned by iterate method. I didn't dig deeper to understand why this code is so slow but I decided to log a ticket instead. Original inspiration for this code comes from https://github.com/scala/scala/pull/2331

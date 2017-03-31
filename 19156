@@ -1,35 +1,32 @@
-{code}
+```scala
 object Test {
   def main(args : Array[String]) {
     org.jsoup.Jsoup.parse(null: java.net.URL, 3000)
   }
 }
-{code}
+```
 
 Results in:
-
-{noformat}
+```
 scala.reflect.internal.Types$TypeError: illegal cyclic reference involving class Document
 /tmp/Cycle.scala:3: error: illegal cyclic reference involving class Document
     org.jsoup.Jsoup.parse(null: java.net.URL, 3000)
                          ^
 one error found
-{noformat}
+```
 
 But this:
-
-{code}
+```scala
 object Test {
   def main(args : Array[String]) {
     org.jsoup.Jsoup.parse(null: java.net.URL, 3000)
     ()
   }
 }
-{code}
+```
 
 Results in a compiler stack trace:
-
-{noformat}
+```
 exception when typing org.jsoup.Jsoup.parse/class scala.reflect.internal.Trees$Select
 illegal cyclic reference involving class Document in file /tmp/Cycle.scala
 scala.reflect.internal.Types$TypeError: illegal cyclic reference involving class Document
@@ -46,4 +43,4 @@ scala.reflect.internal.Types$TypeError: illegal cyclic reference involving class
 	at scala.reflect.internal.Types$Type.member(Types.scala:600)
 	at scala.tools.nsc.GlobalSymbolLoaders.scala$tools$nsc$GlobalSymbolLoaders$$lookup$1(GlobalSymbolLoaders.scala:19)
 ...
-{noformat}
+```

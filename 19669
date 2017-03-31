@@ -1,21 +1,21 @@
-this code, for [a very ugly API|https://developer.android.com/guide/topics/providers/contacts-provider.html]:
-{code}
+this code, for [a very ugly API](https://developer.android.com/guide/topics/providers/contacts-provider.html):
+```scala
 val ops: java.util.ArrayList[ContentProviderOperation] = new java.util.ArrayList[ContentProviderOperation]
     ops.add(ContentProviderOperation.newInsert(RawContacts.CONTENT_URI)
             .withValue(RawContacts.ACCOUNT_TYPE, AccountType)
             .withValue(RawContacts.ACCOUNT_NAME, AccountName).build)
-{code}
+```
 
 doesn't compile
-{code}
+```scala
 [error] <snip>.scala:63: value ACCOUNT_TYPE is not a member of object android.provider.ContactsContract.RawContacts
 [error]             .withValue(RawContacts.ACCOUNT_TYPE, AccountType)
 [error]                                    ^
 [error] <snip>.scala:64: value ACCOUNT_NAME is not a member of object android.provider.ContactsContract.RawContacts
 [error]             .withValue(RawContacts.ACCOUNT_NAME, AccountName).build)
-{code}
+```
 
-[RawContacts|https://developer.android.com/reference/android/provider/ContactsContract.RawContacts.html] is a public static class which implements the [SyncColumns|https://developer.android.com/reference/android/provider/ContactsContract.SyncColumns.html] protected static interface (among others), both defined in [android.provider.ContactsContract|https://developer.android.com/reference/android/provider/ContactsContract.html].
+[RawContacts](https://developer.android.com/reference/android/provider/ContactsContract.RawContacts.html) is a public static class which implements the [SyncColumns](https://developer.android.com/reference/android/provider/ContactsContract.SyncColumns.html) protected static interface (among others), both defined in [android.provider.ContactsContract](https://developer.android.com/reference/android/provider/ContactsContract.html).
 RawContacts inherits those public static fields from SyncColumns, but scalac just doesn't see them.
 
-The scaloid guy [wrote a workaround|https://github.com/pocorall/scaloid/blob/master/scaloid-common/src/main/scala/org/scaloid/Workarounds.java#L33-L44] but it's only a hardcoded bridge for this specific API. Note that he refers to [SI-1086|https://issues.scala-lang.org/browse/SI-1806] but that seems like a different bug.
+The scaloid guy [wrote a workaround](https://github.com/pocorall/scaloid/blob/master/scaloid-common/src/main/scala/org/scaloid/Workarounds.java#L33-L44) but it's only a hardcoded bridge for this specific API. Note that he refers to [SI-1086](https://issues.scala-lang.org/browse/SI-1806) but that seems like a different bug.

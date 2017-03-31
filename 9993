@@ -1,10 +1,9 @@
 Thanks for looking into this, Chris.
 
-I tend to agree that the restrictions placed by SI-3873 didn't get to the essence of the unsoundness.
+I tend to agree that the restrictions placed by scala/bug#3873 didn't get to the essence of the unsoundness.
 
 I also agree that the "stability lambda" (nicely coined!) is pretty dubious.
-
-{noformat}
+```
 cat sandbox/test.scala
 object Test {
   {val x = ""; x: x.type}: Singleton
@@ -29,15 +28,14 @@ package <empty>{<empty>.type} {
 }
 
 one warning found
-{noformat}
+```
 
 As you point out, this has an ill-scoped reference to `x` in the type of the block. Maybe it should be `x.type forSome { val x: String }`.
 
 Here's an analagous situation where block typing widens to a structural type to avoid leaking a locally scoped type:
-
-{code}
+```scala
 scala> {class A { def foo = 0 }; new A }
 res1: AnyRef{def foo: Int} = A$1@23905e3
-{code}
+```
 
 With regards to eta-expansion, that's no surprise as you currently can't express dependently typed functions in scala.

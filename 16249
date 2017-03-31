@@ -1,6 +1,5 @@
 This might be classified as an enhancement. But here is an example where I would expect type inference to work - I would expect type information to flow from right to left for a right associative operator, but it does not:
-
-{noformat}
+```
 scala>   case class Foo[A]() { def :::(f: Foo[A]) = f }
 defined class Foo
 
@@ -15,21 +14,19 @@ You may wish to define A as +A instead. (SLS 4.5)
 
 scala>   Foo[Int]().:::(Foo())
 res1: Foo[Int] = Foo()
-{noformat}
+```
 
 So, explicitly calling the operator results in proper type inference flow, but using the same operator in a right associative way doesn't seem to work. Incidentally, I could fix things in this case by making Foo covariant, but that isn't always possible/desireable. 
 
 I thought this might be a bug, and went looking through the spec to see what the spec'd behavior is. Page 85 of the spec states that right associative operators are desugared to the declaration of a fresh variable, followed by application:
-
-{noformat}
+```
 A left-associative binary operation e1 op e2 is interpreted as e1.op(e2). 
 If op is right-associative, the same operation is interpreted as 
 { val x=e1; e2.op(x ) }, where x is a fresh name.
-{noformat}
+```
 
 So I suppose this is behaving exactly as expected. Incidentally, a consequence of this is that right associative operators cannot be usefully non-strict:
-
-{noformat}
+```
 scala> case class Foo[A]() { def :::(f: => Foo[A]) = this }
 defined class Foo
 
@@ -43,7 +40,7 @@ scala> sys.error("todo") ::: Foo[Int]()
 java.lang.RuntimeException: todo
         at scala.sys.package$.error(package.scala:27)
         ...
-{noformat}
+```
 
 But I have to ask - why are right associative operators desugared this way? It does not seem correct. Since the val is a fresh name, it is not even observable and no code can distinguish it from desugaring a :: b to b.::(a). This will have the benefit of better inference, and it would, incidentally, allow a to be non-strict (which is quite useful in some cases, e.g. a fully lazy stream cons.
 

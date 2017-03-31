@@ -2,11 +2,10 @@ I left my comfort zone and got the versions aligned, but alas IWFM on 2.10.
 
 There was an enhancement for 2.11:
 
-https://issues.scala-lang.org/browse/SI-7410
+scala/bug#7410
 
 On Ubuntu it's easy to get JAVA_HOME, java and javac at cross-purposes.  In my case, after installing jdk7, it left java at java6.  I've forgotten the details except that it was a confusing mode of failure; perhaps it's more confusing on 2.10.
-
-{code}
+```scala
 apm@mara:~/tmp/q$ JAVA_HOME=$JAVA6_HOME sbt12
 [info] Set current project to default-7bbd7f (in build file:/home/apm/tmp/q/)
 > ++ 2.10.2
@@ -29,11 +28,10 @@ scala> :javap
 
 scala> :javap -public scala.Option
 Compiled from "Option.scala"
-{code}
+```
 
 I see there's an about command:
-
-{code}
+```scala
 > about
 [info] This is sbt 0.12.3
 [info] The current project is {file:/home/apm/tmp/q/}default-7bbd7f
@@ -41,11 +39,10 @@ I see there's an about command:
 [info] 
 [info] sbt, sbt plugins, and build definitions are using Scala 2.9.2
 > 
-{code}
+```
 
 There's a debug flag that might help.  But what does this mean?
-
-{code}
+```scala
 $ sbt12 -Dscala.repl.debug=true
 
 Welcome to Scala version 2.10.2 (OpenJDK 64-Bit Server VM, Java 1.7.0_25).
@@ -56,13 +53,12 @@ Type :help for more information.
 scala> :javap
 :javap unavailable: no tools.jar at /usr/lib/jvm/java-7-openjdk-amd64
 :javap not yet working with java 1.7
-{code}
+```
 
 Not finding tools.jar should be a spurious report.
 
 Running that again with JDK 6 works as expected:
-
-{code}
+```scala
 Welcome to Scala version 2.10.2 (OpenJDK 64-Bit Server VM, Java 1.6.0_27).
 Type in expressions to have them evaluated.
 Type :help for more information.
@@ -74,11 +70,10 @@ scala> :javap
 
 scala> :javap java.lang.Object
 Compiled from "Object.java"
-{code}
+```
 
 Also, under debug,
-
-{code}
+```scala
 > about
 [info] This is sbt 0.12.3
 [info] The current project is {file:/home/apm/tmp/q/}default-7bbd7f
@@ -95,5 +90,5 @@ java.lang.NullPointerException
 	at scala.tools.nsc.InterpreterLoop.<init>(InterpreterLoop.scala:11)
 	at xsbt.ConsoleInterface$$anon$1.<init>(ConsoleInterface.scala:27)
 	at xsbt.ConsoleInterface.run(ConsoleInterface.scala:27)
-{code}
+```
 

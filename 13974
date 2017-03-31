@@ -1,5 +1,5 @@
 A while back, I started an email on list about the hidden gotcha of overloading multi parameter list. For example:
-{code}
+```scala
 $$ scala
 Welcome to Scala version 2.7.3.final (Java HotSpot(TM) Client VM, Java 1.5.0_16).
 Type in expressions to have them evaluated.
@@ -18,14 +18,13 @@ and  method handle in class A of type (String)(=> Unit)Unit
 match argument types (java.lang.String)
        new A().handle("/test"){ println("test no param") }
                ^
-
-{code}
+```
 
 Noticed that it compiled no problem, but only to failed at runtime. The mailing list thread is here:
 http://www.nabble.com/how-to-get-overloaded-multiparameter-list-working--td18396779.html
 
 There is a proposed work around by Miles Sabin like this:
-{code}
+```scala
 scala> class A { 
        | def handle(s: String) = new { 
        | def apply(f: => Unit) = f 
@@ -41,6 +40,6 @@ scala> class A {
 
   scala> a.handle("/test2"){ s=>println("test 1 param " +s) } 
   test 1 param /test2 
-{code}
+```
 
 I really like Scala to support the overloading of multi params list without as default rather than a work around. If not to the feature, then at least error out during compile rather than runtime will seem more correct.

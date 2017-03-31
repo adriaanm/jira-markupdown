@@ -1,10 +1,10 @@
-This can be implemented efficiently only if when's predicate argument will be invoked *before* checking PF domain. The implmentation will look like:
-{code}
+This can be implemented efficiently only if when's predicate argument will be invoked **before** checking PF domain. The implmentation will look like:
+```scala
 def when[A1 <: A](predicate: A1 => Boolean): PartialFunction[A1, B] = new PartialFunction[A1, B] {
   def isDefinedAt(x: A1) = predicate(x) && self.isDefinedAt(x)
   def apply(x: A1) = if (predicate(x)) self(x) else empty(x)
   override def applyOrElse[A2 <: A1, B2 >: B](x: A2, default: A2 => B2): B2 =
     if (predicate(x)) self.applyOrElse(x, default) else default(x)
 }
-{code}
+```
 I can make the patch if the decision to include this into the library will be made.

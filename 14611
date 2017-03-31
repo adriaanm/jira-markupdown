@@ -1,8 +1,7 @@
 According to the spec Section 5.1.4, overriding is to be done on superclasses (or super-traits). Therefore, if C'.M' is marked "abstract override" and is overriding abstract method C.M, C' cannot be instantiated until a definition of C.M is provided.
 
 The compiler is too lenient about where a definition of C.M comes from. The provided method should not only have name M, but should also override C.M, but the typechecker does not seem to check the second property.
-
-{code}
+```scala
 trait Node { def eval: Int }
 
 trait DebugNode extends Node {
@@ -20,8 +19,7 @@ class Foo { def eval = 42 }
 
 // should *not* typecheck but does!
 (new Foo with DebugNode).eval // Foo.eval does not override Node.eval, but typechecker accepts this anyway
-{code}
+```
 
 Proposed fix:
-Check if method M exists *and also* overrides C.M (in this example, Node.eval).
-
+Check if method M exists **and also** overrides C.M (in this example, Node.eval).

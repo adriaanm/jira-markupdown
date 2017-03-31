@@ -1,4 +1,4 @@
-{noformat}
+```
 object Bug extends App {
   class Result(_str: => String) {
     lazy val str = _str
@@ -18,13 +18,12 @@ object Bug extends App {
     println("Stroke a kitten")
   }
 }
-{noformat}
+```
 
-We would expect the output of this code would be "Stroke a kitten", since the value of `test` is given a non-null value *before* the `str` lazy val is realized.  However, the actual printout is "Destroy ALL THE THINGS!!!", which isn't a polite thing to do.
+We would expect the output of this code would be "Stroke a kitten", since the value of `test` is given a non-null value **before** the `str` lazy val is realized.  However, the actual printout is "Destroy ALL THE THINGS!!!", which isn't a polite thing to do.
 
 The problem lies in the bytecode generated for `bar(foo(test))`.  More specifically, the issue is in the lifting of the `test` actual for the `foo` invocation.  Bytecode (from Bug$delayedInit$body.apply:()Ljava/lang/Object;):
-
-{noformat}
+```
       18: aload_0       
       19: getfield      #12                 // Field $outer:LBug$;
       22: invokevirtual #22                 // Method Bug$.test:()Ljava/lang/String;
@@ -33,8 +32,8 @@ The problem lies in the bytecode generated for `bar(foo(test))`.  More specifica
       29: dup           
       30: aload_1       
       31: invokespecial #27                 // Method Bug$$anonfun$1."<init>":(Ljava/lang/String;)V
-{noformat}
+```
 
-Notice instruction 22.  We're getting a raw (un-thunked) value for `test` and *then* lifting it into the requisite closure for the foo(test) invocation.
+Notice instruction 22.  We're getting a raw (un-thunked) value for `test` and **then** lifting it into the requisite closure for the foo(test) invocation.
 
 Using an explicit thunk (of type () => String) rather than a by-name parameter for `str` avoids this issue.

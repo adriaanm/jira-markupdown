@@ -3,8 +3,7 @@ I've just been bitten by this bug too, in 2.7.7.RC2.
 I assume that the comment above by DRMacIver that immutable hash maps are broken by design in concurrent situations does not reflect the overall goals of the Scala team. An immutable data structure that is not thread-safe does not have much reason for existing.
 
 The Clojure folks have made a big deal of their immutable maps (see, for example, http://blog.higher-order.net/2009/09/08/understanding-clojures-persistenthashmap-deftwice/), so to see whether they indeed behave better, I downloaded Clojure 1.0.0 and replaced scala.collection.immutable.Map with a wrapper for its PersistentHashMap:
-
-{code}
+```scala
     import clojure.lang.PersistentHashMap
     
     object Map {
@@ -45,7 +44,7 @@ The Clojure folks have made a big deal of their immutable maps (see, for example
             }
     
     }
-{code}
+```
 
 I reran my test where scala.collection.immutable.HashMap had failed, and the test completed without error.
 

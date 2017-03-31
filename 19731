@@ -1,6 +1,5 @@
 I've stumbled across a bafflingly specific case in which a type refined by a pattern won't be inferred as equivalent to the matched type. In the code:
-
-{code}
+```scala
 object RefinementTest {
   trait A[T]
   trait B[T] extends A[T]
@@ -16,10 +15,10 @@ object RefinementTest {
     }
   }
 }
-{code}
+```
 
 the implicit evidence is not found. All of the following factors are necessary to produce this bug. If any are removed, the problem goes away:
 
-# The context is in the body of a lambda
-# The lambda is passed as the second parameter list to a function taking two parameter lists
-# The first parameter list is a partial function
+- The context is in the body of a lambda
+- The lambda is passed as the second parameter list to a function taking two parameter lists
+- The first parameter list is a partial function

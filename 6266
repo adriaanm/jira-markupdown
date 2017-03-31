@@ -1,11 +1,11 @@
 Inlining the forwarder method could be sufficient: since the forwarder contains an explicit call of the implementation method wouldn't that be dealt with transitively?
 
-However it seems like {{lookupIMethod}} would need to do the same thing as {{lookupImplFor}}, namely look at {{overridingSymbol}} while walking up the inheritance chain. 
+However it seems like `lookupIMethod` would need to do the same thing as `lookupImplFor`, namely look at `overridingSymbol` while walking up the inheritance chain. 
 
-Also, {{lookupImplFor}} aborts the traversal if {{sym.owner.isTrait}}. I'm not sure about the reasoning behind that check.
+Also, `lookupImplFor` aborts the traversal if `sym.owner.isTrait`. I'm not sure about the reasoning behind that check.
 
 I may be missing something (a lot, possibly) but to me it looks like the lookup logic could be simplified into something like this:
-{code}
+```scala
       // look up methSym for a receiver instance of classSym:
       var actualClass = classSym
       var actualMeth = methSym
@@ -20,4 +20,4 @@ I may be missing something (a lot, possibly) but to me it looks like the lookup 
       }
       val iclass = icodes.icode(actualClass,true)
       val imethod = iclass.lookupMethod(actualMeth)
-{code}
+```

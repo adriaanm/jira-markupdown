@@ -1,18 +1,16 @@
 It's an "Attempt to enter try block with non-empty stack"
 
 Input program:
-
-{code}
+```scala
   def main(args: Array[String]) { 
     for (x <- List(1))
       return try { 1 } catch { case _ => 0 }
     0
   }
-{code}
+```
 
 After cleanup:
-
-{code}
+```scala
     @SerialVersionUID(0) final <synthetic> class $anonfun$main$1 extends scala.runtime.AbstractFunction1 with Serializable {
 
       final def apply(x: Int): Nothing = 
@@ -44,11 +42,10 @@ After cleanup:
         ()
       }
     };
-{code}
+```
 
 What Scala.Net emits:
-
-{code}
+```scala
 .method public hidebysig virtual final instance class [mscorlib]System.Exception 
         apply(int32 x) cil managed
 {
@@ -83,10 +80,9 @@ What Scala.Net emits:
                                                                                           object)
   IL_0033:  throw
 } // end of method $anonfun$main$1::apply
-{code}
+```
 
 And the error message:
-
-{code}
+```scala
 ABC$+$anonfun$main$1::apply][offset 0x00000008] Attempt to enter a try block with nonempty stack.
-{code}
+```

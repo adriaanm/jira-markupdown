@@ -1,6 +1,5 @@
 The reference to the original stream head is not released until the mapper function produces a non-empty stream. This can be a problem if the elements consume considerable memory, and the mapper returns a long chain of empy streams.
-
-{code}
+```scala
 scala> def run[A](s: Stream[A]) = s.flatMap(_ => Stream.empty[Int])
 run: [A](s: Stream[A])scala.collection.immutable.Stream[Int]
 
@@ -9,6 +8,6 @@ bigElemts: scala.collection.immutable.Stream[List[java.lang.String]]
 
 scala> run(bigElemts)
 java.lang.OutOfMemoryError: Java heap space
-{code}
+```
 
 With Stream's head not being lazy, I'm not sure this can be solved. But at least would be nice to include a hint in the flatMap apidocs.

@@ -3,8 +3,7 @@ Good stuff in there.  One thing:
 > You really want to hash the raw bits of each non-reference field, not its ##, even though the latter is usually the same. 
 
 I don't think you want to do that.  The value of ## is how you know they're equal.  If you ignore it then you will hash equal values to unequal hashcodes.
-
-{code}
+```scala
 scala> case class A[T](x: T)
 defined class A
 
@@ -16,10 +15,9 @@ res1: A[Int] = A(1)
 
 scala> res0 == res1
 res2: Boolean = true  
-{code}
+```
 I imagine I don't need to demonstrate that the raw bits of 1.0f and 1 are not identical, but:
-
-{code}
+```scala
 scala> java.lang.Float.floatToRawIntBits(1.0f)
 res3: Int = 1065353216
 
@@ -31,4 +29,4 @@ res5: Int = 1
 
 scala> 1.0f.hashCode
 res6: Int = 1065353216
-{code}
+```

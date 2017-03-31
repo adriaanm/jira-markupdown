@@ -1,11 +1,10 @@
 Does this mean that in 2.11.3, scala.collection.concurrent.TrieMap will override the getOrElseMethod method in a properly thread-safe and atomic way?
 
 If the contract is relaxed, I guess that this could be done in scala.collection.concurrent.Map instead, like this:
-
-{code}
+```scala
 override def getOrElseUpdate(key: A, op: => B): B =
   get(key) match {
     case Some(v) => v
     case None => val d = op; putIfAbsent(key, d).getOrElse(d)
   }
-{code}
+```

@@ -1,6 +1,5 @@
-While working on SI-5130 I spotted this method:
-
-{code}
+While working on scala/bug#5130 I spotted this method:
+```scala
   // Optimization to avoid creating unnecessary new typerefs.
   def copyTypeRef(tp: Type, pre: Type, sym: Symbol, args: List[Type]): Type = tp match {
     case TypeRef(pre0, sym0, _) if (pre0 eq sym0) && sym0.name == sym.name =>
@@ -11,7 +10,7 @@ While working on SI-5130 I spotted this method:
     case _ =>
       typeRef(pre, sym, args)
   }
-{code}
+```
 
 1.- The first case will never be followed: both Type and Symbol are classes and they don't extend each other, so a Type and a Symbol can ever be "eq" to each other... ¿am I right?
 

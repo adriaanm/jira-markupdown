@@ -1,32 +1,28 @@
 I've come across some typos in the Scala Language Specification Syntax Summary section.  The version referenced is 2.6.0.final.  I haven't checked them all but at least some of the typos are also duplicated in the productions embedded in the text of the specification.  
 
-Note: While keywords are generally bolded, they are inconsistently quoted. e.g. val appears as both *val* and * 'val' *
-
-{code}
+Note: While keywords are generally bolded, they are inconsistently quoted. e.g. val appears as both **val** and * 'val' *
+```scala
 Type ::= InfixType ‘=>’ Type
     | ‘(’ [‘=>’ Type] ‘)’ ‘=>’ Type
     | InfixType [ExistentialClause]
-{code}
+```
 
 I think this should be something like:
-
-{code}
+```scala
 Type ::= InfixType ‘=>’ Type
     | ‘(’ [[‘=>’] Type {‘,’ [‘=>’] Type}] ‘)’ ‘=>’ Type
     | InfixType [ExistentialClause]
-{code}
+```
 
 ----
-
-{code}
+```scala
 ExistentialClause ::= forSome ‘{’ ExistentialDcl {semi ExistentialDcl}} ‘}’
-{code}
+```
 
 has an extra } i.e. {semi !ExistentialDcl}~~}~~
 
 ----
-
-{code}
+```scala
 SimpleExpr1 ::= Literal
     | Path
     | ‘_’
@@ -35,9 +31,8 @@ SimpleExpr1 ::= Literal
     | SimpleExpr TypeArgs
     | SimpleExpr1 ArgumentExprs
     | XmlExpr
-{code}
-
-{code}
+```
+```scala
 SimplePattern ::= ‘_’
     | varid
     | Literal
@@ -46,33 +41,30 @@ SimplePattern ::= ‘_’
     | StableId ‘(’ [Patterns ‘,’] ‘_’ ‘*’ ‘)’
     | ‘(’ [Patterns [‘,’]] ‘)’
     | XmlPattern
-{code}
+```
 
 !XmlExpr, !XmlPattern and related productions are not present in the Syntax Summary section (although they are in Chapter 10)
 
 ----
-
-{code}
+```scala
 ParamClause ::= [nl] ‘(’ [Params] ’)’}
-{code}
+```
 
 has a stray '}'
 
 ----
-
-{code}
+```scala
 FunDef ::= FunSig ‘:’ Type ‘=’ Expr
     | FunSig [nl] ‘{’ Block ‘}’
     | this ParamClause ParamClauses
-{code}
+```
 
 I think Type is optional and this should instead be:
-
-{code}
+```scala
 FunDef ::= FunSig [‘:’ Type] ‘=’ Expr
     | FunSig [nl] ‘{’ Block ‘}’
     | this ParamClause ParamClauses
-{code}
+```
 
 ----
 

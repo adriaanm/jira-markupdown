@@ -1,6 +1,5 @@
 Taking slices of IndexedSeqView repeatedly leads to "stacking" Sliced instances up and that in turn leads to StackOverflowError when you sliced a view enough times, for example:
-
-{code}
+```scala
 import scala.annotation.tailrec
 import scala.collection.mutable
 
@@ -18,11 +17,10 @@ object ViewSliceBug extends App {
   val slice = makeStackedSlice(coll, 10000)
   println(slice.head)
 }
-{code}
+```
 
 produces
-
-{quote}
+```
 java.lang.StackOverflowError
     at scala.collection.mutable.IndexedSeqView$$anon$2.from(IndexedSeqView.scala:81)
     at scala.collection.SeqViewLike$Sliced$class.apply(SeqViewLike.scala:58)
@@ -31,7 +29,7 @@ java.lang.StackOverflowError
     at scala.collection.mutable.IndexedSeqView$$anon$2.apply(IndexedSeqView.scala:81)
     at scala.collection.SeqViewLike$Sliced$class.apply(SeqViewLike.scala:58)
 ...
-{quote}
+```
 
  In my humble opinion, slice applied to a view should do no more than indices translation, so I would expect this example to work regardless of how many times tail (or any slice) was taken (and with no performance degradation). Maybe Sliced trait should override the newSliced method to cut off transformation stacking. 
 PS. Corresponding scala-internals discussion: [https://groups.google.com/d/msg/scala-internals/r1WnP5DfuNM/kyFtKG-sLfYJ]

@@ -1,18 +1,16 @@
 The cause of the problem is a missing JAR on the classpath.
 
-If you move the {{mock}} call to the top level, you get a more accurate error message.
-
-{noformat}
+If you move the `mock` call to the top level, you get a more accurate error message.
+```
 info] Compiling 1 Scala source to /Users/jason/code/scratch1/target/scala-2.10/classes...
 [error] bad symbolic reference to class MockSettings in package mockito (a classfile may be missing)
 [error] one error found
-{noformat}
+```
 
 After adding the following:
-
-{code}
+```scala
 libraryDependencies += "org.mockito" % "mockito-all" % "1.9.0"
-{code}
+```
 
 Both the reduced and originally reported files compile successfully.
 

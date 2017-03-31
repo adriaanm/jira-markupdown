@@ -1,5 +1,5 @@
 The following code compiles and results in a ClassCastException at runtime (using scalac 2.6.1).
-{code}
+```scala
 trait Comparator[T] {
   def compare(t1: T, t2: T): Boolean
 }
@@ -9,5 +9,5 @@ val c = new Comparator[String] {
 def cmp[T](ls: List[T], cmp: Comparator[_ >: T]) = cmp.compare(ls(0), ls(1))
 val ls = 1 :: 2 :: Nil
 cmp[Int](ls, c) // should not compile
-{code}
+```
 This should not compile, as it is clear that String is not a supertype of Int. This is a severe bug, as it results in a circumvention of the type system.

@@ -1,6 +1,5 @@
 1. This code:
-
-{code}
+```scala
 class Buf {
   class ByteArray {
     object Owned
@@ -12,28 +11,26 @@ object Buf {
     object Owned
   }
 }
-{code}
+```
 
 results in the following error message:
-
-{code}
+```scala
 test.scala:3: error: name clash: class Buf defines class ByteArray
 and its companion object Buf also defines object ByteArray
   class ByteArray {
         ^
 one error found
-{code}
+```
 
 It seems like there should be no name clash.
 
 2. This code:
-
-{code}
+```scala
 object Buf {
   object ByteArray {
     object Owned
   }
 }
-{code}
+```
 
-generates a class {{Buf$ByteArray$Owned$}}. According to the JLS, and if a singleton object is a considered a class with a dollar appended, it should be {{Buf$$ByteArray$$Owned$}}.
+generates a class `Buf$ByteArray$Owned$`. According to the JLS, and if a singleton object is a considered a class with a dollar appended, it should be `Buf$$ByteArray$$Owned$`.

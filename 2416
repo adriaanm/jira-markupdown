@@ -1,6 +1,5 @@
 A slightly simpler version of the bug is:
-
-{code}
+```scala
 class A
 
 class B[X <: B[X]]
@@ -16,12 +15,11 @@ implicit def b[X <: B[X]](implicit mx: Manifest[X]) = new F[X]()
 def f(implicit aa: F[A]) = println(aa)
 
 f
-{code}
+```
 
 The key seems to be the implicit parameter on b,
 since the following compiles:
-
-{code}
+```scala
 class A
 
 class B[X <: B[X]]
@@ -37,4 +35,4 @@ implicit def b[X <: B[X]] = new F[X]()
 def f(implicit aa: F[A]) = println(aa)
 
 f
-{code}
+```

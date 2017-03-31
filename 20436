@@ -1,15 +1,13 @@
 Given
-
-{noformat}
+```
 class X
 class Y extends X
 object Ambiguous {
   def f(x: X) = 1
   def f(ys: Y*) = 2
 }
-{noformat}
-
-{noformat}
+```
+```
 scala> Ambiguous.f(new X)
 res2: Int = 1
 
@@ -19,13 +17,12 @@ both method f in object Ambiguous of type (ys: Y*)Int
 and  method f in object Ambiguous of type (x: X)Int
 match argument types (Y)
        Ambiguous.f(new Y)
-{noformat}
+```
 
-But the corresponding Java program -works- compiles:
+But the corresponding Java program ~~works~~ compiles:
 
-*edit*: as pointed out by andrew (comment below), javac picks the first alternative in both cases.
-
-{noformat}
+**edit**: as pointed out by andrew (comment below), javac picks the first alternative in both cases.
+```
 public class AmbiguousJ {
     static int f(X x) { return 1; }
     static int f(Y... y) { return 2; }
@@ -34,14 +31,13 @@ public class AmbiguousJ {
         System.out.println(f(new Y()));
     }
 }
-{noformat}
+```
 
 prints (when running):
-
-{noformat}
+```
 1
 1
-{noformat}
+```
 
 (Assuming that X.class and Y.class already exist from compiling the Scala example.)
 

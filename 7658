@@ -1,9 +1,8 @@
 [~ureche], I'll be looking into getting valid bytecode (including passing the 1.6 verifier) for the example, not so much out of interest in {{InlineExceptionHandlers}} but the 1.6 verifier, looking carefully at those assignments to locals (as needed by {{LabelDef}}) which are eaten away by {{BasicBlock.enterIgnoreMode}}. That happens in {{ICodePhase.adapt()}}, as in the example, right after an invocation to a {{Nothing}} method. In the example, that invocation is an argument to a jump, ie {{Nothing}} is supposed to be assigned to a local.
-
-{noformat}
+```
       } else if (from == NothingReference) {
         ctx.bb.emit(THROW(ThrowableClass))
         ctx.bb.enterIgnoreMode
-{noformat}
+```
 
 I'll look into this bug but any implications for tail-calls you'll have to figure out yourself anyway! :)

@@ -1,5 +1,5 @@
 The following code
-{code}
+```scala
 object lazy1 {
   def fun = {
     import scala.collection.jcl._
@@ -8,9 +8,9 @@ object lazy1 {
     logs
   }
 }
-{code}
+```
 produces a lot of exceptions, like
-{code}
+```scala
 No message
 
 java.lang.AssertionError: assertion failed: lazy value logs$$lzy
@@ -146,10 +146,10 @@ at scala.tools.eclipse.Driver$$Project.afterParsing(Driver.scala:10)
 at lampion.presentation.Presentations$$ProjectImpl$$class.protected$$afterParsing(Presentations.scala:335)
 at scala.tools.eclipse.Driver$$Project.protected$$afterParsing(Driver.scala:10)
 at lampion.presentation.Presentations$$ProjectImpl$$Job.run(Presentations.scala:335)
-{code}
+```
 
 Workaround (inspired by [http://scala.sygneca.com/faqs/language#what-s-the-difference-between-a-lazy-argument-a-no-arg-function-argument-and-a-lazy-value wiki]), which uses "lazy val" as well, produces no errors:
-{code}
+```scala
 object lazy1 {
   def lazy_[T] (fun: =>T) = new Function0[T] {lazy val lv = fun; override def apply = lv}
   def fun = {
@@ -159,7 +159,7 @@ object lazy1 {
     logs()
   }
 }
-{code}
+```
 
 Still, it would be very cool to make the original "lazy val" fully functional!
 Thanks.
