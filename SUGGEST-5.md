@@ -34,4 +34,3 @@ public Simple();
    line 2: 0
    line 3: 4
 
-

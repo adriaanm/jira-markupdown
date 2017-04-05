@@ -1,7 +1,7 @@
 I am definitely subscribed to scala-users (and several other scala lists, too),
 as witnessed by:
 
-{code}
+```scala
 | Received: from listes.epfl.ch ([128.178.224.101])
 |	by mailin.webmailer.de (zeb mi47) (RZmta 22.1)
 |	with SMTP id r006dfl9LDVM8s for <fh+scala@hars.de>;
@@ -11,11 +11,11 @@ as witnessed by:
 | List-Id: <scala-user.listes.epfl.ch>
 ...
 | Subject: [scala-user] Mailing list reminder: Scala-user
-{code}
+```
 
 Yet if I try to post to any of the lists, I get:
 
-{code}
+```scala
 | This is a permanent error; I've given up. Sorry it didn't work out.
 |
 | <scala-user@listes.epfl.ch>:
@@ -33,7 +33,6 @@ Yet if I try to post to any of the lists, I get:
 | Return-Path: <fh+scala@hars.de>
 ...
 | From: Florian Hars <fh+scala@hars.de>
-{code}
+```
 
 Notice that this is the exact same address I am subscribed with.
-

@@ -1,8 +1,8 @@
-Aladdin: *[http://scala-webapps.epfl.ch/bugtracking/bugs/displayItem.do?id=1159  bug 1159]*
+Aladdin: **[http://scala-webapps.epfl.ch/bugtracking/bugs/displayItem.do?id=1159  bug 1159]**
 
 == Code ==
 
-{code}
+```scala
 class Outer {
   case class Foo(x: int, y: int) {
     override def equals(other: Any) = other match {
@@ -25,21 +25,21 @@ object Test extends Application {
   }
 }
 
-{code}
+```
 
 == What happened ==
 
-{code}
+```scala
 true
 OK
-{code}
+```
 
 == What expected ==
 
-{code}
+```scala
 false
 OK
-{code}
+```
 (meta) haha, if you don't assign to anybody, trac picks "dubochet" (/meta)
 
-This ticket is from open aladdin bug SI-1159.
+This ticket is from open aladdin bug #1159.

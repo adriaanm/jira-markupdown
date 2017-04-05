@@ -1,8 +1,8 @@
-Aladdin: *[http://scala-webapps.epfl.ch/bugtracking/bugs/displayItem.do?id=1292 bug 1292], [http://scala-webapps.epfl.ch/bugtracking/contribs/display.do?id=764 contrib 764]*
+Aladdin: **[http://scala-webapps.epfl.ch/bugtracking/bugs/displayItem.do?id=1292 bug 1292], [http://scala-webapps.epfl.ch/bugtracking/contribs/display.do?id=764 contrib 764]**
 
 == Code ==
 
-{code}
+```scala
 trait Foo[T <: Foo[T, Enum], Enum <: Enumeration] {
   type StV = Enum#Value  
   type Meta = MegaFoo[T, Enum]
@@ -36,11 +36,11 @@ object MegaRFoo extends RFoo with MegaFoo[RFoo, E.type] {
   def stateEnumeration = E
   def se2 = E
 }
-{code}
+```
 
 == What happened ==
 
-{code}
+```scala
 bad.scala:31: error: error overriding method stateEnumeration in trait MegaFoo of type => MegaRFoo.this.Slog;
  method stateEnumeration has incompatible type => object E
   def stateEnumeration = E
@@ -50,7 +50,7 @@ bad.scala:32: error: error overriding method se2 in trait MegaFoo of type => E.t
   def se2 = E
   ^
 two errors found
-{code}
+```
 
 == What expected ==
 

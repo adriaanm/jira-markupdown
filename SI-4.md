@@ -1,18 +1,18 @@
-Aladdin: *[http://scala-webapps.epfl.ch/bugtracking/bugs/displayItem.do?id=1296 bug 1296], [http://scala-webapps.epfl.ch/bugtracking/contribs/display.do?id=772 contrib 772]*
+Aladdin: **[http://scala-webapps.epfl.ch/bugtracking/bugs/displayItem.do?id=1296 bug 1296], [http://scala-webapps.epfl.ch/bugtracking/contribs/display.do?id=772 contrib 772]**
 
 == Code ==
 
-{code}
+```scala
 object Foo extends Application {
   val (a: Boolean, b: String) = Some(Some(4)) getOrElse (false, "Foo")
 
   println(a+" "+b)
 }
-{code}
+```
 
 == What happened ==
 
-{code}
+```scala
 java.lang.ExceptionInInitializerError
         at Foo.main(bad2.scala)
         at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
@@ -28,17 +28,16 @@ Caused by: scala.MatchError: Some(4)
         at Foo$$.(bad2.scala:2)
         at Foo$$.(bad2.scala)
         ... 10 more
-{code}
+```
 
 
 == What expected ==
 
 Compilation error
-
 I don't think there's any bug there, the code is type correct. getOrElse is instantiated with 'Product', and Option is a subclass of Product. Then, the pattern match is well typed, since the scrutinee is a supertype of the cases (pair is a product too). If you want to get an error, you need to override the type inferencer:
 
-{code}
+```scala
 val (a: Boolean, b: String) = Some(Some(4)).getOrElse[(Boolean, String)]((false, "Foo"))
-{code}
+```
 
 By the way, why is Option a Product?

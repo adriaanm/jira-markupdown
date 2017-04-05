@@ -1,11 +1,11 @@
 === What steps will reproduce the problem (please be specific and use wikiformatting)? ===
-{code}
+```scala
 
 I'm not receiving any email notifications for bugs that I'm replying to. Is it enabled? 
 
 http://trac.edgewall.org/wiki/TracNotification
 
-{code} 
+```
 
 
 

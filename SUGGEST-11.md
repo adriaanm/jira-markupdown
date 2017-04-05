@@ -10,9 +10,8 @@ use a profiler).
 One workaround I see right now is to manually touch the cheap lazy-vals to be used concurrently up front to be sure their calculation won't run into a lock. The other one is to use a special
 LazyVal class like I used to do in Java and lock on it for the long-running calculations. Both workarounds aren't nearly as usable as the built-in keyword.
 
-This may seem like a special case but IMO this will become more of a trap in the future if more software has to run concurrently. Therefore, lazy vals should be improved to have a lock per lazy val in the default case. A final solution to this problem would have to balance memory use (the per-lazy-val lock has to be saved somewhere) while still maintaining ease of use. David MacIver [once|http://scala-programming-language.1934581.n4.nabble.com/Question-on-lazy-val-td1940749.html] conceived of a way to do so.
-
-Not only lazy val members of the object are concerned but other lazy vals in methods of the object as well when their initialization is lifted to the object. Additionally, initialization of all inner {{object}} also lock on the same object.
+This may seem like a special case but IMO this will become more of a trap in the future if more software has to run concurrently. Therefore, lazy vals should be improved to have a lock per lazy val in the default case. A final solution to this problem would have to balance memory use (the per-lazy-val lock has to be saved somewhere) while still maintaining ease of use. David MacIver [once](http://scala-programming-language.1934581.n4.nabble.com/Question-on-lazy-val-td1940749.html) conceived of a way to do so.
+Not only lazy val members of the object are concerned but other lazy vals in methods of the object as well when their initialization is lifted to the object. Additionally, initialization of all inner `object` also lock on the same object.
 IMO, a possible solution should have these features:
  * Lock-free access
  * After initialization no heavier (memory/cpu) footprint than with the current solution
@@ -21,13 +20,13 @@ IMO, a possible solution should have these features:
 
 At https://gist.github.com/1076016 I posted an example file to experiment with various solutions.
 
-{{CurrentLazyHolder}} roughly represents the current solution.
+`CurrentLazyHolder` roughly represents the current solution.
 
-{{SimpleManualLazyHolder}} and {{AdvancedManualLazyHolder}} are two new possible implementations. The idea is to reuse the field, which is going to hold the initialized value later on, to save a lock while initializing. As locks we just use simple objects of a known marker type. The access call-path stays the same as before.
+`SimpleManualLazyHolder` and `AdvancedManualLazyHolder` are two new possible implementations. The idea is to reuse the field, which is going to hold the initialized value later on, to save a lock while initializing. As locks we just use simple objects of a known marker type. The access call-path stays the same as before.
 
-{{SimpleManualLazyHolder}} simply pre-initializes the lock objects in the constructor of the owner. On access and after having checked that the value needs to be initialized the current value of the value field is checked. It may either still contain the lock object in which case the value is not yet initialized and the particular lock is entered to initialize the object. Otherwise, it may already contain the initialized value if another thread just finished initialization. Note that there's still a shared lock needed to update the bitmap (synchronized on the owner).
+`SimpleManualLazyHolder` simply pre-initializes the lock objects in the constructor of the owner. On access and after having checked that the value needs to be initialized the current value of the value field is checked. It may either still contain the lock object in which case the value is not yet initialized and the particular lock is entered to initialize the object. Otherwise, it may already contain the initialized value if another thread just finished initialization. Note that there's still a shared lock needed to update the bitmap (synchronized on the owner).
 
-{{AdvancedManualLazyHolder}} works similarly but tries to defer creation of the lock object to the time when the lazy value is actually calculated. This makes it possible to not introduce any additional memory penalty in cases where lazy vals aren't accessed at all with the drawback of additional complexity.
+`AdvancedManualLazyHolder` works similarly but tries to defer creation of the lock object to the time when the lazy value is actually calculated. This makes it possible to not introduce any additional memory penalty in cases where lazy vals aren't accessed at all with the drawback of additional complexity.
 
 There's still a solution needed for primitive values: Those are currently boxed and thus, access to them is slower than with the current solution. One could either accept that or introduce another field per primitive lazy val to hold the lock. I'm not sure it goes cheaper than that.
 
@@ -38,6 +37,6 @@ One should certainly do the benchmarking before deciding for one solution but my
 Your input is appreciated, but I'm afraid we are no longer accepting "Suggestion" tickets on JIRA.
 
 Available mechanisms for making suggestions include:
-* the Scala mailing lists
-* SIP (Scala Improvement Process) and SLIP (Scala Library Improvement Process)
-* a pull request on GitHub implementing the suggestion
+- the Scala mailing lists
+- SIP (Scala Improvement Process) and SLIP (Scala Library Improvement Process)
+- a pull request on GitHub implementing the suggestion

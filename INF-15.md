@@ -11,4 +11,3 @@ If 2.8.0 is due (with scalap) so soon that switching the page back and forth wou
 Little fixes like this help new users stay confident in the website and docs.
 
 Thanks!
-

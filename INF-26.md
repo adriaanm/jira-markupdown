@@ -7,7 +7,7 @@ Now the above program invocation of �md5sum -c ...� succeeds with �scala-2
 How about changing the MD5-file-format for future releases of Scala distributions?
 There are a number of md5-based programs, each with slightly different options and formats, therefore we will not include additional data in the checksum.
 If you want to perform the verification using md5sum, just use:
-{code}
+```scala
 FILE=your_filename
 echo "$(cat ${FILE}.md5) ${FILE}" | md5sum -c -
-{code}
+```

@@ -1,25 +1,24 @@
-Aladdin: *[http://scala-webapps.epfl.ch/bugtracking/bugs/displayItem.do?id=1295 bug 1295], [http://scala-webapps.epfl.ch/bugtracking/contribs/display.do?id=770 contrib 770]*
+Aladdin: **[http://scala-webapps.epfl.ch/bugtracking/bugs/displayItem.do?id=1295 bug 1295], [http://scala-webapps.epfl.ch/bugtracking/contribs/display.do?id=770 contrib 770]**
 
 == Code ==
 
-{code}
+```scala
 class X { def unapply(v : Int) = Some(v + 1) }
 val q = new X
 5 match { case q(x) => x }
-{code}
+```
 
 == What happened ==
 
-{code}
+```scala
 java.lang.ClassCastException:  cannot be cast to 
-{code}
+```
 
 == What expected ==
 
 Prints 6. This works in the compiler, and works in the interpreter if I use an object rather than class + val.
-
 It has something to do with unapply's when mixed with nested objects.  The following code generates the same error with the stand-alone compiler:
-{code}
+```scala
 object A1 {
  object A2 {
    class X { def unapply(v : Int) = Some(v + 1) }
@@ -39,13 +38,13 @@ object Test {
     println(res)
   }
 }
-{code}
+```
 
 I have committed a test case at `test/pending/run/bugtr0005.scala`.
 
 I don't know who should be assigned pattern-matching bugs right now. Burak, is it you still, or should it be passed to someone else or to devteam?
 It was not related to the other bugs,  here is the thing after typer...
-{code}
+```scala
 [[syntax trees at end of typer]]// Scala source: t5.scala
 package <empty> {
   final object A1 extends java.lang.Object with ScalaObject {
@@ -95,11 +94,11 @@ package <empty> {
     }
   }
 }
-{code}
+```
 
 and after explicitouter
 
-{code}
+```scala
   final class Test extends java.lang.Object with ScalaObject {
     def this(): object Test = {
       Test.super.this();
@@ -115,11 +114,11 @@ and after explicitouter
       };
       scala.this.Predef.println(res)
     }
-{code}
+```
 
 and erasure
 
-{code}
+```scala
   final class Test extends java.lang.Object with ScalaObject {
     def this(): object Test = {
       Test.super.this();
@@ -136,4 +135,4 @@ and erasure
       scala.this.Predef.println(scala.Int.box(res))
     }
   }
-{code}
+```

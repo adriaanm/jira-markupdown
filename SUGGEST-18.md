@@ -9,6 +9,6 @@ The point here is that the compiler functionality should not be entangled with t
 P.S. I am working on such a non-standard category theory collections library, that is much less complex than Scalaz, because I use novel subtyping paradigm and higher-kinds. I am also working on a language that compiles to Scala and interopts with Scala. I understand Scala was created to be toolset for experimentation in languages and thus I also assume libraries, so I am hoping I can encourage the removal of unnecessary conflation of library and compiler.
 Your input is appreciated, but I'm afraid we are no longer accepting "Suggestion" tickets on JIRA.
 Available mechanisms for making suggestions include:
-* the Scala mailing lists
-* SIP (Scala Improvement Process) and SLIP (Scala Library Improvement Process)
-* a pull request on GitHub implementing the suggestion
+- the Scala mailing lists
+- SIP (Scala Improvement Process) and SLIP (Scala Library Improvement Process)
+- a pull request on GitHub implementing the suggestion

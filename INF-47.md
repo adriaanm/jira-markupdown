@@ -28,9 +28,8 @@ this as user-friendly as possible.
     the contents of this commit message are added to their notes.
 A fairly complicated example of what you can do is with a commit message
 of:
-Changed blah and foo to do this or that. Fixes SI-10 and SI-12, and refs SI-12.
-This will close SI-10 and SI-12, and add a note to SI-12.
-
+Changed blah and foo to do this or that. Fixes #10 and #12, and refs #12.
+This will close #10 and #12, and add a note to #12.
 
 
 

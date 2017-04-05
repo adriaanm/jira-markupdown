@@ -2,7 +2,7 @@ Aladdin: *[http://scala-webapps.epfl.ch/bugtracking/bugs/displayItem.do?id=1290 
 
 == Code ==
 
-{code}
+```scala
 $$ cat Structural.scala
 
 
@@ -129,11 +129,10 @@ ef{def x[U <: Derived](U): Int}
 	at scala.tools.nsc.ScriptRunner.runScript(ScriptRunner.scala:362)
 	at scala.tools.nsc.MainGenericRunner$$.main(MainGenericRunner.scala:165)
 	at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
-{code}
+```
 
 == What happened ==
 
 Compiler crash
 
 == What expected ==
-

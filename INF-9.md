@@ -2,7 +2,7 @@ From the main landing page of www.scala-lang.org, the hover menu labeled "Scala 
 
 I'm guessing the link should instead be named "Scala Jira" and link to issues.scala-lang.org 
 The specific output from Trac that I get is:
-{noformat}
+```
 Traceback (most recent call last):
   File "/usr/lib/python2.5/site-packages/trac/web/api.py", line 377, in send_error
     'text/html')
@@ -31,4 +31,4 @@ Traceback (most recent call last):
   File "/usr/lib/python2.5/posixpath.py", line 49, in isabs
     return s.startswith('/')
 AttributeError: 'NoneType' object has no attribute 'startswith'
-{noformat}
+```

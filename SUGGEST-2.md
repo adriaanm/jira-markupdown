@@ -1,4 +1,4 @@
-I have an application that creates a Stream with Stream.iterate, but as it processes the items in the stream, it sometimes pushes new items onto the front of the stream. (The application uses +:, which didn't work as I expected, and for which I submitted https://issues.scala-lang.org/browse/SI-4697).
+I have an application that creates a Stream with Stream.iterate, but as it processes the items in the stream, it sometimes pushes new items onto the front of the stream. (The application uses +:, which didn't work as I expected, and for which I submitted #4697).
 
 In the course of tracking down the problem, I created my own featherweight Stream implementation (attached), which contains only the Stream facilities I'm actually using.
 
@@ -8,6 +8,6 @@ If you run the timing test archontophoenix.stream.TimeStreams in the attached fi
 Your input is appreciated, but I'm afraid we are no longer accepting "Suggestion" tickets on JIRA.
 
 Available mechanisms for making suggestions include:
-* the Scala mailing lists
-* SIP (Scala Improvement Process) and SLIP (Scala Library Improvement Process)
-* a pull request on GitHub implementing the suggestion
+- the Scala mailing lists
+- SIP (Scala Improvement Process) and SLIP (Scala Library Improvement Process)
+- a pull request on GitHub implementing the suggestion

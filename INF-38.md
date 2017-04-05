@@ -2,24 +2,24 @@
 
 While doing a GET operation on `/login`, Trac issued an internal error.
 
-_(please provide additional details here)_
+*(please provide additional details here)*
 
 
 
 ==== System Information ====
 
-|| *Trac* || `0.11.2.1` ||
-|| *Python* || `2.4.4 (SI-1, Apr 16 2008, 17:56:48) ` [[br]] `[GCC 4.1.2 20061115 (prerelease) (Debian 4.1.1-21)]` ||
-|| *setuptools* || `0.6c3` ||
-|| *SQLite* || `3.3.8` ||
-|| *pysqlite* || `2.3.2` ||
-|| *Genshi* || `0.5` ||
-|| *mod_python* || `3.2.10` ||
-|| *Pygments* || `0.10` ||
-|| *Subversion* || `1.4.2 (r22196)` ||
+|| **Trac** || `0.11.2.1` ||
+|| **Python** || `2.4.4 (#1, Apr 16 2008, 17:56:48) ` [[br]] `[GCC 4.1.2 20061115 (prerelease) (Debian 4.1.1-21)]` ||
+|| **setuptools** || `0.6c3` ||
+|| **SQLite** || `3.3.8` ||
+|| **pysqlite** || `2.3.2` ||
+|| **Genshi** || `0.5` ||
+|| **mod_python** || `3.2.10` ||
+|| **Pygments** || `0.10` ||
+|| **Subversion** || `1.4.2 (r22196)` ||
 
 ==== Python Traceback ====
-{code}
+```scala
 Traceback (most recent call last):
   File "/var/lib/python-support/python2.4/trac/web/main.py", line 432, in _dispatch_request
     dispatcher.dispatch(req)
@@ -37,5 +37,5 @@ Traceback (most recent call last):
     return function(self, *args, **kwargs)
 OperationalError: database is locked
 
-{code}
+```
     

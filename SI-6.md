@@ -1,8 +1,8 @@
-Aladdin: *[http://scala-webapps.epfl.ch/bugtracking/bugs/displayItem.do?id=1294 bug 1294], [http://scala-webapps.epfl.ch/bugtracking/contribs/display.do?id=766 contrib 766]*
+Aladdin: **[http://scala-webapps.epfl.ch/bugtracking/bugs/displayItem.do?id=1294 bug 1294], [http://scala-webapps.epfl.ch/bugtracking/contribs/display.do?id=766 contrib 766]**
 
 == Code ==
 
-{code}
+```scala
 test1.scala:
 
 package foo.bar
@@ -18,12 +18,12 @@ class Foo
 ---
 
 > scalac -Ybrowse:namer test1.scala test2.scala
-{code}
+```
 In tree, click on the CompilationUnit[test2.scala]/PackageDef/Import => exception gets thrown, and RH information panel is missing.
 
 == What happened ==
 
-{code}
+```scala
 Exception in thread "AWT-EventQueue-0" java.lang.Error: Unknown case: ImportType(bar)
         at scala.tools.nsc.ast.TreeBrowsers$$TypePrinter$$.toDocument(TreeBrowsers.scala:663)
         at scala.tools.nsc.ast.TreeBrowsers$$TreeInfo$$.symbolTypeDoc(TreeBrowsers.scala:545)
@@ -60,9 +60,8 @@ Exception in thread "AWT-EventQueue-0" java.lang.Error: Unknown case: ImportType
         at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:157)
         at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:149)
         at java.awt.EventDispatchThread.run(EventDispatchThread.java:110)
-{code}
+```
 
 == What expected ==
 
 No exception, and display of RH information panel.
-
