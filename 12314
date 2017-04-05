@@ -1,5 +1,0 @@
-@ruippeixotog - There is the magical 35-byte limit under which point the JIT compiler pretty much automatically inlines a method.  Other than that, it's certainly not forbidden from doing so, but it's less certain.  But keeping forwarders small should be easy enough: you should almost always be able to convert an exception into a call to a private reportIndexException method in fewer bytes than the original exception generation.
-
-So if a method looks like a forwarder to another method, I'd try to keep it as such.
-
-@Ben - People sometimes catch exceptions, at which point they do become part of the normal runtime in unusual cases.  Changing the execution time by several orders of magnitude is, therefore, not something to do lightly.  Creating an exception is O(n) in the depth of the stack, and has a pretty high constant factor also.  Adding some constant or log term is fine.  Adding O(m) with m >>> n is probably not, because it could make someone's normal error-handling code a performance bottleneck.

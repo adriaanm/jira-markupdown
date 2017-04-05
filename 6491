@@ -1,9 +1,0 @@
-Thanks for providing the example. I agree that rules out no. 2 of my suggestions.
-
-As for putting it inside Success, I'm afraid that won't work (or I don't understand the idea). It's a case class used in pattern matches everywhere so we cannot change the API. And in the hundreds of places where new Success instances get created, how would we set the value there, where would we get it from?
-
-I feel the ideal solution (but that would require API changes, too), would be to route something through the parsing operations (e.g. piggy-backing on Reader or (semantically cleaner) in a separate, custom state object. Similarly like the parsec library for Haskell allows to route user state through the parsing process. But I don't know the considerations behind the original design that led to user state being left out.
-
-Regarding my idea 1), what are your concerns, apart from not being 100% perfect? It would reduce the leak from a ThreadLocal potentially holding the full input string, to a ThreadLocal holding a None, so a huge improvement.
-
-And yes, always using the phrase parser as an entry point avoids the issue. I do that in Laika, too, so I'm not really affected. I'm just volunteering as I noticed this ancient issue causes some "bad press" for the combinators. :-)

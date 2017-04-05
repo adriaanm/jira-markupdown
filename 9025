@@ -1,9 +1,0 @@
-I thought about this some more, and I believe the degree of parallelism is identical with the approach I gave (updated version below). I am just reusing the spawned thread for the 'rest' of the computation and avoiding a needless task submit cycle. That is, if I have a f.flatMap(g), the Future produced by g must be run in sequence *after* f. Therefore, there is no advantage to *always* spawning a separate logical thread to run the Future produced by g - we would be better off just reusing the thread that f was just about to relinquish, unless g explicitly indicates it wishes to refork.
-
-Here's updated code, if you are interested: 
-
-https://github.com/pchiusano/fpinscala/blob/master/answers/src/main/scala/fpinscala/iomonad/Future.scala
-
-It is a different library than what you have in the sense that Future does not necessarily represent a *running* computation. Until you call start, run, or runAsync, nothing is happening. This greatly simplifies the implementation - there are no race conditions to worry about, where a listener registers itself at the same time the promise is completing on its own.
-
-I'll probably port this to scalaz pretty soon so we can see how it works out there. 

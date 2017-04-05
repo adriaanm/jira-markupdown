@@ -1,5 +1,0 @@
-I'd like to urge reconsideration of this suggestion.  I don't think it's really about direct side-effects in parsers, which we can probably agree is bad or confusing at least.
-
-The lack of call-by-name passing for ^^^ means that in situations such as p ^^^ Foo (), where Foo is a case class, a Foo object is constructed whether or not p succeeds, which means extra objects that are created and then immediately become garbage if p fails.  In my experience this is a typical usage where the Foo instance represents a constant leaf tree node. The Foo construction is a side-effect that can't be avoided with the current by-value parameter.
-
-Is there anything to be lost by making the parameter by-name?  It would be nice to avoid these useless object constructions.

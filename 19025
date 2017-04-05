@@ -1,8 +1,0 @@
-Due to bug in unlifting following code crashes with `StackOverflow`:
-```scala
-implicit val unliftXmlComment = Unliftable[xml.Comment] {
-  case q"new _root_.scala.xml.Comment(${value: String})" => xml.Comment(value)
-}
-val q"${comment: xml.Comment}" = q"<!--foo-->"
-```
-This is caused by the fact that quasiquotes tries to recursively unwrap `xml.Node` as an iterable to figure out its rank but due to the fact that `xml.Node` is an `Iterable\[xml.Node\]` it causes infinite recursion.

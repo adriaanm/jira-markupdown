@@ -1,9 +1,0 @@
-Regressed in https://github.com/scala/scala/pull/4026.
-
-@soc: this is totally not your fault: right now the Java source parser skips over all annotations, [{{def annotations}} doesn't return anything](https://github.com/scala/scala/blob/2.11.x/src/compiler/scala/tools/nsc/javac/JavaParsers.scala#L334). Therefore the ClassSymbol for `SomeAnnotation` doesn't have a `@Retention` annotation in case the class is read from source (instead of the classfile when the annotation class was previously compiled with javac).
-
-Extending the Java parser is out of scope for 2.11.4, [see here](http://docs.oracle.com/javase/specs/jls/se8/html/jls-9.html#jls-9.7) what it takes.
-
-My proposal: How about we change the [default visibility|https://github.com/scala/scala/blob/2.11.x/src/compiler/scala/tools/nsc/backend/jvm/BCodeAsmCommon.scala#L158] (in case there is no {{@Retention}} annotation on the annotation class' ClassSymbol) to {{RUNTIME}}? This means that we emit a too large visibility in some cases, like we did in the past, which would be safe. What happens currently (too small visibility in some cases) is not safe, because some expected annotations are missing. For 2.11.5 we should fix the java parser.
-
-The other option is to revert the change and put the complete change in 2.11.5. What do you think?

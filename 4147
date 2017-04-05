@@ -1,7 +1,0 @@
-I don't see how `start` can be idempotent and support restarting a terminated actor at the same time. Restarting a terminated actor could be made the only exception to an otherwise idempotent `start`; however, I think that would make the semantics of `start` too complicated with little gain.
-
-Also, the actor supervision and restart patterns known from Erlang are not affected by making `start` idempotent: "restarting" works by creating a new actor with the same behavior as the one that terminated. Note that Erlang actors cannot be restarted either.
-
-In summary, making `start` idempotent was intentional. The goal has been to make the behavior of `start` robust (the behavior of `start` in 2.7.7 was a source of hard-to-debug errors, see http://article.gmane.org/gmane.comp.lang.scala.user/17995), and to simplify its semantics. Actually, the behavior of `start` in 2.7.x was never really specified; sure, you can test the implementation, but I do not consider the change to make `start` idempotent a regression. Therefore, I would suggest to close this ticket, unless there are compelling use cases that show that non-idempotent uses of `start` are very useful.
-
-For your information, Jonas Bon�r recommended to make `start` idempotent, see http://article.gmane.org/gmane.comp.lang.scala.user/18002/. Therefore, I assume that's also the case in Akka, but I haven't verified. Lift actors do not have execution states like started and terminated, they are always passively responsive to messages, but do not have "active" behavior.

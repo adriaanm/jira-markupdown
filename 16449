@@ -1,9 +1,0 @@
-Since yesterday (Oct. 6), I'm getting test failures in my scala-refactoring project with Scala 2.10-SNAPSHOT. I tracked them down to a wrong position; the following code:
-
-bq. List(1)
-
-is represented as
-
-bq. immutable.this.List.apply[Int](1)
-
-but the `This` tree has exactly the same RangePosition as the `List` `Select`, which is clearly incorrect.

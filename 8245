@@ -1,9 +1,0 @@
-I just wanted to let you know that I am working on additions to HashSet to implement all set operations (union, intersection, diff and subsetOf) as bulk Tree/Tree operations. This gives a pretty significant speedup in many cases, especially when the objects in question have an expensive hashCode and equals implementation. 
-
-Unfortunately Josh Suereth told me that right now is not a good time to get this included to the scala library, since they are very busy with getting 2.10 out of the door. I managed to get a few small improvements in, but the bulk operations will have to wait. 
-
-@Simon: you are requiring union (|) and intersection (&). The bulk union operation would take care of making union as fast as possible. So maybe write a ticket for intersection? 
-
-Regarding the eq thing: as a general rule, whenever you call a method on an immutable collection that returns an object that is equal to the original object, you should try to *return the original object* whenever this is possible without changing the asymptotic complexity. There are some operations where this is not possible, but for the set operations on HashSets it should always be possible! I even have a dedicated test for that in my HashSet improvements.
-
-val x1 = x.someOp(...) // if(x==x1) then x1 should be eq to x!

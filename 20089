@@ -1,5 +1,0 @@
-The original (and still current) probe implementation in `OpenHashMap` is based on the algorithm used in Python. It is exponential (in the long run), with sequence (_h_+¼)·5 <sup>i</sup> - ¼ modulo the table size, where *i* is the sequence index and *h* is the hash of the key. (Actually, the start of the sequence is modified by adding in a "perturbation" at each step, but this value becomes 0 or -1 after the 8th step.)
-
-Using these probe intervals leads to poor memory locality, as the sequence jumps around the table.
-
-This ticket replaces the probe algorithm with a more sensible and well-studied quadratic probe with small step size.

@@ -1,5 +1,0 @@
-If I link two actors (Parent <-> Child) and Child exits, a reference to it will be kept in Parent#links forever. It can be mitigated somewhat by manually unlinking in Parent when it receives the Exit message, but it is tedious and bug-prone.
-
-To reproduce this: open a REPL and paste the contents of testcase.scala. Wait until it prints the "child exited" messages and then take a heap dump using any available tool (e.g. jvisualvm). It will show 4 instances of Child as not being available for GC because they're referenced from Parent#links.
-
-This could probably be fixed easily by changing a line in the exitLinked() method from `mylinks.foreach(unlinkFrom(_))` to `mylinks.foreach(_.unlinkFrom(this))`.

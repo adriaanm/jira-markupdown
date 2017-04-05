@@ -1,5 +1,0 @@
-Intermediate result: this is related to scala/bug#5284, which was fixed in https://github.com/scala/scala/pull/755, i still have to spend some time to understand that change.
-
-The example in this ticket compiles using `-Ydelambdafy:inline`, in which case the `castType` method introduced in the above PR casts the function instantiation (new anonfun) to the necessary type `(Int, A) => Int`.
-
-This cast is not performed under `-Ydelambdafy:method`, where the `Function` survives until specialization and is not replaced by `new anonfun`. So "duplicators" attempts to re-typecheck `(x: B, y: B) => $anonfun$sum(x, y)` with expected type `(Int, A) => Int`, which then yields the type mismatch.

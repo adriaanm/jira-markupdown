@@ -1,9 +1,0 @@
-This line compiles
-```scala
-class B{ def b  :(Char)=>Unit = ((c:Char) => ()) };  val f:(Char)=>Unit = new B().b
-```
-While this line wont
-```scala
-class B{ def b():(Char)=>Unit = ((c:Char) => ()) };  val f:(Char)=>Unit = new B().b
-```
-Because B.b will be thought to return a ()=> (Char)=> () instead of a (Char)=> (). This behavior is not present when the return types are not lambdas, and it is masked with the caller uses parens, as that executes the returned lambda, which then returns the expected one.

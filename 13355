@@ -1,5 +1,0 @@
-Currently the Eclipse plugin saves project-specific compiler settings as IResource persistent project-level properties. Consequently these don't appear as a file in the workspace and cannot be placed under version control.
-
-This is especially relevant to the Eclipse-project for the plugin itself, because it needs to be built with target=jvm-1.4 due to issues with the Eclipse APIs use of raw types. Because the default is jvm-1.5 a non-Ant build of freshly checked out plugin source will fail.
-
-The attached patch against the plugin modifies scala.tools.eclipse.properties.CompilerSettings to use the org.eclipse.core.runtime.preferences API which manages storage of project-specific preferences in .settings project subdirectories. Once this has been applied project-specific settings can be placed under version control.

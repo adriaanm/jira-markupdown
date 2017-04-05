@@ -1,8 +1,0 @@
-That field was made public to enable accessing it from another class compiled alongside `StdNames`, and that access, yes, is motivated by an inlining.
-
-Currently, classes not compiled alongside `StdNames` just see the field public and use it, notwithstanding that the ex-private, synthetic, field in question might show up as `private` under other circumstances.
-
-Given that the field's synthetic origin still can be traced from its name (contains a dollar sign), we could let the inliner keep publicizing (to allow intra-library inlining) yet have the inliner regard as private those dollar-sign fields it finds in external libraries (thus missing some opportunities of inter-library inlining).
-
-What do you think?
-

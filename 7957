@@ -1,8 +1,0 @@
-Are you running on JDK 1.7 by any chance? Two fixes to parallel collections were backported to 2.9.2:
-
-  https://github.com/scala/scala/commit/0e49b37
-  https://github.com/scala/scala/commit/1016522
-
-The second one is relevant here: It fixed selection of the suitable backend for the parallel collections, after the JDK Vendor property changed from Sun to Oracle.
-
-Your stack trace indicates that you are using the `ThreadPoolTaskSupport`, which is definitely less efficient than `ForkJoinTaskSupport`. But I'm not aware of any difference between the two that might contribute to this bug.

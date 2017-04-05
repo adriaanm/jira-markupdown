@@ -1,7 +1,0 @@
-One might say that this behavior is warranted by SIP-17: http://docs.scala-lang.org/sips/completed/type-dynamic.html. Here's a relevant excerpt:
-
-- If qual.sel is followed by a type argument list \[Ts\] (optionally) and an argument list (arg1, …, argn), where none of the arguments argi are named, and argn is not a sequence argument, i.e., of the shape e: _* (the argument list is required, though it may be empty), as in: qual.sel\[Ts\](arg1, …, argn), rewrite the expression to: `qual.applyDynamic\[Ts\](“sel”)(arg1, …, argn)`
-
-- If qual.sel is not followed by arguments or an assignment operator: `qual.selectDynamic\[Ts\](“sel”)`.
-
-If we follow the letter of the SIP, then `x.bippy` in `x.bippy("arg")` is followed by an argument list, hence it should get desugared into applyDynamic, not selectDynamic. Do you agree?

@@ -1,7 +1,0 @@
-@sjrd I don't think it's clear at all that `Builder` is intended to be discarded after `result`, always and every time.  First, it's absolutely unnecessary for most (maybe all?--I didn't check) immutable collections.  Second, `clear` hardly makes sense as a method on a single-shot `Builder` unless you're in the habit of trying to build your collection, failing, and needing to start over again.  It looks like a standard case of a single superclass trying be an intersection type instead of a union type; we really need both a `Builder` and `ReusableBuilder`, the latter of which has the `clear` method and a guarantee that `result` followed by `clear` results in a fresh copy.
-
-Secondly, I'm not arguing that `Builder` must always be ready for a second run on `clear`, just that when it can be made to work 100% of the time instead of 94% of the time, it should be.  And the docs should be improved at the same time.
-
-Thirdly, the behavior of mostly-working-except-when-it-doesn't is, docs aside, a poor choice.
-
-Now it may be the case that there's no sufficiently nonperturbative way to get out of this situation aside from changing the docs.  But I don't think we should be terribly pleased by this state of affairs, and should look for better ways to handle the situation

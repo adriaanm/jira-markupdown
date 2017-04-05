@@ -1,5 +1,0 @@
-`Builder.mapResult` returns an anonymous proxy that forwards most method calls to the target builder and overrides `result` to apply a function to the target Builder's result. Unfortunately this proxy does not forward `sizeHint` and related methods. This causes excessive copying and oversized buffer allocations when mapped Builders are used ({{ArraySeq}} uses a mapped Builder so this situation is not uncommon).
-
-The fix is easy: add
-`def sizeHint(size: Int) = self.sizeHint(size)`
-to the mapResult proxy. 

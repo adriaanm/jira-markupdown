@@ -1,7 +1,0 @@
-```scala
-scala> def x() = { 0; (a : Int, b : Int) => println(List(a, b)) ; 0  }
-x: ()(Int, Int) => Int
-```
-*Shouldn't x be a function from ()=>Int ?* 
-
-No, for two reasons.  (1) x is a method.  Method types are printed as `(argtypes)restype`.  (2) Anonymous functions are not restricted to having expressions as their bodies, so the parser is interpreting the body of the anonymous function as extending to the right brace.  Therefore, the method is returning an anonymous function returning 0, not 0.

@@ -1,8 +1,0 @@
-the compiler certainly shouldn't crash, but I don't think it's feasible to make this work
-
-the problem is that the target of the andThen call is not stable, and thus, nor is the expected type of andThen's argument. In the "val f" variant above, the type of the argument is f.Bar, but in the original example it's `X.Bar forSome {val X : Foo}`
-
-before the search for the implicit conversion that converts "Bar" into a suitable argument for andThen has even begun, it is doomed: since we've essentially opened the existential in the expected type, but not in the return type of the fromFunction implicit, those types have become hopelessly incompatible. fromFunction's return type must now be thought of as `Y.Bar forSome {val Y : Foo}` (renaming only for emphasis), which is not compatible with `X.Bar forSome {val X : Foo}`
-
-conceptually, it would be reasonable to expect the skolems (existentials that have been opened) X and Y in X.Bar (expected type of andThen's argument) and Y.Bar (return type of the fromFunction implicit) to refer to the same "value", and thus for the type selections to refer to the same type, but this is not how it's implemented (and I'm pretty sure it would be hard to change that)
-

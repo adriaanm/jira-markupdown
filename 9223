@@ -1,7 +1,0 @@
-Regressed with the new encoding of PartialFunctions: 383d28daa16
-
-But it's possible that this just lifted the lid on some existing problem in erasure; I'm trying to track down why `x1` in the non-bridge signature below erases to `Object`, rather than `Container`.
-```scala
-        final override def applyOrElse(x1: Object, default: Function1): Object = {
-        final override <bridge> def applyOrElse(x: Object, default: Function1): Object = $anonfun.this.applyOrElse(x.$asInstanceOf[Container](), default)
-```

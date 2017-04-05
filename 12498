@@ -1,7 +1,0 @@
-I'm didn't study the Scala language spec (but I would say that if it agrees with this behavior then the bug still exists but it is in the spec).
-
-In fact, as @apm said, it didn't infer `Map.empty` to be of type `Map[Int, Int]` as I said, but it must, at least, infer `Map.empty` to be of type `Map[Int, _]`, since `Map` is invariant in the key.  However, the error on instatiation says that it got a `Map[Nothing, Nothing]`.  How could it even typecheck at the type of the class definition?
-
-To be more general: I don't think it is acceptable to get a type error when a default parameter is used.  It was typechecked before, it must fail at definition of the class/method if the types don't checkout
-
-(Another way this is weird is that `class A(foo: String => Map[Int, Int] = (_: String) => Map.empty) ; new A` works.  Having the type parameterized somehow makes a difference here.  This is like breaking "referential transparency" for types.)

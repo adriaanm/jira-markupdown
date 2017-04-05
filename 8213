@@ -1,7 +1,0 @@
-When reading from bytecode, and when reading from java source, statics are mapped into the (possibly synthetic) companion object of the class being read. So although there is bytecode for p$x$x with a static field in it, the scala class p.x.x does not have it; the object p.x.x does.
-
-If I change this:
-
-  val hostClass = qual.tpe.typeSymbol.orElse(sym.owner).companionClass
-
-Not to call companionClass, then it finds the field foo and stops crashing.  Of course then it fails at runtime with "java.lang.NoSuchFieldError: foo" because the confusion surrounding this is not so nicely localized.

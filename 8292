@@ -1,6 +1,0 @@
-{quote}Since try is reifying exception handling, this is not an unreasonable assertion to make.{quote}
-
-In the case of `flatMap`, I'd probably buy that argument. That is, when you have `f: A => Try\[B\]` it's probably reasonable to assume that whoever wrote `f` knows how `Try` is supposed to work! But there are two problems:
-
-- If that were the case, then the implementation of `Success.flatMap` should simply be `f(value)`, right? No need to `try/catch`, since `f` presumably won't throw a non-fatal exception.
-- More importantly, I think in the case of `map` that your assertion doesn't fly. That is, you can't assume the author of some arbitrary, pre-existing `f: A => B` will have foreknowledge that their function will be lifted into the `Try` functor, nor is it safe to assume that the consumer of `f` can see its implementation. If you're writing all the code yourself, no problem, but you know how that goes...

@@ -1,8 +1,0 @@
-I agree to cutting down on useless specialization. But scanning user code seems too intrusive -- I wouldn't want the compiler to decide not to specialize on a value type because it thought it's not a good idea. To give an example:
-```scala
-class Foo[@specialized T1, @specialized T2, @specialized R](f: (T1, T2) => R) {
-  val inverse: R => (T1, T2) = ???
-}
-```
-
-Would you avoid specializing R to Unit in the above class, because it's an argument in a publicly accessible value? What about Foo[Int, Int, Unit]? I would rather issue a warning, but still specialize.

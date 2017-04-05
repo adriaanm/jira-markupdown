@@ -1,8 +1,0 @@
-When explicitly specifying a ClassLoader for RemoteActor to get around scala/bug#1686, it uses scala.actors.remote.CustomObjectInputStream for deserialization instead of the normal java.io.ObjectInputStream.  CustomObjectInputStream.resolveClass() calls {code}cl.loadClass(cd.getName()){code} but that doesn't work for Arrays (see http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6516909).  It should instead call
-{code}Class.forName(cd.getName(), false, cl){code} like the original ObjectInputStream.resolveClass().
-
-The workaround is to set a ClassLoader that intercepts the wrong call in CustomObjectInputStream:
-{code}RemoteActor.classLoader = new org.springframework.core.OverridingClassLoader(cl) {
-  override def loadClass(name: String) = Class.forName(name, false, getParent)
-}
-{code}

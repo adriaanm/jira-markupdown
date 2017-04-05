@@ -1,9 +1,0 @@
-.. and some further poking indicates, as you might have expected, that that `NoType` was not put in there by the cycle detection logic in the `apply` method
-
-proposed patch:
-```scala
-     /** The type at i'th position in this sequence; lazy types are returned evaluated. */
-     def apply(i: Int): Type = elems(i) match {
--      case NoType =>
-+      case NoType if pending.keySet contains i => // the NoType was put there by us since it's in pending's keys -- SI-3676 says it might come from outer space as well
-```

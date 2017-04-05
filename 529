@@ -1,7 +1,0 @@
-After another frustrating day, I have a bit more information about this issue: Your code runs fine, but the same change in `scala.Stream` does not (crashes with `OOM` even on Java 6). JProfiler insisted that the first cell was referenced from the Java stack.
-
-It looks like it was actually about local variables (probably JProfiler can't distinguish them)! Turn your `Stream` into a `trait` and watch it die... The implementation of traits turns each method into a static method that takes an explicit `this` object, and a forwarder which calls it. The static method iterates over the stream, and keeps no references to it's visited cells, but the *forwarder* does! I think we should fix the compiler to null arguments before forwarding the call.
-
-There was also a bug in tail call elimination causing a dead variable holding on to the 'this' instance with which the method was invoked (fixed in r14481). But that seems to be ok, as long as it happens inside a long running method (the real `foreach`), and fails when it's inside a forwarder (as mentioned in your link, short-running methods are a problem). We could either switch `Stream` to be an `abstract class` (checked that, and it works), or wait for a fix in the compiler.
-
-I also changed `Stream.scala` to use tail recursion directly, instead of local `loop` functions (see r14480).

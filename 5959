@@ -1,7 +1,0 @@
-This appears to induce the same problem, tested on 2.9.0.1 and 2.10 nightly:
-```scala
-object C { implicit def y(s : String) = new { def x(implicit x : List[Int] = Nil) = "" } }
-import C._
-object A extends B { def main(args : Array[String]) : Unit = fail() }
-trait B { this : A.type => def fail() = "".x }
-```

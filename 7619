@@ -1,9 +1,0 @@
-Unfortunately it's not in M4 but it'll be there in 2.10. I fixed the main issue, but there's a widening transformation happening and I haven't been able to prevent it so far. In case you want to take a look, my last progress is at [https://github.com/VladUreche/scala/tree/issue/5788]. The main commit that explains what I do is [https://github.com/VladUreche/scala/commit/101c4385568b3c762306277d8a2bd14171b4451f].
-
-It won't compile the following case, complaining it's expecting `Test.this.B[T]` and it got `<empty>.This#B[T]`:
-```scala
-trait Test {
-  trait B[T]
-  private final def grow[T](): B[T] = grow[T]()
-}
-```

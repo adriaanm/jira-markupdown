@@ -1,3 +1,0 @@
-For the record, since as is often the case with the pattern matcher I can see the problem and can "fix" it, but only if I don't mind breaking other things: in uncurry, when an anonymous partial function is created, the synthetic isDefinedAt method copies everything from the casedef, including the "items" binding.  But since items is unused, the pattern matcher translation leaves it behind.
-
-Altering isDefinedAt not to copy bindings from apply (since the right hand side of every case in that method is a boolean, they're useless) makes the problem go away, but then the compiler fails to bootstrap, failing in quick with something about lambdalift and outer pointers: NSDNHO.

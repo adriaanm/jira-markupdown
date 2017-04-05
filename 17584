@@ -1,8 +1,0 @@
-Type casting in Actor.scala:64 fails with a ClassCastException when migrating remote actors. This prevents migration of remote actors at the early stage of actor migration.
-The line that fails in Actor.scala:64:
-```scala
-def self: Actor = self(Scheduler).asInstanceOf[Actor]
-```
-
-The fix is very simple and has local effects. The invocations to `Actor.self` should be replaced with `self(Scheduler)` in the code of remote actors. The fix is already prepared and can be seen in:
-http://github.com/vjovanov/scala/commit/626bd15b1335c03a85d7c3bd40cc324552108d8a

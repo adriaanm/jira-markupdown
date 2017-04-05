@@ -1,5 +1,0 @@
-This issue is a bit trickier that it looks. The way the index is built, each DocTemplateEntity's members are added to the index, as long as the member's owner is the DocTemplateEntity in question (http://www.scala-lang.org/archives/downloads/distrib/files/nightly/docs/compiler/index.html#scala.tools.nsc.doc.model.IndexModelFactory$).
-
-Normally, the owner of a member is the template it is defined in, and this is computed with the makeTemplate function (by using the owner of the symbol of a member), where it will normally find a correspondence. In the case of a member of a package object, however, it seems that the owner of such a member does **not** correspond to the package, but to a generic symbol having the name "package"
-
-TL;DR the symbol table does not seem to map owners correctly for members of package objects, so the issue seems to be during symbol table generation.

@@ -1,3 +1,0 @@
-The original author of `OpenHashMap`, David MacIver, [looked into not caching hash codes, but not very deeply](http://scala-language.1934581.n4.nabble.com/scala-Open-versus-Chained-HashMap-td1997654.html#a1997659). [His code uses the cached value to precede an equality check against the key](https://github.com/scala/scala/blob/30d704df5c66986b82cd3158e8e36a0f1b5284ab/src/library/scala/collection/mutable/OpenHashMap.scala#L116-L117), presumably to avoid a more expensive operation, though in fact his key comparisons are based on a quick reference equality check.
-
-Making this change improves execution times slightly, probably to a statistically insignificant degree, but it does clearly, and logically, reduce memory usage by about 10%.

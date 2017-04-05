@@ -1,5 +1,0 @@
-I expanded the tests to cover more collections (I hope I caught all relevant implementations): https://github.com/scala/scala/compare/2.12.x...szeiger:issue/8434
-
-The test that are commented out all fail at the moment. When testing [~retronym]'s fix I discovered that his original tests in https://github.com/retronym/scala/tree/ticket/8434 and my expanded tests do not actually test the right thing though. The LinkedHashSet test succeeds even without the bug fix. The builders that are found do not only depend on the runtime type of the collection but also on the type as which it is statically seen. For example, LinkedHashSet seen as Set is currently broken, but LinkedHashSet seen as GenTraversableOnce works. For a comprehensive suite of tests, we'd have to test every combination of concrete collection constructor and all supertypes of the collection.
-
-I also asked @odersky and he agrees that it is a bug. The current strawman proposals for a new collections implementation in Scala 2.13 and Dotty do not suffer from it. Therefore we may want to defer a more comprehensive fix to 2.13 and only patch up the concrete issues that were discovered so far.

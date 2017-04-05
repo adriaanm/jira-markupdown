@@ -1,5 +1,0 @@
-I tracked the problem down to this commit:
-
-[cb4fd65825f3c88908103e48d0d7e89d70d26c22](https://github.com/scala/scala/commit/cb4fd65825f3c88908103e48d0d7e89d70d26c22)
-
-which "tentatively" replaces the `this.type` of implementation classes of traits with the declared self type of the trait. This may or may not have any other consequences aside from this issue. Reverting the `ThisType.apply` part of the commit and the former workarounds for this issue seems to fix the issue. I can't comment on the original purpose of the commit and if the "lift build problem" is still an issue.

@@ -1,8 +1,0 @@
-I determined after looking a little harder that the reporter is correct at least inasmuch as that the code in question embeds a strong implicit assumption which is apparently being violated, so the least it can do is output something useful.  The code in question looked like this:
-```scala
-      def subst(tp: Type, sym: Symbol, from: List[Symbol], to: List[T]): Type =
-        if (from.isEmpty) tp
-        else if (matches(from.head, sym)) toType(tp, to.head)
-        else subst(tp, sym, from.tail, to.tail)
-```
-You can see that if from.nonEmpty and to.isEmpty, it will always crash.  So maybe adriaan or martin or someone else versed in type mysteries could drop in a comment as to why this should be impossible (if that is the case) or better yet maybe this illuminates some overlooked situation.  Until then, in r20880 I added a check to this and a second largely identical function which prints some context.

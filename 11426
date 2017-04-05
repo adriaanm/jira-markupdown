@@ -1,7 +1,0 @@
-> I've opened a discussion on Scala internals about fatal error handling.
-
-Wow, that's a long discussion! It is very insightful too. I'm not sure what the conclusion is. Will this be fixed?
-
-Let me add one more example of why the current behavior is annoying. I do some reflection in a `Future` and it may fail with `NoClassDefFoundError` if things go wrong. Since `NoClassDefFoundError` is not `NonFatal`, this does not complete the `Future` and the thread waiting for its completion will wait forever. This is a user request for a potentially slow operation. The user will wait hours before deciding that perhaps something is wrong.
-
-The only workaround I see for now is that I have to become an expert at what may cause an exception that is not `NonFatal` and be sure to catch all those myself. It would be great if I could override the definition of `NonFatal` in my own `ExecutionContext` instead.

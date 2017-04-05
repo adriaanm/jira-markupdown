@@ -1,9 +1,0 @@
-Simpler test case:
-```scala
-scala> <k a="1" b="2"/> == <k a="1" b="3"/>
-res0: true
-```
-
-The issue is the implementation of `strict_==` for `Attribute`.  It overrides the definition of `MetaData` but does not recurse.  So, only the first attribute is compared.  As far as I can tell, `MetaData.strict_==` is never called.
-
-Patch attached that removes `MetaData.strict_==` and adds `&& (next == x.next)` to `Attribute.strict_==`.  Also attached is a test case for `test/files/run`.

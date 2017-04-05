@@ -1,3 +1,0 @@
-Yes, you need the `-Ycheck:genjvm` to generate the warning. Looking at the code there's a `return` after generating the warning which circumvents the generation of the broken signature. This would explain why using the flag makes the runtime error disappear.
-
-It may be sensible to enable this flag/code path by default if this can't be fixed soon or is still likely to be broken in some cases. That would mean that a) you *can* use these methods at all from Java even if the compiler still has a bug when generating them b) you are loosing generic type info at the Java side because the generic type is missing. Compare that to the current situation where although Java can compile against the generic type, the call fails at runtime.

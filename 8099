@@ -1,8 +1,0 @@
-For another fascinating wrinkle, see https://github.com/puffnfresh/wartremover/pull/46 .
-```scala
-class A {
-  def f1 = Vector(1,2,3) == List(1).map(_ + 1)
-  def f2 = Vector(1,2,3) equals List(1).map(_ + 1)
-}
-```
-The first map call infers List[Int] for the type argument, the second infers Any. Since I had already observed that arguments to overloaded targets are typed more accurately than arguments to not-overloaded targets, I looked and indeed 'def ==' is overloaded between Any and AnyRef whereas 'def equals' is overridden in AnyRef.

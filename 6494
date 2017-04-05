@@ -1,3 +1,0 @@
-I'm not sure that it's *worse*, because before you effectively had to make a new parser every time or force all your code onto a single thread. If you make a new parser every time, garbage collection will remove the `DynamicVariable` that comes along with it. If you force all your code onto a single thread, you can pretty easily use a single-threaded executor so that only one instance of ThreadLocal is ever allocated.
-
-A cursory look at the code does suggest that if you're reusing the same parser from a lot of different threads, you can wind up with stray references. If your parsers are actually short-lived though, those dynamic variables should be getting garbage collected.

@@ -1,9 +1,0 @@
-When two or more matches overlap, Regex.findAllIn does not report each individual match. A simple test case is
-```scala
-// should evaluate to 2, but evaluates to 1
-"aa".r.findAllIn("aaa").toSeq.size
-```
-
-There are certainly use cases where it is not helpful to find overlapping matches (e.g., when replacing text), but this is not universal. Perhaps there should be a variant method?
-
-I guess the underlying implementation is using Matcher.find(), which resumes the search from the last unmatched character. It could instead use Matcher.find(start) and resume from the second character of the previous match.

@@ -1,8 +1,0 @@
-It's not windows specific, it's all-your-local-factors specific, and if you're using java 6 all the memory limitations hit faster.  It crashes on snow leopard's jvm6 with default scalac from trunk:
-```scala
-$$ JAVA_OPTS="" scalac28 a.scala 
-Exception in thread "main" java.lang.StackOverflowError
-	at scala.tools.nsc.ast.Trees$$Transformer.transform(Trees.scala:1411)
-	at scala.tools.nsc.typechecker.RefChecks$$RefCheckTransformer.transform(RefChecks.scala:998)
-```
-I'm not sure it's a bug though (as opposed to an "implementation limitation") as that's how the typechecker works, you get a pile of stack for each element when it's doing this kind of typing.  This is a duplicate of at least one other ticket.  Workaround is to use more stack.  I'm not closing this as I don't know what the official position is.

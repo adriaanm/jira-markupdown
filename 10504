@@ -1,9 +1,0 @@
-Right, which is why running things through asSeenFrom again works:
-```scala
-scala> typeOf[View[Int]].memberType(typeOf[View[Int]].member(newTypeName("Bla")))
-res2: $r.intp.global.Type = AIn
-
-scala> res2.asSeenFrom(typeOf[View[Int]], typeOf[View[Int]].typeSymbol)
-res3: $r.intp.global.Type = Int
-```
-It would help if I better understood what is the resistance to more aggressive dealiasing. I don't mean stuff like "there will be cycles" or other implementation artifacts, nor "the undealiased types are desirable in error messages" which is valid but cosmetic, but whatever is the deeper objection. Because as far as I can see it, if there is a T from Foo[T] reachable in any way shape or form in the result of a whatever.asSeenFrom(Foo[Arg]) then when that T comes out it's going to be a bug. So I don't see the advantage of allowing it, ever. Which requires peeking inside type aliases, always.

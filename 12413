@@ -1,5 +1,0 @@
-There remains an issue of *what* order we want: are new items inserted at the back or the front?
-
-mutable.ListMap is implemented as a very simple wrapper around scala.collection.immutable.List. As a natural consequence, new items are added to the front.
-
-immutable.ListMap doesn't work that way — it's implemented on top of a private Node class. internally, it adds items on the front, but then it does `def iterator = ... .toList.reverseIterator` so the externally observable order is forwards. Note that this is expensive, as both `toList` and `reverseIterator` copy the whole collection.

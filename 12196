@@ -1,3 +1,0 @@
-The first part works as expected (as `-Xprint:typer` will verify). The implicit conversion claims to be able to produce any subtype of `TestBase`, which includes `Nothing`. Since you need a cast to get there, it's not a soundness issue, either (but the similar scala/bug#9633 is). You'd have to add a subtype of all the types the implicit conversion can really produce, and use that as an upper bound.
-
-The fact that it doesn't work with a TypeTag looks like a legitimate bug to me. An explicit call `conv(Foo())` compiles but `conv` is not picked as an implicit conversion.

@@ -1,3 +1,0 @@
-There is a bug in the implementation of MailBox.receiveWithin. If the call timesout then the next message that *could* have been sent to the block will be sent to that block (which is no longer valid) rather than either going into the pending queue or to a current waiting block. The bug appears to be caused by the timedout block not removing itself from the list of available receivers, this may also be a memory leak until an appropriate message is sent.
-
-Gist of testcase and email to scala-users lists: http://gist.github.com/547596 (ill attach both to this ticket)

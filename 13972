@@ -1,7 +1,0 @@
-The print method is defined like this in 2.7.3-RC1:
-```scala
-def print(sep: String) { if (isEmpty)
- Console.println("Stream.empty") else { Console.print(head); Console.print(sep); tail.print(sep) } }
-```
-
-This can lead to !StackOverflowError for large streams because the method is neither final nor private. In this case the fix would be to nest a locally defined truly tail recursive print function inside the outer definition to allow overriding the method in a subclass.

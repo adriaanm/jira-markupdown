@@ -1,5 +1,0 @@
-problem is that in ` def m(s:X[_]) {} `, the symbol `_` gets pickled as "external", no loacal. the owner is `method m`, the unpickler tries to find a member named `_$$1` in `mSym.info.decls`.
-
-It also happens when giving the existential a name, i.e. ` def m(s:X[T forSome {type T}]) {} `.
-
-I think `T / _$$1` just has to be pickled as if they were local. => Ask martin what the current `isUnrootedExistential` logic in the pickler is for, and how to fix the current bug.

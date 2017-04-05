@@ -1,2 +1,0 @@
-I think I have isolated the reason. Overloading resolution prefers values x over parameterless method accessors x. In the first case, we have two implicits as fields, and both are accessed with parameterless method accessors. So ambiguity results. In the second case, the local variable is treated as more specific in overloading resolution. This is not justified by the spec, which treats fields and parameterless methods the same. But changing it might break existing code, so we have to tread carefully here.
-

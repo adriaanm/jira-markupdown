@@ -1,9 +1,0 @@
-does scala/bug#2252 only apply if @BeanProperty was used too right? 
-
-FWIW I don't want to have to use @BeanProperty just to be able to use @Inject, @Autowired or the other IoC & JPA annotations. Forcing the addition of new annotations just to get around scala compiler issues, we might as well just go the whole hog and use explicit nested annotations to fix this.
-
-i.e. I still think this issue is relevant; we need a DRY way to default which elements get the annotation at the bytecode level - the field and the accessor/getter and mutator/setter method - irrespective of the use of @BeanProperty
-
-Also for IoC injections, you might want the annotation on the setter/mutator so that things work nicely with inheritance rather than always being on the field.
-
-I guess you could say for scala/bug#2252 you are just picking a single default setting (on the field only right?) whereas the solution in this ticket provides a way to provide per-annotation-type defaults so framework developers can choose the best default for a particular annotation. I'm not sure if field-only makes sense for all annotations in IoC/JPA etc

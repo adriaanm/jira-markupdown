@@ -1,5 +1,0 @@
-"Is there any other way to accomplish post-constructor functionality in Scala today without DelayedInit?"
-
-Nope. I have another unpublished branch which comes at it from another angle; you can define postInit in the companion of any class, and after instantiation it traverses all the base classes calling any companion-defined postInit methods with the newly created instance as the argument. This makes it possible to inherit from a class, write custom postInit code, yet still have the base class's postInit code called, without being required to know about and dispatch to the existing postInits.
-
-The major weakness is that it of necessity depends on the participation of the compiler; it would all break down if any such class were instantiated from java. This might not matter to most people, but it would be an issue nonetheless. (You could make the constructors private, but then you lose the part where you can still use inheritance.)

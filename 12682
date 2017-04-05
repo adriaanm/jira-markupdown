@@ -1,5 +1,0 @@
-For the record, the change in 2.12.1 was https://github.com/scala/scala/pull/5528, a fix for scala/bug#10049.
-
-Documenting the new behavior as the default in 2.13 (and reverting in 2.12) would be a natural choice. OTOH, getOrElseUpdate is much more convenient than doing the same thing manually, so it's understandable why people would want to use it even though they do not care about the improved performance (with the limitation of not being allowed to modify the map in the callback). The only obvious places in the Scala repo where the map is mutated while computing the default value are in ProdConsAnalyzerImpl.scala and SetMapConsistencyTest.scala, in both cases using an AnyRefMap.
-
-The latter is a regression test for scala/bug#8213 where the new behavior that we now have in HashMap was classified as a bug and consequently fixed for AnyRefMap. For the sake of consistency I suggest that we revert the change and allow mutation. Since the motivation for scala/bug#10049 was performance of groupBy, we could explore a more directed fix, e.g. overriding groupBy in HashMap and using a private copy of getOrElseUpdate with the new semantics.

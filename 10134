@@ -1,3 +1,0 @@
-Nice; I didn't know about `fs_usage`. (I tried to get `dtruss` to show which files were being opened, but failed; even `dtruss -f` won't follow all of the levels of indirection involved when starting a JVM.)
-
-Looking at the output I get with `fs_usage` on my own machine, I wonder if the culprit might be something sitting in one of the many extensions directories that the JVM loads jars from: `/Library/Java/Extensions`, `/System/Library/Java/Extensions`, and the one in each user's homedir. Charles, when you run scala, you might try running it with `-Djava.ext.dirs=` (yes, with nothing after the equals sign). When I do that, I no longer see any extensions directories in the output of `fsusage`.

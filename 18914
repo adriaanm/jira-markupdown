@@ -1,7 +1,0 @@
-Due to tree re-use under the hood type quasiquotes might match term trees:
-```scala
-scala> val tq"$a.$b" = q"Foo.bar"
-a: universe.Tree = Foo
-b: universe.Name = bar
-```
-This is quite unfortunate and looks like leakage of trees internals on the outside. I'd expect that pattern to only match selections of type members and always extract TypeName as a consequence.

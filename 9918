@@ -1,7 +1,0 @@
-@rex Oh, I didn't make any changes to the parser code at all. I'm using the stock code from 2.10.3.
-
-All I'm doing is wrapping a String in this class and parsing that instead of parsing the String directly. This conforms to the CharSequence interface (which the scala parsing code depends on). In java < 7u6, the underlying character array was reused within String.java. Now String.java copies the underlying array each time for safety.
-
-So this class just reuses that array at level higher and any others created from `subSequence`.
-
-I considered memoizing `toString` since `new String(chars, startBounds, length)`, will iterate over the array each time, but perf seemed good enough without it.

@@ -1,5 +1,0 @@
-The original implementation only caught blatant assignments of null to a NotNull type. As Paul alluded to, tracking non-nullness is a form of effect tracking, which is much trickier than regular type checking because it's flow sensitive (e.g., `val x = if(foo) notNull else null; ... ; if(foo) methodExpectingNotNull(x)` is a common pattern that requires flow sensitivity/full dependent types to type check). More generally, it likely requires whole-program analysis to get good results (but that still doesn't solve how to do java interop).
-
-There are no plans to replace NotNull at the moment, though some Scala 3.x release may gain effect tracking, or some lint-like tool could do a static analysis.
-
-Here are two relevant papers that should give you a sense of how it could work: http://research.microsoft.com/en-us/um/people/leino/papers/krml109.pdf, http://www.cs.cornell.edu/andru/papers/masked-types.pdf (nullness interferes with initialization)

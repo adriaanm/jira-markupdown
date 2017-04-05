@@ -1,6 +1,0 @@
-I'm clearly a menace to anything protected so I'll be staying far away, but I think this is the bug in Refechecks:
-```scala
-  -              !(inclazz.isJavaDefined && sym.privateWithin == sym.enclosingPackageClass) || memberEnclPackageCls == sym.privateWithin
-  +              !(inclazz.isJavaDefined && sym.isPrivate && sym.privateWithin == sym.enclosingPackageClass) || memberEnclPackageCls == sym.privateWithin
-```
-Checking sym.privateWithin without also checking sym.isPrivate excludes protected[X] as well, and protected[p1] is how java's protected is translated here.

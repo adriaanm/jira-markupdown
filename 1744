@@ -1,7 +1,0 @@
-I have looked into this problem in more depth, it appears that the failure point occurs at `org.eclipse.jdt.internal.compiler.SourceElementParser.parseCompilationUnit(...)` line 899:
-
-`parsedUnit = parse(unit, compilationUnitResult);`
-
-parse is a call to a java-centric document parser, so it, of course, is going to fail on calls with scala documents. 
-
-Maybe an aspect can be used to make a pointcut somewhere around that execution path and a call to the scala parser could be made instead.

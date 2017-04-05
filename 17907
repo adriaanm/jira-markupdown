@@ -1,9 +1,0 @@
-Symbol attachments leak through the $outer pointer. Proof is in this gist:
-
-https://gist.github.com/4622507
-
-You need to have an input file for that to work, place the one in the gist it under ./src (the directory from where you'll run the test).
-
-The attachments leak instances of `NonemptyAttachments` through the outer pointer (in this case, there's a chain of 101 instances).
-
-The problem is that [NonemptyAttachments](https://github.com/scala/scala/blob/master/src/reflect/scala/reflect/macros/Attachments.scala#L56) extends its own outer class (yeah, it takes a while to grok this), so every time you create a new instance, you capture the outer instance.. which happens to be another instance of NonemptyAttachments. That's a very interesting way to create linked lists, but in this case I'm pretty sure it's unintended.

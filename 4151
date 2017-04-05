@@ -1,5 +1,0 @@
-That's the point.  They're deprecated but should not be because they're not deprecated in Seq, and BufferLike implements Seq (via Buffer).  So if I have a Seq that just happens to be (for example) a ListBuffer, then it works fine, but if I have a ListBuffer that' actually typed as ListBuffer, then I get deprecation warnings, and the methods behave differently (they append to the current LB instead of creating a new one).  See the example code.  The method should work the same (that is, create a new ListBuffer) regardless of the Seq type because that's what the Seq documentation says it should do.
-
-I brought up the same issue in 3089.  There the solution was to add a "migration" annotation to flag methods that behave differently in 2.8.  (The difference being that in 2.7, +: modified the ListBuffer but in 2.8 it doesn't, and ditto for ++:.)  You can see the migration annotation in BufferLike.
-
-I'm asking for the +: and ++: methods be modified to (a) create a new ListBuffer instead of modifying the current one as per the Seq contract, (b) remove the deprecation annotation, and (c) add the migration annotation.

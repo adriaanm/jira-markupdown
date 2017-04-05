@@ -1,5 +1,0 @@
-Because of the way specialized classes (e.g. C2$mcZ$sp) subclass the parent (e.g. C2) C2's methods obviously can't be final (IIRC "final" is removed during "specialize"). But the compiler could remember which methods **were** marked final/@inline and mark the specialized subclass's methods appropriately.
-
-By itself this wouldn't fix your issue with Option. But using AnyRef specialization we can ensure that all uses of C2 will be rerouted to a specialized subclass (whose methods would correctly be final). I think this would fix this bug with regards to Option, although it wouldn't fix it in general. To fix it in general (IMO) would require always using AnyRef specialization (which seems like an OK plan to me) or to do a bigger change to how specialization works (maybe too big).
-
-Am I missing something? What do you think?

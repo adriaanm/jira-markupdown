@@ -1,7 +1,0 @@
-this is a bit of a double-whammy:
-  - `type I[+_] <: Sequence[_]`  mixes higher-kinded types and existentials, so that T does not conform to `++`'s bounds in `x . ++ [T]`
-  - `x . ++ [T] y` is not the same as `x . ++ [T](y)` or `x ++  y`
-
-The problem is that `inferPolyAlternatives` fails to find the right version of the overloaded method due to the second problem, which breaks the assumptions that the number of type arguments passed to a polytyped equals the number of parameters it expects. I replaced the assert by an if and put an errorTree in the failing branch. 
-
-Martin, please review this change in r13917  (let me know if it's ok, and I'll copy it to the 2.7 branch)

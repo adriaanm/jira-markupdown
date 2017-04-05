@@ -1,8 +1,0 @@
-The logic that would need tweaking in CheckabilityChecker:
-```scala
-    def areIrreconcilableAsParents(sym1: Symbol, sym2: Symbol): Boolean = areUnrelatedClasses(sym1, sym2) && (
-         sym1.initialize.isEffectivelyFinal // initialization important
-      || sym2.initialize.isEffectivelyFinal
-      || !sym1.isTrait && !sym2.isTrait
-      || sym1.isSealed && sym2.isSealed && allChildrenAreIrreconcilable(sym1, sym2) && !currentRun.compiles(sym1) && !currentRun.compiles(sym2)
-```

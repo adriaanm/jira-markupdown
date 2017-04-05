@@ -1,7 +1,0 @@
-FWIW, I'm looking at similar scala/bug#5720, which seems to turn on interaction between the owner of synthetic symbols and lambda lifting.  (I think that has been seen before.)
-
-Stuff$1 added in typers is wrapped in anonfuns in uncurry; I think the stuff$ wants to be owned by the anonfun.
-
-I added a small ChangeOwner at uncurry (in transformFunction where the body is made) which made both bug examples compile, but it isn't quite correct enough yet (for nested anonfuns, I think).
-
-I could be off-base, since I only just learned how all the parts work -- lambda lifter, default args, etc, all interesting stuff$.  Thanks to everyone: it reads like a good novel, with spell-binding plot twists.

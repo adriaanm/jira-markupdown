@@ -1,7 +1,0 @@
-If you run that sequence with "scala -Dscalac.debug.lub" you will see why:
-```
-Malformed lub: ScalaObject with A with B{val x: ScalaObject with A with B}
-Argument C does not conform.  Falling back to ScalaObject with A with B
-lub of List(C, D) is ScalaObject with A with B
-```
-So unless I'm further gone than I'm thought, the lub can't be right if one of the contributors to the lub does not conform to it.  scalac thinks that !(t <:< lubRefined), in this case that C does not conform.  So there is a bug somewhere, but right at this moment it looks to me like a bug in the subtyping logic.  I'll open to suggestions.

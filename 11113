@@ -1,9 +1,0 @@
-This is bad and hard to fix.  The problem is that GrowingBuilder takes only an *instance* of what it is supposed to grow, and has no way to create another copy.  So a GrowingBuilder cannot clear itself without this problem:
-```scala
-b += 3
-val x = b.result
-b.clear
-x.length == 0  // true
-```
-
-Thus, a GrowingBuilder can only safely be used to grow exactly the Growable you give to it, which means you may as well just use the naked Growable.  For 2.11.2 I am going to add a deprecation flag to give some warning about the broken behavior; I think it's even worse to "fix" it and clobber collections you think you've already created.  Then in 2.12 I'll actually fix it.

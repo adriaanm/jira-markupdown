@@ -1,9 +1,0 @@
-There are rather more problems than simply Int boundaries. The present implementation is very susceptible to int overflow and underflow, given arbitrary step values. I'm attaching both a test suit based on scalacheck, and a patch.
-
-The patch is based on the idea of computing and keeping an Option of last. This means going through or testing for Option, which may introduce a small overhead on a few methods.
-
-On the other hand, it removes an "if" statement from foreach (byOne ranges not-affected) which might well make them faster.
-
-A possible optimization that was not pursued here might see the Range factory checking whether a Range has a "last" or not, and overriding the few methods affected by this with versions that make no checking at all.
-
-I'll do some benchmarking later, and update this ticket with the results, unless some kind soul beat me to it. :-)

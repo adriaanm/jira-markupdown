@@ -1,5 +1,0 @@
-I've looked at this more closely and realized that a major premise of my proposal is flawed: namely, that many extractors could guarantee a Some return value. Because of our old friend `null`, this is not possible. For case classes, for example, the generated unapply method returns None when passed a null. 
-
-Some alternative solutions:
-- Type check these definitions more strictly, and require additional syntax (e.g. the case keyword) to obtain the (current) less strict type checking
-- Annotate unapply methods such as Tuple2.unapply to indicate that they are guaranteed to return a Some as long as the argument is non-null, and directly invoke unapply (as in the original proposal) when the annotation is present. If the rhs is null, throw an appropriate exception (preferably not MatchError)

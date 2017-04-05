@@ -1,7 +1,0 @@
-Your example code doesn't indicate that the above run method doesn't holds to the stream head because len method is a tail recursive and the tail recursive method jumps to beginning of the method and **rewrite** the corresponding parameter `s` when the method itself is called.
-
-However, my previous comment was also wrong.  The reason of this problem is not that the run method holds to the stream head.
-The reason of this problems is that flatMap continues to evaluate each thunk of Stream until non-empty sequence is produced.
-
-In `len(bigElemts)`, because `s` is rewritten to its tail when calling `len(s.tail, acc + 1)`, memory leaks doesn't happen.
-In `len(bigElemts.flatMap(_ => Stream.empty[Int]))`, all thunks ({{LIst.fill(1000)("big")}}) of `bigElemts`, the number of `bigElemts` is 1000000, is evaluated to big List.  Then, much memory is consumed.  The head of `bigElemts` cannot be released in the flatMap because `bigElemts` itself is **`this`** reference, which is not rewritable.

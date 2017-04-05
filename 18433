@@ -1,9 +1,0 @@
-Current BitSetLike implementation for the foreach function loops through each bits in the array. When the set is not dense, it is possible to avoid blocks of 64 bits by comparing them to 0L.
-
-Using different density, on my computer I obtained a performance improvement of a factor above 5 for density below 0.1 and a minimal improvement of 20% when all bits are set.
-Runtime is computed using System.nanoTime and is the mean of 20 iterations.
-
-Note: this change might affect some program behavior. Using this implementation, if the called function insert an integer having a higher value than the current value and being stored in the same long value, then it will not be considered. E.g., inserting 42 when looping on 40. 
-Since manipulating a collection while iterating over it is a bad practice and is known to produce unwanted effects, I don't if it is a problem.
-
-I did not compare runtime using other architectures.

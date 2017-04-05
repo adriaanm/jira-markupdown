@@ -1,9 +1,0 @@
-The updated, \+:, and :\+ methods ignore the provided CanBuildFrom instance, likely for performance reasons. This breaks type safety:
-```scala
-scala> (Vector(1,2,3) :+ 4)(collection.breakOut):List[Int]
-java.lang.ClassCastException: scala.collection.immutable.Vector cannot be cast to scala.collection.immutable.List
-```
-
-The implementation of List.+: gets it right though, with minimal overhead (one instanceof check). I've attached a diff that applies the same implementation to Vector. All tests pass when applied to current trunk (277dc7cf43566f8294bde4143107d9bfaa59e8e3)
-
-Obviously, performance may be affected, although an instanceof check should be cheap compared to the required node allocation, etc. The original code seems to have been added on 2009-10-14 with commit 1747692434cece862d63a0f67decd810707b1508 and includes the comment: "{{TODO: check overhead of builder factories for methods updated, \+: and :\+}}". The comment was removed when the code was moved from IndexedSeq to Vector (commit 6f7723bea494da2616edc1877d2402d356787512). I wonder if any overhead checking was ever done.

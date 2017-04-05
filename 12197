@@ -1,7 +1,0 @@
-More specifically, `Global` has a lazy val `macroClassLoader` which is used to load macro implementations. This class loader is neither closed, nor is a reference to it released, as the end of a run.
-
-Here's a sketch of how we could improve the situation:
-
-  https://github.com/scala/scala/compare/2.12.x...retronym:ticket/9682?expand=1
-
-The diff gets large as I started applying the same idea to the compilation classpath. That is tricker as we need to propagate the `close()` calls all the way down the line to the places to all the places that opened file handles.

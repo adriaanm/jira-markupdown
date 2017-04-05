@@ -1,4 +1,0 @@
-The way I discovered this is pretty nutball. There was a call to scalaz.stream.Process.empty which stopped compiling after I stopped importing the $conforms implicit, which is simply reflexive. As [paul chiusano discusses here|https://issues.scala-lang.org/browse/SI-9453?focusedCommentId=73506&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-73506], it needs to infer F and O in `def empty\[F\[_\], O\]`. Maybe you can see where this is going.
-
-It won't allow `quasar.Predef.Nothing` to be inferred for F because it thinks it has the wrong kind. But if we have a nice `A => A` implicit in scope, it will "translate" from a type alias to the dealiased type, utilizing the identity function.
-

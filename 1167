@@ -1,5 +1,0 @@
-The readResolve method is added because the check to see if it's present only looks for non-private methods.  The Serializable documentation (http://java.sun.com/j2se/1.5.0/docs/api/java/io/Serializable.html) says private is fine:
-```scala
-ANY-ACCESS-MODIFIER Object readResolve() throws ObjectStreamException;
-```
-I attached a patch to widen the check.  It successfully compiles both failing cases from this report.  This is the only purpose for which hasImplementation is ever called and the method isn't documented, so I didn't feel bad about altering the semantics of what it is to "have an implementation" but YMMV.

@@ -1,7 +1,0 @@
-`throw` produces type `Nothing` which is bottom type in Scala, which means they are sub type of any other type. When using overloading, Scala will pick the most specific argument type, and obviously `Function1[String, Any]` is more specific than `Any`. Throwing an exception *is* a sub type of `Function1[String, Any]` because of the bottom type nature. So you are invoking the second method with a *value* that is throwing an exception. That's perfectly correct behaviour.
-
-You are basically doing this:
-```scala
-def schoko: String => Any = ???
-ByNameTest.exec(schoko)
-```

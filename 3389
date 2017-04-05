@@ -1,3 +1,0 @@
-Thanks for your detailed report. In my view the main issue with your suggestion is that the actor it creates waits using a blocking operation (`!?`), which means blocking the underlying worker thread.
-
-Therefore, I changed `alarm` so that it no longer uses `future`. Instead, it uses a `FutureActor`, which now supports future bodies with non-returning operations like `reactWithin`. I still changed the result type of `alarm` to `Future[Unit]`, since the protocol of actor-based futures demands that there is a result value sent to the (typed) `inputChannel` of the `Future` object (there is no value of type `Nothing`).

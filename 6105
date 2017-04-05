@@ -1,5 +1,0 @@
-The problem happens at {{takeWhile}}. It's {{hasNext}} calls {{next}} on the iterator it is based on, therefore changing it (ie, calling {{reader.read}}). Perhaps it would be best for {{takeWhile}} not to do so, but the main problem here is that calling {{getLines}} will only work if the previous iterator had not been used at all.
-
-I think the proper solution would be for `val reader`/`val bufReader` to be moved up one level in scope and *shared* between `iter` and `BufferedLineIterator`.
-
-On the other hand, it turns out this bug isn't all that bad. It only happens if you do something to the iterator before using it -- such as REPL showing whether the iterator is empty or not.

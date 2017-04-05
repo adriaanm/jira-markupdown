@@ -1,9 +1,0 @@
-> Because the guard is executed outside the scope of the actor and may be executed concurrently with a thread updating the mutablehashmap, you've given up all concurrency guarantees for Actors.  This is a serious defect.  It cannot reasonably be cured with a comment.
-
-That shouldn't be the case, and if it is, yes, that's a serious bug that can't be cured by a comment.
-
->   It can be cured by moving all code that touches (creates, tests, or applies) the partial function in react/receive to execute only on the thread that is currently running the Actor.  Anything short of that gives up what the Actor is.
-
-I think the way the current implementation is supposed to work the actor essentially takes over the sender's thread while it is checking the message.  If the actor is currently running on another thread, then it should just queue the message without examining it, thus isDefinedAt is never executed.  If it's waiting, then the synchronizing should serialize message sends so that it inspects the messages one at a time.
-
-Actors are supposed to guarantee that they only execute on one thread at a time.  But they don't make any guarantees about what thread that is or how often it changes.  This should be possible with the current design, but it's quite possible that somewhere the synchronization isn't right and the guarantee is not being met.

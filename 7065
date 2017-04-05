@@ -1,9 +1,0 @@
-Problem is: it's an intrusive change trying to fix this one, because we don't compile java files (just parse signatures). in Scalac, constants folding happens thanks to the type system, (1 + 1) has ConstantType(2). To make the following work, we need to push expressions through the typer:
-```scala
-public class A {
-  public static final int N = 0;
-  public static final int K = A.N + A.N; // needs to have ConstantType
-}
-```
-
-Also, the way things are set up in Scalac, a compile-time constant (in Scala) needs to have an inferred type. In Java, there's always an explicit type. So we need to be able to decide somehow if the type (for K) should be inferred or not.

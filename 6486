@@ -1,5 +1,0 @@
-Thanks for looking into possible performance implications. A few points:
-
-- I did some benchmarking (of various JSON strings) and did not, to my recollection, see a major drop in performance. The cost of creating NoSuccess instances was small relative to everything else the parser does.
-- In our case (IRC protocol parser) constructing the parser instances was more expensive than the parsing itself. This is obviously a function of the very small size of messages, and relatively complexity of parser, but just creating a new non-threadsafe parser for every parse job would not be an acceptable solution for many people.
-- I know this solution is fugly. I played around with other solutions that don't use mutable state, but the only reasonable one I came up with (state monad containing lastNoSuccess) would involve breaking the existing parser API. If anyone has any superior suggestions I'd love to help implement them.

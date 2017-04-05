@@ -1,9 +1,0 @@
-Ugh.  I'd forgotten about hash codes.  Floating-point is such a pain.
-```scala
-scala> new java.math.BigDecimal(123.312)
-res0: java.math.BigDecimal = 123.3119999999999976125764078460633754730224609375
-```
-
-So, that's not actually 123.312, is it?  But my patch tried to make BigDecimal(123.312) be exactly 123.312 (i.e. the decimal fractional value, not the Double approximation), since there were a lot of consistency gotchas around BigDecimal/Double interconversion.
-
-I'll see if it's practical to fix isValidDouble or hashCode to agree with the string representation of the Double, not the actual value.  I think I just forgot to switch this out for equivalentToDouble.

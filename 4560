@@ -1,3 +1,0 @@
-It is worse than I thought at first. This is because calling TimerTask#cancel does not remove the task from the Timer's queue. It is still there until it is its turn to fire at which point it's state is CANCELLED and therefore it will be discarded.
-
-This means that even in a long running actor, timer task objects will be accumulated. Even if timeout is "just" several seconds away, the actor can do a lot of loops in that time thus creating more and more tasks.
